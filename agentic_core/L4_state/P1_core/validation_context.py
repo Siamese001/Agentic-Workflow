@@ -7,14 +7,15 @@ to optimize performance and prevent unnecessary re-scanning.
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 import time
+from pathlib import Path
 
 
 import json
 import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
 
 LOGGER = logging.getLogger(__name__)
 
@@ -49,6 +50,49 @@ class ValidationContext:
     # Flapping detection
     flapping_files: Dict[str, int] = field(default_factory=dict)
     recent_cycles: List[Dict[str, Any]] = field(default_factory=list)
+    
+    # Cached state ledger
+    ledger: Optional[CachedStateLedger] = field(default=None, init=False)
+    
+    # Project root for ledger initialization
+    project_root: Optional[Path] = field(default=None, init=False)
+    session_id: Optional[str] = field(default=None, init=False)
+    
+    def __post_init__(self):
+        """Initialize ledger if project_root and session_id are available."""
+        if self.project_root and self.session_id:
+            self.ledger = CachedStateLedger(self.project_root, self.session_id)
+    
+    def initialize_ledger(self, project_root: Path, session_id: str):
+        """Initialize the cached state ledger."""
+        self.project_root = project_root
+        self.session_id = session_id
+        self.ledger = CachedStateLedger(project_root, session_id)
+    
+    def get_context(self, key: str) -> Optional[Dict]:
+        """Get context with cache-first recall."""
+        if self.ledger:
+            # [CACHE-FIRST] Sovereign recall
+            cached = self.ledger.get_cached_validation_context(key)
+            if cached:
+                return cached
+        
+        # Compute raw context if not cached
+        context = self._compute_raw_context(key)
+        if self.ledger and context:
+            self.ledger.cache_validation_context(key, context)
+        return context
+    
+    def _compute_raw_context(self, key: str) -> Optional[Dict]:
+        """Compute raw context - override in subclasses."""
+        # Default implementation returns basic context
+        return {
+            "key": key,
+            "cycle_id": self.cycle_id,
+            "status": self.status,
+            "files_scanned": self.files_scanned,
+            "violations_found": self.violations_found
+        }
 
     def add_modified_file(self, file_path: Path):
         """Add a file to the modified set."""

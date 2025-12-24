@@ -64,14 +64,12 @@ class OrchestrationHandshake(CachedOrchestrator):
         args = args or {}
         kwargs = kwargs or {}
         
-        # [CACHE] Check for identical recent delegation
-        delegation_key = f"handshake_delegate:{hashlib.sha256((task + json.dumps(kwargs)).encode()).hexdigest()}"
-        if self.redis:
-            cached = self.redis.get(delegation_key)
-            if cached:
-                print(f"   [CACHE HIT] Handshake result reused for '{task[:30]}...'")
-                return json.loads(cached)
-
+        # [CACHE-FIRST] Check previous routing for this mission
+        cached = self.get_cached_routing(task)
+        if cached:
+            print(f"   [CACHE HIT] Handshake routing for '{task[:30]}...'")
+            return cached
+        
         capable = self.discover_capable_agents(task, min_confidence)
         if not capable:
             return {
@@ -97,10 +95,7 @@ class OrchestrationHandshake(CachedOrchestrator):
                 "result_summary": str(result)[:500] if result else "None"
             }
             # Cache successful delegation for 30 mins
-            if self.redis:
-                try:
-                    self.redis.set(delegation_key, json.dumps(audit), ex=1800)
-                except Exception: pass
+            self.cache_routing_decision(task, audit)
             return audit
         except Exception as e:
             return {

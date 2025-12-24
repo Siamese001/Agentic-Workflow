@@ -9,16 +9,17 @@ import re
 from pathlib import Path
 from typing import Dict, Set
 from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 
 
-class GravityEnforcerAgent:
+class GravityEnforcerAgent(CachedSafetyShield):
     """
     The "Neural Link" stabilizer that enforces gravity rules by actively
     commenting out forbidden imports from upstream sovereign code to downstream domains.
     """
     
     def __init__(self, project_root: Path, ctx):
-        self.root = project_root
+        super().__init__(project_root, "gravity_gate")
         self.ctx = ctx
         # Derive Upstream vs Downstream from SSOT
         all_roots = set(SOVEREIGN_REGISTRY.keys())
@@ -92,6 +93,11 @@ class GravityEnforcerAgent:
         Check a file for gravity violations and heal them by commenting out.
         Returns True if the file was healed, False if no violations found.
         """
+        # [CACHE-FIRST] Sovereign reflex
+        cached = self.get_cached_gravity(file_path)
+        if cached:
+            return cached.get('had_violations', False)
+        
         try:
             with open(file_path, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
@@ -112,10 +118,16 @@ class GravityEnforcerAgent:
             try:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(new_content)
+                # Cache the verdict
+                verdict = {"had_violations": True, "healed": True}
+                self.cache_gravity_verdict(file_path, verdict)
                 return True
             except Exception as e:
                 print(f"   [!] Could not write to {file_path}: {e}")
-                
+        
+        # Cache no violations
+        verdict = {"had_violations": False, "healed": False}
+        self.cache_gravity_verdict(file_path, verdict)
         return False
         
     def get_summary(self) -> Dict:

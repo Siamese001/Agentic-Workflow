@@ -235,6 +235,7 @@ from agentic_core.L5_safety.gravity.gravity_enforcer_agent import GravityEnforce
 from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
 from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
+from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -1194,6 +1195,9 @@ IF (task == "GRAVITY_REFACTOR"):
     # [SUBATOMIC REGISTRY] Add method registry to monitors
     monitors.append(SubAtomicRegistry(project_root))
     
+    # [L5 ALERTING] Add SovereignAlertingAgent to monitors
+    monitors.append(SovereignAlertingAgent(project_root))
+    
     # [ORCHESTRATION PROTOCOL] Arm multi-hop collaboration
     print("   [OK] OrchestrationHandshake protocol armed for multi-hop missions.")
     n_files = []
@@ -1774,7 +1778,8 @@ CURRENT CODE:
     print("    Ghost Embeddings — Purged from Redis cache")
     print("    Configuration eternal — .env SSOT gateway")
     print("    L3 Orchestration: Memory-Aware (Redis) — instant routing & fission")
-    print("    L4 State: Persistent memory with Pinecone + Redis")
+    print("    L4 State: Persistent Ledger (Redis) — instant context & immutable audits")
+    print("    L5 Safety: Sovereign Shield (Redis) — reactive reflexes & cached policies")
     print("="*80)
     print("    [ETERNAL SOVEREIGNTY ACHIEVED — PERFECTION SEALED]")
     print("="*80)
