@@ -5,6 +5,8 @@ inspect_scripts_quality.py - Diagnostics Module
 Domain: utilities
 Generated: 2025-12-07T12:07:59.885531
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
 
 import logging
 from datetime import datetime

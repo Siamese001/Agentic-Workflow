@@ -7,7 +7,10 @@ modules to avoid circular imports. This file must not import from any
 runtime.* modules - only from pydantic, enum, and typing.
 """
 
-from enum import Enum
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+
+from enum import Enum, auto
 from pathlib import Path
 
 # ============================================================================

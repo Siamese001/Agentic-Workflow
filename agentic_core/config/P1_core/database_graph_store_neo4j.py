@@ -5,7 +5,7 @@ except ImportError:
     GraphDatabase = None
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Optional, Protocol, Dict, List
 
 
 class Neo4jGraphStore:

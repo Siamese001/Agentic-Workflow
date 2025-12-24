@@ -2,11 +2,12 @@
 """
 Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.
+"""
 import logging
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
-"""
 
 from pathlib import Path
 

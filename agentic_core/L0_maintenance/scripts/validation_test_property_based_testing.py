@@ -10,6 +10,7 @@ This test validates:
 5. Test file generation and cleanup
 """
 
+import sys
 import asyncio
 import os
 import tempfile

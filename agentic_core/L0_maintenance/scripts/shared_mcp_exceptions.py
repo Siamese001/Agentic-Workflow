@@ -1,4 +1,5 @@
-from typing import Any
+import logging
+from typing import Any, Optional, Protocol, Dict, List
 
 """MCP-specific exceptions.
 

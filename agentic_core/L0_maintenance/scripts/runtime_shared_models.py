@@ -5,8 +5,10 @@ LOGGER = logging.getLogger(__name__)
 Provides common data structures used across the runtime shared modules.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
 
 
 @dataclass

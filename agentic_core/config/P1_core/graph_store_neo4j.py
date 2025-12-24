@@ -5,7 +5,7 @@ except ImportError:
     GraphDatabase = None
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Optional, Protocol, Dict, List
 
 
 class Neo4jGraphStore:
@@ -20,7 +20,7 @@ class Neo4jGraphStore:
         URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
         PWD = os.environ.get("NEO4J_PASSWORD", "password")
-        self._driver = GraphDatabase.driver(uri, auth=(user, pwd))
+        self._driver = GraphDatabase.driver(URI, auth=(USER, PWD))
 
     def close(self) -> None:
         """TODO: Add docstring."""
@@ -42,14 +42,14 @@ class Neo4jGraphStore:
         CYPHER = """
         MERGE (e:Entity {id: $id})
         SET e.type = $type,
-            E.NAME = $name
+            e.name = $name
         with e
         CALL apoc.create.addProperties(e, $metadata) yield node
         return node
         """
         try:
             self.run(
-                cypher,
+                CYPHER,
                 {
                     "id": entity_id,
                     "type": etype,
@@ -62,8 +62,8 @@ class Neo4jGraphStore:
             fallback_cypher = """
             MERGE (e:Entity {id: $id})
             SET e.type = $type,
-                E.NAME = $name,
-                E += $metadata
+                e.name = $name,
+                e += $metadata
             return e
             """
             self.run(
@@ -116,13 +116,13 @@ class Neo4jGraphStore:
                 CALL apoc.create.addProperties(r, $attrs) yield rel
                 return rel
                 """
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs
             except Exception:
                 # Fallback without APOC
                 CYPHER += "\nSET r += $attrs"
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def update_relation_invalidity(
         self,
@@ -145,7 +145,7 @@ class Neo4jGraphStore:
             CYPHER += "\nSET r.invalidated_by = $invalidated_by"
             params["invalidated_by"] = invalidated_by
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def query_factual_temporal(
         self,
@@ -166,7 +166,7 @@ class Neo4jGraphStore:
         return s, r, o
         """
         return self.run(
-            cypher,
+            CYPHER,
             {
                 "name": entity_name,
                 "predicate": predicate,

@@ -22,6 +22,7 @@ Version: 1.0.0
 """
 
 import logging
+from typing import Any, Optional, Protocol, Dict, List
 
 # Module configuration
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ __author__ = "Agentic-Workflow Team"
 # Core functionality
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    logger.info("Initializing module")
+    LOGGER.info("Initializing module")
     return True
 
 

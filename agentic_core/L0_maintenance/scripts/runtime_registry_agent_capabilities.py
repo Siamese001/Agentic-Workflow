@@ -1,5 +1,5 @@
-from enum import Enum
-from dataclasses import dataclass
+from enum import Enum, auto
+from dataclasses import dataclass, field
 """Agent Capabilities Registry - Functional Role-based Agent System.
 
 This module defines the functional capabilities that replace the legacy K-node
@@ -7,7 +7,7 @@ numbered system. Agents are identified by their function, not by numbers.
 """
 
 import logging
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -344,7 +344,7 @@ def map_legacy_to_role(self: Any, legacy_reference: str) -> Optional[AgentRole]:
     """Map a legacy K-node reference to a functional role.
 
     Args:
-        legacy_reference: Legacy reference (e.g., "K.3", "K2")
+        legacy_reference: Legacy reference (e.g., "K.3")
 
     Returns:
         Corresponding AgentRole or None

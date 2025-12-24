@@ -1,3 +1,4 @@
+import logging
 _logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
@@ -44,7 +45,7 @@ def create_pointer_file(original_path: Path, canonical_path: str, source_hash: s
             "original_path": str(original_path),
             "created": datetime.now().isoformat(),
         },
-        INDENT=2,
+        indent=2,
     )
 
 
@@ -63,9 +64,9 @@ def create_pointer_file(original_path: Path, canonical_path: str, source_hash: s
 
 def execute_dedup(dry_run: bool = True) -> Dict:
     """Execute the deduplication."""
-    load_latest_analysis()
+    report = load_latest_analysis()
 
-    RESULTS = {
+    results = {
         "timestamp": datetime.now().isoformat(),
         "dry_run": dry_run,
         "clusters_processed": 0,
@@ -80,8 +81,8 @@ def execute_dedup(dry_run: bool = True) -> Dict:
         POINTER_DIR.mkdir(parents=True, exist_ok=True)
 
     for cluster in report["clusters"]:
-        cluster["cluster_id"]
-        cluster["canonical_path"]
+        cluster_id = cluster["cluster_id"]
+        canonical = cluster["canonical_path"]
         merge_plan = cluster["merge_plan"]
         non_canonical = merge_plan["non_canonical"]
 
@@ -128,10 +129,10 @@ def execute_dedup(dry_run: bool = True) -> Dict:
     # Summary
 
     if dry_run:
-        pass  # "\n[DRY RUN] Would execute the following operations:")
-        pass  # f"  - Process {len(report['clusters'])} clusters")
-        pass  # f"  - Archive {results['files_archived']} files")
-        pass  # f"  - Create {results['pointers_created']} pointers")
+        _logger.info("\n[DRY RUN] Would execute the following operations:")
+        _logger.info(f"  - Process {len(report['clusters'])} clusters")
+        _logger.info(f"  - Archive {results['files_archived']} files")
+        _logger.info(f"  - Create {results['pointers_created']} pointers")
 
     return results
 
@@ -141,10 +142,10 @@ if __name__ == "__main__":
 
     dry_run = "--execute" not in sys.argv
 
-    RESULTS = execute_dedup(dry_run=dry_run)
+    results = execute_dedup(dry_run=dry_run)
 
     # Save results
     results_path = ANALYSIS_DIR / f"dedup_execution_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(results_path, "w") as f:
-        JSON.DUMP(RESULTS, F, INDENT=2)
+        json.dump(results, f, indent=2)

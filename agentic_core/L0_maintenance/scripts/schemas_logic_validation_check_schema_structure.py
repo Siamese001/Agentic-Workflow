@@ -8,6 +8,7 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original check_schema_structure.py contained 6 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from agentic_core.check_schema_structure_impl import *  # Star import removed

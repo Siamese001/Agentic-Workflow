@@ -8,7 +8,7 @@ Phase 1C - SDK Integration Layer
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 from scripts.runtime.shared.agent_executor import AgentExecutor, AgentMessage
 from scripts.runtime.shared.cache_clients import cache_get, cache_set

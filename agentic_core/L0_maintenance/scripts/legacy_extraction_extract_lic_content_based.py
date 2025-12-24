@@ -6,6 +6,7 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Dict
+from typing import Any, Optional, Protocol, Dict, List
 
 
 def get_file_hash(filepath: Path) -> str:
@@ -103,4 +104,3 @@ if __name__ == "__main__":
     else:
         # logger.info("\nNo duplicate files found")
         pass
-

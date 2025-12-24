@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """
 compute_scripts_score.py - Scoring Module
 
@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.878858
 """
 
 import logging
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

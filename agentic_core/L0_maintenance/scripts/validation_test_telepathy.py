@@ -10,6 +10,7 @@ This test validates:
 5. Forced agent execution in mission flow
 """
 
+import sys
 import asyncio
 import tempfile
 from pathlib import Path

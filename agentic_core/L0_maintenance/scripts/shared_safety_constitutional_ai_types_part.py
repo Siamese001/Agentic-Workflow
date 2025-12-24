@@ -1,6 +1,8 @@
-from enum import Enum
-from dataclasses import dataclass
 """Split module 1 for constitutional_ai_types."""
+
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
 
 import logging
 

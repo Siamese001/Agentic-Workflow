@@ -6,7 +6,7 @@ Provides core functionality and exports for the Security Controls module.
 
 
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 
@@ -69,5 +69,5 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created Security Controls instance with config: {final_config}")
+    LOGGER.info(f"Created Security Controls instance with config: {final_config}")
     return final_config

@@ -9,6 +9,9 @@ Generated: 2025-12-07T12:07:59.882600
 
 import logging
 from typing import Dict, List, Optional
+from typing import Any, Protocol
+from dataclasses import field
+from enum import auto
 
 LOGGER = logging.getLogger(__name__)
 

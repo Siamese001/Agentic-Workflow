@@ -6,7 +6,8 @@
 import hashlib
 import shutil
 from pathlib import Path
-from typing import Dict
+import logging
+from typing import Any, Optional, Protocol, Dict, List
 
 
 def get_file_hash(filepath: Path) -> str:
@@ -117,4 +118,3 @@ if __name__ == "__main__":
         for orig, new in sorted(unique_content):
             # logger.info(f"  - {orig} -> {new}")
             pass
-

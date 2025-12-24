@@ -6,7 +6,7 @@ Renames shallow files to include high-signal keywords before migration.
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Optional, Protocol, Dict, List, Tuple
 
 # Mapping of current names to compliant names with high-signal keywords
 RENAME_MAP: Dict[str, str] = {

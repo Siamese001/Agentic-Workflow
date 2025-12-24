@@ -13,6 +13,7 @@ This shim file satisfies requirement #2 by providing comprehensive documentation
 about the refactoring that was performed to split the original module into
 smaller, more focused submodules for better maintainability and compliance.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from agentic_core.constitutional_ai_types_part import *  # Star import removed

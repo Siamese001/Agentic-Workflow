@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 """Types and models for comprehensive_dedup_analysis."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
 
 import logging
 

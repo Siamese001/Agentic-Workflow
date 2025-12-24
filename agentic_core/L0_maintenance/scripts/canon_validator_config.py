@@ -6,7 +6,7 @@ The Three Laws of Subatomic Governance are defined here.
 import os
 import sys
 from pathlib import Path
-from typing import List
+from typing import Any, Optional, Protocol, Dict, List
 
 # [SSOT] Import structure definitions from master blueprint
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))

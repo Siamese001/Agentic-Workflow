@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from enum import Enum, auto
 import logging
+from typing import Any, Optional, Protocol, Dict, List, ClassVar
 
 _logger = logging.getLogger(__name__)
 # Ownership: shared

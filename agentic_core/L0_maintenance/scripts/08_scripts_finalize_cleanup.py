@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Finalize cleanup - handle orphans and clean merged files."""
 
+import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -18,16 +19,16 @@ def backup_file(file_path: Path):
         backup_path = BACKUP_DIR / file_path.name
         backup_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(file_path, backup_path)
-        logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
+        logging.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
 
 
 def clean_merged_file(file_path: Path):
     """Remove duplicate imports and docstrings from merged files."""
     if not file_path.exists():
-        logger.info(f"  ⚠ File not found: {file_path.relative_to(ROOT)}")
+        logging.info(f"  ⚠ File not found: {file_path.relative_to(ROOT)}")
         return
 
-    logger.info(f"Cleaning: {file_path.relative_to(ROOT)}")
+    logging.info(f"Cleaning: {file_path.relative_to(ROOT)}")
     backup_file(file_path)
 
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -37,7 +38,7 @@ def clean_merged_file(file_path: Path):
     parts = content.split('# ============================================')
 
     if len(parts) <= 1:
-        logger.info(f"  ℹ No merge markers found")
+        logging.info(f"  ℹ No merge markers found")
         return
 
     # Keep first part (original)
@@ -77,37 +78,40 @@ def clean_merged_file(file_path: Path):
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(cleaned + '\n')
 
-    logger.info(f"  ✓ Cleaned")
+    logging.info(f"  ✓ Cleaned")
 
 
 def rename_orphan(src: Path, dst: Path):
     """Rename orphan file by removing _2 suffix."""
     if not src.exists():
-        logger.info(f"  ⚠ File not found: {src.relative_to(ROOT)}")
+        logging.info(f"  ⚠ File not found: {src.relative_to(ROOT)}")
         return
 
     backup_file(src)
     src.rename(dst)
-    logger.info(f"  ✓ Renamed: {src.name} → {dst.name}")
+    logging.info(f"  ✓ Renamed: {src.name} → {dst.name}")
 
 
 def main():
     """Docstring."""
-    LOGGER.INFO("=" * 50)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logger = logging.getLogger(__name__)
+
+    logger.info("=" * 50)
     logger.info("Finalizing Duplicate File Cleanup")
-    LOGGER.INFO("=" * 50)
-    logger.info()
+    logger.info("=" * 50)
+    logger.info("")
 
     # Create backup directory
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     logger.info(f"Backup directory: {BACKUP_DIR.relative_to(ROOT)}")
-    logger.info()
+    logger.info("")
 
     # Step 1: Clean merged files
     logger.info("━" * 50)
     logger.info("STEP 1: Clean merged files")
     logger.info("━" * 50)
-    logger.info()
+    logger.info("")
 
     merged_files = [
         ROOT / "config/config_models.py",
@@ -129,11 +133,11 @@ def main():
         clean_merged_file(file_path)
 
     # Step 2: Rename orphans
-    logger.info()
+    logger.info("")
     logger.info("━" * 50)
     logger.info("STEP 2: Rename orphan files")
     logger.info("━" * 50)
-    logger.info()
+    logger.info("")
 
     orphans = [
         (ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models_2.py",
@@ -155,11 +159,11 @@ def main():
     for src, dst in orphans:
         rename_orphan(src, dst)
 
-    logger.info()
+    logger.info("")
     logger.info("━" * 50)
     logger.info("✅ Finalization Complete!")
     logger.info("━" * 50)
-    logger.info()
+    logger.info("")
     logger.info("Summary:")
     logger.info(f"  - Cleaned {len(merged_files)} merged files")
     logger.info(f"  - Renamed {len(orphans)} orphan files")
@@ -168,4 +172,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
