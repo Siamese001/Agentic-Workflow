@@ -1777,6 +1777,14 @@ CURRENT CODE:
     print("    [ETERNAL SOVEREIGNTY ACHIEVED — PERFECTION SEALED]")
     print("="*80)
 
+    # [FINAL PURITY] Auto-run Sovereign Rescue Review
+    try:
+        from scripts.sovereign_rescue_review import SovereignRescueReviewer
+        reviewer = SovereignRescueReviewer(project_root)
+        reviewer.review_and_heal()
+    except Exception as e:
+        print(f"   [!] SRR failed: {e} — manual archive review needed")
+
     # [ULTIMATE SELF-AUDIT] Final compliance verification
     total_violations = len([r for r in ctx.report_list if not r.get("success", True)])
     if total_violations == 0:
