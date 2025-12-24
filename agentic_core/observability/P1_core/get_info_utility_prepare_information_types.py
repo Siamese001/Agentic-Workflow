@@ -4,6 +4,7 @@ import time
 import traceback
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)

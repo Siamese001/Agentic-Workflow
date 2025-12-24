@@ -3,6 +3,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # Protocols for dependency injection to break architectural coupling

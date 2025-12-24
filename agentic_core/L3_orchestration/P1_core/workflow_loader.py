@@ -1,15 +1,16 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """
 Workflow Loader - Dynamic loading and parsing of workflow configurations.
 
 Loads the active_workflow.json and provides typed accessors for workflow sections,
 K-node configurations, prompts, and validation rules.
 """
+from typing import Any, Optional, Protocol, Dict, List
 
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 
@@ -100,15 +101,15 @@ class WorkflowLoader:
         try:
             with open(self.workflow_path, 'r', encoding='utf-8') as f:
                 self._workflow_data = json.load(f)
-            logger.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
+            LOGGER.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
         except FileNotFoundError:
-            logger.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
+            LOGGER.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
+            LOGGER.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except Exception as e:
-            logger.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
+            LOGGER.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:
@@ -331,7 +332,7 @@ class WorkflowLoader:
 
         # Reload from disk
         self._load_workflow()
-        logger.info("Workflow reloaded from disk with cleared caches")
+        LOGGER.info("Workflow reloaded from disk with cleared caches")
 
 # Convenience function for creating a loader
 def create_workflow_loader(workflow_path: Optional[Union[str, Path]] = None) -> WorkflowLoader:
