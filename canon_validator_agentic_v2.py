@@ -272,6 +272,32 @@ try:
 except ImportError:
     EternalConvergenceAgent = None
 
+# Try to import ultra-hardening agents
+try:
+    from agentic_core.L4_state.dependencies.dependency_pinner_agent import DependencyPinnerAgent
+except ImportError:
+    DependencyPinnerAgent = None
+try:
+    from agentic_core.L5_safety.red_teaming.security_vuln_scanner_agent import SecurityVulnScannerAgent
+except ImportError:
+    SecurityVulnScannerAgent = None
+try:
+    from agentic_core.L3_vitality.performance_sentinel_agent import PerformanceSentinelAgent
+except ImportError:
+    PerformanceSentinelAgent = None
+try:
+    from agentic_core.L5_safety.verifiability.test_coverage_guardian import TestCoverageGuardian
+except ImportError:
+    TestCoverageGuardian = None
+try:
+    from agentic_core.L6_meta.legal.license_compliance_agent import LicenseComplianceAgent
+except ImportError:
+    LicenseComplianceAgent = None
+try:
+    from agentic_core.L6_meta.seal.sovereign_seal_agent import SovereignSealAgent
+except ImportError:
+    SovereignSealAgent = None
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -1197,6 +1223,38 @@ IF (task == "GRAVITY_REFACTOR"):
             print(f"     [+] FissionExecutorAgent HARDENED — atomicity enforced")
             continue
             
+        # [L3 COMPLEXITY HARDENING] ComplexityGovernorAgent — strict cyclomatic limits
+        if name == 'ComplexityGovernorAgent':
+            agent.max_function_complexity = 15
+            agent.max_file_complexity = 50
+            agent.auto_refactor_high = True
+            atomic_validators.append(agent)
+            print(f"     [+] ComplexityGovernorAgent ULTRA-HARDENED — control flow absolute")
+            continue
+
+        # [L1 DOCSTRING HARDENING] DocstringSovereignAgent — high-signal documentation
+        if name == 'DocstringSovereignAgent':
+            agent.required_style = "google"
+            agent.min_coverage = 1.0  # 100% coverage mandatory
+            atomic_validators.append(agent)
+            print(f"     [+] DocstringSovereignAgent ULTRA-HARDENED — knowledge preservation eternal")
+            continue
+
+        # [L5 TYPE HARDENING] TypeHintEnforcerAgent — full static typing
+        if name == 'TypeHintEnforcerAgent':
+            agent.enforce_returns = True
+            agent.coverage_target = 1.0
+            atomic_validators.append(agent)
+            print(f"     [+] TypeHintEnforcerAgent ULTRA-HARDENED — static truth absolute")
+            continue
+
+        # [L1 ENTROPY HARDENING] EntropyMaximizerAgent — maximum information density
+        if name == 'EntropyMaximizerAgent':
+            agent.target_entropy = "ULTRA"
+            atomic_validators.append(agent)
+            print(f"     [+] EntropyMaximizerAgent HARDENED — signal density absolute")
+            continue
+            
         # [L1 HARDENING] ArchitectureGovernor — per-file structural enforcement
         if name == 'ArchitectureGovernor':
             # Inject safety limits to prevent runaway fission/refactor
@@ -1248,6 +1306,62 @@ IF (task == "GRAVITY_REFACTOR"):
     monitors.append(pinecone_agent)
     print(f"     [+] PineconeSovereignAgent armed with ValidationContext for precise sync")
     
+    # [L4 REPRODUCIBILITY HARDENING] DependencyPinnerAgent — exact version locking
+    try:
+        pinner_agent = DependencyPinnerAgent(project_root=project_root, ctx=ctx)
+        pin_result = await pinner_agent.generate_pinned_requirements()
+        if pin_result['success']:
+            print(f"   [REPRO] Pinned {pin_result['pinned_count']} packages → requirements.txt eternal")
+        monitors.append(pinner_agent)
+        print(f"     [+] DependencyPinnerAgent ULTRA-HARDENED — build sovereignty eternal")
+    except Exception as e:
+        print(f"   [!] DependencyPinner failed: {e}")
+
+    # [L5 SECURITY HARDENING] SecurityVulnScannerAgent — zero known vulnerabilities
+    try:
+        vuln_agent = SecurityVulnScannerAgent(project_root=project_root, ctx=ctx)
+        scan_result = await vuln_agent.scan_entire_territory()
+        if scan_result['vulnerabilities']:
+            print(f"   [!] CRITICAL: {len(scan_result['vulnerabilities'])} vulnerabilities detected")
+            sys.exit(1)
+        print(f"   [SHIELD] Zero known vulnerabilities — security absolute")
+        monitors.append(vuln_agent)
+        print(f"     [+] SecurityVulnScannerAgent ULTRA-HARDENED")
+    except Exception as e:
+        sys.exit(1)
+
+    # [L3 PERFORMANCE HARDENING] PerformanceSentinelAgent — sovereign efficiency
+    try:
+        perf_agent = PerformanceSentinelAgent(project_root=project_root, ctx=ctx)
+        perf_result = await perf_agent.profile_and_optimize()
+        print(f"   [PERF] Optimized {perf_result['optimized_functions']} hot paths")
+        monitors.append(perf_agent)
+        print(f"     [+] PerformanceSentinelAgent HARDENED — vitality eternal")
+    except Exception as e:
+        print(f"   [!] Performance agent failed: {e}")
+
+    # [L5 COVERAGE HARDENING] TestCoverageGuardian — 100% verifiability
+    try:
+        coverage_agent = TestCoverageGuardian(project_root=project_root, ctx=ctx)
+        coverage = await coverage_agent.enforce_sovereign_coverage()
+        if coverage['critical_coverage'] < 100:
+            print(f"   [!] Critical coverage breach: {coverage['critical_coverage']}%")
+            sys.exit(1)
+        monitors.append(coverage_agent)
+    except Exception as e:
+        sys.exit(1)
+
+    # [L6 LEGAL HARDENING] LicenseComplianceAgent — no contamination
+    try:
+        license_agent = LicenseComplianceAgent(project_root=project_root, ctx=ctx)
+        compliance = await license_agent.verify_all_licenses()
+        if not compliance['compliant']:
+            print(f"   [!] Legal breach detected: {compliance['violations']}")
+            sys.exit(1)
+        monitors.append(license_agent)
+    except Exception as e:
+        print(f"   [!] License check failed: {e}")
+
     # [L5 BUDGET HARDENING] BudgetGuardianAgent — global resource control
     try:
         budget_agent = BudgetGuardianAgent(
