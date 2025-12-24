@@ -109,8 +109,15 @@ CANON_SIGNALS = {
     "strategy", "reasoning", "planner", "node", "extraction", "synthesis",
     "orchestration", "fission", "hop", "router", "memory", "historian",
     "state", "cache", "safety", "guardrail", "filter", "engine",
-    "validator", "compliance", "blueprint", "registry", "context",
-    "agent", "processor", "handler", "manager", "executor", "loader"
+    "compliance", "auditor", "validator", "healer", "prompt", "persona",
+    "schema", "blueprint", "agent", "handler", "manager", "impl", "types"
+}
+
+# [KEY 49] FORBIDDEN NAMING PATTERNS
+FORBIDDEN_PATTERNS = {
+    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r"^script\.py$",
+    r"^main\.py$", r"^test\.py$", r".*_v\d+\.py$", r".*_final\.py$",
+    r".*_new\.py$", r".*_old\.py$", r"^.+_\d+\.py$"
 }
 
 # --- SYSTEM EXEMPTIONS ---
