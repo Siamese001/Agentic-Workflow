@@ -481,18 +481,20 @@ from agentic_core.runtime.shared.void_compliance import (
 
 print(f"   [OK] Void Compliance Engine: Online.")
 
-# [HYBRID ROUTING] Vector Sovereignty Integration
+# [L4 SOVEREIGNTY] Pinecone Hybrid Routing Integration
 pinecone_agent = None
 try:
-    # Post-Hierarchy path: L4_state/validation_context
     from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
-    pinecone_agent = PineconeSovereignAgent()
-    print(f"   [OK] Hybrid Routing ONLINE: PineconeSovereignAgent armed.")
-except ImportError as e:
-    # Handle move-related import errors gracefully
-    print(f"   [!] Hybrid Routing Offline: Agent path not found ({e})")
+    # Inject the project root for path-awareness
+    pinecone_agent = PineconeSovereignAgent(project_root=project_root)
+    # Seal the name in the global context for cross-agent access
+    globals()['PineconeSovereignAgent'] = PineconeSovereignAgent
+    if "DEGRADED" not in pinecone_agent.status:
+        print(f"   [OK] Hybrid routing ONLINE: PineconeSovereignAgent sovereign armed")
+    else:
+        print(f"   [!] Hybrid routing DEGRADED: {pinecone_agent.status}")
 except Exception as e:
-    print(f"   [!] PineconeSovereignAgent init failed: {e}")
+    print(f"   [!] Hybrid routing failed to load: {e}")
 
 # [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
 from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
