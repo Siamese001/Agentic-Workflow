@@ -6,7 +6,6 @@ This module provides waterfall-compliant access to shared constants.
 import sys
 from pathlib import Path
 
-# [SSOT] Import structure definitions from master blueprint
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
 from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_DEPTH_MAP
 

@@ -4,11 +4,12 @@ CachedSafetyShield - Eternal L5 Safety Base with Redis Sovereign Cache
 """
 
 import json
-import hashlib
-import redis
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
 import os
+
+import hashlib
+import redis
 
 class CachedSafetyShield:
     """

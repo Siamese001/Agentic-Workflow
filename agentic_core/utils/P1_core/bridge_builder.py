@@ -2,7 +2,6 @@ import os
 import re
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow")
 APPS = [ROOT / "apps_rg", ROOT / "apps_lic", ROOT / "apps_shared"]
 

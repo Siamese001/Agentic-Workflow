@@ -2,7 +2,6 @@ import os
 import re
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow")
 
 # [THE SOVEREIGN MAPPING] Old Path Pattern -> New Canonical Path

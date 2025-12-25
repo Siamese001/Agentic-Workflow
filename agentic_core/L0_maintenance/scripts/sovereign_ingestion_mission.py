@@ -4,10 +4,11 @@ Sovereign Ingestion Mission - Index all sovereign territories into vector store
 """
 
 import asyncio
-import hashlib
 import os
 from pathlib import Path
 from typing import List, Dict, Optional
+
+import hashlib
 import argparse
 
 async def load_text_file(file_path: Path) -> str:

@@ -8,14 +8,14 @@ Usage:
     python scripts/deep_brain_harvest.py --pattern flattening --namespace structural_patterns
 """
 
-import argparse
 import logging
 import os
 import sys
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
 
-# Add project root to path
+import argparse
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:

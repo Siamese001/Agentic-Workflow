@@ -4,8 +4,6 @@ Job Analyzer - LLM-powered job description analysis.
 Analyzes job descriptions to extract key skills, requirements, and cultural fit indicators.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import json
 import logging
 from typing import Any, Dict, List, Optional

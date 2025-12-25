@@ -12,8 +12,6 @@ Strategy:
 """
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
-
 import logging
 import os
 from typing import Dict, List, Optional

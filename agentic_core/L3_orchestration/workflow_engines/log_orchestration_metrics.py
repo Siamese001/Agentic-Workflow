@@ -4,9 +4,7 @@ log_orchestration_metrics.py - Diagnostics Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.216679
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 from typing import Dict, Optional, Union
 

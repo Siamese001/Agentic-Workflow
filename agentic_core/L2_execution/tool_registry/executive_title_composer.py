@@ -21,12 +21,6 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
-# Assuming these are defined elsewhere or need to be imported
-# For the purpose of fixing syntax, I'll assume they exist or are placeholders
-# from agentic_core.integrity_gates import IntegrityGateExecutor, ValidationResult
-# from agentic_core.recovery_loop import AdaptiveRecoveryLoop
-
-# Placeholder for missing imports to allow syntax check
 class IntegrityGateExecutor:
     def execute_hygiene_scan(self, headline: str): pass
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass

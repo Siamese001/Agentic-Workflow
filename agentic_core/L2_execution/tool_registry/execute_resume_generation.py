@@ -10,8 +10,6 @@ import time
 from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol
 
-
-# Local workflow loader to avoid L3 dependency
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
     def __init__(self):

@@ -6,14 +6,13 @@ Ensures changes are committed and pushed to remote repository.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
-
 import logging
 import os
-import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+import subprocess
 
 LOGGER = logging.getLogger(__name__)
 

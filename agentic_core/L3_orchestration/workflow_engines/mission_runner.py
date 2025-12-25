@@ -10,16 +10,15 @@ This module consolidates all mission execution logic from the canon validator.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
-
 import asyncio
 import logging
 import os
-import subprocess
 import sys
 import time
 from pathlib import Path
 from typing import List
+
+import subprocess
 
 logger = logging.getLogger(__name__)
 

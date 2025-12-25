@@ -13,8 +13,6 @@ Canon Validator Patterns Implemented:
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
-
 import asyncio
 import logging
 from dataclasses import dataclass, field

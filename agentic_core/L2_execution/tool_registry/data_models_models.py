@@ -1,8 +1,6 @@
 """Dataclass models for data_models."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 from dataclasses import dataclass, field
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

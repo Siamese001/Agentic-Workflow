@@ -1,9 +1,7 @@
 """Types and models for subatomic_orchestrator."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

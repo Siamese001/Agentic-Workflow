@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """Semantic Cache for LLM response caching.
 
 Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)

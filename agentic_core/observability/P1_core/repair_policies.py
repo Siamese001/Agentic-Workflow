@@ -8,12 +8,7 @@ repair actions (retry, downgrade, replan, escalate).
 import logging
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
-
 from typing import Dict, List
-
-# from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECAT...
-
 
 @dataclass
 class RepairAction:

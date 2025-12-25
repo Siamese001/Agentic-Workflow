@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """K.7 Assembly Agent - Final Message Assembly with Signature Immutability.
 
 This agent assembles the final message with strict signature formatting,

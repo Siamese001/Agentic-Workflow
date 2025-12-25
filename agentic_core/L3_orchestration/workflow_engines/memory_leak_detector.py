@@ -1,14 +1,14 @@
-import gc
 import json
 import logging
 import re
 import time
-import tracemalloc
-
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 from typing import Any, Optional, Protocol, Dict, List
+
+import gc
+import tracemalloc
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,8 +1,6 @@
 """Types and models for lic_code_interpreter."""
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

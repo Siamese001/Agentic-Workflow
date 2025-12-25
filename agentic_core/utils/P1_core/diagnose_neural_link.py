@@ -8,9 +8,9 @@ import asyncio
 import os
 import time
 from pathlib import Path
+
 from dotenv import load_dotenv
 
-# Load environment from root
 project_root = Path(__file__).resolve().parent
 load_dotenv(dotenv_path=project_root / ".env", override=True)
 

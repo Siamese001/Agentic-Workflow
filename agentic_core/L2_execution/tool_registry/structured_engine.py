@@ -5,8 +5,6 @@ Forces LLMs to output valid, schema-compliant JSON using grammar-based constrain
 No more "I hope this parses" - the LLM physically cannot output invalid structures.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
 from typing import Any, Dict, List, Literal
 

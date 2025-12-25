@@ -4,20 +4,18 @@ L5 Safety: SubAtomicEngine
 Hardens LLM interaction with token budgets and retry logic.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import asyncio
 import json
 import logging
 import os
-import random
 import re
 import time
-import numpy as np
 from typing import Any, Dict, Optional, List
 from pathlib import Path
 
-# Gemini SDK
+import random
+import numpy as np
+
 try:
     from google import genai
     from google.api_core.exceptions import (

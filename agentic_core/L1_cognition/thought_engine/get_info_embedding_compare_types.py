@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Optional, Protocol, Dict, List, Union
+
 """Types and models for get_info_embedding_compare."""
 import logging
 import time

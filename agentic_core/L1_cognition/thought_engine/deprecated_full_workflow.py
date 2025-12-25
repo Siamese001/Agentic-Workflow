@@ -7,12 +7,10 @@ import logging
 import re
 import time
 from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
-from unittest.mock import Mock, patch
 
-# Third-party imports
+from unittest.mock import Mock, patch
 import pytest
 
-# First-party (local) imports
 if TYPE_CHECKING:
     # Define minimal Protocols for type checking to avoid importing from downstream
     # This addresses "Sovereign layer importing from Downstream" and "eliminate ALL imports from 'apps_shared'"

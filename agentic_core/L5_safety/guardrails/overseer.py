@@ -4,8 +4,6 @@ Validates actions against forbidden commands and safety rules.
 Includes SafetyInspector with Socratic Judge for false positive mitigation.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
 import os
 import re

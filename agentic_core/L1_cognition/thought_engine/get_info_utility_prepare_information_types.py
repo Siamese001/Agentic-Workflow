@@ -1,5 +1,5 @@
 """Types and models for get_info_utility_prepare_information."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 from enum import Enum, auto
 import logging
 from enum import Enum

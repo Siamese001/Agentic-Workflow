@@ -4,6 +4,7 @@ Delegates to consolidated tools in agentic_core/tools/
 
 This is a backward compatibility shim. All new code should import directly from:
     from agentic_core.tools import *
+
 """
 
 # Analysis Operations

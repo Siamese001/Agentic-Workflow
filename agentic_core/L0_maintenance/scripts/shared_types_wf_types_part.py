@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """Split module 2 for workflow_types_types."""
 
 from typing import Any, Optional, Protocol, Dict, List

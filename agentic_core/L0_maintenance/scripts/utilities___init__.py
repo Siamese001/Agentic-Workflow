@@ -24,7 +24,6 @@ Version: 1.0.0
 import logging
 from typing import Any, Optional, Protocol, Dict, List
 
-# Module configuration
 LOGGER = logging.getLogger(__name__)
 __version__ = "1.0.0"
 __author__ = "Agentic-Workflow Team"

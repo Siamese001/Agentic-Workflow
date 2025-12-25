@@ -1,7 +1,6 @@
 """Implementation for autonomic_monitor."""
 from typing import Any, Optional, Protocol, Dict, List, Callable
 import time
-
 import logging
 
 from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import HealthMetrics, HealthAlert, HealthStatus, AlertSeverity

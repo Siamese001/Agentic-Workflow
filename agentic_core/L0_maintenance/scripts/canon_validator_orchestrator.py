@@ -9,7 +9,7 @@ Legacy API preserved for backward compatibility.
 
 import asyncio
 import logging
-from typing import Optional
+from typing import Any, Optional
 from typing import Any, Optional, Protocol, Dict, List
 
 logger = logging.getLogger(__name__)

@@ -9,14 +9,8 @@ runtime.* modules - only from pydantic, enum, and typing.
 
 import logging
 from typing import Any, Optional, Protocol, Dict, List
-
 from enum import Enum, auto
 from pathlib import Path
-
-# ============================================================================
-# SubatomicHop Models
-# ============================================================================
-
 
 class MicroStage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""

@@ -8,11 +8,9 @@ across the system, providing unified access to:
 - P3: Prompt injection detection and prevention
 - P4: Fact checking and truth anchor validation
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-
 import json
 import logging
 import re
@@ -21,7 +19,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Optional, Set
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 

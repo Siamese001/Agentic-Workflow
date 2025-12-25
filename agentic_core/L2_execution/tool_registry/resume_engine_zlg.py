@@ -21,10 +21,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from typing import Any, Optional, Protocol, Dict, List
 
-# Third-party imports (none in this file)
-
-# Local/Application-specific imports
 from agentic_core.L2_execution.knowledge.knowledge_utilities import (
+
     KnowledgeResult,
     get_consolidated_knowledge,
 )

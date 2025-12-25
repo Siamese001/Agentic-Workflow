@@ -2,7 +2,6 @@ import os
 import shutil
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow/agentic_core")
 THOUGHTS = ROOT / "L1_cognition" / "thought_engine"
 KNOWLEDGE = ROOT / "knowledge" # You mentioned this didn't exist, let's birth it correctly

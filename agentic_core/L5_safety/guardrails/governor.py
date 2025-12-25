@@ -4,8 +4,6 @@ Tracks token usage and halts execution if cost exceeds threshold.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
-
 import logging
 import time
 from typing import Dict

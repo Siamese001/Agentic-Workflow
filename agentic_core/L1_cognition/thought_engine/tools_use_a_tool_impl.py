@@ -2,9 +2,7 @@
 
 import logging
 import sys
-from typing import Any, Optional, Protocol, Dict, List
-
-# from agentic_core.tools_use_a_tool_types import *  # Star import removed
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 class ToolsUseATool:
     """

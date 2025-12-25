@@ -5,13 +5,11 @@ Provides a FastAPI-based web UI for human approval/veto of high-risk
 autonomous actions during validation missions.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import asyncio
-import threading
 from typing import Any, Optional
 
-# Global event for pausing execution pending human approval
+import threading
+
 approval_event = asyncio.Event()
 _intervention_server_started = False
 _intervention_context = None  # Will hold reference to ValidationContext

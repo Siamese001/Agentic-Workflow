@@ -12,8 +12,6 @@ from pathlib import Path
 from typing import List, Dict, Set, Tuple, Optional
 from collections import defaultdict
 
-
-# Helper to add parent reference (for self/cls traversal)
 def add_parents(node, parent=None):
     """Add parent reference to all AST nodes for upward traversal."""
     node.parent = parent

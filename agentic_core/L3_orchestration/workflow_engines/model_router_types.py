@@ -2,7 +2,6 @@
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
 import logging
 from dataclasses import dataclass  # Added import for dataclass
 from enum import Enum  # Added import for Enum

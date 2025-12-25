@@ -1,26 +1,22 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 import re
 import time
-
 import ast
 import asyncio
-import atexit
 import json  # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import logging
 import os
-import signal
-import subprocess  # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
 
-# This import was present within the execute_with_healing method in the original code,
-# despite a contradictory comment. It is moved here for proper module structure
-# and availability to the new OrchestratorHealingService.
+import atexit
+import signal
+import subprocess  # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
+
 from agentic_core.tools.filesystem import WriteFileArgs, write_file
 
-# Phase 4: Subatomic Agents
     CanonStructuralEngineer,
     CodeJanitor,
     CodeStyleGuardian,

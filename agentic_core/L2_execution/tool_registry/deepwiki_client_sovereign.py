@@ -5,11 +5,12 @@ L5 shielded (repo allowlist, token protection) + L4 cached.
 import os
 import json
 import logging
-import hashlib
 from typing import Dict, Any, Optional, List
 from urllib.parse import urljoin
 
+import hashlib
 import httpx
+
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)

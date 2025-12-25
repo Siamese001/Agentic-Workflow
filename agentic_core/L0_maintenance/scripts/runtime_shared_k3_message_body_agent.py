@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """K.3 Message Body Agent - Archetype-Specific Content Generation.
 
 This agent generates the message body with archetype-specific transition phrases,

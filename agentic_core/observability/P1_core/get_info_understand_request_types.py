@@ -1,8 +1,9 @@
 from enum import Enum, auto
 from dataclasses import dataclass, field
+
 """Types and models for get_info_understand_request."""
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):

@@ -1,8 +1,6 @@
 """Dataclass models for lic_cta_patterns."""
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

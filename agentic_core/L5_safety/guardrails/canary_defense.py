@@ -1,11 +1,11 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field
-
 import logging
 import re
-import secrets
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
+
+import secrets
 
 LOGGER = logging.getLogger(__name__)
 

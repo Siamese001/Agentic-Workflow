@@ -1,17 +1,14 @@
 from typing import Any, Optional, Protocol, Dict, List
-
-import hashlib
 import json
 import logging
 import os
 import time
 from typing import Any, Dict, Optional
 
-# Local application imports
+import hashlib
 from connection_manager import ConnectionManager
 from schemas_connectivity import CanonEntry, CanonMetadata
 
-# Initialize a module-level logger
 logger = logging.getLogger(__name__)
 
 

@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 from typing import Set
 
-# Current sovereign codebase roots
 SOVEREIGN_ROOTS = {
     "agentic_core",
     "apps_lic",

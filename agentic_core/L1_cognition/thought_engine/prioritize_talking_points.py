@@ -4,9 +4,7 @@ prioritize_talking_points.py - Outreach Operations Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.051132
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 from typing import Dict, Optional, Union
 

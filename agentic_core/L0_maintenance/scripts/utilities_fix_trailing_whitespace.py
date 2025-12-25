@@ -1,10 +1,10 @@
 """Fix trailing whitespace in all Python files."""
-import glob
 import logging
 import os
 from typing import Any
 from typing import Any, Optional, Protocol, Dict, List
 
+import glob
 from services.configuration import ConfigurationService
 
 logger = logging.getLogger(__name__)

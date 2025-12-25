@@ -12,6 +12,7 @@ value = eval(user_input)
 
 GOOD:
 import ast
+
 try:
     value = ast.literal_eval(user_input)
 except (ValueError, SyntaxError):

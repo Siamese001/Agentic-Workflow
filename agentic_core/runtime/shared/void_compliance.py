@@ -4,16 +4,14 @@ L6 Runtime: Void Compliance Enforcer
 Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapping.
 """
 from typing import Any, Optional, Protocol, Dict, List, Set, Tuple
-
-
 import logging
 import os
 import ast
 import re
 from pathlib import Path
 
-# [SSOT] Import the master structure blueprint
 from agentic_core.config.P1_core.structure_blueprint import (
+
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
     CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,

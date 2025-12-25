@@ -3,15 +3,6 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
 from typing import Any, Optional, Protocol, Dict, List # Added missing imports
-
-# from agentic_core.rules_policy_check_safety_types import *  # Star import removed
-
-# Assuming these types are defined elsewhere or need to be imported
-# For the purpose of fixing syntax, I'll assume they exist or are placeholders.
-# If they are not defined, it would be a NameError, not a SyntaxError.
-# Adding common types for Union, but ProcessingResult and ExecutionContext are custom.
-# For a pure syntax fix, I won't add imports for custom types unless they are part of the syntax error.
-# However, `Union` was used without import, so adding it.
 import sys # Added for logging.StreamHandler
 
 class ProcessingResult: # Placeholder for syntax validation

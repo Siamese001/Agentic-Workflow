@@ -1,5 +1,4 @@
 from typing import Any, Optional, Protocol, Dict, List
-
 import asyncio
 import os
 import re
@@ -7,7 +6,6 @@ from typing import Optional
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
-# Use environment variables for configuration
 INTELLIGENCE_THRESHOLD = os.getenv("INTELLIGENCE_THRESHOLD", "0.5")
 
 # Optional AutoGen import for collective repair

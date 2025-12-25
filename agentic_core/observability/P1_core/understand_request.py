@@ -26,7 +26,6 @@ from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 from dataclasses import dataclass, field
 
-# Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):

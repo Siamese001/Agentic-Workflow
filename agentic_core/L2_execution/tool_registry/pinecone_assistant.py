@@ -10,9 +10,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 
-
-# --- Configuration Constants ---
-# Define constants for better readability and maintainability
 INDEX_NAME = "canon-memory-l2"
 INDEX_DIMENSION = 768  # Matches your existing index's dimension
 INDEX_METRIC = "cosine"

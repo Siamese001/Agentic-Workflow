@@ -7,14 +7,11 @@ This pattern can be applied to any method that exceeds complexity thresholds.
 Pattern Origin: agent_logic.py check_and_learn() method refactoring (Dec 19, 2025)
 Success Metrics: 41% line reduction, 50% nesting reduction, 103% preservation
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field
-
-
 import ast
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
-
 
 @dataclass
 class ComplexityMetrics:

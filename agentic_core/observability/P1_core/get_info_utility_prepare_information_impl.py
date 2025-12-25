@@ -4,9 +4,6 @@ from typing import Any, Optional, Protocol, Dict, List
 import sys
 import time
 
-# from agentic_core.get_info_utility_prepare_information_types import *  # Star import removed
-
-# Placeholder for undefined types to allow syntax check
 class ProcessingResult:
     def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         pass

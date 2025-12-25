@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Optional, Protocol, Dict, List
 
-# THE SOVEREIGN IMPORTS: This is the ONLY file that can reach across all layers.
 from agentic_core.L0_maintenance.logs.telemetry_recorder import TelemetryRecorder
 from agentic_core.L1_cognition.thought_engine.structured_engine import StructuredEngine
 from agentic_core.L1_cognition.boundaries.semantic_gatekeeper import SemanticGatekeeper

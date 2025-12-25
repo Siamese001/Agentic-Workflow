@@ -1,6 +1,5 @@
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
 import json
 import logging
 from typing import Any

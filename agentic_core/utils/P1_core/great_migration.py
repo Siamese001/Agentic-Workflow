@@ -9,7 +9,6 @@ import os
 import shutil
 from pathlib import Path
 
-# [SSOT] Pull from Blueprint, derive compliance locally
 from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.runtime.shared.void_compliance import get_placement_guidance
 

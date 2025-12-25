@@ -5,8 +5,6 @@ Concatenates all source code from mapped repositories into a single context buff
 for complex architectural queries and RAG-based agent retrieval.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
 from typing import Any, Dict, Optional
 

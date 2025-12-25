@@ -1,14 +1,12 @@
-import hashlib
 import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-# Protocols for dependency injection to break architectural coupling
-# These protocols define the minimal interface required by Historian
-# without needing to import the concrete classes from L4_state.
+import hashlib
+
 class IValidationContext(Protocol):
     cycle_id: Optional[int]
     status: str

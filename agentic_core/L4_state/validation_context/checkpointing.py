@@ -6,12 +6,11 @@ Prevents corrupted or tampered checkpoints from being loaded into agent memory.
 """
 from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import re
-
-
-import hashlib
 import json
 import logging
 from typing import Any, Dict, Optional
+
+import hashlib
 
 if TYPE_CHECKING:
     from agentic_core.storage import BlobStorageProvider

@@ -4,9 +4,7 @@ rank_resume_sections.py - Resume Operations Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.207251
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 from typing import Dict, Optional, Union
 

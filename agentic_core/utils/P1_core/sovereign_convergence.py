@@ -3,7 +3,6 @@ import shutil
 import re
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path.cwd()
 CORE = ROOT / "agentic_core"
 

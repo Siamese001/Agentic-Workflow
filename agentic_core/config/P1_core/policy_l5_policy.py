@@ -10,13 +10,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, TypeVar
 from typing import Any, Optional, Protocol, Dict, List
 
-# Assuming these are defined elsewhere or need to be imported
-# from agentic_core.l4_policy_protocol import SafetyPolicy, PolicyDecision, SafetyFinding, SafetyContext, Verdict, Severity
-# For the purpose of fixing syntax, I'll assume they are available or will be imported.
-# If not, the code would fail at runtime, but not due to syntax.
-
-# Placeholder imports for types used in the provided snippet to make it syntactically valid
-# In a real scenario, these would come from specific modules.
 class SafetyPolicy:
     policy_id: str
     description: str

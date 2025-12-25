@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """
 inspect_scripts_quality.py - Diagnostics Module
 

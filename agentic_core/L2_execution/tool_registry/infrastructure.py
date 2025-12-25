@@ -1,13 +1,12 @@
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
 import asyncio
 import datetime
 import os
 import time
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
-# Domain constants not available, using fallback
+
 EXCLUDED_DIRS = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
 
 # Optional dependencies

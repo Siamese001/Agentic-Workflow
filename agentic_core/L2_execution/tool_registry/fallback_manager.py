@@ -3,10 +3,8 @@
 Phase 3 - Pillar 8 (Cont.): Tool Ecosystem (Automatic Fallbacks)
 Implements ordered fallback chains when primary providers fail.
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Protocol
 from enum import Enum, auto
-
-
 import logging
 from dataclasses import dataclass, field  # Added import for dataclass and field
 from enum import Enum

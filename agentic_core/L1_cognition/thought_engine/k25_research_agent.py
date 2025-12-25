@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 
-# Assuming these models are defined in a local models file
 from agentic_core.L1_cognition.thought_engine.k25_research_models import (
+
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,

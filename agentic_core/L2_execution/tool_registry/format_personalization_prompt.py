@@ -4,10 +4,8 @@ format_personalization_prompt.py - Formatting Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.124458
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 import re
-
-
 import logging
 from typing import Dict, Optional, Union
 

@@ -7,8 +7,6 @@ before execution. Acts as a pre-commit check for agent actions.
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-
 import ast
 import logging
 import re

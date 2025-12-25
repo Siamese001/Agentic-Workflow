@@ -5,8 +5,6 @@ Implements dynamic instruction injection via observability/human_instructions.md
 Allows humans to telepathically control mission execution by writing commands.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
 from pathlib import Path
 from typing import Any, Dict, Optional

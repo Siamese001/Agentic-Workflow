@@ -8,7 +8,6 @@ import os
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 
-
 class StateSerializer:
     """
     Manages serialization and deserialization of workflow hop outputs.

@@ -7,6 +7,7 @@ from agentic_core.core import FEW_SHOT_GITOPS, FEW_SHOT_SHERLOCK, POSITIVE_INSTR
 from agentic_core.historian import FEW_SHOT_HISTORIAN
 from agentic_core.refactoring import FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_IMPORT_FIXES
 from agentic_core.reflection import (
+
     FEW_SHOT_REFLECTION_ENHANCED,
     FEW_SHOT_REFLECTION_STRATEGY,
     FEW_SHOT_STRATEGIC,

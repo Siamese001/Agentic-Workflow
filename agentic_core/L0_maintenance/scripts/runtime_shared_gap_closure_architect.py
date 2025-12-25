@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).
 
 This agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,
@@ -9,7 +10,7 @@ Legacy K-Node: K.9 (K.8 in some versions)
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,7 +1,5 @@
 """Enum types for orchestrate_workflow_types."""
 from enum import Enum, auto
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

@@ -21,12 +21,11 @@ import logging
 import sys
 import time
 import traceback
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 from typing import Any, Dict, List, Optional, Protocol, Union # Added Protocol
 from enum import Enum, auto # Added auto
 from dataclasses import dataclass, field
 
-# Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):

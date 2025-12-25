@@ -1,15 +1,9 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
 from typing import Any, Optional, Protocol, Dict, List
-
-# from agentic_core.check_resume_rules_types import *  # Star import removed
-# Assuming ProcessingResult and ExecutionContext are defined elsewhere or need to be imported
-# For the purpose of fixing syntax, we'll assume they exist.
-# Also, sys is used but not imported. Adding it for completeness, though not strictly a syntax error at line 40.
 import sys
 import time
 
-# Placeholder for types that are not defined in the provided snippet
 class ProcessingResult:
     def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         self.success = success

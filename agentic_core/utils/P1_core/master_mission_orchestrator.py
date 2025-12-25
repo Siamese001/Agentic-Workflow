@@ -9,9 +9,9 @@ import asyncio
 import os
 import sys
 from pathlib import Path
+
 from dotenv import load_dotenv
 
-# Physical Path Anchoring
 project_root = Path(__file__).resolve().parent
 sys.path.insert(0, str(project_root))
 load_dotenv(dotenv_path=project_root / ".env", override=True)

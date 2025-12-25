@@ -8,6 +8,7 @@ search toward the most relevant content for each recipient type.
 import logging
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+
 """
 evaluate_scripts_compliance.py - Assessment Module
 

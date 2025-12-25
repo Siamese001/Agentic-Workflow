@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List, Set
 
-# Third-party
 try:
     from google import genai
 except ImportError:

@@ -5,12 +5,11 @@ Orchestrates all validation agents in dependency order.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
 import asyncio
 
-# Local application imports (grouped by sub-module for clarity)
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
 from agentic_core.canon_agents_pattern import (
+
     PatternEnforcer,
     SemanticMapper,
     UIValidationAgent,

@@ -1,12 +1,8 @@
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
 import logging
 from typing import Any, Dict, List
 
-# Configure logging for this module.
-# In a larger application, logging configuration might be handled at the application's entry point
-# to avoid conflicts or redundant setups.
 logger = logging.getLogger("ConsensusEngine")
 # Only configure basicConfig if no handlers are already set up for the root logger.
 # This prevents multiple calls to basicConfig from overriding existing configurations

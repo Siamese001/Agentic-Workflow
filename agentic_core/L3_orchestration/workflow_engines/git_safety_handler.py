@@ -13,8 +13,6 @@ Strategy:
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
-
 import logging
 from datetime import datetime
 from typing import Dict, List

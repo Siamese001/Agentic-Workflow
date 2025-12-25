@@ -1,5 +1,5 @@
 """Types and models for check_resume_rules."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 from enum import Enum, auto
 import logging
 from enum import Enum

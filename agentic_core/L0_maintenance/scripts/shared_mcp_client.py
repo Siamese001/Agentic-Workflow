@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """MCP client specifications and registry.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)

@@ -1,4 +1,5 @@
 from enum import Enum
+
 """Enum types for models."""
 from enum import Enum, auto
 

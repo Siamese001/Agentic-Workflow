@@ -2,8 +2,8 @@
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
 import logging
+
 from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
 
 LOGGER = logging.getLogger(__name__)

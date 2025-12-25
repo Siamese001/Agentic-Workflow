@@ -5,8 +5,6 @@ Physical file splitting logic for atomic fission protocol.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
-
 import logging
 import os
 import shutil

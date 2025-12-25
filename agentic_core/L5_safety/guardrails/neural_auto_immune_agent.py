@@ -5,11 +5,12 @@ NeuralAutoImmuneAgent - Eternal Sovereign Self-Defense System
 
 import json
 import os
-import redis
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict
+
+import redis
 
 class NeuralAutoImmuneAgent:
     """

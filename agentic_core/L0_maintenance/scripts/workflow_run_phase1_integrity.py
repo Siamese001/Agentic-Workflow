@@ -8,8 +8,6 @@ It should show L5 validation logs during execution.
 import asyncio
 import logging
 
-
-# Setup high-visibility logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'

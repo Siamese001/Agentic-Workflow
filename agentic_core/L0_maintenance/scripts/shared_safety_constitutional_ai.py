@@ -14,7 +14,4 @@ about the refactoring that was performed to split the original module.
 """
 import logging
 
-# Re-export all components for backward compatibility
-# from agentic_core.constitutional_ai_impl import *  # Star import removed
-
 __all__ = ["*"]  # Re-export all imported names

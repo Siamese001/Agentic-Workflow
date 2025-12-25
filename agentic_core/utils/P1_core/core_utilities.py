@@ -6,8 +6,6 @@ Provides draft generation, scoring, and file operations
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 import time
-
-
 import json
 import logging
 import re
@@ -16,7 +14,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 

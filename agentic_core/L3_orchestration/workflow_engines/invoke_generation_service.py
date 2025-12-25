@@ -7,7 +7,7 @@ Generated: 2025-12-07T13:29:00.529512
 
 import logging
 import time
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
