@@ -10,11 +10,21 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 EXCLUDED_DIRS = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
 
 # Optional dependencies
-try:
-    from git import Repo
-    GITPYTHON_AVAILABLE = True
-except ImportError:
-    GITPYTHON_AVAILABLE = False
+# [HARDENING] Lazy import to prevent subprocess hangs during canon validation
+GITPYTHON_AVAILABLE = False
+Repo = None
+
+def _lazy_load_git():
+    """Lazy load GitPython only when actually needed"""
+    global GITPYTHON_AVAILABLE, Repo
+    if Repo is None:
+        try:
+            from git import Repo as _Repo
+            Repo = _Repo
+            GITPYTHON_AVAILABLE = True
+        except (ImportError, Exception):
+            GITPYTHON_AVAILABLE = False
+    return GITPYTHON_AVAILABLE
 
 try:
     from watchdog.events import FileSystemEventHandler
