@@ -1,19 +1,17 @@
-from typing import Any, Dict, List, Optional, Protocol, Set
-import re
-import time
 import ast
 import asyncio
+import atexit
 import json  # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import logging
 import os
-import sys
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
-
-import atexit
+import re
 import signal
 import subprocess  # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
+import sys
+import time
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 from agentic_core.tools.filesystem import WriteFileArgs, write_file
 

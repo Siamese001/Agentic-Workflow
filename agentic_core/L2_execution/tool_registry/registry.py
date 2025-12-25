@@ -2,7 +2,7 @@
 Tool Registry - Type-Safe FunctionDeclaration Generation for Gemini 2.5/3.0
 Automatically generates google.genai.types.FunctionDeclaration from Pydantic models.
 """
-from typing import Any, Optional, Protocol, Dict, List, Callable
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 from pydantic import BaseModel
 

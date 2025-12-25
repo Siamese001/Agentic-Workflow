@@ -9,7 +9,7 @@ Generated: 2025-12-07T12:07:59.881062
 
 import logging
 from datetime import datetime
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

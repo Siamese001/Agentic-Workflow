@@ -3,9 +3,9 @@ Envelope Factory
 Creates and manages data envelopes for pipeline processing.
 """
 import logging
-from typing import Any, Dict, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -4,15 +4,13 @@ TestPilot - Property-Based Testing Agent
 Implements regression testing and property-based testing using Hypothesis
 to detect deep logic failures that standard unit tests miss.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import asyncio
 import logging
 import os
 import sys
-import time
-from typing import Any, Dict, List
-
 import tempfile
+import time
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

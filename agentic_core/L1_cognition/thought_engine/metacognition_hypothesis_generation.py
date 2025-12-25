@@ -1,6 +1,5 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
-from typing import Any
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypothe...

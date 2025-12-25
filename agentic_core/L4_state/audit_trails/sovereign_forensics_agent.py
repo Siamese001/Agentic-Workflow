@@ -5,12 +5,15 @@ Analyzes immutable Redis audit trail for excessive structural modifications.
 """
 
 import json
-from pathlib import Path
 from collections import Counter
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+    RedisSovereignAgent,
+)
+
 
 class SovereignForensicsAgent:
     """

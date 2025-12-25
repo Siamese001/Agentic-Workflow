@@ -1,11 +1,11 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 """Types and models for rules_policy_check_safety."""
-from typing import Any, Dict, List, Optional, Protocol, Union
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import logging
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):

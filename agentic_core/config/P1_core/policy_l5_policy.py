@@ -5,10 +5,10 @@ Defines the policy interface and implements the safety engine.
 """
 import logging
 import uuid
-from datetime import UTC, datetime
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional, Protocol, TypeVar
-from typing import Any, Optional, Protocol, Dict, List
+
 
 class SafetyPolicy:
     policy_id: str
@@ -41,6 +41,8 @@ class SafetyContext:
     metadata: Dict[str, object] = field(default_factory=dict)
 
 from enum import Enum, auto
+
+
 class Verdict(Enum):
     ALLOW = "allow"
     REVIEW = "review"

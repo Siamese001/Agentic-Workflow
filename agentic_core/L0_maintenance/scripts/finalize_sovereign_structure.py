@@ -11,11 +11,11 @@ if BLUEPRINT_DIR not in sys.path:
 
 try:
     from structure_blueprint import (
-        CORE_SUBFOLDER_MAP, 
-        APPS_RG_SUBFOLDER_MAP, 
-        APPS_LIC_SUBFOLDER_MAP, 
+        APPS_LIC_SUBFOLDER_MAP,
+        APPS_RG_SUBFOLDER_MAP,
         APPS_SHARED_SUBFOLDER_MAP,
-        TESTS_SUBFOLDER_MAP
+        CORE_SUBFOLDER_MAP,
+        TESTS_SUBFOLDER_MAP,
     )
 except ImportError:
     print(f"❌ ERROR: Could not find structure_blueprint.py")

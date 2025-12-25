@@ -3,9 +3,9 @@ Bias Auditor
 Lightweight bias detection in text.
 """
 import logging
-from typing import List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 

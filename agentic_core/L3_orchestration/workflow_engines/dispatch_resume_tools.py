@@ -1,15 +1,15 @@
 import logging
 import time
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
     from titanium_rag_pipeline import (
+        get_pipeline_stats,
         get_titanium_search_tool,
         get_titanium_search_with_sources,
-        get_pipeline_stats
     )
     TITANIUM_AVAILABLE = True
     LOGGER.info("Titanium RAG Pipeline imported successfully")

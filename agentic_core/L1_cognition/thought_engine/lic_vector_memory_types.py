@@ -1,8 +1,8 @@
 """Types and models for lic_vector_memory."""
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import re
 import logging
+import re
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

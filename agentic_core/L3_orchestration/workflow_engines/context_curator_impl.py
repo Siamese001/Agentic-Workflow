@@ -1,6 +1,6 @@
 """Implementation for context_curator."""
-from typing import Any, Optional, Protocol, Dict, List, Set
 import logging
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.context_curator_types import *  # Star import removed

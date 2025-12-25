@@ -4,7 +4,8 @@ Responsible for:
 - Testing autonomous code splitting of files > 1000 lines.
 - Verifying AST integrity post-split.
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 def dummy_function_0():
     """Operation 0 logic."""

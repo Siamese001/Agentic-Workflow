@@ -5,12 +5,14 @@ QueryPlanner - L1 Cognition Query Decomposition and Expansion
 
 import asyncio
 import json
-import re
 import logging
-from typing import List, Dict, Optional
+import re
+from typing import Dict, List, Optional
 
+from agentic_core.L4_state.validation_context.semantic_cache_sovereign import (
+    SemanticCache,
+)
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
-from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SemanticCache
 
 logger = logging.getLogger(__name__)
 

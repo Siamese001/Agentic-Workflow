@@ -6,14 +6,14 @@ Responsible for:
 - Key 41-47: Import dependencies, module structure
 - Key 48-50: Architectural patterns and design
 """
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-import re
 import ast
 import os
+import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+
 
 class SystemArchitect(CanonBaseAgent):
     """
@@ -95,8 +95,10 @@ class SystemArchitect(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
-        from agentic_core.runtime.shared.void_compliance import validate_canonical_hierarchy
         from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.runtime.shared.void_compliance import (
+            validate_canonical_hierarchy,
+        )
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
         
         # 1. Centralized hierarchy drift check
@@ -122,7 +124,9 @@ class SystemArchitect(CanonBaseAgent):
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
                     # Check L2 subfolders if depth is 4
                     if config["depth"] == 4:
-                        from agentic_core.config.P1_core.structure_blueprint import CORE_SUBFOLDER_MAP
+                        from agentic_core.config.P1_core.structure_blueprint import (
+                            CORE_SUBFOLDER_MAP,
+                        )
                         l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
                         for l2_name in l2_list:
                             l2_path = l1_path / l2_name
@@ -157,7 +161,9 @@ class SystemArchitect(CanonBaseAgent):
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
             # [SSOT] Dynamic depth check from structure_blueprint
-            from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+            from agentic_core.config.P1_core.structure_blueprint import (
+                SOVEREIGN_REGISTRY,
+            )
             
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth = SOVEREIGN_REGISTRY[root_folder]["depth"]

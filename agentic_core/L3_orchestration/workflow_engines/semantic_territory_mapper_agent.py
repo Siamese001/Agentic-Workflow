@@ -5,16 +5,19 @@ Maps files to their correct semantic territories using real Gemini embeddings.
 This agent replaces mock logic with actual SubAtomicEngine integration.
 """
 
-import json
-from typing import List, Dict, Optional, Tuple
-from pathlib import Path
-
 import hashlib
+import json
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 import redis
 
-from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
 from agentic_core.config.P1_core.sovereign_env import get_env
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+    PineconeSovereignAgent,
+)
+
 
 class SemanticTerritoryMapperAgent:
     """
@@ -116,7 +119,9 @@ class SemanticTerritoryMapperAgent:
                     
                     # [L4 REFINEMENT] Can we go deeper?
                     deepest = territory
-                    from agentic_core.config.P1_core.structure_blueprint import CORE_L4_SUBFOLDER_MAP
+                    from agentic_core.config.P1_core.structure_blueprint import (
+                        CORE_L4_SUBFOLDER_MAP,
+                    )
                     
                     for l3, l4_list in CORE_L4_SUBFOLDER_MAP.items():
                         if l3 in deepest:

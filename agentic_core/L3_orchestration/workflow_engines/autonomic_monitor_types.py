@@ -1,9 +1,9 @@
 """Types and models for autonomic_monitor."""
-from typing import Any, Optional, Protocol, Dict, List
+import logging
+import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import time
-import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 class HealthStatus(Enum):

@@ -1,7 +1,6 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

@@ -8,9 +8,10 @@ Zero drift, fail-fast, type-safe enforcement of .env SSOT integrity.
 """
 import os
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 from dotenv import load_dotenv
+
 
 class SovereignEnv:
     """Sovereign .env loader — fail-fast, type-safe, zero-drift."""

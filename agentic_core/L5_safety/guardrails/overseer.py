@@ -3,11 +3,10 @@
 Validates actions against forbidden commands and safety rules.
 Includes SafetyInspector with Socratic Judge for false positive mitigation.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import os
 import re
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 

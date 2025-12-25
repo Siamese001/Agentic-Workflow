@@ -5,17 +5,16 @@ Creates active_manifest.json as the single source of truth for all valid files.
 Implements content-hashing deduplication to eliminate duplicate files.
 """
 
+import hashlib
 import json
 import logging
 import os
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-from typing import Any, Optional, Protocol, Dict, List
 
-import hashlib
-import tempfile
 
 def is_excluded_path(path: Path) -> bool:
     """Check if a path should be excluded from indexing."""

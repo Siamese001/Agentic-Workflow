@@ -2,8 +2,8 @@
 Minimal stub for MCP connection management until full implementation.
 """
 import logging
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 import yaml
 

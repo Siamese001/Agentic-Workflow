@@ -5,9 +5,10 @@ RAGGuardrail - L5 RAG Content Filtering and Reranking
 
 import asyncio
 import math
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 import torch
+
 
 class RAGGuardrail:
     def __init__(self):
@@ -16,6 +17,7 @@ class RAGGuardrail:
 
         try:
             from FlagEmbedding import FlagReranker
+
             # Detect hardware: CUDA > MPS (Mac) > CPU
             device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
             # v2-m3 is the 2025 SOTA for multilingual + 1024 context

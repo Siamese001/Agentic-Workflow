@@ -6,11 +6,12 @@ Automatically mutates workflows to route around failures and optimize execution.
 """
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any, Set, Tuple
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from collections import defaultdict
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
+
 import networkx as nx
 
 logger = logging.getLogger(__name__)

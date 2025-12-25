@@ -3,6 +3,7 @@ Redis L4 local cache for lightning recall + Pinecone eternal vector store.
 Full AST + metadata sovereignty with mission-isolation.
 """
 import ast
+import hashlib
 import json
 import logging
 import os
@@ -10,10 +11,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import hashlib
 import redis
 
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+    PineconeSovereignAgent,
+)
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)

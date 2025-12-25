@@ -5,13 +5,13 @@ Learns from healing patterns to predict and prevent violations before they occur
 Uses pattern recognition and predictive analytics to make agents more autonomous.
 """
 import asyncio
+import json
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+import os
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from collections import defaultdict
-import json
-import os
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 

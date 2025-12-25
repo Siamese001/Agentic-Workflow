@@ -1,6 +1,6 @@
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 """Types and models for judge_evaluator."""
 import logging

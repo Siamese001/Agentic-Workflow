@@ -7,10 +7,9 @@ DRY RUN MODE: Lists all files requiring changes before applying fixes.
 """
 import os
 import re
-from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
-from typing import Any, Optional, Protocol, Dict, List
 from collections import defaultdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 EXCLUDE_DIRS = {'.venv', '__pycache', '.git', 'node_modules', 'archives'}
 EXCLUDE_FILES = {'sovereign_import_surgeon.py'}

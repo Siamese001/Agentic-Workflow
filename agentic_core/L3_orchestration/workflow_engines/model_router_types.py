@@ -1,11 +1,16 @@
 """Types and models for model_router."""
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-from enum import Enum, auto
 import logging
 from dataclasses import dataclass  # Added import for dataclass
+from dataclasses import field
 from enum import Enum  # Added import for Enum
-from typing import Any, Dict, List  # Added imports for List, Dict, Any
+from enum import auto
+from typing import (  # Added imports for List, Dict, Any
+    Any,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+)
 
 LOGGER = logging.getLogger(__name__)
 class ModelTier(Enum):

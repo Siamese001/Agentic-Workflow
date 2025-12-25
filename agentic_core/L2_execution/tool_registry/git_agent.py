@@ -4,15 +4,13 @@ GitAgent - L6 GitOps & Remote Synchronization
 Manages git operations for self-healing commits and remote pushes.
 Ensures changes are committed and pushed to remote repository.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import time
 import logging
 import os
+import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-import subprocess
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

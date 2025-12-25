@@ -5,10 +5,10 @@ Handles physical removal of empty folders, temporary artifacts, and ghost direct
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
-from typing import List, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+
 
 class HygieneGuardian(CanonBaseAgent):
     """

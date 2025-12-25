@@ -1,14 +1,12 @@
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
-import re
 import asyncio
 import json
 import logging
+import re
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from agentic_core.L1_cognition.P1_interfaces import (
-
     ActionRequest,
     ExecutionContext,
     ExecutionResult,
@@ -17,6 +15,7 @@ from agentic_core.L1_cognition.P1_interfaces import (
     OrchestratorConfig,
 )
 from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
+
 if TYPE_CHECKING:
     from agentic_core.L1_cognition.sovereign_cognitive_plane import (
         create_sovereign_cognitive_plane,
@@ -25,9 +24,9 @@ if TYPE_CHECKING:
         create_sovereign_action_plane,
     )
     from agentic_core.telepathy import (
-        process_telepathy_instructions,
         InterventionServer,
         check_intervention_required,
+        process_telepathy_instructions,
     )
 
 LOGGER = logging.getLogger(__name__)

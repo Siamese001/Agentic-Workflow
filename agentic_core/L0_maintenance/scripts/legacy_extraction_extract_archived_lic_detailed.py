@@ -4,8 +4,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, List, Set, Tuple
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 SOVEREIGN_ROOTS = {
     "agentic_core",

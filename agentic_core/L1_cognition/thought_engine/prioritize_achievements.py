@@ -4,9 +4,8 @@ prioritize_achievements.py - Resume Operations Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.206349
 """
-from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
-from typing import Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 

@@ -19,8 +19,8 @@ of concerns and maintainable code structure.
 Author: Agentic-Workflow Team
 Version: 1.0.0
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 from services.configuration import ConfigurationService
 

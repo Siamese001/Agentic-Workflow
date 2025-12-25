@@ -7,7 +7,6 @@ Uses AST parsing to analyze and validate import structures.
 import ast
 import logging
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)

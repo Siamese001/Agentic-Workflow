@@ -10,11 +10,9 @@ Strategy:
 - ATOMIC_FISSION mode: Allows facade pattern (large → small file)
 - Ensures zero-loss transitions during fission
 """
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from dataclasses import dataclass, field
 import logging
-from dataclasses import dataclass
-from typing import List, Tuple
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 logger = logging.getLogger(__name__)
 

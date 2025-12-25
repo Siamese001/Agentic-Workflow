@@ -22,7 +22,7 @@ Version: 1.0.0
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 __version__ = "1.0.0"

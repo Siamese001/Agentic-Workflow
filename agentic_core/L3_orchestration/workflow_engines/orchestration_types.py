@@ -3,11 +3,11 @@ Orchestration Types for agentic_core
 
 Core types used across orchestration components to avoid circular dependencies.
 """
-from enum import Enum, auto
-from typing import List, Callable, Optional, Dict, Any, Protocol
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum, auto
+from typing import Any, Callable, Dict, List, Optional, Protocol
+
 
 class ExecutionPhaseSignal(Enum):
     """Signal enum for phase logic checks."""

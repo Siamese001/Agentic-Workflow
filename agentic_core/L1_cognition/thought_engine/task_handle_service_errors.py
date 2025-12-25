@@ -6,8 +6,14 @@ Generated: 2025-12-07T13:28:54.090417
 """
 
 import logging
-from typing import Any, Callable # Added Callable, Dict, Optional
-from typing import Any, Optional, Protocol, Dict, List
+from typing import (  # Added Callable, Dict, Optional
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+)
 
 LOGGER = logging.getLogger(__name__)
 

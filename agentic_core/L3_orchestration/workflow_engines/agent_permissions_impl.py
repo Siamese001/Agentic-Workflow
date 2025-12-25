@@ -1,9 +1,17 @@
 """Implementation for agent_permissions."""
-from typing import Any, Optional, Protocol, Dict, List
 import logging
+from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.L3_orchestration.security.agent_permissions_types import Permission, PermissionScope, PermissionAction, PermissionCheck
-from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
+from agentic_core.L1_cognition.identity.spiffe_manager_types import (
+    AgentIdentity,
+    IdentityType,
+)
+from agentic_core.L3_orchestration.security.agent_permissions_types import (
+    Permission,
+    PermissionAction,
+    PermissionCheck,
+    PermissionScope,
+)
 
 LOGGER = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)

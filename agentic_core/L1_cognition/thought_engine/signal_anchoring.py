@@ -1,12 +1,12 @@
 # Standard library imports
+import hashlib
 import logging
 import re
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
 
 @dataclass
 class SignedClaim:

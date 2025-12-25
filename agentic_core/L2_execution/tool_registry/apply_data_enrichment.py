@@ -10,7 +10,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from typing import Any, Optional, Protocol, Dict, List
+
 
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""

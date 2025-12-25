@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Extract net incremental files (Python and JSON) from legacy_lic archive to staging directory."""
 
+import hashlib
+import logging
 import shutil
 from pathlib import Path
-from typing import Any, Dict
-import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""

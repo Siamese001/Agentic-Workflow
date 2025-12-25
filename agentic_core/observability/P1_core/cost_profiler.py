@@ -2,13 +2,11 @@
 Cost profiler for observability.
 Auto-hardened by WINDSURF v2
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import time
 import logging
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

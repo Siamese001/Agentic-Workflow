@@ -1,8 +1,7 @@
 """Dataclass models for outreach_orchestration_config."""
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
 import logging
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.outreach_orchestration_config_enums import *  # Star import removed

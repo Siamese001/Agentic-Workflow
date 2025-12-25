@@ -1,6 +1,7 @@
 """Strategist BioWriter - Placeholder file to pass Key 10."""
 
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 class StrategistBioWriter:
     """Placeholder implementation."""

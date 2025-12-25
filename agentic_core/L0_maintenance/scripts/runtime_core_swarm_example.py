@@ -6,7 +6,7 @@ in resume generation and other agentic workflows.
 
 import asyncio
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 from subatomic_swarm import SwarmResult, create_subatomic_swarm
 

@@ -6,7 +6,7 @@ Generated: 2025-12-07T13:28:54.092345
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List, Callable
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

@@ -4,11 +4,10 @@ Comprehensive file organization script for sovereign silos
 Moves ALL file types from root to appropriate directories
 """
 
+import argparse
 import logging
 import os
 import shutil
-
-import argparse
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)

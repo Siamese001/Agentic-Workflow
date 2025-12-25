@@ -3,13 +3,12 @@ Canon Validator Intelligent Orchestrator
 
 Orchestrates all validation agents in dependency order.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import asyncio
+import re
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
 from agentic_core.canon_agents_pattern import (
-
     PatternEnforcer,
     SemanticMapper,
     UIValidationAgent,

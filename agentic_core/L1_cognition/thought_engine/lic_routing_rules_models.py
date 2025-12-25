@@ -1,7 +1,7 @@
 """Dataclass models for lic_routing_rules."""
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.lic_routing_rules_enums import *  # Star import removed

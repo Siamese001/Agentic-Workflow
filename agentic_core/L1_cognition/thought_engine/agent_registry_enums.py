@@ -1,7 +1,6 @@
 """Enum types for agent_registry."""
-from enum import Enum, auto
 import logging
-from enum import Enum
+from enum import Enum, auto
 
 _logger = logging.getLogger(__name__)
 

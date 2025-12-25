@@ -2,10 +2,9 @@
 
 Coordinates PII Vault, Constitutional Overseer, and Cost Governor.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import logging
-from typing import Any, Dict, TYPE_CHECKING
+import re
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 

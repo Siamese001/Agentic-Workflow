@@ -1,12 +1,10 @@
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import time
 import datetime
 import json
 import logging
 import re
-from dataclasses import dataclass
-from typing import Dict, List, Optional
+import time
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 try:
     NUMPY_AVAILABLE = True

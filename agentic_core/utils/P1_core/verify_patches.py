@@ -2,12 +2,7 @@
 """Verify Sovereign Patches Applied Successfully"""
 from pathlib import Path
 
-from . import (
-
-    validate_file_location,
-    ALLOWED_CORE_STAGES,
-    CANONICAL_DEPTH_MAP
-)
+from . import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
 
 root = Path("C:/Git/Agentic-Workflow")
 
@@ -43,6 +38,7 @@ print("\n✓ Patch 2: canon_validator_agentic_v2.py - Unified Async/Sync Wrapper
 print("  Checking telemetry wrapper implementation...")
 
 import ast
+
 validator_path = root / "canon_validator_agentic_v2.py"
 with open(validator_path, 'r', encoding='utf-8') as f:
     content = f.read()

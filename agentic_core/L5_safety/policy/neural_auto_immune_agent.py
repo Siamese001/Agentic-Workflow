@@ -6,7 +6,10 @@ Detects repeated non-compliance and issues territory lockdowns.
 
 from pathlib import Path
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+    RedisSovereignAgent,
+)
+
 
 class NeuralAutoImmuneAgent:
     def __init__(self, project_root: Path):

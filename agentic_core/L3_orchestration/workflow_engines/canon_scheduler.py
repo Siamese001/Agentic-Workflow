@@ -5,17 +5,17 @@ Orchestrates the execution of validation agents in phases for the
 Canon Validator system. Manages mission execution, convergence checking,
 and human-in-the-loop intervention.
 """
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
-import re
 import asyncio
+import re
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from agentic_core.domain.context import ValidationContext
 
 if TYPE_CHECKING:
     from agentic_core.intervention_server import (
-    approval_event,
-    start_intervention_server,
-)
+        approval_event,
+        start_intervention_server,
+    )
 
 
 class CanonSwarmScheduler:
@@ -57,18 +57,27 @@ class CanonSwarmScheduler:
             raise ValueError("No agent classes provided. Call set_phases() or provide agent_classes in constructor.")
 
         # Import agent classes dynamically to avoid circular imports
-        from agentic_core.L2_execution.tool_registry.engineering import PatternEnforcer, StructuralEngineer
+        from agentic_core.L2_execution.tool_registry.engineering import (
+            PatternEnforcer,
+            StructuralEngineer,
+        )
         from agentic_core.L2_execution.tool_registry.governance import (
             ArchitectureGovernor,
             DependencySentinel,
         )
-        from agentic_core.L2_execution.tool_registry.infrastructure import BenchmarkingAgent, Historian
+        from agentic_core.L2_execution.tool_registry.infrastructure import (
+            BenchmarkingAgent,
+            Historian,
+        )
         from agentic_core.L2_execution.tool_registry.quality import (
             CodeStyleGuardian,
             HygieneGuardian,
             PerformanceEnforcer,
         )
-        from agentic_core.L2_execution.tool_registry.repair import TestPilot, ToolsmithAgent
+        from agentic_core.L2_execution.tool_registry.repair import (
+            TestPilot,
+            ToolsmithAgent,
+        )
         from agentic_core.L2_execution.tool_registry.security import (
             ConcurrencyGuardian,
             SafetyInspector,

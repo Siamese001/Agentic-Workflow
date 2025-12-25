@@ -3,17 +3,16 @@
 L5 Safety: SubAtomicEngine
 Hardens LLM interaction with token budgets and retry logic.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import asyncio
 import json
 import logging
 import os
+import random
 import re
 import time
-from typing import Any, Dict, Optional, List
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
 
-import random
 import numpy as np
 
 try:
@@ -30,7 +29,9 @@ except ImportError:
 
 # Pinecone for hybrid routing
 try:
-    from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+    from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+        PineconeSovereignAgent,
+    )
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False

@@ -9,6 +9,7 @@ import logging
 
 import pytest
 
+
 class TestBasicSecurityIntegration:
     """Test basic integration between security components."""
 

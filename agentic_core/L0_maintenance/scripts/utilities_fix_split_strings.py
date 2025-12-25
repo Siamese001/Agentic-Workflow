@@ -8,6 +8,7 @@ split across lines without proper line continuation.
 import sys
 from pathlib import Path
 
+
 def fix_split_strings_in_file(filepath):
     """Fix split string literals in a single file."""
     try:

@@ -11,14 +11,13 @@ Canon Validator Patterns Implemented:
 - Veto capability with signal emission
 - Telepathy interface (human instructions file)
 """
-from typing import Any, Optional, Protocol, Dict, List
-import time
 import asyncio
 import logging
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

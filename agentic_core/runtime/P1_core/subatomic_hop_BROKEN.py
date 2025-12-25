@@ -1,9 +1,8 @@
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
-import re
 import logging
+import re
 import time
 import uuid
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from pydantic import BaseModel
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent

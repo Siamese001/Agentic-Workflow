@@ -6,11 +6,11 @@ Automatically adjusts healing budgets and prevents resource exhaustion.
 """
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any, Tuple
+import os
+from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from collections import deque
-import os
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 

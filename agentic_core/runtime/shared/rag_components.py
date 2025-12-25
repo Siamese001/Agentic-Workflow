@@ -3,8 +3,8 @@ RAG Enhancement Components
 Ported from archives - provides semantic caching, self-RAG, knowledge graph injection, and episodic memory.
 """
 import logging
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

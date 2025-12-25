@@ -7,7 +7,6 @@ import ast
 import os
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
 
 if TYPE_CHECKING:
     from agentic_core.types import ValidationContext

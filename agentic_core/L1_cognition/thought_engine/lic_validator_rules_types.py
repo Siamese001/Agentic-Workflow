@@ -1,8 +1,8 @@
 """Types and models for lic_validator_rules."""
-from typing import Any, Optional, Protocol, Dict, List
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

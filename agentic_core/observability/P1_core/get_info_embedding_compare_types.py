@@ -1,10 +1,10 @@
 """Types and models for get_info_embedding_compare."""
 import logging
-from enum import Enum, auto
+import time  # Added missing import
+import traceback  # Added missing import
 from dataclasses import dataclass, field
-from typing import Any, Optional, Protocol, Dict, List, Union
-import time # Added missing import
-import traceback # Added missing import
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):

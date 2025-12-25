@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 import ast
 import os
-from typing import Any, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+
 
 class SubAtomicAgent:
     def __init__(self, ctx: Any, name: str):

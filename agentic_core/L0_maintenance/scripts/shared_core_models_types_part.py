@@ -1,10 +1,10 @@
-from enum import Enum, auto
 from dataclasses import dataclass, field
+from enum import Enum, auto
 
 """Split module 1 for models_types."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

@@ -6,8 +6,7 @@ Provides core functionality and exports for the Security Controls module.
 
 
 import logging
-from typing import Any, Dict, List, Optional, Union
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 

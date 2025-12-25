@@ -11,18 +11,16 @@ Features:
 - Agent lifecycle broadcasts
 - Graceful shutdown with queue drain
 """
-from typing import Any, Dict, List, Optional, Protocol, Set
-import time
 import asyncio
 import json
 import logging
 import re
 import sys
+import threading
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Set
-
-import threading
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 if sys.platform == "win32":
     sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)

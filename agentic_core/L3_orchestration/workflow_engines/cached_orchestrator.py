@@ -3,13 +3,15 @@
 CachedOrchestrator - Eternal L3 Orchestration with Redis Sovereign Cache
 """
 
+import hashlib
 import json
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+    RedisSovereignAgent,
+)
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 class CachedOrchestrator:
     """

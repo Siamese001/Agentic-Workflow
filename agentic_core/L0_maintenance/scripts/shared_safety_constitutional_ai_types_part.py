@@ -1,9 +1,9 @@
 """Split module 1 for constitutional_ai_types."""
 
-from typing import Any, Optional, Protocol, Dict, List
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

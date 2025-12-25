@@ -4,7 +4,8 @@ HierarchyEnforcerAgent - Ensures L4 structure compliance
 """
 
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 
 class HierarchyEnforcerAgent:
     """
@@ -14,7 +15,9 @@ class HierarchyEnforcerAgent:
     
     def __init__(self, project_root: Path, ctx):
         from agentic_core.config.P1_core.structure_blueprint import (
-            CANON_STRUCTURE, CORE_L3_SUBFOLDER_MAP, CORE_L4_SUBFOLDER_MAP
+            CANON_STRUCTURE,
+            CORE_L3_SUBFOLDER_MAP,
+            CORE_L4_SUBFOLDER_MAP,
         )
         self.canon_structure = CANON_STRUCTURE
         self.l3_map = CORE_L3_SUBFOLDER_MAP
@@ -141,7 +144,9 @@ class HierarchyEnforcerAgent:
         Universal depth enforcement for all file types under agentic_core.
         Archives non-Python files that violate depth 4 rule.
         """
-        from agentic_core.config.P1_core.structure_blueprint import AGENTIC_CORE_EXACT_DEPTH
+        from agentic_core.config.P1_core.structure_blueprint import (
+            AGENTIC_CORE_EXACT_DEPTH,
+        )
         actions = []
 
         # [UNIVERSAL ENFORCEMENT] Target common data/doc extensions

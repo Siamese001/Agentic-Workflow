@@ -1,10 +1,10 @@
 """Types and models for rg_provenance_tracker."""
-from typing import Any, Optional, Protocol, Dict, List
+import datetime
+import logging
+import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import datetime
-import time
-import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

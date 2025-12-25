@@ -5,7 +5,7 @@ Detects drift from canonical naming and structure patterns.
 """
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 

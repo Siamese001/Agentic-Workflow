@@ -1,7 +1,8 @@
 """
 Test Protocol: Key 42 Subject
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 def operation_0():
     return 'data_0'

@@ -3,12 +3,11 @@
 import asyncio
 import logging
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
-from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 import networkx as nx
+
 
 class AgentRole(Enum):
     CONTEXT_GATHERER = "context_gatherer"

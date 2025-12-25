@@ -1,8 +1,9 @@
-import shutil
 import logging
+import shutil
 from pathlib import Path
 
-from structure_blueprint import CORE_SUBFOLDER_MAP #
+from structure_blueprint import CORE_SUBFOLDER_MAP
+
 
 class HierarchyHealer:
     """

@@ -1,6 +1,6 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.resume_orchestration_config_types_enums import *  # Star import removed

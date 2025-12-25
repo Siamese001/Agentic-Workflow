@@ -4,9 +4,8 @@ log_campaign_metrics.py - Diagnostics Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.060979
 """
-from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
-from typing import Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 from shared.result_types import DiagnosticReport
 

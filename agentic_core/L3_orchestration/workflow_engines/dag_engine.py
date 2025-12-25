@@ -3,12 +3,10 @@
 Phase 2 - Pillar 4: Workflow (DAGs)
 Lightweight workflow engine for modeling task dependencies and conditional branching.
 """
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set
-from enum import Enum, auto
 import logging
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Set
+from enum import Enum, auto
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, Set
 
 LOGGER = logging.getLogger(__name__)
 

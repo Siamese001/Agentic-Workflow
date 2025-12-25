@@ -4,7 +4,7 @@ PreCommitGuardianAgent - L5 Safety Framework Agent
 Guards pre-commit hooks and ensures compliance before commits.
 """
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

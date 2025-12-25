@@ -7,10 +7,11 @@ Responsible for:
 - Pattern learning from successful fixes
 - Integration with Pinecone for pattern storage
 """
-from typing import Any, Optional, Protocol, Dict, List
 import os
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+
 
 class HealerAgent(CanonBaseAgent):
     """
@@ -56,11 +57,11 @@ class HealerAgent(CanonBaseAgent):
         [KEY 40/49 HARDENING] High-Signal Re-homing.
         Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
-        from agentic_core.runtime.shared.void_compliance import (
-            get_placement_guidance,
-            FORBIDDEN_ROOT_FOLDERS
-        )
         from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.runtime.shared.void_compliance import (
+            FORBIDDEN_ROOT_FOLDERS,
+            get_placement_guidance,
+        )
         
         try:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
@@ -220,7 +221,9 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                from agentic_core.L3_orchestration.workflow_engines.canon_scheduler import apply_fission_blueprint
+                from agentic_core.L3_orchestration.workflow_engines.canon_scheduler import (
+                    apply_fission_blueprint,
+                )
                 blueprint_data = self.ctx.engine.parse_fission_output(res)
                 if blueprint_data and blueprint_data.get("fission_event"):
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):

@@ -3,9 +3,9 @@ Claim Confidence Scorer
 Atomic claim extraction and confidence scoring.
 """
 import logging
-from typing import List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 

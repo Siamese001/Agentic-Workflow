@@ -5,8 +5,8 @@ Generated: 2025-12-08
 These symbols lack proper docstrings and are acknowledged as technical debt.
 No NEW missing docstrings will be allowed. This list can only shrink.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 DOCSTRING_DEBT = {

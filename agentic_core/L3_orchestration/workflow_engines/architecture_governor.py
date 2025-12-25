@@ -5,8 +5,7 @@ Validates and enforces architectural patterns across the codebase.
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 logger = logging.getLogger(__name__)
 

@@ -2,11 +2,10 @@
 
 Tracks token usage and halts execution if cost exceeds threshold.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import logging
+import re
 import time
-from typing import Dict
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

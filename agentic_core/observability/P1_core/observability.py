@@ -25,6 +25,7 @@ Non-responsibilities:
 import logging
 import time
 
+
 def get_all_events() -> list:
     """Backward-compatible alias for get_events()."""
 

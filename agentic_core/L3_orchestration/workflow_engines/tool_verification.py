@@ -4,15 +4,12 @@ Tool Verification Loop - The "Compiler Check"
 Prevents agents from hallucinating tools or code by forcing verification
 before execution. Acts as a pre-commit check for agent actions.
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-from enum import Enum, auto
 import ast
 import logging
 import re
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

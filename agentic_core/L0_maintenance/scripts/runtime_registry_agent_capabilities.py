@@ -1,5 +1,5 @@
-from enum import Enum, auto
 from dataclasses import dataclass, field
+from enum import Enum, auto
 
 """Agent Capabilities Registry - Functional Role-based Agent System.
 
@@ -9,7 +9,6 @@ numbered system. Agents are identified by their function, not by numbers.
 
 import logging
 from typing import Any, Callable, Dict, List, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

@@ -10,11 +10,10 @@ Strategy:
 - Cross-link with parent_monolith metadata
 - Maintain L4 State consistency
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import logging
 import os
-from typing import Dict, List, Optional
+import re
+from typing import Any, Dict, List, Optional, Protocol
 
 try:
     from pinecone import Pinecone

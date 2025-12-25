@@ -3,13 +3,12 @@
 L3 Orchestration: Fission Executor
 Physical file splitting logic for atomic fission protocol.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import time
 import logging
 import os
 import shutil
+import time
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 if TYPE_CHECKING:
     from agentic_core.fission_manager import FissionManager

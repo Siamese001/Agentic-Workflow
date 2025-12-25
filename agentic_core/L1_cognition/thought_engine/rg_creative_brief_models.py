@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 """Dataclass models for rg_creative_brief."""
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.rg_creative_brief_enums import *  # Star import removed

@@ -5,10 +5,11 @@ The eternal orchestrator that watches all layers and coordinates autonomous resp
 
 import asyncio
 from datetime import datetime
-from typing import Any
 from pathlib import Path
-from watchdog.observers import Observer
+from typing import Any
+
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 
 class TerritoryWatcher(FileSystemEventHandler):
@@ -35,14 +36,28 @@ class AutonomousSovereignCore:
         self.running = True
         
         # Import autonomous improvements
-        from agentic_core.L1_cognition.thought_engine.adaptive_learning_engine import create_adaptive_learning_engine
-        from agentic_core.L2_execution.tool_registry.proactive_resource_manager import create_proactive_resource_manager
-        from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import create_self_recovering_orchestrator
-        from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import create_autonomous_execution_engine
-        from agentic_core.L4_state.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
-        from agentic_core.L4_state.autonomous_state_guardian import create_autonomous_state_guardian
-        from agentic_core.L5_safety.self_updating_safety_engine import create_self_updating_safety_engine
-        
+        from agentic_core.L1_cognition.thought_engine.adaptive_learning_engine import (
+            create_adaptive_learning_engine,
+        )
+        from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+            create_proactive_resource_manager,
+        )
+        from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (
+            create_autonomous_execution_engine,
+        )
+        from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
+            create_self_recovering_orchestrator,
+        )
+        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+            create_autonomous_checkpoint_manager,
+        )
+        from agentic_core.L4_state.autonomous_state_guardian import (
+            create_autonomous_state_guardian,
+        )
+        from agentic_core.L5_safety.self_updating_safety_engine import (
+            create_self_updating_safety_engine,
+        )
+
         # Initialize all autonomous layers
         self.l1_learning = create_adaptive_learning_engine(autonomous_mode=True)
         self.l2_resource = create_proactive_resource_manager()

@@ -3,16 +3,14 @@
 Core Utilities for Resume Engine
 Provides draft generation, scoring, and file operations
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import time
 import json
 import logging
 import re
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

@@ -8,11 +8,9 @@ This module provides unified access to:
 - Cover letter templates from Pinecone/L3
 - Consolidated search across both knowledge bases
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
 import logging
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

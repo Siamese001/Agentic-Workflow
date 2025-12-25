@@ -5,6 +5,7 @@ Scans all Python files for depth > 5 (Key 49: Universal Max 5 Levels From Root)
 """
 from pathlib import Path
 
+
 def check_key_49_depth():
     """Check directory depth violations per Key 49"""
     project_root = Path(__file__).parent.parent.parent  # Repository root (from validator/entry/)
@@ -24,7 +25,7 @@ def check_key_49_depth():
         from pathlib import Path as PathLib
         sys.path.insert(0, str(PathLib(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
         from structure_blueprint import SOVEREIGN_DEPTH_MAP
-        
+
         # Check if folder has specific depth requirement
         if relative_path.parts and relative_path.parts[0] in SOVEREIGN_DEPTH_MAP:
             root_folder = relative_path.parts[0]

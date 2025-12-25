@@ -1,7 +1,7 @@
 import logging
-from typing import Any, Dict, List, Optional, Protocol, Tuple
 import sys
-from typing import Protocol, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+
 
 class Logger(Protocol):
     """Protocol for a logging mechanism."""

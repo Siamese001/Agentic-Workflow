@@ -1,10 +1,13 @@
 """Dataclass models for k25_research_models_types."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.k25_research_models_types_enums import ResearchHopPhase, ValidationRejectionReason
+from agentic_core.k25_research_models_types_enums import (
+    ResearchHopPhase,
+    ValidationRejectionReason,
+)
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.k25_research_models_types_enums import *  # Star import removed

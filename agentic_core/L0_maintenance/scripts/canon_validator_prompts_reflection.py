@@ -2,7 +2,7 @@
 Reflection and strategic planning few-shot patterns.
 Used by ReflectionAgent, StrategicPlanner.
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 FEW_SHOT_REFLECTION_STRATEGY = """
 FEW-SHOT HEALING STRATEGY DECISIONS:

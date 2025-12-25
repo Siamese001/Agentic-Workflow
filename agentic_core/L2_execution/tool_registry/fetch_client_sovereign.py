@@ -3,14 +3,15 @@ Ultra-hardened web content retrieval with domain allowlist and L4 caching.
 No internal IPs, robots.txt enforced, chunked reading for L1 safety.
 """
 import asyncio
+import hashlib
 import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
-import hashlib
-
+from agentic_core.L4_state.semantic.semantic_cache_sovereign import (
+    SovereignSemanticCache,
+)
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
 
 logger = logging.getLogger(__name__)
 

@@ -1,9 +1,9 @@
+import glob
 import logging
 import os
 import re
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import glob
 from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)

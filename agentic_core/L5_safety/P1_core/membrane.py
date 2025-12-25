@@ -4,10 +4,9 @@ Input Membrane - Zero Trust Input Sanitization
 Protects against prompt injection and adversarial data by sanitizing
 all external content before it enters the agent's context.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import re
-from typing import Any
+from typing import Any, Dict, List, Optional, Protocol
 
 from openai import AsyncOpenAI
 

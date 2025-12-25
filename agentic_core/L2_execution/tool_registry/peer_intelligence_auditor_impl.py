@@ -1,6 +1,5 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.peer_intelligence_auditor_types import *  # Star import removed

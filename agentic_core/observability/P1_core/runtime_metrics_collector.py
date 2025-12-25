@@ -4,11 +4,10 @@ runtime_metrics_collector.py - Metrics Module
 Domain: metrics
 Generated: 2025-12-07T12:07:59.850014
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
 import logging
 import time
-from typing import Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

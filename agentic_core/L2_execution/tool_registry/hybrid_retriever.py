@@ -4,15 +4,16 @@ HybridRetriever - Dense + Sparse Retrieval with Reranking
 """
 
 import asyncio
+import hashlib
 import json
 import os
-from typing import List, Dict, Any, Optional
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-import tempfile
-import hashlib
 from rank_bm25 import BM25Okapi
+
 
 @dataclass
 class RetrievalResult:
@@ -61,7 +62,9 @@ class HybridRetriever:
     async def rebuild_from_ingestion(self):
         """Rebuild local index from latest ingestion artifacts"""
         try:
-            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import load_latest_ingested_chunks
+            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import (
+                load_latest_ingested_chunks,
+            )
             chunks = await asyncio.to_thread(load_latest_ingested_chunks)
             self.local_chunks = chunks
             

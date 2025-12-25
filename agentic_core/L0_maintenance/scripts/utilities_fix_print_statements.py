@@ -7,6 +7,7 @@ import re
 
 from services.configuration import ConfigurationService
 
+
 def _should_add_logging_imports(content):
     """Check if logging import and logger instance already exist in the content."""
     has_logging_import = 'import logging' in content or 'from logging import' in content

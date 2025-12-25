@@ -2,13 +2,12 @@
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
 """
-from typing import Any, Dict, List, Optional, Protocol, Tuple
 import ast
 import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
 

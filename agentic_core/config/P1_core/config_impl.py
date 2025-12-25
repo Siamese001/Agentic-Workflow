@@ -1,8 +1,8 @@
 """Implementation for config."""
-import logging
-from typing import Any, Optional, Protocol, Dict, List
-from pathlib import Path
 import json
+import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.config_types import *  # Star import removed

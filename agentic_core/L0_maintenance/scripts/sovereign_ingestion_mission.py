@@ -3,13 +3,13 @@
 Sovereign Ingestion Mission - Index all sovereign territories into vector store
 """
 
+import argparse
 import asyncio
+import hashlib
 import os
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
-import hashlib
-import argparse
 
 async def load_text_file(file_path: Path) -> str:
     """Load text from supported files with encoding fallback"""

@@ -1,7 +1,6 @@
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import logging
-from typing import Any, Dict, List
+import re
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger("ConsensusEngine")
 # Only configure basicConfig if no handlers are already set up for the root logger.

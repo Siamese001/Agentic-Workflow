@@ -1,8 +1,7 @@
-from typing import Any, Optional, Protocol, Dict, List
 import asyncio
 import os
 import re
-from typing import Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 

@@ -4,15 +4,13 @@ SwarmScheduler - L3 Task Scheduling System
 Manages task scheduling and execution across the agentic swarm.
 Optimizes resource utilization and ensures fair task distribution.
 """
-from typing import Any, Dict, List, Optional, Protocol, Set
-from enum import Enum, auto
-import time
 import asyncio
 import logging
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
+from enum import Enum, auto
+from typing import Any, Callable, Dict, List, Optional, Protocol, Set
 
 LOGGER = logging.getLogger(__name__)
 

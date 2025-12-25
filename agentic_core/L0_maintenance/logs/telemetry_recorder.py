@@ -1,6 +1,7 @@
 import logging
 import time
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 class TraceEvent:
     def __init__(self, trace_id, span_id, ROLE, event_type, PAYLOAD, TIMESTAMP):

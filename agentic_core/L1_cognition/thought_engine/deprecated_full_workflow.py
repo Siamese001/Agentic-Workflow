@@ -6,9 +6,9 @@ integrating all layers and components.
 import logging
 import re
 import time
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 from unittest.mock import Mock, patch
+
 import pytest
 
 if TYPE_CHECKING:

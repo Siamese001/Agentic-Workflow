@@ -5,8 +5,7 @@ Validates that all required agents in CANON_AGENT_REGISTRY exist and are properl
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Set, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +102,7 @@ class AgentRegistryValidatorAgent:
             List of module paths to search
         """
         import re
-        
+
         # Convert CamelCase to snake_case
         def camel_to_snake(name):
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)

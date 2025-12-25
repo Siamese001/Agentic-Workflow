@@ -6,9 +6,9 @@ Enhanced PDF parsing with OCR fallback, metadata extraction, and async processin
 
 import asyncio
 import re
-from pathlib import Path
-from typing import List, Dict, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional
 
 try:
     import pdfplumber

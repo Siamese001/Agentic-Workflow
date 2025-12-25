@@ -4,10 +4,9 @@ build_search_filters.py - Formatting Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.192875
 """
-from typing import Any, Dict, List, Optional, Protocol, Union
-import re
 import logging
-from typing import Dict, Optional, Union
+import re
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 """Dataclass models for config."""
 import logging
-from dataclasses import dataclass, field, ClassVar
+from dataclasses import ClassVar, dataclass, field
 from pathlib import Path
 from typing import Any, ClassVar, Dict, List, Optional, Protocol, Set, Tuple
 

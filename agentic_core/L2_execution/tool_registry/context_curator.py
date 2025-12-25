@@ -9,16 +9,14 @@ Strategy: "Clean Slate" with "High Wisdom" - compressed context injection
 
 Impact: Agents don't get confused by previous stage history
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import re
-import time
 import json
 import logging
-from dataclasses import dataclass
+import re
+import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 

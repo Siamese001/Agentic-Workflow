@@ -2,8 +2,8 @@
 
 import logging
 import sys
-from typing import Any, Dict, List, Optional, Union
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
+
 
 class GetInfoUnderstandRequest:
     """

@@ -3,12 +3,15 @@ Hardened routing of canon violations to MCP tools across all layers and apps.
 L5 safety shielded + auto-immune on breach.
 """
 import asyncio
-import logging
-from typing import Optional, Dict, Any, List
-from pathlib import Path
 import json
+import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
+from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
+    MCPConnectionManager,
+    load_mcp_config,
+)
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)
@@ -94,7 +97,9 @@ class SovereignMCPRouter:
             elif key_id in {40, 41, 42, 49}:
                 # Check if we have a DeepWiki client available in the context
                 try:
-                    from agentic_core.L4_state.P1_core.validation_context import ValidationContext
+                    from agentic_core.L4_state.P1_core.validation_context import (
+                        ValidationContext,
+                    )
                     if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
                         ctx = ValidationContext._instance
                         if hasattr(ctx, 'deepwiki_client') and ctx.deepwiki_client:
@@ -118,7 +123,9 @@ class SovereignMCPRouter:
                 # Check if we have a Figma client available in the context
                 try:
                     # Import context to check for figma_client
-                    from agentic_core.L4_state.P1_core.validation_context import ValidationContext
+                    from agentic_core.L4_state.P1_core.validation_context import (
+                        ValidationContext,
+                    )
                     if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
                         ctx = ValidationContext._instance
                         if hasattr(ctx, 'figma_client') and ctx.figma_client:
@@ -143,7 +150,9 @@ class SovereignMCPRouter:
                     # Check Redis for a successful "thought template" to speed up recall
                     template_key = f"seq_template:key{key_id}"
                     cached_template = None
-                    from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
+                    from agentic_core.L5_safety.shield.redis_sovereign_shield import (
+                        redis_shield,
+                    )
                     
                     try:
                         cached = redis_shield.execute("get", template_key)
