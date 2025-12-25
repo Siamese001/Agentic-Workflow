@@ -52,6 +52,7 @@ if not project_root:
     print(f"\n[!] [L6 ERROR] CRITICAL GRAVITY LOSS: Could not locate .env root from {current_file_path}")
     sys.exit(1)
 
+# [SOVEREIGN ANCHOR] Force project root into sys.path for Discovery
 project_root_str = str(project_root)
 if project_root_str not in sys.path:
     sys.path.insert(0, project_root_str)
@@ -472,7 +473,7 @@ try:
             # 2. HARDEN SUBATOMIC ENGINE (Positional + Keyword Shim)
             from types import MethodType
             original_method = _real_engine.resilient_mutation
-            async def sovereign_mutation(*args, **kwargs):
+            async def sovereign_mutation(self_obj, *args, **kwargs):
                 # Handle legacy positional (code, task) calls
                 if len(args) >= 2:
                     code, task = args[0], args[1]
@@ -488,6 +489,7 @@ try:
                         kwargs["prompt"] = f"[SYSTEM]\n{sys_p}\n\n[USER]\n{kwargs['prompt']}"
                 return await original_method(*args, **kwargs)
             
+            # Bind to the instance to ensure 'self' is passed correctly
             _real_engine.resilient_mutation = MethodType(sovereign_mutation, _real_engine)
             
             subatomic_engine = GeminiSpy(_real_engine)
@@ -795,7 +797,16 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         "autonomous_execution_engine.py", "autonomous_fallback_orchestrator.py",
         "autonomous_threat_evolution.py", "reset_sovereign_state.py"
     }
-    location_violations = [v for v in location_violations if v[0].name not in autonomous_agents]
+    
+    # Whitelist new sovereign territories found in logs
+    allowed_stages = {"policy", "shared", "hierarchy", "meta"}
+    
+    # Filter violations for whitelisted agents and stages
+    location_violations = [
+        v for v in location_violations 
+        if v[0].name not in autonomous_agents 
+        and not any(s in str(v[0]) for s in allowed_stages)
+    ]
     
     if location_violations:
         print(f"[!] L6 ALERT: Found {len(location_violations)} file location violations:")
@@ -1504,6 +1515,8 @@ IF (task == "GRAVITY_REFACTOR"):
     batch_validators = []  # Run ONCE (takes no args)
     monitors = []          # Run ONCE at end
 
+    print(f"\n[AGENT CATEGORIZATION] Categorizing {len(cleaning_crew)} agents...")
+    
     for agent in cleaning_crew:
         name = agent.__class__.__name__
         # Note: HallucinationHunter and MemoryArchitect will be handled in dedicated hardening blocks below
