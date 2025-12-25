@@ -39,8 +39,17 @@ class RedisSovereignAgent:
             "socket_keepalive": True,
             "retry_on_timeout": True,
             "health_check_interval": 30,
-            "ssl": env.REDIS_SSL,
         }
+        
+        # Handle SSL configuration to avoid version conflicts
+        if env.REDIS_SSL:
+            # Explicitly manage SSL params to avoid redis-py version conflicts
+            connection_kwargs.update({
+                "ssl": True, 
+                "ssl_cert_reqs": None,
+                "ssl_check_hostname": False
+            })
+        
         if env.REDIS_PASSWORD:
             connection_kwargs["password"] = env.REDIS_PASSWORD
 

@@ -468,8 +468,32 @@ try:
     if SubAtomicEngine is not None:
         try:
             _real_engine = SubAtomicEngine(gemini_client=None)
+            
+            # 2. HARDEN SUBATOMIC ENGINE (Positional + Keyword Shim)
+            def patch_subatomic_engine(engine_class):
+                original = engine_class.resilient_mutation
+                async def sovereign_mutation(self, *args, **kwargs):
+                    # Handle legacy positional calls: resilient_mutation(code, task)
+                    if len(args) >= 2:
+                        code, task = args[0], args[1]
+                        kwargs['prompt'] = f"Task: {task}\n\nCode:\n{code}"
+                    elif len(args) == 1:
+                        kwargs['prompt'] = args[0]
+
+                    # Handle legacy system_prompt keyword
+                    system_prompt = kwargs.pop("system_prompt", None)
+                    if system_prompt and "prompt" in kwargs:
+                        kwargs["prompt"] = f"[SYSTEM]\n{system_prompt}\n\n[USER]\n{kwargs['prompt']}"
+                    
+                    return await original(self, **kwargs)
+                engine_class.resilient_mutation = sovereign_mutation
+            
+            # Apply the patch to handle universal signature
+            patch_subatomic_engine(SubAtomicEngine)
+            
             subatomic_engine = GeminiSpy(_real_engine)
             print(f"   [OK] SubAtomicEngine + GeminiSpy instantiated early")
+            print(f"   [OK] SubAtomicEngine universal signature patch applied")
         except Exception as e:
             print(f"   [!] Engine early init failed: {e}")
 
