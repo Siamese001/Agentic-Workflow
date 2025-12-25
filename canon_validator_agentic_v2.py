@@ -760,16 +760,26 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         if cfg["depth"] == 4  # Only the heavy core
     } | {"prompt_governance", "schemas", "config", "scripts"}
     
+    # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
     if target_path.is_dir():
-        for py_file in target_path.rglob("*.py"):
-            rel_path = py_file.relative_to(project_root)
-            root_folder = rel_path.parts[0] if rel_path.parts else ""
-            
-            # Only enforce gravity on Sovereign territory to avoid noise in downstream apps.
-            if root_folder in SOVEREIGN_ROOTS:
-                violations = check_import_waterfall_violations(py_file, project_root)
-                if violations:
-                    waterfall_violations.extend([(py_file, v) for v in violations])
+        for root, dirs, files in os.walk(target_path):
+            # Prune protected dirs to avoid scanning archives, .git, etc.
+            dirs[:] = [d for d in dirs if d not in PROTECTED]
+            for file in files:
+                if not file.endswith('.py'):
+                    continue
+                py_file = Path(root) / file
+                try:
+                    rel_path = py_file.relative_to(project_root)
+                    root_folder = rel_path.parts[0] if rel_path.parts else ""
+                    
+                    # Only enforce gravity on Sovereign territory to avoid noise in downstream apps.
+                    if root_folder in SOVEREIGN_ROOTS:
+                        violations = check_import_waterfall_violations(py_file, project_root)
+                        if violations:
+                            waterfall_violations.extend([(py_file, v) for v in violations])
+                except (ValueError, IndexError):
+                    continue
     
     if waterfall_violations:
         print(f"[!] L6 ALERT: Found {len(waterfall_violations)} import waterfall violations:")
@@ -778,13 +788,23 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         if len(waterfall_violations) > 3:
             print(f"   ... and {len(waterfall_violations) - 3} more violations")
     
-    # Check 3: File Location Validation
+    # Check 4: File Location Validation
+    # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
     location_violations = []
     if target_path.is_dir():
-        for py_file in target_path.rglob("*.py"):
-            is_valid, reason = validate_file_location(py_file, project_root)
-            if not is_valid:
-                location_violations.append((py_file, reason))
+        for root, dirs, files in os.walk(target_path):
+            # Prune protected dirs to avoid scanning archives, .git, etc.
+            dirs[:] = [d for d in dirs if d not in PROTECTED]
+            for file in files:
+                if not file.endswith('.py'):
+                    continue
+                py_file = Path(root) / file
+                try:
+                    is_valid, reason = validate_file_location(py_file, project_root)
+                    if not is_valid:
+                        location_violations.append((py_file, reason))
+                except Exception:
+                    continue
     
     # Whitelist meta-autonomy folders and agents (Depth 3)
     autonomous_agents = {
@@ -1213,10 +1233,14 @@ async def run_mission(target_scope: str = "agentic_core"):
     }
     
     # Discover all Python files in target scope, excluding protected folders
-    discovered_files = [
-        p for p in target_path.rglob("*.py") 
-        if p.is_file() and not any(protected in p.parts for protected in PROTECTED_FOLDERS)
-    ]
+    # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
+    discovered_files = []
+    for root, dirs, files in os.walk(target_path):
+        # Prune protected dirs in-place to prevent os.walk from entering them
+        dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
+        for file in files:
+            if file.endswith('.py'):
+                discovered_files.append(Path(root) / file)
     
     print(f"   [PROTECTED] Skipping folders: {', '.join(sorted(PROTECTED_FOLDERS))}")
     
@@ -1331,36 +1355,41 @@ Return ONLY the fixed Python code. No explanations, no markdown.
         for base_dir in scan_targets:
             if not base_dir.exists(): continue
 
-            for file_path in base_dir.rglob("*.py"):
-                if file_path.name.startswith("__") or "__pycache__" in str(file_path):
-                    continue
-                
-                try:
-                    rel_path = file_path.relative_to(project_root)
-                    module_name = str(rel_path).replace(os.sep, ".")[:-3]
-                    module = importlib.import_module(module_name)
-
-                    for attr_name in dir(module):
-                        attr = getattr(module, attr_name)
-                        
-                        # [HARDENING] Widen discovery to include Protocols and the 50-key Registry
-                        if (isinstance(attr, type) and 
-                            attr.__module__ == module_name and
-                            attr_name != 'SubAtomicAgent' and
-                            (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Protocol', 'Registry')) or
-                             attr_name in ('ValidationContext', 'VERIFICATION_REGISTRY'))):
-                            
-                            found_agents.append((module_name, attr_name, attr))
-                            if attr_name == 'VERIFICATION_REGISTRY':
-                                print(f"     [✓] Found 50-Key Canon Registry in {module_name}")
-
-                except Exception as e:
-                    # Suppress known legacy noise to find real architectural breaks
-                    noise = ["services.", "runtime_shared", "BaseModel", "Agent", "ClassVar"]
-                    if any(n in str(e) for n in noise):
-                        print(f"     [!] Known legacy issue: {e}")
+            # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
+            for root, dirs, files in os.walk(base_dir):
+                # Prune protected dirs to avoid scanning archives
+                dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
+                for file in files:
+                    if not file.endswith('.py') or file.startswith("__"):
                         continue
-                    print(f"     [!] Failed to inspect {file_path.name}: {e}")
+                    file_path = Path(root) / file
+                    
+                    try:
+                        rel_path = file_path.relative_to(project_root)
+                        module_name = str(rel_path).replace(os.sep, ".")[:-3]
+                        module = importlib.import_module(module_name)
+
+                        for attr_name in dir(module):
+                            attr = getattr(module, attr_name)
+                            
+                            # [HARDENING] Widen discovery to include Protocols and the 50-key Registry
+                            if (isinstance(attr, type) and 
+                                attr.__module__ == module_name and
+                                attr_name != 'SubAtomicAgent' and
+                                (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Protocol', 'Registry')) or
+                                 attr_name in ('ValidationContext', 'VERIFICATION_REGISTRY'))):
+                                
+                                found_agents.append((module_name, attr_name, attr))
+                                if attr_name == 'VERIFICATION_REGISTRY':
+                                    print(f"     [✓] Found 50-Key Canon Registry in {module_name}")
+
+                    except Exception as e:
+                        # Suppress known legacy noise to find real architectural breaks
+                        noise = ["services.", "runtime_shared", "BaseModel", "Agent", "ClassVar"]
+                        if any(n in str(e) for n in noise):
+                            print(f"     [!] Known legacy issue: {e}")
+                            continue
+                        print(f"     [!] Failed to inspect {file_path.name}: {e}")
         
         return found_agents
 
