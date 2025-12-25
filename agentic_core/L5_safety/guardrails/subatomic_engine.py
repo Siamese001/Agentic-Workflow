@@ -147,9 +147,21 @@ class SubAtomicEngine:
         code: str,
         task: str,
         round_num: int = 1,
-        fission_active: bool = False
+        fission_active: bool = False,
+        system_prompt: Optional[str] = None,
+        **kwargs
     ) -> str:
-        """Execute resilient mutation with exponential backoff retry."""
+        """Execute resilient mutation with exponential backoff retry.
+        
+        Args:
+            file_path: Path to the file being mutated
+            code: Code content to mutate
+            task: Task description
+            round_num: Current round number
+            fission_active: Whether fission mode is active
+            system_prompt: Optional system prompt override
+            **kwargs: Additional arguments (ignored for compatibility)
+        """
         if not self._client:
             raise RuntimeError("Gemini client not initialized")
         
@@ -163,8 +175,10 @@ class SubAtomicEngine:
                 logger.warning(f"   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.")
                 temp_override = 0.8  # Increase randomness to break loop
         
-        # Build prompt
-        if fission_active:
+        # Build prompt (use system_prompt if provided)
+        if system_prompt:
+            prompt = f"{system_prompt}\n\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}"
+        elif fission_active:
             prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
         else:
             prompt = f"HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
