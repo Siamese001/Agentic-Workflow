@@ -1381,11 +1381,9 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                                 attr_name != 'SubAtomicAgent' and
                                 (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Protocol', 'Registry')) or
                                  attr_name in ('ValidationContext', 'VERIFICATION_REGISTRY'))):
-                                
                                 found_agents.append((module_name, attr_name, attr))
                                 if attr_name == 'VERIFICATION_REGISTRY':
                                     print(f"     [✓] Found 50-Key Canon Registry in {module_name}")
-
                     except Exception as e:
                         # Suppress known legacy noise to find real architectural breaks
                         noise = ["services.", "runtime_shared", "BaseModel", "Agent", "ClassVar"]
@@ -1400,6 +1398,8 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     discovered = discover_agents()
     print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} potential components")
     
+    # [SOVEREIGN ARMING] Instantiate with context to prevent 'TypeError'
+    ctx.cleaning_crew = []
     for mod_name, cls_name, cls_ref in discovered:
         try:
             # [SOVEREIGN CUT] Only instantiate agents with actual execute/run methods
@@ -1411,73 +1411,40 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                 # Silently skip passive components - no warning needed
                 continue
 
-            # [SOVEREIGN ARMING] Context-aware instantiation with fallback
-            sig = inspect.signature(cls_ref.__init__)
-            kwargs = {}
-            
-            if 'ctx' in sig.parameters: kwargs['ctx'] = ctx
-            elif 'context' in sig.parameters: kwargs['context'] = ctx
-            
-            if 'project_root' in sig.parameters: kwargs['project_root'] = project_root
-            if 'guardrail' in sig.parameters and hasattr(ctx, 'safety_guardrail'): 
-                kwargs['guardrail'] = ctx.safety_guardrail
-            
-            if 'name' in sig.parameters: kwargs['name'] = cls_name
-            if 'engine' in sig.parameters: kwargs['engine'] = ctx.engine
-            
-            # Try instantiation with context, fallback to empty constructor
+            # Try standard sovereign init (ProjectRoot + Guardrail)
             try:
+                kwargs = {}
+                if 'project_root' in inspect.signature(cls_ref.__init__).parameters:
+                    kwargs['project_root'] = project_root
+                if 'guardrail' in inspect.signature(cls_ref.__init__).parameters and hasattr(ctx, 'safety_guardrail'):
+                    kwargs['guardrail'] = ctx.safety_guardrail
+                if 'ctx' in inspect.signature(cls_ref.__init__).parameters:
+                    kwargs['ctx'] = ctx
+                if 'name' in inspect.signature(cls_ref.__init__).parameters:
+                    kwargs['name'] = cls_name
+                if 'engine' in inspect.signature(cls_ref.__init__).parameters:
+                    kwargs['engine'] = ctx.engine
+                    
                 agent_instance = cls_ref(**kwargs)
+                if hasattr(agent_instance, 'heal_violation') or has_execute or has_run:
+                    ctx.cleaning_crew.append(agent_instance)
+                    print(f"   [+] {cls_name} ARMED as ATOMIC healer")
             except TypeError:
                 try:
+                    # Fallback to empty init
                     agent_instance = cls_ref()
-                except Exception:
-                    continue
-                    
-            agent_instance.current_status = "Idle"
-            agent_instance.current_task = "Awaiting mission"
-            
-            # [HARDENING] Defensive monkey-patch for real-time telemetry
-            # Auto-update status/task on all agents without requiring individual changes
-            original_method = getattr(agent_instance, 'execute', getattr(agent_instance, 'run', None))
-            
-            if original_method:
-                # Unified Smart Wrapper (Handles both Sync and Async)
-                async def status_wrapper(*args, **kwargs):
-                    file_path = args[0] if args else "batch/global"
-                    file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
-                    agent_instance.current_status = "Active"
-                    agent_instance.current_task = f"Processing: {file_name}"
-                    
-                    try:
-                        # Smart Dispatch: Check if method is async at runtime
-                        if inspect.iscoroutinefunction(original_method):
-                            result = await original_method(*args, **kwargs)
-                        else:
-                            result = original_method(*args, **kwargs)
-                            
-                        agent_instance.current_status = "Success"
-                        agent_instance.current_task = "Complete"
-                        return result
-                    except Exception as e:
-                        agent_instance.current_status = "Error"
-                        agent_instance.current_task = f"Failed: {str(e)[:50]}"
-                        # Log error to context if available
-                        if hasattr(ctx, 'log_error'):
-                            ctx.log_error(f"{cls_name}: {str(e)}")
-                        raise
-
-                # Replace method with unified async telemetry wrapper
-                # Note: The Phase 2 batch runner is already configured to await coroutines
-                if hasattr(agent_instance, 'execute'):
-                    agent_instance.execute = status_wrapper
-                else:
-                    agent_instance.run = status_wrapper
-            
-            cleaning_crew.append(agent_instance)
-            print(f"     [+] Active Agent: {cls_name}")
+                    if hasattr(agent_instance, 'heal_violation') or has_execute or has_run:
+                        ctx.cleaning_crew.append(agent_instance)
+                        print(f"   [+] {cls_name} ARMED (fallback)")
+                except Exception: continue
+            except Exception as e:
+                print(f"   [!] Discovery Error for {cls_name}: {e}")
+                
         except Exception as e:
-            print(f"     [!] Failed to instantiate {cls_name}: {e}")
+            print(f"   [!] Failed to instantiate {cls_name}: {e}")
+    
+    # Update the global cleaning_crew for compatibility
+    cleaning_crew = ctx.cleaning_crew
 
     # --- CRITICAL SAFETY CHECK ---
     if not cleaning_crew:
