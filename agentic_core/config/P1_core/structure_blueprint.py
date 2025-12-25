@@ -57,7 +57,7 @@ CORE_SUBFOLDER_MAP = {
     "L1_cognition": ["thought_engine", "intent_analysis"],
     "L2_execution": ["tool_registry", "action_handlers"],
     "L3_orchestration": ["workflow_engines", "fission_logic"],
-    "L4_state": ["validation_context", "audit_trails", "checkpoints"],
+    "L4_state": ["validation_context", "audit_trails", "ledger"],
     "L5_safety": ["guardrails", "red_teaming"],
     "schemas": ["models", "requests", "responses"],
     "config": ["blueprint_sovereign", "environments"],
@@ -108,7 +108,6 @@ CORE_L3_SUBFOLDER_MAP = {
     # L3 under workflow_engines
     "workflow_engines": ["coordinator", "router", "hop"],
     # L3 under L4_state (Depth 4 Enforcement)
-    "checkpoints": ["snapshots", "recovery"],
     "validation_context": ["historian", "cache", "ledger"],
     # L3 under schemas (Depth 4 Enforcement)
     "models": ["core", "domain"],
