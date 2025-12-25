@@ -2,7 +2,6 @@ from typing import Any, Optional, Protocol, Dict, List
 import os
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT_DIR = Path("C:/Git/Agentic-Workflow/agentic_core")
 
 def purge_illegal_airlocks():

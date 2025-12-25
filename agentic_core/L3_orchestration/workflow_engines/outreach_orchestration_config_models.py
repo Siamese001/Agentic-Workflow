@@ -1,8 +1,6 @@
 """Dataclass models for outreach_orchestration_config."""
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
-
 import logging
 from typing import Any
 

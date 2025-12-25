@@ -1,6 +1,5 @@
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
 import logging
 
 _logger = logging.getLogger(__name__)

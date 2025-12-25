@@ -5,16 +5,16 @@ Maps files to their correct semantic territories using real Gemini embeddings.
 This agent replaces mock logic with actual SubAtomicEngine integration.
 """
 
-import hashlib
 import json
-import redis
 from typing import List, Dict, Optional, Tuple
 from pathlib import Path
+
+import hashlib
+import redis
 
 from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
 from agentic_core.config.P1_core.sovereign_env import get_env
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
-
 
 class SemanticTerritoryMapperAgent:
     """

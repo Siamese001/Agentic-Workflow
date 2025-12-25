@@ -14,6 +14,4 @@ about the refactoring that was performed to split the original module.
 """
 import logging
 
-# Re-export all components for backward compatibility
-
 __all__ = ["*"]  # Re-export all imported names

@@ -6,9 +6,6 @@ Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 import re
 from typing import Any, Optional, Protocol, Dict, List
 
-# [SOVEREIGN SSOT] THE MASTER REGISTRY
-# Defines every legal territory, its subfolders (L1), and its required depth.
-# This structure is derived from the canonical ASCII tree and must be kept in sync.
 SOVEREIGN_REGISTRY = {
     # === THE HEAVY CORE (Depth 4: Root > Layer > Stage > File) ===
     "agentic_core": {

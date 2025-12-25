@@ -1,6 +1,5 @@
 """Implementation for context_curator."""
 from typing import Any, Optional, Protocol, Dict, List, Set
-
 import logging
 
 LOGGER = logging.getLogger(__name__)

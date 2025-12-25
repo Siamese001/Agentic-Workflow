@@ -8,11 +8,9 @@ Responsible for:
 - Integration with Pinecone for pattern storage
 """
 from typing import Any, Optional, Protocol, Dict, List
-
 import os
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
-
 
 class HealerAgent(CanonBaseAgent):
     """

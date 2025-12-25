@@ -20,10 +20,8 @@ from agentic_core.L2_execution.tool_registry.healer_agent import HealerAgent
 from agentic_core.L2_execution.tool_registry.hygiene_guardian import HygieneGuardian
 from agentic_core.L2_execution.tool_registry.infrastructure import Historian, GitAgent, BenchmarkingAgent
 from agentic_core.L2_execution.tool_registry.memory_architect import HealingSuccess, DistilledPattern, HealingDiffAnalyzer, MemoryArchitect
-# from agentic_core.L2_execution.tool_registry.pattern_retrieval_agent import PatternRetrievalAgent  # File not found
 from agentic_core.L2_execution.tool_registry.planning import StrategicPlanner, ReflectionAgent
 from agentic_core.L2_execution.tool_registry.predictive_cost_auditor import HealingMetrics, FileAudit, CostReport, PredictiveCostAuditor
-# from agentic_core.L2_execution.tool_registry.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer  # File not found
 from agentic_core.L2_execution.tool_registry.regression_oracle import MethodChange, GeneratedTest, MethodChangeDetector, RegressionTestGenerator, RegressionTestRunner, RegressionOracle
 from agentic_core.L2_execution.tool_registry.repair import Sherlock, TestPilot, ToolsmithAgent
 from agentic_core.L2_execution.tool_registry.schema_evolver import SchemaDefinition, SchemaChange, ImpactAnalysis, SchemaRegistry, SchemaEvolver
@@ -31,7 +29,6 @@ from agentic_core.L2_execution.tool_registry.security import SafetyInspector, Co
 from agentic_core.L2_execution.tool_registry.specialized import TheCartographer, TheOmniContext, TheStrategist, NamingEnforcer, DocEnforcer, TypeEnforcer
 from agentic_core.L2_execution.tool_registry.system_architect import SystemArchitect
 from agentic_core.L2_execution.tool_registry.test_generator_agent import TestGeneratorAgent
-# from agentic_core.L2_execution.P5_healing.structural_engineer import StructuralEngineer  # Path not found
 from agentic_core.L2_execution.tool_registry.ephemeral_vm import IsolationLevel, IsolationConfig, ExecutionResult, EphemeralVM
 from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
 from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMStatus, VMProvider, VMConfig, VMInstance
@@ -44,4 +41,5 @@ from agentic_core.L2_execution.tool_registry.redis_cache_tools import RedisCache
 from agentic_core.L2_execution.tool_registry.secure_tools import SecureToolsImpl
 from agentic_core.L2_execution.tool_registry.time_tools import TimeTools
 from agentic_core.L2_execution.tool_registry.web_search_tools import WebSearchTools
+
 __all__ = ['SubAtomicAgent', 'CanonBaseAgent', 'HealerAgent', 'ToolRegistry', 'OutreachEngineZSE', 'ResumeEngineZLG', 'EphemeralVM', 'FirecrackerManager']

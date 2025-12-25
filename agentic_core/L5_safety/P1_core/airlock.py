@@ -6,8 +6,6 @@ Prevents autonomous execution of dangerous or irreversible operations.
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
-
-
 import asyncio
 import json
 import logging

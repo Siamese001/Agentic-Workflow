@@ -5,8 +5,6 @@ Enforces the 3-level depth law for agentic architecture.
 import os
 import sys
 
-# --- THE IMPORT FIX ---
-# We need to add the deep config path so Python can see the blueprint
 BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/P1_core"
 if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)

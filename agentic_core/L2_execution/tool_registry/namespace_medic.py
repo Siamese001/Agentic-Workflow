@@ -7,11 +7,9 @@ Run this BEFORE canon_validator to fix import starvation issues.
 
 import ast
 import sys
-
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
-# Import patterns: (usage_pattern, import_statement, import_type)
 IMPORT_PATTERNS = [
     ("logging.", "import logging", "simple"),
     ("logger.", "import logging", "simple"),

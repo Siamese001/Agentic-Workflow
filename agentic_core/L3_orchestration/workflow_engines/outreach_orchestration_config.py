@@ -16,5 +16,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from agentic_core.outreach_orchestration_config_impl import *  # Star import removed
 import logging
 
-
 __all__ = ["*"]  # Re-export all imported names

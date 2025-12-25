@@ -11,7 +11,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 
 import logging
 
-# Re-export all components for backward compatibility
-# from agentic_core.populate_hardened_code_impl_impl_impl import *  # Star import removed
-
 __all__ = ["*"]  # Re-export all imported names

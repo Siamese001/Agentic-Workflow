@@ -2,9 +2,10 @@
 Minimal stub for MCP connection management until full implementation.
 """
 import logging
-import yaml
 from typing import Dict, Any, Optional
 from pathlib import Path
+
+import yaml
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
 # Standard library imports
-import hashlib
 import logging
 import re
 from datetime import datetime
@@ -7,10 +6,7 @@ from enum import Enum, auto
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
-# Define core types locally to eliminate external dependency.
-# These types were previously imported from agentic_core.shared.types.
-# This addresses the "Sovereign layer importing from Downstream" violation
-# by making the types self-contained or defining the expected interface.
+import hashlib
 
 @dataclass
 class SignedClaim:

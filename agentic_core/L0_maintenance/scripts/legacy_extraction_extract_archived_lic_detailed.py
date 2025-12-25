@@ -4,10 +4,9 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import List, Set, Tuple
+from typing import Any, List, Set, Tuple
 from typing import Any, Optional, Protocol, Dict, List
 
-# Current sovereign codebase roots
 SOVEREIGN_ROOTS = {
     "agentic_core",
     "apps_lic",

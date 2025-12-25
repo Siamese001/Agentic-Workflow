@@ -3,16 +3,13 @@
 Networking Utilities for Agentic Workflow
 Provides P8 Egress Filter for strict domain whitelisting
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 from dataclasses import dataclass, field
-
-
 import logging
 from dataclasses import dataclass
 from typing import Optional, Set
 from urllib.parse import urlparse
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 

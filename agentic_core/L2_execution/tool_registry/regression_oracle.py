@@ -1,15 +1,15 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field
 import re
 import time
-
 import ast
 import logging
-import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
+
+import subprocess
 
 try:
     from pinecone import Pinecone

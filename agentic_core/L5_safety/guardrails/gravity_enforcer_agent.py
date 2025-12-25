@@ -8,9 +8,9 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 import re
 from pathlib import Path
 from typing import Dict, Set
+
 from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
-
 
 class GravityEnforcerAgent(CachedSafetyShield):
     """

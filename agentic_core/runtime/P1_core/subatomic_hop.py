@@ -4,7 +4,7 @@ import time
 import uuid
 
 from pydantic import BaseModel
-# Note: These are sideways/downward imports, so they are Gravity-Compliant
+
 from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from agentic_core.config.blueprint_sovereign import ConfigurationService
 

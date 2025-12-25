@@ -1,11 +1,12 @@
-import hashlib
 import logging
-import secrets
 import time
 from typing import Any, Dict, List, Optional, Protocol
 
-# Refactored to relative import to address "DIRECT CIRCULAR RISK: File imports own root 'agentic_core'."
+import hashlib
+import secrets
+
 from agentic_core.L1_cognition.identity.spiffe_manager_types import (
+
     AgentIdentity,
     IdentityType,
     IdentityVerificationResult,

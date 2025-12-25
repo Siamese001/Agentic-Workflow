@@ -3,17 +3,12 @@
 import asyncio
 import logging
 from datetime import datetime
-
-# Assuming these are defined elsewhere
 from enum import Enum
 from typing import Any, Dict, List, Optional
-
-# Add the specified missing imports
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 
 import networkx as nx
-
 
 class AgentRole(Enum):
     CONTEXT_GATHERER = "context_gatherer"

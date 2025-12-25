@@ -11,7 +11,6 @@ Audits the codebase for compliance with the Three Laws:
 from collections import defaultdict
 from pathlib import Path
 
-# Folders to audit
 FOLDERS = [
     'apps_rg', 'apps_lic', 'apps_shared', 'agentic_core',
     'schemas', 'prompt_governance', 'observability', 'config', 'scripts'

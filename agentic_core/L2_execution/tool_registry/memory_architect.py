@@ -19,17 +19,16 @@ from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 import re
 import time
-
-
 import ast
-import difflib
-import hashlib
 import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
+
+import difflib
+import hashlib
 
 try:
     from pinecone import Pinecone

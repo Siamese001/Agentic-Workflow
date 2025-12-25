@@ -9,8 +9,9 @@ FEW-SHOT CODE STYLE FIXES (CodeStyleGuardian — Follow exactly):
 EXAMPLE 1: Import Ordering (isort)
 BAD:
 import os
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 GOOD (isort sections):
 import os

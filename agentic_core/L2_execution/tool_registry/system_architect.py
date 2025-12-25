@@ -6,16 +6,14 @@ Responsible for:
 - Key 41-47: Import dependencies, module structure
 - Key 48-50: Architectural patterns and design
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import re
-
 import ast
 import os
 from pathlib import Path
 from typing import List, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
-
 
 class SystemArchitect(CanonBaseAgent):
     """

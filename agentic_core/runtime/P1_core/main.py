@@ -1,8 +1,8 @@
 import asyncio
 import logging
+
 from agentic_core.runtime.P1_core.runtime_bootstrapper import RuntimeBootstrapper
 
-# Set to INFO to see the 'Sovereign Registry' logs
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 async def main():

@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from dataclasses import dataclass, field
+
 """Agent Capabilities Registry - Functional Role-based Agent System.
 
 This module defines the functional capabilities that replace the legacy K-node

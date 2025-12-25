@@ -6,11 +6,12 @@ HybridRetriever - Dense + Sparse Retrieval with Reranking
 import asyncio
 import json
 import os
-import tempfile
-import hashlib
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from pathlib import Path
+
+import tempfile
+import hashlib
 from rank_bm25 import BM25Okapi
 
 @dataclass

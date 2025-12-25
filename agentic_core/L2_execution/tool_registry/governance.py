@@ -3,18 +3,17 @@ apps_shared/agents/domain/governance/governor.py
 Depth: 5
 Role: Enforces Architectural, Import, and Security Laws (The Three Laws of Subatomic Governance).
 """
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import ast
 import asyncio
 import os
 import re
-import subprocess
 from typing import List, Tuple
+
+import subprocess
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 from agentic_core.L0_maintenance.scripts.canon_validator_config import MAX_DEPTH, MAX_LINES, MIN_DEPTH
-
 
 class ArchitectureGovernor(SubAtomicAgent):
     """

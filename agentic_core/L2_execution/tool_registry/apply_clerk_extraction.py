@@ -5,7 +5,6 @@
 import logging
 from typing import Any, Optional, Protocol, Dict, List, Tuple
 
-
 class ClerkExtractor:
     """HOP-1: Extract structured data from master resume."""
 

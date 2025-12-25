@@ -5,7 +5,6 @@ Role: Static storage for LLM few-shot prompts to keep Context clean.
 """
 import re
 
-
 FEW_SHOT_GLOBAL_REFACTOR = """
 FEW-SHOT REFACTORING PATTERNS:
 

@@ -3,8 +3,7 @@ Core Executor - Atomic Module
 Extracted from action_node.py via Atomic Fission Protocol
 Handles plan execution and step orchestration
 """
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Union

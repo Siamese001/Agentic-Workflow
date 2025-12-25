@@ -6,15 +6,13 @@ Responsible for:
 - Key 21-25: Complexity metrics, cyclomatic complexity
 - Key 26-30: Code organization, modularity, cohesion
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import re
-
 import ast
 import os
 from typing import List, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
-
 
 class StructuralEngineer(CanonBaseAgent):
     """

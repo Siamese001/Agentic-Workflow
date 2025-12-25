@@ -1,6 +1,5 @@
 from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import re
-
 import asyncio
 import json
 import logging
@@ -9,6 +8,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from agentic_core.L1_cognition.P1_interfaces import (
+
     ActionRequest,
     ExecutionContext,
     ExecutionResult,

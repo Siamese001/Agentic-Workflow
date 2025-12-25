@@ -8,6 +8,7 @@ voice to match, preventing the "Generic AI" voice.
 import logging
 import re
 from enum import Enum
+from typing import Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 

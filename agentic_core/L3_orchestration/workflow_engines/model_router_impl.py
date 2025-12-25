@@ -1,6 +1,5 @@
 """Implementation for model_router."""
 from typing import Any, Optional, Protocol, Dict, List
-
 import logging
 
 LOGGER = logging.getLogger(__name__)

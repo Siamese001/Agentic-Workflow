@@ -10,7 +10,7 @@ This script:
 
 import re
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from typing import List, Tuple
 
 def calculate_relative_import(file_path: Path, import_path: str, project_root: Path) -> str:

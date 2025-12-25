@@ -2,8 +2,9 @@
 """
 Simple wrapper to run the validator and capture output
 """
-import subprocess
 import sys
+
+import subprocess
 
 result = subprocess.run(
     [sys.executable, "canon_validator_agentic_v2.py", "--target", "agentic_core"],

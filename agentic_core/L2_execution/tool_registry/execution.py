@@ -3,14 +3,12 @@ Secure Subprocess Execution - Timeout-Protected Command Execution
 Prevents livelocks and provides safe subprocess management.
 """
 from typing import Any, Optional, Protocol, Dict, List, Tuple, TypedDict
-
-import subprocess
 import sys
 from pathlib import Path
 import os
 
+import subprocess
 
-# Inlined ExecuteCommandArgs definition
 class ExecuteCommandArgs(TypedDict):
     command: str
     args: List[str]

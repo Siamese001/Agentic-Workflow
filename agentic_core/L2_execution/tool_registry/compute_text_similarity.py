@@ -9,8 +9,9 @@ Provides core similarity calculation with sklearn alternative path.
 """
 
 import logging
-import math
 from typing import Any, Optional, Protocol, Dict, List, Tuple
+
+import math
 
 try:
     from sklearn.metrics.pairwise import cosine_similarity

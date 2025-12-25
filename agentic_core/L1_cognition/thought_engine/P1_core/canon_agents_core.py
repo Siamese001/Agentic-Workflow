@@ -2,9 +2,7 @@
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import ast
 import os
 import re
@@ -14,7 +12,6 @@ from typing import List, Optional, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
 
-# Inlined EXCLUDED_DIRS and is_excluded to remove dependency on apps_shared.canon_utils
 EXCLUDED_DIRS = [
     '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
     'dist', 'build', '.vscode', '.idea', '.DS_Store', '.mypy_cache',

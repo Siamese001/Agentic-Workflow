@@ -5,7 +5,6 @@ Defines exclusion zones and constants for validation.
 
 import os
 
-# Exclusion zones
 EXCLUDED_DIRS = {
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
     'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',

@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from collections import Counter
 from datetime import datetime, timedelta
+from typing import Dict
+
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 class SovereignForensicsAgent:

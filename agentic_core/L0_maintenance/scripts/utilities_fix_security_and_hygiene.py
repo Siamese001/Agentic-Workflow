@@ -11,7 +11,6 @@ import re
 import shutil
 from datetime import datetime
 
-# Excluded directories to avoid processing
 EXCLUDED_DIRS = {
     '.git', '.venv', 'venv', 'env', '__pycache__',
     'node_modules', 'build', 'dist', 'eggs',

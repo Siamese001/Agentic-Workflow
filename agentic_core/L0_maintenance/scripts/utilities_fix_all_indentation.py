@@ -3,7 +3,6 @@
 
 import re
 
-
 def fix_all_indentation():
     # Read the file with UTF-8 encoding
     with open('canon_validator_engine.py', 'r', encoding='utf-8') as f:

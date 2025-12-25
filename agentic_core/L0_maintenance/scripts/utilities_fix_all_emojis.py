@@ -6,7 +6,6 @@ Prevents Windows encoding issues.
 
 from pathlib import Path
 
-# Emoji replacement map
 EMOJI_MAP = {
     '✅': '[OK]',
     '⚠️': '[!]',

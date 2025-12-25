@@ -1,7 +1,5 @@
 """Enum types for lic_routing_rules."""
 from enum import Enum, auto
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

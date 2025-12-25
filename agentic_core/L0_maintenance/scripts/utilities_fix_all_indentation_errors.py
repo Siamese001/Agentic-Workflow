@@ -8,7 +8,6 @@ import os
 import re
 import logging
 
-
 def fix_indentation_errors(file_path):
     """Fix indentation errors in a Python file."""
     try:

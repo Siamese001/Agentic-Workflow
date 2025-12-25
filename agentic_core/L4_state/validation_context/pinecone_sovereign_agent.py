@@ -9,15 +9,16 @@ Zero drift, eternal readiness.
 
 import os
 import json
-import hashlib
-import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Any
+
+import hashlib
+import numpy as np
 from pinecone import Pinecone
+
 from agentic_core.config.P1_core.sovereign_env import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
-
 
 class PineconeSovereignAgent:
     """

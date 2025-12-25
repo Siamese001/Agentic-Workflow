@@ -5,7 +5,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow")
 CORE = ROOT / "agentic_core"
 # Folders we strictly DO NOT touch/move/modify logic-wise

@@ -5,7 +5,6 @@ import os
 
 from connection_manager import ConnectionFactory
 
-# Clear Redis
 try:
     redis_conn = ConnectionFactory.get_redis_connection()
     redis_conn.flushall()

@@ -10,6 +10,7 @@ ZERO-LOSS GUARANTEE: All functionality preserved via re-exports
 from typing import Any, Optional, Protocol, Dict, List
 
 from agentic_core.L1_cognition.thought_engine.action_registry_modules import (
+
     FigmaTools,
     FileIO,
     GitTools,

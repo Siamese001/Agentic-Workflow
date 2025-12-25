@@ -4,7 +4,6 @@ Defines the interface L1 needs without depending on L4 implementation.
 """
 from typing import Any, Optional, Protocol, Dict, List
 
-
 class ValidationProtocol(Protocol):
     """Protocol defining the validation context interface needed by L1.
     

@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """Dataclass models for models."""
 
 import logging

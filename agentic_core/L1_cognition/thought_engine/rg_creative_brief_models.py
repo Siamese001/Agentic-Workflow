@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+
 """Dataclass models for rg_creative_brief."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field
 import logging
 

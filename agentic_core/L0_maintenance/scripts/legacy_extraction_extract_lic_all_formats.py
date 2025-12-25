@@ -3,12 +3,12 @@
     JSON,
     and Markdown) from legacy_lic archive to staging directory."""
 
-import hashlib
 import shutil
 from pathlib import Path
 import logging
 from typing import Any, Optional, Protocol, Dict, List
 
+import hashlib
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""

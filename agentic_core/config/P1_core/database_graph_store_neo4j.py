@@ -1,5 +1,6 @@
 try:
     from neo4j import GraphDatabase
+
 except ImportError:
     # Neo4j driver not installed - provide fallback
     GraphDatabase = None

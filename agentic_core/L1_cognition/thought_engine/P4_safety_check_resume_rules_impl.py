@@ -1,14 +1,10 @@
 """Implementation for check_resume_rules."""
 
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
 import sys # Added missing import
 from typing import Any, Dict, List, Optional, Protocol, Union
 
-# from agentic_core.check_resume_rules_types import *  # Star import removed
-
-# Placeholder for missing types to avoid NameError for syntax check
 class ProcessingResult:
     def __init__(self, success: bool, data=None, error_message: Optional[str]=None, execution_context=None, additional_info: Optional[Dict[str, Any]]=None):
         pass

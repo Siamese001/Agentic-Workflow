@@ -8,10 +8,7 @@ used by tests or higher-level evaluation code.
 """
 import logging
 from typing import Any, Optional, Protocol, Dict, List
-
-
 from typing import Dict, List, object
-
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:
     """Return fraction of events marked as errors.

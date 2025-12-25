@@ -1,8 +1,8 @@
-from typing import Any, Optional, Protocol, Dict, List
-
-import hashlib
+from typing import Any, Dict, List, Optional, Protocol, Set
 import logging
 from typing import Dict, Set
+
+import hashlib
 
 LOGGER = logging.getLogger(__name__)
 class GenealogyRegistry:

@@ -14,7 +14,6 @@ Examples:
 from pathlib import Path
 from typing import List, Optional, Dict
 
-
 class TerritoryHealerAgent:
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.

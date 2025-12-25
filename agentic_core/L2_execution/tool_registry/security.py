@@ -3,8 +3,7 @@ apps_shared/security/domain/safety_inspector.py
 Depth: 5
 Role: Enforces security protocols, concurrency safety, and intelligent remediation.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import asyncio
 import re
 from typing import Dict, List, Tuple
@@ -12,7 +11,6 @@ from typing import Dict, List, Tuple
 import httpx
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
-
 
 class SafetyInspector(SubAtomicAgent):
     """

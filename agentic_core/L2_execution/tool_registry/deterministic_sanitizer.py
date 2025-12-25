@@ -8,14 +8,13 @@ import ast
 import logging
 import os
 import re
-import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from typing import Any, Optional, Protocol, Dict, List
 
-# First-party imports
-# Assuming agentic_core/shared/architecture_constants.py exists and contains ALLOWED_ROOT_FILES
+import subprocess
+import tempfile
+
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 
 LOGGER = logging.getLogger(__name__)

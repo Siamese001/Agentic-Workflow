@@ -8,7 +8,6 @@ import logging
 import re
 from pathlib import Path
 
-# Agent files to refactor (excluding base.py and canon_base_agent.py which are already done)
 AGENT_FILES = [
     "memory_architect.py",
     "context_curator.py", 

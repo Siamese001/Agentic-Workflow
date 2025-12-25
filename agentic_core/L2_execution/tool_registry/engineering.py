@@ -1,13 +1,13 @@
 import ast
-import hashlib
 import json
 import re
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+
+import hashlib
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 from agentic_core.L0_maintenance.scripts.canon_validator_config import MAX_LINES
-
 
 class StructuralEngineer(SubAtomicAgent):
     """

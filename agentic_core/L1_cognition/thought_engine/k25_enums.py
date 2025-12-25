@@ -1,7 +1,5 @@
 """Enum types for k25_research_models_types."""
 from enum import Enum, auto
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

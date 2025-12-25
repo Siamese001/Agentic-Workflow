@@ -5,8 +5,8 @@ Cluster: GPG signing and Git commit operations (Protocol 9)
 Lines: 337-380 from core_utils.py
 """
 from typing import Any, Optional, Protocol, Dict, List
-
 import logging
+
 import subprocess
 
 logger = logging.getLogger("CanonValidator")

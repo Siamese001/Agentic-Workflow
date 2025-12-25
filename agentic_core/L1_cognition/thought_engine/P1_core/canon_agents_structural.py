@@ -1,16 +1,8 @@
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 import ast
 import os
 from typing import Any, List, Set, Tuple
 
-# Assuming SubAtomicAgent and other necessary base classes/types are defined elsewhere
-# and are available in the context where this file is used.
-# For the purpose of this fix, we assume these imports are handled by the environment.
-
-# Placeholder for SubAtomicAgent if not defined in this snippet,
-# to allow for type hinting without import errors in a standalone context.
-# In the actual codebase, this would be imported from its definition.
 class SubAtomicAgent:
     def __init__(self, ctx: Any, name: str):
         self.ctx = ctx

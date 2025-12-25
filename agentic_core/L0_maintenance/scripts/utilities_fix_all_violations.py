@@ -7,7 +7,6 @@ from enum import Enum, auto
 
 from services.configuration import ConfigurationService
 
-
 def fix_micro_fragments():
     """Docstring."""
 

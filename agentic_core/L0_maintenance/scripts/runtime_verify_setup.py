@@ -7,9 +7,8 @@ Checks all requirements before running the Magnificent Seven validator
 import os
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, List, Tuple
 from typing import Any, Optional, Protocol, Dict, List
-
 
 def load_env_file():
     """Load environment variables from agentic_core.env file if it exists"""

@@ -11,8 +11,6 @@ from agentic_core.deadlock_detector import DeadlockDetector
 from agentic_core.dependency_sentinel import DependencySentinel
 from agentic_core.doc_enforcer import DocEnforcer
 from agentic_core.git_agent import GitAgent
-
-# Batch 2: Core agents
 from agentic_core.historian import Historian
 from agentic_core.hygiene_guardian import HygieneGuardian
 from agentic_core.memory_leak_detector import MemoryLeakDetector
@@ -20,21 +18,13 @@ from agentic_core.naming_enforcer import NamingEnforcer
 from agentic_core.pattern_enforcer import PatternEnforcer
 from agentic_core.performance_enforcer import PerformanceEnforcer
 from agentic_core.reflection_agent import ReflectionAgent
-
-# Batch 3: Safety and testing agents
 from agentic_core.safety_inspector import SafetyInspector
-
-# Batch 4: Security and performance agents
 from agentic_core.security_enforcer import SecurityEnforcer
 from agentic_core.sherlock import Sherlock
-
-# Batch 5: Strategic and operational agents
 from agentic_core.strategic_planner import StrategicPlanner
 from agentic_core.structural_engineer import StructuralEngineer
 from agentic_core.test_pilot import TestPilot
 from agentic_core.the_cartographer import TheCartographer, TheOmniContext
-
-# Batch 6: Refinement and optimization agents
 from agentic_core.the_strategist import TheStrategist
 from agentic_core.toolsmith_agent import ToolsmithAgent
 from agentic_core.type_enforcer import TypeEnforcer

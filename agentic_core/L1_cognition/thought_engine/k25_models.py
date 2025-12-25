@@ -3,6 +3,7 @@
 import logging
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
+
 from agentic_core.k25_research_models_types_enums import ResearchHopPhase, ValidationRejectionReason
 
 LOGGER = logging.getLogger(__name__)

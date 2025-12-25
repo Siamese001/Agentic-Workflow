@@ -1,25 +1,18 @@
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
 import logging
 import time
 import os
 
-# External LLM client imports
 import openai
 import anthropic
-# FUTURE-PROOFING: Switching to modern genai client
 from google import genai
 from mistralai.async_client import MistralAsyncClient
 from groq import Groq
 from together import Together
 from fireworks.client import Fireworks
 
-# Protocols for dependency injection to eliminate direct import of SignalContext
-# This addresses the "Sovereign layer importing from Downstream" and
-# "DIRECT CIRCULAR RISK: File imports own root 'agentic_core'" violations
-# by abstracting the SignalContext dependency.
 class HardStateProtocol(Protocol):
     """Protocol for the hard_state attribute of SignalContext."""
     execution_id: str

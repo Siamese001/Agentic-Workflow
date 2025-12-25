@@ -1,5 +1,5 @@
 """Types and models for peer_intelligence_auditor."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Set
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import logging

@@ -1,4 +1,3 @@
-import hashlib
 import logging
 import os
 import pickle
@@ -7,6 +6,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
 from typing import Any, Optional, Protocol, Dict, List
+
+import hashlib
 
 LOGGER = logging.getLogger(__name__)
 

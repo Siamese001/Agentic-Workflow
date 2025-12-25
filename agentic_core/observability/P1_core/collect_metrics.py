@@ -6,8 +6,6 @@ Generated: 2025-12-07T12:07:59.846192
 """
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
-
-
 import logging
 from typing import Any, Dict, List, Optional
 

@@ -3,11 +3,8 @@
 Defines OrchestratorConfig and related configuration dataclasses.
 """
 from typing import Any, Optional, Protocol, Dict, List
-
-
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
-
 
 @dataclass
 class OrchestratorConfig:

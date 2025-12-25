@@ -24,7 +24,6 @@ import re
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
-
 @dataclass
 class BioWriterConfig:
     """TODO: Add docstring."""

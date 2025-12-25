@@ -10,5 +10,4 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 import logging
 
-# Re-export all components for backward compatibility
 __all__ = ["*"]  # Re-export all imported names

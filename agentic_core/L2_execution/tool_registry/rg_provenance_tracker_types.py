@@ -4,8 +4,6 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 import datetime
 import time
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

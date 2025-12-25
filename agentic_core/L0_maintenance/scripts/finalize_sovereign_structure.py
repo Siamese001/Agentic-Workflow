@@ -5,7 +5,6 @@ Creates all missing directories to enforce the 3-level depth law.
 import os
 import sys
 
-# --- THE IMPORT FIX ---
 BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/P1_core"
 if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)

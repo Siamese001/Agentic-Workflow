@@ -10,13 +10,10 @@ fast checks already detect issues.
 """
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
-
-
 import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-
 
 logger = logging.getLogger(__name__)
 

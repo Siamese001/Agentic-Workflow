@@ -1,12 +1,10 @@
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from typing import Any, Optional, Protocol, Dict, List
-
 import ast
 import os
 import re
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
-
 
 class CodeJanitor(CanonBaseAgent):
     """

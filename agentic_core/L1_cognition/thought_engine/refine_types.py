@@ -1,6 +1,7 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol, Union
 from dataclasses import dataclass, field
 from enum import Enum, auto
+
 """Types and models for message_refinement_adjust_scores."""
 import logging
 

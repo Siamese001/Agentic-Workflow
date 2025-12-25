@@ -4,7 +4,6 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow")
 CORE = ROOT / "agentic_core"
 EXCLUDED_ZONES = ["data", "archives", "tests", ".git", ".venv", "__pycache__"]

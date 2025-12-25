@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from dataclasses import dataclass, field
+
 """
 assess_scripts_risk.py - Assessment Module
 

@@ -10,7 +10,6 @@ import os
 import shutil
 from datetime import datetime
 
-# Excluded directories to avoid processing
 EXCLUDED_DIRS = {
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
     'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',

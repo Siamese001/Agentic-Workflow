@@ -1,7 +1,6 @@
 """Types and models for capability_analyzer."""
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
-
 import logging
 from dataclasses import dataclass, field
 from enum import Enum

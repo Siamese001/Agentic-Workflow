@@ -2,7 +2,6 @@ import os
 import ast
 from pathlib import Path
 
-# --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow")
 CORE = ROOT / "agentic_core"
 

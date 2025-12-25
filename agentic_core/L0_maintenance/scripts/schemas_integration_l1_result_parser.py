@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 """L1 Result Parser - Pure result parsing logic only."""
 
 from dataclasses import dataclass, field

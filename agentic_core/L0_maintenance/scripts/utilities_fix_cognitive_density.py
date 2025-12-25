@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 
-
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
 

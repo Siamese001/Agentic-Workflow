@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 """Executive Title Composer - Industry-First Headline Generation (K.4).
 
 This agent generates professional headlines with strict Industry-First positioning,

@@ -2,7 +2,6 @@
 
 from typing import Any, Optional, Protocol, Dict, List
 
-
 class CulturalDecoderAgent:
     """Placeholder implementation."""
 

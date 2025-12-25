@@ -6,7 +6,9 @@ Exempts root protected files and __init__.py glue files.
 """
 from pathlib import Path
 from typing import List, Set
+
 from agentic_core.config.P1_core.structure_blueprint import (
+
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES
 )

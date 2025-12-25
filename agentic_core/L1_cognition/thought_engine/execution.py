@@ -5,12 +5,9 @@ orchestrating agent execution cycles.
 """
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
-
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
-
 
 class ExecutionPhase(Enum):
     """Phases of the Think-Act-Observe execution cycle."""

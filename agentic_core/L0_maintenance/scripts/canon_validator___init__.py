@@ -11,6 +11,7 @@ This package provides the complete Canon Validator infrastructure:
 
 # All agents
 from agentic_core.agents import (
+
     ArchitectureGovernor,
     BenchmarkingAgent,
     CodeStyleGuardian,

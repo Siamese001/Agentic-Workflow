@@ -1,9 +1,7 @@
 """Types and models for rg_validation_gates."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Protocol
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-
 import logging
 
 _logger = logging.getLogger(__name__)

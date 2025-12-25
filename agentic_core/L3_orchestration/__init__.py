@@ -12,10 +12,5 @@ from agentic_core.L3_orchestration.workflow_engines.fission_manager import Fissi
 from agentic_core.L3_orchestration.workflow_engines.git_safety_handler import GitSafetyHandler
 from agentic_core.L3_orchestration.workflow_engines.mcp_router import MCPRouter
 from agentic_core.L3_orchestration.workflow_engines.safety_guardrail import SafetyResult, SafetyGuardrail
-# TEMPORARY: Disabled due to cascading type import errors
-# from agentic_core.security.agent_permissions_impl import AgentPermissionManager
-# from agentic_core.security.agent_permissions_types import PermissionScope, PermissionAction, Permission, PermissionCheck
-# from agentic_core.training.agent_gym_impl import AgentGym
-# from agentic_core.training.agent_gym_types import ScenarioType, PerformanceLevel, TrainingScenario, BenchmarkResult, TrainingSession
 
 __all__ = ['DAGNode', 'DAGExecutionResult', 'DAGExecutor', 'apply_fission_blueprint', 'AutonomicMonitor', 'HealthStatus', 'AlertSeverity', 'HealthMetrics', 'HealthAlert', 'BenchmarkResult', 'BenchmarkSuite', 'BenchmarkingAgent', 'BenchmarkContext', 'TaskMonitor', 'DeadlockDetector', 'MemorySnapshot', 'MemoryLeakDetector', 'ThermalProfile', 'FissionResult', 'FissionManager', 'GitSafetyHandler', 'MCPRouter', 'SafetyResult', 'SafetyGuardrail']

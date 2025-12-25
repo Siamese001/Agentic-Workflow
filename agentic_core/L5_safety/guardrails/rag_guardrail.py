@@ -4,8 +4,9 @@ RAGGuardrail - L5 RAG Content Filtering and Reranking
 """
 
 import asyncio
-import torch
 from typing import List, Dict, Any, Optional
+
+import torch
 
 class RAGGuardrail:
     def __init__(self):

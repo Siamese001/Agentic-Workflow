@@ -1,19 +1,9 @@
 """Implementation for judge_evaluator."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Protocol
 from typing import Any, Dict, List, Optional, Callable, Awaitable, Protocol
 
-# Assuming these types are defined elsewhere or need to be imported.
-# Adding them here to make the code runnable if they are standard types or need to be mocked.
-# Based on context, JudgmentCriterion, JudgmentScore, JudgeVerdict, JudgeEvaluationResult are custom types.
-# For the purpose of fixing syntax, I'll assume they are available.
-# If they are not, the original code would have other errors, but the task is only syntax.
-# For now, I'll add a placeholder import for them to avoid further errors if this were run.
-# from agentic_core.judge_evaluator_types import JudgmentCriterion, JudgmentScore, JudgeVerdict, JudgeEvaluationResult
-
-# Placeholder for missing types to allow syntax check.
-# In a real scenario, these would be imported from a types file.
 class JudgmentCriterion:
     COMPLETENESS = "completeness"
     COHERENCE = "coherence"

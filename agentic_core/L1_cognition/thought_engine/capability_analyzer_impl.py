@@ -1,10 +1,10 @@
 from typing import Any, Optional, Protocol, Dict, List
 import re
-
 import logging
 import time
 
 from agentic_core.L1_cognition.planning.capability_analyzer_types import (
+
     AnalysisReport,
     CapabilityGap,
     CapabilityGapType,
