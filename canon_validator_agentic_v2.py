@@ -521,6 +521,9 @@ from agentic_core.runtime.shared.void_compliance import (
 
 print(f"   [OK] Void Compliance Engine: Online.")
 
+# [SOVEREIGN FIX] Pre-declare for global and hybrid router visibility
+PineconeSovereignAgent = None
+
 # [L4 SOVEREIGNTY] Pinecone Hybrid Routing Integration
 # DEFERRED: Pinecone agent will be initialized inside async run_mission() to avoid SSL issues
 pinecone_agent = None
