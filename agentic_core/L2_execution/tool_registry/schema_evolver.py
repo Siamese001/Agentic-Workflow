@@ -10,13 +10,12 @@ Strategy: Automated data contract management with transformation mappings
 Prevents: Type Sprawl, Schema Drift, Breaking Changes between HOP stages
 Enables: Independent stage deployment with consistent data contracts
 """
-from typing import Any, Dict, List, Optional, Protocol, Set
-import re
 import ast
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 

@@ -8,17 +8,15 @@ Contains all mission execution modes:
 
 This module consolidates all mission execution logic from the canon validator.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import asyncio
 import logging
 import os
+import re
+import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import List
-
-import subprocess
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +60,14 @@ def _get_imports():
     """
     # Import ALL self-healing agents from canon_validator (ZERO CAPABILITY LOSS)
     # WatchmanHandler is in agentic_core (not in scripts/canon_validator)
-    from agentic_core.L2_execution.tool_registry.infrastructure import WatchmanHandler
     from agentic_core.canon_scheduler import CanonSwarmScheduler
     from agentic_core.intervention_server import (
         FASTAPI_AVAILABLE,
         approval_event,
         start_intervention_server,
     )
+    from agentic_core.L2_execution.tool_registry.infrastructure import WatchmanHandler
+
     # GRAVITY FIX: Removed all scripts.canon_validator imports
     # These agents need to be moved to agentic_core or refactored
     ArchitectureGovernor = None  # Keys 40, 41, 50 + syntax fix

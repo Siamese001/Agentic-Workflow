@@ -8,8 +8,10 @@ import asyncio
 import time
 from pathlib import Path
 from typing import Optional
-from watchdog.observers import Observer
+
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 
 class TerritoryChangeHandler(FileSystemEventHandler):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""

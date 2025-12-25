@@ -1,12 +1,10 @@
 """Types and models for check_resume_rules."""
-from typing import Any, Dict, List, Optional, Protocol, Union
-from enum import Enum, auto
 import logging
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, Union
 import time
 import traceback
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):

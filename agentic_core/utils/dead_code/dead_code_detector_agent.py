@@ -8,9 +8,10 @@ VERSION 2.0 - Hardened with parent-node tracking and class-aware method analysis
 import ast
 import os
 import sys
-from pathlib import Path
-from typing import List, Dict, Set, Tuple, Optional
 from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
+
 
 def add_parents(node, parent=None):
     """Add parent reference to all AST nodes for upward traversal."""

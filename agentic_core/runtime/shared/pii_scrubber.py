@@ -3,11 +3,11 @@
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Migrated from archives/engines/legacy_engines/safety_enhancements.py
 """
+import logging
+import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Tuple
-import logging
-import re
 
 LOGGER = logging.getLogger(__name__)
 

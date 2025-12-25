@@ -5,10 +5,10 @@ Defines the policy interface and implements the safety engine.
 """
 import logging
 import uuid
-from datetime import UTC, datetime
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, TypeVar
+from datetime import UTC, datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional, Protocol, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 

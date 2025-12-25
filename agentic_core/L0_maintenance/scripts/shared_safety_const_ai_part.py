@@ -1,11 +1,9 @@
 from dataclasses import dataclass
 
 """Split module 2 for constitutional_ai_types."""
-from dataclasses import dataclass, field
-from dataclasses import field
-from typing import Any, Optional, Protocol, Dict, List
-
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

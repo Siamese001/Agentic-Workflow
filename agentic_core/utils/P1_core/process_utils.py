@@ -8,6 +8,7 @@ import logging
 import os
 import time
 
+
 def register_process(pid_file_path: str = "run/agent.pid"):
     """Writes the current process ID to the PID file."""
     try:

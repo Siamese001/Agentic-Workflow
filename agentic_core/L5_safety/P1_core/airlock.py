@@ -4,15 +4,14 @@ Airlock Protocol - Zero Trust Human Authorization
 Provides human-in-the-loop verification for high-risk actions.
 Prevents autonomous execution of dangerous or irreversible operations.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import time
 import asyncio
 import json
 import logging
+import time
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

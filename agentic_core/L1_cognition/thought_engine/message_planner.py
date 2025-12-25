@@ -9,8 +9,8 @@ planners and feeds into the hop-based K3 draft execution phase.
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field # Added missing imports
+from dataclasses import dataclass, field  # Added missing imports
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

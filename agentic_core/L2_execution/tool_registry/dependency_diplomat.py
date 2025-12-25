@@ -15,7 +15,6 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from typing import Any, Optional, Protocol, Dict, List
 
 try:
     import redis

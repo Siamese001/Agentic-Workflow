@@ -1,9 +1,8 @@
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import re
-from typing import Any
+from typing import Any, Dict, List, Optional, Protocol
 
 """
 

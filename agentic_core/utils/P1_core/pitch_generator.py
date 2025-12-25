@@ -3,14 +3,12 @@
 Pitch Generator for Outreach Engine
 Generates personalized outreach pitches
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-import time
 import json
 import logging
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

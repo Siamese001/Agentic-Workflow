@@ -12,6 +12,7 @@ from typing import Dict
 
 import redis
 
+
 class NeuralAutoImmuneAgent:
     """
     Sovereign auto-immune response — isolates territories after repeated breaches.

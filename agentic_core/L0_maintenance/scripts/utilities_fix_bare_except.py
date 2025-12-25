@@ -1,10 +1,10 @@
 """Fix bare except clauses in Python files."""
+import glob
 import logging
 import os
 import re
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import glob
 from services.configuration import ConfigurationService
 
 logging.basicConfig(level=logging.INFO)

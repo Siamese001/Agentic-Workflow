@@ -6,11 +6,9 @@ format_scripts_context.py - Formatting Module
 Domain: utilities
 Generated: 2025-12-07T12:07:59.884149
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-
 import logging
-from typing import Dict, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

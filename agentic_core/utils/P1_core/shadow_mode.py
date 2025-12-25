@@ -3,11 +3,9 @@
 P10 Shadow Mode Engine for Outreach Engine
 Provides pre-flight refinement for outreach pitches
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
 import logging
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.pitch_generator import PitchGenerator, PitchResult
 

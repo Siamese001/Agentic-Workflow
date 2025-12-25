@@ -5,7 +5,7 @@ Heals territorial violations and ensures proper folder hierarchy.
 """
 import logging
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

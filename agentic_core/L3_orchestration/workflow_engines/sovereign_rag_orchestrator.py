@@ -7,7 +7,8 @@ Adapts parameters based on performance with persistent configuration
 import asyncio
 import json
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 
 class SovereignRAGOrchestrator:
     def __init__(self, retriever=None, query_planner=None, guardrail=None, engine=None):
@@ -66,7 +67,9 @@ Output JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}
         def _parse_critique(raw):
             try:
                 # Stripping potential markdown artifacts
-                from agentic_core.L1_cognition.thought_engine.query_planner import QueryPlanner
+                from agentic_core.L1_cognition.thought_engine.query_planner import (
+                    QueryPlanner,
+                )
                 planner_helper = QueryPlanner()
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)

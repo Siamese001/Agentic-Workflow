@@ -1,8 +1,7 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

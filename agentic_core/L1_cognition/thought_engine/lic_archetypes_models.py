@@ -1,7 +1,7 @@
 """Dataclass models for lic_archetypes."""
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.lic_archetypes_enums import *  # Star import removed

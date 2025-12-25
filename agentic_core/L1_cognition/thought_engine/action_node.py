@@ -5,11 +5,10 @@ Original 351-line monolith split into 2 atomic sub-modules
 
 ZERO-LOSS GUARANTEE: All functionality preserved via composition
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
 import logging
+import re
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
 

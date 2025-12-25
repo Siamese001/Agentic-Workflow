@@ -6,7 +6,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List, Set
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 try:
     from google import genai

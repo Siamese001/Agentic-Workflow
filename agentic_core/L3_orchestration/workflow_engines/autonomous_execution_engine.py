@@ -5,20 +5,24 @@ The eternal heart that continuously validates and heals the Canon territory.
 
 import asyncio
 import json
+import logging
 import os
 import tempfile
-import logging
-from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from agentic_core.L2_execution.tool_registry.proactive_resource_manager import create_proactive_resource_manager
+from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+    create_proactive_resource_manager,
+)
 
 # L4 Checkpoint integration
-from agentic_core.L4_state.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+from agentic_core.L4_state.autonomous_checkpoint_manager import (
+    create_autonomous_checkpoint_manager,
+)
 
 
 class AutonomousExecutionEngine:

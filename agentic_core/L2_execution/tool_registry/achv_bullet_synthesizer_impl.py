@@ -1,7 +1,7 @@
 """Implementation for achv_bullet_synthesizer."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.achv_bullet_synthesizer_types import *  # Star import removed

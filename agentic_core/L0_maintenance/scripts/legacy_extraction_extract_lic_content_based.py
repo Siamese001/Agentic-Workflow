@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Content-based extraction from legacy_lic archive."""
 
+import hashlib
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, Dict
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""

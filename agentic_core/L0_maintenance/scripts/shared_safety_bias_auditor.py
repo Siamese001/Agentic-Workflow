@@ -1,5 +1,5 @@
-from enum import Enum, auto
 from dataclasses import dataclass, field
+from enum import Enum, auto
 
 """Lightweight Bias Detection for Content Quality.
 
@@ -9,7 +9,7 @@ Migrated from archives/engines/legacy_engines/safety_enhancements.py
 
 import logging
 import re
-from typing import Any, Optional, Protocol, Dict, List, Set
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 LOGGER = logging.getLogger(__name__)
 

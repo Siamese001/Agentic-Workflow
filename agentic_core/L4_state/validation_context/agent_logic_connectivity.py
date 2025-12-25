@@ -1,11 +1,10 @@
-from typing import Any, Optional, Protocol, Dict, List
+import hashlib
 import json
 import logging
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
 from connection_manager import ConnectionManager
 from schemas_connectivity import CanonEntry, CanonMetadata
 

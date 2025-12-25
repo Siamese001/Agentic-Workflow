@@ -1,7 +1,7 @@
 import logging
 import time
-from typing import Dict, Any
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 class GenealogyRegistry:
     """

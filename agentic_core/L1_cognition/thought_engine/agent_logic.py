@@ -4,13 +4,13 @@ import logging
 import re
 import time
 import uuid
-from datetime import datetime, timezone
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
+
 
 @dataclass
 class CanonEntry:

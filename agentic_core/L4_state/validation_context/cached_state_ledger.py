@@ -6,9 +6,10 @@ CachedStateLedger - Eternal L4 State with Redis Sovereign Cache
 import json
 import os
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 import redis
+
 
 class CachedStateLedger:
     """

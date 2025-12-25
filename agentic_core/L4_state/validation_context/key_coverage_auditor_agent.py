@@ -4,7 +4,6 @@ KeyCoverageAuditorAgent - L4 State Framework Agent
 Audits coverage of all 50 canon keys.
 """
 import logging
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)

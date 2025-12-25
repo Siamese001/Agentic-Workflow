@@ -1,8 +1,8 @@
 """Implementation for judge_evaluator."""
 
 import logging
-from typing import Any, Callable, Dict, List, Optional, Protocol
-from typing import Any, Dict, List, Optional, Callable, Awaitable, Protocol
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
+
 
 class JudgmentCriterion:
     COMPLETENESS = "completeness"

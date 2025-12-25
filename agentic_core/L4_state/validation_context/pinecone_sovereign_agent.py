@@ -7,18 +7,21 @@ It handles index creation, health checks, embedding generation, and territory bo
 Zero drift, eternal readiness.
 """
 
-import os
-import json
 import hashlib
+import json
+import os
 from pathlib import Path
-from typing import List, Dict, Optional, Any
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 
 from agentic_core.config.P1_core.sovereign_env import get_env
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+    RedisSovereignAgent,
+)
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+
 
 class PineconeSovereignAgent:
     """

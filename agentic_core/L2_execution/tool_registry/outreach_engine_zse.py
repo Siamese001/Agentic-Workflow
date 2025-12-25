@@ -3,17 +3,19 @@
 Outreach Engine (E3) - Zero-Side Effect (ZSE) Execution
 Implements outreach with P6 vetting and P10 Shadow Mode
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
 import logging
 import os
+import time
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.utils.P1_core.core_utilities import log_action, register_process
-from agentic_core.utils.P1_core.networking import get_networking_utility, send_email, strict_egress_filter
+from agentic_core.utils.P1_core.networking import (
+    get_networking_utility,
+    send_email,
+    strict_egress_filter,
+)
 from agentic_core.utils.P1_core.pitch_generator import PitchGenerator
 from agentic_core.utils.P1_core.shadow_mode import ShadowModeEngine
 

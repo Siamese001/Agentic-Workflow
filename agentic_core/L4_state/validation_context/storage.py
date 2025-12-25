@@ -4,12 +4,11 @@ Storage adapters for different backend types.
 Provides atomic storage operations with hot-swappable backends.
 Supports local disk (for development) and S3 (for production).
 """
-from typing import Any, Optional, Protocol, Dict, List
 import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

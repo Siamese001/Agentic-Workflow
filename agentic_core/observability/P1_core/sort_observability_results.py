@@ -6,10 +6,8 @@ sort_observability_results.py - Optimization Module
 Domain: standard
 Generated: 2025-12-07T12:07:59.838335
 """
-from typing import Any, Callable, Dict, List, Optional, Protocol, TypeVar
-
 import logging
-from typing import Any, Dict, List, Optional, Protocol, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Protocol, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 

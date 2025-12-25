@@ -1,12 +1,12 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import time
 import uuid
+from typing import Any, Dict, List, Optional, Protocol
 
 from pydantic import BaseModel
 
-from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from agentic_core.config.blueprint_sovereign import ConfigurationService
+from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
 LOGGER = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 """Dataclass models for models."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # from agentic_core.models_enums import *  # Star import removed

@@ -2,9 +2,10 @@
 
 import ast
 import logging
-from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
+
 
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""

@@ -5,7 +5,7 @@ The highest layer that orchestrates all autonomous self-healing capabilities acr
 
 from agentic_core.L6_meta.autonomous_sovereign_core import (
     AutonomousSovereignCore,
-    TerritoryWatcher
+    TerritoryWatcher,
 )
 
 __all__ = [

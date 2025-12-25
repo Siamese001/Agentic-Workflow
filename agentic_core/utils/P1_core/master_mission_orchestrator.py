@@ -19,6 +19,7 @@ load_dotenv(dotenv_path=project_root / ".env", override=True)
 # L6 Component Imports
 from canon_validator_agentic_v2 import run_mission
 
+
 async def execute_sovereign_sweep(target_scope: str = "agentic_core"):
     print(f"\n{'='*70}\n[L6] STARTING MASTER MISSION: {target_scope}\n{'='*70}")
     

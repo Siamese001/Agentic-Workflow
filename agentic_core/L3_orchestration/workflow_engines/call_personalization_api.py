@@ -1,4 +1,5 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
+
 
 def execute(action: str,
     params: Dict[str,

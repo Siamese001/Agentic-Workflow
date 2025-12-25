@@ -2,13 +2,13 @@
 Ultra-hardened access to repository wiki via SSE.
 L5 shielded (repo allowlist, token protection) + L4 cached.
 """
-import os
+import hashlib
 import json
 import logging
-from typing import Dict, Any, Optional, List
+import os
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
-import hashlib
 import httpx
 
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority

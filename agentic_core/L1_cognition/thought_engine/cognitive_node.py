@@ -1,15 +1,15 @@
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-import re
 import ast
 import json
 import logging
+import re
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 import yaml
 from llm_client import LLMClient
+
 
 class CognitiveNode:
     """

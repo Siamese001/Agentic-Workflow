@@ -1,7 +1,7 @@
 import logging
-from typing import Any, Optional, Protocol, Dict, List
 import re
 import time
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 # MERGED from UNASSIGNED BY WINDSURF v4 — 2025-12-07T01:21:36.310145+00:00

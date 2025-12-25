@@ -12,7 +12,8 @@ Examples:
 """
 
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
+
 
 class TerritoryHealerAgent:
     """
@@ -24,9 +25,11 @@ class TerritoryHealerAgent:
         self.ctx = ctx
         
         from agentic_core.config.P1_core.structure_blueprint import (
-            CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES,
-            TERRITORY_EXAMPLES, TERRITORY_POSITIVE_SIGNALS,
-            AGENTIC_CORE_EXACT_DEPTH
+            AGENTIC_CORE_EXACT_DEPTH,
+            CANON_KEY_TO_FOLDER_MAP,
+            ROOT_PROTECTED_FILES,
+            TERRITORY_EXAMPLES,
+            TERRITORY_POSITIVE_SIGNALS,
         )
         from agentic_core.runtime.shared.void_compliance import get_placement_guidance
         
@@ -248,8 +251,12 @@ class TerritoryHealerAgent:
         
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
-            from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+            from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+                PineconeSovereignAgent,
+            )
+            from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+                RedisSovereignAgent,
+            )
             redis_agent = RedisSovereignAgent(self.root)
             pinecone_agent = PineconeSovereignAgent(self.root)
         except Exception:

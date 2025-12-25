@@ -5,8 +5,9 @@
 import json
 import logging
 import os
-from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
+
 
 class StateSerializer:
     """

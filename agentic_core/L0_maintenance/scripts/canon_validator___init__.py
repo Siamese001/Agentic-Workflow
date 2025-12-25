@@ -11,7 +11,6 @@ This package provides the complete Canon Validator infrastructure:
 
 # All agents
 from agentic_core.agents import (
-
     ArchitectureGovernor,
     BenchmarkingAgent,
     CodeStyleGuardian,
@@ -39,7 +38,6 @@ from agentic_core.agents import (
     ToolsmithAgent,
     TypeEnforcer,
 )
-from agentic_core.L2_execution.tool_registry.base import ImportPatcher, SubAtomicAgent
 from agentic_core.config import (
     ALLOWED_ROOT_FILES,
     ALLOWED_ROOT_FOLDERS,
@@ -52,6 +50,7 @@ from agentic_core.config import (
     get_python_files,
     is_excluded,
 )
+from agentic_core.L2_execution.tool_registry.base import ImportPatcher, SubAtomicAgent
 
 # Orchestrator
 from agentic_core.orchestrator import IntelligentOrchestrator, SwarmScheduler

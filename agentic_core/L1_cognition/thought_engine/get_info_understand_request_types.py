@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional, Protocol, Union
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 """Types and models for get_info_understand_request."""
 import logging

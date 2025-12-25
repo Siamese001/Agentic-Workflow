@@ -2,10 +2,9 @@
 Network Operations - API Calls, Redis, and External Service Integration
 Consolidated from core_utils.py, network_utils.py, and security_utils.py
 """
-from typing import Any, Optional, Protocol, Dict, List
 import json
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

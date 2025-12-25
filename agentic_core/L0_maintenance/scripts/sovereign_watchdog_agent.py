@@ -4,6 +4,7 @@ SovereignWatchdogAgent - Real-Time Monitor
 """
 from pathlib import Path
 
+
 class SovereignWatchdogAgent:
     def __init__(self, project_root: Path):
         self.archive = project_root / "archives" / "depth_violations"

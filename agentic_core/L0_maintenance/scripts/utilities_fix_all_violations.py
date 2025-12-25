@@ -1,11 +1,12 @@
 """Comprehensive fixer for cognitive density and micro-fragment violations."""
 import ast
 import logging
-from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
 
 from services.configuration import ConfigurationService
+
 
 def fix_micro_fragments():
     """Docstring."""

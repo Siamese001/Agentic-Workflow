@@ -3,10 +3,9 @@
 Phase 2 - Pillar 4: Workflow (DAGs)
 Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integration.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

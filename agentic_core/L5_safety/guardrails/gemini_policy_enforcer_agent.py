@@ -4,8 +4,7 @@ GeminiPolicyEnforcerAgent - L5 Safety Framework Agent
 Enforces Gemini-only policy and blocks unauthorized model usage.
 """
 import logging
-from typing import Dict, Any
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

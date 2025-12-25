@@ -1,6 +1,6 @@
 """Implementation for model_router."""
-from typing import Any, Optional, Protocol, Dict, List
 import logging
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 # from agentic_core.model_router_types import *  # Star import removed

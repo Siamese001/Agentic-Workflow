@@ -7,8 +7,8 @@ Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
 import logging
-from typing import Any, Optional, Protocol, Dict, List
-from typing import Dict, List, object
+from typing import Any, Dict, List, Optional, Protocol, object
+
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:
     """Return fraction of events marked as errors.

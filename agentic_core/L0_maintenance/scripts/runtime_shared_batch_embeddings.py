@@ -6,9 +6,9 @@ Uses ThreadPoolExecutor to process embeddings in parallel batches.
 
 import asyncio
 import logging
-from typing import Any, Optional, Protocol, Dict, List, Callable
-
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable, Dict, List, Optional, Protocol
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

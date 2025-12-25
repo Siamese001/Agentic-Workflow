@@ -3,9 +3,9 @@ File I/O Tools - Atomic Module
 Extracted from action_registry.py via Atomic Fission Protocol
 Tool ID Prefix: ACT-002
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 import os
+from typing import Any, Dict, List, Optional, Protocol
 
 try:
     import PyPDF2

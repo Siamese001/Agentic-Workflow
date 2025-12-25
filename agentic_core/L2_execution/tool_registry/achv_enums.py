@@ -1,6 +1,6 @@
 """Enum types for achv_bullet_synthesizer_types."""
-from enum import Enum, auto
 import logging
+from enum import Enum, auto
 
 _logger = logging.getLogger(__name__)
 

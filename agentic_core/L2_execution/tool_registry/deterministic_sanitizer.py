@@ -8,12 +8,10 @@ import ast
 import logging
 import os
 import re
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-from typing import Any, Optional, Protocol, Dict, List
-
 import subprocess
 import tempfile
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 

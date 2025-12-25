@@ -1,9 +1,9 @@
 """Implementation for check_resume_rules."""
 
-from typing import Any, Dict, List, Optional, Protocol, Union
 import logging
-import sys # Added missing import
+import sys  # Added missing import
 from typing import Any, Dict, List, Optional, Protocol, Union
+
 
 class ProcessingResult:
     def __init__(self, success: bool, data=None, error_message: Optional[str]=None, execution_context=None, additional_info: Optional[Dict[str, Any]]=None):

@@ -1,20 +1,22 @@
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L0_maintenance.logs.telemetry_recorder import TelemetryRecorder
-from agentic_core.L1_cognition.thought_engine.structured_engine import StructuredEngine
 from agentic_core.L1_cognition.boundaries.semantic_gatekeeper import SemanticGatekeeper
+from agentic_core.L1_cognition.thought_engine.structured_engine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
 from agentic_core.L3_orchestration.fission_logic.fission_manager import FissionManager
 from agentic_core.L3_orchestration.workflow_engines.supreme_court import SupremeCourt
-from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
-from agentic_core.L5_safety.guardrails.pii_vault import PIIVault
-from agentic_core.L5_safety.guardrails.membrane import InputMembrane
+from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol
+from agentic_core.L5_safety.guardrails.membrane import InputMembrane
+from agentic_core.L5_safety.guardrails.pii_vault import PIIVault
+from agentic_core.L5_safety.validators.constitutional_overseer import (
+    ConstitutionalOverseer,
+)
 from agentic_core.L5_safety.validators.cost_governor import CostGovernor
-from agentic_core.L5_safety.validators.constitutional_overseer import ConstitutionalOverseer
 from agentic_core.runtime.P1_core.subatomic_hop import SubatomicHop
 
 LOGGER = logging.getLogger(__name__)

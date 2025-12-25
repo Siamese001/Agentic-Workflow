@@ -3,6 +3,7 @@
 
 import os
 
+
 def fix_whitespace_in_file(filepath):
     """Fix trailing whitespace and ensure file ends with newline."""
     try:

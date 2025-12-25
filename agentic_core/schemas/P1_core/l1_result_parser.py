@@ -1,6 +1,6 @@
 """L1 Result Parser - Pure result parsing logic only."""
-from dataclasses import dataclass, field
 import logging
+from dataclasses import dataclass, field
 
 _logger = logging.getLogger(__name__)
 

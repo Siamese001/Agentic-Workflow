@@ -1,9 +1,8 @@
 """Split module 1 for models_types."""
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
 import logging
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

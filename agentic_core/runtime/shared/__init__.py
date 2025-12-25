@@ -3,32 +3,32 @@ Runtime Shared Modules
 Resurrected from archives - provides RAG components, safety tools, and optimization utilities.
 """
 
-# RAG Components
-from .rag_components import (
-
-    SemanticCache,
-    SelfRAGProcessor,
-    KnowledgeGraphInjector,
-    EpisodicMemory,
-    FewShotInjector,
-)
-
-# Safety Components
-from .pii_scrubber import PIIScrubber
 from .bias_auditor import BiasAuditor
-from .constitutional_ai import ConstitutionalAISystem
+
+# Infrastructure Components
+from .checkpoint_manager import CheckpointManager, get_checkpoint_manager
 
 # Optimization Components
 # TODO: Systematic Repair (Option 2) - syntax errors require fixing
 # from .hyde_processor import HyDEProcessor
 # from .tone_model import ToneModel
 from .claim_confidence import ClaimConfidenceScorer
+from .constitutional_ai import ConstitutionalAISystem
+from .envelope_factory import Envelope, EnvelopeFactory
+
+# Safety Components
+from .pii_scrubber import PIIScrubber
 from .prompt_optimizer import PromptOptimizer
 
-# Infrastructure Components
-from .checkpoint_manager import CheckpointManager, get_checkpoint_manager
+# RAG Components
+from .rag_components import (
+    EpisodicMemory,
+    FewShotInjector,
+    KnowledgeGraphInjector,
+    SelfRAGProcessor,
+    SemanticCache,
+)
 from .shared_infrastructure import SharedInfrastructure, get_shared_infrastructure
-from .envelope_factory import Envelope, EnvelopeFactory
 
 __all__ = [
     # RAG

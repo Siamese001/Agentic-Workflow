@@ -1,6 +1,6 @@
 """Enum types for resume_orchestration_config_types."""
-from enum import Enum, auto
 import logging
+from enum import Enum, auto
 
 _logger = logging.getLogger(__name__)
 

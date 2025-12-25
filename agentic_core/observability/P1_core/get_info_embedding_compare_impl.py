@@ -1,9 +1,9 @@
 """Implementation for get_info_embedding_compare."""
 
 import logging
-from typing import Any, Dict, List, Optional, Union
-from typing import Any, Optional, Protocol, Dict, List
 import sys
+from typing import Any, Dict, List, Optional, Protocol, Union
+
 
 class GetInfoEmbeddingCompareMeaning:
     """

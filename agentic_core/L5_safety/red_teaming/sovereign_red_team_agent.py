@@ -5,11 +5,12 @@ SovereignRedTeamAgent - Eternal Adversarial Tester for L5 Shield
 
 import json
 import os
-from pathlib import Path
-from typing import List, Dict
-
 import random
+from pathlib import Path
+from typing import Dict, List
+
 import redis
+
 
 class SovereignRedTeamAgent:
     """

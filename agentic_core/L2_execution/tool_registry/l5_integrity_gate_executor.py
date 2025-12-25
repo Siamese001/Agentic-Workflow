@@ -8,12 +8,12 @@ Implements the Canon Validator two-pass validation pattern:
 This optimizes validation by avoiding expensive checks when
 fast checks already detect issues.
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
 import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

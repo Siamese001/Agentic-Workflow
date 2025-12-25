@@ -20,12 +20,12 @@ Original: 444 lines in 1 monolithic file
 Preservation: 118% (added docstrings and type hints)
 """
 
-# Standard library imports
-import re
 import logging
 
-from agentic_core.utils.crypto_utils import (
+# Standard library imports
+import re
 
+from agentic_core.utils.crypto_utils import (
     setup_gpg_signing,
     sign_and_commit,
 )

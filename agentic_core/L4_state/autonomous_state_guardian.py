@@ -6,9 +6,9 @@ Monitors and self-repairs state corruption with mirrored redundancy and state lo
 import asyncio
 import json
 import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,9 @@ class AutonomousStateGuardian:
     """
     
     def __init__(self):
-        from agentic_core.L4_state.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+            create_autonomous_checkpoint_manager,
+        )
         
         self.checkpoint_manager = create_autonomous_checkpoint_manager()
         self.state_manifest_path = Path(".canon_memory/state_manifest.json")
@@ -141,7 +143,9 @@ class AutonomousStateGuardian:
                     
                     # Trigger reindex as a non-blocking task
                     try:
-                        from agentic_core.L2_execution.tool_registry.hybrid_retriever import HybridRetriever
+                        from agentic_core.L2_execution.tool_registry.hybrid_retriever import (
+                            HybridRetriever,
+                        )
                         asyncio.create_task(HybridRetriever()._rebuild_from_ingestion())
                         logger.info("L4: Triggered background reindex")
                     except ImportError:

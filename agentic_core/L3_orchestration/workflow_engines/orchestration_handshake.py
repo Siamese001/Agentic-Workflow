@@ -3,15 +3,17 @@
 OrchestrationHandshake - Multi-Hop Agent Collaboration
 """
 
-import json
-from typing import Dict, List, Any, Optional
-from pathlib import Path
-
 import hashlib
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 from agentic_core.config.P1_core.sovereign_env import get_env
-from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestrator
+from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import (
+    CachedOrchestrator,
+)
+from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
+
 
 class OrchestrationHandshake(CachedOrchestrator):
     """

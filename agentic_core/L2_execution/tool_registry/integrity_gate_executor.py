@@ -1,9 +1,8 @@
 import logging
 import re
-from enum import Enum
-from typing import List, Any
-from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
+
 
 class ValidationRejectionReason(Enum):
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"

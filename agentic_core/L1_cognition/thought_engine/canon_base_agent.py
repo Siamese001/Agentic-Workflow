@@ -1,12 +1,13 @@
 # Standard library imports
 import asyncio
+import hashlib
 import logging
 import os
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
-
-from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
+from agentic_core.L1_cognition.thought_engine.validation_protocol import (
+    ValidationProtocol,
+)
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 logger = logging.getLogger(__name__)

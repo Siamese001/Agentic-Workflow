@@ -4,10 +4,9 @@ L6 Codebase Telepathy - Human Instruction Watcher
 Implements dynamic instruction injection via observability/human_instructions.md.
 Allows humans to telepathically control mission execution by writing commands.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

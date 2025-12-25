@@ -1,5 +1,5 @@
-from enum import Enum, auto
 from dataclasses import dataclass, field
+from enum import Enum, auto
 
 """
 assess_scripts_risk.py - Assessment Module
@@ -9,7 +9,7 @@ Generated: 2025-12-07T12:07:59.870725
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

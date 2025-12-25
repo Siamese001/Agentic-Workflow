@@ -6,7 +6,7 @@ for 5-10x performance improvement in resume generation pipeline.
 
 import asyncio
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 import numpy as np
 from batch_embeddings import create_batch_embedding_service

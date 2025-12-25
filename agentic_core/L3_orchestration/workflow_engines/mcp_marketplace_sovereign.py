@@ -3,7 +3,7 @@ Safe discovery and registration of marketplace MCPs with L5 sovereignty enforcem
 GEMINI-ONLY policy — forbidden providers auto-blocked.
 """
 import logging
-from typing import List, Dict
+from typing import Dict, List
 
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 

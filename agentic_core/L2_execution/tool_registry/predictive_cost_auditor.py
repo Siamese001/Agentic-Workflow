@@ -11,14 +11,12 @@ Tracks: Token usage per file, healing attempts, success rates
 Flags: Files consuming excessive tokens without reaching PASS state
 Suggests: Where manual Atomic Fission would be more cost-effective
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
+import logging
 import re
 import time
-import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 

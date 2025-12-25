@@ -24,9 +24,8 @@ LOGGER = logging.getLogger(__name__)
 
 import pathlib
 import sys
-from typing import Any, List
-from typing import Any, Optional, Protocol, Dict, List
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
 
 
 def create_init_files(paths: List[str]) -> int:

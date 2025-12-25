@@ -6,9 +6,10 @@ Provides common data structures used across the runtime shared modules.
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
+
 
 @dataclass
 class LLMResponse:

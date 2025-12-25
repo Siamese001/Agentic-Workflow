@@ -1,11 +1,11 @@
 """Implementation for constitutional_ai."""
 import logging
-import time
 import re
-from enum import Enum
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Any
+import time
 from collections import defaultdict
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 

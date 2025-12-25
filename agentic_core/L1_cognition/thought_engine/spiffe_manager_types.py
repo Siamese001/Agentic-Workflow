@@ -1,10 +1,8 @@
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
 import logging
 import time
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

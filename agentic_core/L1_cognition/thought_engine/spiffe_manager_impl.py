@@ -1,12 +1,10 @@
+import hashlib
 import logging
+import secrets
 import time
 from typing import Any, Dict, List, Optional, Protocol
 
-import hashlib
-import secrets
-
 from agentic_core.L1_cognition.identity.spiffe_manager_types import (
-
     AgentIdentity,
     IdentityType,
     IdentityVerificationResult,

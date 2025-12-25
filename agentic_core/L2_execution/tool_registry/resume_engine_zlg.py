@@ -19,10 +19,8 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from typing import Any, Optional, Protocol, Dict, List
 
 from agentic_core.L2_execution.knowledge.knowledge_utilities import (
-
     KnowledgeResult,
     get_consolidated_knowledge,
 )

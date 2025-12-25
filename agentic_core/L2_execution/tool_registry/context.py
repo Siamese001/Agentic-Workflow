@@ -2,6 +2,7 @@ import asyncio
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+
 class OmniContext(SubAtomicAgent):
     """
     ROLE: Global Architectural Context. Concatenates all non-excluded .py files

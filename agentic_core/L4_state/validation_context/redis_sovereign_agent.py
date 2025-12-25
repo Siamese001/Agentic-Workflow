@@ -3,14 +3,15 @@
 RedisSovereignAgent - Eternal Sovereign Gateway to Redis
 """
 
+import hashlib
 from pathlib import Path
 from typing import Dict
 
 import redis
-import hashlib
 from redis.connection import ConnectionPool
 
 from agentic_core.config.P1_core.sovereign_env import get_env
+
 
 class RedisSovereignAgent:
     """

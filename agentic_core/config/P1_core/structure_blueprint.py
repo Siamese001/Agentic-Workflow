@@ -4,7 +4,7 @@ Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 """
 import re
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 SOVEREIGN_REGISTRY = {
     # === THE HEAVY CORE (Depth 4: Root > Layer > Stage > File) ===
@@ -219,7 +219,9 @@ def bootstrap_territory_index():
     from pathlib import Path
     
     try:
-        from agentic_core.L3_orchestration.healing.semantic_territory_mapper_agent import SemanticTerritoryMapperAgent
+        from agentic_core.L3_orchestration.healing.semantic_territory_mapper_agent import (
+            SemanticTerritoryMapperAgent,
+        )
         mapper = SemanticTerritoryMapperAgent(Path("."), None)  # Dummy ctx
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():

@@ -6,16 +6,14 @@ The Context Passport implements dual-state isolation to safely maximize LLM crea
 while maintaining structural integrity. It separates immutable DAG-owned state from
 mutable LLM-owned scratchpad space.
 """
-from typing import Any, Dict, List, Optional, Protocol, Set
-from enum import Enum, auto
+import logging
 import re
 import time
-import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 from pydantic import BaseModel, Field
 

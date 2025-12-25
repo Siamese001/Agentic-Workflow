@@ -3,7 +3,8 @@
 """Clerk extraction for resume generation HOP-1."""
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+
 
 class ClerkExtractor:
     """HOP-1: Extract structured data from master resume."""
@@ -82,7 +83,7 @@ class ClerkExtractor:
             r"\d{1,3}(?:,\d{3})+", # Fixed unterminated string literal
         ]
         METRICS = []
-        import re # Added missing import for 're' module
+        import re  # Added missing import for 're' module
         for pattern in PATTERNS: # Corrected variable name from 'patterns' to 'PATTERNS'
             METRICS.extend(re.findall(pattern, text))
         return METRICS # Corrected variable name from 'metrics' to 'METRICS'

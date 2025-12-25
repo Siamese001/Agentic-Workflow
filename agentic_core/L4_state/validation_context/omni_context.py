@@ -4,9 +4,8 @@ TheOmniContext - L6 Semantic Context Buffer
 Concatenates all source code from mapped repositories into a single context buffer
 for complex architectural queries and RAG-based agent retrieval.
 """
-from typing import Any, Optional, Protocol, Dict, List
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

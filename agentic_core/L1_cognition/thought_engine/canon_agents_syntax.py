@@ -2,16 +2,15 @@
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinel - Code hygiene and import management.
 """
-from typing import Any, Dict, List, Optional, Protocol, Tuple
-import re
 import ast
 import os
-import sys
-from typing import List, Tuple
-
+import re
 import subprocess
+import sys
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
+
 
 class CodeJanitor(SubAtomicAgent):
     """

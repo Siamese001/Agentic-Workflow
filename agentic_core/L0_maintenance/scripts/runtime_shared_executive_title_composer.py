@@ -10,7 +10,7 @@ Legacy K-Node: K.4
 """
 
 import logging
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

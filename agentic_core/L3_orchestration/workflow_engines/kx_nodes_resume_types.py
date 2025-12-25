@@ -1,9 +1,8 @@
 """Types and models for kx_nodes_resume."""
-from typing import Any, Optional, Protocol, Dict, List
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
-import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
 

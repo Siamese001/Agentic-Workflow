@@ -1,11 +1,10 @@
+import hashlib
 import json
 import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-import hashlib
 
 class IValidationContext(Protocol):
     cycle_id: Optional[int]

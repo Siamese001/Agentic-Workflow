@@ -11,11 +11,10 @@ Strategy:
 - Update Redis source of truth
 - Enable safe rollback on failure
 """
-from typing import Any, Optional, Protocol, Dict, List
-import time
 import logging
+import time
 from datetime import datetime
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

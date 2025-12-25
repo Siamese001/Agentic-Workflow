@@ -1,6 +1,6 @@
+import json
 import os
 import sys
-import json
 
 """Persona Planner - L1 planning for persona parameters and messaging approaches.
 
@@ -13,9 +13,8 @@ K1-K7 execution pipeline for persona-driven message generation.
 """
 
 import logging
+from dataclasses import dataclass, field  # Added missing import
 from typing import Any, Dict, List, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field # Added missing import
 
 LOGGER = logging.getLogger(__name__)
 

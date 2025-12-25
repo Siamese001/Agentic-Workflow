@@ -6,12 +6,10 @@ inspect_scripts_quality.py - Diagnostics Module
 Domain: utilities
 Generated: 2025-12-07T12:07:59.885531
 """
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

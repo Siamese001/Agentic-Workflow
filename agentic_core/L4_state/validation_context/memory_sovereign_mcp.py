@@ -4,12 +4,14 @@ L5 shielded + Redis/Pinecone hybrid + tampering detection.
 """
 import json
 import logging
-from typing import List, Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+    PineconeSovereignAgent,
+)
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
 
 logger = logging.getLogger(__name__)
 

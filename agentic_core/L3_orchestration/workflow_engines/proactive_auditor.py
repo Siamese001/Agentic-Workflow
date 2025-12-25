@@ -11,14 +11,13 @@ Strategy:
 - Create pre-emptive refactor proposals
 - Enable proactive architectural governance
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
-import time
 import logging
 import os
+import re
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 """
 evaluate_scripts_compliance.py - Assessment Module
@@ -7,15 +7,10 @@ evaluate_scripts_compliance.py - Assessment Module
 Domain: utilities
 Generated: 2025-12-07T12:07:59.882600
 """
-from typing import Any, Optional, Protocol, Dict, List
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-import logging
-from typing import Dict, List, Optional
-from typing import Any, Protocol
-from dataclasses import field
-from enum import auto
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 

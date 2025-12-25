@@ -1,7 +1,7 @@
 import os
+import subprocess
 from pathlib import Path
 
-import subprocess
 
 def wake_the_brain():
     print("[*] MISSION START: FINAL SOVEREIGN VALIDATION")

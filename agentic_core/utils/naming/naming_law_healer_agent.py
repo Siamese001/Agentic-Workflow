@@ -10,7 +10,11 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
-from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS, FORBIDDEN_PATTERNS
+from agentic_core.config.P1_core.structure_blueprint import (
+    CANON_SIGNALS,
+    FORBIDDEN_PATTERNS,
+)
+
 
 class NamingLawHealerAgent:
     """

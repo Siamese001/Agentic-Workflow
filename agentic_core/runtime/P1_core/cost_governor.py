@@ -1,10 +1,9 @@
-from typing import Any, Optional, Protocol, Dict, List
 import logging
+import threading
 import time
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
-import threading
 from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)

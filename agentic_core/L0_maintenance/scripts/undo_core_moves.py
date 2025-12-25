@@ -5,6 +5,7 @@ Undo all the incorrect core/ subdirectory moves
 import shutil
 from pathlib import Path
 
+
 def undo_core_moves():
     """Move all files back from */core/ to parent directories"""
     root = Path(".")

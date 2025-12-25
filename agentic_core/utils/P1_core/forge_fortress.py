@@ -1,6 +1,6 @@
+import logging
 import os
 import shutil
-import logging
 import sys
 from pathlib import Path
 

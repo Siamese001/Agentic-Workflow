@@ -6,14 +6,14 @@ DependencyGraph and BudgetManager are infrastructure classes.
 
 import ast
 import asyncio
+import hashlib
 import json
 import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List, Set
+from typing import Any, Dict, List, Optional, Protocol, Set
 
-import hashlib
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
