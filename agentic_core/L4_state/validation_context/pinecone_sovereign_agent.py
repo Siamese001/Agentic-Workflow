@@ -26,14 +26,30 @@ class PineconeSovereignAgent:
     Centralizes all vector operations to prevent configuration drift.
     """
     
-    def __init__(self, project_root: Path, ctx=None):
-        env = get_env(project_root)
-        self.pc = Pinecone(api_key=env.PINECONE_API_KEY)
-        self.index_name = env.PINECONE_INDEX_NAME
-        self.dimension = env.EMBEDDING_DIMENSION
-        self.cloud = env.PINECONE_CLOUD
-        self.region = env.PINECONE_REGION
-        self.gemini = SubAtomicEngine()
+    def __init__(self, project_root: Optional[Path] = None, ctx=None):
+        # Sovereign anchor: Ensure we know where we are in the territory
+        self.project_root = project_root or Path(__file__).resolve().parents[4]
+        self.status = "INITIALIZING"
+        
+        api_key = os.getenv("PINECONE_API_KEY")
+        if not api_key:
+            self.status = "DEGRADED (Missing API Key)"
+            print(f"   [!] PineconeSovereignAgent: API key missing.")
+            return
+        
+        try:
+            env = get_env(self.project_root)
+            self.pc = Pinecone(api_key=api_key)
+            self.index_name = env.PINECONE_INDEX_NAME
+            self.dimension = env.EMBEDDING_DIMENSION
+            self.cloud = env.PINECONE_CLOUD
+            self.region = env.PINECONE_REGION
+            self.gemini = SubAtomicEngine()
+            self.status = "ONLINE"
+        except Exception as e:
+            self.status = f"DEGRADED ({str(e)})"
+            print(f"   [!] PineconeSovereignAgent initialization failed: {e}")
+            return
         
         # Store ValidationContext for precise sync operations
         self.ctx = ctx

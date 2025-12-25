@@ -61,8 +61,10 @@ class AutonomousSovereignCore:
         print(f"   L4 State Guardian: Online")
         print(f"   L5 Safety Engine: Online")
         
-        # Awaken autonomous loops
+        # Awaken autonomous loops with dependency injection
         self.l1_learning.awaken()
+        self.l2_resource.awaken(learner_instance=self.l1_learning)  # Inject L1 wisdom into L2
+        self.l3_orchestrator.awaken_mutation_engine()
         self.l3_execution.awaken()
         self.l4_guardian.awaken()
 

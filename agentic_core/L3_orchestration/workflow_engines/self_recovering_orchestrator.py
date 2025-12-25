@@ -78,9 +78,40 @@ class SelfRecoveringOrchestrator:
         self.mutation_history: List[WorkflowMutation] = []
         self.active_graphs: Dict[str, nx.DiGraph] = {}
         self.recovery_strategies: Dict[str, RecoveryStrategy] = {}
+        self.alternative_routes: Dict[str, List[str]] = {}
         self.max_retries = 3
         self.retry_backoff_base = 2.0
+        self.mutation_threshold = 0.45  # More aggressive: mutate if failing ~half the time
+        self.max_mutations_per_node = 3
+        self.probation_list: Dict[str, Dict[str, int]] = {}  # new_node -> {"test_runs": 0, "failures": 0}
+        self._mutation_task = None
         logger.info("Self-Recovering Orchestrator initialized")
+    
+    def awaken_mutation_engine(self):
+        """Explicitly start the L3 evolution cycle"""
+        if not self._mutation_task:
+            self._mutation_task = asyncio.create_task(self.autonomous_mutation_cycle())
+            logger.info("L3 Autonomous mutation cycle awakened")
+    
+    async def autonomous_mutation_cycle(self):
+        """L3: Continuous workflow optimization cycle"""
+        while True:
+            try:
+                await asyncio.sleep(600)  # Every 10 minutes
+                
+                # Analyze patterns and trigger mutations for problematic nodes
+                for node_id, pattern in self.node_patterns.items():
+                    if pattern.failure_rate > self.mutation_threshold and pattern.failure_count >= 3:
+                        mutation_count = sum(1 for m in self.mutation_history if m.target_node == node_id)
+                        if mutation_count < self.max_mutations_per_node:
+                            logger.info(f"L3: Auto-mutating problematic node {node_id}")
+                            await self.mutate_node(node_id, pattern.failure_rate)
+                
+                logger.debug("L3: Autonomous mutation cycle completed")
+                
+            except Exception as e:
+                logger.error(f"L3 Mutation cycle error: {e}")
+                await asyncio.sleep(60)
     
     async def execute_with_recovery(
         self,
@@ -367,8 +398,46 @@ class SelfRecoveringOrchestrator:
         
         return RecoveryStrategy.RETRY
     
+    async def mutate_node(self, failed_node: str, failure_rate: float) -> str:
+        """L3: Sovereign mutation with Probationary Logic"""
+        logger.info(f"L3 SELF-HEALING: Mutating {failed_node} (failure_rate={failure_rate:.2f})")
+        
+        # Determine mutation strategy based on failure rate
+        if failure_rate > 0.8:
+            strategy = "SKIP"
+        elif failure_rate > 0.6:
+            strategy = "REPLACE"
+        elif failure_rate > 0.5:
+            strategy = "FORK"
+        else:
+            strategy = "RETRY"
+        
+        new_node = f"{failed_node}_alt_{len(self.mutation_history)}"
+        
+        if strategy == "REPLACE":
+            self.alternative_routes[failed_node] = [new_node]
+            # Mark the new node as 'Under Probation'
+            self.probation_list[new_node] = {"test_runs": 0, "failures": 0}
+            logger.info(f"L3: Replacement node {new_node} under probation")
+        
+        mutation = WorkflowMutation(
+            mutation_id=f"mut_{len(self.mutation_history)}",
+            mutation_type=RecoveryStrategy[strategy],
+            target_node=failed_node,
+            replacement_node=new_node if strategy == "REPLACE" else None,
+            reason=f"Auto-mutation due to {failure_rate:.1%} failure rate",
+            applied_at=datetime.now(),
+            success=True
+        )
+        self.mutation_history.append(mutation)
+        
+        return new_node
+    
     def _find_replacement_node(self, node_id: str, graph: nx.DiGraph) -> Optional[Any]:
         """Find a replacement node for a failed node."""
+        # Check if we have alternative routes
+        if node_id in self.alternative_routes and self.alternative_routes[node_id]:
+            return self.alternative_routes[node_id][0]
         return None
     
     def _get_ready_nodes(self, graph: nx.DiGraph, completed_nodes: Set) -> List[Any]:
@@ -388,16 +457,57 @@ class SelfRecoveringOrchestrator:
             return node.config.hop_id
         return str(node)
     
-    def _record_node_success(self, node_id: str):
-        """Record successful node execution."""
+    def record_node_attempt(self, node_id: str, success: bool):
+        """Track node performance and handle probation checks"""
+        # Standard stat tracking
         if node_id not in self.node_patterns:
             self.node_patterns[node_id] = NodeFailurePattern(node_id=node_id)
         
-        self.node_patterns[node_id].success_count += 1
+        if success:
+            self.node_patterns[node_id].success_count += 1
+        else:
+            self.node_patterns[node_id].failure_count += 1
+            self.node_patterns[node_id].last_failure = datetime.now()
+        
+        # Probation tracking for replacement nodes
+        if node_id in self.probation_list:
+            prob = self.probation_list[node_id]
+            prob["test_runs"] += 1
+            if not success:
+                prob["failures"] += 1
+            
+            # If replacement is worse than the original, revert
+            if prob["test_runs"] >= 5 and (prob["failures"] / prob["test_runs"]) > 0.6:
+                logger.warning(f"PROBATION FAILED: {node_id} is unreliable (failure rate: {prob['failures']/prob['test_runs']:.1%}). Reverting mutation.")
+                
+                # Find and remove the mutation that created this node
+                for mutation in self.mutation_history:
+                    if mutation.replacement_node == node_id:
+                        mutation.success = False
+                        logger.info(f"L3: Reverted mutation {mutation.mutation_id}")
+                        break
+                
+                # Remove from probation and alternative routes
+                del self.probation_list[node_id]
+                for original, alternatives in list(self.alternative_routes.items()):
+                    if node_id in alternatives:
+                        alternatives.remove(node_id)
+                        if not alternatives:
+                            del self.alternative_routes[original]
+            
+            elif prob["test_runs"] >= 5 and (prob["failures"] / prob["test_runs"]) <= 0.3:
+                # Probation passed - node is reliable
+                logger.info(f"PROBATION PASSED: {node_id} is reliable (failure rate: {prob['failures']/prob['test_runs']:.1%})")
+                del self.probation_list[node_id]
+    
+    def _record_node_success(self, node_id: str):
+        """Record successful node execution."""
+        self.record_node_attempt(node_id, success=True)
         logger.debug(f"Node {node_id} success recorded")
     
     def _record_node_failure(self, node_id: str, reason: str):
         """Record node failure."""
+        self.record_node_attempt(node_id, success=False)
         if node_id not in self.node_patterns:
             self.node_patterns[node_id] = NodeFailurePattern(node_id=node_id)
         
