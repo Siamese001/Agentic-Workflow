@@ -18,6 +18,7 @@ SOVEREIGN_REGISTRY = {
             "L4_state",           # The Ledger
             "L5_safety",          # The Shield
             "config",             # System Blueprints
+            "schemas",            # Data Contracts
             "prompt_governance",  # Prompt Authority
             "runtime",            # Infrastructure
             "observability",      # The Watchtower
@@ -56,8 +57,9 @@ CORE_SUBFOLDER_MAP = {
     "L1_cognition": ["thought_engine", "intent_analysis"],
     "L2_execution": ["tool_registry", "action_handlers"],
     "L3_orchestration": ["workflow_engines", "fission_logic"],
-    "L4_state": ["validation_context", "audit_trails"],
+    "L4_state": ["validation_context", "audit_trails", "checkpoints"],
     "L5_safety": ["guardrails", "red_teaming"],
+    "schemas": ["models", "requests", "responses"],
     "config": ["blueprint_sovereign", "environments"],
     "prompt_governance": ["meta_prompts", "version_registry"],
     "runtime": ["shared_runtime", "environment_setup"],
@@ -105,6 +107,13 @@ CORE_L3_SUBFOLDER_MAP = {
     "fission_logic": ["healing", "pruning", "registry", "protocol"],
     # L3 under workflow_engines
     "workflow_engines": ["coordinator", "router", "hop"],
+    # L3 under L4_state (Depth 4 Enforcement)
+    "checkpoints": ["snapshots", "recovery"],
+    "validation_context": ["historian", "cache", "ledger"],
+    # L3 under schemas (Depth 4 Enforcement)
+    "models": ["core", "domain"],
+    "requests": ["api", "internal"],
+    "responses": ["api", "internal"]
 }
 
 # [L4 ENFORCEMENT] Required Depth 4 specialized territories
