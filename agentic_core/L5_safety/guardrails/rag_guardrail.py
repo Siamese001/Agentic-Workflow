@@ -4,6 +4,7 @@ RAGGuardrail - L5 RAG Content Filtering and Reranking
 """
 
 import asyncio
+import math
 from typing import List, Dict, Any, Optional
 
 import torch
@@ -38,27 +39,39 @@ class RAGGuardrail:
             return documents
 
         try:
-            # Extract text pairs for the cross-encoder
+            # BGE-v2-m3 Reranking with Sovereign Confidence Filtering
             pairs = [[query, doc.text] for doc in documents]
             
-            # Offload heavy synchronous model inference to a worker thread
             def _compute():
                 return self.bge_reranker.compute_score(pairs, batch_size=32)
             
-            scores = await asyncio.to_thread(_compute)
+            raw_logits = await asyncio.to_thread(_compute)
             
-            # Handle single vs batch return formats
-            if isinstance(scores, (float, int)):
-                scores = [scores]
+            if isinstance(raw_logits, (float, int)):
+                raw_logits = [raw_logits]
+
+            confident_docs = []
+            min_confidence = 0.75  # Sovereign Default
+            
+            for doc, logit in zip(documents, raw_logits):
+                # Apply Sigmoid: 1 / (1 + exp(-x))
+                confidence = 1 / (1 + math.exp(-logit))
                 
-            for doc, score in zip(documents, scores):
-                doc.score = float(score)
+                if confidence >= min_confidence:
+                    doc.score = float(confidence)
+                    confident_docs.append(doc)
+
+            # Resort by calibrated confidence
+            confident_docs.sort(key=lambda x: x.score, reverse=True)
             
-            # Resort by the superior L5 precision scores
-            documents.sort(key=lambda x: x.score, reverse=True)
+            dropped = len(documents) - len(confident_docs)
+            if dropped > 0:
+                print(f"   [FILTER] Dropped {dropped} low-confidence docs (<{min_confidence})")
             
-            print(f"   [RERANK] BGE-v2-m3 refined top-{top_k} candidates")
-            return documents[:top_k]
+            if not confident_docs:
+                print(f"   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.")
+                
+            return confident_docs[:top_k]
         except Exception as e:
             print(f"   [!] BGE reranking failed: {e}")
             return documents

@@ -9,12 +9,12 @@ Zero drift, eternal readiness.
 
 import os
 import json
+import hashlib
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 
-import hashlib
 import numpy as np
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
 
 from agentic_core.config.P1_core.sovereign_env import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
@@ -203,6 +203,29 @@ class PineconeSovereignAgent:
             self.index.upsert(vectors=vectors)
             print(f"   [OK] PineconeSovereignAgent: Bootstrapped {len(vectors)} territories")
 
+    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str = "canon"):
+        """
+        L4: Secure, idempotent upsert into the vector memory
+        """
+        vectors = []
+        for chunk in chunks:
+            # Generate a content-based ID for idempotency
+            content_hash = hashlib.sha256(chunk["text"].encode('utf-8')).hexdigest()
+            
+            vectors.append({
+                "id": content_hash,
+                "values": chunk["values"],
+                "metadata": {
+                    "text": chunk["text"],
+                    "source": chunk["metadata"].get("source", "unknown"),
+                    "ingested_at": chunk["metadata"].get("ingested_at")
+                }
+            })
+        
+        # Batch upsert in sizes of 100
+        for i in range(0, len(vectors), 100):
+            self.index.upsert(vectors=vectors[i:i+100], namespace=namespace)
+    
     def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None):
         """Upsert single file — used during healing"""
         content = file_path.read_text(encoding="utf-8", errors="ignore")
