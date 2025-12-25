@@ -142,7 +142,44 @@ class SubAtomicEngine:
             logger.error(f"   [MEMORY ERROR] Embedding failed: {e}")
             return [0.0] * 768  # Return null vector to prevent mission crash
     
-    async def resilient_mutation(
+    async def resilient_mutation(self, *args, **kwargs) -> str:
+        """
+        Universal Compatibility Signature: Handles (prompt), (code, task), 
+        and legacy system_prompt.
+        """
+        # Extract prompt from multiple possible legacy signatures
+        if len(args) >= 2:  # Handle (code, task)
+            code, task = args[0], args[1]
+            prompt = f"### TASK\n{task}\n\n### CODE\n{code}"
+        elif len(args) == 1: # Handle (prompt)
+            prompt = args[0]
+        else:
+            prompt = kwargs.get("prompt", "")
+
+        # Handle system_prompt shim
+        system_prompt = kwargs.pop("system_prompt", None)
+        if system_prompt:
+            prompt = f"[SYSTEM_INSTRUCTION]\n{system_prompt}\n\n[USER_INPUT]\n{prompt}"
+
+        # Extract other parameters if provided in new style
+        file_path = kwargs.get("file_path", "unknown_file")
+        code = kwargs.get("code", "")
+        task = kwargs.get("task", prompt)
+        round_num = kwargs.get("round_num", 1)
+        fission_active = kwargs.get("fission_active", False)
+        
+        # Call the original implementation with extracted parameters
+        return await self._resilient_mutation_impl(
+            file_path=file_path,
+            code=code or prompt,
+            task=task,
+            round_num=round_num,
+            fission_active=fission_active,
+            system_prompt=system_prompt,
+            **{k: v for k, v in kwargs.items() if k not in ['file_path', 'code', 'task', 'round_num', 'fission_active', 'system_prompt', 'prompt']}
+        )
+
+    async def _resilient_mutation_impl(
         self,
         file_path: str,
         code: str,
