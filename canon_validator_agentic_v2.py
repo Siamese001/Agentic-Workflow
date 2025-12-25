@@ -116,8 +116,12 @@ def verify_neural_link():
             "socket_timeout": 2,
         }
         if parsed.scheme == "rediss":
-            connection_kwargs["ssl"] = True
-            connection_kwargs["ssl_cert_reqs"] = None # Flexible for local/dev SSL
+            # Explicitly manage SSL params to avoid redis-py version conflicts
+            connection_kwargs.update({
+                "ssl": True, 
+                "ssl_cert_reqs": None,
+                "ssl_check_hostname": False
+            })
 
         r = redis.Redis(**connection_kwargs)
         r.ping()
@@ -818,6 +822,17 @@ async def run_mission(target_scope: str = "agentic_core"):
     # Use the GLOBALLY defined project_root from the Gravity Anchor
     global project_root 
     print(f"   [OK] Mission Root Anchored: {project_root}")
+    
+    # === SOVEREIGN STATE RESET (Optional) ===
+    # Auto-reset volatile state if --reset flag provided
+    if "--reset" in sys.argv:
+        print("\n[*] SOVEREIGN STATE RESET ACTIVATED")
+        try:
+            from agentic_core.L0_maintenance.reset_sovereign_state import purge_volatile_state
+            purge_volatile_state()
+            print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
+        except Exception as e:
+            print(f"   [!] Reset failed: {e}")
     
     # === DASHBOARD INITIALIZATION (METRICS ONLY) ===
     # [DASHBOARD INITIALIZATION] Initialize metrics and web server
