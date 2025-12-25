@@ -142,10 +142,10 @@ class SubAtomicEngine:
             logger.error(f"   [MEMORY ERROR] Embedding failed: {e}")
             return [0.0] * 768  # Return null vector to prevent mission crash
     
-    async def resilient_mutation(self, *args, **kwargs) -> str:
+    async def resilient_mutation(self, *args, system_prompt: Optional[str] = None, **kwargs) -> str:
         """
-        Universal Compatibility Signature: Handles (prompt), (code, task), 
-        and legacy system_prompt.
+        Hardened LLM Gateway: Universal signature with legacy system_prompt support.
+        Scrubs unknown kwargs to prevent Gemini API errors.
         """
         # Extract prompt from multiple possible legacy signatures
         if len(args) >= 2:  # Handle (code, task)
@@ -156,8 +156,9 @@ class SubAtomicEngine:
         else:
             prompt = kwargs.get("prompt", "")
 
-        # Handle system_prompt shim
-        system_prompt = kwargs.pop("system_prompt", None)
+        # Handle system_prompt shim - prioritize parameter over keyword
+        if not system_prompt:
+            system_prompt = kwargs.pop("system_prompt", None)
         if system_prompt:
             prompt = f"[SYSTEM_INSTRUCTION]\n{system_prompt}\n\n[USER_INPUT]\n{prompt}"
 
@@ -168,6 +169,10 @@ class SubAtomicEngine:
         round_num = kwargs.get("round_num", 1)
         fission_active = kwargs.get("fission_active", False)
         
+        # [HARDENING] Scrub unknown kwargs that cause Gemini API to choke
+        # This prevents 'unexpected keyword' errors from third-party callables
+        scrubbed_kwargs = {k: v for k, v in kwargs.items() if k not in ['stop_sequences', 'top_p', 'response_format']}
+        
         # Call the original implementation with extracted parameters
         return await self._resilient_mutation_impl(
             file_path=file_path,
@@ -176,7 +181,7 @@ class SubAtomicEngine:
             round_num=round_num,
             fission_active=fission_active,
             system_prompt=system_prompt,
-            **{k: v for k, v in kwargs.items() if k not in ['file_path', 'code', 'task', 'round_num', 'fission_active', 'system_prompt', 'prompt']}
+            **scrubbed_kwargs
         )
 
     async def _resilient_mutation_impl(
@@ -213,9 +218,10 @@ class SubAtomicEngine:
                 logger.warning(f"   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.")
                 temp_override = 0.8  # Increase randomness to break loop
         
-        # Build prompt (use system_prompt if provided)
+        # Build prompt with improved system prompt handling
         if system_prompt:
-            prompt = f"{system_prompt}\n\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}"
+            # Use cleaner INSTRUCTION/CONTEXT format for better clarity
+            prompt = f"[INSTRUCTION]\n{system_prompt}\n\n[CONTEXT]\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}"
         elif fission_active:
             prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
         else:
