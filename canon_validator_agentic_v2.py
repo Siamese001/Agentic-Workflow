@@ -522,19 +522,16 @@ from agentic_core.runtime.shared.void_compliance import (
 print(f"   [OK] Void Compliance Engine: Online.")
 
 # [L4 SOVEREIGNTY] Pinecone Hybrid Routing Integration
+# DEFERRED: Pinecone agent will be initialized inside async run_mission() to avoid SSL issues
 pinecone_agent = None
 try:
     from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
-    # Inject the project root for path-awareness
-    pinecone_agent = PineconeSovereignAgent(project_root=project_root)
-    # Seal the name in the global context for cross-agent access
+    # Just import the class, don't instantiate yet
     globals()['PineconeSovereignAgent'] = PineconeSovereignAgent
-    if "DEGRADED" not in pinecone_agent.status:
-        print(f"   [OK] Hybrid routing ONLINE: PineconeSovereignAgent sovereign armed")
-    else:
-        print(f"   [!] Hybrid routing DEGRADED: {pinecone_agent.status}")
+    print(f"   [OK] PineconeSovereignAgent class loaded (will instantiate in async context)")
 except Exception as e:
-    print(f"   [!] Hybrid routing failed to load: {e}")
+    print(f"   [!] Hybrid routing class import failed: {e}")
+    PineconeSovereignAgent = None
 
 # [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
 from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
@@ -1382,16 +1379,29 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                 # Silently skip passive components - no warning needed
                 continue
 
+            # [SOVEREIGN ARMING] Context-aware instantiation with fallback
             sig = inspect.signature(cls_ref.__init__)
             kwargs = {}
             
             if 'ctx' in sig.parameters: kwargs['ctx'] = ctx
             elif 'context' in sig.parameters: kwargs['context'] = ctx
             
+            if 'project_root' in sig.parameters: kwargs['project_root'] = project_root
+            if 'guardrail' in sig.parameters and hasattr(ctx, 'safety_guardrail'): 
+                kwargs['guardrail'] = ctx.safety_guardrail
+            
             if 'name' in sig.parameters: kwargs['name'] = cls_name
             if 'engine' in sig.parameters: kwargs['engine'] = ctx.engine
-                
-            agent_instance = cls_ref(**kwargs)
+            
+            # Try instantiation with context, fallback to empty constructor
+            try:
+                agent_instance = cls_ref(**kwargs)
+            except TypeError:
+                try:
+                    agent_instance = cls_ref()
+                except Exception:
+                    continue
+                    
             agent_instance.current_status = "Idle"
             agent_instance.current_task = "Awaiting mission"
             
@@ -2169,7 +2179,39 @@ CURRENT CODE:
                     'needs_move': True
                 }
         
-        # Initialize violation tracking for healing loop
+        # [SOVEREIGN MUTATION CASCADE] Execute healing loop with atomic validators
+        if atomic_validators:
+            # Bounded rounds to prevent system exhaustion (WinError 1450)
+            for round_idx in range(1, 4):
+                healed_this_round = False
+                
+                for agent in atomic_validators:
+                    try:
+                        # Get the agent's execute or run method
+                        method = getattr(agent, 'execute', getattr(agent, 'run', None))
+                        if not method:
+                            continue
+                        
+                        # [CRITICAL] Shim makes methods async; MUST await result
+                        if inspect.iscoroutinefunction(method):
+                            result = await method(file_path)
+                        else:
+                            result = method(file_path)
+                        
+                        # Check if healing occurred
+                        if result and isinstance(result, dict) and result.get("healed"):
+                            healed_this_round = True
+                            ctx.results[file_path] = result
+                            print(f"\n      [MUTATED] {agent.__class__.__name__}: {file_name}")
+                            
+                    except Exception as e:
+                        print(f"\n      [!] {agent.__class__.__name__} execution error: {str(e)[:100]}")
+                
+                # If no healing occurred this round, break early
+                if not healed_this_round:
+                    break
+        
+        # Legacy healing loop for compatibility (will be removed after migration)
         initial_violations = 0
         file_healed = False
         
