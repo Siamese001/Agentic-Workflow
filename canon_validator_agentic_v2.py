@@ -213,8 +213,19 @@ def perform_backup(p: Path):
         bak = p.with_suffix(p.suffix + ".bak." + datetime.now().strftime("%H%M%S"))
         shutil.copy2(p, bak)
 
-for asset in project_root.rglob("*"):
-    if asset.is_dir() or asset.suffix == ".py" or ".git" in str(asset):
+# [MEMORY FIX] Replace rglob with memory-efficient walker
+PROTECTED = {'.git', '.venv', 'node_modules', 'archives', '__pycache__', 'data'}
+
+def get_assets(root_path):
+    """Memory-efficient asset walker that prunes protected directories."""
+    for root, dirs, files in os.walk(root_path):
+        # Prune protected dirs in-place to prevent os.walk from entering them
+        dirs[:] = [d for d in dirs if d not in PROTECTED]
+        for file in files:
+            yield Path(root) / file
+
+for asset in get_assets(project_root):
+    if asset.suffix == ".py" or ".git" in str(asset):
         continue
         
     rel = asset.relative_to(project_root)
