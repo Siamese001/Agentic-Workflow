@@ -61,7 +61,23 @@ class ProactiveResourceManager:
         self.success_history: deque = deque(maxlen=50)
         self.priority_weights: Dict[int, float] = self._initialize_priority_weights()
         self._last_adjustment: datetime = datetime.now()
+        
+        # Resource mutation parameters
+        self.base_global_budget = self.thresholds.global_healing_budget
+        self.current_global_budget = self.base_global_budget
+        self.mutation_active = True
+        self.mutation_cycle = 180  # 3 minutes
+        self._mutation_task = None
+        self.l1_learner = None  # Injected via awaken() to prevent circular imports
+        
         logger.info("Proactive Resource Manager initialized")
+    
+    def awaken(self, learner_instance=None):
+        """L2: Wake with injected L1 wisdom"""
+        self.l1_learner = learner_instance
+        if self.mutation_active and not self._mutation_task:
+            self._mutation_task = asyncio.create_task(self.l1_guided_mutation_cycle())
+            logger.info("L2: Resource-aware mutation engine awakened with L1 guidance")
     
     def _initialize_priority_weights(self) -> Dict[int, float]:
         """Initialize priority weights for different violation keys."""
@@ -286,6 +302,101 @@ class ProactiveResourceManager:
         self.active_healings = 0
         self.healing_queue.clear()
         logger.info("Resource counters reset")
+    
+    async def l1_guided_mutation_cycle(self):
+        """L2: Accept resource recommendations from L1 with confidence-based dampening"""
+        logger.info("L2: L1-guided mutation cycle active")
+        
+        while self.mutation_active:
+            try:
+                await asyncio.sleep(300)  # 5 minutes
+                
+                # Calculate success metrics for L2's own logic
+                if len(self.success_history) >= 10:
+                    success_rate = sum(self.success_history) / len(self.success_history)
+                    avg_rounds = 2.0  # Default estimate
+                    
+                    # L2's autonomous budget adaptation with Safety Floor
+                    old_budget = self.current_global_budget
+                    
+                    if success_rate > 0.85 and avg_rounds < 2:
+                        new_budget = min(self.base_global_budget * 2, self.current_global_budget + 10)
+                    elif success_rate < 0.5:
+                        # Safety Floor: Never drop below 20% of base budget
+                        safety_floor = int(self.base_global_budget * 0.2)
+                        new_budget = max(safety_floor, self.current_global_budget - 15)
+                    else:
+                        new_budget = self.current_global_budget
+                    
+                    if new_budget != old_budget:
+                        self.current_global_budget = new_budget
+                        self.thresholds.global_healing_budget = new_budget
+                        logger.info(f"L2 MUTATION: Budget adjusted {old_budget} → {new_budget} (success_rate={success_rate:.1%})")
+                
+                # L1-guided recommendations (if L1 learner is available)
+                if self.l1_learner:
+                    try:
+                        # Get recommendations from L1 (placeholder - would need actual method)
+                        # rec = await self.l1_learner.recommend_resource_mutation()
+                        rec = None  # Placeholder until L1 method is implemented
+                        
+                        if rec and rec.get("confidence", 0) > 0.5:
+                            # Sovereign Pattern: Apply only if confidence is high
+                            if rec["mutation"] == "increase_critical_budget":
+                                increase = rec.get("suggested_global_increase", 5)
+                                old_budget = self.current_global_budget
+                                self.current_global_budget += increase
+                                self.thresholds.global_healing_budget = self.current_global_budget
+                                logger.info(f"L2: Applied L1 recommendation: +{increase} budget (confidence={rec['confidence']:.1%})")
+                            
+                            elif rec["mutation"] == "decrease_budget":
+                                decrease = rec.get("suggested_global_decrease", 5)
+                                safety_floor = int(self.base_global_budget * 0.2)
+                                old_budget = self.current_global_budget
+                                self.current_global_budget = max(safety_floor, self.current_global_budget - decrease)
+                                self.thresholds.global_healing_budget = self.current_global_budget
+                                logger.info(f"L2: Applied L1 recommendation: -{decrease} budget (confidence={rec['confidence']:.1%})")
+                    
+                    except Exception as e:
+                        logger.debug(f"L2: L1 guidance unavailable: {e}")
+                
+                # Persist mutation state
+                await self.persist_mutation_state()
+                
+                logger.debug("L2: L1-guided mutation cycle completed")
+                
+            except Exception as e:
+                logger.error(f"L2 Mutation cycle error: {e}")
+                await asyncio.sleep(60)
+    
+    async def persist_mutation_state(self):
+        """L2: Atomic state persistence for resource policies"""
+        import json
+        import tempfile
+        from pathlib import Path
+        
+        try:
+            state_path = Path(".canon_memory/resource_state.json")
+            state_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            state = {
+                "current_global_budget": self.current_global_budget,
+                "base_global_budget": self.base_global_budget,
+                "mutation_active": self.mutation_active,
+                "last_updated": datetime.now().isoformat()
+            }
+            
+            # Atomic write using tempfile + rename
+            with tempfile.NamedTemporaryFile('w', delete=False, dir=state_path.parent, encoding='utf-8') as tf:
+                json.dump(state, tf, indent=2)
+                temp_name = tf.name
+            
+            import os
+            os.replace(temp_name, state_path)
+            logger.debug("L2: Resource state persisted atomically")
+            
+        except Exception as e:
+            logger.error(f"L2: Failed to persist resource state: {e}")
     
     def get_recommendations(self) -> List[str]:
         """Get resource management recommendations."""
