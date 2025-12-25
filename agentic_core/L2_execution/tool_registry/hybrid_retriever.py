@@ -135,23 +135,35 @@ class HybridRetriever:
                 unique.append(r)
         return unique
 
-    def _reciprocal_rank_fusion(self, rankings: List[List[RetrievalResult]], k: int = 60) -> List[RetrievalResult]:
+    def reciprocal_rank_fusion(self, dense: List[RetrievalResult], sparse: List[RetrievalResult], k: int = 60) -> List[RetrievalResult]:
         """
-        Standard RRF: Σ 1 / (k + rank)
+        Fused rankings using optimized RRF (O(N) performance)
         """
-        scores = {}  # {content_hash: score}
-        doc_map = {} # {content_hash: RetrievalResult}
+        rank_map = {}  # {content_hash: {"result": R, "rrf_score": 0.0}}
+        
+        # Fuse Dense Ranking
+        for rank, r in enumerate(dense, start=1):
+            h = hashlib.sha256(r.text.encode()).hexdigest()
+            if h not in rank_map:
+                rank_map[h] = {"result": r, "rrf_score": 0.0}
+            rank_map[h]["rrf_score"] += 1 / (k + rank)
 
-        for ranking in rankings:
-            for rank, doc in enumerate(ranking, start=1):
-                doc_hash = hashlib.sha256(doc.text.encode()).hexdigest()
-                scores[doc_hash] = scores.get(doc_hash, 0) + 1.0 / (k + rank)
-                if doc_hash not in doc_map:
-                    doc_map[doc_hash] = doc
+        # Fuse Sparse Ranking
+        for rank, r in enumerate(sparse, start=1):
+            h = hashlib.sha256(r.text.encode()).hexdigest()
+            if h not in rank_map:
+                rank_map[h] = {"result": r, "rrf_score": 0.0}
+            rank_map[h]["rrf_score"] += 1 / (k + rank)
 
-        # Return results sorted by the new fused score
-        sorted_docs = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        return [doc_map[h] for h, _ in sorted_docs]
+        # Convert back and sort
+        fused = []
+        for info in rank_map.values():
+            res = info["result"]
+            res.score = info["rrf_score"]
+            fused.append(res)
+        
+        fused.sort(key=lambda x: x.score, reverse=True)
+        return fused
 
     async def rerank_combined(self, combined: List[RetrievalResult], query: str) -> List[RetrievalResult]:
         """L5 reranking via cross-encoder (guardrail)"""
@@ -162,19 +174,20 @@ class HybridRetriever:
 
     async def hybrid_search(self, query: str, top_k: int = 12) -> List[RetrievalResult]:
         """Sovereign hybrid search with RRF fusion"""
-        # Run searches in parallel
+        # Run searches in parallel with thread offloading for BM25
         dense_results, sparse_results = await asyncio.gather(
             self.dense_search(query, top_k=top_k*2),
             asyncio.to_thread(self.sparse_search, query, top_k=top_k*2)
         )
 
-        # Fuse rankings
-        fused = self._reciprocal_rank_fusion([dense_results, sparse_results], k=60)
+        if not dense_results and not sparse_results:
+            return []
+
+        # Hybrid Fusion via RRF
+        fused = self.reciprocal_rank_fusion(dense_results, sparse_results)
         
-        # Final Guardrail: Rerank the top fused candidates
-        if fused and len(fused) > 0:
-            return await self.rerank_combined(fused[:top_k*2], query)
-        return fused[:top_k]
+        # Final L5 Precision boost
+        return await self.guardrail.rerank_documents(fused[:min(50, len(fused))], query, top_k=top_k)
 
     async def wait_for_index(self):
         """Wait for BM25 index to be ready"""
