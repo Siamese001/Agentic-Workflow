@@ -8,10 +8,11 @@ Fixes 'ssl' error and provides memory-safe fallback.
 import os
 import urllib.parse
 from collections import OrderedDict
-from typing import Optional, Any
+from typing import Any, Optional
 
 # 2. THIRDPARTY
 import redis
+
 
 class SovereignRedisOrchestrator:
     def __init__(self):

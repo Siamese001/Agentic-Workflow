@@ -1350,7 +1350,8 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                     # Suppress known legacy noise to find real architectural breaks
                     noise = ["services.", "runtime_shared", "BaseModel", "Agent", "ClassVar"]
                     if any(n in str(e) for n in noise):
-                        return 
+                        print(f"     [!] Known legacy issue: {e}")
+                        continue
                     print(f"     [!] Failed to inspect {file_path.name}: {e}")
         
         return found_agents
@@ -2579,6 +2580,11 @@ if __name__ == "__main__":
         type=str, 
         default="agentic_core", 
         help="Target folder for validation"
+    )
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="Reset sovereign state before validation"
     )
     args = parser.parse_args()
     
