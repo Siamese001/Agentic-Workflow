@@ -67,16 +67,50 @@ class AdaptiveLearningEngine:
     - Continuous learning from new healing attempts
     """
     
-    def __init__(self, pattern_storage_path: Optional[str] = None):
+    def __init__(self, pattern_storage_path: Optional[str] = None, autonomous_mode: bool = True):
         """Initialize the adaptive learning engine."""
+        from pathlib import Path
         self.pattern_storage_path = pattern_storage_path or os.path.join(
             os.getcwd(), ".canon_memory", "healing_patterns.json"
         )
+        self.storage_path = Path(self.pattern_storage_path)
+        self.backup_dir = Path(".canon_memory/backups")
+        self.backup_dir.mkdir(parents=True, exist_ok=True)
+        self.autonomous_mode = autonomous_mode
+        self._improvement_task = None
         self.patterns: Dict[int, List[HealingPattern]] = defaultdict(list)
         self.violation_history: Dict[str, List[Tuple[int, bool, datetime]]] = defaultdict(list)
         self.prediction_cache: Dict[str, List[ViolationPrediction]] = {}
         self._load_patterns()
         logger.info("Adaptive Learning Engine initialized")
+    
+    def awaken(self):
+        """L1: Explicitly trigger the autonomous learning loop"""
+        if self.autonomous_mode and not self._improvement_task:
+            self._improvement_task = asyncio.create_task(self.eternal_self_improvement())
+            logger.info("L1 Autonomous learning loop awakened")
+    
+    async def eternal_self_improvement(self):
+        """L1: Continuous self-improvement loop"""
+        while self.autonomous_mode:
+            try:
+                # Periodic pattern optimization
+                await asyncio.sleep(300)  # Every 5 minutes
+                
+                # Prune low-confidence patterns
+                for key in list(self.patterns.keys()):
+                    self.patterns[key] = [
+                        p for p in self.patterns[key]
+                        if p.confidence_score > 0.3 or (p.success_count + p.failure_count) < 5
+                    ]
+                
+                # Save optimized patterns
+                self._save_patterns()
+                logger.debug("L1 Self-improvement cycle completed")
+                
+            except Exception as e:
+                logger.error(f"L1 Self-improvement error: {e}")
+                await asyncio.sleep(60)
     
     def _load_patterns(self):
         """Load learned patterns from storage."""
@@ -109,9 +143,21 @@ class AdaptiveLearningEngine:
             logger.error(f"Failed to load patterns: {e}")
     
     def _save_patterns(self):
-        """Save learned patterns to storage."""
+        """Save learned patterns to storage with versioned rotation (Keep Last 10)."""
         try:
             os.makedirs(os.path.dirname(self.pattern_storage_path), exist_ok=True)
+            
+            # Backup previous version before overwriting
+            if self.storage_path.exists():
+                backup = self.backup_dir / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+                import shutil
+                shutil.copy2(self.storage_path, backup)
+                
+                # Rotate: Keep only the 10 most recent backups
+                backups = sorted(self.backup_dir.glob("healing_patterns.*.json"), key=os.path.getmtime)
+                while len(backups) > 10:
+                    backups[0].unlink()
+                    backups.pop(0)
             
             data = {
                 'patterns': {},
@@ -334,6 +380,6 @@ class AdaptiveLearningEngine:
         }
 
 
-def create_adaptive_learning_engine(storage_path: Optional[str] = None) -> AdaptiveLearningEngine:
+def create_adaptive_learning_engine(storage_path: Optional[str] = None, autonomous_mode: bool = True) -> AdaptiveLearningEngine:
     """Factory function to create adaptive learning engine."""
-    return AdaptiveLearningEngine(pattern_storage_path=storage_path)
+    return AdaptiveLearningEngine(pattern_storage_path=storage_path, autonomous_mode=autonomous_mode)
