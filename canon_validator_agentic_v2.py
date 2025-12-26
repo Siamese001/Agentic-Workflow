@@ -73,13 +73,6 @@ print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 # [ETERNAL INDEX] Ensure territory embeddings bootstrapped
 try:
     from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
-    # Patch: Ignore system_prompt if engine signature is old
-    if hasattr(subatomic_engine, 'resilient_mutation'):
-        orig = subatomic_engine.resilient_mutation
-        def patched_mutation(*args, **kwargs):
-            kwargs.pop('system_prompt', None)
-            return orig(*args, **kwargs)
-        subatomic_engine.resilient_mutation = patched_mutation
     bootstrap_territory_index()
     print("   [OK] Semantic territory index ready")
 except Exception as e:
@@ -400,52 +393,6 @@ def dynamic_import(module_path, class_name):
     except (ImportError, AttributeError):
         return None
 
-# ==============================================================================
-# [HARDENING] TELEMETRY PROXY: GEMINI SPY
-# ==============================================================================
-class GeminiSpy:
-    """
-    [L5 HARDENING] TELEMETRY INTERCEPTOR
-    Wraps the SubAtomicEngine to force visibility of all LLM transactions.
-    Ensures that 'Agentic Capabilities' are actually resulting in API calls.
-    """
-    def __init__(self, real_engine):
-        self._engine = real_engine
-
-    def __getattr__(self, name):
-        attr = getattr(self._engine, name)
-        if not callable(attr) or name.startswith("_"):
-            return attr
-
-        def wrapper(*args, **kwargs):
-            if args:
-                prompt_text = str(args[0]).lower()
-                forbidden = ["openai", "anthropic", "claude", "gpt"]
-                if any(bad in prompt_text for bad in forbidden):
-                    raise ValueError(f"[L5 SECURITY BLOCK] Unauthorized model reference detected in prompt.")
-            
-            print(f"\n[SPY] GEMINI SPY Agent triggering: {name}")
-            if args:
-                try:
-                    preview = str(args[0])[:120].replace('\n', ' ')
-                    print(f"   -> Prompt: {preview}...")
-                except: pass
-            
-            start_t = time.time()
-            try:
-                result = attr(*args, **kwargs)
-                duration = time.time() - start_t
-                if duration < 0.05 and name == "resilient_mutation":
-                    print(f"   [!] ALERT: Zero-latency mutation detected. Check engine logic.")
-                print(f"[SPY] GEMINI SPY LLM Success ({duration:.2f}s).")
-                return result
-            except Exception as e:
-                print(f"[SPY] GEMINI SPY LLM OR TELEMETRY FAILURE: {e}")
-                if "successful_traces" in str(e):
-                    print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
-                raise e
-        return wrapper
-
 # Try loading components dynamically
 try:
     apply_fission_blueprint = dynamic_import('agentic_core.L3_orchestration.P1_core.fission_executor', 'apply_fission_blueprint')
@@ -464,41 +411,27 @@ try:
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 
-    # [ETERNAL HARDENING] Early SubAtomicEngine + GeminiSpy instantiation
+    # [ETERNAL HARDENING] Early SubAtomicEngine instantiation — DEFERRED
+    # REMOVED: Early GeminiSpy wrapping was using incomplete/broken class definition below.
+    # The correct GeminiSpy is defined later. Early wrapping caused corrupted engine → no mutations.
+    # SubAtomicEngine will be properly wrapped inside run_mission() when full context is available.
     subatomic_engine = None
     if SubAtomicEngine is not None:
         try:
             _real_engine = SubAtomicEngine(gemini_client=None)
-            
-            # 2. HARDEN SUBATOMIC ENGINE (Positional + Keyword Shim)
+            # Apply minimal safe shim: only remove system_prompt (legacy compatibility)
             from types import MethodType
             original_method = _real_engine.resilient_mutation
-            async def sovereign_mutation(self_obj, *args, **kwargs):
-                # Handle legacy positional (code, task) calls
-                if len(args) >= 2:
-                    code, task = args[0], args[1]
-                    kwargs["prompt"] = f"Task: {task}\n\nCode:\n{code}"
-                    args = args[2:]
-                elif len(args) == 1:
-                    kwargs['prompt'] = args[0]
-                    args = ()
-                # Handle legacy system_prompt keyword
-                if "system_prompt" in kwargs:
-                    sys_p = kwargs.pop("system_prompt")
-                    if "prompt" in kwargs:
-                        kwargs["prompt"] = f"[SYSTEM]\n{sys_p}\n\n[USER]\n{kwargs['prompt']}"
+            async def safe_mutation(self, *args, **kwargs):
+                kwargs.pop("system_prompt", None)  # Strip legacy kwarg
                 return await original_method(*args, **kwargs)
-            
-            # Bind to the instance to ensure 'self' is passed correctly
-            _real_engine.resilient_mutation = MethodType(sovereign_mutation, _real_engine)
-            
-            subatomic_engine = GeminiSpy(_real_engine)
-            print(f"   [OK] SubAtomicEngine + GeminiSpy instantiated early")
-            print(f"   [OK] SubAtomicEngine Bound: Coroutine shim active")
+            _real_engine.resilient_mutation = MethodType(safe_mutation, _real_engine)
+            subatomic_engine = _real_engine  # Do NOT wrap with GeminiSpy yet — will do later
+            print(f"   [OK] SubAtomicEngine instantiated (light shim only)")
         except Exception as e:
-            print(f"   [!] Engine early init failed: {e}")
+            print(f"   [!] Engine early init failed (non-fatal): {e}")
 
-    # [GRAVITY SURGERY ENABLED] waterfall enforcement active
+    print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 except Exception as e:
     print(f"   [CRITICAL] Dynamic import failed: {e}")
     sys.exit(1)
@@ -616,8 +549,11 @@ GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '100'))
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
 # ==============================================================================
 # Toggle these to False for daily work after global sweep is complete
-RUN_GRAVITY_REFACTOR = True  # Enable automatic gravity violation fixes
+RUN_GRAVITY_REFACTOR = False  # TEMPORARY: Disabled to allow healing cascade to run without stalling
 RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
+
+# [DEBUG GUARD] Prevent infinite pre-flight loop
+print("\n[FORCE PROGRESS] Gravity refactor temporarily disabled to enable mutation cascade.")
 
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
@@ -669,6 +605,7 @@ class GeminiSpy:
                 if "successful_traces" in str(e):
                     print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
+        return wrapper  # [CRITICAL FIX] Actually return the wrapper function
 # ==============================================================================
 # [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
 # ==============================================================================
@@ -1407,22 +1344,27 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     # [SOVEREIGN ARMING] Instantiate with core architectural context
     ctx.cleaning_crew = []
     for mod_name, cls_name, agent_class in discovered:
+        # Skip non-agent classes
+        if cls_name in ('ValidationContext', 'VERIFICATION_REGISTRY'):
+            continue
+            
         try:
             # Pass project_root and safety_guardrail as standard context
             instance = agent_class(project_root=project_root, guardrail=safety_guard)
-            if hasattr(instance, 'heal_violation'):
+            # Agents have execute or run methods, not heal_violation
+            if hasattr(instance, 'execute') or hasattr(instance, 'run'):
                 ctx.cleaning_crew.append(instance)
                 print(f"   [+] {cls_name} ARMED with context")
         except TypeError:
             # Fallback for simple agents without context requirements
             try:
                 instance = agent_class()
-                if hasattr(instance, 'heal_violation'):
+                if hasattr(instance, 'execute') or hasattr(instance, 'run'):
                     ctx.cleaning_crew.append(instance)
                     print(f"   [+] {cls_name} ARMED (bare)")
             except Exception: continue
         except Exception as e:
-            print(f"   [!] Failed to arm {cls_name}: {e}")
+            print(f"   [!] Failed to arm {cls_name}: {str(e)[:80]}")
     
     print(f"   [OK] {len(ctx.cleaning_crew)} healing agents armed for mutation")
     
