@@ -205,21 +205,22 @@ class ObservabilityHealing(HealingStrategy):
             description = issue.get("description", "").lower()
             
             # Check if this is an observability footprint issue
-            if "observability footprint" in dimension.lower() or "observability" in description:
+            if "observability footprint" in dimension.lower() or "dark reasoning" in description or "observability" in description:
                 # Extract function and line information if available
-                function_name = None
-                line_num = None
+                function_name = issue.get("function", "anonymous")
+                line_num = issue.get("line")
                 
-                # Try to parse from description
-                if "function" in description:
-                    try:
-                        parts = description.split("function")
-                        if len(parts) > 1:
-                            function_name = parts[1].strip().split()[0]
-                    except (ValueError, IndexError):
-                        pass
+                # Try to parse from description if not directly available
+                if not function_name or function_name == "anonymous":
+                    if "function" in description:
+                        try:
+                            parts = description.split("function")
+                            if len(parts) > 1:
+                                function_name = parts[1].strip().split()[0]
+                        except (ValueError, IndexError):
+                            pass
                 
-                if "line" in description:
+                if not line_num and "line" in description:
                     try:
                         parts = description.split("line")
                         if len(parts) > 1:
@@ -232,10 +233,11 @@ class ObservabilityHealing(HealingStrategy):
                     "file": issue.get("file", ""),
                     "line": line_num,
                     "function": function_name,
-                    "reason": "Missing observability footprint in reasoning block",
-                    "priority": self.priority,
+                    "insert_start": f'        logger.info("[REASONING START] Entering {function_name}")',
+                    "insert_end": f'        logger.info("[REASONING END] Exiting {function_name}")',
+                    "reason": "Missing L6 observability footprint — bracketed logging required",
                     "strategy": self.name,
-                    "suggestion": f"Add logger.info('[REASONING START] {function_name}')" if function_name else "Add logging statement"
+                    "priority": self.priority
                 })
         
         return fixes
