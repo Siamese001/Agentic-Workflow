@@ -2543,7 +2543,7 @@ class SovereignEvent(SovereignBaseModel):
     event_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
     event_type: SovereignEventType
-    severity: str  # "INFO", "WARNING", "ERROR", "CRITICAL"
+    severity: SovereignSeverity
     source: str
     dimension: Optional[str] = None
     payload: Dict[str, Any] = field(default_factory=dict)
@@ -2560,6 +2560,17 @@ class SovereignEvent(SovereignBaseModel):
                 raise ValueError(f"Sovereignty Violation: '{v}' is not a registered SovereignEventType")
         return v
 
+    @field_validator('severity', mode='before')
+    @classmethod
+    def validate_severity(cls, v):
+        """Validate and convert severity to SovereignSeverity enum."""
+        if isinstance(v, str):
+            try:
+                return SovereignSeverity(v)
+            except ValueError:
+                raise ValueError(f"Sovereignty Violation: '{v}' is not a valid SovereignSeverity")
+        return v
+
     class Builder:
         """
         Sovereign Builder for SovereignEvent – Phase 12 (Dec 26, 2025)
@@ -2571,7 +2582,7 @@ class SovereignEvent(SovereignBaseModel):
         def __init__(self):
             self._event_id: Optional[str] = None
             self._event_type: Optional[SovereignEventType] = None
-            self._severity: Optional[str] = None
+            self._severity: Optional[SovereignSeverity] = None
             self._source: Optional[str] = None
             self._dimension: Optional[str] = None
             self._payload: Dict[str, Any] = {}
@@ -2585,10 +2596,12 @@ class SovereignEvent(SovereignBaseModel):
                 raise ValueError(f"Invalid Event Type: {event_type}. Use SovereignEventType.")
             return self
 
-        def with_severity(self, severity: str) -> 'SovereignEvent.Builder':
-            if severity not in ["INFO", "WARNING", "ERROR", "CRITICAL"]:
-                raise ValueError(f"Constitutional Violation: Invalid severity '{severity}'")
-            self._severity = severity
+        def with_severity(self, severity: Any) -> 'SovereignEvent.Builder':
+            """Hardens the event emission with canonical weight."""
+            try:
+                self._severity = SovereignSeverity(severity)
+            except ValueError:
+                raise ValueError(f"Invalid Severity: {severity}. Choose from {list(SOVEREIGN_SEVERITIES)}")
             return self
 
         def from_source(self, source: str) -> 'SovereignEvent.Builder':
