@@ -2,14 +2,28 @@ import ast
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
+# DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
+from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 
-class SafetyInspector(SubAtomicAgent):
+class SafetyInspector:
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance. Emits SECURE signal.
+    
+    DDD Compliance Phase 9A:
+    - Uses composition with CanonBaseAgentInterface
+    - Implementation injected via dependency injection
+    - No direct dependency on L2_Execution layer
     """
+    
+    def __init__(self, agent_impl: CanonBaseAgentInterface):
+        """Initialize with injected agent implementation."""
+        self.agent = agent_impl
+    
+    def __getattr__(self, name):
+        """Delegate all agent methods to injected implementation - backward compatible."""
+        return getattr(self.agent, name)
 
     def execute(self) -> None:
         """
