@@ -99,6 +99,20 @@ class SovereignConfig:
     DEEPWIKI_REPO_CONTEXT: str = "local"
     DEEPWIKI_INDEX_ON_STARTUP: bool = False
     
+    # === Phase 14: Playwright MCP (Dec 26, 2025) ===
+    PLAYWRIGHT_MCP_ENABLED: bool = True
+    PLAYWRIGHT_BROWSER_TYPE: str = "chromium"
+    PLAYWRIGHT_HEADLESS: bool = True
+    PLAYWRIGHT_VIEWPORT_WIDTH: int = 1280
+    PLAYWRIGHT_VIEWPORT_HEIGHT: int = 720
+    PLAYWRIGHT_SCREENSHOT_ON_FAILURE: bool = True
+    
+    # === Phase 15: Fetch MCP (Dec 26, 2025) ===
+    FETCH_MCP_ENABLED: bool = True
+    FETCH_MAX_CONTENT_LENGTH: int = 10000
+    FETCH_EXTRACT_MARKDOWN: bool = True
+    FETCH_TIMEOUT_SECONDS: int = 30
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
