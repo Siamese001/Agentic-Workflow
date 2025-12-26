@@ -189,28 +189,28 @@ TERRITORY_POSITIVE_SIGNALS = CANON_SIGNALS_MK2
 # [SOVEREIGN BOOTSTRAP] Auto-populate Pinecone index on first run
 def bootstrap_territory_index():
     """
-    Called once — embeds TERRITORY_EXAMPLES into Pinecone for semantic healing.
-    Safe to run multiple times (upserts).
+    Sovereign bootstrap – embeds TERRITORY_EXAMPLES into Pinecone using canonical store.
+    Idempotent and safe for multiple runs.
     """
     import hashlib
-    from pathlib import Path
     
     try:
-        from agentic_core.L3_orchestration.healing.semantic_territory_mapper_agent import (
-            SemanticTerritoryMapperAgent,
-        )
-        mapper = SemanticTerritoryMapperAgent(Path("."), None)  # Dummy ctx
+        from agentic_core.semantic_memory.vector_stores.pinecone.pinecone_store import SovereignPineconeStore
+        # Assumes basic embedding logic exists in the mapped territory
+        from agentic_core.semantic_memory.embedding_logic.core_embedder import get_embedding 
+        
+        store = SovereignPineconeStore()
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():
-            embedding = mapper.get_embedding(example)
+            embedding = get_embedding(example)
             vectors.append({
                 "id": f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}",
                 "values": embedding,
-                "metadata": {"territory": territory}
+                "metadata": {"territory": territory, "source": "sovereign_constitution"}
             })
         if vectors:
-            mapper.index.upsert(vectors=vectors)
-            print(f"   [✓] Bootstrapped {len(vectors)} territory examples to Pinecone")
+            store.upsert(vectors=vectors, namespace="territory_examples")
+            print(f"   [✓] Bootstrapped {len(vectors)} territory examples to Pinecone (namespace=territory_examples)")
     except Exception as e:
         print(f"   [!] Territory bootstrap failed: {e}")
 
