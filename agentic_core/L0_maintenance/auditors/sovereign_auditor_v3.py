@@ -21,6 +21,11 @@ try:
 except ImportError:
     validate_ddd_alignment = None
 
+try:
+    from agentic_core.L0_maintenance.auditors.guard_observability_footprint import validate_observability_footprint
+except ImportError:
+    validate_observability_footprint = None
+
 class SovereignReport:
     def __init__(self):
         self.scores = {}
@@ -86,6 +91,14 @@ def main():
     # 5. Config SSOT (Placeholder - guardian not yet created)
     report.scores["Config SSOT"] = 100.0  # Assumed compliant
     report.issues["Config SSOT"] = ["Guardian not yet implemented"]
+    
+    # 6. Observability Footprint (Dark Reasoning Guardian)
+    if validate_observability_footprint:
+        obs_score, obs_issues = validate_observability_footprint(str(target))
+        report.scores["Observability Footprint"] = obs_score
+        report.issues["Observability Footprint"] = obs_issues
+    else:
+        print("⚠ Observability Footprint guardian not available")
 
     report.print_summary()
 

@@ -19,11 +19,15 @@ def check_bounded_contexts(filepath: Path) -> List[str]:
         tree = ast.parse(filepath.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
+                # Phase 9A: Allow SharedContracts imports (neutral interface layer)
+                if "apps_shared.base_agents" in node.module:
+                    continue  # SharedContracts are allowed across all contexts
+                
                 # Check for illegal cross-context imports
-                # (Simple heuristic: L1 should not import L2 directly if L2 is 'low level')
-                # For now, we just flag explicit context jumps
                 for ctx, paths in BOUNDED_CONTEXTS.items():
                     if ctx == current_context: continue
+                    if ctx == "SharedContracts": continue  # SharedContracts can be imported anywhere
+                    
                     if any(p.replace("/", ".") in node.module for p in paths):
                         # Allow imports from contracts/interfaces, flag logic imports
                         if "contracts" not in node.module and "interfaces" not in node.module:
