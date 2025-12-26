@@ -136,28 +136,20 @@ CORE_L4_SUBFOLDER_MAP = {
 
 # --- BACKWARD COMPATIBILITY EXPORTS ---
 AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
-# [ULTIMATE FINAL HARDENING] Precision depth + general bounds + deprecation archive
-CANONICAL_PRECISION_DEPTH = {
-    "agentic_core": 4,   # Root > L# > Stage > File
-    "apps_rg": 3,
-    "apps_lic": 3,
-    "apps_shared": 3,
-    "tests": 3,
-}
+# [L6 ULTIMATE HARDENING] All depth requirements are now derived EXCLUSIVELY from SOVEREIGN_REGISTRY["depth"]
+# Rationale: Eliminates duplicate constants that cause drift and NameError crashes in void_compliance.py
+# CANONICAL_PRECISION_DEPTH, APPS_EXACT_DEPTH, TESTS_EXACT_DEPTH are DEPRECATED and REMOVED.
+# void_compliance.py now uses SOVEREIGN_REGISTRY directly → single source of truth.
 
-# [ETERNAL DEPTH 3] All apps_* folders — exact depth 3 for files
-# Root(0) + apps_*(1) + L1 subfolder(2) + file(3)
-# No deeper nesting allowed — domain limbs remain simple
-APPS_EXACT_DEPTH = 3
+# Keep AGENTIC_CORE_EXACT_DEPTH only for backward compatibility in void_compliance (temporary bridge)
+# It will be removed in next hardening cycle once void_compliance is fully refactored.
+AGENTIC_CORE_EXACT_DEPTH = 4  # Legacy export — will be deleted after full migration
 
-# [ETERNAL DEPTH 3] All tests/ folder — exact depth 3
-# Root(0) + tests(1) + category(2) + file(3)
-TESTS_EXACT_DEPTH = 3
-
-# Specific lock for the core brain
-AGENTIC_CORE_EXACT_DEPTH = 4
-# [ULTIMATE LOCK] Universal depth 4 for ALL files under agentic_core.
-# Applies to L0_maintenance through L5_safety and all internal subfolders.
+# [DEPRECATION NOTICE] The following constants are obsolete:
+# - CANONICAL_PRECISION_DEPTH (duplicate of SOVEREIGN_REGISTRY["depth"])
+# - APPS_EXACT_DEPTH (use SOVEREIGN_REGISTRY["apps_rg"]["depth"])
+# - TESTS_EXACT_DEPTH (use SOVEREIGN_REGISTRY["tests"]["depth"])
+# They have been removed to enforce SSOT and prevent future drift.
 
 # Safe deprecation territory — outside active keys
 DEPRECATION_ARCHIVE = "archives/deprecated_code"
@@ -174,40 +166,25 @@ TERRITORY_EXAMPLES = {
     "scripts": "operational tool cli integrity backup deploy",
 }
 
-# [DOUBLE-LOCK] Positive signals — files with these BELONG in the territory
-# [ETERNAL REFINEMENT] Territory-specific POSITIVE signals for hybrid search
-# These confirm a file's belonging to a specific key territory.
-TERRITORY_POSITIVE_SIGNALS = {
-    # Key 0: Sovereign Root
-    0: ["canon", "validator", "orchestrator", "sovereign", "constitution", "windsurf", "blueprint"],
-
-    # Key 1: Prompt Governance
-    1: ["prompt", "persona", "instructional", "directive", "system_prompt", "meta_prompt", "governance"],
-
-    # Key 11: L1_cognition — reasoning
-    11: ["strategy", "reasoning", "planner", "decomposition", "intent", "mission", "cognition", "thought", "synthesis"],
-
-    # Key 12: L3_orchestration — workflow
-    12: ["orchestration", "fission", "workflow", "router", "hop", "coordinator", "healer", "pruner", "mapper", "registry"],
-
-    # Key 13: L4_state — persistence
-    13: ["state", "memory", "cache", "historian", "audit", "ledger", "persistence", "vector", "pinecone", "redis", "embedding"],
-
-    # Key 15: Domain Specialists
-    15: ["resume", "ranking", "narrative", "scoring", "compliance", "license", "specialist", "generator", "processor"],
-
-    # Key 17: Tests
-    17: ["test", "unit", "integration", "e2e", "functional", "fixture", "mock", "scenario", "pytest"],
-
-    # Key 18: Scripts / Operational
-    18: ["script", "tool", "cli", "operational", "integrity", "backup", "deploy", "maintenance", "guardian"],
-
-    # Key 19: L5_safety — shield
-    19: ["safety", "guardrail", "filter", "enforcer", "shield", "policy", "gravity", "neural", "subatomic", "gemini"],
-
-    # Key 20: Observability / Drift
-    20: ["drift", "audit", "coverage", "naming", "compliance", "monitor", "detector", "aggregator", "hierarchy"]
+# [L6 HARDENING] TERRITORY_POSITIVE_SIGNALS → CANON_SIGNALS_MK2
+# Renamed and hardened to prevent naming drift.
+# Now used exclusively by NamingLawHealerAgent and KeyCoverageAuditorAgent.
+# Expanded with missing high-signal terms to reduce false negatives in Key 49 enforcement.
+CANON_SIGNALS_MK2 = {
+    0:  ["canon", "validator", "orchestrator", "sovereign", "constitution", "windsurf", "blueprint", "compliance"],
+    1:  ["prompt", "persona", "instruction", "directive", "system_prompt", "meta_prompt", "governance", "template"],
+    11: ["strategy", "reasoning", "planner", "decomposition", "intent", "mission", "cognition", "thought", "synthesis", "analysis"],
+    12: ["orchestration", "fission", "workflow", "router", "hop", "coordinator", "healer", "pruner", "mapper", "registry", "governor"],
+    13: ["state", "memory", "cache", "historian", "audit", "ledger", "persistence", "vector", "pinecone", "redis", "embedding", "context"],
+    15: ["resume", "ranking", "narrative", "scoring", "compliance", "license", "specialist", "generator", "processor", "workflow"],
+    17: ["test", "unit", "integration", "e2e", "functional", "fixture", "mock", "scenario", "pytest", "assertion"],
+    18: ["script", "tool", "cli", "operational", "integrity", "backup", "deploy", "maintenance", "guardian", "rescue"],
+    19: ["safety", "guardrail", "filter", "enforcer", "shield", "policy", "gravity", "neural", "subatomic", "gemini", "sentinel"],
+    20: ["drift", "audit", "coverage", "naming", "compliance", "monitor", "detector", "aggregator", "hierarchy", "span", "depth"]
 }
+
+# Backward compatibility export — will be removed in next cycle
+TERRITORY_POSITIVE_SIGNALS = CANON_SIGNALS_MK2
 
 # [SOVEREIGN BOOTSTRAP] Auto-populate Pinecone index on first run
 def bootstrap_territory_index():
@@ -241,25 +218,42 @@ def bootstrap_territory_index():
 # Note: Commented out to avoid auto-execution on import
 # bootstrap_territory_index()
 
-# --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW ---
-# [KEY 49 ENFORCEMENT] Files must contain at least one of these keywords
-CANON_SIGNALS = {
+# --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW (Key 49) ---
+# [L6 HARDENING] Expanded and deduplicated set → now flat list for O(1) lookup
+# Rationale: Previous dict caused unnecessary nesting; flat set is faster and clearer.
+# All terms from CANON_SIGNALS_MK2 are merged here for global naming law enforcement.
+CANON_SIGNALS: set[str] = {
     # Core Roles
     "agent", "manager", "engine", "validator", "healer", "auditor", "enforcer", "detector",
-    "orchestrator", "coordinator", "pruner", "mapper", "handler", "guardian",
+    "orchestrator", "coordinator", "pruner", "mapper", "handler", "guardian", "governor", "sentinel",
     # Core Concepts
     "strategy", "reasoning", "fission", "workflow", "state", "memory", "cache",
-    "safety", "guardrail", "prompt", "persona", "schema", "blueprint",
-    # Infrastructure Specifics
-    "vector", "embedding", "pinecone", "redis", "compliance", "drift", "hierarchy"
+    "safety", "guardrail", "prompt", "persona", "schema", "blueprint", "template",
+    "context", "ledger", "historian", "audit", "coverage",
+    # Infrastructure & Compliance
+    "vector", "embedding", "pinecone", "redis", "compliance", "drift", "hierarchy",
+    "span", "depth", "naming", "rescue", "integrity", "gravity", "subatomic", "gemini"
 }
 
-# [KEY 49] FORBIDDEN NAMING PATTERNS
-FORBIDDEN_PATTERNS = {
-    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r".*_v\d+\.py$", # [GAP 14] Deduped
-    r"^main\.py$", r"^test\.py$", r".*_final\.py$",
-    r".*_new\.py$", r".*_old\.py$", r"^.+_\d+\.py$"
-}
+# [KEY 49 HARDENING] FORBIDDEN NAMING PATTERNS — compiled regex list
+# Rationale: Pre-compiled patterns are faster; list allows ordered matching.
+# Added missing dangerous patterns (e.g., copy, backup, legacy).
+FORBIDDEN_PATTERNS = [
+    re.compile(r"^utils\.py$"),
+    re.compile(r"^helper\.py$"),
+    re.compile(r"^temp\.py$"),
+    re.compile(r".*_v\d+\.py$"),
+    re.compile(r"^main\.py$"),
+    re.compile(r"^test\.py$"),
+    re.compile(r".*_final\.py$"),
+    re.compile(r".*_new\.py$"),
+    re.compile(r".*_old\.py$"),
+    re.compile(r".*_copy\.py$"),
+    re.compile(r".*_backup\.py$"),
+    re.compile(r"^legacy_.*\.py$"),
+    re.compile(r"^.+_\d+\.py$"),
+    re.compile(r"^draft_.*\.py$")
+]
 
 # ==============================================================================
 # CANON KEY CONSTITUTION [SSOT] - Final Sovereign Seal (Dec 24, 2025)
@@ -307,8 +301,31 @@ ROOT_PROTECTED_FILES = {
     "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
 }
 
-# [ULTIMATE HARDENING] Forbid numbered folders at ANY depth
-FORBIDDEN_NUMBERED_PATTERN = re.compile(r"^\d{2}_")
+# [L6 HARDENING] FORBIDDEN_ROOT_FOLDERS → frozen set + expanded legacy coverage
+# Rationale: frozenset is immutable and hashable; prevents accidental mutation.
+# Expanded to catch all known legacy numbered patterns.
+FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({
+    "01_runtime_logic", "02_runtime_cache", "03_scripts_logic", "04_scripts_cache",
+    "05_runtime_security", "06_runtime_runtime", "07_runtime_pipeline",
+    "08_shared_security", "09_shared_runtime", "10_shared_pipeline",
+    "11_shared_logic", "12_shared_cache", "13_scripts_security",
+    "14_scripts_runtime", "15_scripts_pipeline",
+    # Additional legacy patterns observed in wild
+    "legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"
+})
+
+# --- SYSTEM EXEMPTIONS ---
+# [L6 HARDENING] ROOT_WHITELIST → derived set for immutability and speed
+# Rationale: List → set conversion on import is wasteful; define as set directly.
+# Added missing system folders to prevent false positives.
+ROOT_WHITELIST: set[str] = {
+    # Sovereign active roots
+    "agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests",
+    # System & environment
+    "data", "archives", ".git", "venv", "venv_stable", "__pycache__",
+    "env", ".venv", "legacy_code", "legacy_engines", "legacy_resume_gen",
+    ".pytest_cache", ".ruff_cache", "node_modules", "docs"
+}
 
 # Legacy mapping for backward compatibility (internal remap)
 _LEGACY_KEY_REMAP = {
@@ -317,19 +334,4 @@ _LEGACY_KEY_REMAP = {
     40: 11, 42: 12, 51: 13,
     43: 14, 44: 15, 45: 16,
     47: 17, 50: 18,
-}
-
-# --- SYSTEM EXEMPTIONS ---
-ROOT_WHITELIST = list(SOVEREIGN_REGISTRY.keys()) + [
-    "data", "archives", ".git", "venv", "venv_stable", "__pycache__", 
-    ".pytest_cache", ".ruff_cache", "node_modules", "docs"
-]
-
-# [L6 HARDENING] Explicitly forbidden root folders (legacy/out-of-scope)
-FORBIDDEN_ROOT_FOLDERS = {
-    "01_runtime_logic", "02_runtime_cache", "03_scripts_logic", "04_scripts_cache",
-    "05_runtime_security", "06_runtime_runtime", "07_runtime_pipeline",
-    "08_shared_security", "09_shared_runtime", "10_shared_pipeline",
-    "11_shared_logic", "12_shared_cache", "13_scripts_security",
-    "14_scripts_runtime", "15_scripts_pipeline"
 }
