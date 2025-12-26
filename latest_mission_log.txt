@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-26 14:03:53
+MISSION LOG - 2025-12-26 14:11:44
 ================================================================================
-COMMAND: python -c "from agentic_core.schemas.models import core_contracts; print('Integrity OK')"
+COMMAND: powershell -Command "(Get-Content 'c:\Git\Agentic-Workflow\agentic_core\schemas\models\core_contracts.py').Count"
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 1
+EXIT CODE: 0
 ================================================================================
 
