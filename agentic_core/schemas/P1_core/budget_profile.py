@@ -1,14 +1,7 @@
-import logging
+"""
+LEGACY MIGRATION COMPLETE: Phase 2B
+All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
+"""
+from agentic_core.schemas.models.core_contracts import BudgetProfile
 
-_logger = logging.getLogger(__name__)
-
-
-class BudgetProfile(BaseModel):
-    """High-level budget profile for cost/latency envelopes.
-
-    This duplicates some of the fields from ExecutionProfileSpec so that
-    future callers can reason about budget in a single nested object.
-    """
-
-    _max_cost_usd: float = Field(default=0.10, ge=0.0)
-    _max_latency_ms: int = Field(default=3000, ge=0)
+__all__ = ["BudgetProfile"]

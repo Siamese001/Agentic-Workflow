@@ -347,3 +347,279 @@ CORE_CONTRACTS_REGISTRY = {
     "InjectionScope": InjectionScope,
     "InjectionPattern": InjectionPattern,
 }
+
+# === Legacy P1 Core Profiles – Phase 2B Migration (Dec 2025) ===
+
+from dataclasses import dataclass, field
+from datetime import datetime
+import uuid
+
+# Context Passport Models
+
+class ThermalProfile(str, Enum):
+    """Predefined thermal configurations for different node types."""
+    CREATIVITY_MAX = "creativity_max"
+    CREATIVITY_HIGH = "creativity_high"
+    BALANCED = "balanced"
+    STRUCTURED = "structured"
+    PRECISION = "precision"
+
+@dataclass(frozen=True)
+class HardState:
+    """
+    Immutable, DAG-owned state that the LLM cannot edit directly.
+    
+    This contains critical execution metadata, security_scopes, and structural
+    information that must remain stable throughout the workflow.
+    """
+    execution_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    workflow_id: Optional[str] = None
+    node_id: Optional[str] = None
+    security_scopes: set = field(default_factory=set)
+    file_paths: Dict[str, str] = field(default_factory=dict)
+    schemas: Dict[str, str] = field(default_factory=dict)
+    execution_trace: List[Dict[str, Any]] = field(default_factory=list)
+    created_at: datetime = field(default_factory=datetime.utcnow)
+
+    def add_trace(self, event: str, data: Dict[str, Any]) -> 'HardState':
+        """Add an event to the execution trace (returns new instance)."""
+        new_trace = self.execution_trace + [{
+            "event": event,
+            "timestamp": datetime.utcnow().isoformat(),
+            "data": data
+        }]
+        return HardState(
+            execution_id=self.execution_id,
+            workflow_id=self.workflow_id,
+            node_id=self.node_id,
+            security_scopes=self.security_scopes,
+            file_paths=self.file_paths,
+            schemas=self.schemas,
+            execution_trace=new_trace,
+            created_at=self.created_at
+        )
+
+@dataclass
+class SoftState:
+    """
+    Mutable, LLM-owned scratchpad for high-temperature creativity.
+    
+    This is where the LLM can draft, speculate, and iterate without risking
+    system stability. Content here must be validated before promotion to HardState.
+    """
+    drafts: Dict[str, Any] = field(default_factory=dict)
+    scratchpad: List[str] = field(default_factory=list)
+    creative_variants: List[Dict[str, Any]] = field(default_factory=list)
+    speculative_content: Dict[str, Any] = field(default_factory=dict)
+    revision_history: List[Dict[str, Any]] = field(default_factory=list)
+
+    def add_draft(self, key: str, content: Any) -> None:
+        """Add content to the drafts."""
+        self.drafts[key] = content
+
+    def add_scratch_note(self, note: str) -> None:
+        """Add a note to the scratchpad."""
+        self.scratchpad.append(note)
+
+    def record_revision(self, key: str, old_value: Any, new_value: Any) -> None:
+        """Record a revision in the history."""
+        self.revision_history.append({
+            "key": key,
+            "old_value": old_value,
+            "new_value": new_value,
+            "timestamp": datetime.utcnow().isoformat()
+        })
+
+@dataclass
+class ThermalConfig:
+    """Dynamic thermal configuration for LLM parameters."""
+    profile: ThermalProfile = ThermalProfile.BALANCED
+    temperature: float = 0.7
+    top_p: float = 0.85
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    max_tokens: Optional[int] = None
+    node_overrides: Dict[str, Dict[str, float]] = field(default_factory=dict)
+
+    def get_params_for_node(self, node_id: str) -> Dict[str, float]:
+        """Get thermal parameters for a specific node."""
+        if node_id in self.node_overrides:
+            return {
+                "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
+                "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
+                "frequency_penalty": self.node_overrides[node_id].get("frequency_penalty", self.frequency_penalty),
+                "presence_penalty": self.node_overrides[node_id].get("presence_penalty", self.presence_penalty)
+            }
+        return {
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "frequency_penalty": self.frequency_penalty,
+            "presence_penalty": self.presence_penalty
+        }
+
+    def set_node_profile(self, node_id: str, profile: ThermalProfile) -> None:
+        """Set a thermal profile for a specific node."""
+        profile_configs = {
+            ThermalProfile.CREATIVITY_MAX: {"temperature": 0.9, "top_p": 0.95},
+            ThermalProfile.CREATIVITY_HIGH: {"temperature": 0.8, "top_p": 0.90},
+            ThermalProfile.BALANCED: {"temperature": 0.7, "top_p": 0.85},
+            ThermalProfile.STRUCTURED: {"temperature": 0.3, "top_p": 0.70},
+            ThermalProfile.PRECISION: {"temperature": 0.1, "top_p": 0.50}
+        }
+        self.node_overrides[node_id] = profile_configs[profile]
+
+@dataclass
+class SignedClaim:
+    """A factual claim with source attribution and confidence score."""
+    claim: str
+    source: str
+    confidence: float
+    evidence: Optional[str] = None
+    verified_at: Optional[datetime] = None
+
+    def __post_init__(self):
+        if self.verified_at is None:
+            self.verified_at = datetime.utcnow()
+
+class SignalContext(BaseModel):
+    """
+    The Thermostatic Context Passport that enables high-temperature creativity
+    while maintaining structural integrity through dual-state isolation.
+    """
+    hard_state: HardState = Field(default_factory=HardState)
+    soft_state: SoftState = Field(default_factory=SoftState)
+    thermal_config: ThermalConfig = Field(default_factory=ThermalConfig)
+    signed_claims: List[SignedClaim] = Field(default_factory=list)
+    context_version: str = "1.0.0"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    last_modified: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def update_timestamp(self) -> None:
+        """Update the last modified timestamp."""
+        self.last_modified = datetime.utcnow()
+
+    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None:
+        """Add a signed claim to the context."""
+        signed_claim = SignedClaim(claim=claim, source=source, confidence=confidence, evidence=evidence)
+        self.signed_claims.append(signed_claim)
+
+# Safety Profile
+
+class SafetyProfile(BaseModel):
+    """Safety configuration profile used by execution profiles."""
+    _safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
+    _pii_detection_enabled: bool = True
+    _policy_engine_enabled: bool = True
+
+# Simulation Models
+
+class SimScenario(BaseModel):
+    """Simulation scenario definition."""
+    _id: str
+    _description: str
+    _initial_context: Dict[str, Any]
+    _execution_profile_name: str
+    _run_count: int
+
+class SimOutcome(BaseModel):
+    """Simulation outcome results."""
+    _scenario_id: str
+    _average_scores: Dict[str, float]
+    _safety_incidents: int
+    _agent_conflict_count: int
+
+# Metacognition Models
+
+class Hypothesis(BaseModel):
+    """Lightweight hypothesis used by the metacognition layer."""
+    _id: str
+    _agent_id: str
+    _content: str
+    _confidence: float = 0.0
+    _evidence_ids: List[str] = Field(default_factory=list)
+    _rationale: Optional[str] = None
+
+class MetacognitionReport(BaseModel):
+    """Aggregate view over a set of hypotheses and signals."""
+    _hypotheses: List[Hypothesis] = Field(default_factory=list)
+    _global_confidence: float = 0.0
+    _uncertainty_score: float = 0.0
+    _issues_detected: List[str] = Field(default_factory=list)
+
+# Golden State Models
+
+@dataclass
+class GoldenStateTestCase:
+    """Single golden-state test case."""
+    _id: str
+    _input_text: str
+    _expected_behavior: str
+    _metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class JudgeVerdict:
+    """LM-as-a-judge style verdict."""
+    _score: float
+    _rating: str
+    _explanation: str
+
+@dataclass
+class EvalResult:
+    """Result of running a golden test case through the system."""
+    _test_id: str
+    _verdict: JudgeVerdict
+    _raw_output: str
+    _reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+
+class GoldenCase(BaseModel):
+    """Golden test case for evaluation."""
+    id: str
+    input_text: str
+    _agent_sequence: List[str]
+    _expected_keypoints: List[str]
+    _correctness_criteria: Dict[str, Any]
+
+class GoldenOutput(BaseModel):
+    """Golden test output results."""
+    _case_id: str
+    _produced_keypoints: List[str]
+    _correctness_map: Dict[str, bool]
+    _safety_decisions: Dict[str, Any]
+    _metacognition_summary: Dict[str, Any]
+    _final_verdict: Literal["pass", "fail", "borderline"]
+
+# Budget Profile
+
+class BudgetProfile(BaseModel):
+    """High-level budget profile for cost/latency envelopes."""
+    _max_cost_usd: float = Field(default=0.10, ge=0.0)
+    _max_latency_ms: int = Field(default=3000, ge=0)
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Context Passport
+    "ThermalProfile": ThermalProfile,
+    "HardState": HardState,
+    "SoftState": SoftState,
+    "ThermalConfig": ThermalConfig,
+    "SignedClaim": SignedClaim,
+    "SignalContext": SignalContext,
+    # Profiles
+    "SafetyProfile": SafetyProfile,
+    "BudgetProfile": BudgetProfile,
+    # Simulation
+    "SimScenario": SimScenario,
+    "SimOutcome": SimOutcome,
+    # Metacognition
+    "Hypothesis": Hypothesis,
+    "MetacognitionReport": MetacognitionReport,
+    # Golden State
+    "GoldenStateTestCase": GoldenStateTestCase,
+    "JudgeVerdict": JudgeVerdict,
+    "EvalResult": EvalResult,
+    "GoldenCase": GoldenCase,
+    "GoldenOutput": GoldenOutput,
+})
