@@ -1248,3 +1248,68 @@ CORE_CONTRACTS_REGISTRY.update({
     "ResearchHopResult": ResearchHopResult,
     "IntegrityGateResult": IntegrityGateResult,
 })
+
+# LIC Archetype Models (from L1_cognition/thought_engine/lic_archetypes_models.py)
+
+@dataclass
+class SubjectLineBrief:
+    """Brief for subject line generation."""
+    _word_count: tuple[int, int]
+    _tone: str
+    _forbidden_phrases: List[str] = field(default_factory=list)
+
+@dataclass
+class MessageBodyBrief:
+    """Brief for message body generation."""
+    word_count: tuple[int, int]
+    _jargon_level: str
+    _focus: str
+
+@dataclass
+class CTABrief:
+    """Brief for call-to-action generation."""
+    word_count: tuple[int, int]
+    tone: str
+    _strategy: Optional[str] = None
+
+@dataclass
+class CreativeBrief:
+    """Complete creative brief for message generation."""
+    _subject_line: SubjectLineBrief
+    _message_body: MessageBodyBrief
+    _cta: CTABrief
+
+@dataclass
+class ArchetypeTemplate:
+    """Complete template for an archetype."""
+    _archetype: str
+    _system_instructions: str
+    tone: str
+    _approach: str
+    _avoid: str
+    _creative_brief: CreativeBrief
+
+@dataclass
+class SignatureTemplate:
+    """Template for message signature."""
+    _template: str
+    _use_for: List[str]
+    _line_count: int
+
+@dataclass
+class GreetingTemplate:
+    """Template for message greeting."""
+    template: str
+    _note: str
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # LIC Archetype Models
+    "SubjectLineBrief": SubjectLineBrief,
+    "MessageBodyBrief": MessageBodyBrief,
+    "CTABrief": CTABrief,
+    "CreativeBrief": CreativeBrief,
+    "ArchetypeTemplate": ArchetypeTemplate,
+    "SignatureTemplate": SignatureTemplate,
+    "GreetingTemplate": GreetingTemplate,
+})
