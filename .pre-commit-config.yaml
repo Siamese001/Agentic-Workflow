@@ -1,0 +1,24 @@
+# Sovereign Architectural Enforcement – Eternal Zero-Drift (Dec 26, 2025)
+repos:
+  - repo: local
+    hooks:
+      - id: guard-no-inline-models
+        name: Sovereign Guard - Block Inline Contracts
+        entry: python scripts/guard_no_inline_models.py
+        language: python
+        types: [python]
+        exclude: ^agentic_core/schemas/models/core_contracts\.py$
+
+      - id: guard-no-raw-prompts
+        name: Sovereign Guard - Block Raw Prompts
+        entry: python scripts/guard_no_raw_prompts.py
+        language: python
+        types: [python]
+        exclude: ^agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution\.py$
+
+      - id: guard-no-hardcoded-config
+        name: Sovereign Guard - Block Hardcoded Constants
+        entry: python scripts/guard_no_hardcoded_config.py
+        language: python
+        types: [python]
+        exclude: ^agentic_core/config/blueprint_sovereign/environments/sovereign_config\.py$
