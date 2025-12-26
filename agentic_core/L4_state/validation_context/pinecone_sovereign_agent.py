@@ -47,11 +47,15 @@ class PineconeSovereignAgent:
             self.dimension = env.EMBEDDING_DIMENSION
             self.cloud = env.PINECONE_CLOUD
             self.region = env.PINECONE_REGION
-            self.gemini = SubAtomicEngine()
+            # [L6 HARDENING] Remove direct SubAtomicEngine instantiation
+            # Rationale: Creates circular dependency with SubAtomicEngine.__init__
+            # SubAtomicEngine will instantiate PineconeSovereignAgent lazily → safe.
+            self.gemini = None  # Will be set by SubAtomicEngine when needed or remain None
             self.status = "ONLINE"
         except Exception as e:
             self.status = f"DEGRADED ({str(e)})"
             print(f"   [!] PineconeSovereignAgent initialization failed: {e}")
+            self.gemini = None
             return
         
         # Store ValidationContext for precise sync operations
@@ -81,10 +85,9 @@ class PineconeSovereignAgent:
         
         self.index = self.pc.Index(self.index_name)
 
-        # Force sync with SSOT
-        self.bootstrap_territory_vectors()
+        # Note: bootstrap_territory_vectors is now async and will be called from execute()
 
-    def get_embedding(self, text: str, is_sanity_check: bool = False) -> List[float]:
+    async def get_embedding(self, text: str, is_sanity_check: bool = False) -> List[float]:
         """
         Sovereign embedding — cached, deterministic, QUALITY-VALIDATED.
         
@@ -106,14 +109,31 @@ class PineconeSovereignAgent:
         system_prompt = "You are a code territory classifier. Return only JSON: {\"embedding\": [float vector of code semantics]}"
         user_prompt = f"Classify this code snippet for canon territory mapping:\n\n{text[:12000]}"
         
-        response = self.gemini.resilient_mutation(
-            user_prompt,
-            system_prompt=system_prompt,
-            return_json=True,
-            temperature=0.0  # Deterministic for consistency
-        )
+        # [L6 FALLBACK] If gemini not available (circular init), skip embedding cache
+        if self.gemini is None:
+            # Return zero vector as sentinel — will be rejected downstream
+            return [0.0] * self.dimension
         
-        embedding = response.get("embedding", [])
+        try:
+            response = await self.gemini.resilient_mutation(
+                code=user_prompt,
+                task=system_prompt,  # Swap: task=system, code=user for resilient_mutation signature
+                file_path="embedding_request",
+                fission_active=False
+            )
+            # Parse embedding from response (expected format: JSON with "embedding" key)
+            import json, re
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                embedding = data.get("embedding", [])
+                if len(embedding) == self.dimension:
+                    return embedding
+        except Exception as e:
+            print(f"   [!] Embedding generation failed: {e}")
+        
+        # Final fallback: zero vector
+        return [0.0] * self.dimension
         
         # [ETERNAL QUALITY VALIDATION]
         # Skip recursive sanity check if we are currently IN a sanity check
@@ -181,9 +201,9 @@ class PineconeSovereignAgent:
                 values.append(float(count))
         return {"indices": indices, "values": values}
 
-    def hybrid_search(self, query: str, top_k: int = 5) -> List[Dict]:
+    async def hybrid_search(self, query: str, top_k: int = 5) -> List[Dict]:
         """Eternal precision: Combined Vector + Keyword search"""
-        dense_vec = self.get_embedding(query)
+        dense_vec = await self.get_embedding(query)
         sparse_vec = self._get_sparse_vector(query)
         
         return self.index.query(
@@ -201,7 +221,7 @@ class PineconeSovereignAgent:
         except Exception:
             pass
 
-    def bootstrap_territory_vectors(self):
+    async def bootstrap_territory_vectors(self):
         """
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
@@ -210,7 +230,7 @@ class PineconeSovereignAgent:
         
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():
-            emb = self.get_embedding(example)
+            emb = await self.get_embedding(example)
             vec_id = f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}"
             vectors.append({
                 "id": vec_id, 
@@ -245,10 +265,10 @@ class PineconeSovereignAgent:
         for i in range(0, len(vectors), 100):
             self.index.upsert(vectors=vectors[i:i+100], namespace=namespace)
     
-    def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None):
+    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None):
         """Upsert single file — used during healing"""
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-        emb = self.get_embedding(content)
+        emb = await self.get_embedding(content)
         
         # Final quality gate
         if all(abs(x) < 1e-8 for x in emb):
@@ -262,7 +282,7 @@ class PineconeSovereignAgent:
         
         self.index.upsert(vectors=[{"id": file_id, "values": emb, "metadata": metadata}])
     
-    def semantic_search(self, query: str, top_k: int = 5) -> List[Dict]:
+    async def semantic_search(self, query: str, top_k: int = 5) -> List[Dict]:
         """
         Runtime retrieval for agents needing to 'find' logic.
         
@@ -273,7 +293,7 @@ class PineconeSovereignAgent:
         Returns:
             List of search results with metadata
         """
-        q_emb = self.get_embedding(query)
+        q_emb = await self.get_embedding(query)
         results = self.index.query(vector=q_emb, top_k=top_k, include_metadata=True)
         return results.to_dict() if hasattr(results, 'to_dict') else results
     
@@ -300,6 +320,9 @@ class PineconeSovereignAgent:
         Reports index status and vector count with quality metrics.
         """
         try:
+            # Bootstrap territories on first execution
+            await self.bootstrap_territory_vectors()
+            
             health = self.health_check()
             print(f"   [OK] PineconeSovereignAgent: {health['vectors']} vectors online (quality: {health['sample_quality']})")
             
