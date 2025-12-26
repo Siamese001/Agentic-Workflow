@@ -74,13 +74,14 @@ class SubAtomicEngine:
         
         self.chat_sessions: Dict[str, Any] = {}
         
-        # [HYBRID ROUTING] Link the vector gateway
-        try:
-            self.pinecone = PineconeSovereignAgent(Path("."))
-            print("   [OK] SubAtomicEngine: Hybrid routing active")
-        except Exception as e:
-            print(f"   [!] Hybrid routing offline: {e}")
-            self.pinecone = None
+        # [L6 HARDENING] Defer PineconeSovereignAgent instantiation
+        # Rationale: Early instantiation in __init__ triggers circular import:
+        #    SubAtomicEngine → PineconeSovereignAgent → SubAtomicEngine
+        # This causes PineconeSovereignAgent to receive partially-initialized SubAtomicEngine
+        # → hybrid routing always offline → no semantic cache → degraded healing.
+        # Fix: Instantiate lazily inside methods that need it (route_mission, resilient_mutation).
+        self.pinecone = None
+        print("   [OK] SubAtomicEngine: Hybrid routing deferred (lazy init)")
     
     @staticmethod
     def get_safe_config(is_fission: bool = False) -> Any:
@@ -205,6 +206,15 @@ class SubAtomicEngine:
             system_prompt: Optional system prompt override
             **kwargs: Additional arguments (ignored for compatibility)
         """
+        # [L6 LAZY INIT] Instantiate Pinecone gateway only when needed
+        if self.pinecone is None and PINECONE_AVAILABLE:
+            try:
+                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                self.pinecone = PineconeSovereignAgent(Path("."))  # project_root will be resolved inside
+                print("   [OK] SubAtomicEngine: Hybrid routing activated (lazy)")
+            except Exception as e:
+                print(f"   [!] Hybrid routing failed (will use fallback): {e}")
+                self.pinecone = None
         if not self._client:
             raise RuntimeError("Gemini client not initialized")
         
@@ -274,13 +284,17 @@ class SubAtomicEngine:
                 return code
             
             # [L2 MEMORY] Store Successful Pattern in Pinecone
-            if self.pinecone_index:
-                vector = await self.get_embedding(task)
-                self.pinecone_index.upsert(vectors=[{
-                    "id": f"succ:{os.path.basename(file_path)}",
-                    "values": vector,
-                    "metadata": {"task": task[:200], "round": round_num}
-                }])
+            if self.pinecone and hasattr(self.pinecone, 'index'):
+                try:
+                    vector = await self.get_embedding(task)
+                    self.pinecone.index.upsert(vectors=[{
+                        "id": f"succ:{os.path.basename(file_path)}",
+                        "values": vector,
+                        "metadata": {"task": task[:200], "round": round_num, "type": "healing_pattern"}
+                    }])
+                    print(f"   [MEMORY] Stored healing pattern for {os.path.basename(file_path)}")
+                except Exception as e:
+                    print(f"   [!] Failed to store pattern in Pinecone: {e}")
             
             # Clear failures on success
             if self.redis_client:
@@ -295,6 +309,15 @@ class SubAtomicEngine:
         """
         Eternal sub-atomic routing: Vector + Keyword precision.
         """
+        # [L6 LAZY INIT] Ensure pinecone gateway is ready
+        if self.pinecone is None and PINECONE_AVAILABLE:
+            try:
+                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                self.pinecone = PineconeSovereignAgent(Path("."))
+            except Exception as e:
+                print(f"   [!] Routing failed to initialize Pinecone: {e}")
+                self.pinecone = None
+
         if not self.pinecone:
             return {"route": "fallback", "reason": "Hybrid routing offline", "confidence": 0.0}
 
@@ -302,11 +325,15 @@ class SubAtomicEngine:
         from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS
         keywords = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
 
-        # Perform Hybrid Search (Alpha 0.65 favors semantic but requires keyword match)
-        results = self.pinecone.hybrid_search(
-            query=mission,
-            top_k=8
-        )
+        # [L6 HARDENING] Defensive hybrid search with fallback
+        if hasattr(self.pinecone, 'hybrid_search'):
+            try:
+                results = self.pinecone.hybrid_search(query=mission, top_k=8)
+            except Exception as e:
+                print(f"   [!] Hybrid search failed: {e}")
+                results = None
+        else:
+            results = None
 
         if not results or not results.get('matches'):
             return {"route": "unknown", "reason": "No high-confidence matches", "confidence": 0.0}
