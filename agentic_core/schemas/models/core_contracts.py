@@ -7,6 +7,31 @@ from enum import Enum
 from typing import Optional, List, Dict, Any, Literal, Set
 from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
 
+# === SOVEREIGN EVENT TYPE REGISTRY – Phase 12 (Dec 26, 2025) ===
+# Canonical SSOT for all SovereignEvent.event_type values.
+class SovereignEventType(str, Enum):
+    """Canonical registry of all sovereign event types."""
+    # Governance & Audit
+    AUDIT_STARTED = "AUDIT_STARTED"
+    AUDIT_COMPLETED = "AUDIT_COMPLETED"
+    VIOLATION_DETECTED = "VIOLATION_DETECTED"
+    SOVEREIGNTY_RESTORED = "SOVEREIGNTY_RESTORED"
+    
+    # Healing Engine
+    HEALING_CYCLE_STARTED = "HEALING_CYCLE_STARTED"
+    HEALING_ACTION_APPLIED = "HEALING_ACTION_APPLIED"
+    HEALING_ACTION_FAILED = "HEALING_ACTION_FAILED"
+    HEALING_CYCLE_COMPLETE = "HEALING_CYCLE_COMPLETE"
+    
+    # Observability & Reasoning
+    REASONING_START = "REASONING_START"
+    REASONING_END = "REASONING_END"
+    DARK_REASONING_DETECTED = "DARK_REASONING_DETECTED"
+    
+    # Layer Violations
+    DDD_VIOLATION = "DDD_VIOLATION"
+    LAYER_CROSS_IMPORT = "LAYER_CROSS_IMPORT"
+
 class SovereignBaseModel(BaseModel):
     """Base model for all Sovereign entities with strict config."""
     model_config = ConfigDict(strict=True, frozen=True)
@@ -2312,6 +2337,112 @@ class HealingReport(SovereignBaseModel):
                 healing_strategies_used=self._strategies_used.copy()
             )
 
+@dataclass(frozen=True)
+class SovereignEvent(SovereignBaseModel):
+    """
+    Sovereign event telemetry with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Fluent telemetry emission
+    - Severity-to-log-level mapping
+    - Correlation support for audit trails
+    - L6 observability integration
+    """
+    event_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    event_type: SovereignEventType
+    severity: str  # "INFO", "WARNING", "ERROR", "CRITICAL"
+    source: str
+    dimension: Optional[str] = None
+    payload: Dict[str, Any] = field(default_factory=dict)
+    correlation_id: Optional[str] = None
+
+    @field_validator('event_type', mode='before')
+    @classmethod
+    def validate_event_type(cls, v):
+        """Validate and convert event_type to SovereignEventType enum."""
+        if isinstance(v, str):
+            try:
+                return SovereignEventType(v)
+            except ValueError:
+                raise ValueError(f"Sovereignty Violation: '{v}' is not a registered SovereignEventType")
+        return v
+
+    class Builder:
+        """
+        Sovereign Builder for SovereignEvent – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent, immutable telemetry emission
+        - Severity-to-L6 mapping
+        - Correlation support for multi-layer audit trails
+        """
+        def __init__(self):
+            self._event_id: Optional[str] = None
+            self._event_type: Optional[SovereignEventType] = None
+            self._severity: Optional[str] = None
+            self._source: Optional[str] = None
+            self._dimension: Optional[str] = None
+            self._payload: Dict[str, Any] = {}
+            self._correlation_id: Optional[str] = None
+
+        def with_type(self, event_type: Any) -> 'SovereignEvent.Builder':
+            """Supports both Enum and String types with immediate validation."""
+            try:
+                self._event_type = SovereignEventType(event_type)
+            except ValueError:
+                raise ValueError(f"Invalid Event Type: {event_type}. Use SovereignEventType.")
+            return self
+
+        def with_severity(self, severity: str) -> 'SovereignEvent.Builder':
+            if severity not in ["INFO", "WARNING", "ERROR", "CRITICAL"]:
+                raise ValueError(f"Constitutional Violation: Invalid severity '{severity}'")
+            self._severity = severity
+            return self
+
+        def from_source(self, source: str) -> 'SovereignEvent.Builder':
+            self._source = source
+            return self
+
+        def in_dimension(self, dimension: Optional[str]) -> 'SovereignEvent.Builder':
+            self._dimension = dimension
+            return self
+
+        def with_payload(self, **kwargs) -> 'SovereignEvent.Builder':
+            self._payload.update(kwargs)
+            return self
+
+        def correlated_with(self, correlation_id: str) -> 'SovereignEvent.Builder':
+            self._correlation_id = correlation_id
+            return self
+
+        def build(self) -> 'SovereignEvent':
+            """Construct immutable SovereignEvent with L6 log emission."""
+            import logging
+            
+            if self._event_type is None:
+                raise ValueError("event_type is mandatory for SovereignEvent.")
+            if not all([self._severity, self._source]):
+                raise ValueError("Sovereignty Telemetry Error: severity and source are required.")
+
+            if not self._event_id:
+                self._event_id = f"event-{uuid.uuid4().hex[:8]}"
+
+            # L6 Observability: Emitting to the system senses
+            log_level = {"INFO": logging.INFO, "WARNING": logging.WARNING, 
+                         "ERROR": logging.ERROR, "CRITICAL": logging.CRITICAL}[self._severity]
+            
+            logger.log(log_level, f"[SOVEREIGN EVENT] {self._event_id} | {self._event_type.value} | {self._source}")
+
+            return SovereignEvent(
+                event_id=self._event_id,
+                event_type=self._event_type,
+                severity=self._severity,
+                source=self._source,
+                dimension=self._dimension,
+                payload=self._payload.copy(),
+                correlation_id=self._correlation_id
+            )
+
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
     # Strategic Planning Models
@@ -2327,6 +2458,7 @@ CORE_CONTRACTS_REGISTRY.update({
     "HealingAction": HealingAction,
     "HealingCycle": HealingCycle,
     "HealingReport": HealingReport,
+    "SovereignEvent": SovereignEvent,
 })
 
 # === ETERNAL SOVEREIGNTY CERTIFICATION – Dec 26, 2025 ===
