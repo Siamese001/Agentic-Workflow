@@ -7,30 +7,191 @@ from enum import Enum
 from typing import Optional, List, Dict, Any, Literal, Set
 from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
 
-# === SOVEREIGN EVENT TYPE REGISTRY – Phase 12 (Dec 26, 2025) ===
+# === SOVEREIGN EVENT TYPE REGISTRY – CATEGORIZED (Dec 26, 2025) ===
 # Canonical SSOT for all SovereignEvent.event_type values.
 class SovereignEventType(str, Enum):
-    """Canonical registry of all sovereign event types."""
-    # Governance & Audit
+    """Canonical SSOT for all SovereignEvent types with human-readable intent."""
+    
+    # === GOVERNANCE ===
     AUDIT_STARTED = "AUDIT_STARTED"
+    """Sovereign Auditor v3 begins multi-dimensional compliance sweep"""
+    
     AUDIT_COMPLETED = "AUDIT_COMPLETED"
-    VIOLATION_DETECTED = "VIOLATION_DETECTED"
+    """Sovereign Auditor v3 finishes audit with final sovereignty score"""
+    
+    SOVEREIGNTY_COMPROMISED = "SOVEREIGNTY_COMPROMISED"
+    """Overall health score drops below 95% — healing required"""
+    
     SOVEREIGNTY_RESTORED = "SOVEREIGNTY_RESTORED"
+    """Healing cycle restores health to ≥95%"""
     
-    # Healing Engine
+    SOVEREIGNTY_ACHIEVED = "SOVEREIGNTY_ACHIEVED"
+    """Overall health reaches ≥95% — threshold for active operations met"""
+    
+    SOVEREIGNTY_PERFECT = "SOVEREIGNTY_PERFECT"
+    """Overall health reaches 100.0% — perfect constitutional alignment"""
+    
+    # === GUARDIAN ===
+    GUARDIAN_BLOCKED_COMMIT = "GUARDIAN_BLOCKED_COMMIT"
+    """Pre-commit hook blocked commit due to constitutional violations"""
+    
+    GUARDIAN_VIOLATION = "GUARDIAN_VIOLATION"
+    """Guardian detected violation during enforcement check"""
+    
+    GUARDIAN_CLEAN = "GUARDIAN_CLEAN"
+    """Guardian validation passed — commit approved"""
+    
+    # === HEALING ===
     HEALING_CYCLE_STARTED = "HEALING_CYCLE_STARTED"
+    """L0 Healing Engine begins new self-correction cycle"""
+    
     HEALING_ACTION_APPLIED = "HEALING_ACTION_APPLIED"
+    """Healing fix successfully applied via Transaction Manager"""
+    
     HEALING_ACTION_FAILED = "HEALING_ACTION_FAILED"
+    """Healing fix failed — atomicity preserved via rollback"""
+    
+    HEALING_TRANSACTION_START = "HEALING_TRANSACTION_START"
+    """Healing transaction initiated with ACID guarantees"""
+    
+    HEALING_TRANSACTION_COMMIT = "HEALING_TRANSACTION_COMMIT"
+    """Healing transaction committed successfully"""
+    
+    HEALING_TRANSACTION_ROLLBACK = "HEALING_TRANSACTION_ROLLBACK"
+    """Healing transaction rolled back due to failure"""
+    
+    HEALING_FIX_APPLIED = "HEALING_FIX_APPLIED"
+    """Individual healing fix applied to codebase"""
+    
+    HEALING_FIX_REVERTED = "HEALING_FIX_REVERTED"
+    """Healing fix reverted due to validation failure"""
+    
     HEALING_CYCLE_COMPLETE = "HEALING_CYCLE_COMPLETE"
+    """Healing cycle concludes with final remediation count"""
     
-    # Observability & Reasoning
+    # === REASONING ===
     REASONING_START = "REASONING_START"
-    REASONING_END = "REASONING_END"
-    DARK_REASONING_DETECTED = "DARK_REASONING_DETECTED"
+    """Reasoning chain begins execution for a goal"""
     
-    # Layer Violations
+    REASONING_END = "REASONING_END"
+    """Reasoning chain completes with final conclusion"""
+    
+    REASONING_STEP = "REASONING_STEP"
+    """Individual reasoning step executed in thought chain"""
+    
+    HYPOTHESIS_FORMED = "HYPOTHESIS_FORMED"
+    """New hypothesis created during reasoning process"""
+    
+    HYPOTHESIS_VALIDATED = "HYPOTHESIS_VALIDATED"
+    """Hypothesis confirmed through evidence validation"""
+    
+    HYPOTHESIS_REJECTED = "HYPOTHESIS_REJECTED"
+    """Hypothesis disproven and discarded"""
+    
+    DARK_REASONING_DETECTED = "DARK_REASONING_DETECTED"
+    """Unlogged reasoning detected — observability gap identified"""
+    
+    # === VIOLATION ===
+    VIOLATION_DETECTED = "VIOLATION_DETECTED"
+    """Guardian detects constitutional violation (SSOT, DDD, observability, etc.)"""
+    
+    SSOT_INLINE_MODEL = "SSOT_INLINE_MODEL"
+    """Inline Pydantic model detected outside schemas/ — SSOT violation"""
+    
+    SSOT_RAW_PROMPT = "SSOT_RAW_PROMPT"
+    """Raw prompt string found — should use prompt_governance SSOT"""
+    
+    SSOT_HARDCODED_CONFIG = "SSOT_HARDCODED_CONFIG"
+    """Hardcoded configuration value — should use sovereign_config SSOT"""
+    
+    SSOT_UNDERSCORE_FIELD = "SSOT_UNDERSCORE_FIELD"
+    """Underscore field detected in dataclass/BaseModel — naming violation"""
+    
     DDD_VIOLATION = "DDD_VIOLATION"
+    """Domain-Driven Design principle violated"""
+    
+    DDD_AGGREGATE_BYPASS = "DDD_AGGREGATE_BYPASS"
+    """Aggregate boundary bypassed — direct entity access detected"""
+    
+    DDD_UBIQUITOUS_LANGUAGE_MISSING = "DDD_UBIQUITOUS_LANGUAGE_MISSING"
+    """Domain ubiquitous language not used — terminology violation"""
+    
     LAYER_CROSS_IMPORT = "LAYER_CROSS_IMPORT"
+    """L1 agent directly imports L2 implementation — DIP violation"""
+    
+    # === SYSTEM ===
+    SYSTEM_BOOT = "SYSTEM_BOOT"
+    """Agentic system initialization started"""
+    
+    CONSTITUTION_LOAD = "CONSTITUTION_LOAD"
+    """Sovereign domain constitution loaded into memory"""
+    
+    # === MCP ===
+    MCP_INTEGRATION_STARTED = "MCP_INTEGRATION_STARTED"
+    """Model Context Protocol integration initiated"""
+    
+    MCP_INTEGRATION_SUCCESS = "MCP_INTEGRATION_SUCCESS"
+    """MCP integration completed successfully"""
+    
+    MCP_INTEGRATION_FAILED = "MCP_INTEGRATION_FAILED"
+    """MCP integration failed with error"""
+
+# === CATEGORY MAPPING FOR ANALYTICS ===
+SOVEREIGN_EVENT_CATEGORIES = {
+    "GOVERNANCE": [
+        SovereignEventType.AUDIT_STARTED, 
+        SovereignEventType.AUDIT_COMPLETED,
+        SovereignEventType.SOVEREIGNTY_COMPROMISED, 
+        SovereignEventType.SOVEREIGNTY_RESTORED,
+        SovereignEventType.SOVEREIGNTY_ACHIEVED,
+        SovereignEventType.SOVEREIGNTY_PERFECT
+    ],
+    "GUARDIAN": [
+        SovereignEventType.GUARDIAN_BLOCKED_COMMIT, 
+        SovereignEventType.GUARDIAN_VIOLATION,
+        SovereignEventType.GUARDIAN_CLEAN
+    ],
+    "HEALING": [
+        SovereignEventType.HEALING_CYCLE_STARTED,
+        SovereignEventType.HEALING_ACTION_APPLIED, 
+        SovereignEventType.HEALING_ACTION_FAILED,
+        SovereignEventType.HEALING_TRANSACTION_START, 
+        SovereignEventType.HEALING_TRANSACTION_COMMIT,
+        SovereignEventType.HEALING_TRANSACTION_ROLLBACK,
+        SovereignEventType.HEALING_FIX_APPLIED,
+        SovereignEventType.HEALING_FIX_REVERTED,
+        SovereignEventType.HEALING_CYCLE_COMPLETE
+    ],
+    "REASONING": [
+        SovereignEventType.REASONING_START, 
+        SovereignEventType.REASONING_END,
+        SovereignEventType.REASONING_STEP, 
+        SovereignEventType.HYPOTHESIS_FORMED,
+        SovereignEventType.HYPOTHESIS_VALIDATED, 
+        SovereignEventType.HYPOTHESIS_REJECTED,
+        SovereignEventType.DARK_REASONING_DETECTED
+    ],
+    "VIOLATION": [
+        SovereignEventType.VIOLATION_DETECTED, 
+        SovereignEventType.SSOT_INLINE_MODEL,
+        SovereignEventType.SSOT_RAW_PROMPT, 
+        SovereignEventType.SSOT_HARDCODED_CONFIG,
+        SovereignEventType.SSOT_UNDERSCORE_FIELD, 
+        SovereignEventType.DDD_VIOLATION,
+        SovereignEventType.DDD_AGGREGATE_BYPASS, 
+        SovereignEventType.DDD_UBIQUITOUS_LANGUAGE_MISSING,
+        SovereignEventType.LAYER_CROSS_IMPORT
+    ],
+    "SYSTEM": [
+        SovereignEventType.SYSTEM_BOOT,
+        SovereignEventType.CONSTITUTION_LOAD
+    ],
+    "MCP": [
+        SovereignEventType.MCP_INTEGRATION_STARTED,
+        SovereignEventType.MCP_INTEGRATION_SUCCESS,
+        SovereignEventType.MCP_INTEGRATION_FAILED
+    ]
+}
 
 class SovereignBaseModel(BaseModel):
     """Base model for all Sovereign entities with strict config."""
@@ -2458,6 +2619,7 @@ CORE_CONTRACTS_REGISTRY.update({
     "HealingAction": HealingAction,
     "HealingCycle": HealingCycle,
     "HealingReport": HealingReport,
+    "SovereignEventType": SovereignEventType,
     "SovereignEvent": SovereignEvent,
 })
 
