@@ -3,8 +3,7 @@ import time
 import uuid
 from typing import Any, Dict, List, Optional, Protocol
 
-from pydantic import BaseModel
-
+from agentic_core.schemas.models.core_contracts import AgentPlan
 from agentic_core.config.blueprint_sovereign import ConfigurationService
 from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
@@ -16,9 +15,7 @@ class SovereignDependencyError(Exception):
     pass
 
 
-class AgentPlan(BaseModel):
-    reasoning: str
-    tool_calls: list[dict]
+# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
 
 class SubatomicHop:

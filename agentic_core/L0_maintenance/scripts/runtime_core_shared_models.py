@@ -1,109 +1,31 @@
 """Shared models and enums for the Agentic Workflow runtime.
 
+Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
-LOGGER = logging.getLogger(__name__)
 This file contains all shared data structures that are used across multiple
 modules to avoid circular imports. This file must not import from any
 runtime.* modules - only from pydantic, enum, and typing.
 """
 
 import logging
-from enum import Enum, auto
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.schemas.models.core_contracts import (
+    MicroStage,
+    HopState,
+    RetryPolicy,
+    MicroCheckpoint,
+    StageTransition,
+    InjectionType,
+    InjectionScope,
+    InjectionPattern,
+    InjectionMatch,
+    InjectionConfig,
+    ValidationResult,
+    ExecutionResult,
+)
 
+LOGGER = logging.getLogger(__name__)
 
-class MicroStage(Enum):
-    """The 5 atomic micro-stages of a Subatomic Hop."""
-
-
-class HopState(Enum):
-    """Overall state of a Subatomic Hop."""
-
-
-class RetryPolicy(BaseModel):
-    """Retry policy for micro-stages."""
-
-    _max_retries: int = Field(default=3, ge=0, le=10)
-    _retry_delay: float = Field(default=1.0, ge=0.0)
-    _exponential_backoff: bool = Field(default=True)
-    _retryable_stages: List[MicroStage] = Field(
-        DEFAULT=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
-    )
-
-
-class MicroCheckpoint(BaseModel):
-    """Checkpoint data for a micro-stage."""
-
-    _hop_id: str
-    _stage: MicroStage
-    _timestamp: float
-    _state: HopState
-    _data: Dict[str, Any] = Field(default_factory=dict)
-    _error: Optional[str] = None
-
-
-class StageTransition(BaseModel):
-    """Record of a stage transition."""
-
-    _from_stage: Optional[MicroStage] = None
-    _to_stage: MicroStage
-    timestamp: float
-    _reason: Optional[str] = None
-
-
-# ============================================================================
-# Prompt Injection Models
-# ============================================================================
-
-
-class InjectionType(Enum):
-    """Types of prompt injections."""
-
-    # Original built-in types
-
-    # Instructional injection types - Framing Layer
-
-    # Instructional injection types - Context Layer
-
-    # Instructional injection types - Reasoning Layer
-
-    # Instructional injection types - Tooling Layer
-
-    # Instructional injection types - Safety Layer
-
-    # Instructional injection types - Output Layer
-
-
-class InjectionScope(BaseModel):
-    """Scope where injection should be applied."""
-
-    _hop_types: List[str] = Field(default_factory=list)
-    _stages: List[str] = Field(default_factory=list)
-    _contexts: Dict[str, Any] = Field(default_factory=dict)
-
-
-class InjectionPattern(BaseModel):
-    """A single prompt injection pattern."""
-
-    _id: str
-    _name: str
-    _type: InjectionType
-    _description: str
-    _template: str
-    _variables: List[str] = Field(default_factory=list)
-    _scope: InjectionScope = Field(default_factory=InjectionScope)
-    _priority: int = Field(default=0, ge=0, le=10)
-    _enabled: bool = True
-
-    class Config:
-        """TODO: Add docstring."""
-
-
-class InjectionMatch(BaseModel):
-    """Result of matching injections to context."""
-
-    _injection: InjectionPattern
+# All models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
     _relevance_score: float = Field(ge=0.0, le=1.0)
     _variable_values: Dict[str, Any] = Field(default_factory=dict)
 
