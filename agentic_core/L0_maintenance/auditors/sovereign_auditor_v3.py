@@ -46,12 +46,61 @@ class SovereignReport:
     def __init__(self):
         self.scores = {}
         self.issues = {}
+        self.report_id = ""
+        self.timestamp = None
     
     def get_overall_score(self) -> float:
         """Calculate overall health score."""
         if not self.scores:
             return 0.0
         return sum(self.scores.values()) / len(self.scores)
+    
+    class Builder:
+        """Sovereign Builder for SovereignReport – Phase 12 (Dec 26, 2025)"""
+        
+        def __init__(self):
+            from datetime import datetime
+            self._dimensions = {
+                "Structural SSOT": {"score": 0.0, "issues": []},
+                "Schema SSOT": {"score": 0.0, "issues": []},
+                "Prompt SSOT": {"score": 0.0, "issues": []},
+                "Config SSOT": {"score": 0.0, "issues": []},
+                "DDD Alignment": {"score": 0.0, "issues": []},
+                "Atomic Fission": {"score": 0.0, "issues": []},
+                "Zero-Trust Membrane": {"score": 0.0, "issues": []},
+                "Observability Footprint": {"score": 0.0, "issues": []},
+            }
+            self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
+
+        def with_dimension(self, name: str, score: float, issues: List[str] = None) -> 'SovereignReport.Builder':
+            """Sets a validated dimension score."""
+            if name not in self._dimensions:
+                raise ValueError(f"Sovereignty Violation: Unknown dimension: {name}")
+            if not 0 <= score <= 100:
+                raise ValueError(f"Constitutional Violation: Score {score} out of bounds.")
+            self._dimensions[name]["score"] = score
+            self._dimensions[name]["issues"] = issues or []
+            return self
+
+        def build(self) -> 'SovereignReport':
+            """Constructs the report and derived metrics."""
+            from datetime import datetime
+            import logging
+            logger = logging.getLogger(__name__)
+            
+            scores = [d["score"] for d in self._dimensions.values()]
+            overall = sum(scores) / len(scores)
+            
+            # L6 Observability: Witnessing the Final Audit
+            status = "SOVEREIGN" if overall >= 95 else "VULNERABLE"
+            logger.info(f"[L6_AUDIT] Report Sealed: {self._report_id} | Health: {overall:.1f}% | {status}")
+            
+            report = SovereignReport()
+            report.scores = {name: d["score"] for name, d in self._dimensions.items()}
+            report.issues = {name: d["issues"] for name, d in self._dimensions.items()}
+            report.report_id = self._report_id
+            report.timestamp = datetime.utcnow()
+            return report
     
     def get_all_issues(self) -> List[Dict]:
         """Get all issues in structured format for healing engine."""
