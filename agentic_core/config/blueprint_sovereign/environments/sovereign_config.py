@@ -19,8 +19,8 @@ class SovereignConfig:
     DEFAULT_EMBEDDING_DIM: int = 1024  # Truncated for Pinecone cost/perf sweet spot
     
     # === Phase 4: Model Governance (Dec 26, 2025) ===
-    PRIMARY_MODEL: str = "gpt-5.1"
-    REASONING_MODEL: str = "claude-sonnet-4.5"
+    PRIMARY_MODEL: str = "gemini-2.5-flash"
+    REASONING_MODEL: str = "gemini-2.5-flash"
     
     # === Phase 4: Semantic Cache Thresholds ===
     SEMANTIC_SIMILARITY_THRESHOLD: float = 0.95
@@ -57,13 +57,14 @@ class SovereignConfig:
     # === Phase 8A: Model Pricing Table (Dec 26, 2025) ===
     # Dollars per 1M tokens
     MODEL_PRICING: Dict[str, Dict[str, float]] = None  # Initialized below due to dataclass constraints
-    DEFAULT_COST_MODEL: str = "gpt-5.1"
+    DEFAULT_COST_MODEL: str = "gemini-2.5-flash"
     
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
-        # Only approved models: gpt-5.1 (OpenAI) and Claude Sonnet 4.5 (Anthropic)
+        # Approved models: gemini-2.5-flash (default), gpt-5.1 (OpenAI), Claude Sonnet 4.5 (Anthropic)
         object.__setattr__(self, 'MODEL_PRICING', {
+            "gemini-2.5-flash": {"input": 0.075, "output": 0.30},  # $0.075 / $0.30 per 1M tokens
             "gpt-5.1": {"input": 0.0030, "output": 0.012},  # $3.00 / $12.00 per 1M tokens (estimated)
             "claude-sonnet-4.5": {"input": 0.0035, "output": 0.018},  # $3.50 / $18.00 per 1M tokens (estimated)
         })
