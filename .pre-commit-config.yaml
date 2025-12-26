@@ -28,3 +28,10 @@ repos:
         entry: python agentic_core/L0_maintenance/scripts/guard_no_underscore_fields.py
         language: python
         files: ^agentic_core/schemas/models/core_contracts\.py$
+
+      - id: no-dark-reasoning
+        name: Sovereign Guard - Block Dark Reasoning
+        entry: python scripts/guard_dark_reasoning.py
+        language: python
+        types: [python]
+        exclude: ^agentic_core/L6_observability/|^tests/
