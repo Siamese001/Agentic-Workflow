@@ -10,6 +10,7 @@ import google.generativeai as genai
 
 # Load environment variables
 from dotenv import load_dotenv
+from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
 load_dotenv()
 
@@ -26,8 +27,8 @@ class LLMClient:
     """
 
     def __init__(self):
-        # 1. Fetch Key
-        api_key = os.getenv("GOOGLE_API_KEY")
+        # 1. Fetch Key from sovereign config
+        api_key = os.getenv("GOOGLE_API_KEY")  # Keep for backward compatibility
         if not api_key:
             logger.error("❌ GOOGLE_API_KEY not found in .env!")
             raise ValueError("Missing GOOGLE_API_KEY")
@@ -35,7 +36,7 @@ class LLMClient:
         genai.configure(api_key=api_key)
 
         # 2. Get model from environment or use standard Flash
-        self.model_id = os.getenv("LLM_MODEL", "gemini-2.5-flash-preview-09-2025")
+        self.model_id = os.getenv("LLM_MODEL", "gemini-2.5-flash-preview-09-2025")  # Keep for backward compatibility
 
     def generate_plan(self, system_context: str, user_goal: str, complexity: str = "mini") -> Dict[str, Any]:
         """

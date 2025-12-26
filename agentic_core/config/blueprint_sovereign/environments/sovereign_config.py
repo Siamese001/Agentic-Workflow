@@ -37,6 +37,23 @@ class SovereignConfig:
     # System Paths
     ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split("agentic_core")[0]
     
+    # === Phase 8: App Layer Configuration (Dec 26, 2025) ===
+    # Resume Generation (apps_rg)
+    RG_MIN_WORDS: int = 300
+    RG_MAX_WORDS: int = 800
+    RG_REASONING_TEMPERATURE: float = 0.7
+    RG_MAX_RESUME_LENGTH_CHARS: int = 10000
+    RG_ATS_COMPLIANCE_LEVEL: str = "strict"
+    
+    # LinkedIn Outreach (apps_lic)
+    LIC_MAX_MESSAGE_CHARS: int = 2000
+    LIC_TARGET_TONE: str = "professional_warm"
+    LIC_CTA_STRENGTH: str = "direct"
+    
+    # Shared App Config
+    APP_LOG_LEVEL: str = "INFO"
+    APP_CACHE_TTL_SECONDS: int = 3600
+    
     def validate(self):
         """Ensure critical secrets are present."""
         errors = []
