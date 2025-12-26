@@ -2,10 +2,41 @@
 Sovereign Core Contracts – Absolute SSOT for all Pydantic models and data schemas
 No inline BaseModel definitions allowed outside schemas/.
 """
+import logging
 from pathlib import Path
 from enum import Enum
 from typing import Optional, List, Dict, Any, Literal, Set
 from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
+
+# === SOVEREIGN SEVERITY LEVELS – Phase 12 (Dec 26, 2025) ===
+# Canonical SSOT for SovereignEvent.severity.
+class SovereignSeverity(str, Enum):
+    """Canonical SSOT for event severity levels with L6 log mapping."""
+    
+    CRITICAL = "CRITICAL"
+    """Immediate threat to sovereignty — system may be compromised"""
+    
+    ERROR = "ERROR"
+    """Healing required — constitutional violation detected"""
+    
+    WARNING = "WARNING"
+    """Degradation risk — attention needed but not blocking"""
+    
+    INFO = "INFO"
+    """Normal sovereign operation — audit trail"""
+    
+    DEBUG = "DEBUG"
+    """Detailed internal diagnostics — verbose"""
+
+# Registry for validation and L6 mapping
+SOVEREIGN_SEVERITIES = {e.value for e in SovereignSeverity}
+SEVERITY_LOG_LEVELS = {
+    SovereignSeverity.CRITICAL: logging.CRITICAL,
+    SovereignSeverity.ERROR: logging.ERROR,
+    SovereignSeverity.WARNING: logging.WARNING,
+    SovereignSeverity.INFO: logging.INFO,
+    SovereignSeverity.DEBUG: logging.DEBUG,
+}
 
 # === SOVEREIGN EVENT TYPE REGISTRY – CATEGORIZED (Dec 26, 2025) ===
 # Canonical SSOT for all SovereignEvent.event_type values.
