@@ -4,7 +4,7 @@ No inline BaseModel definitions allowed outside schemas/.
 """
 from pathlib import Path
 from enum import Enum
-from typing import Optional, List, Dict, Any, Literal
+from typing import Optional, List, Dict, Any, Literal, Set
 from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
 
 class SovereignBaseModel(BaseModel):
@@ -261,28 +261,28 @@ class HopState(Enum):
 
 class RetryPolicy(BaseModel):
     """Retry policy for micro-stages."""
-    _max_retries: int = Field(default=3, ge=0, le=10)
-    _retry_delay: float = Field(default=1.0, ge=0.0)
-    _exponential_backoff: bool = Field(default=True)
-    _retryable_stages: List[MicroStage] = Field(
+    max_retries: int = Field(default=3, ge=0, le=10)
+    retry_delay: float = Field(default=1.0, ge=0.0)
+    exponential_backoff: bool = Field(default=True)
+    retryable_stages: List[MicroStage] = Field(
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
 class MicroCheckpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
-    _hop_id: str
-    _stage: MicroStage
-    _timestamp: float
-    _state: HopState
-    _data: Dict[str, Any] = Field(default_factory=dict)
-    _error: Optional[str] = None
+    hop_id: str
+    stage: MicroStage
+    timestamp: float
+    state: HopState
+    data: Dict[str, Any] = Field(default_factory=dict)
+    error: Optional[str] = None
 
 class StageTransition(BaseModel):
     """Record of a stage transition."""
-    _from_stage: Optional[MicroStage] = None
-    _to_stage: MicroStage
+    from_stage: Optional[MicroStage] = None
+    to_stage: MicroStage
     timestamp: float
-    _reason: Optional[str] = None
+    reason: Optional[str] = None
 
 class InjectionType(Enum):
     """Types of prompt injections."""
@@ -296,21 +296,21 @@ class InjectionType(Enum):
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
-    _hop_types: List[str] = Field(default_factory=list)
-    _stages: List[str] = Field(default_factory=list)
-    _contexts: Dict[str, Any] = Field(default_factory=dict)
+    hop_types: List[str] = Field(default_factory=list)
+    stages: List[str] = Field(default_factory=list)
+    contexts: Dict[str, Any] = Field(default_factory=dict)
 
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern."""
-    _id: str
-    _name: str
-    _type: InjectionType
-    _description: str
-    _template: str
-    _variables: List[str] = Field(default_factory=list)
-    _scope: InjectionScope = Field(default_factory=InjectionScope)
-    _priority: int = Field(default=0, ge=0, le=10)
-    _enabled: bool = True
+    id: str
+    name: str
+    type: InjectionType
+    description: str
+    template: str
+    variables: List[str] = Field(default_factory=list)
+    scope: InjectionScope = Field(default_factory=InjectionScope)
+    priority: int = Field(default=0, ge=0, le=10)
+    enabled: bool = True
 
 CORE_CONTRACTS_REGISTRY = {
     # Base Models
@@ -510,44 +510,44 @@ class SignalContext(BaseModel):
 
 class SafetyProfile(BaseModel):
     """Safety configuration profile used by execution profiles."""
-    _safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
-    _pii_detection_enabled: bool = True
-    _policy_engine_enabled: bool = True
+    safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
+    pii_detection_enabled: bool = True
+    policy_engine_enabled: bool = True
 
 # Simulation Models
 
 class SimScenario(BaseModel):
     """Simulation scenario definition."""
-    _id: str
-    _description: str
-    _initial_context: Dict[str, Any]
-    _execution_profile_name: str
-    _run_count: int
+    id: str
+    description: str
+    initial_context: Dict[str, Any]
+    execution_profile_name: str
+    run_count: int
 
 class SimOutcome(BaseModel):
     """Simulation outcome results."""
-    _scenario_id: str
-    _average_scores: Dict[str, float]
-    _safety_incidents: int
-    _agent_conflict_count: int
+    scenario_id: str
+    average_scores: Dict[str, float]
+    safety_incidents: int
+    agent_conflict_count: int
 
 # Metacognition Models
 
 class Hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
-    _id: str
-    _agent_id: str
-    _content: str
-    _confidence: float = 0.0
-    _evidence_ids: List[str] = Field(default_factory=list)
-    _rationale: Optional[str] = None
+    id: str
+    agent_id: str
+    content: str
+    confidence: float = 0.0
+    evidence_ids: List[str] = Field(default_factory=list)
+    rationale: Optional[str] = None
 
 class MetacognitionReport(BaseModel):
     """Aggregate view over a set of hypotheses and signals."""
-    _hypotheses: List[Hypothesis] = Field(default_factory=list)
-    _global_confidence: float = 0.0
-    _uncertainty_score: float = 0.0
-    _issues_detected: List[str] = Field(default_factory=list)
+    hypotheses: List[Hypothesis] = Field(default_factory=list)
+    global_confidence: float = 0.0
+    uncertainty_score: float = 0.0
+    issues_detected: List[str] = Field(default_factory=list)
 
 # Golden State Models
 
@@ -578,25 +578,25 @@ class GoldenCase(BaseModel):
     """Golden test case for evaluation."""
     id: str
     input_text: str
-    _agent_sequence: List[str]
-    _expected_keypoints: List[str]
-    _correctness_criteria: Dict[str, Any]
+    agent_sequence: List[str]
+    expected_keypoints: List[str]
+    correctness_criteria: Dict[str, Any]
 
 class GoldenOutput(BaseModel):
     """Golden test output results."""
-    _case_id: str
-    _produced_keypoints: List[str]
-    _correctness_map: Dict[str, bool]
-    _safety_decisions: Dict[str, Any]
-    _metacognition_summary: Dict[str, Any]
-    _final_verdict: Literal["pass", "fail", "borderline"]
+    case_id: str
+    produced_keypoints: List[str]
+    correctness_map: Dict[str, bool]
+    safety_decisions: Dict[str, Any]
+    metacognition_summary: Dict[str, Any]
+    final_verdict: Literal["pass", "fail", "borderline"]
 
 # Budget Profile
 
 class BudgetProfile(BaseModel):
     """High-level budget profile for cost/latency envelopes."""
-    _max_cost_usd: float = Field(default=0.10, ge=0.0)
-    _max_latency_ms: int = Field(default=3000, ge=0)
+    max_cost_usd: float = Field(default=0.10, ge=0.0)
+    max_latency_ms: int = Field(default=3000, ge=0)
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -1083,8 +1083,8 @@ class FinancialMetric:
     metric_name: str
     value: str
     period: str
-    yoy_change: Optional[str] = None
     source_citation: str
+    yoy_change: Optional[str] = None
     
     def validate(self) -> bool:
         return bool(self.metric_name and self.value and self.source_citation)
@@ -1094,8 +1094,8 @@ class TechnicalImplementation:
     """Technical implementation details with validation."""
     technology_name: str
     implementation_details: str
-    performance_gain: Optional[str] = None
     source_citation: str
+    performance_gain: Optional[str] = None
     
     def validate(self) -> bool:
         return bool(self.technology_name and self.implementation_details and self.source_citation)
