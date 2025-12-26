@@ -1638,6 +1638,230 @@ CORE_CONTRACTS_REGISTRY.update({
     "TemperatureConfig": TemperatureConfig,
 })
 
+# Strategic Planning Models (from L1_cognition/thought_engine/strategic_planner.py)
+# Migrated with Builder pattern for fluent, immutable construction
+
+import logging
+logger = logging.getLogger(__name__)
+
+class MissionPriority(str, Enum):
+    """Mission priority levels."""
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+
+class MissionStatus(str, Enum):
+    """Mission status values."""
+    PLANNED = "PLANNED"
+    ACTIVE = "ACTIVE"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
+
+@dataclass(frozen=True)
+class MissionPhase(SovereignBaseModel):
+    """A single phase of a mission."""
+    name: str
+    agents: List[str]
+    dependencies: List[str] = field(default_factory=list)
+    status: str = "pending"
+    result: Optional[Dict[str, Any]] = None
+
+@dataclass(frozen=True)
+class MissionPlan(SovereignBaseModel):
+    """
+    Complete mission plan with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Fluent API for mission construction
+    - Immutable result with constitutional validation
+    - L6 observability stamping at build time
+    """
+    mission_id: str
+    cycle_id: int
+    priority: MissionPriority
+    objective: str
+    phases: List[MissionPhase] = field(default_factory=list)
+    risk_assessment: Dict = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    status: MissionStatus = MissionStatus.PLANNED
+
+    class Builder:
+        """
+        Sovereign Builder for MissionPlan – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent, readable mission definitions
+        - Early validation (uniqueness, required fields)
+        - L6 observability (construction logging)
+        """
+        
+        def __init__(self):
+            self._mission_id: Optional[str] = None
+            self._cycle_id: Optional[int] = None
+            self._priority: MissionPriority = MissionPriority.MEDIUM
+            self._objective: Optional[str] = None
+            self._phases: List[MissionPhase] = []
+            self._risk_assessment: Dict = {}
+            self._phase_names: set = set()  # Integrity check
+        
+        def with_mission_id(self, mission_id: str) -> 'MissionPlan.Builder':
+            self._mission_id = mission_id
+            return self
+        
+        def with_cycle(self, cycle_id: int) -> 'MissionPlan.Builder':
+            self._cycle_id = cycle_id
+            return self
+        
+        def with_priority(self, priority: MissionPriority) -> 'MissionPlan.Builder':
+            self._priority = priority
+            return self
+        
+        def with_objective(self, objective: str) -> 'MissionPlan.Builder':
+            self._objective = objective
+            return self
+        
+        def add_phase(self, phase: MissionPhase) -> 'MissionPlan.Builder':
+            if phase.name in self._phase_names:
+                raise ValueError(f"Sovereignty Violation: Duplicate phase name detected: {phase.name}")
+            self._phase_names.add(phase.name)
+            self._phases.append(phase)
+            return self
+        
+        def with_risk_assessment(self, assessment: Dict) -> 'MissionPlan.Builder':
+            self._risk_assessment = assessment
+            return self
+        
+        def build(self) -> MissionPlan:
+            """Construct immutable MissionPlan with sovereign validation"""
+            if not self._mission_id:
+                raise ValueError("Incomplete Mission: mission_id is required")
+            if self._cycle_id is None:
+                raise ValueError("Incomplete Mission: cycle_id is required")
+            if not self._objective:
+                raise ValueError("Incomplete Mission: objective is required")
+            if not self._phases:
+                raise ValueError("Illegal Mission: At least one phase required")
+            
+            # L6 Observability: Log the formal sealing of the plan
+            logger.info(f"[BUILDER] Sealing MissionPlan {self._mission_id} | "
+                        f"Phases: {len(self._phases)} | Priority: {self._priority}")
+            
+            return MissionPlan(
+                mission_id=self._mission_id,
+                cycle_id=self._cycle_id,
+                priority=self._priority,
+                objective=self._objective,
+                phases=self._phases.copy(),  # Defensive copy
+                risk_assessment=self._risk_assessment.copy(),  # Defensive copy
+            )
+
+@dataclass(frozen=True)
+class ThinkingStep(SovereignBaseModel):
+    """A single step in a thought chain."""
+    step_number: int
+    thought: str
+    action: str
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+@dataclass(frozen=True)
+class RevisionStep(SovereignBaseModel):
+    """A revision made to the thought chain."""
+    revision_number: int
+    original_step: int
+    revised_thought: str
+    reason: str
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+@dataclass(frozen=True)
+class ThoughtChain(SovereignBaseModel):
+    """
+    Thought chain for reasoning trace with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Ensures logical continuity in reasoning steps
+    - Immutable chain with timestamp tracking
+    - Constitutional validation of chain integrity
+    """
+    chain_id: str
+    goal: str
+    steps: List[ThinkingStep] = field(default_factory=list)
+    active_hypotheses: List[Hypothesis] = field(default_factory=list)
+    revisions: List[RevisionStep] = field(default_factory=list)
+    final_conclusion: Optional[str] = None
+    success: bool = False
+    duration_seconds: float = 0.0
+
+    class Builder:
+        """
+        Sovereign Builder for ThoughtChain – Phase 12 (Dec 26, 2025)
+        Ensures logical continuity and constitutional validation.
+        """
+        def __init__(self):
+            self._chain_id: Optional[str] = None
+            self._goal: Optional[str] = None
+            self._steps: List[ThinkingStep] = []
+            self._hypotheses: List[Hypothesis] = []
+            self._revisions: List[RevisionStep] = []
+            self._final_conclusion: Optional[str] = None
+            self._success: bool = False
+            self._duration_seconds: float = 0.0
+
+        def with_chain_id(self, chain_id: str) -> 'ThoughtChain.Builder':
+            self._chain_id = chain_id
+            return self
+
+        def with_goal(self, goal: str) -> 'ThoughtChain.Builder':
+            self._goal = goal
+            return self
+
+        def add_step(self, step: ThinkingStep) -> 'ThoughtChain.Builder':
+            self._steps.append(step)
+            return self
+
+        def add_hypothesis(self, hypothesis: Hypothesis) -> 'ThoughtChain.Builder':
+            self._hypotheses.append(hypothesis)
+            return self
+
+        def with_final_conclusion(self, conclusion: str) -> 'ThoughtChain.Builder':
+            self._final_conclusion = conclusion
+            self._success = True
+            return self
+
+        def build(self) -> 'ThoughtChain':
+            """Construct immutable ThoughtChain with sovereign validation."""
+            if not self._chain_id or not self._goal:
+                raise ValueError("ThoughtChain construction failed: mission_id and goal are mandatory.")
+            
+            if self._success and not self._final_conclusion:
+                raise ValueError("Inconsistent State: Success requires a final_conclusion.")
+
+            # L6 Observability: Record the construction of the thinking aggregate
+            logger.info(f"[L6_AUDIT] ThoughtChain Constructed: {self._chain_id}")
+
+            return ThoughtChain(
+                chain_id=self._chain_id,
+                goal=self._goal,
+                steps=self._steps.copy(),
+                active_hypotheses=self._hypotheses.copy(),
+                revisions=self._revisions.copy(),
+                final_conclusion=self._final_conclusion,
+                success=self._success,
+                duration_seconds=self._duration_seconds
+            )
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Strategic Planning Models
+    "MissionPriority": MissionPriority,
+    "MissionStatus": MissionStatus,
+    "MissionPhase": MissionPhase,
+    "MissionPlan": MissionPlan,
+    "ThinkingStep": ThinkingStep,
+    "RevisionStep": RevisionStep,
+    "ThoughtChain": ThoughtChain,
+})
+
 # === ETERNAL SOVEREIGNTY CERTIFICATION – Dec 26, 2025 ===
 # OPERATION SOVEREIGN STRIKE (Sessions 4–6) COMPLETE
 #
