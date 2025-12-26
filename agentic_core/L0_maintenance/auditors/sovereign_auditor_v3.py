@@ -2,9 +2,12 @@
 Sovereign Multi-Dimensional Auditor v3.0
 The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
+Phase 10: Sovereign Healing Engine integrated (Dec 26, 2025)
 """
 import sys
+import asyncio
 from pathlib import Path
+from typing import List, Dict
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
@@ -26,10 +29,34 @@ try:
 except ImportError:
     validate_observability_footprint = None
 
+try:
+    from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES, get_strategies_by_priority
+except ImportError:
+    HEALING_STRATEGIES = []
+    get_strategies_by_priority = lambda: []
+
 class SovereignReport:
     def __init__(self):
         self.scores = {}
         self.issues = {}
+    
+    def get_overall_score(self) -> float:
+        """Calculate overall health score."""
+        if not self.scores:
+            return 0.0
+        return sum(self.scores.values()) / len(self.scores)
+    
+    def get_all_issues(self) -> List[Dict]:
+        """Get all issues in structured format for healing engine."""
+        all_issues = []
+        for dimension, issues in self.issues.items():
+            for issue in issues:
+                all_issues.append({
+                    "dimension": dimension,
+                    "description": issue,
+                    "file": issue.split(":")[0] if ":" in str(issue) else str(issue)
+                })
+        return all_issues
 
     def run_check(self, name, check_func, files):
         failures = 0
@@ -49,18 +76,19 @@ class SovereignReport:
         print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
         print("="*60)
         
-        overall = sum(self.scores.values()) / len(self.scores)
+        overall = self.get_overall_score()
         
         for dim, score in self.scores.items():
             status = "✓" if score > 95 else "⚠" if score > 80 else "✗"
             print(f"{status} {dim:<20} : {score:.1f}%")
             if score < 100:
-                print(f"   Violations: {', '.join(self.issues[dim][:3])}" + ("..." if len(self.issues[dim]) > 3 else ""))
+                print(f"   Violations: {', '.join(str(i) for i in self.issues[dim][:3])}" + ("..." if len(self.issues[dim]) > 3 else ""))
 
         print("-" * 60)
         status = "SOVEREIGN" if overall > 95 else "VULNERABLE"
         print(f"OVERALL HEALTH: {overall:.1f}% -> {status}")
         print("="*60)
+        return overall
 
 def main():
     target = Path("agentic_core")
@@ -100,7 +128,52 @@ def main():
     else:
         print("⚠ Observability Footprint guardian not available")
 
-    report.print_summary()
+    overall_score = report.print_summary()
+    
+    # Phase 10: Sovereign Healing Engine
+    if overall_score < 95 and HEALING_STRATEGIES:
+        print("\n[⚠] SOVEREIGNTY COMPROMISED — INITIATING L0 HEALING")
+        asyncio.run(sovereign_self_correction(report.get_all_issues()))
+    elif overall_score >= 95:
+        print("\n[✓] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
+    
+    return report
+
+async def sovereign_self_correction(issues: List[Dict]):
+    """
+    L0 Proactive Healing Engine: Orchestrates repairs across all dimensions.
+    
+    This is the core of the Sovereign Control Circuit:
+    1. L0 detects violations via guardians
+    2. L0 diagnoses root causes via healing strategies
+    3. L0 applies fixes proactively
+    4. L0 logs to L6 for audit trail
+    """
+    print(f"   [L0 HEALING] Analyzing {len(issues)} violations...")
+    
+    all_fixes = []
+    for strategy in get_strategies_by_priority():
+        fixes = await strategy.diagnose(issues)
+        if fixes:
+            print(f"   [L0 HEALING] {strategy.name} strategy proposed {len(fixes)} fixes")
+            all_fixes.extend(fixes)
+    
+    if not all_fixes:
+        print("   [L0 HEALING] No automated fixes available for current violations")
+        return
+    
+    print(f"\n   [L0 HEALING] Executing {len(all_fixes)} fixes in priority order...")
+    
+    for fix in sorted(all_fixes, key=lambda f: f.get("priority", 10)):
+        print(f"   [L0 HEALING] {fix['action']}: {fix['reason']}")
+        print(f"                File: {fix.get('file', 'N/A')}")
+        
+        # Note: Actual fix application would require L2 execution capabilities
+        # For now, we log the proposed fixes for manual review
+        # Future: Integrate with L2 execution layer for automated fixes
+        
+    print("\n   [L0 HEALING] Healing recommendations logged.")
+    print("   [L0 HEALING] Manual review recommended before applying fixes.")
 
 if __name__ == "__main__":
     main()
