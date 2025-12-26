@@ -1,13 +1,14 @@
 """
-Sovereign DeepWiki Client – Phase 13D (Dec 26, 2025)
-Codebase Intelligence via MCP.
-L6 Observability integration with DeepWiki MCP for repository knowledge access.
-L3 routed, L5 shielded documentation queries.
+Sovereign DeepWiki Client – Phase 13E (Dec 26, 2025)
+L6 Codebase Intelligence via Official MCP.
+L3 Routed | L5 Shielded
 
-Allows the agent to 'read' the codebase structure and ask questions about it.
+Allows the agent to query its own structure and logic.
+Enables self-verification and canon audit capabilities.
 """
 import logging
-from typing import Dict, Any, Optional, List
+import json
+from typing import Dict, Any, Optional, List, Union
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
@@ -43,6 +44,7 @@ class SovereignDeepWikiClient:
     async def ask_question(self, question: str, repo: Optional[str] = None) -> str:
         """
         Ask a natural language question about the codebase.
+        Example: "Where is the retry logic for Pinecone located?"
         
         Args:
             question: Natural language question about the codebase
@@ -59,18 +61,18 @@ class SovereignDeepWikiClient:
         
         repo_target = repo or config.DEEPWIKI_REPO_CONTEXT
         
-        logger.info(f"[L6 DEEPWIKI] Asking: {question} (Repo: {repo_target})")
+        logger.info(f"[L6 DEEPWIKI] Analyzing codebase: '{question}'")
         
         try:
             result = await self.router.manager.call_tool(
-                "mcp2_ask_question",
-                {
-                    "repoName": repo_target,
-                    "question": question
+                tool_name="deepwiki_ask",
+                args={
+                    "question": question,
+                    "repo": repo_target
                 }
             )
             
-            # Parse result (DeepWiki usually returns simple text or dict)
+            # Robust parsing (handle simple string or dict return)
             if isinstance(result, dict) and "answer" in result:
                 return result["answer"]
             elif isinstance(result, dict) and "response" in result:
@@ -79,18 +81,19 @@ class SovereignDeepWikiClient:
             return str(result)
             
         except Exception as e:
-            logger.error(f"[L6 DEEPWIKI] Question failed: {e}")
-            return f"Error: {str(e)}"
+            logger.error(f"[L6 DEEPWIKI] Query failed: {e}")
+            return f"Error analyzing codebase: {e}"
     
     async def get_structure(self, repo: Optional[str] = None) -> Dict[str, Any]:
         """
-        Retrieve file/folder structure.
+        Retrieve the file/folder structure of the repository.
+        Useful for L6 'Canon Verification' (checking for missing files).
         
         Args:
             repo: Optional repository identifier (defaults to config)
             
         Returns:
-            Repository structure
+            Repository structure as dict
         """
         if not config.DEEPWIKI_MCP_ENABLED:
             return {"structure": [], "error": "DeepWiki MCP Disabled"}
@@ -102,21 +105,20 @@ class SovereignDeepWikiClient:
         
         try:
             result = await self.router.manager.call_tool(
-                "mcp2_read_wiki_structure",
-                {
-                    "repoName": repo_target
-                }
+                tool_name="deepwiki_structure",
+                args={"repo": repo_target}
             )
+            
+            # Ensure return is a Dict
+            if isinstance(result, str):
+                return json.loads(result)
             
             logger.info(f"[L6 DEEPWIKI] Structure retrieved for repo: {repo_target}")
             return result
             
         except Exception as e:
-            logger.error(f"[L6 DEEPWIKI] Structure read failed: {e}")
-            return {
-                "structure": [],
-                "error": str(e)
-            }
+            logger.error(f"[L6 DEEPWIKI] Structure fetch failed: {e}")
+            return {"error": str(e)}
     
     async def read_wiki_structure(self, repo: str) -> Dict[str, Any]:
         """
