@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-26 10:39:08
+MISSION LOG - 2025-12-26 10:48:51
 ================================================================================
-COMMAND: mkdir -p "c:\Git\Agentic-Workflow\agentic_core\L2_execution\mcp"
-DIRECTORY: C:\Git\Agentic-Workflow
+COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+DIRECTORY: C:\Git
 EXIT CODE: 
 ================================================================================
 
