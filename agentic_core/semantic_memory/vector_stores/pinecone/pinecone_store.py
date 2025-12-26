@@ -1,75 +1,50 @@
 """
 Pinecone Vector Store Implementation – Sovereign Primary (Serverless)
-SSOT-aligned integration for semantic memory territory mapping and RAG context.
+SSOT-aligned integration using SovereignConfig.
 """
-import os
 import time
 from typing import List, Optional, Dict, Any
-from pinecone import Pinecone, ServerlessSpec
-from pinecone.exceptions import PineconeApiException
+from pinecone import Pinecone, ServerlessSpec, PineconeApiException
+from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
 class SovereignPineconeStore:
-    """
-    Sovereign wrapper for Pinecone serverless index.
-    Handles index creation (idempotent), upsert, query, and namespace management.
-    """
+    """Sovereign wrapper for Pinecone serverless index."""
+    
     DEFAULT_INDEX_NAME = "sovereign-territory-index"
-    DEFAULT_DIMENSION = 1536  # Standard for text-embedding-3-large
-    DEFAULT_METRIC = "cosine"
-    DEFAULT_CLOUD = "aws"
-    DEFAULT_REGION = "us-east-1"
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
         index_name: str = DEFAULT_INDEX_NAME,
-        dimension: int = DEFAULT_DIMENSION,
-        metric: str = DEFAULT_METRIC,
-        cloud: str = DEFAULT_CLOUD,
-        region: str = DEFAULT_REGION,
+        dimension: int = config.DEFAULT_EMBEDDING_DIM,
+        metric: str = "cosine",
     ):
-        self.api_key = api_key or os.getenv("PINECONE_API_KEY")
-        if not self.api_key:
-            raise ValueError("PINECONE_API_KEY environment variable or api_key argument required")
-
+        # Validate config immediately
+        config.validate()
+        
+        self.api_key = config.PINECONE_API_KEY
         self.pc = Pinecone(api_key=self.api_key)
         self.index_name = index_name
         self.dimension = dimension
         self.metric = metric
 
-        self._ensure_index(cloud=cloud, region=region)
+        self._ensure_index()
         self.index = self.pc.Index(self.index_name)
 
-    def _ensure_index(self, cloud: str, region: str) -> None:
-        """Idempotent index creation – serverless only."""
+    def _ensure_index(self) -> None:
+        """Idempotent index creation using Config SSOT values."""
         if not self.pc.has_index(self.index_name):
             try:
                 self.pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
                     metric=self.metric,
-                    spec=ServerlessSpec(cloud=cloud, region=region),
-                    deletion_protection="disabled",  # Set to 'enabled' in production
+                    spec=ServerlessSpec(cloud=config.PINECONE_CLOUD, region=config.PINECONE_ENV),
+                    deletion_protection="disabled",
                 )
-                # Brief sleep to ensure eventual consistency propagation
                 time.sleep(1)
             except PineconeApiException as e:
-                if "ALREADY_EXISTS" in str(e):
-                    pass
-                else:
+                if "ALREADY_EXISTS" not in str(e):
                     raise e
-        
-        # Validation
-        try:
-            desc = self.pc.describe_index(self.index_name)
-            if desc.dimension != self.dimension:
-                raise ValueError(
-                    f"Existing index dimension {desc.dimension} != requested {self.dimension}. "
-                    "Manual intervention required to prevent data corruption."
-                )
-        except Exception as e:
-             # Handle edge cases where description might fail temporarily
-             print(f"[Warn] Could not validate index dimensions: {e}")
 
     def upsert(
         self,
