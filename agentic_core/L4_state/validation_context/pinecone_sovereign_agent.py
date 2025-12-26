@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+#############################################################################
+# DEPRECATED - Phase 13C
+# This logic has been superseded by 'pinecone_mcp_client.py'
+# Do not modify. Plan for removal in Phase 15.
+#############################################################################
 """
 PineconeSovereignAgent - Eternal Sovereign Gateway to Pinecone
 

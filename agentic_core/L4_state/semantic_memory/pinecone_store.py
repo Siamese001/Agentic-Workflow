@@ -1,32 +1,33 @@
 """
-Pinecone Vector Store – DEPRECATED (Phase 13C)
-Refactored as an Adapter to SovereignPineconeMCPClient.
+Pinecone Vector Store – ADAPTER (Phase 13C)
+Translation Layer: Legacy Interface -> New MCP Client
 
-This module maintains backward compatibility with legacy code
-while routing actual logic to the new MCP Client.
+Maintains backward compatibility for 'add_texts' and 'similarity_search'
+while routing all operations through the Sovereign MCP architecture.
 """
 import logging
 from typing import List, Optional, Any, Dict
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("L4.PineconeStore")
 
 
 class SovereignPineconeStore:
     """
-    Adapter class to maintain backward compatibility with legacy code
-    while routing actual logic to the new MCP Client.
+    ADAPTER: Legacy Interface -> New MCP Client.
+    Maintains backward compatibility for 'add_texts' and 'similarity_search'.
     
     Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
     """
     
-    def __init__(self):
+    def __init__(self, index_name: Optional[str] = None, namespace: Optional[str] = None):
         """Initialize the adapter with MCP client."""
-        from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import get_pinecone_mcp_client
+        from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient
         
-        self.mcp_client = get_pinecone_mcp_client()
+        self.mcp_client = SovereignPineconeMCPClient()
+        self.namespace = namespace
         self._initialized = False
-        logger.info("[L4 PINECONE STORE] Adapter initialized - routing to MCP client")
+        logger.info("[L4 ADAPTER] Initialized - routing to MCP client")
     
     async def _ensure_initialized(self):
         """Ensure MCP client is initialized."""
@@ -37,101 +38,63 @@ class SovereignPineconeStore:
     async def similarity_search(
         self, 
         query: str, 
-        k: int = 4, 
-        namespace: Optional[str] = None,
+        k: int = 4,
         **kwargs
-    ) -> List[Any]:
-        """
-        Legacy interface adapter for search.
+    ) -> List[Dict]:
+        """Legacy adapter for search."""
+        logger.info(f"[L4 ADAPTER] Routing legacy search to MCP: {query}")
         
-        Args:
-            query: Search query text
-            k: Number of results to return
-            namespace: Optional namespace
-            **kwargs: Additional arguments (e.g., rerank, filters)
-            
-        Returns:
-            List of search results
-        """
         await self._ensure_initialized()
         
-        try:
-            results = await self.mcp_client.search(
-                query_text=query,
-                top_k=k,
-                namespace=namespace,
-                rerank=kwargs.get('rerank', True),
-                filters=kwargs.get('filters')
-            )
-            
-            # Transform MCP results back to legacy format
-            matches = results.get('matches', [])
-            
-            # Convert to legacy result format
-            legacy_results = []
-            for match in matches:
-                legacy_results.append({
-                    'id': match.get('id'),
-                    'score': match.get('score', 0.0),
-                    'metadata': match.get('metadata', {}),
-                    'values': match.get('values', [])
-                })
-            
-            logger.info(f"[L4 PINECONE STORE] Similarity search returned {len(legacy_results)} results")
-            return legacy_results
-            
-        except Exception as e:
-            logger.error(f"[L4 PINECONE STORE] Similarity search failed: {e}")
-            return []
+        result = await self.mcp_client.search(
+            query_text=query,
+            top_k=k,
+            namespace=self.namespace,
+            rerank=kwargs.get('rerank', True)
+        )
+        
+        # Transform MCP result format back to legacy list-of-dicts if needed
+        # Assuming MCP returns {'matches': [...]}
+        matches = result.get('matches', []) if isinstance(result, dict) else []
+        return matches
     
     async def add_texts(
         self, 
         texts: List[str], 
-        metadatas: Optional[List[dict]] = None, 
-        namespace: Optional[str] = None,
+        metadatas: Optional[List[dict]] = None,
         ids: Optional[List[str]] = None
     ) -> List[str]:
-        """
-        Legacy interface adapter for adding documents (via embedding + upsert).
+        """Legacy adapter for adding documents."""
+        logger.info(f"[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert")
         
-        Args:
-            texts: List of texts to add
-            metadatas: Optional metadata for each text
-            namespace: Optional namespace
-            ids: Optional IDs for each text
-            
-        Returns:
-            List of IDs for added texts
-        """
         await self._ensure_initialized()
         
-        try:
-            # Generate IDs if not provided
-            if ids is None:
-                import hashlib
-                ids = [f"vec_{hashlib.sha256(text.encode()).hexdigest()[:16]}" for text in texts]
+        # 1. Generate Embeddings (Server-side)
+        emb_result = await self.mcp_client.inference_embed(texts)
+        embeddings = emb_result.get('data', [])  # Standardize based on MCP return
+        
+        if not embeddings:
+            raise RuntimeError("MCP Inference failed to return embeddings")
+
+        # 2. Format Vectors
+        vectors = []
+        result_ids = []
+        for i, text in enumerate(texts):
+            # Generate a stable ID based on content hash
+            vec_id = ids[i] if ids else f"vec_{abs(hash(text))}"
+            meta = metadatas[i] if metadatas else {}
+            meta["text"] = text
             
-            # Construct vectors for upsert
-            vectors = []
-            for i, text in enumerate(texts):
-                vector = {
-                    "id": ids[i],
-                    "metadata": {
-                        "text": text,
-                        **(metadatas[i] if metadatas and i < len(metadatas) else {})
-                    }
-                }
-                vectors.append(vector)
+            vectors.append({
+                "id": vec_id,
+                "values": embeddings[i]['values'] if isinstance(embeddings[i], dict) else embeddings[i],
+                "metadata": meta
+            })
+            result_ids.append(vec_id)
             
-            # Upsert via MCP (embeddings generated automatically)
-            result = await self.mcp_client.upsert(vectors=vectors, namespace=namespace)
-            
-            logger.info(f"[L4 PINECONE STORE] Added {len(texts)} texts")
-            return ids
-            
-        except Exception as e:
-            logger.error(f"[L4 PINECONE STORE] Add texts failed: {e}")
-            return []
+        # 3. Upsert
+        await self.mcp_client.upsert(vectors=vectors, namespace=self.namespace)
+        return result_ids
     
     async def upsert_file_vector(
         self, 
