@@ -117,27 +117,27 @@ class AgentThoughtProcess(BaseModel):
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
-    _reasoning_trace: List[str] = Field(
+    reasoning_trace: List[str] = Field(
         ...,
         description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
     )
-    _relevant_context_keys: List[str] = Field(...)
+    relevant_context_keys: List[str] = Field(...)
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
         ...,
         description="The action type to take"
     )
-    _tool_arguments: Dict[str, Any] = Field(
+    tool_arguments: Dict[str, Any] = Field(
         default_factory=dict,
         description="Arguments for the chosen tool"
     )
-    _confidence_score: float = Field(
+    confidence_score: float = Field(
         ...,
         ge=0.0,
         le=1.0,
         description="Confidence in this decision (0.0 to 1.0)"
     )
 
-    @field_validator('_tool_arguments')
+    @field_validator('tool_arguments')
     @classmethod
     def validate_args(cls, v, info):
         """Self-validation inside the schema."""
@@ -156,34 +156,34 @@ class AgentThoughtProcess(BaseModel):
 
 class CodeGenerationResult(BaseModel):
     """Schema for code generation tasks."""
-    _reasoning: str = Field(..., description="Why this code solves the problem")
-    _code: str = Field(..., description="The generated Python code")
-    _dependencies: List[str] = Field(
+    reasoning: str = Field(..., description="Why this code solves the problem")
+    code: str = Field(..., description="The generated Python code")
+    dependencies: List[str] = Field(
         default_factory=list,
         description="Required pip packages"
     )
-    _test_cases: List[str] = Field(
+    test_cases: List[str] = Field(
         default_factory=list,
         description="Test cases to verify the code"
     )
-    _safety_notes: List[str] = Field(
+    safety_notes: List[str] = Field(
         default_factory=list,
         description="Potential safety concerns or limitations"
     )
 
 class ResearchResult(BaseModel):
     """Schema for research tasks."""
-    _query_understanding: str = Field(..., description="How you interpreted the research question")
-    _sources: List[Dict[str, str]] = Field(
+    query_understanding: str = Field(..., description="How you interpreted the research question")
+    sources: List[Dict[str, str]] = Field(
         ...,
         description="List of sources with 'url' and 'relevance' keys"
     )
-    _key_findings: List[str] = Field(..., description="Main findings from the research")
-    _confidence_level: Literal["high", "medium", "low"] = Field(
+    key_findings: List[str] = Field(..., description="Main findings from the research")
+    confidence_level: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )
-    _follow_up_questions: List[str] = Field(
+    follow_up_questions: List[str] = Field(
         default_factory=list,
         description="Suggested follow-up research questions"
     )
@@ -1361,6 +1361,63 @@ CORE_CONTRACTS_REGISTRY.update({
     "ImmutableStagingBuffer": ImmutableStagingBuffer,
 })
 
+# === Sovereign Enums (Phase 5 Enum Migration) ===
+# Enums migrated to unblock circular dependencies
+
+# From rg_creative_brief_enums.py
+class VoiceType(str, Enum):
+    """Voice type for content generation."""
+    FIRST_PERSON = "first_person"
+    THIRD_PERSON = "third_person"
+    THIRD_PERSON_IMPLIED = "third_person_implied"
+
+class ProvenanceStrategy(str, Enum):
+    """Strategy for bullet provenance."""
+    JD_FIT_BASED = "jd_fit_based"
+    INTERNAL_FIRST = "internal_first"
+    TOP_SKILLS = "top_skills"
+    BALANCED = "balanced"
+
+# From lic_routing_rules_enums.py
+class MessageRoute(str, Enum):
+    """Message route types for LinkedIn outreach."""
+    CONNECTION_REQUEST = "connection_request"
+    INMAIL = "inmail"
+    FOLLOW_UP = "follow_up"
+    DIRECT_MESSAGE = "direct_message"
+
+class RecipientArchetype(str, Enum):
+    """Recipient archetype classifications."""
+    EXECUTIVE = "executive"
+    TECHNICAL = "technical"
+    RECRUITER = "recruiter"
+    PEER = "peer"
+
+class SignatureFormat(str, Enum):
+    """Signature format types."""
+    STANDARD = "standard"
+    MINIMAL = "minimal"
+    PROFESSIONAL = "professional"
+    CASUAL = "casual"
+
+class CTAFormat(str, Enum):
+    """Call-to-action format types."""
+    STANDARD = "standard"
+    QUESTION = "question"
+    DIRECT_ASK = "direct_ask"
+    SOFT_CLOSE = "soft_close"
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Sovereign Enums
+    "VoiceType": VoiceType,
+    "ProvenanceStrategy": ProvenanceStrategy,
+    "MessageRoute": MessageRoute,
+    "RecipientArchetype": RecipientArchetype,
+    "SignatureFormat": SignatureFormat,
+    "CTAFormat": CTAFormat,
+})
+
 # RG Creative Brief Models (from L1_cognition/thought_engine/rg_creative_brief_models.py)
 # Migrating dependency-free models only
 
@@ -1461,4 +1518,129 @@ CORE_CONTRACTS_REGISTRY.update({
     "RetryPolicy": RetryPolicy,
     "HopSpec": HopSpec,
     "WorkflowSpec": WorkflowSpec,
+})
+
+# Brief Models (from L1_cognition/thought_engine/brief_models.py)
+# Now unblocked after enum migration
+
+@dataclass
+class ExperienceBulletsBrief:
+    """Creative brief for experience bullets section."""
+    provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
+    provenance_map: Dict[str, str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S', 'IBM': '4V-2T-0S'})
+    default_provenance_fallback: str = '10V-0A-0S'
+    selection_logic: str = 'Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)'
+    overview_word_count: Dict[str, WordCountConstraint] = field(default_factory=lambda: {'k6': WordCountConstraint(25, 33), 'k7': WordCountConstraint(22, 28)})
+    k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
+    k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
+    GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+
+@dataclass
+class LeadershipCompetenciesBrief:
+    """Creative brief for leadership competencies section."""
+    TITLE: str = 'Strategic & Technical Competencies'
+    sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
+    COUNT: int = 6
+    word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
+
+@dataclass
+class CoverLetterBrief:
+    """Creative brief for cover letter section."""
+    STRUCTURE: str = '1-intro-2-body'
+    word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85, 100))
+    min_specific_details: int = 4
+    forbidden_patterns: List[str] = field(default_factory=lambda: ['At [COMPANY], I...', 'During my time at...'])
+    signature_generation_policy: str = 'DYNAMIC_FROM_OWNER_CONTACT'
+
+@dataclass
+class OptimizedSkillsBrief:
+    """Creative brief for optimized skills list section."""
+    sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
+    LOGIC: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
+
+@dataclass
+class RGCreativeBrief:
+    """Complete creative brief for resume generation."""
+    headline: HeadlineBrief = field(default_factory=HeadlineBrief)
+    executive_summary: 'ExecutiveSummaryBrief' = None
+    experience_bullets: ExperienceBulletsBrief = field(default_factory=ExperienceBulletsBrief)
+    leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenciesBrief)
+    cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
+    optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)
+
+# ExecutiveSummaryBrief (from rg_creative_brief_models.py - previously blocked)
+@dataclass
+class ExecutiveSummaryBrief:
+    """Creative brief for executive summary section."""
+    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
+    voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
+    forbidden_patterns: List[str] = field(default_factory=lambda: ['I have', 'My expertise', 'At [COMPANY],', 'I'])
+    GUIDANCE: str = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."""
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Brief Models
+    "ExperienceBulletsBrief": ExperienceBulletsBrief,
+    "LeadershipCompetenciesBrief": LeadershipCompetenciesBrief,
+    "CoverLetterBrief": CoverLetterBrief,
+    "OptimizedSkillsBrief": OptimizedSkillsBrief,
+    "RGCreativeBrief": RGCreativeBrief,
+    "ExecutiveSummaryBrief": ExecutiveSummaryBrief,
+})
+
+# LIC Routing Rules Models (from L1_cognition/thought_engine/lic_routing_rules_models.py)
+# Now unblocked after enum migration
+
+@dataclass
+class RouteConditions:
+    """Conditions for route selection."""
+    _connection_status: Optional[str] = None
+    _prior_message_count: Optional[int] = None
+    _prior_message_count_gt: Optional[int] = None
+    _prior_message_count_gte: Optional[int] = None
+
+@dataclass
+class RouteConstraints:
+    """Constraints for a message route."""
+    _char_limit: Optional[int] = None
+    _word_range: Optional[tuple[int, int]] = None
+    _signature_format: SignatureFormat = SignatureFormat.STANDARD
+    _subject_line_enabled: bool = False
+    _attachments_enabled: bool = False
+    _cta_format: CTAFormat = CTAFormat.STANDARD
+    _cta_max_words: Optional[int] = None
+    _greeting_format: str = "Hi {first_name},"
+
+@dataclass
+class RouteConfig:
+    """Complete configuration for a message route."""
+    _route: MessageRoute
+    _conditions: RouteConditions
+    _constraints: RouteConstraints
+
+@dataclass
+class ArchetoneConfig:
+    """Tone configuration for an archetype."""
+    _message_tone: str
+    _verb_preference: List[str]
+    _jargon_level: str
+    _formality: str
+    _focus: str
+
+@dataclass
+class TemperatureConfig:
+    """Temperature configuration for LLM generation."""
+    _base_temperature: float
+    _escalation_step: float = 0.15
+    _max_temperature: float = 0.95
+    _max_creative_retries: int = 3
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # LIC Routing Rules Models
+    "RouteConditions": RouteConditions,
+    "RouteConstraints": RouteConstraints,
+    "RouteConfig": RouteConfig,
+    "ArchetoneConfig": ArchetoneConfig,
+    "TemperatureConfig": TemperatureConfig,
 })
