@@ -46,7 +46,7 @@ class SovereignPineconeMCPClient:
         filters: Optional[Dict] = None
     ) -> Dict[str, Any]:
         """
-        Search for similar vectors using text query.
+        Execute semantic search with optional server-side reranking.
         
         Args:
             query_text: Text to search for
@@ -58,25 +58,21 @@ class SovereignPineconeMCPClient:
         Returns:
             Search results with scores and metadata
         """
+        if not config.PINECONE_MCP_ENABLED:
+            raise RuntimeError("Pinecone MCP is disabled in Sovereign Config.")
+        
         if not self.initialized:
             await self.initialize()
         
         try:
             result = await self.router.manager.call_tool(
-                "mcp8_search-records",
-                {
-                    "name": config.PINECONE_INDEX_NAME if hasattr(config, 'PINECONE_INDEX_NAME') else "default",
-                    "namespace": namespace or "",
-                    "query": {
-                        "inputs": {"text": query_text},
-                        "topK": top_k,
-                        "filter": filters or {}
-                    },
-                    "rerank": {
-                        "model": config.PINECONE_RERANK_MODEL,
-                        "rankFields": ["text"],
-                        "topN": top_k
-                    } if rerank else None
+                tool_name="pinecone_search",
+                args={
+                    "query": query_text,
+                    "top_k": top_k,
+                    "namespace": namespace or config.PINECONE_DEFAULT_NAMESPACE,
+                    "rerank": rerank,
+                    "rerank_model": config.PINECONE_RERANK_MODEL if rerank else None
                 }
             )
             
@@ -93,7 +89,7 @@ class SovereignPineconeMCPClient:
         namespace: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Upsert vectors into the index.
+        Upsert vectors to the index.
         
         Args:
             vectors: List of vector records to upsert
@@ -106,29 +102,15 @@ class SovereignPineconeMCPClient:
             await self.initialize()
         
         try:
-            # Transform vectors to records format expected by MCP
-            records = []
-            for vec in vectors:
-                record = {
-                    "id": vec.get("id", ""),
-                    "text": vec.get("metadata", {}).get("text", ""),
-                }
-                # Add other metadata fields
-                for key, value in vec.get("metadata", {}).items():
-                    if key != "text":
-                        record[key] = value
-                records.append(record)
-            
             result = await self.router.manager.call_tool(
-                "mcp8_upsert-records",
-                {
-                    "name": config.PINECONE_INDEX_NAME if hasattr(config, 'PINECONE_INDEX_NAME') else "default",
-                    "namespace": namespace or "",
-                    "records": records
+                tool_name="pinecone_upsert",
+                args={
+                    "vectors": vectors,
+                    "namespace": namespace or config.PINECONE_DEFAULT_NAMESPACE
                 }
             )
             
-            logger.info(f"[L4 PINECONE MCP] Upserted {len(records)} records")
+            logger.info(f"[L4 PINECONE MCP] Upserted {len(vectors)} records")
             return result
             
         except Exception as e:
@@ -137,33 +119,33 @@ class SovereignPineconeMCPClient:
     
     async def inference_embed(self, texts: List[str]) -> Dict[str, Any]:
         """
-        Generate embeddings using Pinecone inference.
+        Generate embeddings via the Inference MCP tool.
         
         Args:
             texts: List of texts to embed
             
         Returns:
-            Embeddings result
+            Embeddings result with 'data' key containing embedding vectors
         """
         if not self.initialized:
             await self.initialize()
         
         try:
-            # Pinecone MCP inference uses the index's configured model
-            # We'll use upsert with auto-embedding for now
-            logger.info(f"[L4 PINECONE MCP] Generating embeddings for {len(texts)} texts")
+            result = await self.router.manager.call_tool(
+                tool_name="pinecone_inference",
+                args={
+                    "texts": texts,
+                    "model": config.PINECONE_INFERENCE_MODEL,
+                    "input_type": "passage"
+                }
+            )
             
-            # Note: Pinecone MCP handles embedding automatically during upsert
-            # Return placeholder for compatibility
-            return {
-                "embeddings": [[0.0] * 1024 for _ in texts],  # Placeholder
-                "model": config.PINECONE_INFERENCE_MODEL,
-                "note": "Embeddings generated automatically during upsert"
-            }
+            logger.info(f"[L4 PINECONE MCP] Generated embeddings for {len(texts)} texts")
+            return result
             
         except Exception as e:
             logger.error(f"[L4 PINECONE MCP] Inference failed: {e}")
-            return {"embeddings": [], "error": str(e)}
+            return {"data": [], "error": str(e)}
     
     async def delete(
         self, 

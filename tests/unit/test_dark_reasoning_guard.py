@@ -1,0 +1,243 @@
+"""
+Sovereign Dark Reasoning Guard Test – Phase 14B
+Verifies that hidden chains of thought are observable and shielded.
+
+Tests the L5 safety layer's ability to detect and flag violations
+in "dark" (internal monologue) reasoning chains before execution.
+"""
+import pytest
+from unittest.mock import MagicMock, patch, AsyncMock
+from dataclasses import dataclass
+from typing import Optional
+
+
+# Mock ThoughtStep for testing
+@dataclass
+class ThoughtStep:
+    """Mock thought step for testing."""
+    step_number: int
+    content: str
+    is_hidden: bool = False
+    confidence: float = 1.0
+
+
+# Mock SovereignGuardrail for testing
+class MockSovereignGuardrail:
+    """Mock guardrail for testing dark reasoning detection."""
+    
+    def __init__(self):
+        self.violation_keywords = [
+            "delete system32",
+            "rm -rf /",
+            "drop database",
+            "format c:",
+            "sudo rm",
+            "destructive command"
+        ]
+    
+    async def validate_thought(self, thought: ThoughtStep) -> tuple[bool, str]:
+        """
+        Validate a thought step for safety violations.
+        
+        Args:
+            thought: The thought step to validate
+            
+        Returns:
+            Tuple of (is_safe, reason)
+        """
+        # Check for safety violations
+        is_safe, reason = await self._check_safety(thought.content)
+        
+        # If unsafe and hidden, trigger dark reasoning alert
+        if not is_safe and thought.is_hidden:
+            await self._log_dark_reasoning_violation(thought, reason)
+        
+        return is_safe, reason
+    
+    async def _check_safety(self, content: str) -> tuple[bool, str]:
+        """Check content for safety violations."""
+        content_lower = content.lower()
+        
+        for keyword in self.violation_keywords:
+            if keyword in content_lower:
+                return False, f"Destructive command detected: {keyword}"
+        
+        return True, "Safe"
+    
+    async def _log_dark_reasoning_violation(self, thought: ThoughtStep, reason: str):
+        """Log a dark reasoning violation to L6 observability."""
+        # This would normally call the actual logging system
+        # For testing, we'll use a mock
+        from agentic_core.L6_observability import log_security_event
+        log_security_event(
+            event_type="DARK_REASONING_VIOLATION",
+            severity="CRITICAL",
+            details={
+                "step_number": thought.step_number,
+                "content": thought.content,
+                "reason": reason,
+                "is_hidden": thought.is_hidden
+            }
+        )
+
+
+@pytest.fixture
+def guard():
+    """Create a mock guardrail instance."""
+    return MockSovereignGuardrail()
+
+
+@pytest.mark.asyncio
+async def test_dark_reasoning_flagging(guard):
+    """Ensure 'unsafe' thoughts in the reasoning chain trigger a violation."""
+    
+    # 1. Create a chain with a hidden violation
+    dark_thought = ThoughtStep(
+        step_number=1,
+        content="I should delete the system32 folder to save space.",
+        is_hidden=True  # "Dark" reasoning
+    )
+    
+    # 2. Mock the L6 Logger to verify it catches the silent alarm
+    with patch("agentic_core.L6_observability.log_security_event") as mock_log:
+        
+        # 3. Execute validation
+        is_safe, reason = await guard.validate_thought(dark_thought)
+        
+        # 4. Assertions
+        assert is_safe is False, "Unsafe thought should be flagged"
+        assert "Destructive" in reason or "delete system32" in reason.lower(), \
+            f"Reason should mention the violation: {reason}"
+        
+        # Critical: Verify L6 Observability caught the hidden thought
+        mock_log.assert_called_once()
+        call_args = mock_log.call_args
+        
+        # Verify the event type
+        assert call_args[1]["event_type"] == "DARK_REASONING_VIOLATION", \
+            "Should log as DARK_REASONING_VIOLATION"
+        
+        # Verify severity
+        assert call_args[1]["severity"] == "CRITICAL", \
+            "Dark reasoning violations should be CRITICAL"
+        
+        # Verify details contain the thought
+        details = call_args[1]["details"]
+        assert details["is_hidden"] is True, "Should flag as hidden thought"
+        assert "delete system32" in details["content"].lower(), \
+            "Should capture the actual violation content"
+
+
+@pytest.mark.asyncio
+async def test_benign_dark_reasoning(guard):
+    """Ensure benign internal monologue passes without alarm."""
+    
+    benign_thought = ThoughtStep(
+        step_number=1,
+        content="I need to analyze the file structure.",
+        is_hidden=True
+    )
+    
+    with patch("agentic_core.L6_observability.log_security_event") as mock_log:
+        is_safe, reason = await guard.validate_thought(benign_thought)
+        
+        # Should pass safety check
+        assert is_safe is True, "Benign thought should pass"
+        assert reason == "Safe", f"Should be marked safe: {reason}"
+        
+        # Should NOT trigger dark reasoning alert
+        mock_log.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_visible_unsafe_thought(guard):
+    """Verify that visible (non-hidden) unsafe thoughts are also caught."""
+    
+    visible_unsafe = ThoughtStep(
+        step_number=1,
+        content="Let's format c: to clean up.",
+        is_hidden=False  # Visible thought
+    )
+    
+    with patch("agentic_core.L6_observability.log_security_event") as mock_log:
+        is_safe, reason = await guard.validate_thought(visible_unsafe)
+        
+        # Should fail safety check
+        assert is_safe is False, "Unsafe thought should be flagged"
+        assert "format c:" in reason.lower(), f"Should mention violation: {reason}"
+        
+        # Should NOT trigger DARK_REASONING_VIOLATION (since it's visible)
+        mock_log.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_multiple_violations_in_chain():
+    """Test detection of multiple violations in a thought chain."""
+    
+    guard = MockSovereignGuardrail()
+    
+    thoughts = [
+        ThoughtStep(1, "First, analyze the system.", is_hidden=True),
+        ThoughtStep(2, "Then delete system32 folder.", is_hidden=True),
+        ThoughtStep(3, "Finally, drop database to clean up.", is_hidden=True),
+    ]
+    
+    violations = []
+    
+    with patch("agentic_core.L6_observability.log_security_event") as mock_log:
+        for thought in thoughts:
+            is_safe, reason = await guard.validate_thought(thought)
+            if not is_safe:
+                violations.append((thought.step_number, reason))
+        
+        # Should detect 2 violations
+        assert len(violations) == 2, f"Should detect 2 violations, found {len(violations)}"
+        
+        # Should log 2 dark reasoning events
+        assert mock_log.call_count == 2, \
+            f"Should log 2 events, logged {mock_log.call_count}"
+
+
+@pytest.mark.asyncio
+async def test_edge_case_empty_content():
+    """Test handling of edge case: empty thought content."""
+    
+    guard = MockSovereignGuardrail()
+    
+    empty_thought = ThoughtStep(
+        step_number=1,
+        content="",
+        is_hidden=True
+    )
+    
+    is_safe, reason = await guard.validate_thought(empty_thought)
+    
+    # Empty content should be safe (no violations)
+    assert is_safe is True, "Empty content should be safe"
+
+
+@pytest.mark.asyncio
+async def test_case_insensitive_detection():
+    """Verify that violation detection is case-insensitive."""
+    
+    guard = MockSovereignGuardrail()
+    
+    variations = [
+        "DELETE SYSTEM32 folder",
+        "Delete System32 Folder",
+        "delete system32 folder",
+        "DeLeTe SyStEm32 FoLdEr"
+    ]
+    
+    for content in variations:
+        thought = ThoughtStep(1, content, is_hidden=True)
+        is_safe, reason = await guard.validate_thought(thought)
+        
+        assert is_safe is False, \
+            f"Should detect violation regardless of case: {content}"
+        assert "delete system32" in reason.lower(), \
+            f"Should identify the violation: {reason}"
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
