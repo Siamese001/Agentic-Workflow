@@ -1398,53 +1398,22 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     discovered = discover_agents()
     print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} potential components")
     
-    # [SOVEREIGN ARMING] Instantiate with context to prevent 'TypeError'
-    ctx.cleaning_crew = []
-    for mod_name, cls_name, cls_ref in discovered:
+    # [SOVEREIGN HEALING] Populate cleaning_crew with all healing-capable agents
+    cleaning_crew = []
+    for mod_name, cls_name, agent_class in discovered:
         try:
-            # [SOVEREIGN CUT] Only instantiate agents with actual execute/run methods
-            # Skip passive structural components (Protocols, Registries, Types)
-            has_execute = hasattr(cls_ref, 'execute') and callable(getattr(cls_ref, 'execute', None))
-            has_run = hasattr(cls_ref, 'run') and callable(getattr(cls_ref, 'run', None))
-            
-            if not (has_execute or has_run):
-                # Silently skip passive components - no warning needed
-                continue
-
-            # Try standard sovereign init (ProjectRoot + Guardrail)
-            try:
-                kwargs = {}
-                if 'project_root' in inspect.signature(cls_ref.__init__).parameters:
-                    kwargs['project_root'] = project_root
-                if 'guardrail' in inspect.signature(cls_ref.__init__).parameters and hasattr(ctx, 'safety_guardrail'):
-                    kwargs['guardrail'] = ctx.safety_guardrail
-                if 'ctx' in inspect.signature(cls_ref.__init__).parameters:
-                    kwargs['ctx'] = ctx
-                if 'name' in inspect.signature(cls_ref.__init__).parameters:
-                    kwargs['name'] = cls_name
-                if 'engine' in inspect.signature(cls_ref.__init__).parameters:
-                    kwargs['engine'] = ctx.engine
-                    
-                agent_instance = cls_ref(**kwargs)
-                if hasattr(agent_instance, 'heal_violation') or has_execute or has_run:
-                    ctx.cleaning_crew.append(agent_instance)
-                    print(f"   [+] {cls_name} ARMED as ATOMIC healer")
-            except TypeError:
-                try:
-                    # Fallback to empty init
-                    agent_instance = cls_ref()
-                    if hasattr(agent_instance, 'heal_violation') or has_execute or has_run:
-                        ctx.cleaning_crew.append(agent_instance)
-                        print(f"   [+] {cls_name} ARMED (fallback)")
-                except Exception: continue
-            except Exception as e:
-                print(f"   [!] Discovery Error for {cls_name}: {e}")
-                
+            instance = agent_class()
+            if hasattr(instance, 'heal_violation') and callable(getattr(instance, 'heal_violation')):
+                cleaning_crew.append(instance)
+                print(f"   [+] {cls_name} ARMED as sovereign healer ({mod_name})")
         except Exception as e:
-            print(f"   [!] Failed to instantiate {cls_name}: {e}")
+            print(f"   [!] Agent instantiation failed: {e}")
     
-    # Update the global cleaning_crew for compatibility
-    cleaning_crew = ctx.cleaning_crew
+    ctx.cleaning_crew = cleaning_crew
+    print(f"   [OK] {len(cleaning_crew)} healing agents armed for mutation")
+    
+    if not cleaning_crew:
+        print(f"   [!] CRITICAL: No healing agents — mutation disabled")
 
     # --- CRITICAL SAFETY CHECK ---
     if not cleaning_crew:
