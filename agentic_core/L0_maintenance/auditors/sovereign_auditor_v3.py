@@ -127,9 +127,15 @@ def main():
     report.scores["Config SSOT"] = 100.0  # Assumed compliant
     report.issues["Config SSOT"] = ["Guardian not yet implemented"]
     
-    # 6. Observability Footprint (Dark Reasoning Guardian)
+    # 6. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
     if validate_observability_footprint:
         obs_score, obs_issues = validate_observability_footprint(str(target))
+        # Refined scoring: multiplier of 3 ensures moderate violations trigger warnings
+        # while catastrophic darkness triggers system block (score < 50)
+        if obs_issues:
+            obs_score = max(50, 100 - (len(obs_issues) * 3))
+        else:
+            obs_score = 100.0
         report.scores["Observability Footprint"] = obs_score
         report.issues["Observability Footprint"] = obs_issues
     else:

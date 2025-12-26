@@ -190,11 +190,63 @@ class DDDAlignmentHealing(HealingStrategy):
         return fixes
 
 
+class ObservabilityHealing(HealingStrategy):
+    """Heals observability footprint violations by injecting L6 logging."""
+    
+    def __init__(self):
+        super().__init__("Observability", priority=3)
+    
+    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+        """Diagnose observability violations and propose logging injections."""
+        fixes = []
+        
+        for issue in issues:
+            dimension = issue.get("dimension", "")
+            description = issue.get("description", "").lower()
+            
+            # Check if this is an observability footprint issue
+            if "observability footprint" in dimension.lower() or "observability" in description:
+                # Extract function and line information if available
+                function_name = None
+                line_num = None
+                
+                # Try to parse from description
+                if "function" in description:
+                    try:
+                        parts = description.split("function")
+                        if len(parts) > 1:
+                            function_name = parts[1].strip().split()[0]
+                    except (ValueError, IndexError):
+                        pass
+                
+                if "line" in description:
+                    try:
+                        parts = description.split("line")
+                        if len(parts) > 1:
+                            line_num = int(parts[1].strip().split(":")[0].strip())
+                    except (ValueError, IndexError):
+                        pass
+                
+                fixes.append({
+                    "action": "inject_logging",
+                    "file": issue.get("file", ""),
+                    "line": line_num,
+                    "function": function_name,
+                    "reason": "Missing observability footprint in reasoning block",
+                    "priority": self.priority,
+                    "strategy": self.name,
+                    "suggestion": f"Add logger.info('[REASONING START] {function_name}')" if function_name else "Add logging statement"
+                })
+        
+        return fixes
+
+
 # Registry of all available healing strategies
 HEALING_STRATEGIES = [
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
+    ObservabilityHealing(),
     DDDAlignmentHealing()
 ]
 

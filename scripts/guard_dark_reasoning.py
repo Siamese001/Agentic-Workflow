@@ -10,8 +10,9 @@ import sys
 from pathlib import Path
 from typing import List, Dict
 
-REASONING_SIGNALS = {"think", "plan", "reason", "decide", "analyze", "execute", "generate"}
-OBSERVABILITY_SIGNALS = {"logger.", "logging.", "self.logger.", "trace(", "metric(", "print("}
+# Refined signals: only trigger on high-level cognitive intentions
+REASONING_SIGNALS = {"think", "plan", "reason", "decide", "analyze", "generate", "synthesize"}
+OBSERVABILITY_SIGNALS = {"logger.", "logging.", "self.logger.", "trace(", "metric("}
 
 class DarkReasoningVisitor(ast.NodeVisitor):
     """AST visitor to detect reasoning functions without observability."""
@@ -20,34 +21,46 @@ class DarkReasoningVisitor(ast.NodeVisitor):
         self.filepath = filepath
         self.issues = []
         self.in_reasoning_function = False
+        self.has_observability = False
+        self.current_function = "<anonymous>"
 
     def visit_FunctionDef(self, node):
         """Visit function definitions and check for dark reasoning."""
         func_name = node.name.lower()
-        old_state = self.in_reasoning_function
+        was_reasoning = self.in_reasoning_function
         
         # Check if function name contains reasoning signals
         if any(sig in func_name for sig in REASONING_SIGNALS):
             self.in_reasoning_function = True
+            self.current_function = node.name
+            self.has_observability = False
         
-        # Check if function body contains at least one observability signal
-        if self.in_reasoning_function:
-            body_str = ast.dump(node).lower()
-            has_observability = any(sig in body_str for sig in OBSERVABILITY_SIGNALS)
-            
-            if not has_observability:
+        # Visit children to detect observability calls
+        self.generic_visit(node)
+        
+        # Check for darkness upon exiting the function scope
+        if self.in_reasoning_function and not was_reasoning:
+            if not self.has_observability:
                 self.issues.append({
                     "line": node.lineno,
-                    "function": node.name,
-                    "reason": "Reasoning function lacks L6 observability footprint"
+                    "function": self.current_function,
+                    "reason": "Reasoning function lacks L6 observability footprint",
+                    "suggestion": f"Add logger.info('[REASONING START] {self.current_function}')"
                 })
-            
-        self.generic_visit(node)
-        self.in_reasoning_function = old_state
+            self.in_reasoning_function = False
+            self.has_observability = False
 
     def visit_AsyncFunctionDef(self, node):
         """Visit async function definitions (same logic as sync)."""
         self.visit_FunctionDef(node)
+    
+    def visit_Call(self, node):
+        """Visit function calls to detect observability signals."""
+        # Mark as observed if ANY observability signal is found in the call
+        call_repr = ast.dump(node).lower()
+        if any(sig in call_repr for sig in OBSERVABILITY_SIGNALS):
+            self.has_observability = True
+        self.generic_visit(node)
 
 
 def check_dark_reasoning(filepath: Path) -> List[Dict]:
