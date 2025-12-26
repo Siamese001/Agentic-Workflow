@@ -261,6 +261,34 @@ class SovereignDeepWikiClient:
                 "status": "failed"
             }
     
+    async def verify_file_exists(self, filepath: str) -> bool:
+        """
+        L6 Utility: Check if a file exists in the current context.
+        
+        Args:
+            filepath: Path to the file to verify
+            
+        Returns:
+            True if file exists, False otherwise
+        """
+        # Ask specifically about the file presence
+        answer = await self.ask_question(f"Does the file '{filepath}' exist in the codebase?")
+        
+        # Naive NLP parsing - robust enough for Yes/No
+        answer_lower = answer.lower()
+        
+        # Check for positive indicators
+        if any(word in answer_lower for word in ["yes", "exists", "found", "present"]):
+            return True
+        
+        # Check for negative indicators
+        if any(word in answer_lower for word in ["no", "not found", "missing", "does not exist", "doesn't exist"]):
+            return False
+        
+        # If unclear, log warning and return False (conservative)
+        logger.warning(f"[L6 DEEPWIKI] Ambiguous file existence response for {filepath}: {answer}")
+        return False
+    
     async def health_check(self) -> Dict[str, Any]:
         """
         Perform health check on DeepWiki connection.
@@ -270,20 +298,17 @@ class SovereignDeepWikiClient:
         """
         try:
             # Try a simple query to test connectivity
-            result = await self.ask_question(
-                "xai/grok-canon",
-                "What is the purpose of this repository?"
-            )
+            result = await self.ask_question("What is the purpose of this repository?")
             
-            if result.get("error"):
+            if "error" in result.lower():
                 return {
                     "status": "unhealthy",
-                    "error": result["error"]
+                    "error": result
                 }
             
             return {
                 "status": "healthy",
-                "response_length": len(result.get("response", "")),
+                "response_length": len(result),
                 "initialized": self.initialized
             }
             

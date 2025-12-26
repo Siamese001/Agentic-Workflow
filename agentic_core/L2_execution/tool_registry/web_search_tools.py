@@ -1,9 +1,7 @@
 """
-Web Search Tools - Atomic Module
-Extracted from action_registry.py via Atomic Fission Protocol
+Sovereign Brave Search MCP Client — L2 Execution Layer
+Phase 13F: Full MCP integration via L3 router with unified output formatting
 Tool ID Prefix: ACT-001
-
-Phase 14: Refactored to use Brave Search MCP via L3 Sovereign Router
 """
 import logging
 import json
@@ -16,22 +14,20 @@ logger = logging.getLogger("ActionRegistry.WebSearch")
 
 class WebSearchTools:
     """
-    Sovereign Brave Search MCP Client — L2 Execution Layer
-    Phase 14: Full MCP integration via L3 router
+    Standardized toolset for external intelligence.
+    Routes all traffic through L3 Sovereign Router.
     Tool ID Prefix: ACT-001
     """
 
     def __init__(self):
         """Initialize with sovereign MCP router — L5 shielded"""
-        # Role 'web_research' maps to the Brave MCP server in the router config
         self.router = SovereignMCPRouter(role="web_research")
         logger.info("[L2 WEB SEARCH] Initialized with Sovereign MCP Router")
 
     async def search_web(self, query: str) -> str:
         """
-        Sovereign web search via Brave Search MCP
-        L5 shielded, L6 observable
-        Tool ID: ACT-001
+        Sovereign web search via Brave Search MCP.
+        Standardizes the output for L1 Cognition processing.
 
         Args:
             query (str): The search query string.
@@ -45,141 +41,123 @@ class WebSearchTools:
         logger.info(f"🌐 Sovereign Web Search: '{query}'")
         
         try:
-            # L3 → L2 MCP call with L5 shielding
-            # Note: Official Brave MCP usually exposes 'mcp1_brave_web_search'
             result = await self.router.manager.call_tool(
-                tool_name="mcp1_brave_web_search",
+                tool_name="brave_web_search",
                 args={
                     "query": query,
                     "count": config.BRAVE_SEARCH_COUNT,
-                    "offset": 0
+                    "summarize": config.BRAVE_SEARCH_SUMMARIZE,
+                    "safe_search": config.BRAVE_SEARCH_SAFE_SEARCH,
+                    "country": config.BRAVE_SEARCH_COUNTRY
                 }
             )
             
-            return self._parse_mcp_response(result)
+            return self._parse_mcp_response(result, "web")
         
         except Exception as e:
             logger.error(f"[L2 WEB SEARCH] MCP call failed: {e}")
             return f"Search Error: {str(e)}"
 
-    async def search_local(self, query: str) -> str:
+    async def search_local(self, query: str, location: Optional[str] = None) -> str:
         """
-        Local business search via Brave MCP
-        Useful for finding physical locations/businesses
+        Geographic/Business search via Brave MCP.
 
         Args:
             query (str): The local search query string.
+            location (str, optional): Geographic location context.
 
         Returns:
             str: A formatted string of local search results or an error message.
         """
         if not config.BRAVE_SEARCH_MCP_ENABLED:
-            return "Error: Brave Search MCP disabled."
-
-        logger.info(f"📍 Sovereign Local Search: '{query}'")
-
+            return "Error: Brave Search MCP disabled"
+        
+        logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
+        
         try:
             result = await self.router.manager.call_tool(
-                tool_name="mcp1_brave_local_search",
+                tool_name="brave_local_search",
                 args={
                     "query": query,
-                    "count": 5  # Local results are usually denser
+                    "count": config.BRAVE_SEARCH_COUNT
                 }
             )
-            return self._parse_mcp_response(result)
-        
+            return self._parse_mcp_response(result, "local")
         except Exception as e:
             logger.error(f"[L2 LOCAL SEARCH] MCP call failed: {e}")
-            return f"Local Search Error: {str(e)}"
+            return f"Local search error: {str(e)}"
 
-    def _parse_mcp_response(self, result: Any) -> str:
+    def _parse_mcp_response(self, result: Any, mode: str) -> str:
         """
-        Robustly parses MCP results which might be:
-        1. A dict with 'content' list (standard MCP)
-        2. A raw dict from a wrapped tool
-        3. Stringified JSON
+        Normalizes MCP output regardless of server return format.
 
         Args:
             result: The MCP response object
+            mode: "web" or "local" for format selection
 
         Returns:
             str: Formatted search results
         """
+        # 1. Check for standard 'content' list in CallToolResult
+        content = ""
+        if hasattr(result, "content") and isinstance(result.content, list):
+            content = "".join([c.text for c in result.content if hasattr(c, "text")])
+        elif isinstance(result, dict) and "content" in result:
+            content = "".join([c.get("text", "") for c in result["content"] if isinstance(c, dict)])
+        else:
+            content = str(result)
+
+        # 2. Try to parse JSON for structured formatting
         try:
-            # Case 1: Standard MCP response structure (list of Content objects)
-            content_blocks = []
-            if isinstance(result, dict) and "content" in result:
-                content_blocks = result["content"]
-            elif hasattr(result, "content"):
-                content_blocks = result.content
-            
-            # If we found content blocks, process them
-            if content_blocks:
-                text_content = ""
-                for block in content_blocks:
-                    # Handle both object attributes and dict keys
-                    if hasattr(block, "text"):
-                        text_content += block.text
-                    elif isinstance(block, dict) and "text" in block:
-                        text_content += block["text"]
-                
-                # If the text is JSON, try to format it nicely
-                try:
-                    data = json.loads(text_content)
-                    return self._format_brave_json(data)
-                except json.JSONDecodeError:
-                    return text_content  # Return raw text if not JSON
+            data = json.loads(content)
+            if mode == "web":
+                return self._format_web_json(data)
+            return self._format_local_json(data)
+        except (json.JSONDecodeError, TypeError):
+            return content
 
-            # Case 2: Direct Dict (legacy or simplified wrapper)
-            if isinstance(result, dict):
-                return self._format_brave_json(result)
-
-            return str(result)
-
-        except Exception as e:
-            logger.error(f"Error parsing search results: {e}")
-            return "Error parsing search results."
-
-    def _format_brave_json(self, data: Dict) -> str:
+    def _format_web_json(self, data: Dict) -> str:
         """
-        Formats Brave JSON data into readable string
+        Formats web search results into standardized output.
 
         Args:
-            data: The Brave search response data
+            data: The Brave web search response data
 
         Returns:
-            str: Formatted search results
+            str: Formatted web search results
         """
-        output = []
+        items = data.get("web", {}).get("results", []) or data.get("results", [])
+        if not items:
+            return "No web results found."
         
-        # Web results
-        if "web" in data and "results" in data["web"]:
-            for item in data["web"]["results"]:
-                title = item.get('title', 'No Title')
-                desc = item.get('description', 'No description')
-                url = item.get('url', '#')
-                output.append(f"**{title}**\n{desc}\nSource: {url}")
-        
-        # Local results
-        elif "locations" in data and "results" in data["locations"]:
-            for item in data["locations"]["results"]:
-                title = item.get('title', 'No Title')
-                address = item.get('address', {}).get('formattedAddress', 'No Address')
-                rating = item.get('rating', {}).get('ratingValue', 'N/A')
-                output.append(f"**{title}** (Rating: {rating})\nAddress: {address}")
-        
-        # Fallback for generic results
-        elif isinstance(data, list):
-            for item in data:
-                output.append(str(item))
-        else:
-            # Last ditch dump
-            return json.dumps(data, indent=2)
+        formatted = []
+        for i in items:
+            title = i.get("title", "No title")
+            summary = i.get("summary") or i.get("description", "No summary")
+            url = i.get("url", "#")
+            formatted.append(f"Title: {title}\nSummary: {summary}\nLink: {url}\n---")
+        return "\n".join(formatted)
 
-        if not output:
-            return "No relevant results found."
-            
-        return "\n\n---\n\n".join(output)
+    def _format_local_json(self, data: Dict) -> str:
+        """
+        Formats local search results into standardized output.
+
+        Args:
+            data: The Brave local search response data
+
+        Returns:
+            str: Formatted local search results
+        """
+        items = data.get("locations", {}).get("results", []) or data.get("results", [])
+        if not items:
+            return "No local results found."
+        
+        formatted = []
+        for i in items:
+            name = i.get("title") or i.get("name", "Unknown Business")
+            address = i.get("address", {}).get("formattedAddress") or i.get("address", "No address")
+            formatted.append(f"Name: {name}\nAddress: {address}\n---")
+        return "\n".join(formatted)
 
 
 __all__ = ['WebSearchTools']

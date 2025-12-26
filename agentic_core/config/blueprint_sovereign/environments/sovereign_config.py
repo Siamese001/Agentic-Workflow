@@ -79,11 +79,11 @@ class SovereignConfig:
     PINECONE_INFERENCE_MODEL: str = "multilingual-e5-large"
     PINECONE_DEFAULT_NAMESPACE: str = "sovereign_memory_v1"
     
-    # === Phase 14: Brave Search MCP (Dec 26, 2025) ===
+    # === Phase 13F: Brave Search MCP (Dec 26, 2025) ===
     BRAVE_SEARCH_MCP_ENABLED: bool = True
     BRAVE_SEARCH_SUMMARIZE: bool = True
     BRAVE_SEARCH_SAFE_SEARCH: str = "moderate"  # options: off, moderate, strict
-    BRAVE_SEARCH_COUNT: int = 10
+    BRAVE_SEARCH_COUNT: int = 5
     BRAVE_SEARCH_COUNTRY: str = "US"
     
     # === Phase 13D: Knowledge Graph & DeepWiki (Dec 26, 2025) ===
