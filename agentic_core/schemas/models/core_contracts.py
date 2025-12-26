@@ -623,3 +623,130 @@ CORE_CONTRACTS_REGISTRY.update({
     "GoldenCase": GoldenCase,
     "GoldenOutput": GoldenOutput,
 })
+
+# === Phase 2C Residual Sweep – Dec 26, 2025 ===
+# Models discovered in non-schema directories during final sweep
+
+# Runtime Shared Models
+
+@dataclass
+class LLMResponse:
+    """Standard LLM response format."""
+    _content: str
+    _model: str
+    _usage: Optional[Dict[str, int]] = None
+    _finish_reason: Optional[str] = None
+    _metadata: Optional[Dict[str, Any]] = None
+
+class MessageType(str, Enum):
+    """Message types for agent communication."""
+    SYSTEM = "system"
+    USER = "user"
+    ASSISTANT = "assistant"
+    TOOL = "tool"
+
+@dataclass
+class ResidualAgentMessage:  # CONFLICT: Renamed to avoid collision with existing AgentMessage
+    """Message in agent conversation (from runtime_shared_models.py)."""
+    _role: MessageType
+    content: str
+    _tool_calls: Optional[List[Dict[str, Any]]] = None
+    _tool_call_id: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+@dataclass
+class AgentResponse:
+    """Response from agent execution."""
+    _message: 'ResidualAgentMessage'
+    _success: bool
+    _error: Optional[str] = None
+    usage: Optional[Dict[str, int]] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+class ResidualValidationResult(BaseModel):  # CONFLICT: Renamed to avoid collision
+    """Validation result for data or operations (from runtime_shared_models.py)."""
+    _is_valid: bool
+    _errors: List[str] = []
+    _warnings: List[str] = []
+    metadata: Dict[str, Any] = {}
+
+class ReasoningConfig(BaseModel):
+    """Configuration for reasoning operations."""
+    _temperature: float = 0.7
+    _max_tokens: int = 1000
+    _top_p: float = 0.9
+    _frequency_penalty: float = 0.0
+    _presence_penalty: float = 0.0
+    _stop_sequences: Optional[List[str]] = None
+
+class HopStatus(str, Enum):
+    """Status of hop execution."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+class GateDecision(str, Enum):
+    """Decision from validation gate."""
+    PASS = "pass"
+    FAIL = "fail"
+    WARN = "warn"
+    SKIP = "skip"
+
+class ValidationSeverity(str, Enum):
+    """Severity of validation issue."""
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    CRITICAL = "critical"
+
+@dataclass
+class WorkflowCheckpoint:
+    """Checkpoint in workflow execution."""
+    _hop_id: str
+    _status: HopStatus
+    _data: Dict[str, Any]
+    _timestamp: str
+    metadata: Optional[Dict[str, Any]] = None
+
+@dataclass
+class ThematicAnalysis:
+    """Analysis of thematic content."""
+    _theme: str
+    _confidence: float
+    _keywords: List[str]
+    _sentiment: Optional[str] = None
+
+@dataclass
+class RAGState:
+    """State of RAG operations."""
+    _query: str
+    _retrieved_docs: List[Dict[str, Any]]
+    _context: str
+    _response: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+class CircuitState(str, Enum):
+    """Circuit breaker state."""
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half_open"
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Runtime Shared Models
+    "LLMResponse": LLMResponse,
+    "MessageType": MessageType,
+    "ResidualAgentMessage": ResidualAgentMessage,
+    "AgentResponse": AgentResponse,
+    "ResidualValidationResult": ResidualValidationResult,
+    "ReasoningConfig": ReasoningConfig,
+    "HopStatus": HopStatus,
+    "GateDecision": GateDecision,
+    "ValidationSeverity": ValidationSeverity,
+    "WorkflowCheckpoint": WorkflowCheckpoint,
+    "ThematicAnalysis": ThematicAnalysis,
+    "RAGState": RAGState,
+    "CircuitState": CircuitState,
+})
