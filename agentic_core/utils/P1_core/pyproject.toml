@@ -12,6 +12,7 @@ pathlib = "^1.0"
 rich = "^13.7"
 flask = "^3.0"
 flask-cors = "^4.0"
+pinecone = {version = "^5.0.0", extras = ["grpc"]}
 
 [tool.black]
 line-length = 100
