@@ -1,21 +1,27 @@
 """
-Sovereign DeepWiki Client – Phase 13 (Dec 26, 2025)
+Sovereign DeepWiki Client – Phase 13D (Dec 26, 2025)
+Codebase Intelligence via MCP.
 L6 Observability integration with DeepWiki MCP for repository knowledge access.
 L3 routed, L5 shielded documentation queries.
+
+Allows the agent to 'read' the codebase structure and ask questions about it.
 """
 import logging
 from typing import Dict, Any, Optional, List
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("L6.DeepWiki")
 
 
 class SovereignDeepWikiClient:
     """
-    Sovereign DeepWiki MCP client for L6 Observability.
+    DeepWiki MCP Client for L6 Observability.
     
     Provides access to repository documentation and knowledge base
     through the Sovereign MCP Router with L5 safety shielding.
+    
+    Allows the agent to 'read' the codebase structure and ask questions about it.
     """
     
     def __init__(self):
@@ -34,43 +40,88 @@ class SovereignDeepWikiClient:
             logger.error(f"[L6 DEEPWIKI] Initialization failed: {e}")
             raise
     
-    async def ask_question(self, repo: str, question: str) -> Dict[str, Any]:
+    async def ask_question(self, question: str, repo: Optional[str] = None) -> str:
         """
-        Ask a question about a repository using DeepWiki.
+        Ask a natural language question about the codebase.
         
         Args:
-            repo: Repository identifier (e.g., "owner/repo")
-            question: Question to ask about the repository
+            question: Natural language question about the codebase
+            repo: Optional repository identifier (defaults to config)
             
         Returns:
-            Answer with response and metadata
+            Answer string
         """
+        if not config.DEEPWIKI_MCP_ENABLED:
+            return "DeepWiki MCP Disabled"
+        
         if not self.initialized:
             await self.initialize()
+        
+        repo_target = repo or config.DEEPWIKI_REPO_CONTEXT
+        
+        logger.info(f"[L6 DEEPWIKI] Asking: {question} (Repo: {repo_target})")
         
         try:
             result = await self.router.manager.call_tool(
                 "mcp2_ask_question",
                 {
-                    "repoName": repo,
+                    "repoName": repo_target,
                     "question": question
                 }
             )
             
-            logger.info(f"[L6 DEEPWIKI] Question answered for repo: {repo}")
+            # Parse result (DeepWiki usually returns simple text or dict)
+            if isinstance(result, dict) and "answer" in result:
+                return result["answer"]
+            elif isinstance(result, dict) and "response" in result:
+                return result["response"]
+            
+            return str(result)
+            
+        except Exception as e:
+            logger.error(f"[L6 DEEPWIKI] Question failed: {e}")
+            return f"Error: {str(e)}"
+    
+    async def get_structure(self, repo: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Retrieve file/folder structure.
+        
+        Args:
+            repo: Optional repository identifier (defaults to config)
+            
+        Returns:
+            Repository structure
+        """
+        if not config.DEEPWIKI_MCP_ENABLED:
+            return {"structure": [], "error": "DeepWiki MCP Disabled"}
+        
+        if not self.initialized:
+            await self.initialize()
+        
+        repo_target = repo or config.DEEPWIKI_REPO_CONTEXT
+        
+        try:
+            result = await self.router.manager.call_tool(
+                "mcp2_read_wiki_structure",
+                {
+                    "repoName": repo_target
+                }
+            )
+            
+            logger.info(f"[L6 DEEPWIKI] Structure retrieved for repo: {repo_target}")
             return result
             
         except Exception as e:
-            logger.error(f"[L6 DEEPWIKI] Question failed for {repo}: {e}")
+            logger.error(f"[L6 DEEPWIKI] Structure read failed: {e}")
             return {
-                "response": "",
-                "error": str(e),
-                "status": "failed"
+                "structure": [],
+                "error": str(e)
             }
     
     async def read_wiki_structure(self, repo: str) -> Dict[str, Any]:
         """
         Get the structure/topics of a repository's wiki.
+        Legacy method - use get_structure() instead.
         
         Args:
             repo: Repository identifier (e.g., "owner/repo")
@@ -78,27 +129,7 @@ class SovereignDeepWikiClient:
         Returns:
             Wiki structure with topics list
         """
-        if not self.initialized:
-            await self.initialize()
-        
-        try:
-            result = await self.router.manager.call_tool(
-                "mcp2_read_wiki_structure",
-                {
-                    "repoName": repo
-                }
-            )
-            
-            logger.info(f"[L6 DEEPWIKI] Wiki structure retrieved for repo: {repo}")
-            return result
-            
-        except Exception as e:
-            logger.error(f"[L6 DEEPWIKI] Structure read failed for {repo}: {e}")
-            return {
-                "topics": [],
-                "error": str(e),
-                "status": "failed"
-            }
+        return await self.get_structure(repo)
     
     async def read_wiki_contents(self, repo: str, topic: Optional[str] = None) -> Dict[str, Any]:
         """

@@ -86,6 +86,15 @@ class SovereignConfig:
     BRAVE_SEARCH_COUNT: int = 10
     BRAVE_SEARCH_COUNTRY: str = "US"
     
+    # === Phase 13D: Knowledge Graph & DeepWiki (Dec 26, 2025) ===
+    # 1. Knowledge Graph (Entity Memory)
+    KG_MCP_ENABLED: bool = True
+    KG_AUTO_SYNC_ENTITIES: bool = True
+    
+    # 2. DeepWiki (Codebase Intelligence)
+    DEEPWIKI_MCP_ENABLED: bool = True
+    DEEPWIKI_REPO_CONTEXT: str = "local"  # or 'remote' if using GitHub URL
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
