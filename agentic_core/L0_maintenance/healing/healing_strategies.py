@@ -248,7 +248,7 @@ HEALING_STRATEGIES = [
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
-    ObservabilityHealing(),
+    ObservabilityHealing(),  # Phase 10: Dark Reasoning Healing (Dec 26, 2025)
     DDDAlignmentHealing()
 ]
 
