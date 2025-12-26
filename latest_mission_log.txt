@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-26 17:18:56
+MISSION LOG - 2025-12-26 17:32:43
 ================================================================================
-COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+COMMAND: robocopy "c:\Git\Agentic-Workflow\agentic_core\observability" "c:\Git\Agentic-Workflow\agentic_core\L6_observability" /E /MOVE /NFL /NDL /NJH /NJS
 DIRECTORY: C:\Git
-EXIT CODE: 
+EXIT CODE: 3
 ================================================================================
 
