@@ -44,7 +44,7 @@ class PatternEnforcer:
         """
         Executes all defined pattern checks and reports violations.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Pattern Enforcement...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...")
 
         # List of (key, check_function) tuples for all pattern checks
         keys = [
@@ -65,7 +65,7 @@ class PatternEnforcer:
 
         for key, check_func in keys:
             passed, details = check_func()
-            self.ctx.report(self.name, key, passed, details)
+            self.agent.ctx.report(self.agent.name, key, passed, details)
 
     def _parse_file_ast(self, filepath: str) -> ast.AST | None:
         """Helper to safely parse a Python file into an AST."""
@@ -96,7 +96,7 @@ class PatternEnforcer:
         Checks for mutable default arguments in function definitions (e.g., list, dict, set).
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -113,7 +113,7 @@ class PatternEnforcer:
         A more robust check would require deeper AST analysis.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             lines = self._read_file_lines(fp)
             if lines:
                 for i, line in enumerate(lines, 1):
@@ -131,7 +131,7 @@ class PatternEnforcer:
         Checks for bare `except:` clauses without specifying an exception type.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -145,7 +145,7 @@ class PatternEnforcer:
         Checks for `assert` statements, which should generally be avoided in production code.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -159,7 +159,7 @@ class PatternEnforcer:
         preferring f-strings.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             lines = self._read_file_lines(fp)
             if lines:
                 for i, line in enumerate(lines, 1):
@@ -187,7 +187,7 @@ class PatternEnforcer:
         Checks for direct equality comparisons (`==`) involving floating-point numbers.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -206,7 +206,7 @@ class PatternEnforcer:
         Checks for `== None` or `!= None` comparisons, preferring `is None` or `is not None`.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -227,7 +227,7 @@ class PatternEnforcer:
         # A common set of built-ins that are often shadowed
         builtins = {'list', 'dict', 'set', 'str', 'int', 'float', 'bool', 'type', 'id', 'input', 'open', 'print'}
 
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -257,7 +257,7 @@ class PatternEnforcer:
         where the function implicitly returns `None`.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
@@ -280,13 +280,13 @@ class UIValidationAgent(SubAtomicAgent):
         """
         Determines if the UIValidationAgent can run based on available services.
         """
-        return 'figma' in self.ctx.services.mcp_clients
+        return 'figma' in self.agent.ctx.services.mcp_clients
 
     def execute(self):
         """
         Executes UI pattern validation using Figma MCP.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Validating UI Patterns...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Validating UI Patterns...")
 
         if not self.can_run():
             print(f"   [!]  Figma MCP not available - skipping UI validation")
@@ -304,5 +304,5 @@ class SemanticMapper(SubAtomicAgent):
         """
         Performs semantic analysis to identify refactoring opportunities.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Semantic Analysis...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Semantic Analysis...")
         print("   ℹ No refactoring opportunities identified.")
