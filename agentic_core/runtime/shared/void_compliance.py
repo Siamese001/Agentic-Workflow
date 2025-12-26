@@ -10,11 +10,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 from agentic_core.config.P1_core.structure_blueprint import (
-    AGENTIC_CORE_EXACT_DEPTH,
     CANON_KEY_TO_FOLDER_MAP,
     CANON_SIGNALS,
     CORE_SUBFOLDER_MAP,
-    FORBIDDEN_NUMBERED_PATTERN,
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,
     ROOT_PROTECTED_FILES,
@@ -260,9 +258,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
         if root_folder == "agentic_core":
-            if depth != AGENTIC_CORE_EXACT_DEPTH:
-                reason = "SHALLOW" if depth < AGENTIC_CORE_EXACT_DEPTH else "DEEP"
-                return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {AGENTIC_CORE_EXACT_DEPTH}"
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+            if depth != agentic_core_exact_depth:
+                reason = "SHALLOW" if depth < agentic_core_exact_depth else "DEEP"
+                return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {agentic_core_exact_depth}"
 
         # [ETERNAL DEPTH 3] All apps_* folders — exact depth 3
         if root_folder.startswith("apps_"):
@@ -294,8 +293,9 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
 
         # [GAP FIX] Recursive Numbered Folder Check
         for part in parts:
-            if FORBIDDEN_NUMBERED_PATTERN.match(part):
-                return False, f"VOID VIOLATION: Numbered folder '{part}' forbidden at any depth."
+            # Check if part is in FORBIDDEN_ROOT_FOLDERS
+            if part in FORBIDDEN_ROOT_FOLDERS:
+                return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth."
         
         # Check for numbered prefix pattern (NOT APPROVED)
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":

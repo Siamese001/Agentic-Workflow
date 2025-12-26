@@ -15,11 +15,11 @@ class HierarchyEnforcerAgent:
     
     def __init__(self, project_root: Path, ctx):
         from agentic_core.config.P1_core.structure_blueprint import (
-            CANON_STRUCTURE,
+            SOVEREIGN_REGISTRY,
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
         )
-        self.canon_structure = CANON_STRUCTURE
+        self.canon_structure = SOVEREIGN_REGISTRY  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         self.l3_map = CORE_L3_SUBFOLDER_MAP
         self.l4_map = CORE_L4_SUBFOLDER_MAP
         self.project_root = project_root
@@ -72,7 +72,8 @@ class HierarchyEnforcerAgent:
         """
         Apps depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.P1_core.structure_blueprint import APPS_EXACT_DEPTH
+        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [APPS DEPTH 3] Target all files under apps_* (Universal enforcement)
@@ -85,13 +86,13 @@ class HierarchyEnforcerAgent:
                 continue
 
             depth = len(rel.parts)
-            if depth != APPS_EXACT_DEPTH:
+            if depth != apps_exact_depth:
                 # ARCHIVE THE DRIFT
                 archive_path = self.archive_root / "apps_depth" / rel
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
                 explanation = f"# APPS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
-                explanation += f"# {rel} was depth {depth}, but apps_* MUST be exactly {APPS_EXACT_DEPTH}.\n\n"
+                explanation += f"# {rel} was depth {depth}, but apps_* MUST be exactly {apps_exact_depth}.\n\n"
 
                 try:
                     content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -108,7 +109,8 @@ class HierarchyEnforcerAgent:
         """
         Tests depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.P1_core.structure_blueprint import TESTS_EXACT_DEPTH
+        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [TESTS DEPTH 3] Target all files under tests/ (Universal enforcement)
@@ -121,13 +123,13 @@ class HierarchyEnforcerAgent:
                 continue
 
             depth = len(rel.parts)
-            if depth != TESTS_EXACT_DEPTH:
+            if depth != tests_exact_depth:
                 # ARCHIVE THE DRIFT
                 archive_path = self.archive_root / "tests_depth" / rel
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
                 explanation = f"# TESTS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
-                explanation += f"# {rel} was depth {depth}, but tests MUST be exactly {TESTS_EXACT_DEPTH}.\n\n"
+                explanation += f"# {rel} was depth {depth}, but tests MUST be exactly {tests_exact_depth}.\n\n"
 
                 try:
                     content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -145,8 +147,9 @@ class HierarchyEnforcerAgent:
         Archives non-Python files that violate depth 4 rule.
         """
         from agentic_core.config.P1_core.structure_blueprint import (
-            AGENTIC_CORE_EXACT_DEPTH,
+            SOVEREIGN_REGISTRY,
         )
+        agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [UNIVERSAL ENFORCEMENT] Target common data/doc extensions
@@ -161,13 +164,13 @@ class HierarchyEnforcerAgent:
             rel = file_path.relative_to(self.project_root)
             if rel.parts[0] == "agentic_core":
                 depth = len(rel.parts)
-                if depth != AGENTIC_CORE_EXACT_DEPTH:
+                if depth != agentic_core_exact_depth:
                     # [ARCHIVE UNIVERSAL DRIFT]
                     archive_path = self.archive_root / "non_python" / rel
                     archive_path.parent.mkdir(parents=True, exist_ok=True)
 
                     header = f"# UNIVERSAL DEPTH VIOLATION — {__import__('datetime').datetime.now().isoformat()}\n"
-                    header += f"# File {rel} was at depth {depth}, but MUST be {AGENTIC_CORE_EXACT_DEPTH}.\n\n"
+                    header += f"# File {rel} was at depth {depth}, but MUST be {agentic_core_exact_depth}.\n\n"
 
                     try:
                         # We handle text files directly; binaries might need different logic

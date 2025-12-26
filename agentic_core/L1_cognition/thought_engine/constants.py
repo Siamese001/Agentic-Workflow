@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_DEPTH_MAP
+from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
 
 # Architectural Constants
 MIN_DEPTH = 3

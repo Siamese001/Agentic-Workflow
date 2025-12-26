@@ -25,16 +25,16 @@ class TerritoryHealerAgent:
         self.ctx = ctx
         
         from agentic_core.config.P1_core.structure_blueprint import (
-            AGENTIC_CORE_EXACT_DEPTH,
             CANON_KEY_TO_FOLDER_MAP,
             ROOT_PROTECTED_FILES,
+            SOVEREIGN_REGISTRY,
             TERRITORY_EXAMPLES,
-            TERRITORY_POSITIVE_SIGNALS,
+            CANON_SIGNALS_MK2,
         )
         from agentic_core.runtime.shared.void_compliance import get_placement_guidance
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
-        self.key_positive_signals = TERRITORY_POSITIVE_SIGNALS
+        self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
         # Flatten all mapped paths for fast check
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
         
@@ -66,8 +66,9 @@ class TerritoryHealerAgent:
             parts = rel_path.parts
             depth = len(parts)
             
-            if parts[0] == "agentic_core" and depth != AGENTIC_CORE_EXACT_DEPTH:
-                return self._suggest_precision_move(file_path, AGENTIC_CORE_EXACT_DEPTH)
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+            if parts[0] == "agentic_core" and depth != agentic_core_exact_depth:
+                return self._suggest_precision_move(file_path, agentic_core_exact_depth)
                 
         except ValueError:
             pass  # File outside root

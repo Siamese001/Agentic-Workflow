@@ -20,7 +20,7 @@ def fix_file_imports(file_path: Path) -> bool:
             # Old path -> New path
             'from agentic_core.base import': 'from agentic_core.L2_execution.tool_registry.base import',
             'from agentic_core.canon_base_agent import': 'from agentic_core.L2_execution.tool_registry.canon_base_agent import',
-            'from agentic_core.L2_execution.P4_agents.': 'from agentic_core.L2_execution.tool_registry.',
+            'from agentic_core.L2_execution.tool_registry.': 'from agentic_core.L2_execution.tool_registry.',
             'from agentic_core.L2_execution.P2_tools.': 'from agentic_core.L2_execution.tool_registry.',
             'from agentic_core.L2_execution.P3_engines.': 'from agentic_core.L2_execution.tool_registry.',
             'from agentic_core.L5_safety.P1_core.': 'from agentic_core.L5_safety.guardrails.',
@@ -29,7 +29,7 @@ def fix_file_imports(file_path: Path) -> bool:
             'from agentic_core.L4_state.vector.': 'from agentic_core.L4_state.validation_context.',
             'from agentic_core.shared.constants import': 'from agentic_core.L0_maintenance.scripts.canon_validator_config import',
             'import agentic_core.base': 'import agentic_core.L2_execution.tool_registry.base',
-            'import agentic_core.L2_execution.P4_agents.': 'import agentic_core.L2_execution.tool_registry.',
+            'import agentic_core.L2_execution.tool_registry.': 'import agentic_core.L2_execution.tool_registry.',
             'import agentic_core.L2_execution.P2_tools.': 'import agentic_core.L2_execution.tool_registry.',
             'import agentic_core.L2_execution.P3_engines.': 'import agentic_core.L2_execution.tool_registry.',
             # Relative imports
