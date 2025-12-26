@@ -411,26 +411,9 @@ try:
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 
-    # [ETERNAL HARDENING] Early SubAtomicEngine instantiation — DEFERRED
-    # REMOVED: Early GeminiSpy wrapping was using incomplete/broken class definition below.
-    # The correct GeminiSpy is defined later. Early wrapping caused corrupted engine → no mutations.
-    # SubAtomicEngine will be properly wrapped inside run_mission() when full context is available.
-    subatomic_engine = None
-    if SubAtomicEngine is not None:
-        try:
-            _real_engine = SubAtomicEngine(gemini_client=None)
-            # Apply minimal safe shim: only remove system_prompt (legacy compatibility)
-            from types import MethodType
-            original_method = _real_engine.resilient_mutation
-            async def safe_mutation(self, *args, **kwargs):
-                kwargs.pop("system_prompt", None)  # Strip legacy kwarg
-                return await original_method(*args, **kwargs)
-            _real_engine.resilient_mutation = MethodType(safe_mutation, _real_engine)
-            subatomic_engine = _real_engine  # Do NOT wrap with GeminiSpy yet — will do later
-            print(f"   [OK] SubAtomicEngine instantiated (light shim only)")
-        except Exception as e:
-            print(f"   [!] Engine early init failed (non-fatal): {e}")
-
+    # [ETERNAL HARDENING] Early instantiation removed.
+    # Engine is now exclusively instantiated inside run_mission() to ensure
+    # full ValidationContext availability and prevent "double-boot" side effects.
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 except Exception as e:
     print(f"   [CRITICAL] Dynamic import failed: {e}")
