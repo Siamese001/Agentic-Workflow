@@ -2128,6 +2128,97 @@ class HealingAction(SovereignBaseModel):
             )
 
 @dataclass(frozen=True)
+class HealingCycle(SovereignBaseModel):
+    """
+    Healing cycle record with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Fluent self-correction journey construction
+    - Automatic success calculation from scores
+    - Metric derivation from action list
+    - L6 observability for sovereignty restoration
+    """
+    cycle_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    trigger_score: float  # Pre-healing overall score
+    target_score: float   # Post-healing overall score
+    actions: List[HealingAction] = field(default_factory=list)
+    success: bool
+    duration_seconds: float = 0.0
+    healed_violations: int = 0
+    persistent_violations: int = 0
+
+    class Builder:
+        """
+        Sovereign Builder for HealingCycle – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent construction of self-correction journeys
+        - Automatic derivation of success metrics and counts
+        - Score-based sovereignty validation
+        - L6 Observability logging upon completion
+        """
+        def __init__(self):
+            self._cycle_id: Optional[str] = None
+            self._trigger_score: Optional[float] = None
+            self._target_score: Optional[float] = None
+            self._actions: List[HealingAction] = []
+            self._success: Optional[bool] = None
+            self._duration_seconds: float = 0.0
+
+        def with_cycle_id(self, cycle_id: str) -> 'HealingCycle.Builder':
+            self._cycle_id = cycle_id
+            return self
+
+        def triggered_by_score(self, score: float) -> 'HealingCycle.Builder':
+            self._trigger_score = score
+            return self
+
+        def achieved_score(self, score: float) -> 'HealingCycle.Builder':
+            """Sets final score and auto-calculates success status."""
+            self._target_score = score
+            if self._trigger_score is not None:
+                # Success = Improved score AND reached Sovereign threshold
+                self._success = score > self._trigger_score and score >= 95.0
+            return self
+
+        def add_action(self, action: HealingAction) -> 'HealingCycle.Builder':
+            self._actions.append(action)
+            return self
+
+        def with_duration(self, seconds: float) -> 'HealingCycle.Builder':
+            self._duration_seconds = seconds
+            return self
+
+        def build(self) -> 'HealingCycle':
+            """Construct immutable HealingCycle with sovereign validation."""
+            if self._trigger_score is None or self._target_score is None:
+                raise ValueError("Healing Integrity Error: Both trigger and target scores are required.")
+            
+            if not self._cycle_id:
+                self._cycle_id = f"healcycle-{uuid.uuid4().hex[:8]}"
+            
+            # Derive metrics from the action list
+            healed = sum(1 for a in self._actions if a.success)
+            persistent = len(self._actions) - healed
+
+            # L6 Observability: Witnessing the restoration of sovereignty
+            status = "SOVEREIGN" if self._success else "PARTIAL"
+            logger.info(f"[L6_AUDIT] Healing Cycle Concluded: {self._cycle_id} | "
+                        f"Outcome: {status} | Delta: {self._trigger_score:.1f}% -> {self._target_score:.1f}% | "
+                        f"Restored: {healed}/{len(self._actions)}")
+
+            return HealingCycle(
+                cycle_id=self._cycle_id,
+                trigger_score=self._trigger_score,
+                target_score=self._target_score,
+                actions=self._actions.copy(),
+                success=self._success if self._success is not None else False,
+                duration_seconds=self._duration_seconds,
+                healed_violations=healed,
+                persistent_violations=persistent,
+            )
+
+@dataclass(frozen=True)
 class HealingReport(SovereignBaseModel):
     """
     Healing report for DDD compliance audits with Builder pattern support.
@@ -2234,6 +2325,7 @@ CORE_CONTRACTS_REGISTRY.update({
     # Healing & Observability Models
     "ConstitutionalViolation": ConstitutionalViolation,
     "HealingAction": HealingAction,
+    "HealingCycle": HealingCycle,
     "HealingReport": HealingReport,
 })
 
