@@ -1735,16 +1735,19 @@ class MissionPlan(SovereignBaseModel):
         def build(self) -> MissionPlan:
             """Construct immutable MissionPlan with sovereign validation"""
             if not self._mission_id:
-                raise ValueError("Incomplete Mission: mission_id is required")
+                raise ValueError("mission_id is required")
             if self._cycle_id is None:
-                raise ValueError("Incomplete Mission: cycle_id is required")
+                raise ValueError("cycle_id is required")
             if not self._objective:
-                raise ValueError("Incomplete Mission: objective is required")
+                raise ValueError("objective is required")
             if not self._phases:
-                raise ValueError("Illegal Mission: At least one phase required")
+                raise ValueError("At least one phase required")
             
-            # L6 Observability: Log the formal sealing of the plan
-            logger.info(f"[BUILDER] Sealing MissionPlan {self._mission_id} | "
+            # Sovereign Invariant: No dependency cycles
+            self._detect_dependency_cycles()
+            
+            # L6 Observability: Log construction
+            logger.info(f"[BUILDER] Constructing MissionPlan {self._mission_id} | "
                         f"Phases: {len(self._phases)} | Priority: {self._priority}")
             
             return MissionPlan(
@@ -1752,14 +1755,51 @@ class MissionPlan(SovereignBaseModel):
                 cycle_id=self._cycle_id,
                 priority=self._priority,
                 objective=self._objective,
-                phases=self._phases.copy(),  # Defensive copy
-                risk_assessment=self._risk_assessment.copy(),  # Defensive copy
+                phases=self._phases.copy(),
+                risk_assessment=self._risk_assessment.copy(),
             )
+
+        def _detect_dependency_cycles(self) -> None:
+            """
+            Sovereign cycle detection using DFS (Depth-First Search)
+            Prevents infinite loops in orchestration
+            """
+            if not self._phases:
+                return
+            
+            # Build graph: phase_name → list of dependent phase names
+            graph: Dict[str, List[str]] = {p.name: p.dependencies for p in self._phases}
+            
+            visited = set()
+            rec_stack = set()
+            
+            def has_cycle(node: str) -> bool:
+                visited.add(node)
+                rec_stack.add(node)
+                
+                for neighbor in graph.get(node, []):
+                    if neighbor not in visited:
+                        if has_cycle(neighbor):
+                            return True
+                    elif neighbor in rec_stack:
+                        return True
+                
+                rec_stack.remove(node)
+                return False
+            
+            for phase_name in graph:
+                if phase_name not in visited:
+                    if has_cycle(phase_name):
+                        raise ValueError(
+                            f"Sovereignty Breach: Dependency cycle detected in "
+                            f"MissionPlan {self._mission_id} involving phases: "
+                            f"{list(rec_stack if rec_stack else graph.keys())}"
+                        )
 
 @dataclass(frozen=True)
 class ThinkingStep(SovereignBaseModel):
     """A single step in a thought chain."""
-    step_number: int
+    step_id: int
     thought: str
     action: str
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
@@ -1795,7 +1835,7 @@ class ThoughtChain(SovereignBaseModel):
     class Builder:
         """
         Sovereign Builder for ThoughtChain – Phase 12 (Dec 26, 2025)
-        Ensures logical continuity and constitutional validation.
+        Enforces sequential integrity, constitutional validation, and L6 observability.
         """
         def __init__(self):
             self._chain_id: Optional[str] = None
@@ -1816,6 +1856,9 @@ class ThoughtChain(SovereignBaseModel):
             return self
 
         def add_step(self, step: ThinkingStep) -> 'ThoughtChain.Builder':
+            """Adds a step while enforcing sequential ID integrity."""
+            if self._steps and step.step_id <= self._steps[-1].step_id:
+                raise ValueError(f"Step ID {step.step_id} is not sequential.")
             self._steps.append(step)
             return self
 
@@ -1824,20 +1867,28 @@ class ThoughtChain(SovereignBaseModel):
             return self
 
         def with_final_conclusion(self, conclusion: str) -> 'ThoughtChain.Builder':
+            """Seals the chain with a conclusion and auto-marks success."""
             self._final_conclusion = conclusion
             self._success = True
             return self
 
+        def mark_failed(self) -> 'ThoughtChain.Builder':
+            self._success = False
+            return self
+
         def build(self) -> 'ThoughtChain':
-            """Construct immutable ThoughtChain with sovereign validation."""
+            """Construct immutable ThoughtChain with constitutional validation."""
             if not self._chain_id or not self._goal:
-                raise ValueError("ThoughtChain construction failed: mission_id and goal are mandatory.")
+                raise ValueError("ThoughtChain construction failed: chain_id and goal are mandatory.")
             
             if self._success and not self._final_conclusion:
                 raise ValueError("Inconsistent State: Success requires a final_conclusion.")
 
-            # L6 Observability: Record the construction of the thinking aggregate
-            logger.info(f"[L6_AUDIT] ThoughtChain Constructed: {self._chain_id}")
+            if self._steps and self._steps[0].step_id != 1:
+                raise ValueError("Sovereignty Violation: Reasoning steps must begin with ID 1.")
+
+            # L6 Observability: Stamping the birth of the thinking aggregate
+            logger.info(f"[L6_AUDIT] ThoughtChain Constructed: {self._chain_id} | Steps: {len(self._steps)}")
 
             return ThoughtChain(
                 chain_id=self._chain_id,
