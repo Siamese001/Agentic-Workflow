@@ -4,7 +4,7 @@ Centralizes all environment variables, feature flags, and system constants.
 """
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict
 
 @dataclass(frozen=True)
 class SovereignConfig:
@@ -19,8 +19,8 @@ class SovereignConfig:
     DEFAULT_EMBEDDING_DIM: int = 1024  # Truncated for Pinecone cost/perf sweet spot
     
     # === Phase 4: Model Governance (Dec 26, 2025) ===
-    PRIMARY_MODEL: str = "gpt-4o"
-    REASONING_MODEL: str = "o1-preview"
+    PRIMARY_MODEL: str = "gpt-5.1"
+    REASONING_MODEL: str = "claude-sonnet-4.5"
     
     # === Phase 4: Semantic Cache Thresholds ===
     SEMANTIC_SIMILARITY_THRESHOLD: float = 0.95
@@ -53,6 +53,20 @@ class SovereignConfig:
     # Shared App Config
     APP_LOG_LEVEL: str = "INFO"
     APP_CACHE_TTL_SECONDS: int = 3600
+    
+    # === Phase 8A: Model Pricing Table (Dec 26, 2025) ===
+    # Dollars per 1M tokens
+    MODEL_PRICING: Dict[str, Dict[str, float]] = None  # Initialized below due to dataclass constraints
+    DEFAULT_COST_MODEL: str = "gpt-5.1"
+    
+    def __post_init__(self):
+        """Initialize mutable defaults after dataclass creation."""
+        # Must use object.__setattr__ due to frozen=True
+        # Only approved models: gpt-5.1 (OpenAI) and Claude Sonnet 4.5 (Anthropic)
+        object.__setattr__(self, 'MODEL_PRICING', {
+            "gpt-5.1": {"input": 0.0030, "output": 0.012},  # $3.00 / $12.00 per 1M tokens (estimated)
+            "claude-sonnet-4.5": {"input": 0.0035, "output": 0.018},  # $3.50 / $18.00 per 1M tokens (estimated)
+        })
     
     def validate(self):
         """Ensure critical secrets are present."""
