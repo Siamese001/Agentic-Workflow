@@ -42,17 +42,34 @@ class AgentFactory:
     @staticmethod
     def _create_impl(ctx: Optional[Any] = None) -> CanonBaseAgentInterface:
         """
-        Create base agent implementation.
+        Create base agent implementation with configurable mode support.
         
-        Only L3 knows how to instantiate the L2 concrete implementation.
-        This is the single point where L2 is accessed from the orchestration layer.
+        Phase 11: Advanced Factory Pattern
+        - Respects global AGENT_IMPLEMENTATION_MODE configuration
+        - Supports "real" (standard), "mock" (testing), "aggressive" (fast-healing)
+        - Only L3 knows how to instantiate the L2 concrete implementation
         
         Args:
             ctx: Optional context object to pass to the agent implementation
             
         Returns:
-            CanonBaseAgentInterface: Concrete implementation from L2
+            CanonBaseAgentInterface: Concrete implementation based on configured mode
         """
+        mode = config.AGENT_IMPLEMENTATION_MODE
+        
+        if mode == "mock":
+            # Zero-cost mock for unit testing without LLM calls
+            return MockCanonBaseAgent(ctx=ctx)
+        
+        elif mode == "aggressive":
+            # Real implementation with aggressive healing enabled
+            impl = CanonBaseAgent(ctx=ctx)
+            # Custom L2 capability for fast recovery
+            if hasattr(impl, "enable_aggressive_mode"):
+                impl.enable_aggressive_mode()
+            return impl
+        
+        # Default "real" mode - standard production implementation
         return CanonBaseAgent(ctx=ctx)
     
     @staticmethod
