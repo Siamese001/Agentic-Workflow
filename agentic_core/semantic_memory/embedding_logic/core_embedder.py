@@ -1,47 +1,36 @@
 """
-Core Embedding Logic - Sovereign Primary
-Provides standardized embedding generation for semantic memory operations.
+Sovereign Core Embedder – Primary Embedding Engine
+Uses OpenAI text-embedding-3-large (SOTA as of Dec 2025).
+Configurable dimensions for Pinecone cost/accuracy trade-off.
+SSOT for all embedding calls in the agentic core.
 """
-import os
-from typing import List, Optional
+from typing import List
 import openai
+from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
-class CoreEmbedder:
+def get_embedding(
+    text: str,
+    model: str = config.DEFAULT_EMBEDDING_MODEL,
+    dimensions: int = config.DEFAULT_EMBEDDING_DIM,
+) -> List[float]:
     """
-    Sovereign wrapper for OpenAI embeddings with fallback support.
-    """
+    Sovereign embedding function – used by bootstrap, healers, and RAG pipelines.
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "text-embedding-3-large"):
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        if not self.api_key:
-            raise ValueError("OPENAI_API_KEY environment variable or api_key argument required")
-        
-        self.model = model
-        openai.api_key = self.api_key
+    :param text: Input string (will be auto-truncated to model max ~8k tokens)
+    :param model: OpenAI embedding model (defaults to config)
+    :param dimensions: Output dimensionality (defaults to config: 1024)
+    :return: Normalized float vector
+    """
+    if not config.OPENAI_API_KEY:
+         # Just in case validate() wasn't called earlier
+         raise ValueError("OPENAI_API_KEY environment variable required for core embedder")
+
+    client = openai.OpenAI(api_key=config.OPENAI_API_KEY)
     
-    def get_embedding(self, text: str) -> List[float]:
-        """
-        Generate embedding for the given text.
-        """
-        try:
-            response = openai.Embedding.create(
-                model=self.model,
-                input=text
-            )
-            return response['data'][0]['embedding']
-        except Exception as e:
-            print(f"[Error] Failed to generate embedding: {e}")
-            # Return zero embedding as fallback
-            return [0.0] * 1536  # Default dimension for text-embedding-3-large
-
-# Global embedder instance
-_embedder: Optional[CoreEmbedder] = None
-
-def get_embedding(text: str) -> List[float]:
-    """
-    Convenience function to get embedding using the global embedder.
-    """
-    global _embedder
-    if _embedder is None:
-        _embedder = CoreEmbedder()
-    return _embedder.get_embedding(text)
+    response = client.embeddings.create(
+        input=text.replace("\n", " "),  # Simple normalization
+        model=model,
+        dimensions=dimensions,
+    )
+    
+    return response.data[0].embedding
