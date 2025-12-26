@@ -2622,21 +2622,19 @@ class SovereignEvent(SovereignBaseModel):
 
         def build(self) -> 'SovereignEvent':
             """Construct immutable SovereignEvent with L6 log emission."""
-            import logging
-            
             if self._event_type is None:
                 raise ValueError("event_type is mandatory for SovereignEvent.")
-            if not all([self._severity, self._source]):
-                raise ValueError("Sovereignty Telemetry Error: severity and source are required.")
+            if self._severity is None:
+                raise ValueError("Constitutional Error: severity is mandatory for all SovereignEvents.")
+            if not self._source:
+                raise ValueError("Sovereignty Telemetry Error: source is required.")
 
             if not self._event_id:
                 self._event_id = f"event-{uuid.uuid4().hex[:8]}"
 
-            # L6 Observability: Emitting to the system senses
-            log_level = {"INFO": logging.INFO, "WARNING": logging.WARNING, 
-                         "ERROR": logging.ERROR, "CRITICAL": logging.CRITICAL}[self._severity]
-            
-            logger.log(log_level, f"[SOVEREIGN EVENT] {self._event_id} | {self._event_type.value} | {self._source}")
+            # L6 Observability: Map to L6 logging automatically
+            log_level = SEVERITY_LOG_LEVELS[self._severity]
+            logger.log(log_level, f"[SOVEREIGN EVENT] {self._event_id} | {self._severity.value} | {self._event_type.value} | {self._source}")
 
             return SovereignEvent(
                 event_id=self._event_id,
@@ -2663,6 +2661,7 @@ CORE_CONTRACTS_REGISTRY.update({
     "HealingAction": HealingAction,
     "HealingCycle": HealingCycle,
     "HealingReport": HealingReport,
+    "SovereignSeverity": SovereignSeverity,
     "SovereignEventType": SovereignEventType,
     "SovereignEvent": SovereignEvent,
 })
