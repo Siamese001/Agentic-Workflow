@@ -2161,36 +2161,23 @@ CURRENT CODE:
                     'needs_move': True
                 }
         
-        # [SOVEREIGN MUTATION CASCADE] Execute healing loop with atomic validators
-        if atomic_validators:
-            # Bounded rounds to prevent system exhaustion (WinError 1450)
+        # === 3. HEALING CASCADE (Async & Resource Safe) ===
+        # [SOVEREIGN MUTATION] Cycle through armed healers
+        if hasattr(ctx, 'cleaning_crew') and ctx.cleaning_crew:
+            # Cap rounds at 3 to prevent WinError 1450 resource exhaustion
             for round_idx in range(1, 4):
-                healed_this_round = False
-                
-                for agent in atomic_validators:
+                mutated_this_round = False
+                for agent in ctx.cleaning_crew:
                     try:
-                        # Get the agent's execute or run method
-                        method = getattr(agent, 'execute', getattr(agent, 'run', None))
-                        if not method:
-                            continue
-                        
-                        # [CRITICAL] Shim makes methods async; MUST await result
-                        if inspect.iscoroutinefunction(method):
-                            result = await method(file_path)
-                        else:
-                            result = method(file_path)
-                        
-                        # Check if healing occurred
-                        if result and isinstance(result, dict) and result.get("healed"):
-                            healed_this_round = True
+                        # [CRITICAL] Await the async heal_violation
+                        result = await agent.heal_violation(file_path)
+                        if result and result.get("healed"):
+                            mutated_this_round = True
                             ctx.results[file_path] = result
-                            print(f"\n      [MUTATED] {agent.__class__.__name__}: {file_name}")
-                            
+                            print(f"      [MUTATED] {agent.__class__.__name__}: {Path(file_path).name}")
                     except Exception as e:
-                        print(f"\n      [!] {agent.__class__.__name__} execution error: {str(e)[:100]}")
-                
-                # If no healing occurred this round, break early
-                if not healed_this_round:
+                        print(f"      [!] {agent.__class__.__name__} failed: {e}")
+                if not mutated_this_round:
                     break
         
         # Legacy healing loop for compatibility (will be removed after migration)
