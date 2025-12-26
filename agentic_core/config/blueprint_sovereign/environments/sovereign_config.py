@@ -54,6 +54,10 @@ class SovereignConfig:
     APP_LOG_LEVEL: str = "INFO"
     APP_CACHE_TTL_SECONDS: int = 3600
     
+    # === Phase 11: Agent Implementation Strategy (Dec 26, 2025) ===
+    # Options: "real" (standard), "mock" (unit tests), "aggressive" (fast-healing)
+    AGENT_IMPLEMENTATION_MODE: str = "real"
+    
     # === Phase 8A: Model Pricing Table (Dec 26, 2025) ===
     # Dollars per 1M tokens
     MODEL_PRICING: Dict[str, Dict[str, float]] = None  # Initialized below due to dataclass constraints

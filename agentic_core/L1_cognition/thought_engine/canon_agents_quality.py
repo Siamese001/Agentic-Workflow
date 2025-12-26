@@ -30,7 +30,7 @@ class SafetyInspector:
         Executes the security audit by running all defined checks.
         Reports findings to the context and signals security status.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Security Audit...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Security Audit...")
 
         keys = [
             (0, self.check_key_00_no_hardcoded_secrets),
@@ -44,9 +44,9 @@ class SafetyInspector:
 
         for key, check_func in keys:
             passed, details = check_func()
-            self.ctx.report(self.name, key, passed, details)
+            self.agent.ctx.report(self.agent.name, key, passed, details)
 
-        self.ctx.signal_secure()
+        self.agent.ctx.signal_secure()
 
     def _check_content_for_secret_patterns(self, content: str, patterns: List[str]) -> bool:
         """Helper to check if file content contains any secret patterns."""
@@ -86,7 +86,7 @@ class SafetyInspector:
             r'token\s*=\s*["\'][^"\']+["\']',
         ]
 
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             violations.extend(self._find_secret_violations_in_file(fp, patterns))
         return len(violations) == 0, violations
 
@@ -113,7 +113,7 @@ class SafetyInspector:
         Checks for 'TODO' or 'FIXME' comments in files.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             violations.extend(self._find_todo_fixme_violations_in_file(fp))
         return len(violations) == 0, violations
 
@@ -132,7 +132,7 @@ class SafetyInspector:
         Checks for 'print()' statements using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -160,7 +160,7 @@ class SafetyInspector:
         Checks for debugger statements like 'breakpoint()' or 'pdb.set_trace()'.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             violations.extend(self._find_debugger_violations_in_file(fp))
         return len(violations) == 0, violations
 
@@ -181,7 +181,7 @@ class SafetyInspector:
         Checks for empty 'except' blocks or 'except: pass' using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -208,7 +208,7 @@ class SafetyInspector:
         Checks for bare 'except:' statements (catching all exceptions) using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -235,7 +235,7 @@ class SafetyInspector:
         Checks for 'eval()' or 'exec()' function calls using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -256,9 +256,9 @@ class DocumentationAgent(SubAtomicAgent):
         """
         Executes the documentation check, specifically for missing docstrings.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Documentation Check...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...")
         passed, details = self.check_key_21_no_missing_docstrings()
-        self.ctx.report(self.name, 21, passed, details)
+        self.agent.ctx.report(self.agent.name, 21, passed, details)
 
     def _has_missing_docstring(self, node: ast.AST) -> bool:
         """Helper to determine if a node (FunctionDef or ClassDef) has a missing docstring."""
@@ -277,7 +277,7 @@ class DocumentationAgent(SubAtomicAgent):
         Checks for missing docstrings in classes and functions using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -298,9 +298,9 @@ class NamingAgent(SubAtomicAgent):
         """
         Executes the naming convention check.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Naming Convention Check...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...")
         passed, details = self.check_key_47_naming_conventions()
-        self.ctx.report(self.name, 47, passed, details)
+        self.agent.ctx.report(self.agent.name, 47, passed, details)
 
     def _is_invalid_function_name(self, name: str) -> bool:
         """Helper to check if a function name violates PEP 8 snake_case."""
@@ -326,7 +326,7 @@ class NamingAgent(SubAtomicAgent):
         and classes (PascalCase) using AST parsing.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())

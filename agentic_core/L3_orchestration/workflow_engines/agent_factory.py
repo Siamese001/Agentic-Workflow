@@ -1,15 +1,22 @@
 """
-Agent Factory – L3 Orchestration Layer (Phase 9A – Dec 26, 2025)
+Agent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)
 Wires L1 Cognition agents with L2 Execution implementations via DIP.
 
 DDD Compliance:
 - L3 orchestrates the wiring between L1 and L2
 - L1 never directly imports L2
 - All dependencies injected at runtime
+
+Phase 11: Configurable Implementation Factory
+- Supports multiple implementation modes: real, mock, aggressive
+- Enables zero-cost unit testing with mock implementations
+- Allows runtime switching of agent behavior
 """
 from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
+from agentic_core.L2_execution.base_agents.mock_canon_agent import MockCanonBaseAgent
+from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
 # Import L1 Agent Classes
 from agentic_core.L1_cognition.thought_engine.canon_agents_core import (
