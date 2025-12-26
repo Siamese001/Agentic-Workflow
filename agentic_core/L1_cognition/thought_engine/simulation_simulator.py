@@ -17,7 +17,7 @@ def test_run_scenario_uses_existing_engine(self: Any) -> None:
 
     SCENARIO = SimScenario(
         id=scenario_id,
-        DESCRIPTION=description,
+        description=description,
         initial_context={},
         execution_profile_name="default",
         run_count=1,

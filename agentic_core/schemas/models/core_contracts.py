@@ -554,25 +554,25 @@ class MetacognitionReport(BaseModel):
 @dataclass
 class GoldenStateTestCase:
     """Single golden-state test case."""
-    _id: str
-    _input_text: str
-    _expected_behavior: str
-    _metadata: Dict[str, Any] = field(default_factory=dict)
+    id: str
+    input_text: str
+    expected_behavior: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class JudgeVerdict:
     """LM-as-a-judge style verdict."""
-    _score: float
-    _rating: str
-    _explanation: str
+    score: float
+    rating: str
+    explanation: str
 
 @dataclass
 class EvalResult:
     """Result of running a golden test case through the system."""
-    _test_id: str
-    _verdict: JudgeVerdict
-    _raw_output: str
-    _reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    test_id: str
+    verdict: JudgeVerdict
+    raw_output: str
+    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
 
 class GoldenCase(BaseModel):
     """Golden test case for evaluation."""
@@ -632,11 +632,11 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class LLMResponse:
     """Standard LLM response format."""
-    _content: str
-    _model: str
-    _usage: Optional[Dict[str, int]] = None
-    _finish_reason: Optional[str] = None
-    _metadata: Optional[Dict[str, Any]] = None
+    content: str
+    model: str
+    usage: Optional[Dict[str, int]] = None
+    finish_reason: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 class MessageType(str, Enum):
     """Message types for agent communication."""
@@ -648,36 +648,36 @@ class MessageType(str, Enum):
 @dataclass
 class ResidualAgentMessage:  # CONFLICT: Renamed to avoid collision with existing AgentMessage
     """Message in agent conversation (from runtime_shared_models.py)."""
-    _role: MessageType
+    role: MessageType
     content: str
-    _tool_calls: Optional[List[Dict[str, Any]]] = None
-    _tool_call_id: Optional[str] = None
+    tool_calls: Optional[List[Dict[str, Any]]] = None
+    tool_call_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class AgentResponse:
     """Response from agent execution."""
-    _message: 'ResidualAgentMessage'
-    _success: bool
-    _error: Optional[str] = None
+    message: 'ResidualAgentMessage'
+    success: bool
+    error: Optional[str] = None
     usage: Optional[Dict[str, int]] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class ResidualValidationResult(BaseModel):  # CONFLICT: Renamed to avoid collision
     """Validation result for data or operations (from runtime_shared_models.py)."""
-    _is_valid: bool
-    _errors: List[str] = []
-    _warnings: List[str] = []
+    is_valid: bool
+    errors: List[str] = []
+    warnings: List[str] = []
     metadata: Dict[str, Any] = {}
 
 class ReasoningConfig(BaseModel):
     """Configuration for reasoning operations."""
-    _temperature: float = 0.7
-    _max_tokens: int = 1000
-    _top_p: float = 0.9
-    _frequency_penalty: float = 0.0
-    _presence_penalty: float = 0.0
-    _stop_sequences: Optional[List[str]] = None
+    temperature: float = 0.7
+    max_tokens: int = 1000
+    top_p: float = 0.9
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    stop_sequences: Optional[List[str]] = None
 
 class HopStatus(str, Enum):
     """Status of hop execution."""
@@ -704,27 +704,27 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class WorkflowCheckpoint:
     """Checkpoint in workflow execution."""
-    _hop_id: str
-    _status: HopStatus
-    _data: Dict[str, Any]
-    _timestamp: str
+    hop_id: str
+    status: HopStatus
+    data: Dict[str, Any]
+    timestamp: str
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class ThematicAnalysis:
     """Analysis of thematic content."""
-    _theme: str
-    _confidence: float
-    _keywords: List[str]
-    _sentiment: Optional[str] = None
+    theme: str
+    confidence: float
+    keywords: List[str]
+    sentiment: Optional[str] = None
 
 @dataclass
 class RAGState:
     """State of RAG operations."""
-    _query: str
-    _retrieved_docs: List[Dict[str, Any]]
-    _context: str
-    _response: Optional[str] = None
+    query: str
+    retrieved_docs: List[Dict[str, Any]]
+    context: str
+    response: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class CircuitState(str, Enum):
@@ -947,108 +947,108 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class OutreachMission:
     """Complete mission specification (Input)"""
-    _mission_id: str
-    _sender_profile: Dict[str, Any]
-    _recipient_profile: Dict[str, Any]
-    _job_description: Dict[str, Any]
-    _connection_status: str = "not_connected"
-    _prior_message_count: int = 0
-    _context: Dict[str, Any] = field(default_factory=dict)
+    mission_id: str
+    sender_profile: Dict[str, Any]
+    recipient_profile: Dict[str, Any]
+    job_description: Dict[str, Any]
+    connection_status: str = "not_connected"
+    prior_message_count: int = 0
+    context: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class ProfileAnalysis:
     """DEPRECATED v13.0: Profile analysis output (kept for backward compatibility)"""
-    _archetype: str
-    _confidence: float
-    _reasoning: str
-    _key_indicators: List[str]
-    _needs_manual_override: bool = False
+    archetype: str
+    confidence: float
+    reasoning: str
+    key_indicators: List[str]
+    needs_manual_override: bool = False
 
 @dataclass
 class MessageClaim:
     """Individual claim with confidence"""
-    _text: str
+    text: str
     confidence: float
-    _supporting_sources: List[str]
-    _source_weights: List[float]
+    supporting_sources: List[str]
+    source_weights: List[float]
 
 @dataclass
 class RAGCritique:
     """RAG quality critique"""
-    _confidence_score: float
-    _gaps_identified: List[str]
-    _refinement_tasks: List[str]
+    confidence_score: float
+    gaps_identified: List[str]
+    refinement_tasks: List[str]
     reasoning: str
-    _is_sufficient: bool = False
+    is_sufficient: bool = False
 
 @dataclass
 class EnforcementRAGResult:
     """Single RAG retrieval result with metadata (renamed to avoid conflict)"""
-    _source: str
-    _source_type: str
+    source: str
+    source_type: str
     text: str
-    _extracted_keywords: List[str]
-    _source_weight: float
-    _age_days: int
-    _recipient_specific: bool
+    extracted_keywords: List[str]
+    source_weight: float
+    age_days: int
+    recipient_specific: bool
     CONFIDENCE: float = 1.0
 
 @dataclass
 class SenderGroundingWhitelists:
     """Output of SenderGroundingAgent for claim validation"""
-    _team_members: List[str] = field(default_factory=list)
-    _products: List[str] = field(default_factory=list)
-    _case_studies: List[str] = field(default_factory=list)
-    _quantifiable_achievements: List[str] = field(default_factory=list)
-    _raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
+    team_members: List[str] = field(default_factory=list)
+    products: List[str] = field(default_factory=list)
+    case_studies: List[str] = field(default_factory=list)
+    quantifiable_achievements: List[str] = field(default_factory=list)
+    raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
 
 @dataclass
 class ResearchContext:
     """DEPRECATED v13.0: Research context output (kept for backward compatibility)"""
-    _recipient_insights: List[str]
-    _company_context: List[str]
-    _recent_activity: List[str]
-    _rag_results: List['EnforcementRAGResult']
-    _sender_grounding: Optional[SenderGroundingWhitelists] = None
-    _adversarial_findings: List[str] = field(default_factory=list)
+    recipient_insights: List[str]
+    company_context: List[str]
+    recent_activity: List[str]
+    rag_results: List['EnforcementRAGResult']
+    sender_grounding: Optional[SenderGroundingWhitelists] = None
+    adversarial_findings: List[str] = field(default_factory=list)
 
 @dataclass
 class MessageScaffold:
     """DEPRECATED v13.0: Message scaffold output (kept for backward compatibility)"""
-    _route: str
+    route: str
     archetype: str
-    _sections: Dict[str, Dict[str, Any]]
-    _constraints: Dict[str, Any]
-    _locked_sections: Set[str] = field(default_factory=set)
+    sections: Dict[str, Dict[str, Any]]
+    constraints: Dict[str, Any]
+    locked_sections: Set[str] = field(default_factory=set)
 
 @dataclass
 class GeneratedMessage:
     """DEPRECATED v13.0: Generated message output (kept for backward compatibility)"""
-    _content: str
-    _word_count: int
-    _char_count: int
+    content: str
+    word_count: int
+    char_count: int
     route: str
     archetype: str
-    _generation_temperature: float
-    _generation_attempts: int
-    _checksum: str
+    generation_temperature: float
+    generation_attempts: int
+    checksum: str
 
 @dataclass
 class EnforcementValidationResult:
     """Result from validation check (renamed to avoid conflict with existing ValidationResult)"""
-    _passed: bool
-    _severity: str
-    _rule_id: str
-    _message: str
-    _details: Optional[Dict[str, Any]] = None
+    passed: bool
+    severity: str
+    rule_id: str
+    message: str
+    details: Optional[Dict[str, Any]] = None
 
 @dataclass
 class QAReport:
     """DEPRECATED v13.0: QA report output (kept for backward compatibility)"""
     mission_id: str
-    _validation_results: List['EnforcementValidationResult']
+    validation_results: List['EnforcementValidationResult']
     passed: bool
-    _timestamp: str
+    timestamp: str
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -1254,53 +1254,53 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class SubjectLineBrief:
     """Brief for subject line generation."""
-    _word_count: tuple[int, int]
-    _tone: str
-    _forbidden_phrases: List[str] = field(default_factory=list)
+    word_count: tuple[int, int]
+    tone: str
+    forbidden_phrases: List[str] = field(default_factory=list)
 
 @dataclass
 class MessageBodyBrief:
     """Brief for message body generation."""
     word_count: tuple[int, int]
-    _jargon_level: str
-    _focus: str
+    jargon_level: str
+    focus: str
 
 @dataclass
 class CTABrief:
     """Brief for call-to-action generation."""
     word_count: tuple[int, int]
     tone: str
-    _strategy: Optional[str] = None
+    strategy: Optional[str] = None
 
 @dataclass
 class CreativeBrief:
     """Complete creative brief for message generation."""
-    _subject_line: SubjectLineBrief
-    _message_body: MessageBodyBrief
-    _cta: CTABrief
+    subject_line: SubjectLineBrief
+    message_body: MessageBodyBrief
+    cta: CTABrief
 
 @dataclass
 class ArchetypeTemplate:
     """Complete template for an archetype."""
-    _archetype: str
-    _system_instructions: str
+    archetype: str
+    system_instructions: str
     tone: str
-    _approach: str
-    _avoid: str
-    _creative_brief: CreativeBrief
+    approach: str
+    avoid: str
+    creative_brief: CreativeBrief
 
 @dataclass
 class SignatureTemplate:
     """Template for message signature."""
-    _template: str
-    _use_for: List[str]
-    _line_count: int
+    template: str
+    use_for: List[str]
+    line_count: int
 
 @dataclass
 class GreetingTemplate:
     """Template for message greeting."""
     template: str
-    _note: str
+    note: str
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -1320,28 +1320,28 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class APICallMetrics:
     """Metrics for API call tracking"""
-    _call_count: int = 0
-    _success_count: int = 0
-    _error_count: int = 0
-    _total_tokens_used: int = 0
-    _total_latency_ms: float = 0
-    _safety_blocks: int = 0
-    _rate_limits: int = 0
+    call_count: int = 0
+    success_count: int = 0
+    error_count: int = 0
+    total_tokens_used: int = 0
+    total_latency_ms: float = 0
+    safety_blocks: int = 0
+    rate_limits: int = 0
 
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
-    _data: Dict[str, Any] = field(default_factory=dict)
-    _version: int = 1
-    _timestamp: Optional[str] = None
-    _checksum: Optional[str] = None
+    data: Dict[str, Any] = field(default_factory=dict)
+    version: int = 1
+    timestamp: Optional[str] = None
+    checksum: Optional[str] = None
     
     def with_data(self, new_data: Dict[str, Any]) -> 'ImmutableStagingBuffer':
         """Return a new buffer with updated data."""
         from datetime import datetime
         return ImmutableStagingBuffer(
-            _data={**self._data, **new_data},
-            _version=self._version + 1,
+            _data={**self.data, **new_data},
+            _version=self.version + 1,
             _timestamp=datetime.utcnow().isoformat(),
             _checksum=None,
         )
@@ -1350,7 +1350,7 @@ class ImmutableStagingBuffer:
         """Return a new empty buffer."""
         from datetime import datetime
         return ImmutableStagingBuffer(
-            _version=self._version + 1,
+            _version=self.version + 1,
             _timestamp=datetime.utcnow().isoformat()
         )
 
@@ -1470,9 +1470,9 @@ class HeadlineBrief:
 @dataclass
 class HopInput:
     """Input specification for a hop."""
-    _artifact_id: str
-    _required: bool = True
-    _description: str = ""
+    source_artifact: str
+    required: bool = True
+    description: str = ""
 
 @dataclass
 class HopOutput:
@@ -1481,29 +1481,22 @@ class HopOutput:
     DESCRIPTION: str = ""
 
 @dataclass
-class RetryPolicy:
-    """Retry policy for a hop."""
-    _max_retries: int = 3
-    _backoff_seconds: float = 1.0
-    _backoff_multiplier: float = 2.0
-
-@dataclass
 class HopSpec:
     """Specification for a workflow hop."""
-    _id: str
-    _script: str
+    id: str
+    script: str
     description: str
-    _inputs: List[HopInput] = field(default_factory=list)
-    _outputs: List[HopOutput] = field(default_factory=list)
-    _retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
-    _extra_args: List[str] = field(default_factory=list)
+    inputs: List[HopInput] = field(default_factory=list)
+    outputs: List[HopOutput] = field(default_factory=list)
+    retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
+    extra_args: List[str] = field(default_factory=list)
 
 @dataclass
 class WorkflowSpec:
     """Specification for a complete workflow."""
-    _name: str
-    _version: str
-    _hops: List[HopSpec]
+    name: str
+    version: str
+    hops: List[HopSpec]
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -1594,46 +1587,46 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class RouteConditions:
     """Conditions for route selection."""
-    _connection_status: Optional[str] = None
-    _prior_message_count: Optional[int] = None
-    _prior_message_count_gt: Optional[int] = None
-    _prior_message_count_gte: Optional[int] = None
+    connection_status: Optional[str] = None
+    prior_message_count: Optional[int] = None
+    prior_message_count_gt: Optional[int] = None
+    prior_message_count_gte: Optional[int] = None
 
 @dataclass
 class RouteConstraints:
     """Constraints for a message route."""
-    _char_limit: Optional[int] = None
-    _word_range: Optional[tuple[int, int]] = None
-    _signature_format: SignatureFormat = SignatureFormat.STANDARD
-    _subject_line_enabled: bool = False
-    _attachments_enabled: bool = False
-    _cta_format: CTAFormat = CTAFormat.STANDARD
-    _cta_max_words: Optional[int] = None
-    _greeting_format: str = "Hi {first_name},"
+    char_limit: Optional[int] = None
+    word_range: Optional[tuple[int, int]] = None
+    signature_format: SignatureFormat = SignatureFormat.STANDARD
+    subject_line_enabled: bool = False
+    attachments_enabled: bool = False
+    cta_format: CTAFormat = CTAFormat.STANDARD
+    cta_max_words: Optional[int] = None
+    greeting_format: str = "Hi {first_name},"
 
 @dataclass
 class RouteConfig:
     """Complete configuration for a message route."""
-    _route: MessageRoute
-    _conditions: RouteConditions
-    _constraints: RouteConstraints
+    route: MessageRoute
+    conditions: RouteConditions
+    constraints: RouteConstraints
 
 @dataclass
 class ArchetoneConfig:
     """Tone configuration for an archetype."""
-    _message_tone: str
-    _verb_preference: List[str]
-    _jargon_level: str
-    _formality: str
-    _focus: str
+    message_tone: str
+    verb_preference: List[str]
+    jargon_level: str
+    formality: str
+    focus: str
 
 @dataclass
 class TemperatureConfig:
     """Temperature configuration for LLM generation."""
-    _base_temperature: float
-    _escalation_step: float = 0.15
-    _max_temperature: float = 0.95
-    _max_creative_retries: int = 3
+    base_temperature: float
+    escalation_step: float = 0.15
+    max_temperature: float = 0.95
+    max_creative_retries: int = 3
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
