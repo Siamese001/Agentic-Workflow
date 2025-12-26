@@ -1,4 +1,8 @@
-"""Dataclass models for resume_orchestration_config_types."""
+"""Dataclass models for resume_orchestration_config_types.
+
+Local Runtime DTOs (Allowed) - App-specific configuration models.
+Phase 7: Underscore fields eliminated for SSOT alignment.
+"""
 from typing import Any, Optional, Protocol, Dict, List
 
 import logging
@@ -11,18 +15,13 @@ logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constan
 LOGGER = logging.getLogger(__name__)
 
 
-
-# # from .resume_orchestration_config_types_enums import *  # Star import
-# removed
-
-
 @dataclass
-class WordCountConstraint:
+class WordCountConstraint:  # Local Runtime DTO (Allowed)
     """Word count constraint for a section."""
-    _min: Optional[int] = None
-    _max: Optional[int] = None
-    _scope: str = 'total'
-    _unit: str = 'words'
+    min: Optional[int] = None
+    max: Optional[int] = None
+    scope: str = 'total'
+    unit: str = 'words'
 
     def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
@@ -34,7 +33,7 @@ class WordCountConstraint:
 
 
 @dataclass
-class CharCountConstraint:
+class CharCountConstraint:  # Local Runtime DTO (Allowed)
     """Character count constraint for a section."""
     min: Optional[int] = None
     max: Optional[int] = None
@@ -50,28 +49,28 @@ class CharCountConstraint:
 
 
 @dataclass
-class ReasoningConfig:
+class ReasoningConfig:  # Local Runtime DTO (Allowed)
     """Reasoning configuration for K-node execution."""
-    _temperature: float = 0.7
-    _rag_type: RAGType = RAGType.HYBRID
-    _rag_total_calls: int = 5
-    _rag_hops: int = 2
-    _claim_verification_mode: ClaimVerificationMode = ClaimVerificationMode.BALANCED
-    _hybrid_cot_tot: bool = True
-    _cot_min_paths: Optional[int] = 1
-    _tot_branches: Optional[int] = 3
-    _min_tot_depth: Optional[int] = 2
-    _self_consistency: int = 3
-    _reflexion: bool = True
-    _routing_tier: Optional[RoutingTier] = None
+    temperature: float = 0.7
+    rag_type: RAGType = RAGType.HYBRID
+    rag_total_calls: int = 5
+    rag_hops: int = 2
+    claim_verification_mode: ClaimVerificationMode = ClaimVerificationMode.BALANCED
+    hybrid_cot_tot: bool = True
+    cot_min_paths: Optional[int] = 1
+    tot_branches: Optional[int] = 3
+    min_tot_depth: Optional[int] = 2
+    self_consistency: int = 3
+    reflexion: bool = True
+    routing_tier: Optional[RoutingTier] = None
 
 
 @dataclass
-class ProvenanceRule:
+class ProvenanceRule:  # Local Runtime DTO (Allowed)
     """Provenance rule for bullet generation."""
-    _verbatim: int
-    _transformed: int
-    _synthetic: int
+    verbatim: int
+    transformed: int
+    synthetic: int
 
     @property
     def total(self: Any) -> int:
@@ -84,13 +83,13 @@ class ProvenanceRule:
         return f'{self.verbatim}V-{self.transformed}T-{self.synthetic}S'
 
 @dataclass
-class ValidationGate:
+class ValidationGate:  # Local Runtime DTO (Allowed)
     """Validation gate configuration."""
-    _gate_id: str
-    _execution_point: str
-    _blocking: bool
-    _severity: ValidationSeverity
-    _checks: List[str] = field(default_factory=list)
-    _on_fail: str = 'HALT'
-    _halt_message: Optional[str] = None
+    gate_id: str
+    execution_point: str
+    blocking: bool
+    severity: ValidationSeverity
+    checks: List[str] = field(default_factory=list)
+    on_fail: str = 'HALT'
+    halt_message: Optional[str] = None
 
