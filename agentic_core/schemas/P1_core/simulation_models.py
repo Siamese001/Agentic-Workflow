@@ -1,25 +1,7 @@
-import logging
-from typing import Any, Dict, List, Optional, Protocol
+"""
+LEGACY MIGRATION COMPLETE: Phase 2B
+All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
+"""
+from agentic_core.schemas.models.core_contracts import SimScenario, SimOutcome
 
-_logger = logging.getLogger(__name__)
-
-
-class SimScenario(BaseModel):
-    """TODO: Add docstring."""
-
-    _id: str
-    _description: str
-    _initial_context: Dict[str, object]
-    _execution_profile_name: str
-    _run_count: int
-
-    """TODO: Add docstring."""
-
-
-class SimOutcome(BaseModel):
-    """TODO: Add docstring."""
-
-    _scenario_id: str
-    _average_scores: Dict[str, float]
-    _safety_incidents: int
-    _agent_conflict_count: int
+__all__ = ["SimScenario", "SimOutcome"]
