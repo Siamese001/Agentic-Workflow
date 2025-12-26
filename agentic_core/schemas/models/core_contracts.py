@@ -1901,6 +1901,104 @@ class ThoughtChain(SovereignBaseModel):
                 duration_seconds=self._duration_seconds
             )
 
+# Healing & Observability Models (Phase 12 – Dec 26, 2025)
+
+import uuid
+
+@dataclass(frozen=True)
+class HealingReport(SovereignBaseModel):
+    """
+    Healing report for DDD compliance audits with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Automatic ID generation if not provided
+    - Strategy deduplication tracking
+    - Constitutional invariants (fixed <= found)
+    - Success threshold enforcement (>= 95%)
+    """
+    report_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    auditor_version: str
+    target_scope: str
+    violations_found: int
+    violations_fixed: int
+    healing_actions: List[Dict[str, Any]] = field(default_factory=list)
+    pre_healing_score: float
+    post_healing_score: float
+    success: bool
+    healing_strategies_used: List[str] = field(default_factory=list)
+
+    class Builder:
+        """
+        Sovereign Builder for HealingReport – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent, immutable report construction
+        - Automatic ID generation and strategy deduplication
+        - Constitutional invariants (fixed <= found)
+        - L6 Observability integration
+        """
+        def __init__(self):
+            self._report_id: Optional[str] = None
+            self._auditor_version: str = "v3.0"
+            self._target_scope: str = "agentic_core"
+            self._violations_found: int = 0
+            self._violations_fixed: int = 0
+            self._healing_actions: List[Dict[str, Any]] = []
+            self._pre_healing_score: float = 0.0
+            self._post_healing_score: float = 0.0
+            self._success: bool = False
+            self._strategies_used: List[str] = []
+
+        def with_report_id(self, report_id: str) -> 'HealingReport.Builder':
+            self._report_id = report_id
+            return self
+
+        def with_violations(self, found: int, fixed: int) -> 'HealingReport.Builder':
+            """Enforces the invariant that fixed violations cannot exceed found ones."""
+            if fixed > found:
+                raise ValueError("Sovereignty Violation: violations_fixed cannot exceed violations_found")
+            self._violations_found = found
+            self._violations_fixed = fixed
+            return self
+
+        def add_healing_action(self, action: Dict[str, Any]) -> 'HealingReport.Builder':
+            """Adds an action and automatically tracks the strategy used."""
+            self._healing_actions.append(action)
+            strategy = action.get("strategy", "unknown")
+            if strategy not in self._strategies_used:
+                self._strategies_used.append(strategy)
+            return self
+
+        def with_scores(self, pre: float, post: float) -> 'HealingReport.Builder':
+            """Sets scores and determines mission success (threshold >= 95%)."""
+            self._pre_healing_score = pre
+            self._post_healing_score = post
+            self._success = post >= 95.0
+            return self
+
+        def build(self) -> 'HealingReport':
+            """Construct immutable HealingReport with final constitutional validation."""
+            if not self._report_id:
+                self._report_id = f"heal-{uuid.uuid4().hex[:8]}"
+            
+            # L6 Observability: Record the formal generation of the healing ledger
+            logger.info(f"[L6_AUDIT] HealingReport Sealed: {self._report_id} | "
+                        f"Outcome: {'SUCCESS' if self._success else 'PARTIAL'} | "
+                        f"Remediation: {self._violations_fixed}/{self._violations_found}")
+
+            return HealingReport(
+                report_id=self._report_id,
+                auditor_version=self._auditor_version,
+                target_scope=self._target_scope,
+                violations_found=self._violations_found,
+                violations_fixed=self._violations_fixed,
+                healing_actions=self._healing_actions.copy(),
+                pre_healing_score=self._pre_healing_score,
+                post_healing_score=self._post_healing_score,
+                success=self._success,
+                healing_strategies_used=self._strategies_used.copy()
+            )
+
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
     # Strategic Planning Models
@@ -1911,6 +2009,8 @@ CORE_CONTRACTS_REGISTRY.update({
     "ThinkingStep": ThinkingStep,
     "RevisionStep": RevisionStep,
     "ThoughtChain": ThoughtChain,
+    # Healing & Observability Models
+    "HealingReport": HealingReport,
 })
 
 # === ETERNAL SOVEREIGNTY CERTIFICATION – Dec 26, 2025 ===
