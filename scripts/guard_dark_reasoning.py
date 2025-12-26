@@ -54,12 +54,32 @@ class DarkReasoningVisitor(ast.NodeVisitor):
         """Visit async function definitions (same logic as sync)."""
         self.visit_FunctionDef(node)
     
+    def _check_observability(self, node_str: str):
+        """Centralized observability signal detection"""
+        if any(obs in node_str for obs in OBSERVABILITY_SIGNALS):
+            self.has_observability = True
+    
     def visit_Call(self, node):
         """Visit function calls to detect observability signals."""
-        # Mark as observed if ANY observability signal is found in the call
-        call_repr = ast.dump(node).lower()
-        if any(sig in call_repr for sig in OBSERVABILITY_SIGNALS):
-            self.has_observability = True
+        call_str = ""
+        try:
+            # Use unparse for high-fidelity string representation
+            call_str = ast.unparse(node)
+        except Exception:
+            # Fallback to dump for safety
+            call_str = ast.dump(node)
+        self._check_observability(call_str.lower())
+        self.generic_visit(node)
+    
+    def visit_Expr(self, node):
+        """Visit expression statements to catch standalone logging calls."""
+        if self.in_reasoning_function:
+            expr_str = ""
+            try:
+                expr_str = ast.unparse(node)
+            except Exception:
+                expr_str = ast.dump(node)
+            self._check_observability(expr_str.lower())
         self.generic_visit(node)
 
 
