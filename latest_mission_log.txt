@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-26 13:57:04
+MISSION LOG - 2025-12-26 14:03:53
 ================================================================================
-COMMAND: del "c:\Git\Agentic-Workflow\agentic_core\L1_cognition\thought_engine\rg_creative_brief_models.py"
+COMMAND: python -c "from agentic_core.schemas.models import core_contracts; print('Integrity OK')"
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 1
 ================================================================================
