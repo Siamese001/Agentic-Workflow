@@ -1,14 +1,9 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 
-from pydantic import BaseModel
+from agentic_core.schemas.models.core_contracts import ConsensusVerdict
 
-
-class ConsensusVerdict(BaseModel):
-    reasoning: str
-    chosen_plan: Dict
-    consensus_score: float
-    safe_to_proceed: bool
+# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
 class SupremeCourt:
     """

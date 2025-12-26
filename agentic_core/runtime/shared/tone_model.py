@@ -7,57 +7,17 @@ voice to match, preventing the "Generic AI" voice.
 
 import logging
 import re
-from enum import Enum
 from typing import Dict, List, Optional, Tuple
+
+from agentic_core.schemas.models.core_contracts import (
+    ToneType,
+    StyleProfile,
+    GenerationConfig,
+)
 
 LOGGER = logging.getLogger(__name__)
 
-class ToneType(str, Enum):
-    """Primary tone types for communication style analysis."""
-
-    AUTHORITATIVE = "authoritative"  # Confident, expert-driven, decisive
-    EMPATHETIC = "empathetic"        # Understanding, supportive, human-centric
-    ANALYTICAL = "analytical"        # Data-driven, logical, detailed
-    ENTHUSIASTIC = "enthusiastic"    # High energy, positive, engaging
-    DIRECT = "direct"                # Concise, action-oriented, no-fluff
-
-class StyleProfile(BaseModel):
-    """Profile defining a communication style."""
-
-    primary_tone: ToneType = Field(..., description="Primary tone type")
-    formality_level: confloat(ge=0.0, le=1.0) = Field(default=0.7, description="Formality level (0=Casual, 1=Academic)")
-    emoji_frequency: confloat(ge=0.0,
-        le=1.0) = Field(default=0.2,
-        DESCRIPTION="Emoji usage frequency")
-    sentence_length_avg: int = Field(default=15,
-        ge=5,
-        le=50,
-        DESCRIPTION="Target words per sentence")
-    vocabulary_complexity: confloat(ge=0.0,
-        le=1.0) = Field(default=0.5,
-        DESCRIPTION="Vocabulary complexity")
-    confidence_level: confloat(ge=0.0,
-        le=1.0) = Field(default=0.8,
-        DESCRIPTION="Confidence in analysis")
-
-    class Config:
-            """Pydantic configuration."""
-        validate_assignment = True
-
-class GenerationConfig(BaseModel):
-    """Configuration for LLM generation based on tone profile."""
-
-    system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
-    temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
-    banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
-    preferred_transitions: List[str] = Field(default_factory=list,
-        DESCRIPTION="Preferred transition words")
-    max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
-
-    @validator('temperature_setting')
-    def clamp_temperature(cls, v):
-            """Ensure temperature is within valid range."""
-        return max(0.1, min(1.0, v))
+# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
 class ToneAnalyzer:
     """Analyzes communication style from content samples."""

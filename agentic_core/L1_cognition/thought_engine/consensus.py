@@ -11,25 +11,9 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from openai import AsyncOpenAI
-from pydantic import BaseModel
+from agentic_core.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
 
 LOGGER = logging.getLogger(__name__)
-
-class ConsensusVerdict(BaseModel):
-    """Result of a consensus deliberation."""
-    chosen_plan: str
-    consensus_score: float  # 0.0 to 1.0
-    dissenting_opinions: List[str]
-    reasoning: str
-    safe_to_proceed: bool
-
-class ModelOpinion(BaseModel):
-    """Individual model's opinion on a plan."""
-    model_name: str
-    plan: str
-    reasoning: str
-    risk_assessment: str  # LOW, MEDIUM, HIGH, CRITICAL
-    confidence: float  # 0.0 to 1.0
 
 class SupremeCourt:
     """
