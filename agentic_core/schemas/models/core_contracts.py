@@ -1313,3 +1313,152 @@ CORE_CONTRACTS_REGISTRY.update({
     "SignatureTemplate": SignatureTemplate,
     "GreetingTemplate": GreetingTemplate,
 })
+
+# Shared Core Models (from L0_maintenance/scripts/shared_core_models_types_part.py)
+# Note: ValidationResult, ThematicAnalysis, RAGState already exist in Phase 2C - skipping duplicates
+
+@dataclass
+class APICallMetrics:
+    """Metrics for API call tracking"""
+    _call_count: int = 0
+    _success_count: int = 0
+    _error_count: int = 0
+    _total_tokens_used: int = 0
+    _total_latency_ms: float = 0
+    _safety_blocks: int = 0
+    _rate_limits: int = 0
+
+@dataclass
+class ImmutableStagingBuffer:
+    """Immutable buffer for staging data transformations."""
+    _data: Dict[str, Any] = field(default_factory=dict)
+    _version: int = 1
+    _timestamp: Optional[str] = None
+    _checksum: Optional[str] = None
+    
+    def with_data(self, new_data: Dict[str, Any]) -> 'ImmutableStagingBuffer':
+        """Return a new buffer with updated data."""
+        from datetime import datetime
+        return ImmutableStagingBuffer(
+            _data={**self._data, **new_data},
+            _version=self._version + 1,
+            _timestamp=datetime.utcnow().isoformat(),
+            _checksum=None,
+        )
+    
+    def clear(self) -> 'ImmutableStagingBuffer':
+        """Return a new empty buffer."""
+        from datetime import datetime
+        return ImmutableStagingBuffer(
+            _version=self._version + 1,
+            _timestamp=datetime.utcnow().isoformat()
+        )
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # Shared Core Models (new only - duplicates skipped)
+    "APICallMetrics": APICallMetrics,
+    "ImmutableStagingBuffer": ImmutableStagingBuffer,
+})
+
+# RG Creative Brief Models (from L1_cognition/thought_engine/rg_creative_brief_models.py)
+# Migrating dependency-free models only
+
+@dataclass
+class WordCountConstraint:
+    """Word count constraint for a section."""
+    min_words: int
+    max_words: int
+    
+    def validate(self, text: str) -> tuple[bool, str]:
+        """Validate text against word count constraint."""
+        word_count = len(text.split())
+        if word_count < self.min_words:
+            return (False, f'Word count {word_count} below minimum {self.min_words}')
+        if word_count > self.max_words:
+            return (False, f'Word count {word_count} above maximum {self.max_words}')
+        return (True, '')
+
+@dataclass
+class CharCountConstraint:
+    """Character count constraint for a section."""
+    max_chars: int
+    
+    def validate(self, text: str) -> tuple[bool, str]:
+        """Validate text against character count constraint."""
+        char_count = len(text)
+        if char_count > self.max_chars:
+            return (False, f'Character count {char_count} above maximum {self.max_chars}')
+        return (True, '')
+
+@dataclass
+class StructureConstraint:
+    """Structure constraint for a section."""
+    structure: str
+    segment_word_limit: Optional[int] = None
+    exclusions: List[str] = field(default_factory=list)
+
+@dataclass
+class HeadlineBrief:
+    """Creative brief for headline section."""
+    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(8, 12))
+    char_count_max: int = 90
+    STRUCTURE: str = 'Domain | Leadership | Value Prop'
+    segment_word_limit: int = 3
+    exclusions: List[str] = field(default_factory=lambda: ['and', 'a', 'an', 'the', 'in', 'on', 'at', 'for', 'to', 'of'])
+    GUIDANCE: str = 'Must incorporate differentiator keywords from the Competitive Analysis.'
+
+# Orchestration Workflow Models (from L3_orchestration/workflow_engines/orchestrate_workflow_types_models.py)
+
+@dataclass
+class HopInput:
+    """Input specification for a hop."""
+    _artifact_id: str
+    _required: bool = True
+    _description: str = ""
+
+@dataclass
+class HopOutput:
+    """Output specification for a hop."""
+    artifact_id: str
+    DESCRIPTION: str = ""
+
+@dataclass
+class RetryPolicy:
+    """Retry policy for a hop."""
+    _max_retries: int = 3
+    _backoff_seconds: float = 1.0
+    _backoff_multiplier: float = 2.0
+
+@dataclass
+class HopSpec:
+    """Specification for a workflow hop."""
+    _id: str
+    _script: str
+    description: str
+    _inputs: List[HopInput] = field(default_factory=list)
+    _outputs: List[HopOutput] = field(default_factory=list)
+    _retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
+    _extra_args: List[str] = field(default_factory=list)
+
+@dataclass
+class WorkflowSpec:
+    """Specification for a complete workflow."""
+    _name: str
+    _version: str
+    _hops: List[HopSpec]
+
+# Update Registry
+CORE_CONTRACTS_REGISTRY.update({
+    # RG Creative Brief Models
+    "WordCountConstraint": WordCountConstraint,
+    "CharCountConstraint": CharCountConstraint,
+    "StructureConstraint": StructureConstraint,
+    "HeadlineBrief": HeadlineBrief,
+    # Orchestration Workflow Models
+    "HopInput": HopInput,
+    "HopOutput": HopOutput,
+    "RetryPolicy": RetryPolicy,
+    "HopSpec": HopSpec,
+    "WorkflowSpec": WorkflowSpec,
+})
