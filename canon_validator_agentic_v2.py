@@ -1205,6 +1205,11 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
 
     
+    # === 1. GLOBAL SCOPE & SHIM ARMING ===
+    # Pre-declare for global visibility across all agents
+    globals()['PineconeSovereignAgent'] = PineconeSovereignAgent
+    globals()['subatomic_engine'] = subatomic_engine
+    
     # 3. WIRE COMPONENTS TO CONTEXT (Crucial Fix)
     ctx.engine = subatomic_engine
     ctx.safety = safety_guard
@@ -1398,25 +1403,34 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     discovered = discover_agents()
     print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} potential components")
     
-    # [SOVEREIGN HEALING] Populate cleaning_crew with all healing-capable agents
-    cleaning_crew = []
+    # === 2. CONTEXT-AWARE AGENT ARMING ===
+    # [SOVEREIGN ARMING] Instantiate with core architectural context
+    ctx.cleaning_crew = []
     for mod_name, cls_name, agent_class in discovered:
         try:
-            instance = agent_class()
-            if hasattr(instance, 'heal_violation') and callable(getattr(instance, 'heal_violation')):
-                cleaning_crew.append(instance)
-                print(f"   [+] {cls_name} ARMED as sovereign healer ({mod_name})")
+            # Pass project_root and safety_guardrail as standard context
+            instance = agent_class(project_root=project_root, guardrail=safety_guard)
+            if hasattr(instance, 'heal_violation'):
+                ctx.cleaning_crew.append(instance)
+                print(f"   [+] {cls_name} ARMED with context")
+        except TypeError:
+            # Fallback for simple agents without context requirements
+            try:
+                instance = agent_class()
+                if hasattr(instance, 'heal_violation'):
+                    ctx.cleaning_crew.append(instance)
+                    print(f"   [+] {cls_name} ARMED (bare)")
+            except Exception: continue
         except Exception as e:
-            print(f"   [!] Agent instantiation failed: {e}")
+            print(f"   [!] Failed to arm {cls_name}: {e}")
     
-    ctx.cleaning_crew = cleaning_crew
-    print(f"   [OK] {len(cleaning_crew)} healing agents armed for mutation")
+    print(f"   [OK] {len(ctx.cleaning_crew)} healing agents armed for mutation")
     
-    if not cleaning_crew:
+    if not ctx.cleaning_crew:
         print(f"   [!] CRITICAL: No healing agents — mutation disabled")
 
     # --- CRITICAL SAFETY CHECK ---
-    if not cleaning_crew:
+    if not ctx.cleaning_crew:
         print("\n[CRITICAL FAILURE] 0 Agents loaded. Mission Aborted.")
         print("   -> Check if the Import Shim (Diff 1) was applied correctly.")
         return # Halt execution
@@ -1426,8 +1440,8 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     try:
         import canon_dashboard_web
         canon_dashboard_web.agents_global.clear()
-        canon_dashboard_web.agents_global.extend(cleaning_crew)
-        print(f"   [DASHBOARD] Synced {len(cleaning_crew)} agents to visualization")
+        canon_dashboard_web.agents_global.extend(ctx.cleaning_crew)
+        print(f"   [DASHBOARD] Synced {len(ctx.cleaning_crew)} agents to visualization")
         
         # NOW start the Flask server with agents populated
         if dashboard_available and web_thread is None:
@@ -1477,7 +1491,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
 IF (task == "GRAVITY_REFACTOR"):
     ELIMINATE upward imports. Use dynamic imports or relocate logic.
 """
-    governor = next((a for a in cleaning_crew if a.__class__.__name__ == 'ArchitectureGovernor'), None)
+    governor = next((a for a in ctx.cleaning_crew if a.__class__.__name__ == 'ArchitectureGovernor'), None)
     if governor:
         # Try updating system prompt via method or attribute
         if hasattr(governor, 'update_system_prompt'):
@@ -1493,9 +1507,9 @@ IF (task == "GRAVITY_REFACTOR"):
     batch_validators = []  # Run ONCE (takes no args)
     monitors = []          # Run ONCE at end
 
-    print(f"\n[AGENT CATEGORIZATION] Categorizing {len(cleaning_crew)} agents...")
+    print(f"\n[AGENT CATEGORIZATION] Categorizing {len(ctx.cleaning_crew)} agents...")
     
-    for agent in cleaning_crew:
+    for agent in ctx.cleaning_crew:
         name = agent.__class__.__name__
         # Note: HallucinationHunter and MemoryArchitect will be handled in dedicated hardening blocks below
         
