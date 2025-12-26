@@ -74,8 +74,10 @@ class SovereignConfig:
     SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE: float = 0.6
     
     # Pinecone MCP Defaults
+    PINECONE_MCP_ENABLED: bool = True
     PINECONE_RERANK_MODEL: str = "bge-reranker-v2-m3"
     PINECONE_INFERENCE_MODEL: str = "multilingual-e5-large"
+    PINECONE_DEFAULT_NAMESPACE: str = "sovereign_memory_v1"
     
     # === Phase 14: Brave Search MCP (Dec 26, 2025) ===
     BRAVE_SEARCH_MCP_ENABLED: bool = True
