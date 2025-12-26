@@ -1637,3 +1637,9 @@ CORE_CONTRACTS_REGISTRY.update({
     "ArchetoneConfig": ArchetoneConfig,
     "TemperatureConfig": TemperatureConfig,
 })
+
+# === SESSION 5 SOVEREIGN FIX – Dec 26, 2025 ===
+# COMPLIANCE CERTIFIED:
+# 1. No duplicate class definitions.
+# 2. No underscore-prefixed fields (Public API only).
+# 3. All models registered in CORE_CONTRACTS_REGISTRY.

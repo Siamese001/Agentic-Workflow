@@ -22,3 +22,9 @@ repos:
         language: python
         types: [python]
         exclude: ^agentic_core/config/blueprint_sovereign/environments/sovereign_config\.py$
+
+      - id: no-underscore-fields
+        name: Sovereign Guard - No Underscore Fields
+        entry: python scripts/guard_no_underscore_fields.py
+        language: python
+        files: ^agentic_core/schemas/models/core_contracts\.py$
