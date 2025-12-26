@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-26 14:38:38
+MISSION LOG - 2025-12-26 15:08:15
 ================================================================================
-COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-DIRECTORY: C:\Git
-EXIT CODE: 
+COMMAND: python -m agentic_core.L0_maintenance.auditors.sovereign_auditor_v3
+DIRECTORY: C:\Git\Agentic-Workflow
+EXIT CODE: 1
 ================================================================================
 
