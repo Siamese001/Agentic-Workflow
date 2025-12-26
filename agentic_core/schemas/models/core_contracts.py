@@ -1906,6 +1906,228 @@ class ThoughtChain(SovereignBaseModel):
 import uuid
 
 @dataclass(frozen=True)
+class ConstitutionalViolation(SovereignBaseModel):
+    """
+    Constitutional violation record with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Fluent judicial record construction
+    - Severity validation
+    - Auto-ID generation
+    - L6 warning trail on detection
+    """
+    violation_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    guardian: str
+    dimension: str  # e.g., "DDD Alignment", "Schema SSOT"
+    severity: str  # "CRITICAL", "HIGH", "MEDIUM", "LOW"
+    file_path: str
+    line_number: Optional[int] = None
+    description: str
+    evidence: str
+    suggested_fix: Optional[str] = None
+    status: str = "detected"  # "detected", "healing_proposed", "healed", "persistent"
+
+    class Builder:
+        """
+        Sovereign Builder for ConstitutionalViolation – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent, immutable judicial records
+        - Severity and dimension validation
+        - L6 warning trail on creation
+        """
+        def __init__(self):
+            self._violation_id: Optional[str] = None
+            self._guardian: Optional[str] = None
+            self._dimension: Optional[str] = None
+            self._severity: Optional[str] = None
+            self._file_path: Optional[str] = None
+            self._line_number: Optional[int] = None
+            self._description: Optional[str] = None
+            self._evidence: Optional[str] = None
+            self._suggested_fix: Optional[str] = None
+
+        def with_guardian(self, guardian: str) -> 'ConstitutionalViolation.Builder':
+            self._guardian = guardian
+            return self
+
+        def in_dimension(self, dimension: str) -> 'ConstitutionalViolation.Builder':
+            self._dimension = dimension
+            return self
+
+        def with_severity(self, severity: str) -> 'ConstitutionalViolation.Builder':
+            if severity not in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
+                raise ValueError(f"Sovereignty Violation: Invalid severity: {severity}")
+            self._severity = severity
+            return self
+
+        def at_location(self, file_path: str, line_number: Optional[int] = None) -> 'ConstitutionalViolation.Builder':
+            self._file_path = file_path
+            self._line_number = line_number
+            return self
+
+        def with_description(self, description: str) -> 'ConstitutionalViolation.Builder':
+            self._description = description
+            return self
+
+        def with_evidence(self, evidence: str) -> 'ConstitutionalViolation.Builder':
+            self._evidence = evidence
+            return self
+
+        def with_suggested_fix(self, fix: str) -> 'ConstitutionalViolation.Builder':
+            self._suggested_fix = fix
+            return self
+
+        def build(self) -> 'ConstitutionalViolation':
+            """Construct immutable ConstitutionalViolation with final validation."""
+            required = {
+                "guardian": self._guardian,
+                "dimension": self._dimension,
+                "severity": self._severity,
+                "file_path": self._file_path,
+                "description": self._description
+            }
+            for field, value in required.items():
+                if not value:
+                    raise ValueError(f"Constitutional Reporting Error: {field} is required.")
+
+            if not self._violation_id:
+                self._violation_id = f"violation-{uuid.uuid4().hex[:8]}"
+
+            # L6 Observability: Witnessing the transgression
+            logger.warning(f"[L6_AUDIT] Violation Detected: {self._violation_id} | "
+                           f"Severity: {self._severity} | Dimension: {self._dimension} | "
+                           f"Loc: {self._file_path}:{self._line_number or 'N/A'}")
+
+            return ConstitutionalViolation(
+                violation_id=self._violation_id,
+                guardian=self._guardian,
+                dimension=self._dimension,
+                severity=self._severity,
+                file_path=self._file_path,
+                line_number=self._line_number,
+                description=self._description,
+                evidence=self._evidence or "Not recorded",
+                suggested_fix=self._suggested_fix
+            )
+
+@dataclass(frozen=True)
+class HealingAction(SovereignBaseModel):
+    """
+    Healing action record with Builder pattern support.
+    
+    Sovereign Builder Pattern (Phase 12):
+    - Fluent correction record construction
+    - Explicit success/failure outcome paths
+    - Transaction linkage for atomic operations
+    - L6 forensic audit trail
+    """
+    action_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    strategy: str
+    action_type: str  # e.g., "move", "replace", "inject_logging"
+    target_file: str
+    target_line: Optional[int] = None
+    reason: str
+    success: bool
+    error_message: Optional[str] = None
+    backup_path: Optional[str] = None
+    transaction_id: Optional[str] = None
+
+    class Builder:
+        """
+        Sovereign Builder for HealingAction – Phase 12 (Dec 26, 2025)
+        Enforces:
+        - Fluent, immutable record of system corrections
+        - Explicit success/failure outcome paths
+        - L6 Observability integration for forensic audits
+        - Atomic transaction linkage
+        """
+        def __init__(self):
+            self._action_id: Optional[str] = None
+            self._strategy: Optional[str] = None
+            self._action_type: Optional[str] = None
+            self._target_file: Optional[str] = None
+            self._target_line: Optional[int] = None
+            self._reason: Optional[str] = None
+            self._success: Optional[bool] = None
+            self._error_message: Optional[str] = None
+            self._backup_path: Optional[str] = None
+            self._transaction_id: Optional[str] = None
+
+        def with_strategy(self, strategy: str) -> 'HealingAction.Builder':
+            self._strategy = strategy
+            return self
+
+        def with_action_type(self, action_type: str) -> 'HealingAction.Builder':
+            self._action_type = action_type
+            return self
+
+        def targeting(self, file: str, line: Optional[int] = None) -> 'HealingAction.Builder':
+            self._target_file = file
+            self._target_line = line
+            return self
+
+        def for_reason(self, reason: str) -> 'HealingAction.Builder':
+            self._reason = reason
+            return self
+
+        def succeeded(self) -> 'HealingAction.Builder':
+            self._success = True
+            self._error_message = None
+            return self
+
+        def failed(self, error: str) -> 'HealingAction.Builder':
+            self._success = False
+            self._error_message = error
+            return self
+
+        def with_backup(self, backup_path: str) -> 'HealingAction.Builder':
+            self._backup_path = backup_path
+            return self
+
+        def in_transaction(self, transaction_id: str) -> 'HealingAction.Builder':
+            self._transaction_id = transaction_id
+            return self
+
+        def build(self) -> 'HealingAction':
+            """Construct immutable HealingAction with final constitutional validation."""
+            required = {
+                "strategy": self._strategy,
+                "action_type": self._action_type,
+                "target_file": self._target_file,
+                "reason": self._reason
+            }
+            for field, value in required.items():
+                if not value:
+                    raise ValueError(f"Sovereignty Reporting Error: {field} is required.")
+            
+            if self._success is None:
+                raise ValueError("Incomplete Record: Must specify outcome via succeeded() or failed().")
+
+            if not self._action_id:
+                self._action_id = f"healact-{uuid.uuid4().hex[:8]}"
+
+            # L6 Observability: Witnessing the Correction
+            status = "SUCCESS" if self._success else "FAILED"
+            logger.info(f"[L6_AUDIT] Healing Action Logged: {self._action_id} | "
+                        f"Outcome: {status} | Strategy: {self._strategy} | "
+                        f"Type: {self._action_type} | File: {self._target_file}")
+
+            return HealingAction(
+                action_id=self._action_id,
+                strategy=self._strategy,
+                action_type=self._action_type,
+                target_file=self._target_file,
+                target_line=self._target_line,
+                reason=self._reason,
+                success=self._success,
+                error_message=self._error_message,
+                backup_path=self._backup_path,
+                transaction_id=self._transaction_id
+            )
+
+@dataclass(frozen=True)
 class HealingReport(SovereignBaseModel):
     """
     Healing report for DDD compliance audits with Builder pattern support.
@@ -2010,6 +2232,8 @@ CORE_CONTRACTS_REGISTRY.update({
     "RevisionStep": RevisionStep,
     "ThoughtChain": ThoughtChain,
     # Healing & Observability Models
+    "ConstitutionalViolation": ConstitutionalViolation,
+    "HealingAction": HealingAction,
     "HealingReport": HealingReport,
 })
 
