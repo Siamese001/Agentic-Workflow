@@ -4,7 +4,6 @@ L6 Runtime: Void Compliance Enforcer
 Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapping.
 """
 import ast
-import logging
 import os
 import re
 from pathlib import Path
@@ -12,10 +11,8 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 from agentic_core.config.P1_core.structure_blueprint import (
     AGENTIC_CORE_EXACT_DEPTH,
-    APPS_EXACT_DEPTH,
     CANON_KEY_TO_FOLDER_MAP,
     CANON_SIGNALS,
-    CANONICAL_PRECISION_DEPTH,
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_NUMBERED_PATTERN,
     FORBIDDEN_PATTERNS,
@@ -23,7 +20,6 @@ from agentic_core.config.P1_core.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
-    TESTS_EXACT_DEPTH,
 )
 
 logger = logging.getLogger(__name__)
@@ -235,41 +231,10 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 
     return violations
 
+
 # ==============================================================================
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
-
-def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
-    """
-    [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
-    No ranges, no flexibility - only absolute precision.
-    [DYNAMIC ENFORCEMENT] Pulls depth requirements from structure_blueprint.py
-    """
-    rel_path = file_path.relative_to(project_root)
-    parts = rel_path.parts
-    depth = len(parts)
-    root_folder = parts[0]
-
-    # Rule 0: Sovereign Exemptions
-    if root_folder in ["data", "archives", ".git", ".venv", "__pycache__"]:
-        return True, "Storage Bypass"
-    if file_path.name == "__init__.py" or "validator" in file_path.name:
-        return True, "Root Structural Component"
-
-    # Rule 1: Precision Enforcement (Dynamic from CANONICAL_DEPTH_MAP)
-    if root_folder in CANONICAL_DEPTH_MAP:
-        required = CANONICAL_DEPTH_MAP[root_folder]
-        if depth != required:
-            return False, f"DEPTH VIOLATION (Structure Rule): '{rel_path}' depth {depth} != {required}."
-        
-        # Rule 2: Core Stage Enforcement (Mandatory P/S Patterns)
-        if root_folder == "agentic_core":
-            stage = parts[2]
-            if not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
-                return False, f"CORE STAGE VIOLATION: '{stage}' must be P1-P5, S1-S4, or L0-L5."
-
-    return True, "Canonical Depth Verified"
-
 
 def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
@@ -293,12 +258,6 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
         
-        # Rule 1: [DEPTH PRECISION] Exact per-root only
-        if root_folder in CANONICAL_PRECISION_DEPTH:
-            required = CANONICAL_PRECISION_DEPTH[root_folder]
-            if depth != required:
-                return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} ≠ {required} for '{root_folder}'"
-            
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
         if root_folder == "agentic_core":
             if depth != AGENTIC_CORE_EXACT_DEPTH:
@@ -307,21 +266,15 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
 
         # [ETERNAL DEPTH 3] All apps_* folders — exact depth 3
         if root_folder.startswith("apps_"):
-            if depth != APPS_EXACT_DEPTH:
-                reason = "SHALLOW" if depth < APPS_EXACT_DEPTH else "DEEP"
-                return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != {APPS_EXACT_DEPTH}"
+            if depth != 3:
+                reason = "SHALLOW" if depth < 3 else "DEEP"
+                return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != 3"
 
         # [ETERNAL DEPTH 3] tests/ folder lockdown
         if root_folder == "tests":
-            if depth != TESTS_EXACT_DEPTH:
-                reason = "SHALLOW" if depth < TESTS_EXACT_DEPTH else "DEEP"
-                return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != {TESTS_EXACT_DEPTH}"
-
-        # Precision depth for other roots
-        if root_folder in CANONICAL_PRECISION_DEPTH:
-            required = CANONICAL_PRECISION_DEPTH[root_folder]
-            if depth != required:
-                return False, f"DEPTH PRECISION VIOLATION: '{root_folder}' requires depth {required}, found {depth}"
+            if depth != 3:
+                reason = "SHALLOW" if depth < 3 else "DEEP"
+                return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != 3"
             
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
         if root_folder == "agentic_core":
@@ -331,17 +284,6 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
                 return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
         
         return True, f"{root_folder} depth verified"
-
-        # Rule 3: General Depth Bounds (Depth 3-5)
-        if depth < 3:
-            return False, f"SHALLOW VIOLATION (Key 41): '{rel_path}' depth {depth} < min 3. Add intermediate L-layer folder."
-        
-        if depth > 5:
-            return False, f"DEEP VIOLATION (Key 41): '{rel_path}' depth {depth} > max 5. Flatten structure."
-        
-        # [L6 HARDENING] Silent Ignore for standard environment/git noise
-        if root_folder in {".venv", "venv", ".git", "__pycache__", "node_modules"}:
-            return True, f"System folder ignored: {root_folder}"
         
         if root_folder in ALLOWED_ROOT_FOLDERS:
             return True, f"File in allowed root folder: {root_folder}"
@@ -374,23 +316,6 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
     except ValueError:
         # File is outside project root
         return False, f"VOID VIOLATION: File outside project root"
-
-
-def validate_universal_depth(file_path: Path, project_root: Path) -> Tuple[bool, str]:
-    """
-    Sovereign Law: ALL files under agentic_core must be exactly depth 4.
-    """
-    rel_path = file_path.relative_to(project_root)
-    parts = rel_path.parts
-    depth = len(parts)
-    root_folder = parts[0]
-
-    if root_folder == "agentic_core":
-        if depth != AGENTIC_CORE_EXACT_DEPTH:
-            ext_type = "NON-PYTHON" if file_path.suffix != ".py" else "PYTHON"
-            return False, f"{ext_type} DEPTH VIOLATION: '{rel_path}' depth {depth} != {AGENTIC_CORE_EXACT_DEPTH}"
-    
-    return True, "Universal depth verified"
 
 
 def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int]:
