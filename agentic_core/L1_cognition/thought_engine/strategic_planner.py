@@ -3,9 +3,12 @@ StrategicPlanner - L1 Guardian for Mission Planning
 
 Generates MissionPlan at the start of cycles.
 Coordinates agent execution and resource allocation.
+
+Phase 13: Enhanced with Sequential Thinking MCP for sovereign reasoning.
 """
 import logging
 import time
+import json
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
@@ -168,6 +171,14 @@ class StrategicPlanner:
         self.active_missions: Dict[str, MissionPlan] = {}
         self.mission_history: List[Dict] = []
         self.agent_capabilities = self._load_agent_capabilities()
+        
+        # Phase 13: L3 MCP Router for Sequential Thinking
+        try:
+            from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+            self.mcp_router = SovereignMCPRouter(role="cognition_strategic")
+        except Exception as e:
+            LOGGER.warning(f"MCP Router initialization failed: {e}. Using legacy planning.")
+            self.mcp_router = None
 
         LOGGER.info("StrategicPlanner initialized")
 
@@ -221,11 +232,13 @@ class StrategicPlanner:
             }
         }
 
-    def generate_plan(self, objective: str, cycle_id: int,
+    async def generate_plan(self, objective: str, cycle_id: int,
                      priority: MissionPriority = MissionPriority.MEDIUM,
                      context: Dict = None) -> MissionPlan:
         """
         Generate a mission plan for the given objective.
+        
+        Phase 13B: Full MCP reasoning integration via Sequential Thinking.
 
         Args:
             objective: Mission objective
@@ -236,6 +249,112 @@ class StrategicPlanner:
         Returns:
             Generated mission plan
         """
+        from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+        
+        # Check if Sequential Thinking MCP is enabled
+        if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.mcp_router:
+            try:
+                return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
+            except Exception as e:
+                LOGGER.error(f"MCP planning failed: {e}. Falling back to legacy.")
+        
+        # Legacy fallback
+        return self._generate_plan_legacy(objective, cycle_id, priority, context)
+    
+    async def _generate_plan_with_mcp(self, objective: str, cycle_id: int,
+                                      priority: MissionPriority, context: Dict) -> MissionPlan:
+        """Generate plan using Sequential Thinking MCP."""
+        from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+        
+        # Build MCP payload
+        mcp_payload = {
+            "task": f"Generate comprehensive sovereign mission plan for objective: {objective}",
+            "cycle_id": cycle_id,
+            "priority": priority.value,
+            "context": context or {},
+            "max_steps": config.SEQ_THINKING_MAX_STEPS,
+            "temperature": config.SEQ_THINKING_TEMPERATURE,
+            "enable_hypothesis_branching": config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING,
+            "enable_self_revision": config.SEQ_THINKING_ENABLE_SELF_REVISION,
+            "prune_low_confidence": config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE,
+            "min_confidence_threshold": config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE,
+        }
+        
+        # L3 → L2 MCP call with L5 shielding
+        result = await self.mcp_router.manager.call_tool(
+            tool_name="mcp10_sequentialthinking",
+            args=mcp_payload
+        )
+        
+        # Extract mission plan from MCP result
+        plan = self._extract_mission_plan_from_mcp(result, objective, cycle_id, priority)
+        
+        LOGGER.info(f"[L1 PLANNING] Mission plan generated via Sequential Thinking MCP")
+        return plan
+    
+    def _extract_mission_plan_from_mcp(self, mcp_result: Dict, objective: str, 
+                                       cycle_id: int, priority: MissionPriority) -> MissionPlan:
+        """Extract MissionPlan from Sequential Thinking MCP result."""
+        mission_id = f"mission-{cycle_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        
+        # Create base plan
+        plan = MissionPlan(
+            mission_id=mission_id,
+            cycle_id=cycle_id,
+            priority=priority,
+            objective=objective
+        )
+        
+        # Parse thought chain if available
+        thought_content = mcp_result.get("thought", "")
+        
+        # Generate phases from MCP reasoning or fallback to default
+        if thought_content:
+            # Try to extract structured plan from thought content
+            plan.phases = self._parse_phases_from_thought(thought_content)
+        
+        if not plan.phases:
+            # Fallback to default phase generation
+            plan.phases = self._generate_phases(objective, {})
+        
+        # Add risk assessment
+        plan.risk_assessment = self._assess_risks(plan)
+        
+        # Store plan
+        self.active_missions[mission_id] = plan
+        
+        return plan
+    
+    def _parse_phases_from_thought(self, thought: str) -> List[MissionPhase]:
+        """Parse mission phases from Sequential Thinking output."""
+        # Simple extraction - look for phase keywords
+        phases = []
+        
+        if "reconnaissance" in thought.lower():
+            phases.append(MissionPhase(
+                name="reconnaissance",
+                agents=["Historian", "TheCartographer"],
+                dependencies=[],
+                estimated_duration=120,
+                resources=["cpu", "disk"],
+                parallel=True
+            ))
+        
+        if "validation" in thought.lower():
+            phases.append(MissionPhase(
+                name="validation",
+                agents=["ArchitectureGovernor", "SafetyInspector", "TruthKeeper"],
+                dependencies=["reconnaissance"] if phases else [],
+                estimated_duration=300,
+                resources=["cpu", "llm", "file_access"],
+                parallel=True
+            ))
+        
+        return phases
+    
+    def _generate_plan_legacy(self, objective: str, cycle_id: int,
+                             priority: MissionPriority, context: Dict) -> MissionPlan:
+        """Legacy mission plan generation."""
         mission_id = f"mission-{cycle_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
 
         # Create base plan

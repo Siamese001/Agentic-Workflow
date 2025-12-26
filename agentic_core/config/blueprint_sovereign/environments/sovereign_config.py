@@ -63,6 +63,20 @@ class SovereignConfig:
     MODEL_PRICING: Dict[str, Dict[str, float]] = None  # Initialized below due to dataclass constraints
     DEFAULT_COST_MODEL: str = "gemini-2.5-flash"
     
+    # === Phase 13: MCP Integrations (Dec 26, 2025) ===
+    # Sequential Thinking MCP – L1 Cognition Enhancement
+    SEQUENTIAL_THINKING_MCP_ENABLED: bool = True
+    SEQ_THINKING_MAX_STEPS: int = 20
+    SEQ_THINKING_TEMPERATURE: float = 0.7
+    SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING: bool = True
+    SEQ_THINKING_ENABLE_SELF_REVISION: bool = True
+    SEQ_THINKING_PRUNE_LOW_CONFIDENCE: bool = True
+    SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE: float = 0.6
+    
+    # Pinecone MCP Defaults
+    PINECONE_RERANK_MODEL: str = "bge-reranker-v2-m3"
+    PINECONE_INFERENCE_MODEL: str = "multilingual-e5-large"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
