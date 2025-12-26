@@ -77,6 +77,13 @@ class SovereignConfig:
     PINECONE_RERANK_MODEL: str = "bge-reranker-v2-m3"
     PINECONE_INFERENCE_MODEL: str = "multilingual-e5-large"
     
+    # === Phase 14: Brave Search MCP (Dec 26, 2025) ===
+    BRAVE_SEARCH_MCP_ENABLED: bool = True
+    BRAVE_SEARCH_SUMMARIZE: bool = True
+    BRAVE_SEARCH_SAFE_SEARCH: str = "moderate"  # options: off, moderate, strict
+    BRAVE_SEARCH_COUNT: int = 10
+    BRAVE_SEARCH_COUNTRY: str = "US"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
