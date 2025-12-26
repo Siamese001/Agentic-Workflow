@@ -91,9 +91,13 @@ class SovereignConfig:
     KG_MCP_ENABLED: bool = True
     KG_AUTO_SYNC_ENTITIES: bool = True
     
-    # 2. DeepWiki (Codebase Intelligence)
+    # === Phase 13E: DeepWiki MCP Enhancement (Dec 26, 2025) ===
+    # L6 Codebase Intelligence
     DEEPWIKI_MCP_ENABLED: bool = True
-    DEEPWIKI_REPO_CONTEXT: str = "local"  # or 'remote' if using GitHub URL
+    # "local" implies the agent inspects the disk where it runs.
+    # Can be a GitHub URL if inspecting a remote repo.
+    DEEPWIKI_REPO_CONTEXT: str = "local"
+    DEEPWIKI_INDEX_ON_STARTUP: bool = False
     
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
