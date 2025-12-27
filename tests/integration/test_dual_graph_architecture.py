@@ -8,6 +8,7 @@ Tests the complete dual-graph brain:
 - Codebase Graph (DeepWiki MCP): Repository intelligence
 """
 import pytest
+import pytest_asyncio
 import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, Any, List
@@ -110,7 +111,7 @@ class MockSovereignDeepWikiClient:
         }
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def graph_client():
     """Create and initialize a mock graph client."""
     client = MockSovereignGraphClient()
@@ -118,7 +119,7 @@ async def graph_client():
     return client
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def deepwiki_client():
     """Create and initialize a mock DeepWiki client."""
     client = MockSovereignDeepWikiClient()

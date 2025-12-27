@@ -150,18 +150,19 @@ class AgenticCore:
     
     @patch('canon_validator_agentic_v2.GeminiClient')
     def test_mission_rollback_on_critical_failure(
-        self, mock_gemini, tmp_sovereign_workspace, healing_transaction_mock, file_hash_tracker
+        self, mock_gemini, tmp_sovereign_workspace, healing_transaction_mock
     ):
         """
         GIVEN: Healing operation fails critically
-        WHEN: Rollback is triggered
+        WHEN: Rollback triggered
         THEN: All changes reverted, original state restored
         """
         # Arrange
         critical_file = tmp_sovereign_workspace / "critical.py"
         original_content = "# Critical sovereignty code\nclass Sovereign:\n    pass\n"
         critical_file.write_text(original_content)
-        original_hash = file_hash_tracker(critical_file)
+        import hashlib
+        original_hash = hashlib.sha256(critical_file.read_bytes()).hexdigest()
         
         # Act
         healing_transaction_mock.backup(critical_file)
@@ -178,7 +179,8 @@ class AgenticCore:
             })
         
         # Assert
-        assert file_hash_tracker(critical_file) == original_hash
+        final_hash = hashlib.sha256(critical_file.read_bytes()).hexdigest()
+        assert final_hash == original_hash
         assert critical_file.read_text() == original_content
         assert healing_transaction_mock.rolled_back is True
         
