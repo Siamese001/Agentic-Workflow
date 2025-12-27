@@ -145,6 +145,7 @@ if self.violations:
 - No issues handling
 - Max fixes per cycle limiting
 - Fix generation for HTTP, Redis, Pinecone, legacy paths
+- **New:** Healing strategy tests (DirectRedis, DirectLLM, FilesystemBypass)
 - Transaction manager backup/rollback/commit
 - Context manager support
 - MCP client integration verification
@@ -152,6 +153,31 @@ if self.violations:
 **Run Tests:**
 ```bash
 pytest tests/integration/test_autonomous_healing.py -v --asyncio-mode=auto
+```
+
+---
+
+### 6. Granular Action Mapping Added ✅
+
+**File:** `agentic_core/L0_maintenance/healing/healing_engine.py`
+
+**New Execution Methods:**
+- `_exec_replace_import()`: Handles import and usage replacement for Redis violations
+- `_exec_replace_llm()`: Sophisticated LLM SDK removal with import injection
+- `_exec_replace_io()`: Replaces direct file I/O with Filesystem MCP client
+
+**Action Mapping:**
+```python
+action = issue.get("action")
+if action == "replace_import":
+    fix_successful = await self._exec_replace_import(issue)
+elif action == "replace_llm_sdk":
+    fix_successful = await self._exec_replace_llm(issue)
+elif action == "replace_io":
+    fix_successful = await self._exec_replace_io(issue)
+else:
+    # Fallback to legacy fix method
+    fix_successful = await self._apply_fix(issue)
 ```
 
 ---
