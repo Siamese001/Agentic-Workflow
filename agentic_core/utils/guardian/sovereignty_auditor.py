@@ -17,7 +17,12 @@ BANNED_IMPORTS = {
     "Vector SDKs": [r'from\s+pinecone', r'Pinecone\s*\('],
     "HTTP Clients": [r'import\s+requests', r'import\s+httpx', r'urllib\.request'],
     "Filesystem": [r'open\(', r'\.read_text\(', r'\.write_text\('],
-    "Git Operations": [r'subprocess\.run\(\[.*["\']git["\']', r'import\s+git\b'],
+    "Git Operations": [
+        r'subprocess\..*?git',  # Phase 17D: Strict Git subprocess lockdown
+        r'os\.system\(.*?git',
+        r'import\s+git\s',  # Block GitPython
+        r'from\s+git\s+import'
+    ],
 }
 
 REQUIRED_CLIENTS = [
