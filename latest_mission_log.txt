@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 11:51:47
+MISSION LOG - 2025-12-27 12:11:10
 ================================================================================
-COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-DIRECTORY: C:\Git
-EXIT CODE: 
+COMMAND: Remove-Item -Recurse -Force .pytest_cache, tests/__pycache__, tests/unit/__pycache__, agentic_core/__pycache__ -ErrorAction SilentlyContinue; pytest tests/unit/test_agentic_core_domain_models.py::TestAgenticCoreModel::test_agentic_core_initialization -v --tb=short 2>&1 | Select-String -Pattern "FAILED|assert|ModuleNotFoundError" | Select-Object -First 5
+DIRECTORY: C:\Git\Agentic-Workflow
+EXIT CODE: 1
 ================================================================================
 

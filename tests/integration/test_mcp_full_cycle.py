@@ -6,9 +6,10 @@ Tests the complete flow: L1 Request -> L3 Router -> L5 Shield -> L2 MCP
 without mocking internal logic (only external network calls).
 """
 import pytest
+import pytest_asyncio
 import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 # Mock imports for testing
@@ -68,7 +69,7 @@ class MockSovereignMCPRouter:
             await self.manager.cleanup()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def router():
     """Create and initialize a mock router."""
     router = MockSovereignMCPRouter(role="web_research")

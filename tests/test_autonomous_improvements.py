@@ -404,6 +404,8 @@ class TestAutonomousCheckpointManager:
     @pytest.fixture
     def temp_test_file(self, temp_checkpoint_dir):
         """Create temporary test file."""
+        # Ensure directory exists
+        os.makedirs(temp_checkpoint_dir, exist_ok=True)
         test_file = os.path.join(temp_checkpoint_dir, "test.py")
         with open(test_file, 'w') as f:
             f.write("# Test content\nprint('hello')\n")

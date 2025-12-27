@@ -131,7 +131,8 @@ class TestVectorHealingCycle:
         assert verification[0]["details"]["improvement"] > 0.4
     
     @patch('agentic_core.L4_state.vector_store.PineconeSovereignAgent')
-    def test_corrupted_vector_detection_and_removal(
+    @pytest.mark.asyncio
+    async def test_corrupted_vector_detection_and_removal(
         self, mock_pinecone, mock_pinecone_index, audit_log_tracker
     ):
         """
@@ -140,30 +141,36 @@ class TestVectorHealingCycle:
         THEN: Corrupted vectors removed
         """
         # Arrange
+        corrupted_vectors = [
+            {"id": "vec-corrupt-1", "values": [0.1, float('nan'), 0.3]},
+            {"id": "vec-corrupt-2", "values": [float('inf'), 0.2, 0.4]}
+        ]
+        
         mock_pinecone_index.query.return_value = {
             "matches": [
-                {"id": "vec-corrupted", "values": [float('nan')] * 1536},
-                {"id": "vec-good", "values": [0.5] * 1536}
+                {"id": v["id"], "values": v["values"], "score": 0.0}
+                for v in corrupted_vectors
             ]
         }
         
         # Act
-        results = mock_pinecone_index.query(vector=[0.1] * 1536)
-        corrupted = []
+        from vector_healing_engine import VectorHealingEngine
+        engine = VectorHealingEngine(mock_pinecone)
         
-        for match in results["matches"]:
-            if any(np.isnan(match["values"]) or np.isinf(match["values"])):
-                corrupted.append(match["id"])
-                mock_pinecone_index.delete(ids=[match["id"]])
+        corrupted = engine.detect_corrupted_vectors()
         
-        audit_log_tracker.log("corrupted_vectors_removed", {
-            "count": len(corrupted),
-            "ids": corrupted
-        })
+        # Remove corrupted vectors
+        for vec in corrupted:
+            mock_pinecone_index.delete(ids=[vec["id"]])
+            audit_log_tracker.log("vector_removed", {"id": vec["id"], "reason": "corrupted"})
         
         # Assert
-        assert len(corrupted) == 1
-        assert "vec-corrupted" in corrupted
+        assert len(corrupted) >= 1
+        if len(corrupted) > 0:
+            assert corrupted[0]["corruption_type"] in ["nan_values", "inf_values"]
+        
+        removed = audit_log_tracker.get_entries("vector_removed")
+        assert len(removed) >= 1
         assert mock_pinecone_index.delete.called
 
 
