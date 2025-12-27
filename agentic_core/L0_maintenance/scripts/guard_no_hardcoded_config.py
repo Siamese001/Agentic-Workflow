@@ -99,6 +99,31 @@ def check_file(filepath: Path) -> bool:
             line_no = content[:match.start()].count('\n') + 1
             violations.append((line_no, desc, "Use get_filesystem_client() from agentic_core.L0_maintenance.filesystem_mcp_client"))
     
+    # Check 7: Phase 16D - Block direct git operations
+    git_patterns = [
+        (r'subprocess\.run\(\[.*["\']git["\']', "Direct git subprocess call"),
+        (r'os\.system\(["\']git', "Direct git os.system() call"),
+        (r'\bimport\s+git\b', "Direct gitpython import"),
+        (r'\bfrom\s+git\s+import\b', "Direct gitpython import"),
+        (r'\bimport\s+pygit2\b', "Direct pygit2 import"),
+    ]
+    for pattern, desc in git_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_git_client() from agentic_core.L0_maintenance.gitkraken_mcp_client"))
+    
+    # Check 8: Phase 16F - Block legacy Pinecone SDK
+    pinecone_patterns = [
+        (r'\bfrom\s+pinecone\s+import\b', "Direct pinecone import"),
+        (r'\bPinecone\s*\(', "Direct Pinecone() instantiation"),
+        (r'\.Index\s*\(', "Direct pc.Index() call"),
+        (r'["\']sovereign-territory-index["\']', "Hardcoded index name"),
+    ]
+    for pattern, desc in pinecone_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client"))
+    
     if violations:
         print(f"\n❌ {filepath.name}:")
         for line_no, issue, fix in violations[:5]:  # Limit to first 5
