@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 06:31:08
+MISSION LOG - 2025-12-27 06:35:45
 ================================================================================
-COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
-DIRECTORY: C:\Git
-EXIT CODE: 
+COMMAND: pytest tests/ --collect-only -q 2>&1 | Select-Object -Last 100
+DIRECTORY: C:\Git\Agentic-Workflow
+EXIT CODE: 3
 ================================================================================
 

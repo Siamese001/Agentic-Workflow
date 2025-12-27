@@ -6,13 +6,13 @@ import logging
 import os
 import sys
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 # Add project to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-LOGGER.INFO("=" * 60)
+logger.info("=" * 60)
 logger.info("MCP Installation Verification")
-LOGGER.INFO("=" * 60)
+logger.info("=" * 60)
 logger.info("")
 
 # Test 1: Node.js Installation
@@ -20,7 +20,7 @@ logger.info("1. Testing Node.js installation...")
 try:
     import subprocess
 
-    RESULT = subprocess.run(
+    result = subprocess.run(
         [r"C:\Program Files\nodejs\node.exe", "--version"], capture_output=True, text=True
     )
     if result.returncode == 0:
