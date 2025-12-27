@@ -24,6 +24,9 @@ except ImportError:
     exit(1)
 
 
+import pytest
+
+@pytest.mark.asyncio
 async def test_no_tool_calling() -> bool:
     """
     Tests that configuring a chat session with `tools=[]` successfully
