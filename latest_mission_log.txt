@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 10:27:59
+MISSION LOG - 2025-12-27 11:25:35
 ================================================================================
-COMMAND: cd c:\Git\Agentic-Workflow; pytest tests/ --collect-only -q 2>&1 | Select-Object -Last 5
+COMMAND: pytest tests/integration/test_healing_transaction_atomicity.py tests/integration/test_zero_loss_fission_merge.py tests/integration/test_concurrent_healing_merge.py tests/integration/test_sovereign_merge_conflict_resolution.py -v --tb=no -q
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 2
+EXIT CODE: 1
 ================================================================================
 

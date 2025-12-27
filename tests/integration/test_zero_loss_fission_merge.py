@@ -21,8 +21,8 @@ class TestZeroLossFissionMerge:
         """
         # Arrange
         large_file = tmp_sovereign_workspace / "monolith.py"
-        content = "# Large file\n" + ("class Model{}:\n    pass\n\n".format(i) for i in range(3000))
-        large_file.write_text("".join(content))
+        content = "# Large file\n" + "".join([f"class Model{i}:\n    pass\n\n" for i in range(3000)])
+        large_file.write_text(content)
         
         # Act
         line_count = len(large_file.read_text().splitlines())
@@ -32,7 +32,8 @@ class TestZeroLossFissionMerge:
         assert should_trigger is False  # 3000 classes * 3 lines = 9000 < 10000
         
         # Add more to trigger
-        large_file.write_text(large_file.read_text() + "\n" + ("def util{}():\n    pass\n\n".format(i) for i in range(500)))
+        additional_content = "".join([f"def util{i}():\n    pass\n\n" for i in range(500)])
+        large_file.write_text(large_file.read_text() + "\n" + additional_content)
         line_count = len(large_file.read_text().splitlines())
         assert line_count > fission_blueprint["trigger_threshold"]
     
@@ -203,8 +204,8 @@ def compute_total(values):
         """
         # Arrange
         large_file = tmp_sovereign_workspace / f"large_{file_size_loc}.py"
-        lines_per_class = 5
-        num_classes = file_size_loc // lines_per_class
+        # Generate enough classes to reach target LOC (4 lines per class)
+        num_classes = (file_size_loc // 4) + 1
         
         content = "".join([
             f"class Class{i}:\n    def method(self):\n        return {i}\n\n"
@@ -217,7 +218,8 @@ def compute_total(values):
         expected_modules = (num_classes // classes_per_module) + 1
         
         # Assert
-        assert len(large_file.read_text().splitlines()) >= file_size_loc
+        actual_lines = len(large_file.read_text().splitlines())
+        assert actual_lines >= file_size_loc, f"Expected >={file_size_loc} lines, got {actual_lines}"
         assert expected_modules >= 2  # Should split into at least 2 modules
     
     def test_fission_preserves_docstrings_and_comments(

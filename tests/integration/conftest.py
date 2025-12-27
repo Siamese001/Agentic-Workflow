@@ -3,8 +3,9 @@ import hashlib
 import json
 import tempfile
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, List
 from unittest.mock import Mock, MagicMock
+from contextlib import contextmanager
 import pytest
 
 
@@ -16,9 +17,9 @@ def tmp_sovereign_workspace(tmp_path):
     
     # Create canonical structure
     (workspace / "agentic_core").mkdir()
-    (workspace / "agentic_core" / "L1_cognition").mkdir()
-    (workspace / "agentic_core" / "L2_execution").mkdir()
-    (workspace / "agentic_core" / "L3_orchestration").mkdir()
+    (workspace / "agentic_core" / "L1_cognition").mkdir(parents=True)
+    (workspace / "agentic_core" / "L2_execution").mkdir(parents=True)
+    (workspace / "agentic_core" / "L3_orchestration").mkdir(parents=True)
     (workspace / "schemas").mkdir()
     (workspace / "data").mkdir()
     
@@ -27,13 +28,33 @@ def tmp_sovereign_workspace(tmp_path):
 
 @pytest.fixture
 def file_hash_tracker():
-    """Track file content hashes for zero-loss verification."""
+    """Track file content hashes for zero-loss verification with context manager support."""
+    @contextmanager
+    def _track_before_after(paths: List[Path]):
+        """Context manager to verify files unchanged after operations."""
+        def _hash_file(path: Path) -> str:
+            # Handle non-existent files gracefully for creation tests
+            if not path.exists():
+                return "NON_EXISTENT"
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+        
+        before = {p: _hash_file(p) for p in paths}
+        yield
+        after = {p: _hash_file(p) for p in paths}
+        
+        # Explicit delta reporting for easier debugging
+        if before != after:
+            diff = {k: (before.get(k), after.get(k)) for k in before.keys() | after.keys() if before.get(k) != after.get(k)}
+            pytest.fail(f"Zero-loss violation! State changed unexpectedly. Diff: {diff}")
+    
+    # Also provide simple hash function for direct use
     def compute_hash(file_path: Path) -> str:
         """Compute SHA256 hash of file content."""
         if not file_path.exists():
             return None
         return hashlib.sha256(file_path.read_bytes()).hexdigest()
     
+    compute_hash.track = _track_before_after
     return compute_hash
 
 

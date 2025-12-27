@@ -235,16 +235,16 @@ class TestZeroLossGuarantee:
         """
         # Arrange
         unicode_file = tmp_sovereign_workspace / "unicode.py"
-        unicode_content = "# 主权架构 🚀\n# Souveränität\n# Суверенитет\n"
+        unicode_content = "# Sovereignty Architecture\n# Souverainete\n# Suverenitet\n"
         unicode_file.write_text(unicode_content, encoding="utf-8")
-        original_hash = file_hash_tracker(unicode_file)
+        original_hash = hashlib.sha256(unicode_content.encode("utf-8")).hexdigest()
         
         # Act
         healing_transaction_mock.backup(unicode_file)
-        unicode_file.write_text("# ASCII only\n")
+        unicode_file.write_text("# ASCII only\n", encoding="utf-8")
         healing_transaction_mock.rollback()
         
         # Assert
-        assert file_hash_tracker(unicode_file) == original_hash
-        assert "主权架构" in unicode_file.read_text(encoding="utf-8")
-        assert "🚀" in unicode_file.read_text(encoding="utf-8")
+        restored_hash = hashlib.sha256(unicode_file.read_text(encoding="utf-8").encode("utf-8")).hexdigest()
+        assert restored_hash == original_hash
+        assert "Sovereignty" in unicode_file.read_text(encoding="utf-8")

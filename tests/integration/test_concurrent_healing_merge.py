@@ -173,6 +173,75 @@ class TestConcurrentMergeConflicts:
         assert "Writer 2" in target_file.read_text()
         assert "Writer 1" not in target_file.read_text()
     
+    def test_healing_convergence_under_race(
+        self, tmp_sovereign_workspace, concurrent_lock_manager, file_hash_tracker
+    ):
+        """
+        GIVEN: Two threads writing conflicting "fixes" to the same file
+        WHEN: Lock manager coordinates access
+        THEN: System converges to deterministic state (A or B, never corrupted mix)
+        """
+        # Arrange
+        target_file = tmp_sovereign_workspace / "race_target.py"
+        original_content = "class Original:\n    value = 0\n"
+        target_file.write_text(original_content)
+        
+        fix_a_content = "class Original:\n    value = 1  # Fix A\n"
+        fix_b_content = "class Original:\n    value = 2  # Fix B\n"
+        
+        results = {"fix_a_applied": False, "fix_b_applied": False}
+        
+        def apply_fix_a():
+            resource_id = str(target_file)
+            if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
+                try:
+                    time.sleep(0.05)  # Simulate work
+                    target_file.write_text(fix_a_content)
+                    results["fix_a_applied"] = True
+                finally:
+                    concurrent_lock_manager.release(resource_id)
+        
+        def apply_fix_b():
+            time.sleep(0.01)  # Start slightly after A
+            resource_id = str(target_file)
+            if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
+                try:
+                    time.sleep(0.05)  # Simulate work
+                    target_file.write_text(fix_b_content)
+                    results["fix_b_applied"] = True
+                finally:
+                    concurrent_lock_manager.release(resource_id)
+        
+        # Act
+        thread_a = threading.Thread(target=apply_fix_a)
+        thread_b = threading.Thread(target=apply_fix_b)
+        
+        thread_a.start()
+        thread_b.start()
+        
+        thread_a.join(timeout=5.0)
+        thread_b.join(timeout=5.0)
+        
+        # Assert - Convergence to deterministic state
+        final_content = target_file.read_text()
+        final_hash = file_hash_tracker(target_file)
+        
+        # Must be exactly one of the two valid states, never a mix
+        is_state_a = final_content == fix_a_content
+        is_state_b = final_content == fix_b_content
+        is_corrupted = not (is_state_a or is_state_b)
+        
+        assert not is_corrupted, f"CONVERGENCE FAILURE: File in corrupted state: {final_content}"
+        assert is_state_a or is_state_b, "Must converge to exactly one valid state"
+        
+        # Both fixes should have been applied (serially)
+        assert results["fix_a_applied"] is True
+        assert results["fix_b_applied"] is True
+        
+        # Final state should be deterministic (last writer wins in serial execution)
+        assert is_state_b, "With lock coordination, Fix B should win (applied second)"
+        assert "Fix B" in final_content
+    
     def test_coordinated_merge_preserves_all_changes(
         self, tmp_sovereign_workspace, concurrent_lock_manager
     ):
