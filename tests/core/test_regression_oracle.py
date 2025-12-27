@@ -1,4 +1,3 @@
-```python
 import asyncio
 import logging
 import sys
@@ -214,4 +213,3 @@ async def test_orchestrator_integration() -> None:
 if __name__ == '__main__':
     asyncio.run(test_regression_oracle())
     asyncio.run(test_orchestrator_integration())
-```

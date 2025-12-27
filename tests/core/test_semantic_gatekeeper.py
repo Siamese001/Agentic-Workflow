@@ -24,10 +24,10 @@ def test_redis_connection():
         # print("✅ Redis connection successful")  # [Security Fix]
         return gatekeeper
     except Exception as e:
-pass
-pass
-pass
-# print(f"❌ Redis connection failed: {e}")  # [Security Fix]
+        pass
+        pass
+        pass
+        # print(f"❌ Redis connection failed: {e}")  # [Security Fix]
         return None
 
 
@@ -160,4 +160,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

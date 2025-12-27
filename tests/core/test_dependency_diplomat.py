@@ -1,4 +1,3 @@
-```python
 """
 Test script for Dependency Diplomat integration.
 
@@ -123,4 +122,3 @@ async def test_dependency_diplomat():
 
 if __name__ == "__main__":
     asyncio.run(test_dependency_diplomat())
-```

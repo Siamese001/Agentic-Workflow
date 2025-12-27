@@ -1,4 +1,3 @@
-```python
 #!/usr/bin/env python3
 """
 Test that AFC loop is fixed - model should NOT call tools.
@@ -121,5 +120,3 @@ if __name__ == "__main__":
             "\n❌ AFC loop fix failed: Tools might still be called, "
             "or an unexpected error occurred during the test."
         )
-
-```

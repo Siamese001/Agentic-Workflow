@@ -64,7 +64,7 @@ def test_news_rag_pipeline():
             return False
 
     except Exception as e:
-logger.error(f"❌ News RAG pipeline test failed: {e}")
+        logger.error(f"❌ News RAG pipeline test failed: {e}")
         return False
 
 
@@ -123,7 +123,7 @@ def test_news_rag_caching():
             return False
 
     except Exception as e:
-logger.error(f"❌ News RAG caching test failed: {e}")
+        logger.error(f"❌ News RAG caching test failed: {e}")
         return False
 
 
@@ -188,7 +188,7 @@ def test_news_rag_outreach_integration():
             return False
 
     except Exception as e:
-logger.error(f"❌ News RAG outreach integration test failed: {e}")
+        logger.error(f"❌ News RAG outreach integration test failed: {e}")
         return False
 
 
@@ -241,7 +241,7 @@ def test_news_rag_error_handling():
             return False
 
     except Exception as e:
-logger.error(f"❌ News RAG error handling test failed: {e}")
+        logger.error(f"❌ News RAG error handling test failed: {e}")
         return False
 
 
@@ -308,7 +308,7 @@ def test_news_rag_personalization_quality():
             return False
 
     except Exception as e:
-logger.error(f"❌ Personalization quality test failed: {e}")
+        logger.error(f"❌ Personalization quality test failed: {e}")
         return False
 
 
@@ -362,4 +362,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-
