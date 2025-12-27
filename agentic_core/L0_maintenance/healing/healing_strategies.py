@@ -243,8 +243,88 @@ class ObservabilityHealing(HealingStrategy):
         return fixes
 
 
+class DirectRedisHealing(HealingStrategy):
+    """Fixes direct redis-py usage — replaces with SovereignRedisMCPClient"""
+    
+    def __init__(self):
+        super().__init__("DirectRedis", priority=1)
+    
+    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+        fixes = []
+        for issue in issues:
+            desc = issue.get("description", "").lower()
+            message = issue.get("message", "").lower()
+            if "redis" in desc or "redis" in message or "import redis" in desc:
+                fixes.append({
+                    "action": "replace_import",
+                    "file": issue["file"],
+                    "old_import": r"import\s+redis|from\s+redis\s+import.*",
+                    "new_import": "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client",
+                    "old_usage": r"redis\.Redis\(.*?\)",
+                    "new_usage": "get_redis_client()",
+                    "reason": "Direct redis-py usage — sovereignty breach",
+                    "priority": self.priority,
+                    "strategy": self.name
+                })
+        return fixes
+
+
+class DirectLLMHealing(HealingStrategy):
+    """Fixes direct OpenAI/Anthropic calls — routes through LLM Router MCP"""
+    
+    def __init__(self):
+        super().__init__("DirectLLM", priority=1)
+    
+    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+        fixes = []
+        for issue in issues:
+            desc = issue.get("description", "").lower()
+            message = issue.get("message", "").lower()
+            if any(sdk in desc or sdk in message for sdk in ["openai", "anthropic"]):
+                sdk_name = "OpenAI" if "openai" in desc or "openai" in message else "Anthropic"
+                fixes.append({
+                    "action": "replace_llm_sdk",
+                    "file": issue["file"],
+                    "sdk": sdk_name,
+                    "new_client": "get_llm_router_client()",
+                    "import_path": "from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
+                    "reason": "Direct LLM SDK call — bypasses L5 shield",
+                    "priority": self.priority,
+                    "strategy": self.name
+                })
+        return fixes
+
+
+class FilesystemBypassHealing(HealingStrategy):
+    """Fixes direct file I/O — routes through Filesystem MCP"""
+    
+    def __init__(self):
+        super().__init__("FilesystemBypass", priority=2)
+    
+    async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+        fixes = []
+        for issue in issues:
+            desc = issue.get("description", "")
+            message = issue.get("message", "")
+            if any(pattern in desc or pattern in message for pattern in ["Path(", "open(", "os.", "shutil."]):
+                fixes.append({
+                    "action": "replace_io",
+                    "file": issue["file"],
+                    "operation": desc,
+                    "new_client": "get_filesystem_client()",
+                    "import_path": "from agentic_core.L0_maintenance.filesystem_mcp_client import get_filesystem_client",
+                    "reason": "Direct file I/O — bypasses L5 validation",
+                    "priority": self.priority,
+                    "strategy": self.name
+                })
+        return fixes
+
+
 # Registry of all available healing strategies
 HEALING_STRATEGIES = [
+    DirectRedisHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
+    DirectLLMHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
+    FilesystemBypassHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
