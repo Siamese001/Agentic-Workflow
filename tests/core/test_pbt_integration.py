@@ -177,10 +177,10 @@ def cleanup_test_files():
 # L5 PBT TESTS - Generation Trigger
 # ==============================================================================
 
-@pytest.mark.skip(reason="PBT generation trigger mock issues")
 class TestPBTGenerationTrigger:
     """Verifies TestPilot triggers property generation for modified files."""
 
+    @pytest.mark.skip(reason="PBT generation trigger - file size check prevents resilient_mutation call")
     @pytest.mark.asyncio
     async def test_pbt_generation_trigger(self, cleanup_test_files):
         """Verifies TestPilot triggers property generation for modified files."""
