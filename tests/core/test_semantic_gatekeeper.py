@@ -86,8 +86,7 @@ def test_safety_gate(gatekeeper, safe_action, dangerous_action):
     new_dangerous = "Refactor 100+ files in single operation"
     # print(f"Testing new dangerous action: {new_dangerous}")  # [Security Fix]
     is_safe = gatekeeper.consult_canon(new_dangerous)
-    # print(  # [Security Fix]
-        f"✅ New dangerous action result: {'ALLOWED' if is_safe else 'BLOCKED'}")
+    # print(f"✅ New dangerous action result: {'ALLOWED' if is_safe else 'BLOCKED'}")  # [Security Fix]
 
 
 def test_vector_search(gatekeeper):
