@@ -121,6 +121,7 @@ async def ctx(temp_stream_dir):
 # L5 STREAMER TESTS - Non-Blocking Integrity
 # ==============================================================================
 
+@pytest.mark.usefixtures("disable_path_shield")
 class TestStreamerNonBlockingIntegrity:
     """Verifies the streamer writes to JSONL without blocking the main thread."""
 
@@ -199,6 +200,7 @@ class TestStreamerNonBlockingIntegrity:
 # L5 STREAMER TESTS - Stress Load Handling
 # ==============================================================================
 
+@pytest.mark.usefixtures("disable_path_shield")
 class TestStreamerStressLoad:
     """Ensures the streamer handles high-frequency message bursts."""
 

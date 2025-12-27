@@ -183,6 +183,7 @@ class TestToolsmithActivationLogic:
 # L5 TOOLSMITH TESTS - Script Creation
 # ==============================================================================
 
+@pytest.mark.usefixtures("disable_path_shield")
 class TestToolsmithScriptCreation:
     """Verifies Toolsmith creates valid diagnostic scripts."""
 

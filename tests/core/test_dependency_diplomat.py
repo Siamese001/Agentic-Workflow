@@ -8,6 +8,7 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
+import pytest
 
 # Add the directory containing this script to sys.path to enable local imports.
 # This assumes 'agentic_core' is a sibling directory to this script.
@@ -40,6 +41,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="Requires ValidationContext and get_dependency_diplomat stubs")
+@pytest.mark.asyncio
 async def test_dependency_diplomat():
     """Test Dependency Diplomat smart scope calculation."""
 

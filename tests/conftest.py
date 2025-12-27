@@ -26,12 +26,21 @@ def stub_environment_warning():
         UserWarning
     )
 
+@pytest.fixture
+def disable_path_shield():
+    """Marker fixture to disable path_shield for specific tests."""
+    pass
+
 @pytest.fixture(autouse=True)
-def path_shield(monkeypatch):
+def path_shield(request, monkeypatch):
     """
     Sovereign Path Shield v2:
     Satisfies existence checks and provide stub content for all fixture/mock paths.
     """
+    # Skip path_shield if test is marked with disable_path_shield
+    if "disable_path_shield" in request.fixturenames:
+        return
+    
     import json
     
     fixture_keywords = [
@@ -40,12 +49,26 @@ def path_shield(monkeypatch):
         ".json", ".yaml", ".yml", ".ini", ".pdf", ".txt"
     ]
 
+    # Exclusion patterns for real test files that should not be mocked
+    exclusion_patterns = ["live_stream.jsonl", "tmp", "temp", "checkpoint", "test.py", "patterns.json", "rules.json"]
+    
+    # Save original functions before patching
+    original_exists = os.path.exists
+    original_isfile = os.path.isfile
+    original_open = builtins.open
+    
     def mock_exists(path):
         path_str = str(path).lower()
+        # Exclude real test files from mocking
+        if any(excl in path_str for excl in exclusion_patterns):
+            return original_exists(str(path))
         return any(kw in path_str for kw in fixture_keywords)
 
     def mock_open_wrapper(file, *args, **kwargs):
         file_str = str(file).lower()
+        # Exclude real test files from path shield
+        if any(excl in file_str for excl in exclusion_patterns):
+            return original_open(file, *args, **kwargs)
         if any(kw in file_str for kw in fixture_keywords):
             # Deterministic stub data to satisfy L4/L5 parsing
             stub_data = json.dumps({
@@ -54,7 +77,7 @@ def path_shield(monkeypatch):
                 "objective": "stub_objective"
             })
             return mock_open(read_data=stub_data)(file, *args, **kwargs)
-        return builtins.open(file, *args, **kwargs)
+        return original_open(file, *args, **kwargs)
 
     monkeypatch.setattr(os.path, "exists", mock_exists)
     monkeypatch.setattr(os.path, "isfile", mock_exists)
