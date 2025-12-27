@@ -6,7 +6,7 @@ import google.generativeai as genai
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 if not API_KEY:
     # print("❌ GOOGLE_API_KEY not found")  # [Security Fix]
-    exit(1)
+    pass  # Allow pytest collection even without API key
 
 genai.configure(api_key=API_KEY)
 
