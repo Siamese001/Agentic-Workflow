@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-27 06:51:16
+MISSION LOG - 2025-12-27 06:53:33
 ================================================================================
-COMMAND: pytest tests/core tests/integration tests/unit --collect-only -q 2>&1 | Select-Object -Last 15
+COMMAND: pytest tests/core tests/integration tests/unit --collect-only -q 2>&1 | Select-Object -Last 20
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 2
 ================================================================================
