@@ -132,6 +132,12 @@ class SovereignConfig:
     FILESYSTEM_ALLOWED_ROOTS: List[str] = None  # Will be set in __post_init__
     FILESYSTEM_FORBIDDEN_PATTERNS: List[str] = None  # Will be set in __post_init__
     
+    # === Phase 16D: GitKraken MCP – Sovereign Version Control (Dec 27, 2025) ===
+    GITKRAKEN_MCP_ENABLED: bool = True
+    GITKRAKEN_DEFAULT_REPO: str = "xai/sovereign-canon"
+    GITKRAKEN_HEALING_BRANCH: str = "sovereign-healing"
+    GITKRAKEN_PR_TITLE_PREFIX: str = "[SOVEREIGN HEALING]"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
