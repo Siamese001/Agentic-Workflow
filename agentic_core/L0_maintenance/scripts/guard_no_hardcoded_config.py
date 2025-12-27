@@ -124,6 +124,33 @@ def check_file(filepath: Path) -> bool:
             line_no = content[:match.start()].count('\n') + 1
             violations.append((line_no, desc, "Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client"))
     
+    # Check 9: Phase 16G - Block direct HTTP clients
+    http_patterns = [
+        (r'\bimport\s+requests\b', "Direct requests import"),
+        (r'\bimport\s+httpx\b', "Direct httpx import"),
+        (r'\bimport\s+urllib\b', "Direct urllib import"),
+        (r'\brequests\.(get|post|put|delete|patch)\s*\(', "Direct requests HTTP call"),
+        (r'\bhttpx\.(get|post|put|delete|patch|AsyncClient)\s*\(', "Direct httpx HTTP call"),
+    ]
+    for pattern, desc in http_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client"))
+    
+    # Check 10: Phase 16H - Full subprocess and structural lockdown
+    lockdown_patterns = [
+        (r'\bsubprocess\.call\s*\(', "Direct subprocess.call() usage"),
+        (r'\bos\.popen\s*\(', "Direct os.popen() usage"),
+        (r'agentic_core/tools/', "Legacy 'tools/' path usage"),
+    ]
+    for pattern, desc in lockdown_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            if "Legacy 'tools/' path" in desc:
+                violations.append((line_no, desc, "Use 'agentic_core/utils/' or appropriate layer path"))
+            else:
+                violations.append((line_no, desc, "Use appropriate MCP client or approved subprocess wrapper"))
+    
     if violations:
         print(f"\n❌ {filepath.name}:")
         for line_no, issue, fix in violations[:5]:  # Limit to first 5
