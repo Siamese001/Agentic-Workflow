@@ -58,6 +58,18 @@ def check_file(filepath: Path) -> bool:
             line_no = content[:match.start()].count('\n') + 1
             violations.append((line_no, f"Hardcoded path: {match.group()}", "Use config.BASE_GIT_PATH or config.ROOT_DIR"))
     
+    # Check 4: Phase 16A - Block direct Redis usage
+    redis_patterns = [
+        (r'\bimport\s+redis\b', "Direct redis import"),
+        (r'\bfrom\s+redis\s+import\b', "Direct redis import"),
+        (r'\bRedis\s*\(', "Direct Redis() instantiation"),
+        (r'redis://', "Direct redis:// connection string"),
+    ]
+    for pattern, desc in redis_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client"))
+    
     if violations:
         print(f"\n❌ {filepath.name}:")
         for line_no, issue, fix in violations[:5]:  # Limit to first 5
