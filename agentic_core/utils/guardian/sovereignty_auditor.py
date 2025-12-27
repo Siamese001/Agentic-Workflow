@@ -23,6 +23,11 @@ BANNED_IMPORTS = {
         r'import\s+git\s',  # Block GitPython
         r'from\s+git\s+import'
     ],
+    "MCP Manager": [
+        r'from\s+.*L2_execution.*mcp_manager',  # Phase 16E: Block duplicate/relative MCP manager imports
+        r'from\s+.*P1_core.*mcp_manager',
+        r'from\s+\.mcp_manager\s+import'
+    ],
 }
 
 REQUIRED_CLIENTS = [
