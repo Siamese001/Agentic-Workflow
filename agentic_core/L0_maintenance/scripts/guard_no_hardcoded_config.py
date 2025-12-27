@@ -70,6 +70,35 @@ def check_file(filepath: Path) -> bool:
             line_no = content[:match.start()].count('\n') + 1
             violations.append((line_no, desc, "Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client"))
     
+    # Check 5: Phase 16B - Block direct LLM SDK usage
+    llm_sdk_patterns = [
+        (r'\bimport\s+openai\b', "Direct openai import"),
+        (r'\bfrom\s+openai\s+import\b', "Direct openai import"),
+        (r'\bimport\s+anthropic\b', "Direct anthropic import"),
+        (r'\bfrom\s+anthropic\s+import\b', "Direct anthropic import"),
+        (r'\bimport\s+google\.generativeai\b', "Direct google.generativeai import"),
+        (r'\bgenai\.GenerativeModel\b', "Direct genai.GenerativeModel usage"),
+    ]
+    for pattern, desc in llm_sdk_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_llm_router_client() from agentic_core.L5_safety.guardrails.llm_router_mcp_client"))
+    
+    # Check 6: Phase 16C - Block direct filesystem I/O
+    filesystem_patterns = [
+        (r'\bopen\s*\(', "Direct open() call"),
+        (r'\.read_text\(', "Direct Path.read_text() call"),
+        (r'\.write_text\(', "Direct Path.write_text() call"),
+        (r'\bos\.remove\(', "Direct os.remove() call"),
+        (r'\bos\.rename\(', "Direct os.rename() call"),
+        (r'\bshutil\.move\(', "Direct shutil.move() call"),
+        (r'\bshutil\.rmtree\(', "Direct shutil.rmtree() call"),
+    ]
+    for pattern, desc in filesystem_patterns:
+        for match in re.finditer(pattern, content):
+            line_no = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, "Use get_filesystem_client() from agentic_core.L0_maintenance.filesystem_mcp_client"))
+    
     if violations:
         print(f"\n❌ {filepath.name}:")
         for line_no, issue, fix in violations[:5]:  # Limit to first 5

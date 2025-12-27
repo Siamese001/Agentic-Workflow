@@ -29,12 +29,12 @@ class RedSentinel:
     def __init__(self, llm_client=None):
         """
         Initialize the RedSentinel agent.
+        Phase 16B: Uses LLM Router MCP for hostile input generation.
 
         Args:
-            llm_client: LLM client for generating hostile inputs
+            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP)
         """
         self.llm_client = llm_client
-        self.api_key = os.getenv("GOOGLE_API_KEY")
         self.enabled = os.getenv("ENABLE_FUZZ", "false").lower() == "true"
 
         # Audit log path
@@ -110,6 +110,7 @@ class RedSentinel:
     async def _generate_hostile_inputs(self, func_name: str, func_code: str) -> List[Dict[str, Any]]:
         """
         Generate 5 hostile inputs for a function.
+        Phase 16B: Uses LLM Router MCP instead of direct google.generativeai.
 
         Args:
             func_name: Name of the function
@@ -118,21 +119,11 @@ class RedSentinel:
         Returns:
             List of hostile input dictionaries
         """
-        if not self.api_key:
-            # Return basic hostile inputs without LLM
-            return [
-                {"type": "null_input", "value": None},
-                {"type": "empty_string", "value": ""},
-                {"type": "buffer_overflow", "value": "A" * 10000},
-                {"type": "special_chars", "value": "\x00\x01\x02\x03"},
-                {"type": "negative_number", "value": -999999999}
-            ]
-
         try:
-            import google.generativeai as genai
-
-            genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel('gemini-pro')
+            # Use LLM Router MCP (Phase 16B)
+            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            
+            llm_router = get_llm_router_client()
 
             prompt = f"""
 Generate 5 hostile test inputs for this function to test robustness:
@@ -158,19 +149,26 @@ Return as JSON array:
 ]
 """
 
-            response = model.generate_content(prompt)
+            # Get response from LLM Router MCP
+            result_dict = await llm_router.validate_content(prompt, validation_type="red_team")
+            
+            # Extract response from MCP result
+            if isinstance(result_dict, dict):
+                response_text = result_dict.get("response", result_dict.get("reason", ""))
+            else:
+                response_text = str(result_dict)
 
             # Parse JSON response
             try:
-                inputs = json.loads(response.text)
+                inputs = json.loads(response_text)
                 return inputs[:5]  # Ensure only 5 inputs
             except json.JSONDecodeError:
                 # Fallback to manual parsing
-                LOGGER.warning("Failed to parse LLM response, using defaults")
+                LOGGER.warning("Failed to parse LLM MCP response, using defaults")
                 return self._get_default_hostile_inputs()
 
         except Exception as e:
-            LOGGER.error(f"Failed to generate hostile inputs: {e}")
+            LOGGER.error(f"Failed to generate hostile inputs via MCP: {e}")
             return self._get_default_hostile_inputs()
 
     def _get_default_hostile_inputs(self) -> List[Dict[str, Any]]:

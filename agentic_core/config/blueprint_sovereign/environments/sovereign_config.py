@@ -4,7 +4,7 @@ Centralizes all environment variables, feature flags, and system constants.
 """
 import os
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 @dataclass(frozen=True)
 class SovereignConfig:
@@ -126,6 +126,12 @@ class SovereignConfig:
     LLM_ROUTER_VALIDATION_TEMPERATURE: float = 0.0
     LLM_ROUTER_MAX_TOKENS: int = 1024
     
+    # === Phase 16C: Filesystem MCP – Sovereign File Operations (Dec 27, 2025) ===
+    FILESYSTEM_MCP_ENABLED: bool = True
+    FILESYSTEM_MAX_READ_SIZE: int = 10_000_000  # 10MB
+    FILESYSTEM_ALLOWED_ROOTS: List[str] = None  # Will be set in __post_init__
+    FILESYSTEM_FORBIDDEN_PATTERNS: List[str] = None  # Will be set in __post_init__
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
@@ -135,6 +141,21 @@ class SovereignConfig:
             "gpt-5.1": {"input": 0.0030, "output": 0.012},  # $3.00 / $12.00 per 1M tokens (estimated)
             "claude-sonnet-4.5": {"input": 0.0035, "output": 0.018},  # $3.50 / $18.00 per 1M tokens (estimated)
         })
+        
+        # Phase 16C: Initialize filesystem allowed roots and forbidden patterns
+        object.__setattr__(self, 'FILESYSTEM_ALLOWED_ROOTS', [
+            "agentic_core",
+            "apps_shared",
+            "apps_rg",
+            "apps_lic",
+            "config"
+        ])
+        object.__setattr__(self, 'FILESYSTEM_FORBIDDEN_PATTERNS', [
+            r"\.\./",
+            r"/etc/",
+            r"/proc/",
+            r"\.env"
+        ])
     
     def validate(self):
         """Ensure critical secrets are present."""
