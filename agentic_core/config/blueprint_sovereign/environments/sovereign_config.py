@@ -113,6 +113,12 @@ class SovereignConfig:
     FETCH_EXTRACT_MARKDOWN: bool = True
     FETCH_TIMEOUT_SECONDS: int = 30
     
+    # === Phase 16A: Redis MCP – Sovereign Caching (Dec 27, 2025) ===
+    REDIS_MCP_ENABLED: bool = True
+    REDIS_DEFAULT_TTL_SECONDS: int = 3600
+    REDIS_MAX_KEY_LENGTH: int = 512
+    REDIS_CACHE_PREFIX: str = "sovereign:"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True

@@ -11,8 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import redis
-
+from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
     PineconeSovereignAgent,
 )
@@ -35,22 +34,13 @@ class SovereignSemanticCache:
         self.index_name = "canon-semantic-v1"
         self.namespace = "canon-files"
         
-        # L4 Hardened Redis Connection Pool
+        # L4 Redis MCP Client (Phase 16A)
         try:
-            url = os.getenv("REDIS_URL", "redis://localhost:6379")
-            self.redis_pool = redis.ConnectionPool.from_url(
-                url,
-                max_connections=10,
-                socket_connect_timeout=REDIS_TIMEOUT,
-                socket_timeout=REDIS_TIMEOUT,
-                retry_on_timeout=True
-            )
-            self.redis = redis.Redis(connection_pool=self.redis_pool)
-            self.redis.ping()
-            logger.info("[L4 REDIS] Sovereign local cache armed.")
+            self.redis = get_redis_client()
+            logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         except Exception as e:
-            logger.critical(f"[L4 REDIS BREACH] Local cache failed: {e}")
-            mcp_authority.record_breach(f"Redis Cache Failure: {str(e)}")
+            logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
+            mcp_authority.record_breach(f"Redis MCP Cache Failure: {str(e)}")
             self.redis = None
 
     def _cache_key(self, file_path: str) -> str:
@@ -81,12 +71,12 @@ class SovereignSemanticCache:
         """Embed and cache with dual-store synchronization."""
         key = self._cache_key(file_path)
         
-        # [L5 SHIELD] Check Redis local first for fast hit
+        # [L5 SHIELD] Check Redis MCP first for fast hit
         if self.redis:
             try:
-                cached_data = self.redis.get(key)
+                cached_data = await self.redis.get(key)
                 if cached_data:
-                    logger.info(f"[L4 HIT] Redis recall for {Path(file_path).name}")
+                    logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return # Already synced
             except Exception: pass
 
@@ -108,11 +98,11 @@ class SovereignSemanticCache:
                 }
             }
 
-            # 1. Local Redis Persistence (Fast Access)
+            # 1. Redis MCP Persistence (Fast Access)
             if self.redis:
                 entry_json = json.dumps(entry)
                 if len(entry_json.encode()) < MAX_REDIS_ENTRY_SIZE:
-                    self.redis.set(key, entry_json, ex=REDIS_CACHE_TTL)
+                    await self.redis.set(key, entry_json, ttl=REDIS_CACHE_TTL)
             
             # 2. Remote Pinecone Persistence (Eternal Truth)
             self.pinecone.upsert(
@@ -129,7 +119,7 @@ class SovereignSemanticCache:
         """Purge both stores on fission or physical move."""
         key = self._cache_key(file_path)
         if self.redis:
-            try: self.redis.delete(key)
+            try: await self.redis.delete(key)
             except: pass
         try:
             self.pinecone.delete(ids=[key], namespace=self.namespace)
