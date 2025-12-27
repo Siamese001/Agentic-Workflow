@@ -328,6 +328,8 @@ from agentic_core.L0_maintenance.healing.kg_healing_strategy import KnowledgeGra
 from agentic_core.L0_maintenance.healing.gitkraken_healing_strategy import GitKrakenHealingStrategy
 # Import Phase 17E DeepWiki Healing Strategy
 from agentic_core.L0_maintenance.healing.deepwiki_healing_strategy import DeepWikiHealingStrategy
+# Import Phase 17F L6 Audit Healing Strategy
+from agentic_core.L0_maintenance.healing.l6_audit_healing_strategy import L6AuditHealingStrategy
 
 # Registry of all available healing strategies
 HEALING_STRATEGIES = [
@@ -338,6 +340,7 @@ HEALING_STRATEGIES = [
     KnowledgeGraphHealingStrategy(),  # Phase 17C: Knowledge Map Sovereignty (Dec 27, 2025)
     GitKrakenHealingStrategy(),  # Phase 17D: Sovereign Version Control (Dec 27, 2025)
     DeepWikiHealingStrategy(),  # Phase 17E: Knowledge & Documentation Alignment (Dec 27, 2025)
+    L6AuditHealingStrategy(),  # Phase 17F: Observability Autonomy (Dec 27, 2025)
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
