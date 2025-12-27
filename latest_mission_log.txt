@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 11:51:32
+MISSION LOG - 2025-12-27 11:51:47
 ================================================================================
-COMMAND: pytest tests/unit/test_l4_cached_state_ledger.py tests/unit/test_l5_cached_safety_shield.py tests/unit/test_l3_cached_orchestrator.py -v --tb=no -q 2>&1 | Select-String -Pattern "passed|failed|ERROR|collected" | Select-Object -Last 1
-DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 2
+COMMAND: try { . "c:\Users\amita\AppData\Local\Programs\Windsurf\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+DIRECTORY: C:\Git
+EXIT CODE: 
 ================================================================================
 
