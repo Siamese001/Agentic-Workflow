@@ -90,7 +90,7 @@ def test_resume_defense_injection():
         firewall.scan_input(poisoned_input, context_name="JobDescription")
         pytest.fail("Firewall failed to block injection!")
     except SecurityException as e:
-# print(f"\n[Test 3] Firewall successfully blocked: {e}")  # [Security Fix]
+        # print(f"\n[Test 3] Firewall successfully blocked: {e}")  # [Security Fix]
         assert "ignore" in str(e).lower() and "previous instructions" in str(e).lower()
 
 # ==============================================================================
@@ -123,7 +123,7 @@ def test_resume_defense_hallucination(tmp_path):
         fact_checker.validate_skills(bad_draft)
         pytest.fail("FactChecker failed to catch 'Rust'!")
     except HallucinationException as e:
-# print(f"\n[Test 4] Truth Anchor caught hallucination: {e}")  # [Security Fix]
+        # print(f"\n[Test 4] Truth Anchor caught hallucination: {e}")  # [Security Fix]
         assert "Rust" in str(e)
 
 # ==============================================================================
@@ -169,4 +169,3 @@ if __name__ == "__main__":
 
     from pytest import main
     sys.exit(main(["-v", __file__]))
-

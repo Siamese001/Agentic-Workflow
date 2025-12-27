@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 06:35:45
+MISSION LOG - 2025-12-27 06:38:55
 ================================================================================
-COMMAND: pytest tests/ --collect-only -q 2>&1 | Select-Object -Last 100
+COMMAND: python agentic_core\utils\guardian\test_fixer_v1.py
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 3
+EXIT CODE: 0
 ================================================================================
 

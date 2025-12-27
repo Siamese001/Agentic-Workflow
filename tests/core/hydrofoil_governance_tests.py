@@ -137,8 +137,8 @@ def test_gr_r01_quota_enforcement_failover():
                 )
                 results.append(result)
             except Exception as e:
-pass
-results.append({"status": "quota_exceeded", "error": str(e)})
+                pass
+                results.append({"status": "quota_exceeded", "error": str(e)})
 
     # L3 Assertion: Cost governance enforced (simplified)
     assert cost_tracker["brave_calls"] >= 1, "L3: Brave Search not used"
@@ -198,8 +198,8 @@ def test_gr_r02_atomic_state_integrity():
         assert "ROLLBACK" not in transaction_log, "L4: Unexpected rollback"
         # print("    ✅ Transaction committed successfully")  # [Security Fix]
     except Exception as e:
-pass
-# print(f"    ❌ Unexpected failure: {e}")  # [Security Fix]
+        pass
+        # print(f"    ❌ Unexpected failure: {e}")  # [Security Fix]
 
     # Test failed transaction
     # print("  Testing failed atomic transaction...")  # [Security Fix]
@@ -214,8 +214,8 @@ pass
         tx2.exec()
         assert False, "L4: Should have raised exception"
     except Exception:
-pass
-assert "ROLLBACK" in transaction_log, "L4: Rollback not executed"
+        pass
+        assert "ROLLBACK" in transaction_log, "L4: Rollback not executed"
         assert initial_state["audit:123"] == "PENDING", "L4: Initial state changed!"
         # print("    ✅ Transaction rolled back - state preserved")  # [Security Fix]
 
@@ -320,8 +320,8 @@ def test_gr_r04_l5_logging_resilience():
         mock_local_buffer_store("audit_log", result)
 
     except Exception as e:
-pass
-# Handle L5 failure gracefully
+        pass
+        # Handle L5 failure gracefully
         result = {
             "status": "validation_completed",
             "warning": "CRITICAL LOGGING FAILURE",
@@ -367,8 +367,8 @@ def test_circuit_breaker_pattern():
             result = mock_service_call()
             results.append(result)
         except Exception as e:
-pass
-results.append(str(e))
+            pass
+            results.append(str(e))
 
     # L3/L4 Assertion: Circuit breaker protects system
     assert circuit_state["state"] == "OPEN", "L3/L4: Circuit breaker not opened"
@@ -404,8 +404,8 @@ def run_governance_audit():
             test()
             passed += 1
         except Exception as e:
-pass
-# print(f"  ❌ FAILED: {e}")  # [Security Fix]
+            pass
+            # print(f"  ❌ FAILED: {e}")  # [Security Fix]
             failed += 1
 
     # print("\n" + "="*80)  # [Security Fix]
@@ -423,4 +423,3 @@ pass
 if __name__ == "__main__":
     success = run_governance_audit()
     sys.exit(0 if success else 1)
-
