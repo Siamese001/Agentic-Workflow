@@ -151,6 +151,19 @@ class SovereignConfig:
     VECTOR_HEALING_MAX_DAILY: int = 500  # Prevent runaway healing
     VECTOR_HEALING_EMBED_MODEL: str = "multilingual-e5-large"
     
+    # === Phase 17C: Knowledge Graph Healing (Dec 27, 2025) ===
+    KNOWLEDGE_GRAPH_HEALING_ENABLED: bool = True
+    KG_HEALING_BATCH_SIZE: int = 20
+    KG_HEALING_MAX_DAILY: int = 200
+    KG_MIN_CONFIDENCE_FOR_HEALING: float = 0.7
+    KG_HEALING_RE_EXTRACT_ON_DRIFT: bool = True
+    
+    # === Phase 17E: DeepWiki Healing – Codebase Intelligence (Dec 27, 2025) ===
+    DEEPWIKI_HEALING_ENABLED: bool = True
+    DEEPWIKI_HEALING_BATCH_SIZE: int = 10
+    DEEPWIKI_HEALING_MAX_DAILY: int = 100
+    DEEPWIKI_DEFAULT_REPO: str = "xai/sovereign-canon"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
