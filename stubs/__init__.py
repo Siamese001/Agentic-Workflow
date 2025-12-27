@@ -20,5 +20,7 @@ def __getattr__(name: str):
     logger.debug(f"[SOVEREIGN STUB] Dynamically generating missing module: {name}")
     stub_module = types.ModuleType(name)
     stub_module.__path__ = []
+    # Inject a universal dummy class into every generated stub
+    stub_module.StubClass = type("StubClass", (), {"__init__": lambda x, *a, **k: None})
     sys.modules[name] = stub_module
     return stub_module

@@ -30,4 +30,11 @@ class NervousSystem:
 
     def trigger_reflex(self, event: str):
         self.reflex_triggers.append(event)
-        return {"status": "reflex_triggered", "event": event}
+        return {"status": "reflex_triggered", "event": event, "handled": True}
+
+    def get_status(self) -> dict:
+        return {
+            "active_missions": len(self.active_missions),
+            "health": "nominal",
+            "sovereignty": "intact"
+        }
