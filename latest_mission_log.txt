@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 11:33:41
+MISSION LOG - 2025-12-27 11:41:33
 ================================================================================
-COMMAND: pytest tests/ --co -q 2>&1 | Select-String -Pattern "ERROR collecting" | Select-Object -First 30
+COMMAND: pytest tests/integration/test_healing_transaction_atomicity.py tests/integration/test_zero_loss_fission_merge.py tests/integration/test_concurrent_healing_merge.py tests/integration/test_sovereign_merge_conflict_resolution.py tests/unit/test_agentic_core_domain_models.py tests/unit/test_sentinel_anomaly.py tests/unit/test_firewall_policy.py tests/unit/test_nervous_system_reflex.py -v --tb=no -q 2>&1 | Select-String -Pattern "passed|failed|error" | Select-Object -Last 1
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 2
+EXIT CODE: 1
 ================================================================================
 
