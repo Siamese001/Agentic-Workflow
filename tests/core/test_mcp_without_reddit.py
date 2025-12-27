@@ -10,7 +10,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 # REFACTOR: Split this 70-line function
-@pytest.mark.skip(reason="Requires UniversalMCPClient stub")
 @pytest.mark.asyncio
 async def test_mcp() -> None:
     """Test MCP servers without Reddit."""

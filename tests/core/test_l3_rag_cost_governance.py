@@ -14,7 +14,6 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("RAGCostGovernanceTest")  # GLOBAL: Review if this should be constant
 
 
-@pytest.mark.skip(reason="Missing execute_cost_governed_vulnerability_check in canon_validator_engine stub")
 def test_canon_rag_low_cost_priority():
     """Tests if the Canon Validator prioritizes low-cost Brave Search over Pinecone."""
 

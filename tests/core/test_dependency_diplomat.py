@@ -22,14 +22,15 @@ if str(script_dir) not in sys.path:
 try:
     from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
     from agentic_core.L1_cognition.P2_domain.context import ValidationContext
-except ImportError as e:
-    print(
-        f"Error importing agentic_core modules. Make sure 'agentic_core' is a sibling "
-        f"directory to this script and accessible via sys.path. Error: {e}",
-        file=sys.stderr
-    )
-    # sys.exit(1)  # Commented out to allow pytest collection
-    pass
+except ImportError:
+    # Fallback for stub imports
+    import sys
+    from pathlib import Path
+    stubs_path = Path(__file__).parent.parent.parent / "stubs"
+    if str(stubs_path) not in sys.path:
+        sys.path.insert(0, str(stubs_path))
+    from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
+    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 
 logging.basicConfig(
@@ -41,7 +42,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Requires ValidationContext and get_dependency_diplomat stubs")
+@pytest.mark.skip(reason="Import path issues with stub - requires sys.path adjustment before pytest collection")
 @pytest.mark.asyncio
 async def test_dependency_diplomat():
     """Test Dependency Diplomat smart scope calculation."""
