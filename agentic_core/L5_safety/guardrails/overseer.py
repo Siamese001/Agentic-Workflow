@@ -329,7 +329,8 @@ class SafetyInspector:
 
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
         """
-        Ask Gemini to verify if an issue is actually a violation.
+        Ask LLM Router MCP to verify if an issue is actually a violation.
+        Phase 16B: Replaced direct google.generativeai with sovereign LLM Router.
 
         Args:
             file_path: Path to the file being checked
@@ -340,22 +341,14 @@ class SafetyInspector:
             "YES" if it's a real violation, "NO" if it's a false positive
         """
         try:
-            # Try to import google.generativeai
-            import google.generativeai as genai
-
-            # Check for API key
-            api_key = os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                LOGGER.warning("GOOGLE_API_KEY not found - Socratic Judge disabled")
-                return "YES"  # Default to treating as violation
+            # Use LLM Router MCP (Phase 16B)
+            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            
+            llm_router = get_llm_router_client()
 
             # Read the code snippet
             with open(file_path, "r", encoding="utf-8") as f:
                 code_snippet = f.read()
-
-            # Configure Gemini
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-pro')
 
             # Build the Socratic Judge prompt
             prompt = f"""
@@ -386,26 +379,30 @@ Instructions:
 Answer with ONLY "YES" if it's a real violation or "NO" if it's a false positive.
 """
 
-            # Get response from Gemini
-            response = model.generate_content(prompt)
-            result = response.text.strip().upper()
+            # Get response from LLM Router MCP
+            result_dict = await llm_router.validate_content(prompt, validation_type="socratic_judge")
+            
+            # Extract response from MCP result
+            if isinstance(result_dict, dict):
+                response_text = result_dict.get("response", result_dict.get("reason", ""))
+            else:
+                response_text = str(result_dict)
+            
+            result = response_text.strip().upper()
 
             # Extract YES/NO from response
             if "YES" in result[:10]:
-                LOGGER.info(f"Socratic Judge: REAL violation in {file_path}")
+                LOGGER.info(f"Socratic Judge (MCP): REAL violation in {file_path}")
                 return "YES"
             elif "NO" in result[:10]:
-                LOGGER.info(f"Socratic Judge: False positive in {file_path}")
+                LOGGER.info(f"Socratic Judge (MCP): False positive in {file_path}")
                 return "NO"
             else:
                 LOGGER.warning(f"Socratic Judge ambiguous response: {result}")
                 return "YES"  # Default to safe
 
-        except ImportError:
-            LOGGER.warning("google.generativeai not installed - Socratic Judge disabled")
-            return "YES"
         except Exception as e:
-            LOGGER.error(f"Socratic Judge error: {e}")
+            LOGGER.error(f"Socratic Judge (MCP) error: {e}")
             return "YES"  # Default to treating as violation
 
     def clear_false_positive_cache(self):
