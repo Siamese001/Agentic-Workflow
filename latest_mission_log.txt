@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 06:46:22
+MISSION LOG - 2025-12-27 06:48:06
 ================================================================================
-COMMAND: New-Item -ItemType Directory -Path "stubs\agentic_core" -Force | Out-Null
+COMMAND: pytest tests/core tests/integration tests/unit --collect-only -q 2>&1 | Select-Object -Last 20
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 0
+EXIT CODE: 3
 ================================================================================
 
