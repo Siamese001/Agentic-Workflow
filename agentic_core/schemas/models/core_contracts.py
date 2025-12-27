@@ -1949,7 +1949,7 @@ class MissionPlan(SovereignBaseModel):
             self._risk_assessment = assessment
             return self
         
-        def build(self) -> MissionPlan:
+        def build(self) -> "MissionPlan":
             """Construct immutable MissionPlan with sovereign validation"""
             if not self._mission_id:
                 raise ValueError("mission_id is required")
