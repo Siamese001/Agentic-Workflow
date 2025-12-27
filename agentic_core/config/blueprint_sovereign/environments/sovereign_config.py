@@ -145,6 +145,12 @@ class SovereignConfig:
     HEALING_AUTO_PR: bool = False   # True = create PR for review
     HEALING_MAX_FIXES_PER_CYCLE: int = 20
     
+    # === Phase 17B: Pinecone Vector Healing (Dec 27, 2025) ===
+    PINECONE_VECTOR_HEALING_ENABLED: bool = True
+    VECTOR_HEALING_BATCH_SIZE: int = 50
+    VECTOR_HEALING_MAX_DAILY: int = 500  # Prevent runaway healing
+    VECTOR_HEALING_EMBED_MODEL: str = "multilingual-e5-large"
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
