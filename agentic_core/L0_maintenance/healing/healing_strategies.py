@@ -322,6 +322,10 @@ class FilesystemBypassHealing(HealingStrategy):
 
 # Import Phase 17B Vector Healing Strategy
 from agentic_core.L0_maintenance.healing.vector_healing_strategy import VectorHealingStrategy
+# Import Phase 17C Knowledge Graph Healing Strategy
+from agentic_core.L0_maintenance.healing.kg_healing_strategy import KnowledgeGraphHealingStrategy
+# Import Phase 17E DeepWiki Healing Strategy
+from agentic_core.L0_maintenance.healing.deepwiki_healing_strategy import DeepWikiHealingStrategy
 
 # Registry of all available healing strategies
 HEALING_STRATEGIES = [
@@ -329,6 +333,8 @@ HEALING_STRATEGIES = [
     DirectLLMHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     FilesystemBypassHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     VectorHealingStrategy(),  # Phase 17B: Vector State Self-Correction (Dec 27, 2025)
+    KnowledgeGraphHealingStrategy(),  # Phase 17C: Knowledge Map Sovereignty (Dec 27, 2025)
+    DeepWikiHealingStrategy(),  # Phase 17E: Knowledge & Documentation Alignment (Dec 27, 2025)
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
