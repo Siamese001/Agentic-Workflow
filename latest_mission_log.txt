@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 10:27:24
+MISSION LOG - 2025-12-27 10:27:59
 ================================================================================
-COMMAND: pytest tests/ -v --maxfail=5 2>&1 | Tee-Object -FilePath "test_results.txt" | Select-Object -Last 100
-DIRECTORY: C:\Git
-EXIT CODE: 4
+COMMAND: cd c:\Git\Agentic-Workflow; pytest tests/ --collect-only -q 2>&1 | Select-Object -Last 5
+DIRECTORY: C:\Git\Agentic-Workflow
+EXIT CODE: 2
 ================================================================================
 
