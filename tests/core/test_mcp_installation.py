@@ -80,7 +80,7 @@ PACKAGES = {
     "python-dotenv": "Environment variables",
 }
 
-for package, description in packages.items():
+for package, description in PACKAGES.items():
     try:
         __import__(package.replace("-", "_"))
         logger.info(f"   ✓ {package}: {description}")
