@@ -6,8 +6,11 @@ class NervousSystem:
     
     def __init__(self):
         self.reflex_layer = ReflexLayer()
+        self.reflexes = {}
+        self.missions = []
     
     def register_reflex(self, trigger: str, action: callable):
+        self.reflexes[trigger] = action
         return self.reflex_layer.register_reflex(trigger, action)
     
     def trigger_reflex(self, event: str):

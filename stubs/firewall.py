@@ -1,4 +1,22 @@
+"""Firewall stub."""
+
 class Firewall:
-    """Stub for network/egress filtering."""
-    def allow(self, request: dict) -> bool: return True
-    def block(self, request: dict) -> bool: return False
+    """Stub firewall class."""
+    
+    def __init__(self):
+        self.rules = []
+        self.whitelist = []
+        self.blacklist = []
+        self.default_policy = "deny"
+    
+    def allow(self, source: str) -> bool:
+        """Check if source is allowed."""
+        if source in self.blacklist:
+            return False
+        if source in self.whitelist:
+            return True
+        return self.default_policy == "allow"
+    
+    def block(self, source: str) -> bool:
+        """Check if source is blocked."""
+        return not self.allow(source)

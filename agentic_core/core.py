@@ -27,10 +27,11 @@ class MissionPlan:
 class MissionResult:
     """Mission result model."""
     
-    def __init__(self, mission_id: str, success: bool, result: Any = None, error: Optional[str] = None):
+    def __init__(self, mission_id: str, success: bool, result: Any = None, output: Any = None, error: Optional[str] = None):
         self.mission_id = mission_id
         self.success = success
         self.result = result
+        self.output = output or result
         self.error = error
     
     def to_dict(self) -> Dict[str, Any]:
@@ -39,6 +40,7 @@ class MissionResult:
             "mission_id": self.mission_id,
             "success": self.success,
             "result": self.result,
+            "output": self.output,
             "error": self.error
         }
 
@@ -48,6 +50,8 @@ class AgenticCore:
     def __init__(self):
         self.history = []
         self.status = "initialized"
+        self.sovereign = True
+        self.is_initialized = True
     
     def run(self, mission: Dict[str, Any]) -> Dict[str, Any]:
         """Run a mission."""
@@ -59,11 +63,11 @@ class AgenticCore:
     
     def heal(self, issue: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Heal an issue."""
-        return {"healed": True, "issue": issue}
+        return {"healed": True, "recovery": "successful", "error": None, "issue": issue}
     
     def get_status(self) -> Dict[str, Any]:
         """Get current status."""
-        return {"status": self.status, "history_length": len(self.history)}
+        return {"status": self.status, "history_length": len(self.history), "sovereign": self.sovereign}
 
 class Missing:
     """Singleton Missing class."""
