@@ -164,6 +164,11 @@ class SovereignConfig:
     DEEPWIKI_HEALING_MAX_DAILY: int = 100
     DEEPWIKI_DEFAULT_REPO: str = "xai/sovereign-canon"
     
+    # === Phase 17D: GitKraken Healing – Sovereign Version Control (Dec 27, 2025) ===
+    GITKRAKEN_HEALING_ENABLED: bool = True
+    GITKRAKEN_HEALING_AUTO_COMMIT: bool = True
+    GITKRAKEN_HEALING_AUTO_PR: bool = True
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
