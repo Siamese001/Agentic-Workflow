@@ -63,6 +63,10 @@ def path_shield(monkeypatch):
 def pytest_configure(config):
     """Register custom markers for the sovereign suite."""
     config.addinivalue_line("markers", "sovereign: marks tests as part of the core sovereignty suite")
+    config.addinivalue_line("markers", "unit: Unit tests for individual components")
+    config.addinivalue_line("markers", "integration: Integration tests for zero-loss merge and transactional sovereignty")
+    config.addinivalue_line("markers", "e2e: End-to-end workflow tests")
+    config.addinivalue_line("markers", "slow: Tests that take significant time to execute")
 
 def pytest_collection_modifyitems(items):
     """
