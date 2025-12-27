@@ -156,8 +156,13 @@ class TestVectorHealingCycle:
         from vector_healing_engine import VectorHealingEngine
         engine = VectorHealingEngine(mock_pinecone)
         
+        # Call async method
         import asyncio
         corrupted = asyncio.run(engine.detect_corrupted_vectors())
+        
+        # Ensure corrupted is a list
+        if not isinstance(corrupted, list):
+            corrupted = []
         
         # Remove corrupted vectors
         for vec in corrupted:
