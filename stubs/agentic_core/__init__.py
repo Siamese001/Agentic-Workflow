@@ -6,7 +6,10 @@ from .core import (
     AgenticCore, 
     initialize_core, 
     MCPProtocolHandler,
-    SovereignRegistry
+    SovereignRegistry,
+    MissionPlan,
+    MissionResult,
+    Missing
 )
 
 __all__ = [
@@ -14,4 +17,7 @@ __all__ = [
     "initialize_core",
     "MCPProtocolHandler",
     "SovereignRegistry",
+    "MissionPlan",
+    "MissionResult",
+    "Missing",
 ]
