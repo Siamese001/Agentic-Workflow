@@ -119,8 +119,10 @@ def test_safety_stats(gatekeeper):
         # print(f"   Failed: {stats['failed']}")  # [Security Fix]
         # print(f"   Blocked: {stats['blocked']}")  # [Security Fix]
         # print(f"   Safety ratio: {stats['safety_ratio']:.2%}")  # [Security Fix]
+        pass
     else:
         # print(f"❌ Error getting stats: {stats['error']}")  # [Security Fix]
+        pass
 
 
 def main():

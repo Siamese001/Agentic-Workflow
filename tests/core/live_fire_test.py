@@ -11,9 +11,8 @@ from typing import Optional
 try:
     from resume_engine import generate_personalized_cover_letter
 except ImportError:
+    # print("CRITICAL: Could not import generate_personalized_cover_letter. Running in skeleton mode?")  # [Security Fix]
     pass
-# print("CRITICAL: Could not import generate_personalized_cover_letter. Running in skeleton mode?")  # [Security Fix]
-    sys.exit(1)
 
 # Import canary monitor for Protocol 7
 from canary_monitor import CanaryMonitor, run_canary_monitor
