@@ -2,6 +2,7 @@
 Sovereign Audit Engine – Phase 16H (Dec 27, 2025)
 Scans for compliance with Phases 16A-16G.
 Enforces exactly four levels of depth and uses approved utils/ path.
+Enhanced in Phase 17 with autonomous healing integration.
 """
 import os
 import re
@@ -83,7 +84,19 @@ class SovereigntyAuditor:
                     self._audit_file(file_path)
                     self.stats["files_scanned"] += 1
         
-        return self._report_results()
+        audit_passed = self._report_results()
+        
+        # Phase 17: Trigger autonomous healing if violations found
+        if self.violations:
+            logger.warning("[L0 AUDIT] Violations found. Handing over to Healing Engine.")
+            try:
+                from agentic_core.L0_maintenance.healing.healing_engine import run_autonomous_healing
+                healing_result = await run_autonomous_healing(self.violations)
+                logger.info(f"[L0 AUDIT] Healing result: {healing_result.get('status', 'unknown')}")
+            except Exception as e:
+                logger.error(f"[L0 AUDIT] Healing engine failed: {e}")
+        
+        return audit_passed
 
     def _calculate_depth(self, path: str) -> int:
         """
