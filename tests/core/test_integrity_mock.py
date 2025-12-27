@@ -17,15 +17,18 @@ logger = logging.getLogger(__name__)
 
 
 def print_step(step_name):
+    pass
     # print(f"\n🔹 TESTING: {step_name}")  # [Security Fix]
     # print("-" * 50)  # [Security Fix]
 
 
 def print_success(message):
+    pass
     # print(f"   ✅ PASS: {message}")  # [Security Fix]
 
 
 def print_fail(message):
+    pass
     # print(f"   ❌ FAIL: {message}")  # [Security Fix]
 
 
@@ -111,12 +114,7 @@ def run_integrity_test():
         embedding = embed_func(test_content)
         print_success(f"Generated embedding vector (Dim: {len(embedding)})")
     except Exception as e:
-pass
-pass
-pass
-
-
-print_fail(f"Embedding generation failed: {e}")
+        print_fail(f"Embedding generation failed: {e}")
         return test_results
 
     # Create CanonEntry with proper structure
@@ -181,10 +179,7 @@ def test_function():
                     f"Redis data transformation failed. Got: {retrieved}")
 
     except Exception as e:
-pass
-pass
-pass
-print_fail(f"Redis transformation test failed: {e}")
+        print_fail(f"Redis transformation test failed: {e}")
 
     # ---------------------------------------------------------
     # 3. PINECONE TRANSFORMATION TEST (MOCK)
@@ -239,10 +234,7 @@ print_fail(f"Redis transformation test failed: {e}")
             print_fail("Invalid Pinecone vector structure")
 
     except Exception as e:
-pass
-pass
-pass
-print_fail(f"Pinecone transformation test failed: {e}")
+        print_fail(f"Pinecone transformation test failed: {e}")
 
     # ---------------------------------------------------------
     # 4. CROSS-SYSTEM CONSISTENCY (MOCK)
@@ -273,10 +265,7 @@ print_fail(f"Pinecone transformation test failed: {e}")
             print_fail("Metadata inconsistency between formats")
 
     except Exception as e:
-pass
-pass
-pass
-print_fail(f"Cross-system test failed: {e}")
+        print_fail(f"Cross-system test failed: {e}")
 
     # ---------------------------------------------------------
     # 5. CLEANUP (MOCK)
@@ -296,10 +285,7 @@ print_fail(f"Cross-system test failed: {e}")
         test_results['cleanup'] = True
 
     except Exception as e:
-pass
-pass
-pass
-print_fail(f"Cleanup test failed: {e}")
+        print_fail(f"Cleanup test failed: {e}")
 
     # ---------------------------------------------------------
     # 6. SUMMARY
@@ -318,12 +304,16 @@ print_fail(f"Cleanup test failed: {e}")
 
     # print("\nValidated:")  # [Security Fix]
     if test_results['redis_crud']:
+        pass
         # print("  - Redis data transformation")  # [Security Fix]
     if test_results['pinecone_crud']:
+        pass
         # print("  - Pinecone data transformation")  # [Security Fix]
     if test_results['cross_system']:
+        pass
         # print("  - Cross-system consistency")  # [Security Fix]
     if test_results['cleanup']:
+        pass
         # print("  - Cleanup operations")  # [Security Fix]
 
     return test_results
