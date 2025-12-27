@@ -320,11 +320,15 @@ class FilesystemBypassHealing(HealingStrategy):
         return fixes
 
 
+# Import Phase 17B Vector Healing Strategy
+from agentic_core.L0_maintenance.healing.vector_healing_strategy import VectorHealingStrategy
+
 # Registry of all available healing strategies
 HEALING_STRATEGIES = [
     DirectRedisHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     DirectLLMHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     FilesystemBypassHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
+    VectorHealingStrategy(),  # Phase 17B: Vector State Self-Correction (Dec 27, 2025)
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),
