@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 11:51:18
+MISSION LOG - 2025-12-27 11:51:32
 ================================================================================
-COMMAND: python -c "import sys; sys.path.insert(0, 'tests'); import conftest; import agentic_core.L4_state; print('Import works')"
+COMMAND: pytest tests/unit/test_l4_cached_state_ledger.py tests/unit/test_l5_cached_safety_shield.py tests/unit/test_l3_cached_orchestrator.py -v --tb=no -q 2>&1 | Select-String -Pattern "passed|failed|ERROR|collected" | Select-Object -Last 1
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 0
+EXIT CODE: 2
 ================================================================================
 
