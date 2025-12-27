@@ -13,5 +13,6 @@ genai.configure(api_key=API_KEY)
 # print("📋 Available Gemini Models:")  # [Security Fix]
 for model in genai.list_models():
     if 'generateContent' in model.supported_generation_methods:
+        pass
         # print(f"  - {model.name}")  # [Security Fix]
 
