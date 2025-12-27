@@ -1,5 +1,7 @@
 """Test persistent chat functionality."""
 import pytest
+import os
+import asyncio
 
 
 @pytest.mark.skip(reason="Test needs to be implemented - converted from prose")
@@ -21,6 +23,7 @@ except ImportError:
 
 
 # Two blank lines before top-level function definition (PEP 8)
+@pytest.mark.asyncio
 async def test_persistent_chat():
     """Test that chat sessions persist across multiple rounds."""
 
