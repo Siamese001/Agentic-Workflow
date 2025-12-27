@@ -119,6 +119,13 @@ class SovereignConfig:
     REDIS_MAX_KEY_LENGTH: int = 512
     REDIS_CACHE_PREFIX: str = "sovereign:"
     
+    # === Phase 16B: LLM Router MCP – Sovereign Validation (Dec 27, 2025) ===
+    LLM_ROUTER_MCP_ENABLED: bool = True
+    LLM_ROUTER_DEFAULT_PROVIDER: str = "gemini-2.5-flash"
+    LLM_ROUTER_SAFETY_MODEL: str = "gemini-2.5-flash"
+    LLM_ROUTER_VALIDATION_TEMPERATURE: float = 0.0
+    LLM_ROUTER_MAX_TOKENS: int = 1024
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
