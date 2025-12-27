@@ -27,7 +27,8 @@ except ImportError as e:
         f"directory to this script and accessible via sys.path. Error: {e}",
         file=sys.stderr
     )
-    sys.exit(1)
+    # sys.exit(1)  # Commented out to allow pytest collection
+    pass
 
 
 logging.basicConfig(

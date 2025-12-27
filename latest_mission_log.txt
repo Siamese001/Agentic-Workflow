@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-27 06:39:07
+MISSION LOG - 2025-12-27 06:42:06
 ================================================================================
-COMMAND: python agentic_core\utils\guardian\test_fixer_v1.py
+COMMAND: python identify_broken_tests.py 2>&1 | Select-Object -Last 10
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 0
 ================================================================================

@@ -35,6 +35,7 @@ def test_egress_filter_allows_authorized_llm():
         pass
     except NetworkViolationError:
         pytest.fail("Egress Filter blocked an authorized LLM connection.")
+        pass
 
 @pytest.mark.skip(reason="Test not implemented")
 def test_egress_filter_blocks_unauthorized_exfil():
@@ -51,6 +52,7 @@ def test_egress_filter_allows_linkedin():
     try:
         safe_fetch("https://www.linkedin.com/jobs")
     except requests.exceptions.RequestException:
+        pass
     except NetworkViolationError:
         pytest.fail("Egress Filter blocked an authorized domain.")
 
@@ -62,6 +64,7 @@ def test_egress_filter_restores_original_socket():
     try:
         safe_fetch("https://www.linkedin.com/jobs")
     except Exception:
+        pass
 
     # After the function exits, the original socket must be restored
     assert socket.getaddrinfo == original_getaddrinfo
