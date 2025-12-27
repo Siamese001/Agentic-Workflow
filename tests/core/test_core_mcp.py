@@ -89,8 +89,8 @@ class CoreMCPTester:
                             "All Redis operations successful")
 
         except Exception as e:
-pass
-self.log_result("Redis MCP", "FAIL", str(e))
+            pass
+            self.log_result("Redis MCP", "FAIL", str(e))
 
 
     def test_filesystem_mcp(self):
@@ -132,15 +132,15 @@ self.log_result("Redis MCP", "FAIL", str(e))
             try:
                 os.remove(test_file)
             except Exception:
-pass
-pass
+                pass
+                pass
 
             self.log_result("Filesystem MCP", "PASS",
                             "File operations successful")
 
         except Exception as e:
-pass
-self.log_result("Filesystem MCP", "FAIL", str(e))
+            pass
+            self.log_result("Filesystem MCP", "FAIL", str(e))
 
     def test_gitkraken_mcp(self):
         """Test GitKraken MCP operations"""
@@ -180,12 +180,12 @@ self.log_result("Filesystem MCP", "FAIL", str(e))
             try:
                 os.remove(test_file)
             except Exception:
-pass
-pass
+                pass
+                pass
 
         except Exception as e:
-pass
-self.log_result("GitKraken MCP", "FAIL", str(e))
+            pass
+            self.log_result("GitKraken MCP", "FAIL", str(e))
 
     def test_gemini_flash_connection(self):
         """Test Gemini Flash API connection"""
@@ -215,8 +215,8 @@ self.log_result("GitKraken MCP", "FAIL", str(e))
                                 f"Unexpected response: {response[:100]}")
 
         except Exception as e:
-pass
-self.log_result("Gemini Flash API", "FAIL", str(e))
+            pass
+            self.log_result("Gemini Flash API", "FAIL", str(e))
 
     def test_mcp_tool_integration(self):
         """Test MCP tool integration with LLM"""
@@ -245,12 +245,12 @@ self.log_result("Gemini Flash API", "FAIL", str(e))
             try:
                 os.remove("integration_test.txt")
             except Exception:
-pass
-pass
+                pass
+                pass
 
         except Exception as e:
-pass
-self.log_result("MCP Integration", "FAIL", str(e))
+            pass
+            self.log_result("MCP Integration", "FAIL", str(e))
 
     def run_all_tests(self):
         """Run all Phase 1 core tests"""
@@ -299,4 +299,3 @@ if __name__ == "__main__":
     tester = CoreMCPTester()
     success = tester.run_all_tests()
     sys.exit(0 if success else 1)
-

@@ -1,4 +1,3 @@
-```python
 import asyncio
 import logging
 import sys
@@ -225,4 +224,3 @@ async def test_claim_extraction():
 if __name__ == "__main__":
     asyncio.run(test_hallucination_hunter())
     asyncio.run(test_claim_extraction())
-```
