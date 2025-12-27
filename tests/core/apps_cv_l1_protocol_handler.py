@@ -91,8 +91,8 @@ class L1ProtocolHandler:
             return sanitized_result
 
         except (ToolExecutionError, BlackoutProtocolError, GitConflictError) as e:
-pass
-# Log CRITICAL error to L5 MEMory (as defined in EBP)
+            pass
+            # Log CRITICAL error to L5 MEMory (as defined in EBP)
             protocol_error = f"L1_PROTOCOL_ERROR: {e.__class__.__name__}: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
                             protocol_error, status="CRITICAL")
@@ -102,8 +102,8 @@ pass
                 toolExecutionError=f"{e.__class__.__name__}: {str(e)}"
             )
         except Exception as e:
-pass
-# Log CRITICAL error to L5 MEMory
+            pass
+            # Log CRITICAL error to L5 MEMory
             protocol_error = f"L1_PROTOCOL_ERROR: Unexpected error: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
                             protocol_error, status="CRITICAL")
@@ -145,8 +145,8 @@ pass
             }
             logger.warning(f"L5_LOG: {log_entry}")
         except Exception:
-pass
-# Fail silently - logging should not break the protocol
+            pass
+            # Fail silently - logging should not break the protocol
             pass
 
     def _check_path_allowlist(self, path: str):
@@ -178,8 +178,8 @@ pass
                         raise BlackoutProtocolError(
                             "EBP blackout active - tool execution blocked")
             except Exception as e:
-pass
-# Only swallow Redis connection errors, not BlackoutProtocolError
+                pass
+                # Only swallow Redis connection errors, not BlackoutProtocolError
                 if "BlackoutProtocolError" not in str(type(e)):
                     pass  # Redis unavailable, proceed
                 else:
@@ -220,8 +220,8 @@ pass
                     raise ToolExecutionError(
                         "Temporal integrity violation: past timestamp")
         except json.JSONDecodeError:
-pass
-# Not JSON, no temporal check needed
+            pass
+            # Not JSON, no temporal check needed
             pass
 
         return ToolResult(
@@ -284,9 +284,8 @@ pass
                     summary = f"Found {len(data['results'])} search results"
                     sanitized_content = summary
             except json.JSONDecodeError:
-pass
-pass
+                pass
+                pass
 
         result.content = sanitized_content
         return result
-

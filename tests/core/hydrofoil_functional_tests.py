@@ -191,7 +191,7 @@ def run_functional_audit():
             test()
             passed += 1
         except Exception as e:
-# print(f"  ❌ FAILED: {e}")  # [Security Fix]
+            # print(f"  ❌ FAILED: {e}")  # [Security Fix]
             failed += 1
 
     # print("\n" + "="*80)  # [Security Fix]
@@ -209,4 +209,3 @@ def run_functional_audit():
 if __name__ == "__main__":
     success = run_functional_audit()
     sys.exit(0 if success else 1)
-

@@ -48,8 +48,8 @@ class TestStubGenerator:
             return tests
 
         except Exception as e:
-pass
-# print(f"  ❌ Error extracting from {file_path}: {e}")  # [Security Fix]
+            pass
+            # print(f"  ❌ Error extracting from {file_path}: {e}")  # [Security Fix]
             return []
 
     def extract_class_names(self, file_path: Path) -> List[str]:
@@ -65,8 +65,8 @@ pass
             return matches
 
         except Exception:
-pass
-return []
+            pass
+            return []
 
     def generate_stub_file(self, file_path: Path, tests: List[Dict], classes: List[str]) -> str:
         """Generate a stub test file"""
@@ -177,8 +177,8 @@ return []
             return True
 
         except Exception as e:
-pass
-# print(f"  ❌ Error regenerating {file_path}: {e}")  # [Security Fix]
+            pass
+            # print(f"  ❌ Error regenerating {file_path}: {e}")  # [Security Fix]
             return False
 
     def regenerate_all_broken_files(self, failed_files: List[str] = None) -> int:
@@ -337,4 +337,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
