@@ -131,8 +131,7 @@ class TestVectorHealingCycle:
         assert verification[0]["details"]["improvement"] > 0.4
     
     @patch('agentic_core.L4_state.vector_store.PineconeSovereignAgent')
-    @pytest.mark.asyncio
-    async def test_corrupted_vector_detection_and_removal(
+    def test_corrupted_vector_detection_and_removal(
         self, mock_pinecone, mock_pinecone_index, audit_log_tracker
     ):
         """
@@ -157,7 +156,8 @@ class TestVectorHealingCycle:
         from vector_healing_engine import VectorHealingEngine
         engine = VectorHealingEngine(mock_pinecone)
         
-        corrupted = engine.detect_corrupted_vectors()
+        import asyncio
+        corrupted = asyncio.run(engine.detect_corrupted_vectors())
         
         # Remove corrupted vectors
         for vec in corrupted:

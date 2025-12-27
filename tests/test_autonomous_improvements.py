@@ -404,14 +404,21 @@ class TestAutonomousCheckpointManager:
     @pytest.fixture
     def temp_test_file(self, temp_checkpoint_dir):
         """Create temporary test file."""
-        # Ensure directory exists
-        os.makedirs(temp_checkpoint_dir, exist_ok=True)
-        test_file = os.path.join(temp_checkpoint_dir, "test.py")
-        with open(test_file, 'w') as f:
-            f.write("# Test content\nprint('hello')\n")
-        yield test_file
-        if os.path.exists(test_file):
-            os.remove(test_file)
+        # Ensure directory exists using pathlib
+        from pathlib import Path
+        checkpoint_path = Path(temp_checkpoint_dir)
+        checkpoint_path.mkdir(parents=True, exist_ok=True)
+        
+        test_file = checkpoint_path / "test.py"
+        test_file.write_text("# Test content\nprint('hello')\n")
+        
+        # Verify file exists
+        assert test_file.exists(), f"Failed to create test file at {test_file}"
+        
+        yield str(test_file)
+        
+        if test_file.exists():
+            test_file.unlink()
     
     def test_manager_initialization(self, checkpoint_manager):
         """Test manager initializes correctly."""
