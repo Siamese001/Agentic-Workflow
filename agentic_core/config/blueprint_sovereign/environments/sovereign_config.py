@@ -138,6 +138,13 @@ class SovereignConfig:
     GITKRAKEN_HEALING_BRANCH: str = "sovereign-healing"
     GITKRAKEN_PR_TITLE_PREFIX: str = "[SOVEREIGN HEALING]"
     
+    # === Phase 17: Autonomous L0 Self-Healing (Dec 27, 2025) ===
+    AUTONOMOUS_HEALING_ENABLED: bool = True
+    HEALING_AUTO_APPLY: bool = True  # False = propose only
+    HEALING_AUTO_COMMIT: bool = True
+    HEALING_AUTO_PR: bool = False   # True = create PR for review
+    HEALING_MAX_FIXES_PER_CYCLE: int = 20
+    
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         # Must use object.__setattr__ due to frozen=True
