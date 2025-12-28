@@ -130,7 +130,6 @@ def test_canon_rag_low_cost_priority():
     return True
 
 
-@pytest.mark.skip(reason="Missing execute_cost_governed_vulnerability_check in stub")
 def test_pinecone_fallback_when_brave_fails():
     """Tests that Pinecone is used as fallback when Brave Search fails."""
 

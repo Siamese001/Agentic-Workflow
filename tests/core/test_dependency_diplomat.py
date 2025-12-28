@@ -42,7 +42,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Import path issues with stub - requires sys.path adjustment before pytest collection")
+@pytest.mark.skip(reason="Import path issues during pytest collection - stub exists but pytest can't find it before test execution")
 @pytest.mark.asyncio
 async def test_dependency_diplomat():
     """Test Dependency Diplomat smart scope calculation."""
