@@ -113,9 +113,9 @@ print(f"Waterfall violations: {len(waterfall_violations)}")
 print(f"\nTotal violations: {total_violations}")
 
 if total_violations == 0:
-    print("\n✅ ALL CHECKS PASSED - 100% COMPLIANCE")
+    print("\n[OK] ALL CHECKS PASSED - 100% COMPLIANCE")
 else:
-    print(f"\n❌ {total_violations} VIOLATIONS FOUND")
+    print(f"\n[X] {total_violations} VIOLATIONS FOUND")
     
     # Offer auto-healing
     print("\n" + "="*70)
