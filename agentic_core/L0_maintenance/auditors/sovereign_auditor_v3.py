@@ -15,16 +15,16 @@ from pathlib import Path
 from typing import List, Dict
 from enum import Enum
 
+# [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
+try:
+    from agentic_core.config.P1_core.structure_blueprint import ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP
+except ImportError:
+    raise RuntimeError("CRITICAL: SSOT Blueprint missing. Physics cannot be established.")
+
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-
-# Import Sovereign Environment for SSOT Config
-try:
-    from agentic_core.config.P1_core.sovereign_env import get_env
-except ImportError:
-    get_env = None
 
 # Import available Guardians
 try:
@@ -73,18 +73,14 @@ def validate_prompt_ssot(target_path: str) -> tuple[float, list[str]]:
 def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     """Checks for .env existence and core neural link keys."""
     env_path = Path(target_path) / ".env"
-    if not env_path.exists(): return 0.0, [".env missing"]
+    if not env_path.exists(): 
+        return 0.0, ["CRITICAL: Neural Link Offline - .env missing"]
     
-    # Utilize Validator-aligned env loader
-    if get_env:
-        e = get_env(Path(target_path))
-        required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-        missing = [k for k in required if not getattr(e, k, None) and not os.getenv(k)]
-    else:
-        content = env_path.read_text()
-        required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-        missing = [k for k in required if k not in content]
-
+    from agentic_core.config.P1_core.sovereign_env import get_env
+    env = get_env(Path(target_path))
+    required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
+    missing = [k for k in required if not getattr(env, k, None)]
+    
     score = 100.0 * (1 - (len(missing) / len(required)))
     return score, [f"Missing {k}" for k in missing]
 
@@ -132,24 +128,28 @@ def main():
     
     report = SovereignReport()
     
-    # 1. DDD Alignment
-    if validate_ddd_alignment:
-        score, issues = validate_ddd_alignment(str(target))
-        report.record_result("DDD Alignment", score, issues)
-    else:
-        report.record_result("DDD Alignment", 0.0, ["Module Missing"], AuditStatus.PENDING)
+    # 1. Dynamic Key Coverage Audit (Key 20 Compliance)
+    key_issues = []
+    for key in ACTIVE_CANON_KEYS:
+        target_folders = CANON_KEY_TO_FOLDER_MAP.get(key, [])
+        for folder in target_folders:
+            if not (REPO_ROOT / folder).exists():
+                key_issues.append(f"Key {key}: Missing Territory {folder}")
     
-    # 2. Schema SSOT
-    score, issues = validate_schema_ssot(str(target))
+    key_score = 100.0 * (1 - (len(key_issues) / len(ACTIVE_CANON_KEYS))) if ACTIVE_CANON_KEYS else 100.0
+    report.record_result("Key Coverage", key_score, key_issues)
+
+    # 2. Schema SSOT (Key 3 Alignment)
+    score, issues = validate_schema_ssot(str(REPO_ROOT / "agentic_core"))
     report.record_result("Schema SSOT", score, issues)
 
-    # 3. Prompt SSOT
-    score, issues = validate_prompt_ssot(str(target))
+    # 3. Prompt SSOT (Key 1 Alignment)
+    score, issues = validate_prompt_ssot(str(REPO_ROOT / "agentic_core"))
     report.record_result("Prompt SSOT", score, issues)
 
-    # 4. Config SSOT
-    score, issues = validate_config_ssot(str(target))
-    report.record_result("Config SSOT", score, issues)
+    # 4. Config SSOT (Key 2 & .env Physics)
+    score, issues = validate_config_ssot(str(REPO_ROOT))
+    report.record_result("Neural Link", score, issues)
 
     report.record_result("Underscore Fields", 100.0, [], AuditStatus.PASSED)
 
