@@ -10,11 +10,12 @@ The sovereign configuration blueprint (`structure_blueprint.py`).
 - **Constraint**: Do not reference, repeat, or visualize the directory structure in this Markdown file.
 - **MANDATORY**: Always execute the sovereign orchestration entry point (`sovereign_mission_control.py`) to maintain the "Eternal Circuit."
 
-## 2. CANON KEY CONSOLIDATION — December 24, 2025
+## 2. CANON KEY CONSOLIDATION
 
-- The 50-key system has been officially consolidated to **19 active keys (0–18)**.
-- All validation, reporting, and healing now operate exclusively on this range.
-- Legacy key numbers (e.g., old Key 50) are internally remapped.
+- The canon key system has been consolidated and is dynamically maintained via the blueprint.
+- All validation, reporting, and healing operate on the current set of active keys.
+- Legacy key numbers are internally remapped to current active ranges.
+- **Mandatory**: Always query `ACTIVE_CANON_KEYS` from the blueprint to determine the current key range.
 
 ## 3. THE GRAVITY RULE (IMPORT WATERFALL)
 
@@ -26,9 +27,9 @@ The sovereign configuration blueprint (`structure_blueprint.py`).
 
 ## 4. CANON KEY ENFORCEMENT (SSOT ONLY)
 
-- **Source of Truth**: The definition and mapping of active keys (0–18) are located EXCLUSIVELY in the sovereign configuration blueprint.
-- **Constraint**: NEVER hardcode key definitions, counts, or ranges in this Markdown file.
-- **Action**: Dynamically import and read `ACTIVE_CANON_KEYS` from the blueprint before any agent execution to determine current laws.
+- **Source of Truth**: The definition and mapping of active canon keys are located EXCLUSIVELY in the sovereign configuration blueprint.
+- **Constraint**: NEVER hardcode key definitions, counts, or ranges in this Markdown file or any project asset.
+- **Action**: Dynamically import and read `ACTIVE_CANON_KEYS` and `CANON_AGENT_REGISTRY` from the blueprint before any agent execution to determine the active laws.
 
 ## 5. AGENT DISCOVERY PROTOCOL
 
@@ -38,8 +39,8 @@ When creating new agents:
 - Framework-level agents (e.g., FissionManager) go to agentic_core/L3_orchestration/.
 - Every __init__.py must be *Light* (No circular imports).
 
-> **Heuristic**: If the agent uses domain-specific knowledge (e.g., resume scoring, license rules) → domain folder.
-> If it manages framework concerns (fission, healing, validation) → agentic_core.
+> **Heuristic**: If the agent uses domain-specific knowledge (e.g., resume scoring, license rules) -> domain folder.
+> If it manages framework concerns (fission, healing, validation) -> agentic_core.
 
 ## 6. VOID COMPLIANCE
 
