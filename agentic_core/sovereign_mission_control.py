@@ -19,7 +19,7 @@ async def execute_unified_mission(target="agentic_core"):
 
     # PHASE 1: DIAGNOSIS (The Supreme Court)
     print("\n[*] PHASE 1: Executing Multi-Dimensional Audit...")
-    report = run_audit() # Auditor generates SovereignReport
+    report = await run_audit() # Auditor generates SovereignReport
     
     overall_health = report.get_overall_score()
     print(f"\n[DIAGNOSIS COMPLETE] Current Health Score: {overall_health:.1f}%")
@@ -43,7 +43,7 @@ async def execute_unified_mission(target="agentic_core"):
 
     # PHASE 4: FINAL VERIFICATION
     print("\n[*] PHASE 3: Final Compliance Sealing...")
-    final_report = run_audit()
+    final_report = await run_audit()
     
     if final_report.get_overall_score() > overall_health:
         print(f"\n[SUCCESS] Mission Achieved. Health improved to {final_report.get_overall_score():.1f}%")

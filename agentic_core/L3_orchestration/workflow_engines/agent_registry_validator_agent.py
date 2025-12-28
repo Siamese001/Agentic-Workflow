@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
-
 class AgentRegistryValidatorAgent:
     """
     L3 Orchestration: Agent Registry Validation
@@ -26,10 +25,8 @@ class AgentRegistryValidatorAgent:
         self.project_root = project_root or Path.cwd()
         self.missing_agents = []
         self.found_agents = []
-        
-    logger.info("[L6_AUDIT] Action at line 30")
+
     def validate_agent_exists(self, agent_name: str, search_paths: List[str]) -> Tuple[bool, str]:
-        logger.info("[L6_AUDIT] Action at line 32")
         """
         Validate that an agent exists in one of the search paths.
         
@@ -50,10 +47,8 @@ class AgentRegistryValidatorAgent:
             except (ImportError, AttributeError):
                 continue
         
-        logger.info("[L6_AUDIT] Action at line 53")
         return False, ""
-     logger.info("[L6_AUDIT] Action at line 55")
-    
+
     def validate_registry(self, registry: Dict[int, List[str]]) -> Dict[str, Any]:
         """
         Validate all agents in the registry.
@@ -67,7 +62,6 @@ class AgentRegistryValidatorAgent:
         self.missing_agents = []
         self.found_agents = []
         
-        logger.info("[L6_AUDIT] Action at line 70")
         for key, agent_names in registry.items():
             for agent_name in agent_names:
                 # Generate search paths based on key
