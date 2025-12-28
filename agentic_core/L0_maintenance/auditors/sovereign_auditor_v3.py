@@ -174,7 +174,7 @@ class SovereignReport:
         print("="*60)
         return overall
 
-def main():
+async def main():
     target = Path("agentic_core")
     
     report = SovereignReport()
@@ -230,7 +230,7 @@ def main():
         if issues:
             try:
                 # Run the async healing loop
-                asyncio.run(sovereign_self_correction(issues))
+                await sovereign_self_correction(issues)
             except Exception as e:
                 print(f"[✗] Healing engine launch failed: {e}")
                 import traceback
