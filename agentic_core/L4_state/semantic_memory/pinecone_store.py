@@ -115,7 +115,8 @@ class SovereignPineconeStore:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             
             # Generate file ID
-            file_id = f"file_{str(file_path).replace('/', '_').replace('\\', '_')}"
+            path_str = str(file_path).replace('/', '_').replace('\\', '_')
+            file_id = f"file_{path_str}"
             
             # Prepare metadata
             metadata = {
