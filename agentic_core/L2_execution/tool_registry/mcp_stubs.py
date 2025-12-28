@@ -1,8 +1,18 @@
 """
-MCP Tool Stubs - Atomic Module
-Extracted from action_registry.py via Atomic Fission Protocol
-Includes: FigmaTools, PineconeTools, MemoryTools
-Tool ID Prefix: ACT-012+
+MCP Tool Stubs - Planned Feature Integration
+
+PURPOSE:
+    Stub implementations for MCP-powered tool integrations.
+    Provides Figma, Pinecone, and Memory MCP tool stubs for testing.
+
+STATUS: Stub - Planned for Phase 2 MCP Integration
+PLANNED FEATURES:
+    - FigmaTools: Design token extraction, screenshots, design context
+    - PineconeTools: Vector search and RAG operations
+    - MemoryTools: Knowledge graph entity and node operations
+
+EXTRACTED: From action_registry.py via Atomic Fission Protocol
+TOOL ID PREFIX: ACT-012+
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol

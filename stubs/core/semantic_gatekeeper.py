@@ -1,4 +1,13 @@
-"""Stub for semantic gatekeeper module."""
+"""
+Semantic Gatekeeper Stub - Content Validation
+
+PURPOSE:
+    Stub implementation for semantic validation and drift detection.
+    Validates content integrity and detects semantic changes.
+
+STATUS: Active - Used for testing semantic validation
+PLANNED: Full implementation with embedding-based validation in Phase 3
+"""
 
 class SemanticGatekeeper:
     """Stub for semantic validation and gating."""

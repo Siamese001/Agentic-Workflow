@@ -1,4 +1,16 @@
-"""Stub for L5 Safety red team."""
+"""
+L5 Safety Red Team Stub - Security Agents
+
+PURPOSE:
+    Stub implementations for L5 red team security agents.
+    Provides dependency analysis, regression detection, and hallucination hunting.
+
+STATUS: Active - Used for testing security layer
+AGENTS:
+    - DependencyDiplomat: Analyzes dependency graphs and smart scope
+    - RegressionOracle: Detects potential regressions from changes
+    - HallucinationHunter: Identifies hallucinations in generated content
+"""
 from typing import Dict, Any
 
 class DependencyDiplomat:

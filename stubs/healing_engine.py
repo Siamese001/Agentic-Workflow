@@ -1,3 +1,15 @@
+"""
+Healing Engine Stub - Auto-Recovery
+
+PURPOSE:
+    Stub implementation for healing engine.
+    Provides error diagnosis and auto-fix capabilities for testing.
+
+STATUS: Active - Used for testing healing logic
+PLANNED: Full implementation with LLM-powered fixes
+"""
+
+
 class HealingEngine:
     def __init__(self, **kwargs):
         self.config = kwargs

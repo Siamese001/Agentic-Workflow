@@ -1,4 +1,15 @@
+"""
+Agentic Core Stub - Central Agent Implementation
+
+PURPOSE:
+    Stub implementation of the core agentic system.
+    Provides test doubles for AgenticCore, MissionPlan, and related classes.
+
+STATUS: Active - Used for testing core agent functionality
+PLANNED: Full implementation with LLM integration in Phase 3
+"""
 from typing import Any, Dict, Optional, List
+
 
 class AgenticCore:
     def __init__(self, config: Optional[Dict] = None):

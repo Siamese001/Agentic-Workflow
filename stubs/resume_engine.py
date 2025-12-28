@@ -1,3 +1,15 @@
+"""
+Resume Engine Stub - Resume Generation
+
+PURPOSE:
+    Stub implementation for resume generation.
+    Provides cover letter and resume generation for testing.
+
+STATUS: Active - Used for testing apps_rg functionality
+PLANNED: Full implementation with LLM-powered generation
+"""
+
+
 def generate_personalized_cover_letter(job_description: str, **kwargs) -> str:
     """Stub function for generating cover letters."""
     return f"Stub cover letter for: {job_description[:50]}..."

@@ -1,4 +1,13 @@
-"""Stub for sandbox_utils module."""
+"""
+Sandbox Utils Stub - Isolated Execution
+
+PURPOSE:
+    Stub implementation for sandbox execution utilities.
+    Provides isolated code execution environment for testing.
+
+STATUS: Active - Used for testing sandboxed execution
+PLANNED: Full implementation with Docker/subprocess isolation
+"""
 
 class SandboxUtils:
     """Stub for sandbox execution utilities."""

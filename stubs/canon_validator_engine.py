@@ -1,4 +1,13 @@
-"""Stub for canon_validator_engine module."""
+"""
+Canon Validator Engine Stub - Cost-Governed Validation
+
+PURPOSE:
+    Stub implementation for canon validation engine.
+    Provides cost-governed vulnerability checking with Brave Search/Pinecone fallback.
+
+STATUS: Active - Used for testing validation engine
+PLANNED: Full implementation with L3 RAG integration
+"""
 import json
 
 

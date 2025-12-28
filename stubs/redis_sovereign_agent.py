@@ -1,3 +1,15 @@
+"""
+Redis Sovereign Agent Stub - Cache Operations
+
+PURPOSE:
+    Stub implementation for Redis cache operations.
+    Provides in-memory cache for testing L4 state layer.
+
+STATUS: Active - Used for testing cache state
+PLANNED: Full implementation with Redis SDK
+"""
+
+
 class RedisSovereignAgent:
     """L4 Cache State Stub."""
     def __init__(self, **kwargs):

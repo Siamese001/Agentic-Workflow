@@ -1,6 +1,23 @@
 """
-Sovereign Stub Package Root
-Fallbacks for any unmapped modules to ensure 100% collection.
+Sovereign Stub Package Root - Test Compatibility Layer
+
+PURPOSE:
+    Provides fallback stubs for unmapped modules to ensure 100% test collection.
+    This package enables tests to run even when external dependencies (MCP servers,
+    Pinecone, Redis, etc.) are unavailable.
+
+STATUS: Active - Required for test infrastructure
+PLANNED FEATURES:
+    - Full MCP server integration (mcp_adapter, mcp_escalation_router)
+    - External client stubs (Pinecone, Redis, Figma)
+    - L0-L5 layer test doubles
+
+USAGE:
+    Import stubs as fallbacks when real implementations are unavailable:
+    >>> try:
+    ...     from real_module import RealClass
+    ... except ImportError:
+    ...     from stubs.module import StubClass as RealClass
 """
 import sys
 import types

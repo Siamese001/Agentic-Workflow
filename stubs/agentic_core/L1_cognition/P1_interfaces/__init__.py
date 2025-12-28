@@ -1,4 +1,12 @@
-"""Stub for L1 Cognition interfaces."""
+"""
+L1 Cognition Interfaces Stub - Orchestrator Configuration
+
+PURPOSE:
+    Stub implementations for L1 Cognition interface components.
+    Provides orchestrator configuration and interface definitions.
+
+STATUS: Active - Used for testing orchestrator configuration
+"""
 from typing import Dict, Optional
 
 class OrchestratorConfig:

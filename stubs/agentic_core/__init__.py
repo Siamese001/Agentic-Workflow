@@ -1,6 +1,24 @@
 """
-Sovereign Master Export Hub
-Consolidates L0-L5 interfaces for broad test compatibility.
+Agentic Core Stub Package - L0-L5 Test Compatibility Layer
+
+PURPOSE:
+    Consolidates L0-L5 layer interfaces for broad test compatibility.
+    Provides stub implementations of core agentic components when real
+    implementations are unavailable or under development.
+
+STATUS: Active - Required for test infrastructure
+LAYERS:
+    - L0: Maintenance (MissionPlan, SovereignRegistry)
+    - L1: Cognition (NervousSystem, OrchestratorConfig)
+    - L2: Execution (Tool registry, MCP stubs)
+    - L3: Orchestration (Healing, Mission coordination)
+    - L4: State (Cache, Vector stores)
+    - L5: Safety (Red team, Hallucination detection)
+
+USAGE:
+    >>> from stubs.agentic_core import AgenticCore, MissionPlan
+    >>> core = AgenticCore()
+    >>> result = await core.run("test task")
 """
 try:
     from .core import (

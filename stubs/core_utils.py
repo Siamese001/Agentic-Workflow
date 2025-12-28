@@ -1,4 +1,13 @@
-"""Stub for core_utils module."""
+"""
+Core Utils Stub - Utility Functions
+
+PURPOSE:
+    Stub implementation for core utility functions.
+    Provides syntax validation, code formatting, and import extraction.
+
+STATUS: Active - Used for testing utility functions
+PLANNED: Full implementation with AST-based analysis
+"""
 
 class CoreUtils:
     """Stub for core utility functions."""

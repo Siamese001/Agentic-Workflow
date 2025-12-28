@@ -1,3 +1,15 @@
+"""
+Sentinel Stub - Runtime Anomaly Detection
+
+PURPOSE:
+    Stub implementation for runtime anomaly detection.
+    Provides metric monitoring and alert management for testing.
+
+STATUS: Active - Used for testing monitoring
+PLANNED: Full implementation with statistical anomaly detection
+"""
+
+
 class Sentinel:
     """Stub for runtime anomaly detection."""
     def __init__(self): 
