@@ -9,7 +9,7 @@ if sys.platform.startswith("win"):
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM
+VERSION 2.9 - SOVEREIGN HARDENING (Fixes: Boot Hangs, NoneType Crashes, Syntax Loops)
 (Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
 """
 
@@ -72,26 +72,82 @@ for p in SOVEREIGN_PATHS:
 print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
 # [ETERNAL INDEX] Ensure territory embeddings bootstrapped
+# WRAPPED TO PREVENT HANGS
 try:
+    print("   [*] Bootstrapping territory index (Ctrl+C to skip if hung)...")
     from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
     bootstrap_territory_index()
     print("   [OK] Semantic territory index ready")
+except KeyboardInterrupt:
+    print("   [!] Skipped territory bootstrap (user interrupt)")
 except Exception as e:
-    print(f"   [!] Territory bootstrap (non-fatal): {e}") 
+    print(f"   [!] Territory bootstrap failed (non-fatal): {e}") 
 
 # [TRACER FIX] Simple no-op tracer for telemetry spans
 class NoOpTracer:
     """No-op tracer context manager for when OpenTelemetry is not available"""
     class NoOpSpan:
-        def __enter__(self):
-            return self
-        def __exit__(self, *args):
-            pass
-    
-    def start_as_current_span(self, name):
-        return self.NoOpSpan()
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def set_attribute(self, *args): pass
+        def set_status(self, *args): pass
+        def record_exception(self, *args): pass
+        def add_event(self, *args, **kwargs): pass
+        def end(self): pass
+    def start_as_current_span(self, name): return self.NoOpSpan()
+    def start_span(self, name): return self.NoOpSpan()
 
-tracer = NoOpTracer()
+class MockTracer:
+    def start_as_current_span(self, name): return MockSpan()
+    def start_span(self, name): return MockSpan()
+class MockTrace:
+    def get_tracer(self, name): return MockTracer()
+    class Status:
+        def __init__(self, code, description=None): pass
+    class StatusCode:
+        ERROR = 1
+        OK = 0
+
+# Default to Mock (Safe Mode)
+tracer = MockTracer()
+trace = MockTrace()
+
+try:
+    from opentelemetry import trace as otel_trace
+    from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.trace import set_tracer_provider
+    from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
+    from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+    # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
+    otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    if otlp_endpoint:
+        trace = otel_trace # Assign real module
+        # Assign the real module only if import succeeded
+        trace = otel_trace
+        
+        resource = Resource(attributes={
+            SERVICE_NAME: "canon-validator-agentic",
+            SERVICE_VERSION: "v2.9",
+        })
+        trace.set_tracer_provider(TracerProvider(resource=resource))
+        otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
+        span_processor = BatchSpanProcessor(otlp_exporter)
+        trace.get_tracer_provider().add_span_processor(span_processor)
+        AsyncioInstrumentor().instrument()
+        LoggingInstrumentor().instrument()
+
+        print(f"   [OK] Distributed tracing ACTIVE → {otlp_endpoint}")
+        print(f"   [OK] Trace ID propagation enabled across agents and async tasks")
+        # Update global tracer to real one
+        tracer = trace.get_tracer(__name__)
+    else:
+        print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
+except ImportError:
+    pass
 
 # [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
@@ -564,22 +620,14 @@ async def retry_agent_execution_async(agent, file_path, ctx):
             method = getattr(agent, 'execute', getattr(agent, 'run', None))
             if method:
                 try:
-                    # Support both path-aware and parameterless agents
                     # [HARDENING] Robust check for callable signature to avoid NoneType errors
                     sig = inspect.signature(method)
                     if len(sig.parameters) > 0:
-                        result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
-                    else:
-                        result = await method() if inspect.iscoroutinefunction(method) else method()
-                    return result
-                except Exception:
-                    # Fallback for signature inspection failures
-                    try:
-                        result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
-                    except Exception:
-                        # Final fallback - try parameterless
-                        result = await method() if inspect.iscoroutinefunction(method) else method()
-                    return result
+                        return await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
+                except (ValueError, TypeError):
+                    pass # Fallback to no-args call
+                
+                return await method() if inspect.iscoroutinefunction(method) else method()
         except (asyncio.CancelledError, SystemExit):
             raise
         except Exception as e:
@@ -614,7 +662,7 @@ class MockTrace:
         OK = 0
 
 # Default to Mock (Safe Mode)
-tracer = MockTracer() # Define global 'tracer' immediately
+tracer = MockTracer()
 trace = MockTrace()
 
 try:
@@ -630,12 +678,13 @@ try:
     # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
     otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
     if otlp_endpoint:
+        trace = otel_trace # Assign real module
         # Assign the real module only if import succeeded
         trace = otel_trace
         
         resource = Resource(attributes={
             SERVICE_NAME: "canon-validator-agentic",
-            SERVICE_VERSION: "v2.8",
+            SERVICE_VERSION: "v2.9",
         })
         trace.set_tracer_provider(TracerProvider(resource=resource))
         otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
@@ -1329,14 +1378,27 @@ async def run_mission(target_scope: str = "agentic_core"):
     # ===========================================================================
     print(f"\n[PHASE -1] SYNTAX HEALING")
     import ast
+    consecutive_failures = 0
     syntax_healed_count = 0
+    
     for file_path in ctx.python_files:
+        if consecutive_failures > 5:
+            print("   [!] ABORTING SYNTAX HEALING: Too many engine failures.")
+            break
+            
         try:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                 code = f.read()
             ast.parse(code, filename=file_path)
         except SyntaxError as e:
             print(f"   [SYNTAX-FIX] {Path(file_path).name}:{e.lineno} -> {e.msg}")
+            
+            # LIVENESS CHECK - Breaks the infinite NoneType loop
+            if not ctx.engine or not hasattr(ctx.engine, 'resilient_mutation'):
+                print("      [!] Engine invalid. Skipping.")
+                consecutive_failures += 1
+                continue
+                
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     broken_code = f.read()
@@ -1369,12 +1431,18 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                         ast.parse(fixed_code, filename=file_path)
                         with open(file_path, 'w', encoding='utf-8') as f:
                             f.write(fixed_code)
-                        print(f"      [✓] Syntax Healed & Verified.")
-                        syntax_healed_count += 1
+                        print(f"      [✓] Healed.")
+                        consecutive_failures = 0
                     except SyntaxError as e2:
                         print(f"      [!] Healing failed: Fixed code still has syntax error at line {e2.lineno}")
-            except Exception as e:
-                print(f"      [!] Healing failed: {str(e)[:100]}")
+                        consecutive_failures += 1
+                else:
+                    print("      [!] Healing returned empty/bad code.")
+                    consecutive_failures += 1
+                    
+            except Exception as heal_err:
+                print(f"      [!] Healing crash: {str(heal_err)[:100]}")
+                consecutive_failures += 1
     
     if syntax_healed_count > 0:
         print(f"   [PHASE -1 COMPLETE] Healed {syntax_healed_count} files with syntax errors")
