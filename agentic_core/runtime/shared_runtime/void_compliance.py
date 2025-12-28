@@ -170,6 +170,9 @@ STDLIB_MODULES = {
 def validate_import_conventions(file_path: Path, project_root: Path) -> List[str]:
     """
     Enforces L6 import conventions + expanded circular import detection.
+    Exceptions:
+    - Relative imports are allowed in __init__.py files (Facade Pattern)
+    - __init__.py at root depth is allowed (package requirement)
     """
     violations = []
     try:
@@ -177,6 +180,9 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
         own_root = rel_path.parts[0] if rel_path.parts else None
     except ValueError:
         return violations
+
+    filename = file_path.name
+    is_init_file = filename == "__init__.py"
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -189,11 +195,14 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
     import_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
     import_nodes.sort(key=lambda n: n.lineno if hasattr(n, 'lineno') else 0)
 
-    # 1. No relative/star imports
+    # 1. No relative/star imports (except relative imports in __init__.py)
     for node in import_nodes:
         if isinstance(node, ast.ImportFrom):
             if node.level > 0:
-                violations.append(f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths.")
+                # Relative imports are explicitly allowed in __init__.py files
+                # as they are standard for exposing package APIs (Facade Pattern)
+                if not is_init_file:
+                    violations.append(f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths (allowed in __init__.py only).")
             if any(a.name == "*" for a in node.names):
                 violations.append(f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'import *' detected.")
 
