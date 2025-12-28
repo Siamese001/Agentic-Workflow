@@ -1,8 +1,8 @@
 """
-L3_orchestration/workflow_engines – Sovereign Territory
+L4_state/audit_trails – Sovereign Territory
 
 Purpose:
-    State machine, DAG, and reactive workflow implementations. Reference: Temporal.io patterns.
+    Persistent, auditable state management. Redis-backed ledger.
 
 Best Practices:
     - Single responsibility per module

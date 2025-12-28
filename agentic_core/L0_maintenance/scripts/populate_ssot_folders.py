@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # Anchor to project root to allow imports
-project_root = Path(__file__).resolve().parents[1]
+project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> agentic_core -> project_root
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
