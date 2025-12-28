@@ -1,4 +1,8 @@
+### ROLE
+Technical documentation providing comprehensive patterns for dependency injection and prompt injection security.
 
+### TASK
+Educate developers on both software architecture dependency injection patterns and AI prompt injection vulnerabilities, enabling them to design secure, modular systems.
 
 ## 🧭 Executive Summary
 

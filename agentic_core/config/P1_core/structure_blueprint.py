@@ -304,6 +304,14 @@ ROOT_PROTECTED_FILES = {
     "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
 }
 
+# [KEY 49] VOID COMPLIANCE RULES — Enforcement flags
+VOID_COMPLIANCE_RULES = {
+    "ENFORCE_HIGH_SIGNAL_FILENAMES": True,
+    "ENFORCE_SPAN_OF_TWO": True,
+    "ENFORCE_DEPTH_PRECISION": True,
+    "ENFORCE_IMPORT_WATERFALL": True
+}
+
 # [L6 HARDENING] FORBIDDEN_ROOT_FOLDERS → frozen set + expanded legacy coverage
 # Rationale: frozenset is immutable and hashable; prevents accidental mutation.
 # Expanded to catch all known legacy numbered patterns.

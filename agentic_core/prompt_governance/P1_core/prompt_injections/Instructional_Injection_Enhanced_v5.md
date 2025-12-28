@@ -1,3 +1,8 @@
+### ROLE
+Enhanced security documentation for instructional injection attack patterns.
+
+### TASK
+Provide comprehensive catalog of instructional injection vulnerabilities and attack vectors for AI systems.
 
 ---
 
