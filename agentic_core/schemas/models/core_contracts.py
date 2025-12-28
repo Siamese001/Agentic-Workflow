@@ -156,34 +156,34 @@ class AgentThoughtProcess(BaseModel):
 
 class CodeGenerationResult(BaseModel):
     """Schema for code generation tasks."""
-    _reasoning: str = Field(..., description="Why this code solves the problem")
-    _code: str = Field(..., description="The generated Python code")
-    _dependencies: List[str] = Field(
+    reasoning: str = Field(..., description="Why this code solves the problem")
+    code: str = Field(..., description="The generated Python code")
+    dependencies: List[str] = Field(
         default_factory=list,
         description="Required pip packages"
     )
-    _test_cases: List[str] = Field(
+    test_cases: List[str] = Field(
         default_factory=list,
         description="Test cases to verify the code"
     )
-    _safety_notes: List[str] = Field(
+    safety_notes: List[str] = Field(
         default_factory=list,
         description="Potential safety concerns or limitations"
     )
 
 class ResearchResult(BaseModel):
     """Schema for research tasks."""
-    _query_understanding: str = Field(..., description="How you interpreted the research question")
-    _sources: List[Dict[str, str]] = Field(
+    query_understanding: str = Field(..., description="How you interpreted the research question")
+    sources: List[Dict[str, str]] = Field(
         ...,
         description="List of sources with 'url' and 'relevance' keys"
     )
-    _key_findings: List[str] = Field(..., description="Main findings from the research")
-    _confidence_level: Literal["high", "medium", "low"] = Field(
+    key_findings: List[str] = Field(..., description="Main findings from the research")
+    confidence_level: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )
-    _follow_up_questions: List[str] = Field(
+    follow_up_questions: List[str] = Field(
         default_factory=list,
         description="Suggested follow-up research questions"
     )
@@ -261,28 +261,28 @@ class HopState(Enum):
 
 class RetryPolicy(BaseModel):
     """Retry policy for micro-stages."""
-    _max_retries: int = Field(default=3, ge=0, le=10)
-    _retry_delay: float = Field(default=1.0, ge=0.0)
-    _exponential_backoff: bool = Field(default=True)
-    _retryable_stages: List[MicroStage] = Field(
+    max_retries: int = Field(default=3, ge=0, le=10)
+    retry_delay: float = Field(default=1.0, ge=0.0)
+    exponential_backoff: bool = Field(default=True)
+    retryable_stages: List[MicroStage] = Field(
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
 class MicroCheckpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
-    _hop_id: str
-    _stage: MicroStage
-    _timestamp: float
-    _state: HopState
-    _data: Dict[str, Any] = Field(default_factory=dict)
-    _error: Optional[str] = None
+    hop_id: str
+    stage: MicroStage
+    timestamp: float
+    state: HopState
+    data: Dict[str, Any] = Field(default_factory=dict)
+    error: Optional[str] = None
 
 class StageTransition(BaseModel):
     """Record of a stage transition."""
-    _from_stage: Optional[MicroStage] = None
-    _to_stage: MicroStage
+    from_stage: Optional[MicroStage] = None
+    to_stage: MicroStage
     timestamp: float
-    _reason: Optional[str] = None
+    reason: Optional[str] = None
 
 class InjectionType(Enum):
     """Types of prompt injections."""
@@ -296,21 +296,21 @@ class InjectionType(Enum):
 
 class InjectionScope(BaseModel):
     """Scope where injection should be applied."""
-    _hop_types: List[str] = Field(default_factory=list)
-    _stages: List[str] = Field(default_factory=list)
-    _contexts: Dict[str, Any] = Field(default_factory=dict)
+    hop_types: List[str] = Field(default_factory=list)
+    stages: List[str] = Field(default_factory=list)
+    contexts: Dict[str, Any] = Field(default_factory=dict)
 
 class InjectionPattern(BaseModel):
     """A single prompt injection pattern."""
-    _id: str
-    _name: str
-    _type: InjectionType
-    _description: str
-    _template: str
-    _variables: List[str] = Field(default_factory=list)
-    _scope: InjectionScope = Field(default_factory=InjectionScope)
-    _priority: int = Field(default=0, ge=0, le=10)
-    _enabled: bool = True
+    id: str
+    name: str
+    type: InjectionType
+    description: str
+    template: str
+    variables: List[str] = Field(default_factory=list)
+    scope: InjectionScope = Field(default_factory=InjectionScope)
+    priority: int = Field(default=0, ge=0, le=10)
+    enabled: bool = True
 
 CORE_CONTRACTS_REGISTRY = {
     # Base Models
@@ -510,44 +510,44 @@ class SignalContext(BaseModel):
 
 class SafetyProfile(BaseModel):
     """Safety configuration profile used by execution profiles."""
-    _safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
-    _pii_detection_enabled: bool = True
-    _policy_engine_enabled: bool = True
+    safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
+    pii_detection_enabled: bool = True
+    policy_engine_enabled: bool = True
 
 # Simulation Models
 
 class SimScenario(BaseModel):
     """Simulation scenario definition."""
-    _id: str
-    _description: str
-    _initial_context: Dict[str, Any]
-    _execution_profile_name: str
-    _run_count: int
+    id: str
+    description: str
+    initial_context: Dict[str, Any]
+    execution_profile_name: str
+    run_count: int
 
 class SimOutcome(BaseModel):
     """Simulation outcome results."""
-    _scenario_id: str
-    _average_scores: Dict[str, float]
-    _safety_incidents: int
-    _agent_conflict_count: int
+    scenario_id: str
+    average_scores: Dict[str, float]
+    safety_incidents: int
+    agent_conflict_count: int
 
 # Metacognition Models
 
 class Hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
-    _id: str
-    _agent_id: str
-    _content: str
-    _confidence: float = 0.0
-    _evidence_ids: List[str] = Field(default_factory=list)
-    _rationale: Optional[str] = None
+    id: str
+    agent_id: str
+    content: str
+    confidence: float = 0.0
+    evidence_ids: List[str] = Field(default_factory=list)
+    rationale: Optional[str] = None
 
 class MetacognitionReport(BaseModel):
     """Aggregate view over a set of hypotheses and signals."""
-    _hypotheses: List[Hypothesis] = Field(default_factory=list)
-    _global_confidence: float = 0.0
-    _uncertainty_score: float = 0.0
-    _issues_detected: List[str] = Field(default_factory=list)
+    hypotheses: List[Hypothesis] = Field(default_factory=list)
+    global_confidence: float = 0.0
+    uncertainty_score: float = 0.0
+    issues_detected: List[str] = Field(default_factory=list)
 
 # Golden State Models
 
@@ -587,16 +587,16 @@ class GoldenOutput(BaseModel):
     case_id: str
     produced_keypoints: List[str]
     correctness_map: Dict[str, bool]
-    _safety_decisions: Dict[str, Any]
-    _metacognition_summary: Dict[str, Any]
-    _final_verdict: Literal["pass", "fail", "borderline"]
+    safety_decisions: Dict[str, Any]
+    metacognition_summary: Dict[str, Any]
+    final_verdict: Literal["pass", "fail", "borderline"]
 
 # Budget Profile
 
 class BudgetProfile(BaseModel):
     """High-level budget profile for cost/latency envelopes."""
-    _max_cost_usd: float = Field(default=0.10, ge=0.0)
-    _max_latency_ms: int = Field(default=3000, ge=0)
+    max_cost_usd: float = Field(default=0.10, ge=0.0)
+    max_latency_ms: int = Field(default=3000, ge=0)
 
 # Update Registry
 CORE_CONTRACTS_REGISTRY.update({
@@ -632,11 +632,11 @@ CORE_CONTRACTS_REGISTRY.update({
 @dataclass
 class LLMResponse:
     """Standard LLM response format."""
-    _content: str
-    _model: str
-    _usage: Optional[Dict[str, int]] = None
-    _finish_reason: Optional[str] = None
-    _metadata: Optional[Dict[str, Any]] = None
+    content: str
+    model: str
+    usage: Optional[Dict[str, int]] = None
+    finish_reason: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 class MessageType(str, Enum):
     """Message types for agent communication."""
@@ -648,36 +648,36 @@ class MessageType(str, Enum):
 @dataclass
 class ResidualAgentMessage:  # CONFLICT: Renamed to avoid collision with existing AgentMessage
     """Message in agent conversation (from runtime_shared_models.py)."""
-    _role: MessageType
+    role: MessageType
     content: str
-    _tool_calls: Optional[List[Dict[str, Any]]] = None
-    _tool_call_id: Optional[str] = None
+    tool_calls: Optional[List[Dict[str, Any]]] = None
+    tool_call_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class AgentResponse:
     """Response from agent execution."""
-    _message: 'ResidualAgentMessage'
-    _success: bool
-    _error: Optional[str] = None
+    message: 'ResidualAgentMessage'
+    success: bool
+    error: Optional[str] = None
     usage: Optional[Dict[str, int]] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class ResidualValidationResult(BaseModel):  # CONFLICT: Renamed to avoid collision
     """Validation result for data or operations (from runtime_shared_models.py)."""
-    _is_valid: bool
-    _errors: List[str] = []
-    _warnings: List[str] = []
+    is_valid: bool
+    errors: List[str] = []
+    warnings: List[str] = []
     metadata: Dict[str, Any] = {}
 
 class ReasoningConfig(BaseModel):
     """Configuration for reasoning operations."""
-    _temperature: float = 0.7
-    _max_tokens: int = 1000
-    _top_p: float = 0.9
-    _frequency_penalty: float = 0.0
-    _presence_penalty: float = 0.0
-    _stop_sequences: Optional[List[str]] = None
+    temperature: float = 0.7
+    max_tokens: int = 1000
+    top_p: float = 0.9
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    stop_sequences: Optional[List[str]] = None
 
 class HopStatus(str, Enum):
     """Status of hop execution."""
@@ -704,27 +704,27 @@ class ValidationSeverity(str, Enum):
 @dataclass
 class WorkflowCheckpoint:
     """Checkpoint in workflow execution."""
-    _hop_id: str
-    _status: HopStatus
-    _data: Dict[str, Any]
-    _timestamp: str
+    hop_id: str
+    status: HopStatus
+    data: Dict[str, Any]
+    timestamp: str
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
 class ThematicAnalysis:
     """Analysis of thematic content."""
-    _theme: str
-    _confidence: float
-    _keywords: List[str]
-    _sentiment: Optional[str] = None
+    theme: str
+    confidence: float
+    keywords: List[str]
+    sentiment: Optional[str] = None
 
 @dataclass
 class RAGState:
     """State of RAG operations."""
-    _query: str
-    _retrieved_docs: List[Dict[str, Any]]
-    _context: str
-    _response: Optional[str] = None
+    query: str
+    retrieved_docs: List[Dict[str, Any]]
+    context: str
+    response: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class CircuitState(str, Enum):
