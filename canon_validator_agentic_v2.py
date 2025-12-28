@@ -304,6 +304,13 @@ if __name__ == "__main__":
         if AUTO_HEAL_NAMING and not name_ok:
             clean_name = re.sub(r'[^a-z0-9.]', '_', asset.name.lower())
             clean_name = re.sub(r'_+', '_', clean_name).strip('_')
+            
+            # [L6 SIGNAL] High-Signal Naming Law: Ban semantic voids
+            BANNED_WORDS = {"temp", "utils", "misc", "helper", "base", "common", "shared", "legacy"}
+            for banned in BANNED_WORDS:
+                if banned in clean_name and clean_name != f"{banned}.py":
+                    clean_name = clean_name.replace(banned, "core")
+            
             new_path = asset.with_name(clean_name)
             if not new_path.exists():
                 perform_backup(asset)
@@ -1295,6 +1302,9 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     # === L6 RUNTIME: Void Compliance Enforcement ===
     valid_files, violations = enforce_void_compliance(discovered_files, project_root_path)
     
+    # [L6 STRUCTURAL] Whitelist __init__.py from strict depth enforcement
+    violations = [v for v in violations if v[0].name != "__init__.py"]
+    
     if violations:
         print(f"\n[!] [VOID COMPLIANCE] {len(violations)} files in forbidden/unknown folders:")
         for file_path, reason in violations[:5]:  # Show first 5
@@ -1596,6 +1606,17 @@ IF (task == "GRAVITY_REFACTOR"):
             if original_execute:
                 async def purger_wrapper(file_path):
                     print(f"   [PURGER] Pruning dead code in {Path(file_path).name}")
+                    
+                    # [L5 PURITY] Banned Pattern Scan (Zero-Tolerance)
+                    try:
+                        content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
+                        BANNED = ["# noqa", "print(", "pdb.", "TODO:", "FIXME:"]
+                        for b in BANNED:
+                            if b in content:
+                                ctx.report("CodePurity", 0, False, f"Banned pattern '{b}' found in {Path(file_path).name}")
+                    except Exception:
+                        pass
+                    
                     try:
                         result = await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
                         pruned = getattr(result, 'pruned_lines', 0)
