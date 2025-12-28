@@ -104,31 +104,28 @@ class SovereignReport:
     
     def get_all_issues(self) -> List[Dict]:
         """
-        Parse guardian issues into structured format expected by Phase 10+ Healing Strategies.
-        Guardian format: "path/to/file.py: message text (line XX if present)"
+        Parse guardian issues into structured format expected by Healing Strategies.
+        Supports: "path/to/file.py: Message (line X)" or simple strings.
         """
-        all_issues = []
         import re
+        all_issues = []
+        
         for dimension, raw_issues in self.issues.items():
             for raw in raw_issues:
-                # Default values
                 file_path = str(raw)
                 message = str(raw)
                 line_num = None
 
-                # Robust splitting on first colon (Windows drive letter safeish, or simple split)
-                # Ideally, we split on ": " to avoid splitting "C:\path"
-                if ": " in raw:
-                    parts = raw.split(": ", 1)
-                    file_path = parts[0].strip()
-                    message = parts[1].strip()
-                elif ":" in raw and raw.count(":") >= 2:
-                     # Fallback for "file:message" without space
-                    parts = raw.split(":", 2)
-                    file_path = parts[0].strip()
-                    message = parts[2].strip() if len(parts) > 2 else parts[1].strip()
+                # Attempt to split "File: Message" securely
+                if ":" in raw:
+                    # Split on the first colon that looks like a separator (followed by space)
+                    # or just the first colon if not on Windows (no drive letter check here for simplicity)
+                    parts = raw.split(":", 1)
+                    if len(parts) == 2:
+                        file_path = parts[0].strip()
+                        message = parts[1].strip()
 
-                # Extract line number if present
+                # Extract line number if present in message
                 match = re.search(r"(?:line|Line)\s+(\d+)", message)
                 if match:
                     line_num = int(match.group(1))
@@ -162,8 +159,7 @@ class SovereignReport:
         overall = self.get_overall_score()
         
         for dim, score in self.scores.items():
-            # Use ASCII characters for Windows console compatibility
-            status = "[OK]" if score > 95 else "[WARN]" if score > 80 else "[FAIL]"
+            status = "✓" if score > 95 else "⚠" if score > 80 else "✗"
             print(f"{status} {dim:<20} : {score:.1f}%")
             if score < 100:
                 print(f"   Violations: {', '.join(str(i) for i in self.issues[dim][:3])}" + ("..." if len(self.issues[dim]) > 3 else ""))
@@ -220,24 +216,14 @@ def main():
 
     overall_score = report.print_summary()
     
-    # Phase 10: Sovereign Healing Engine - FULLY ENABLED
+    # Phase 10: Sovereign Healing Engine - DISABLED (breaks syntax)
+    # Automatic healing disabled - causes syntax errors in try-except blocks
+    # Manual fixes required for remaining violations
     if overall_score >= 95:
-        print("\n[OK] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
+        print("\n[✓] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
     else:
-        print("\n[WARN] SOVEREIGNTY COMPROMISED - Initiating Autonomous Self-Correction")
-        
-        issues = report.get_all_issues()
-        if issues:
-            try:
-                # Run the async healing loop
-                asyncio.run(sovereign_self_correction(issues))
-            except Exception as e:
-                print(f"[✗] Healing engine launch failed: {e}")
-                import traceback
-                traceback.print_exc()
-        else:
-            print("   No structured violations detected for healing.")
-            
+        print("\n[⚠] SOVEREIGNTY COMPROMISED — Manual fixes required")
+    
     return report
 
 async def sovereign_self_correction(issues: List[Dict]):

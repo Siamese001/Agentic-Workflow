@@ -46,15 +46,8 @@ class HealingTransaction:
                 logger.warning(f"Cannot backup non-existent file: {file_path}")
                 return False
             
-            # Preserve full relative path to prevent name collisions (e.g. L1/utils.py vs L2/utils.py)
-            try:
-                relative = file_path.relative_to(Path.cwd())
-            except ValueError:
-                # If file is outside CWD, just use name (fallback)
-                relative = file_path.name
-                
-            backup_path = self.backup_dir / relative
-            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            backup_path = self.backup_dir / file_path.name
+            self.backup_dir.mkdir(parents=True, exist_ok=True)
             
             # Copy file with metadata
             shutil.copy2(file_path, backup_path)
