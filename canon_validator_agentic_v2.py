@@ -363,23 +363,12 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
 
-# Dashboard Integration
-try:
-    import sys
-    from pathlib import Path
-
-    # Add apps_shared to path for dashboard imports
-    apps_shared_path = Path(__file__).parent / "apps_shared"
-    if str(apps_shared_path) not in sys.path:
-        sys.path.insert(0, str(apps_shared_path))
-    
-    from canon_dashboard import CanonDashboard, DashboardMetrics
-    from canon_dashboard_web import run_server
-    DASHBOARD_AVAILABLE = True
-except ImportError as e:
-    print(f"[L6 CRITICAL] Dashboard dependencies missing: {e}")
-    print("   -> pip install rich flask flask-cors")
-    sys.exit(1) # [GAP 18] Blocking
+# [SYSTEM] Dashboard Integration excised December 28, 2025. 
+print("    [OK] Running in pure CLI mode (UI Deprecated)")
+dashboard_available = False
+dashboard_metrics = None
+dashboard = None
+web_thread = None
 
 # [GRAVITY FIX] DYNAMIC IMPORT SYSTEM
 # Utils layer cannot import from L1-L5 directly - use dynamic loading
@@ -830,23 +819,12 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
-    # === DASHBOARD INITIALIZATION (METRICS ONLY) ===
-    # [DASHBOARD INITIALIZATION] Initialize metrics and web server
+    # === METRICS INITIALIZATION (CLI MODE) ===
+    # [METRICS] Initialize metrics for CLI reporting
     dashboard_metrics = None
     dashboard = None
     web_thread = None
-    dashboard_available = DASHBOARD_AVAILABLE  # Local copy to avoid scope issues
-    
-    if dashboard_available:
-        # ULTRA-HARDENED: Use the singleton pattern and inject into the web module
-        try:
-            dashboard_metrics = DashboardMetrics()
-            import canon_dashboard_web
-            canon_dashboard_web.metrics = dashboard_metrics
-            print(f"   [OK] Dashboard metrics initialized (Singleton mode active)")
-        except Exception as e:
-            print(f"   [!] Dashboard metrics init failed: {e}")
-            dashboard_available = False
+    dashboard_available = False  # CLI mode only
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
@@ -1034,18 +1012,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
             }
             self.append(entry)
             
-            # Forward to dashboard metrics
-            if dashboard_metrics and hasattr(ctx, 'python_files'):
-                current_file = getattr(ctx, 'current_file_path', None)
-                if current_file and not passed:
-                    # Extract violation count from details if present
-                    violation_count = 1
-                    if "violations" in str(details).lower():
-                        import re
-                        match = re.search(r'(\d+)\s+violations?', str(details), re.IGNORECASE)
-                        if match:
-                            violation_count = int(match.group(1))
-                    dashboard_metrics.record_violation(current_file, key_num, violation_count)
+            # Dashboard metrics removed for CLI performance
 
     # Harden Attributes (The "AttributeError" Fix)
     ctx.report = CallableReport(getattr(ctx, 'report', []))
@@ -1156,7 +1123,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     ctx.engine = subatomic_engine
     ctx.safety = safety_guard
     ctx.fission = fission_mgr
-    ctx.dashboard_metrics = dashboard_metrics  # Wire dashboard metrics
+    # Metrics wired for CLI compatibility (not active)
     
     ctx.target_scope = target_scope
     
@@ -1208,9 +1175,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     
     ctx.python_files = [str(p) for p in valid_files]
     print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(ALLOWED_ROOT_FOLDERS)} allowed folders")
-    # Initialize dashboard session
-    if dashboard_metrics:
-        dashboard_metrics.start_session(target_scope, len(ctx.python_files))
+    # CLI mode - no dashboard session initialization
     
     # Print folder scope summary (ASCII TREE)
     print(f"\n   [SCOPE] Verifying Map vs. Territory...")
@@ -1361,32 +1326,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
         return # Halt execution
     # -----------------------------
     
-    # Sync agents with dashboard for visualization
-    try:
-        import canon_dashboard_web
-        canon_dashboard_web.agents_global.clear()
-        canon_dashboard_web.agents_global.extend(ctx.cleaning_crew)
-        print(f"   [DASHBOARD] Synced {len(ctx.cleaning_crew)} agents to visualization")
-        
-        # NOW start the Flask server with agents populated
-        if dashboard_available and web_thread is None:
-            # ULTRA-HARDENED: Let the server handle its own port-retry and startup logic
-            import threading
-            def start_background_dashboard():
-                try:
-                    # Internal retry and path-handling happens inside run_server
-                    run_server('0.0.0.0', 5000, False)
-                except Exception as e:
-                    print(f"   [!] Background dashboard server failed: {e}")
-
-            web_thread = threading.Thread(
-                target=start_background_dashboard,
-                daemon=True
-            )
-            web_thread.start()
-            print(f"   [*] Hardened web dashboard thread launched.")
-    except Exception as e:
-        print(f"   [!] Dashboard sync failed: {e}")
+    # CLI mode - no agent visualization sync
 
     # Inject "Surgeon Mode" into ArchitectureGovernor
     surgeon_prompt = """
@@ -1416,6 +1356,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
 IF (task == "GRAVITY_REFACTOR"):
     ELIMINATE upward imports. Use dynamic imports or relocate logic.
 """
+    
     governor = next((a for a in ctx.cleaning_crew if a.__class__.__name__ == 'ArchitectureGovernor'), None)
     if governor:
         # Try updating system prompt via method or attribute
@@ -1428,7 +1369,6 @@ IF (task == "GRAVITY_REFACTOR"):
     # ===========================================================================
     # [ENHANCEMENT 3] L3 ORCHESTRATION: Categorize Agents (Fixes "Too Fast" Bug)
     # ===========================================================================
-
     atomic_validators = [] # Run PER FILE (takes file_path arg)
     batch_validators = []  # Run ONCE (takes no args)
     monitors = []          # Run ONCE at end
@@ -1495,7 +1435,7 @@ IF (task == "GRAVITY_REFACTOR"):
                         return result
                     except Exception as e:
                         print(f"   [!] Hunter shielded crash: {e}")
-                        ctx.report("HallucinationHunter", 0, False, f"Crash: {str(e)[:80]}")
+                        ctx.report("HallucinationHunter", 0, False, f"Crash: {str(e)[:100]}")
                 agent.execute = hunter_wrapper
             atomic_validators.append(agent)
             print(f"     [+] HallucinationHunter HARDENED — atomic truth enforcement active")
@@ -1537,7 +1477,7 @@ IF (task == "GRAVITY_REFACTOR"):
             atomic_validators.append(agent)
             print(f"     [+] DeadCodePurgerAgent HARDENED — code purity absolute")
             continue
-
+            
         # [L1 SIGNAL HARDENING] SignalAmplifierAgent — maximum naming signal
         if name == 'SignalAmplifierAgent':
             agent.signal_target = "MAX"
@@ -1638,7 +1578,7 @@ IF (task == "GRAVITY_REFACTOR"):
         #   - ctx.python_files: precise final file list (post-healing/moves)
         #   - ctx.report: violation history for metadata tagging
         #   - audit_log: relocation events
-        #   - dashboard_metrics: session stats
+        #   - dashboard_metrics: session stats (CLI mode: None)
     )
     monitors.append(pinecone_agent)
     print(f"     [+] PineconeSovereignAgent armed with ValidationContext for precise sync")
@@ -1783,7 +1723,7 @@ IF (task == "GRAVITY_REFACTOR"):
         drift_result = await resume_agent.compute_and_store_drift_hash(
             files=ctx.python_files,
             reports=ctx.report,
-            metrics=dashboard_metrics
+            metrics=None  # CLI mode
         )
         print(f"   [RESUME] Drift hash stored: {drift_result['hash'][:16]}... ({drift_result['change_level']})")
         monitors.append(resume_agent)
@@ -1818,7 +1758,7 @@ IF (task == "GRAVITY_REFACTOR"):
     
     # [L5 ALERTING HARDENING] External escalation with breach detection
     try:
-        alerting_agent = SovereignAlertingAgent(project_root=project_root, ctx=ctx, dashboard_metrics=dashboard_metrics)
+        alerting_agent = SovereignAlertingAgent(project_root=project_root, ctx=ctx, dashboard_metrics=None)
         total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
         if total_violations > 5:
             alerting_agent.trigger_immediate_alert(severity="HIGH", message=f"Major sovereignty breach: {total_violations} violations")
@@ -2046,10 +1986,8 @@ CURRENT CODE:
         
         print(f"[{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
 
-        # Update dashboard with current file
-        if dashboard_metrics:
-            dashboard_metrics.session.current_file = file_path
-            ctx.current_file_path = file_path  # Store for report callback
+        # CLI mode - no dashboard file tracking
+        ctx.current_file_path = file_path  # Store for report callback
 
         # --- ACTIVE FISSION TRIGGER (Files > 10000 Lines) ---
         # Increased threshold to validate all files comprehensively
@@ -2328,13 +2266,8 @@ CURRENT CODE:
             # Clear processed moves
             ctx.move_instructions = [m for m in ctx.move_instructions if m['source'] != file_path]
         
-        # Update dashboard after file processing
-        if dashboard_metrics:
-            # Determine if file passed or failed based on report
-            file_reports = [r for r in ctx.report if file_name in str(r)]
-            file_passed = len([r for r in file_reports if r.get('status') == 'FAIL']) == 0
-            dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
-    
+        # CLI mode - no dashboard update
+
     # ... (rest of the code remains the same)
     # ===========================================================================
     # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
@@ -2367,19 +2300,13 @@ CURRENT CODE:
         except Exception: pass
 
     # ===========================================================================
-    # [ENHANCEMENT 6] MISSION DASHBOARD & SUMMARY
+    # [ENHANCEMENT 6] MISSION SUMMARY
     # ===========================================================================
     print("\n" + "="*70)
     print(f"MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
     
     # Mark session as complete
-    if dashboard_metrics:
-        dashboard_metrics.session.status = "completed"
-        
-        # Export dashboard report
-        report_path = f"canon_report_{dashboard_metrics.session.session_id}.json"
-        dashboard.export_report(report_path)
-        print(f"[REPORT] Dashboard Report: {report_path}")
+    print(f"[REPORT] Validation complete. Summary generated in ctx.report")
     
     # Fission Stats
     fission_done = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_COMPLETE')
@@ -2446,11 +2373,7 @@ CURRENT CODE:
          for k in keys: key_counts[k] += 1
     for k in sorted(key_counts): print(f"   Key {k}: {key_counts[k]} files")
 
-    if dashboard_metrics:
-        print(f"\n[WEB] Dashboard: http://localhost:5000 (still running)")
-        print("   Press Ctrl+C to stop...")
-    
-    print("="*70)
+    print("\n" + "="*70)
 
 
 async def _execute_move_instruction(move: dict, project_root: Path, ctx):
