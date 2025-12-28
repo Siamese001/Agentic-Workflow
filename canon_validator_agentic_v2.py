@@ -150,28 +150,30 @@ def verify_neural_link():
 verify_neural_link()
 
 # [FINAL PRE-FLIGHT] Reconciliation of all legacy territories
-print(f"\n[FINAL PRE-FLIGHT] Reconciling remaining legacy imports...")
-import re
-patterns = [
-    (r'agentic_core\.L2_execution\.mcp', 'agentic_core.L2_execution.tool_registry'),
-    (r'agentic_core\.L3_orchestration\.mcp', 'agentic_core.L3_orchestration.workflow_engines'),
-    (r'agentic_core\.L4_state\.filesystem', 'agentic_core.L4_state.validation_context'),
-    (r'agentic_core\.L1_cognition\.discovery', 'agentic_core.L1_cognition.thought_engine'),
-    (r'agentic_core\.L2_execution\.P4_agents', 'agentic_core.L2_execution.tool_registry'),
-]
-fixed = 0
-for py_file in Path(project_root / "agentic_core").rglob("*.py"):
-    try:
-        content = py_file.read_text(encoding="utf-8")
-        original = content
-        for old, new in patterns:
-            content = re.sub(old, new, content)
-        if content != original:
-            py_file.write_text(content, encoding="utf-8")
-            fixed += 1
-    except Exception as e: print(f"   [!] Legacy fix failed for {py_file.name}: {e}")
-print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
-print("-" * 70)
+# ONLY run this when script is executed directly, not on import
+if __name__ == "__main__":
+    print(f"\n[FINAL PRE-FLIGHT] Reconciling remaining legacy imports...")
+    import re
+    patterns = [
+        (r'agentic_core\.L2_execution\.mcp', 'agentic_core.L2_execution.tool_registry'),
+        (r'agentic_core\.L3_orchestration\.mcp', 'agentic_core.L3_orchestration.workflow_engines'),
+        (r'agentic_core\.L4_state\.filesystem', 'agentic_core.L4_state.validation_context'),
+        (r'agentic_core\.L1_cognition\.discovery', 'agentic_core.L1_cognition.thought_engine'),
+        (r'agentic_core\.L2_execution\.P4_agents', 'agentic_core.L2_execution.tool_registry'),
+    ]
+    fixed = 0
+    for py_file in Path(project_root / "agentic_core").rglob("*.py"):
+        try:
+            content = py_file.read_text(encoding="utf-8")
+            original = content
+            for old, new in patterns:
+                content = re.sub(old, new, content)
+            if content != original:
+                py_file.write_text(content, encoding="utf-8")
+                fixed += 1
+        except Exception as e: print(f"   [!] Legacy fix failed for {py_file.name}: {e}")
+    print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
+    print("-" * 70)
 
 # ===========================================================================
 # [PHASE -3] NON-PYTHON ASSET COMPLIANCE – COMPREHENSIVE AUTO-HEALING
