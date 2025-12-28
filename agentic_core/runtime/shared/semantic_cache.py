@@ -166,7 +166,6 @@ class SemanticCache:
         )
 
     def set(
-        """Docstring."""
         self,
         prompt: str,
         response: str,
@@ -274,8 +273,7 @@ class SemanticCache:
         return len(expired_keys)
 
 def create_semantic_cache(
-    """Docstring."""
-    TTL: int = 3600,
+    ttl: int = 3600,
     max_entries: int = 10000,
 ) -> SemanticCache:
     """Factory function to create a semantic cache.
