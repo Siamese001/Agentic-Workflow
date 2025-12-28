@@ -152,6 +152,36 @@ class HygieneValidator:
         return orphans
 
 
+    def get_orphans_raw(self) -> List[str]:
+        """Returns raw list of orphan file paths for the pruner script."""
+        orphans = []
+        imported_targets = set(self.import_graph.keys())
+
+        for file in self.all_py_files:
+            filename = os.path.basename(file)
+
+            # Skip files that are expected to be standalone
+            if filename == "__init__.py" or filename in self.entry_points:
+                continue
+
+            # Skip test files and scripts (they're meant to be run, not imported)
+            if "tests" in file or "scripts" in file or "test_" in filename:
+                continue
+
+            # Loose check: if the filename (or path) appears in any import target
+            is_imported = False
+            for target in imported_targets:
+                # Matches if 'agentic_core/utils.py' is in target 'agentic_core/utils.py'
+                if file.endswith(target) or target.endswith(file):
+                    is_imported = True
+                    break
+
+            if not is_imported:
+                orphans.append(file)
+
+        return orphans
+
+
 if __name__ == "__main__":
     import sys
 
