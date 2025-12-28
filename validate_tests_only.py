@@ -38,11 +38,11 @@ valid_files = []
 
 for py_file in python_files:
     try:
-        rel_path = py_file.relative_to(tests_folder)
+        rel_path = py_file.relative_to(project_root)
         # Depth = number of parent directories + 1 (for the file itself)
-        # tests/file.py = depth 1
-        # tests/unit/file.py = depth 2
-        # tests/unit/agentic_core/file.py = depth 3
+        # From project root:
+        # tests/unit/file.py = depth 3 ✓
+        # tests/unit/module/file.py = depth 4 ✗
         depth = len(rel_path.parts)
         
         if depth != 3:
@@ -50,7 +50,7 @@ for py_file in python_files:
         else:
             valid_files.append((py_file, rel_path))
     except ValueError:
-        print(f"[WARNING] File outside tests folder: {py_file}")
+        print(f"[WARNING] File outside project root: {py_file}")
 
 # Report results
 print("\n" + "="*70)
