@@ -5,8 +5,9 @@ import uuid
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from pydantic import BaseModel
-from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from services.configuration import ConfigurationService
+
+from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
 if TYPE_CHECKING:
     pass
