@@ -214,8 +214,8 @@ logger.info("[L6_AUDIT] Action at line 187")
         
         logger.info(f"🔬 ATOMIC FISSION TRIGGERED: {file_path}")
         logger.info(f"   Reason: {reason}")
-         logger.info("[L6_AUDIT] Action at line 217")
-         logger.info("[L6_AUDIT] Action at line 218")
+        logger.info("[L6_AUDIT] Action at line 217")
+        logger.info("[L6_AUDIT] Action at line 218")
         
         try:
             # Generate fission prompt
@@ -253,9 +253,9 @@ logger.info("[L6_AUDIT] Action at line 187")
                     success=True
                 )
             else:
+                logger.info("[L6_AUDIT] Action at line 258")
                 return FissionResult(
                     triggered=True,
-                    logger.info("[L6_AUDIT] Action at line 258")
                     reason=reason,
                     new_files={},
                     original_file=file_path,
@@ -437,7 +437,7 @@ trigger, reason = fission_manager.should_trigger_fission(
     last_error=error_msg,
     lines_deleted=deleted_lines
 )
- logger.info("[L6_AUDIT] Action at line 440")
+logger.info("[L6_AUDIT] Action at line 440")
 
 if trigger:
     logger.info("[L6_AUDIT] Action at line 443")

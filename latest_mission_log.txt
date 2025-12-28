@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-28 04:32:45
+MISSION LOG - 2025-12-28 04:34:41
 ================================================================================
-COMMAND: cd "c:\Git\Agentic-Workflow" && python -c "from agentic_core.L3_orchestration.workflow_engines.autonomous_sovereign_core import AutonomousSovereignCore; print('✅ Autonomous Sovereign Core import successful from L3')"
+COMMAND: python c:\Git\Agentic-Workflow\canon_validator_agentic_v2.py --target agentic_core
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 0
+EXIT CODE: 1
 ================================================================================
 
