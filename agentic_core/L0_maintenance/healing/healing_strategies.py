@@ -437,11 +437,13 @@ HEALING_STRATEGIES = [
     DirectRedisHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     DirectLLMHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     FilesystemBypassHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
-    VectorHealingStrategy(),  # Phase 17B: Vector State Self-Correction (Dec 27, 2025)
-    KnowledgeGraphHealingStrategy(),  # Phase 17C: Knowledge Map Sovereignty (Dec 27, 2025)
-    GitKrakenHealingStrategy(),  # Phase 17D: Sovereign Version Control (Dec 27, 2025)
-    DeepWikiHealingStrategy(),  # Phase 17E: Knowledge & Documentation Alignment (Dec 27, 2025)
-    L6AuditHealingStrategy(),  # Phase 17F: Observability Autonomy (Dec 27, 2025)
+    # Use factory functions to ensure async clients are initialized if needed
+    # or ensuring consistent instantiation patterns
+    VectorHealingStrategy(),
+    KnowledgeGraphHealingStrategy(),
+    GitKrakenHealingStrategy(),
+    DeepWikiHealingStrategy(),
+    L6AuditHealingStrategy(),
     StructureHealing(),
     UnderscoreFieldHealing(),
     DarkReasoningHealing(),

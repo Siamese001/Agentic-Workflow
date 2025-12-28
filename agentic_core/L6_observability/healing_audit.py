@@ -43,9 +43,14 @@ def log_healing_action(
     # Ensure log directory exists
     HEALING_LOG.parent.mkdir(parents=True, exist_ok=True)
     
-    # Append to JSONL log
-    with open(HEALING_LOG, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry) + "\n")
+    # Append to JSONL log with flush to ensure write persistence
+    try:
+        with open(HEALING_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+            f.flush()
+    except Exception as e:
+        # Fallback print if file IO fails
+        print(f"!!! [L6 FATAL] Could not write to healing log: {e}")
 
 
 def get_healing_history(limit: int = 100) -> list:
