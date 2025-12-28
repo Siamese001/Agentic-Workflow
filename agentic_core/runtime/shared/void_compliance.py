@@ -464,10 +464,6 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
         actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
 
-        # Whitelist L6_meta for autonomous agents
-        if "L6_meta" in actual_l1:
-            expected_l1.add("L6_meta")
-
         unexpected_l1 = actual_l1 - expected_l1
         for bad in unexpected_l1:
             violations.append((root_path / bad, f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}"))

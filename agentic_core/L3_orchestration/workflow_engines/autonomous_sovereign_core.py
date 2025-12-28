@@ -1,6 +1,6 @@
 """
-L6 Meta: Autonomous Sovereign Core
-The eternal orchestrator that watches all layers and coordinates autonomous responses.
+L3 Orchestration: Autonomous Sovereign Core
+Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
 """
 
 import asyncio
@@ -13,7 +13,7 @@ from watchdog.observers import Observer
 
 
 class TerritoryWatcher(FileSystemEventHandler):
-    """Watches the entire territory for changes and feeds L6 Executive"""
+    """Watches the entire territory for changes and feeds L3 Orchestration Executive"""
     
     def __init__(self, core):
         self.core = core
@@ -22,7 +22,7 @@ class TerritoryWatcher(FileSystemEventHandler):
     def on_modified(self, event):
         if event.is_directory or any(x in event.src_path for x in ["pycache", ".git", ".idx"]):
             return
-        # Thread-safe handoff to the L6 Executive Queue
+        # Thread-safe handoff to the L3 Executive Queue
         self.core.loop.call_soon_threadsafe(
             self.core.event_queue.put_nowait, 
             {"path": event.src_path, "type": "modify"}
@@ -84,7 +84,7 @@ class AutonomousSovereignCore:
         self.l4_guardian.awaken()
 
     async def sovereign_executive_worker(self):
-        """L6: The central brain processing prioritized territory events"""
+        """L3: The central brain processing prioritized territory events"""
         while self.running:
             event = await self.event_queue.get()
             path = event["path"]
@@ -117,7 +117,7 @@ class AutonomousSovereignCore:
                 self.event_queue.task_done()
 
     async def eternal_watch(self):
-        """L6: Eternal monitoring loop"""
+        """L3: Eternal monitoring loop"""
         # Launch background daemons and the Executive Worker
         asyncio.create_task(self.sovereign_executive_worker())
         
@@ -127,19 +127,19 @@ class AutonomousSovereignCore:
         observer.schedule(handler, str(Path.cwd()), recursive=True)
         observer.start()
         
-        print(f"   [L6] Territory watcher active on: {Path.cwd()}")
+        print(f"   [L3] Territory watcher active on: {Path.cwd()}")
         
         try:
             while self.running:
                 await asyncio.sleep(1)
         except KeyboardInterrupt:
-            print("\n[L6] Sovereign Core shutting down...")
+            print("\n[L3] Sovereign Core shutting down...")
             observer.stop()
             observer.join()
 
 
 async def main():
-    """Entry point for L6 Autonomous Sovereign Core"""
+    """Entry point for L3 Autonomous Sovereign Core"""
     core = AutonomousSovereignCore()
     await core.eternal_watch()
 
