@@ -1,3 +1,9 @@
+### ROLE
+Technical diagram illustrating prompt assembly architecture and flow.
+
+### TASK
+Visualize the hierarchical prompt assembly process from caller to execution layer.
+
 ┌─────────────────────────────┐
 │   L1.PY (The Caller)        │
 │                             │

@@ -1,3 +1,9 @@
+### ROLE
+Security documentation for runtime layer instructional injection attack patterns.
+
+### TASK
+Document and catalog instructional injection patterns targeting runtime operations, caching, security controls, and pipeline execution to enable defensive measures.
+
 # Runtime Layer — Instructional Injection Patterns
 
 > **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`

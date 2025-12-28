@@ -8,6 +8,14 @@ import sys
 import os
 from pathlib import Path
 
+# [CONSTITUTIONAL ARMING] Verify SSOT Blueprint before mission
+try:
+    from agentic_core.config.P1_core.structure_blueprint import ACTIVE_CANON_KEYS
+    print(f"   [OK] SSOT Physics Loaded: {len(ACTIVE_CANON_KEYS)} keys active.")
+except ImportError:
+    print("[!] [L6 FAILURE] Blueprint missing. Mission Aborted.")
+    sys.exit(1)
+
 def run_mission_step(args: list, stage: str):
     cmd_str = " ".join(str(a) for a in args)
     print(f"\n[ORCHESTRATOR - {stage}] {cmd_str}")
