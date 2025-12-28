@@ -78,7 +78,7 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     
     from agentic_core.config.P1_core.sovereign_env import get_env
     env = get_env(Path(target_path))
-    required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
+    required = ["GEMINI_API_KEY", "GEMINI_MODEL"]
     missing = [k for k in required if not getattr(env, k, None)]
     
     score = 100.0 * (1 - (len(missing) / len(required)))
