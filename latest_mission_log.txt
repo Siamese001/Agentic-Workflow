@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-28 04:19:13
+MISSION LOG - 2025-12-28 04:20:56
 ================================================================================
-COMMAND: python agentic_core\L0_maintenance\auditors\sovereign_auditor_v3.py 2>&1 | Select-Object -First 20
+COMMAND: python agentic_core\L0_maintenance\auditors\sovereign_auditor_v3.py 2>&1 | Select-Object -First 25
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 0
 ================================================================================
