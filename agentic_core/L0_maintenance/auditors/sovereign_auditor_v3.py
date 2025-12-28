@@ -20,6 +20,12 @@ REPO_ROOT = Path(__file__).parent.parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+# Import Sovereign Environment for SSOT Config
+try:
+    from agentic_core.config.P1_core.sovereign_env import get_env
+except ImportError:
+    get_env = None
+
 # Import available Guardians
 try:
     from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
@@ -68,9 +74,17 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     """Checks for .env existence and core neural link keys."""
     env_path = Path(target_path) / ".env"
     if not env_path.exists(): return 0.0, [".env missing"]
-    content = env_path.read_text()
-    required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-    missing = [k for k in required if k not in content or not os.getenv(k)]
+    
+    # Utilize Validator-aligned env loader
+    if get_env:
+        e = get_env(Path(target_path))
+        required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
+        missing = [k for k in required if not getattr(e, k, None) and not os.getenv(k)]
+    else:
+        content = env_path.read_text()
+        required = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
+        missing = [k for k in required if k not in content]
+
     score = 100.0 * (1 - (len(missing) / len(required)))
     return score, [f"Missing {k}" for k in missing]
 
