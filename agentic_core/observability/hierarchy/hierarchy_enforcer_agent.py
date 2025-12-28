@@ -14,7 +14,7 @@ class HierarchyEnforcerAgent:
     """
     
     def __init__(self, project_root: Path, ctx):
-        from agentic_core.config.P1_core.structure_blueprint import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             SOVEREIGN_REGISTRY,
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
@@ -26,7 +26,7 @@ class HierarchyEnforcerAgent:
         self.ctx = ctx
         
         # [DEPTH ARCHIVAL] Where depth-drift goes to die
-        from agentic_core.config.P1_core.structure_blueprint import DEPRECATION_ARCHIVE
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import DEPRECATION_ARCHIVE
         self.archive_root = project_root / DEPRECATION_ARCHIVE / "depth_violations"
         self.archive_root.mkdir(parents=True, exist_ok=True)
         
@@ -72,7 +72,7 @@ class HierarchyEnforcerAgent:
         """
         Apps depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
@@ -109,7 +109,7 @@ class HierarchyEnforcerAgent:
         """
         Tests depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
@@ -146,7 +146,7 @@ class HierarchyEnforcerAgent:
         Universal depth enforcement for all file types under agentic_core.
         Archives non-Python files that violate depth 4 rule.
         """
-        from agentic_core.config.P1_core.structure_blueprint import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             SOVEREIGN_REGISTRY,
         )
         agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY

@@ -10,7 +10,7 @@ from typing import Dict
 import redis
 from redis.connection import ConnectionPool
 
-from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 
 class RedisSovereignAgent:

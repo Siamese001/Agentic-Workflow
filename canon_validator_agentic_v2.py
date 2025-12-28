@@ -9,11 +9,12 @@ if sys.platform.startswith("win"):
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.7 - DYNAMIC HEALING ENGINE
-(Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
+VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM
+(Fixes: MD5 checksum tracking, Lazy LLM init, Enhanced error handling)
 """
 
 import asyncio
+import hashlib
 import importlib
 import inspect
 import logging
@@ -24,11 +25,11 @@ import time
 import traceback
 from pathlib import Path
 from typing import Any, Optional, List, Dict
-from agentic_core.config.P1_core.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, 
     ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP, CANON_AGENT_REGISTRY
 )
-from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
 import sys
@@ -68,7 +69,7 @@ print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
 # [ETERNAL INDEX] Ensure territory embeddings bootstrapped
 try:
-    from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import bootstrap_territory_index
     bootstrap_territory_index()
     print("   [OK] Semantic territory index ready")
 except Exception as e:
@@ -795,11 +796,22 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     [L3 ORCHESTRATOR]
     Executes the full Agentic Validation Mission.
     FULLY HARDENED: Instantiates Safety, Engine, and Fission Logic and wires to Context.
+    VERSION 2.8: Infinite loop prevention via MD5 checksums + Lazy LLM initialization
     """
     import sys  # Ensure sys is available in this scope
     
+    # [INFINITE LOOP PREVENTION] Track attempted fixes by file hash
+    attempted_fixes = {}  # file_path: last_hash
+    
+    def get_file_hash(path):
+        """MD5 Checksum to prevent infinite healing loops."""
+        try:
+            return hashlib.md5(Path(path).read_bytes()).hexdigest()
+        except:
+            return None
+    
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
+    print(f"DEBUG: VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM")
     
     # Apply healing mode flags
     if structural_only:
@@ -1163,6 +1175,10 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     
     PROTECTED_FOLDERS = load_gitignore_patterns()
     
+    # [ROOT CAUSE FIX] Explicitly target the requested directory
+    print(f"   [INIT] Scanning target: {target_path.absolute()}")
+    print(f"   [INIT] Project root: {project_root_path.absolute()}")
+    
     # Discover all Python files in target scope, excluding protected folders
     # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
     discovered_files = []
@@ -1173,7 +1189,8 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
             if file.endswith('.py'):
                 discovered_files.append(Path(root) / file)
     
-    print(f"   [PROTECTED] Skipping folders: {', '.join(sorted(PROTECTED_FOLDERS))}")
+    print(f"   [SCAN] Found {len(discovered_files)} Python files in target")
+    print(f"   [PROTECTED] Skipping folders: {', '.join(sorted(list(PROTECTED_FOLDERS)[:10]))}")
     
     # === L6 RUNTIME: Void Compliance Enforcement ===
     valid_files, violations = enforce_void_compliance(discovered_files, project_root_path)
@@ -1986,8 +2003,18 @@ CURRENT CODE:
     # ===========================================================================
     print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
     
+    attempted_fixes = {}
+    
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = Path(file_path).name
+        
+        # [CIRCUIT BREAKER] Skip if file hasn't changed since last healing attempt
+        current_hash = get_file_hash(file_path)
+        if attempted_fixes.get(file_path) == current_hash:
+            print(f"[{idx}/{len(ctx.python_files)}] {file_name} [SKIP: No change after last fix]")
+            continue
+        
+        attempted_fixes[file_path] = current_hash
         
         # === L6 RUNTIME: ACTIVE CANON KEYS FROM SSOT ===
         applicable_keys = ACTIVE_CANON_KEYS
@@ -1996,7 +2023,9 @@ CURRENT CODE:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                 content_preview = f.read(500)  # First 500 chars for heuristics
                 loc_count = len(f.readlines())
-        except: loc_count = 0
+        except Exception as e:
+            print(f"\n    [ERR] Skipping {file_name} due to read error: {e}")
+            continue
         
         print(f"[{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
 

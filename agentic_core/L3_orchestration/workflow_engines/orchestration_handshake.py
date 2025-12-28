@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import (
     CachedOrchestrator,
 )

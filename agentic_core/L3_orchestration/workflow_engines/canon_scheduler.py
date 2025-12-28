@@ -9,7 +9,7 @@ import asyncio
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L4_state.validation_context.validation_context import ValidationContext
 
 if TYPE_CHECKING:
     from agentic_core.intervention_server import (

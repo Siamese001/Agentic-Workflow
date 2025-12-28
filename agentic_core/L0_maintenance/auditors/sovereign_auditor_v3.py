@@ -17,7 +17,7 @@ from enum import Enum
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 try:
-    from agentic_core.config.P1_core.structure_blueprint import ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP
 except ImportError:
     raise RuntimeError("CRITICAL: SSOT Blueprint missing. Physics cannot be established.")
 
@@ -76,7 +76,7 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     if not env_path.exists(): 
         return 0.0, ["CRITICAL: Neural Link Offline - .env missing"]
     
-    from agentic_core.config.P1_core.sovereign_env import get_env
+    from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
     env = get_env(Path(target_path))
     required = ["GEMINI_API_KEY", "GEMINI_MODEL"]
     missing = [k for k in required if not getattr(env, k, None)]

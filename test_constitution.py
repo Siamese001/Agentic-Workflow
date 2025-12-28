@@ -76,7 +76,7 @@ def test_bootstrap():
     """Test territory bootstrap."""
     print("\n=== Testing Territory Bootstrap ===")
     try:
-        from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import bootstrap_territory_index
         
         # Test bootstrap (will fail if API keys missing)
         try:

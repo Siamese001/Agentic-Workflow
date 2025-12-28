@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-from agentic_core.config.P1_core.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     CANON_SIGNALS,
     CORE_SUBFOLDER_MAP,
