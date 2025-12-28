@@ -26,7 +26,7 @@ class AutonomousStateGuardian:
     """
     
     def __init__(self):
-        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
             create_autonomous_checkpoint_manager,
         )
         

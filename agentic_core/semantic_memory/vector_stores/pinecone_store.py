@@ -3,9 +3,12 @@ Pinecone Vector Store Implementation – Sovereign Primary (Serverless)
 SSOT-aligned integration using SovereignConfig.
 """
 import time
-from typing import List, Optional, Dict, Any
-from pinecone import Pinecone, ServerlessSpec, PineconeApiException
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from typing import Any, Dict, List, Optional
+
+from pinecone import Pinecone, PineconeApiException, ServerlessSpec
+
+from agentic_core.config.environments.sovereign_config import config
+
 
 class SovereignPineconeStore:
     """Sovereign wrapper for Pinecone serverless index."""

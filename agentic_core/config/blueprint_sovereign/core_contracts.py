@@ -7,103 +7,103 @@ No model definitions are permitted here.
 """
 
 # 1. Base Models
-from agentic_core.schemas.base import SovereignBaseModel, Territory
-
-# 2. Messaging & Communication
-from agentic_core.schemas.messaging import (
-    AgentMessage,
-    ResidualAgentMessage,
-    MessageType,
-)
-
-# 3. Tool Arguments
-from agentic_core.schemas.tool_args import (
-    ReadFileArgs,
-    WriteFileArgs,
-    MoveFileArgs,
-    ListFilesArgs,
-    ExecuteCommandArgs,
-    DeleteFileArgs,
-    CreateDirectoryArgs,
-)
-
-# 4. Reasoning & Cognitive Core
-from agentic_core.schemas.reasoning import (
-    AgentThoughtProcess,
-    CodeGenerationResult,
-    ResearchResult,
-    AgentPlan,
-)
+from agentic_core.schemas.models.base import SovereignBaseModel, Territory
 
 # 5. Consensus & Deliberation
-from agentic_core.schemas.consensus import ConsensusVerdict, ModelOpinion
-
-# 6. Style & Generation
-from agentic_core.schemas.tone import (
-    ToneType,
-    StyleProfile,
-    GenerationConfig,
-)
-
-# 7. Micro-Runtime & Execution
-from agentic_core.schemas.runtime_micro import (
-    MicroStage,
-    HopState,
-    RetryPolicy,
-    MicroCheckpoint,
-    StageTransition,
-)
-
-# 8. Governance & Injection
-from agentic_core.schemas.injection import (
-    InjectionType,
-    InjectionScope,
-    InjectionPattern,
-)
+from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
 
 # 9. Context Passport (Flattened Option A)
-from agentic_core.schemas.context_passport import (
-    ThermalProfile,
-    ThermalConfig,
+from agentic_core.schemas.models.context_passport import (
     HardState,
-    SoftState,
-    SignedClaim,
     SignalContext,
-)
-
-# 10. System Profiles
-from agentic_core.schemas.profiles import SafetyProfile, BudgetProfile
-
-# 11. Simulation & Metacognition
-from agentic_core.schemas.simulation import SimScenario, SimOutcome
-from agentic_core.schemas.metacognition import Hypothesis, MetacognitionReport
-
-# 12. Golden State & Benchmarking
-from agentic_core.schemas.golden_state import (
-    GoldenStateTestCase,
-    JudgeVerdict,
-    EvalResult,
-    GoldenCase,
-    GoldenOutput,
-)
-
-# 13. Runtime Shared (Phase 2C Residuals)
-from agentic_core.schemas.runtime_shared import (
-    LLMResponse,
-    AgentResponse,
-    ResidualValidationResult,
-    ReasoningConfig,
-    HopStatus,
-    GateDecision,
-    ValidationSeverity,
-    WorkflowCheckpoint,
-    ThematicAnalysis,
-    RAGState,
-    CircuitState,
+    SignedClaim,
+    SoftState,
+    ThermalConfig,
+    ThermalProfile,
 )
 
 # 14. Legacy Registry from core_contracts.py
 from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
+
+# 12. Golden State & Benchmarking
+from agentic_core.schemas.models.golden_state import (
+    EvalResult,
+    GoldenCase,
+    GoldenOutput,
+    GoldenStateTestCase,
+    JudgeVerdict,
+)
+
+# 8. Governance & Injection
+from agentic_core.schemas.models.injection import (
+    InjectionPattern,
+    InjectionScope,
+    InjectionType,
+)
+
+# 2. Messaging & Communication
+from agentic_core.schemas.models.messaging import (
+    AgentMessage,
+    MessageType,
+    ResidualAgentMessage,
+)
+from agentic_core.schemas.models.metacognition import Hypothesis, MetacognitionReport
+
+# 10. System Profiles
+from agentic_core.schemas.models.profiles import BudgetProfile, SafetyProfile
+
+# 4. Reasoning & Cognitive Core
+from agentic_core.schemas.models.reasoning import (
+    AgentPlan,
+    AgentThoughtProcess,
+    CodeGenerationResult,
+    ResearchResult,
+)
+
+# 7. Micro-Runtime & Execution
+from agentic_core.schemas.models.runtime_micro import (
+    HopState,
+    MicroCheckpoint,
+    MicroStage,
+    RetryPolicy,
+    StageTransition,
+)
+
+# 13. Runtime Shared (Phase 2C Residuals)
+from agentic_core.schemas.models.runtime_shared import (
+    AgentResponse,
+    CircuitState,
+    GateDecision,
+    HopStatus,
+    LLMResponse,
+    RAGState,
+    ReasoningConfig,
+    ResidualValidationResult,
+    ThematicAnalysis,
+    ValidationSeverity,
+    WorkflowCheckpoint,
+)
+
+# 11. Simulation & Metacognition
+from agentic_core.schemas.models.simulation import SimOutcome, SimScenario
+
+# 6. Style & Generation
+from agentic_core.schemas.models.tone import (
+    GenerationConfig,
+    StyleProfile,
+    ToneType,
+)
+
+# 3. Tool Arguments
+from agentic_core.schemas.models.tool_args import (
+    CreateDirectoryArgs,
+    DeleteFileArgs,
+    ExecuteCommandArgs,
+    ListFilesArgs,
+    MoveFileArgs,
+    ReadFileArgs,
+    WriteFileArgs,
+)
 
 # Final Centralized SSOT Registry
 FINAL_REGISTRY = {

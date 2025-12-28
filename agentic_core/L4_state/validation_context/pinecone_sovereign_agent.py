@@ -122,7 +122,8 @@ class PineconeSovereignAgent:
                 fission_active=False
             )
             # Parse embedding from response (expected format: JSON with "embedding" key)
-            import json, re
+            import json
+            import re
             json_match = re.search(r'\{.*\}', response, re.DOTALL)
             if json_match:
                 data = json.loads(json_match.group())

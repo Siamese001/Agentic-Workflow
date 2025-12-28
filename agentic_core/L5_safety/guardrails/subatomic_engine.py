@@ -209,7 +209,9 @@ class SubAtomicEngine:
         # [L6 LAZY INIT] Instantiate Pinecone gateway only when needed
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+                    PineconeSovereignAgent,
+                )
                 self.pinecone = PineconeSovereignAgent(Path("."))  # project_root will be resolved inside
                 print("   [OK] SubAtomicEngine: Hybrid routing activated (lazy)")
             except Exception as e:
@@ -312,7 +314,9 @@ class SubAtomicEngine:
         # [L6 LAZY INIT] Ensure pinecone gateway is ready
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+                    PineconeSovereignAgent,
+                )
                 self.pinecone = PineconeSovereignAgent(Path("."))
             except Exception as e:
                 print(f"   [!] Routing failed to initialize Pinecone: {e}")

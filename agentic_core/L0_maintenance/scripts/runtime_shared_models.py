@@ -7,20 +7,21 @@ Note: Some models renamed to avoid conflicts:
 - ValidationResult -> ResidualValidationResult
 """
 from agentic_core.schemas.models.core_contracts import (
+    AgentResponse,
+    CircuitState,
+    GateDecision,
+    HopStatus,
     LLMResponse,
     MessageType,
-    ResidualAgentMessage,
-    AgentResponse,
-    ResidualValidationResult,
+    RAGState,
     ReasoningConfig,
-    HopStatus,
-    GateDecision,
+    ResidualAgentMessage,
+    ResidualValidationResult,
+    ThematicAnalysis,
     ValidationSeverity,
     WorkflowCheckpoint,
-    ThematicAnalysis,
-    RAGState,
-    CircuitState,
 )
+
 
 # Exception classes remain here (not schema models)
 class AgenticWorkflowError(Exception):

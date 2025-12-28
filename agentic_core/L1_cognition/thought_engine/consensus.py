@@ -11,6 +11,7 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from openai import AsyncOpenAI
+
 from agentic_core.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
 
 LOGGER = logging.getLogger(__name__)

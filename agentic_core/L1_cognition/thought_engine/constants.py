@@ -8,12 +8,12 @@ from pathlib import Path
 
 # Path insert no longer needed - using absolute import
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    ROOT_WHITELIST, 
-    SOVEREIGN_REGISTRY,
-    MIN_DEPTH,
     MAX_DEPTH,
     MAX_LINES,
-    MIN_LINES
+    MIN_DEPTH,
+    MIN_LINES,
+    ROOT_WHITELIST,
+    SOVEREIGN_REGISTRY,
 )
 
 # Exclusion Zones

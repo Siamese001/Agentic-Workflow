@@ -20,7 +20,7 @@ from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
 )
 
 # L4 Checkpoint integration
-from agentic_core.L4_state.autonomous_checkpoint_manager import (
+from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
     create_autonomous_checkpoint_manager,
 )
 

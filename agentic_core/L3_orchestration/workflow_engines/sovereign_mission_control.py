@@ -10,6 +10,7 @@ sys.path.append(str(REPO_ROOT))
 from agentic_core.L0_maintenance.scripts.sovereign_auditor_v3 import main as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
+
 async def execute_unified_mission(target="agentic_core"):
     """
     [L6 MISSION CONTROL]

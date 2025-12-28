@@ -6,6 +6,7 @@ Defines safety and budget profiles for system execution.
 
 from pydantic import BaseModel, Field
 
+
 class SafetyProfile(BaseModel):
     """Safety configuration profile used by execution profiles."""
     safety_tier: str = Field(default="standard", description="standard | strict | relaxed | debug")

@@ -3,11 +3,11 @@
 One-Off Bulk Hierarchy Healer - Eternal Depth 4 Alignment
 """
 
-import shutil
 import os
+import shutil
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # === CONFIGURATION ===
 DRY_RUN = False                 # Set False to execute real moves

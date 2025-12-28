@@ -6,7 +6,8 @@ These models enforce "Chain of Thought" transparency and provide
 output schemas for specialized tasks like coding and research.
 """
 
-from typing import Optional, List, Dict, Any, Literal
+from typing import Any, Dict, List, Literal, Optional
+
 from pydantic import BaseModel, Field, field_validator
 
 # ==========================================

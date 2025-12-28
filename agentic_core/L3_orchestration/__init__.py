@@ -34,6 +34,7 @@ from agentic_core.L3_orchestration.workflow_engines.fission_manager import (
 from agentic_core.L3_orchestration.workflow_engines.git_safety_handler import (
     GitSafetyHandler,
 )
+
 try:
     from agentic_core.L3_orchestration.workflow_engines.mcp_router import MCPRouter
 except ImportError:

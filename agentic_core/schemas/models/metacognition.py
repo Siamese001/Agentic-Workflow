@@ -6,7 +6,9 @@ and uncertainty quantification.
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
+
 
 class Hypothesis(BaseModel):
     """A lightweight hypothesis generated during the reasoning layer."""

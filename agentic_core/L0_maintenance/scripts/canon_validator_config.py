@@ -9,12 +9,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    ROOT_WHITELIST, 
-    SOVEREIGN_REGISTRY,
-    MIN_DEPTH,
     MAX_DEPTH,
     MAX_LINES,
-    MIN_LINES
+    MIN_DEPTH,
+    MIN_LINES,
+    ROOT_WHITELIST,
+    SOVEREIGN_REGISTRY,
 )
 
 # Law 3: The Law of The Void - Root directory is sacred

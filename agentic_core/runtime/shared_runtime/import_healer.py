@@ -6,7 +6,7 @@ Prevents import breakage when enforcing strict depth policies
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Set, Tuple
 
 
 class ImportHealer:

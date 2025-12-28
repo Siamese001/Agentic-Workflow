@@ -8,10 +8,11 @@ This module supports a dual-layer messaging architecture:
 2. Residual Messaging: Lightweight, role-based runtime models for LLM compatibility.
 """
 
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, List
-from agentic_core.schemas.base import SovereignBaseModel
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from agentic_core.schemas.models.base import SovereignBaseModel
 
 # ==========================================
 # Core Message Types

@@ -9,9 +9,10 @@ Note: 'Residual' prefixes are maintained to prevent collisions with
 legacy Phase 1 models during the final migration.
 """
 
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
 
 # ==========================================

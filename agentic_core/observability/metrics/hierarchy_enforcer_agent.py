@@ -15,9 +15,9 @@ class HierarchyEnforcerAgent:
     
     def __init__(self, project_root: Path, ctx):
         from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-            SOVEREIGN_REGISTRY,
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
+            SOVEREIGN_REGISTRY,
         )
         self.canon_structure = SOVEREIGN_REGISTRY  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         self.l3_map = CORE_L3_SUBFOLDER_MAP

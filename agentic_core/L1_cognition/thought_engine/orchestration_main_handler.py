@@ -13,7 +13,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol, Set
 
-from agentic_core.tools.filesystem import WriteFileArgs, write_file
 from agentic_core.agents.consolidated import (
     CanonStructuralEngineer,
     CodeJanitor,
@@ -29,6 +28,7 @@ from agentic_core.agents.consolidated import (
 
 # Phase 3: UniversalContext
 from agentic_core.L4_state.validation_context.validation_context import ValidationContext
+from agentic_core.tools.filesystem import WriteFileArgs, write_file
 
 # Phase 5: L1-L5 Unified Architecture
 
