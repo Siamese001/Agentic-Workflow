@@ -5,10 +5,10 @@ This document defines the **spirit, rationale, and human guidance** of the archi
 ## 1. THE PHYSICS (SSOT LAW)
 
 **THE ONLY SOURCE OF TRUTH (SSOT) FOR HIERARCHY, DEPTHS, AND KEY MAPPINGS IS:**
-The `structure_blueprint.py` located in the sovereign configuration territory.
+The sovereign configuration blueprint (`structure_blueprint.py`).
 
 - **Constraint**: Do not reference, repeat, or visualize the directory structure in this Markdown file.
-- **MANDATORY**: Always execute `sovereign_mission_control.py` for any validation, healing, or verification mission.
+- **MANDATORY**: Always execute the sovereign orchestration entry point (`sovereign_mission_control.py`) to maintain the "Eternal Circuit."
 
 ## 2. CANON KEY CONSOLIDATION — December 24, 2025
 
@@ -26,9 +26,9 @@ The `structure_blueprint.py` located in the sovereign configuration territory.
 
 ## 4. CANON KEY ENFORCEMENT (SSOT ONLY)
 
-- **Source of Truth**: The definition and mapping of active keys (0–18) are located EXCLUSIVELY in `agentic_core/config/P1_core/structure_blueprint.py`.
-- **Constraint**: NEVER hardcode key definitions in this Markdown file.
-- **Action**: Before validating any file, you MUST read the `ACTIVE_CANON_KEYS` and `CANON_AGENT_REGISTRY` from the blueprint to determine the applicable laws.
+- **Source of Truth**: The definition and mapping of active keys (0–18) are located EXCLUSIVELY in the sovereign configuration blueprint.
+- **Constraint**: NEVER hardcode key definitions, counts, or ranges in this Markdown file.
+- **Action**: Dynamically import and read `ACTIVE_CANON_KEYS` from the blueprint before any agent execution to determine current laws.
 
 ## 5. AGENT DISCOVERY PROTOCOL
 
