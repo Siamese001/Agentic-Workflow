@@ -1,8 +1,8 @@
 """
-L3_orchestration/workflow_engines – Sovereign Territory
+L3_orchestration/fission_logic – Sovereign Territory
 
 Purpose:
-    State machine, DAG, and reactive workflow implementations. Reference: Temporal.io patterns.
+    Workflow composition and agent handoff. Memory-aware routing.
 
 Best Practices:
     - Single responsibility per module

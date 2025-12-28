@@ -1,8 +1,8 @@
 """
-L3_orchestration/workflow_engines – Sovereign Territory
+utils/async_wrappers – Sovereign Territory
 
 Purpose:
-    State machine, DAG, and reactive workflow implementations. Reference: Temporal.io patterns.
+    Sovereign territory
 
 Best Practices:
     - Single responsibility per module
