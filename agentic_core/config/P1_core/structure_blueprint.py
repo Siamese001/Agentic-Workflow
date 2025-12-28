@@ -255,52 +255,6 @@ FORBIDDEN_PATTERNS = [
     re.compile(r"^draft_.*\.py$")
 ]
 
-# ==============================================================================
-# CANON KEY CONSTITUTION [SSOT] - Final Sovereign Seal (Dec 24, 2025)
-# ==============================================================================
-ACTIVE_CANON_KEYS = list(range(0, 22))
-
-CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    # Root + Operational [GAP 5]
-    0:  [".", "scripts"],
-    # Prompt Governance (Full Tree)
-    1:  ["prompt_governance"],
-    # Schemas (Full Tree)
-    7:  ["schemas"],
-    # Sovereign Core (The Brain)
-    11: ["agentic_core/L1_cognition", "agentic_core/L1_cognition/thought_engine"],
-    12: ["agentic_core/L3_orchestration", "agentic_core/L3_orchestration/healing", "agentic_core/L3_orchestration/registry"],
-    13: ["agentic_core/L4_state"],
-    # The Shield (Safety Layer) [GAP 2+3]
-    19: ["agentic_core/L5_safety", "agentic_core/L5_safety/gravity"],
-    # Support & Infrastructure Layers [GAP 9]
-    20: ["agentic_core/L0_maintenance", "agentic_core/utils/naming", "agentic_core/observability/compliance"],
-    # Execution & Pattern Layers [GAP 11]
-    21: ["agentic_core/L2_execution", "agentic_core/patterns", "agentic_core/semantic_memory", "agentic_core/knowledge"],
-    # Domain & Shared Infrastructure
-    14: ["apps_shared", "apps_rg", "apps_lic"],
-    15: ["apps_rg/agents", "apps_lic/agents"],
-    16: ["apps_shared/utils"],
-    17: ["tests"]
-}
-
-# [FINAL REGISTRY] CANON AGENT REGISTRY (Mandatory Framework Population)
-CANON_AGENT_REGISTRY = {
-    12: ["FissionManager", "ArchitectureGovernor", "AgentRegistryValidatorAgent", 
-         "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent", "TerritoryHealerAgent", 
-         "SemanticTerritoryMapperAgent", "DeadCodePrunerAgent"],
-    13: ["MissionHistorian", "KeyCoverageAuditorAgent"],
-    18: ["PreCommitGuardianAgent"],
-    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent", "GravityEnforcerAgent"],
-    20: ["DriftDetectorAgent", "NamingLawHealerAgent", "GlobalComplianceAggregatorAgent"]
-}
-
-# [GAP 16] ROOT PROTECTED FILES — SSOT centralized
-ROOT_PROTECTED_FILES = {
-    "canon_validator_agentic_v2.py", "pyproject.toml", "README.md", 
-    "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
-}
-
 # [L6 HARDENING] FORBIDDEN_ROOT_FOLDERS → frozen set + expanded legacy coverage
 # Rationale: frozenset is immutable and hashable; prevents accidental mutation.
 # Expanded to catch all known legacy numbered patterns.

@@ -25,12 +25,8 @@ import traceback
 from pathlib import Path
 from typing import Any, Optional, List, Dict
 from agentic_core.config.P1_core.structure_blueprint import (
-    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
-    APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
-    FORBIDDEN_ROOT_FOLDERS,
-    ACTIVE_CANON_KEYS,
-    CANON_AGENT_REGISTRY, # [GAP 2]
-    ROOT_PROTECTED_FILES
+    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, 
+    ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP, CANON_AGENT_REGISTRY
 )
 from agentic_core.config.P1_core.sovereign_env import get_env
 

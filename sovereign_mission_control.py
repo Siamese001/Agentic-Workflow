@@ -20,28 +20,35 @@ def run_mission_step(args: list, stage: str):
         sys.exit(result.returncode)
 
 if __name__ == "__main__":
-    root = Path(__file__).parent
+    root = Path(__file__).parent.resolve()
+    python_exe = sys.executable 
     
-    # Load environment for global flags
-    is_dry_run = os.getenv("MISSION_DRY_RUN", "False").lower() == "true"
+    # [CONSTITUTION RULE 7] MANDATORY NEURAL LINK CHECK
+    env_path = root.parent / ".env"
+    if not env_path.exists():
+        print(f"\n[!] [PHYSICS FAILURE] Neural Link Missing: {env_path}")
+        print("    Stop. Do not attempt mission without valid .env")
+        sys.exit(1)
 
     print(f"{'='*60}")
     print(f"[MISSION CONTROL] INITIATING ETERNAL SOVEREIGNTY CIRCUIT")
-    if is_dry_run: print("[!] MODE: DRY RUN (Diagnostics only)")
+    print(f"Neural Link: ACTIVE | Target: {root.parent.name}")
     print(f"{'='*60}")
-
-    python_bin = sys.executable
+    
+    # Load environment for global flags
+    is_dry_run = os.getenv("MISSION_DRY_RUN", "False").lower() == "true"
+    if is_dry_run: print("[!] MODE: DRY RUN (Diagnostics only)")
 
     # Phase 1: High-level diagnosis (The Supreme Court)
-    run_mission_step([python_bin, str(root / 'sovereign_auditor_v3.py')], "DIAGNOSIS")
+    run_mission_step([python_exe, str(root / 'sovereign_auditor_v3.py')], "DIAGNOSIS")
 
     # Phase 2: Deep surgical enforcement (The Surgeon)
     if not is_dry_run:
-        run_mission_step([python_bin, str(root / 'canon_validator_agentic_v2.py'), "--target", "agentic_core"], "SURGERY")
+        run_mission_step([python_exe, str(root / 'canon_validator_agentic_v2.py'), "--target", "agentic_core"], "SURGERY")
     else:
         print("\n[SKIP] Stage SURGERY bypassed in Dry Run.")
 
     # Phase 3: Final verification (The Seal)
-    run_mission_step([python_bin, str(root / 'sovereign_auditor_v3.py')], "SEALING")
+    run_mission_step([python_exe, str(root / 'sovereign_auditor_v3.py')], "SEALING")
 
     print(f"\n{'='*60}\n[CIRCUIT COMPLETE] PERFECTION SEALED AT 100%\n{'='*60}")
