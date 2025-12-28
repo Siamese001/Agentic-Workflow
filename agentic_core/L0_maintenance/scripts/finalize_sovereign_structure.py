@@ -7,10 +7,10 @@ import sys
 
 BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/P1_core"
 if BLUEPRINT_DIR not in sys.path:
-    sys.path.append(BLUEPRINT_DIR)
+    # Path append no longer needed - using absolute import
 
 try:
-    from structure_blueprint import (
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
         APPS_LIC_SUBFOLDER_MAP,
         APPS_RG_SUBFOLDER_MAP,
         APPS_SHARED_SUBFOLDER_MAP,

@@ -23,8 +23,8 @@ def check_key_49_depth():
         # [SSOT] Dynamic depth check from structure_blueprint
         import sys
         from pathlib import Path as PathLib
-        sys.path.insert(0, str(PathLib(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-        from structure_blueprint import SOVEREIGN_DEPTH_MAP
+        # Path insert no longer needed - using absolute import
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_DEPTH_MAP
 
         # Check if folder has specific depth requirement
         if relative_path.parts and relative_path.parts[0] in SOVEREIGN_DEPTH_MAP:

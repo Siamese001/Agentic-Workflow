@@ -17,7 +17,7 @@ from agentic_core.L5_safety.validators.constitutional_overseer import (
     ConstitutionalOverseer,
 )
 from agentic_core.L5_safety.validators.cost_governor import CostGovernor
-from agentic_core.runtime.P1_core.subatomic_hop import SubatomicHop
+from agentic_core.runtime.shared_runtime.subatomic_hop import SubatomicHop
 
 LOGGER = logging.getLogger(__name__)
 

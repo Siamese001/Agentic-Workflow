@@ -33,7 +33,7 @@ except ImportError:
     check_underscore_fields = None
 
 try:
-    from agentic_core.L0_maintenance.auditors.guard_ddd_alignment import validate_ddd_alignment
+    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
 

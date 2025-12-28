@@ -412,7 +412,7 @@ except Exception as e:
     sys.exit(1)
 
 # Load void_compliance from runtime (allowed - same layer)
-from agentic_core.runtime.shared.void_compliance import (
+from agentic_core.runtime.shared_runtime.void_compliance import (
     ALLOWED_ROOT_FOLDERS,
     FORBIDDEN_ROOT_FOLDERS,
     check_import_waterfall_violations,

@@ -6,8 +6,8 @@ This module provides waterfall-compliant access to shared constants.
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import (
+# Path insert no longer needed - using absolute import
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST, 
     SOVEREIGN_REGISTRY,
     MIN_DEPTH,

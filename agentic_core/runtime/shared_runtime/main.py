@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from agentic_core.runtime.P1_core.runtime_bootstrapper import RuntimeBootstrapper
+from agentic_core.runtime.shared_runtime.runtime_bootstrapper import RuntimeBootstrapper
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 

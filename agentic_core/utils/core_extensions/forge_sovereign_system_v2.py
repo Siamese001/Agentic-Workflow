@@ -13,8 +13,8 @@ EXCLUDED_ZONES = ["data", "archives", "tests", ".git", ".venv", "__pycache__"]
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 # [SSOT] Import structure from master blueprint
-sys.path.insert(0, str(CORE / "config" / "P1_core"))
-from structure_blueprint import AGENTIC_CORE_REGISTRY
+# Path insert no longer needed - using absolute import
+from agentic_core.config.blueprint_sovereign.structure_blueprint import AGENTIC_CORE_REGISTRY
 
 # Use the master blueprint as CORE_MAP
 CORE_MAP = AGENTIC_CORE_REGISTRY

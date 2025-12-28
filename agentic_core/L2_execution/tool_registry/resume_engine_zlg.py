@@ -29,7 +29,7 @@ from agentic_core.L2_execution.security.security_utilities import (
     get_fact_checker,
     get_prompt_firewall,
 )
-from agentic_core.utils.P1_core.core_utilities import (
+from agentic_core.utils.core_extensions.core_utilities import (
     DraftGenerator,
     FileManager,
     SemanticScorer,

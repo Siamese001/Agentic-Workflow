@@ -3,54 +3,23 @@ Runtime Shared Modules
 Resurrected from archives - provides RAG components, safety tools, and optimization utilities.
 """
 
-from .bias_auditor import BiasAuditor
-
-# Infrastructure Components
-from .checkpoint_manager import CheckpointManager, get_checkpoint_manager
-
-# Optimization Components
-# TODO: Systematic Repair (Option 2) - syntax errors require fixing
-# from .hyde_processor import HyDEProcessor
-# from .tone_model import ToneModel
-from .claim_confidence import ClaimConfidenceScorer
-from .constitutional_ai import ConstitutionalAISystem
-from .envelope_factory import Envelope, EnvelopeFactory
-
-# Safety Components
-from .pii_scrubber import PIIScrubber
-from .prompt_optimizer import PromptOptimizer
-
-# RAG Components
-from .rag_components import (
-    EpisodicMemory,
-    FewShotInjector,
-    KnowledgeGraphInjector,
-    SelfRAGProcessor,
-    SemanticCache,
-)
-from .shared_infrastructure import SharedInfrastructure, get_shared_infrastructure
+# [TEMPORARY FIX] Comment out missing modules until they are restored from archives
+# from .bias_auditor import BiasAuditor
+# from .checkpoint_manager import CheckpointManager, get_checkpoint_manager
+# from .claim_confidence import ClaimConfidenceScorer
+# from .constitutional_ai import ConstitutionalAISystem
+# from .envelope_factory import Envelope, EnvelopeFactory
+# from .pii_scrubber import PIIScrubber
+# from .prompt_optimizer import PromptOptimizer
+# from .rag_components import (
+#     EpisodicMemory,
+#     FewShotInjector,
+#     KnowledgeGraphInjector,
+#     SelfRAGProcessor,
+#     SemanticCache,
+# )
+# from .shared_infrastructure import SharedInfrastructure, get_shared_infrastructure
 
 __all__ = [
-    # RAG
-    "SemanticCache",
-    "SelfRAGProcessor",
-    "KnowledgeGraphInjector",
-    "EpisodicMemory",
-    "FewShotInjector",
-    # Safety
-    "PIIScrubber",
-    "BiasAuditor",
-    "ConstitutionalAISystem",
-    # Optimization
-    # "HyDEProcessor",  # TODO: Repair hyde_processor.py
-    # "ToneModel",  # TODO: Repair tone_model.py
-    "ClaimConfidenceScorer",
-    "PromptOptimizer",
-    # Infrastructure
-    "CheckpointManager",
-    "get_checkpoint_manager",
-    "SharedInfrastructure",
-    "get_shared_infrastructure",
-    "Envelope",
-    "EnvelopeFactory",
+    # All modules temporarily disabled until restored from archives
 ]

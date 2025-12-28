@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.canon_base_agent_impl import CanonBaseAgent
 
 EXCLUDED_DIRS = [
     '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',

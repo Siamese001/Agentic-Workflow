@@ -31,7 +31,7 @@ class TerritoryHealerAgent:
             TERRITORY_EXAMPLES,
             CANON_SIGNALS_MK2,
         )
-        from agentic_core.runtime.shared.void_compliance import get_placement_guidance
+        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
