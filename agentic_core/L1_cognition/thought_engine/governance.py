@@ -310,7 +310,11 @@ class ArchitectureGovernor:
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
         from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-            SOVEREIGN_REGISTRY, ROOT_WHITELIST, MIN_DEPTH, MAX_DEPTH, MAX_LINES
+            MAX_DEPTH,
+            MAX_LINES,
+            MIN_DEPTH,
+            ROOT_WHITELIST,
+            SOVEREIGN_REGISTRY,
         )
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
 

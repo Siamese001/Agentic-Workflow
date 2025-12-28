@@ -3,14 +3,16 @@
 Sovereign Rescue & Review (SRR)
 """
 
-import os
+import argparse
 import hashlib
 import json
-import argparse
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+
 from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+
 
 class RescueReviewer:
     """
@@ -62,7 +64,10 @@ class RescueReviewer:
             return
 
         print(f"\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---")
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS_MK2, CANON_KEY_TO_FOLDER_MAP
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+            CANON_KEY_TO_FOLDER_MAP,
+            CANON_SIGNALS_MK2,
+        )
         
         for arch_file in self.archive_path.rglob("*.py"):
             rel = arch_file.relative_to(self.archive_path)

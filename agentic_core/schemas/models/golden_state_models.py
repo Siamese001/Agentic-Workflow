@@ -7,11 +7,11 @@ Imports below preserve backward compatibility.
 New code MUST import directly from core_contracts.py
 """
 from agentic_core.schemas.models.core_contracts import (
-    GoldenStateTestCase,
-    JudgeVerdict,
     EvalResult,
     GoldenCase,
-    GoldenOutput
+    GoldenOutput,
+    GoldenStateTestCase,
+    JudgeVerdict,
 )
 
 __all__ = [

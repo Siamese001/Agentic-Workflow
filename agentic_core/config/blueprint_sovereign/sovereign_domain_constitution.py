@@ -3,7 +3,7 @@ Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
 Defines Bounded Contexts, Aggregates, and Ubiquitous Language.
 L0-L6 Sovereign Stack Hierarchy established.
 """
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 # 1. Bounded Contexts (Strict Boundaries)
 # Sovereign Layer Hierarchy (L0=Governance, L6=Observability)

@@ -26,10 +26,10 @@ class TerritoryHealerAgent:
         
         from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
+            CANON_SIGNALS_MK2,
             ROOT_PROTECTED_FILES,
             SOVEREIGN_REGISTRY,
             TERRITORY_EXAMPLES,
-            CANON_SIGNALS_MK2,
         )
         from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
         

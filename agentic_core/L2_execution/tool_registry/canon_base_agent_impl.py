@@ -7,7 +7,9 @@ This is the concrete implementation that lives in the Execution context.
 Cognition layer agents should use the interface, not this implementation directly.
 """
 from typing import Any, Dict, List
+
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
 
 class CanonBaseAgent(CanonBaseAgentInterface):
     """

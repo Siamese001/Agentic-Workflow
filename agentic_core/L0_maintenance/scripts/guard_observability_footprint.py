@@ -14,6 +14,7 @@ import ast
 from pathlib import Path
 from typing import List, Tuple
 
+
 def check_dark_reasoning(filepath: Path) -> List[str]:
     """
     Check for reasoning operations without corresponding observability footprints.

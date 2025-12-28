@@ -6,8 +6,10 @@ evaluation workflows.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Literal
+from typing import Any, Dict, List, Literal
+
 from pydantic import BaseModel, Field
+
 
 @dataclass
 class GoldenStateTestCase:

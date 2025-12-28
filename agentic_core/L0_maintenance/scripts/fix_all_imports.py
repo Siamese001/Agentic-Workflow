@@ -7,6 +7,7 @@ import os
 import re
 from pathlib import Path
 
+
 def fix_imports_in_file(file_path: Path) -> int:
     """Fix imports in a single file."""
     try:

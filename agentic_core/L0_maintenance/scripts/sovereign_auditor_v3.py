@@ -3,21 +3,25 @@ Sovereign Multi-Dimensional Auditor v3.0
 The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
 """
-import sys
-import os
 import json
+import os
+import sys
+
 try:
     import yaml
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
-from pathlib import Path
-from typing import List, Dict
 from enum import Enum
+from pathlib import Path
+from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 try:
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import ACTIVE_CANON_KEYS, CANON_KEY_TO_FOLDER_MAP
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        ACTIVE_CANON_KEYS,
+        CANON_KEY_TO_FOLDER_MAP,
+    )
 except ImportError:
     raise RuntimeError("CRITICAL: SSOT Blueprint missing. Physics cannot be established.")
 
@@ -28,7 +32,9 @@ if str(REPO_ROOT) not in sys.path:
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
+    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import (
+        check_file as check_underscore_fields,
+    )
 except ImportError:
     check_underscore_fields = None
 

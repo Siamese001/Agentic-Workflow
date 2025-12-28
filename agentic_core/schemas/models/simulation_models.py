@@ -6,6 +6,6 @@ agentic_core/schemas/models/core_contracts.py
 Imports below preserve backward compatibility. 
 New code MUST import directly from core_contracts.py
 """
-from agentic_core.schemas.models.core_contracts import SimScenario, SimOutcome
+from agentic_core.schemas.models.core_contracts import SimOutcome, SimScenario
 
 __all__ = ["SimScenario", "SimOutcome"]

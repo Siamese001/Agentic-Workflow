@@ -7,7 +7,9 @@ the agentic collective.
 """
 
 from typing import List
+
 from pydantic import BaseModel, Field
+
 
 class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation across multiple models."""

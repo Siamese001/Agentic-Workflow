@@ -5,8 +5,10 @@ Defines the models for running system simulations and capturing
 outcomes. Used for testing agentic behavior in sandbox environments.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from pydantic import BaseModel, Field
+
 
 class SimScenario(BaseModel):
     """Definition of a simulation scenario for system testing."""

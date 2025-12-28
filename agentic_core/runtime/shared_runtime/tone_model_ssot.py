@@ -12,9 +12,9 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 from agentic_core.schemas.models.core_contracts import (
-    ToneType,
-    StyleProfile,
     GenerationConfig,
+    StyleProfile,
+    ToneType,
 )
 
 LOGGER = logging.getLogger(__name__)

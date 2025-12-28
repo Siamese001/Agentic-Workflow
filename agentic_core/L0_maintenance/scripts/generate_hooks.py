@@ -8,9 +8,9 @@ Usage:
     python scripts/maintenance/generate_hooks.py
     python scripts/maintenance/generate_hooks.py --dry-run
 """
+import re
 import sys
 from pathlib import Path
-import re
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent.parent

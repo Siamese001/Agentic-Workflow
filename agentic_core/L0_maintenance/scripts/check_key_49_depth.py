@@ -23,6 +23,7 @@ def check_key_49_depth():
         # [SSOT] Dynamic depth check from structure_blueprint
         import sys
         from pathlib import Path as PathLib
+
         # Path insert no longer needed - using absolute import
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_DEPTH_MAP
 

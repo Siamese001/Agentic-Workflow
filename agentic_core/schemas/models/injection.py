@@ -5,8 +5,10 @@ Defines schemas for dynamic prompt injection and safety scoping.
 """
 
 from enum import Enum
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
+
 
 class InjectionType(str, Enum):
     """Types of prompt injections."""

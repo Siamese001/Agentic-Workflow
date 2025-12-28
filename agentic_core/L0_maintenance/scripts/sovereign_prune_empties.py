@@ -6,8 +6,8 @@ Purges empty legacy folders and stale __init__.py files after bulk move.
 
 import os
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # === CONFIGURATION ===
 TARGET_ROOT = "agentic_core"

@@ -2,10 +2,12 @@
 Sovereign Core Contracts – Absolute SSOT for all Pydantic models and data schemas
 No inline BaseModel definitions allowed outside schemas/.
 """
-from pathlib import Path
 from enum import Enum
-from typing import Optional, List, Dict, Any, Literal
-from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
+from pathlib import Path
+from typing import Any, Dict, List, Literal, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
+
 
 class SovereignBaseModel(BaseModel):
     """Base model for all Sovereign entities with strict config."""
@@ -350,9 +352,9 @@ CORE_CONTRACTS_REGISTRY = {
 
 # === Legacy P1 Core Profiles – Phase 2B Migration (Dec 2025) ===
 
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-import uuid
 
 # Context Passport Models
 

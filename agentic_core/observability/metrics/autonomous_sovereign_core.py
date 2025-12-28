@@ -48,13 +48,13 @@ class AutonomousSovereignCore:
         from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
             create_self_recovering_orchestrator,
         )
-        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
             create_autonomous_checkpoint_manager,
         )
-        from agentic_core.L4_state.autonomous_state_guardian import (
+        from agentic_core.L4_state.validation_context.autonomous_state_guardian import (
             create_autonomous_state_guardian,
         )
-        from agentic_core.L5_safety.self_updating_safety_engine import (
+        from agentic_core.L5_safety.guardrails.self_updating_safety_engine import (
             create_self_updating_safety_engine,
         )
 
