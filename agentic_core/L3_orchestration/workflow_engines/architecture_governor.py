@@ -48,7 +48,7 @@ class ArchitectureGovernor:
                 if len(parts) > 2 and parts[1] in layer_dirs:
                     return True, f"Valid layer structure: {parts[1]}"
                     
-            return True, "File outside layer structure"
+            return False, "File outside layer structure"
             
         except ValueError:
             return False, "File outside project root"
@@ -59,7 +59,7 @@ class ArchitectureGovernor:
         
         Args:
             file_path: Path to file to validate
-            
+        
         Returns:
             Dictionary with validation results
         """
