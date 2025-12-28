@@ -69,21 +69,26 @@ for p in SOVEREIGN_PATHS:
     if p.exists() and p_str not in sys.path:
         sys.path.insert(0, p_str)
 
-print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
+# [FIX] Guard against re-execution on import - only print once
+_INIT_COMPLETE = getattr(sys.modules.get(__name__), '_INIT_COMPLETE', False)
+if not _INIT_COMPLETE and __name__ == "__main__":
+    print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
-# [ETERNAL INDEX] Ensure territory embeddings bootstrapped
-# WRAPPED TO PREVENT HANGS
-try:
-    print("   [INFO] Attempting territory index bootstrap (non-critical, will continue on failure)...")
-    from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
-    bootstrap_territory_index()
-    print("   [OK] Semantic territory index ready")
-except KeyboardInterrupt:
-    print("   [INFO] Territory bootstrap skipped by user (safe to continue)")
-except ImportError as ie:
-    print(f"   [INFO] Territory bootstrap unavailable - missing module (continuing): {ie}")
-except Exception as e:
-    print(f"   [INFO] Territory bootstrap failed gracefully (non-fatal): {e}")
+    # [ETERNAL INDEX] Ensure territory embeddings bootstrapped
+    # WRAPPED TO PREVENT HANGS
+    try:
+        print("   [INFO] Attempting territory index bootstrap (non-critical, will continue on failure)...")
+        from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
+        bootstrap_territory_index()
+        print("   [OK] Semantic territory index ready")
+    except KeyboardInterrupt:
+        print("   [INFO] Territory bootstrap skipped by user (safe to continue)")
+    except ImportError as ie:
+        print(f"   [!] Territory bootstrap failed: {ie}")
+    except Exception as e:
+        print(f"   [INFO] Territory bootstrap failed gracefully (non-fatal): {e}")
+    
+    _INIT_COMPLETE = True
 
 # === SINGLE, HARDENED TELEMETRY BLOCK (Remove duplicate lower in file) ===
 # Keep only ONE instance – the later duplicate was causing metric registry conflicts
@@ -135,11 +140,14 @@ try:
         LoggingInstrumentor().instrument()
         tracer = otel_trace.get_tracer(__name__)
         trace = otel_trace
-        print(f"   [OK] Distributed tracing enabled -> {otlp_endpoint}")
+        if __name__ == "__main__":
+            print(f"   [OK] Distributed tracing enabled -> {otlp_endpoint}")
     else:
-        print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
+        if __name__ == "__main__":
+            print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
 except Exception as e:
-    print(f"   [!] Telemetry setup failed (non-fatal): {e}")
+    if __name__ == "__main__":
+        print(f"   [!] Telemetry setup failed (non-fatal): {e}")
 
 # [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
@@ -214,25 +222,25 @@ def verify_neural_link():
         # sys.exit(1)  # Commented out to allow pytest collection
         return  # Early return instead of exit
 
-verify_neural_link()
+if __name__ == "__main__":
+    verify_neural_link()
 
-# [HARDENING] Remove auto-mutation of legacy imports on every run
-# This was writing files every launch -> risk of loops and conflicts
-# If needed once, run manually or via separate script
-print("\n[INFO] Legacy import reconciliation skipped (run manually if needed)")
-print("-" * 70)
+    # [HARDENING] Remove auto-mutation of legacy imports on every run
+    print("\n[INFO] Legacy import reconciliation skipped (run manually if needed)")
+    print("-" * 70)
 
-# ===========================================================================
-# [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
-# ===========================================================================
-print(f"\n[PHASE 0] Naming Law Amplification: ARMED")
-print(f"[PHASE -1] Gravity Surgery: ARMED")
-print(f"[PHASE +1] Sovereign Registry Sync: SCHEDULED")
-print("-" * 70)
+    # ===========================================================================
+    # [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
+    # ===========================================================================
+    print(f"\n[PHASE 0] Naming Law Amplification: ARMED")
+    print(f"[PHASE -1] Gravity Surgery: ARMED")
+    print(f"[PHASE +1] Sovereign Registry Sync: SCHEDULED")
+    print("-" * 70)
 
 # [ETERNAL SSOT] Initialize sovereign environment loader
 env = get_env(project_root)
-print(f"   [OK] SovereignEnv loaded — Model: {env.GEMINI_MODEL} | Embedding Dim: {env.EMBEDDING_DIMENSION}")
+if __name__ == "__main__":
+    print(f"   [OK] SovereignEnv loaded — Model: {env.GEMINI_MODEL} | Embedding Dim: {env.EMBEDDING_DIMENSION}")
 
 # [GRAVITY SSOT] Dynamically derived authority order
 GRAVITY_LAYERS = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
@@ -258,7 +266,8 @@ def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
     return []
 
 # [HARDENING] NEURAL LINK INITIALIZATION
-print("   [OK] Environment loading complete (handled in neural link verification)")
+if __name__ == "__main__":
+    print("   [OK] Environment loading complete (handled in neural link verification)")
 
 # Dashboard removed - was causing port 5000 conflicts
 DASHBOARD_AVAILABLE = False
@@ -289,10 +298,11 @@ try:
     
     SubAtomicEngine = dynamic_import('agentic_core.L5_safety.guardrails.subatomic_engine', 'SubAtomicEngine')
     
-    # Single print — removed duplicate to eliminate log noise
-    print(f"   [OK] Core components loaded dynamically (gravity-compliant)")
+    if __name__ == "__main__":
+        print(f"   [OK] Core components loaded dynamically (gravity-compliant)")
 except Exception as e:
-    print(f"   [CRITICAL] Dynamic import failed: {e}")
+    if __name__ == "__main__":
+        print(f"   [CRITICAL] Dynamic import failed: {e}")
     sys.exit(1)
 
 # Load void_compliance from runtime (allowed - same layer)
@@ -311,7 +321,8 @@ from agentic_core.runtime.shared.void_compliance import (
 
 # [GRAVITY SURGERY ENABLED] waterfall enforcement active
 
-print(f"   [OK] Void Compliance Engine: Online.")
+if __name__ == "__main__":
+    print(f"   [OK] Void Compliance Engine: Online.")
 
 # [SOVEREIGN FIX] Pre-declare for global and hybrid router visibility
 PineconeSovereignAgent = None
@@ -323,9 +334,11 @@ try:
     from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
     # Just import the class, don't instantiate yet
     globals()['PineconeSovereignAgent'] = PineconeSovereignAgent
-    print(f"   [OK] PineconeSovereignAgent class loaded (will instantiate in async context)")
+    if __name__ == "__main__":
+        print(f"   [OK] PineconeSovereignAgent class loaded (will instantiate in async context)")
 except Exception as e:
-    print(f"   [!] Hybrid routing class import failed: {e}")
+    if __name__ == "__main__":
+        print(f"   [!] Hybrid routing class import failed: {e}")
     PineconeSovereignAgent = None
 
 # Configure logging
@@ -361,7 +374,8 @@ RUN_GRAVITY_REFACTOR = False  # TEMPORARY: Disabled to allow healing cascade to 
 RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
 
 # [DEBUG GUARD] Prevent infinite pre-flight loop
-print("\n[FORCE PROGRESS] Gravity auto-refactor paused - structural moves recommended first")
+if __name__ == "__main__":
+    print("\n[FORCE PROGRESS] Gravity auto-refactor paused - structural moves recommended first")
 # Justification: Clarifies that import fixing is disabled until hierarchy is clean
 
 # [L5 RESILIENCE] Configurable agent-level retries with exponential backoff
@@ -413,11 +427,14 @@ try:
     enabled = os.getenv('PROMETHEUS_ENABLED', 'false').lower() == 'true'
     if enabled:
         start_http_server(metrics_port)
-        print(f"   [OK] Prometheus metrics server started -> http://localhost:{metrics_port}/metrics")
+        if __name__ == "__main__":
+            print(f"   [OK] Prometheus metrics server started -> http://localhost:{metrics_port}/metrics")
     else:
-        print("   [INFO] Prometheus metrics disabled - set PROMETHEUS_ENABLED=true to enable")
+        if __name__ == "__main__":
+            print("   [INFO] Prometheus metrics disabled - set PROMETHEUS_ENABLED=true to enable")
 except ImportError:
-    print("   [INFO] prometheus_client not available - running with null metrics")
+    if __name__ == "__main__":
+        print("   [INFO] prometheus_client not available - running with null metrics")
     # Comprehensive dummy to prevent ANY AttributeError downstream
     class NullMetric:
         def __getattr__(self, name):
