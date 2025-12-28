@@ -176,12 +176,10 @@ if __name__ == "__main__":
     print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
     print("-" * 70)
 
-# ===========================================================================
-# [PHASE -3] NON-PYTHON ASSET COMPLIANCE – COMPREHENSIVE AUTO-HEALING
-# Naming, Location, Syntax, and Semantic Healing
-# ===========================================================================
-# ONLY run this when script is executed directly, not on import
-if __name__ == "__main__":
+    # ===========================================================================
+    # [PHASE -3] NON-PYTHON ASSET COMPLIANCE – COMPREHENSIVE AUTO-HEALING
+    # Naming, Location, Syntax, and Semantic Healing
+    # ===========================================================================
     print(f"\n[PHASE -3] Enforcing comprehensive purity on non-Python assets...")
 
     import re
@@ -508,7 +506,7 @@ except Exception as e:
 
 # [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
 from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
-from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
+from agentic_core.utils.core_extensions.naming_law_healer_agent import NamingLawHealerAgent
 from agentic_core.L4_state.validation_context.subatomic_registry import SubAtomicRegistry
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 from agentic_core.L5_safety.guardrails.adversarial_red_teamer import AdversarialRedTeamer as SovereignRedTeamAgent
@@ -517,9 +515,18 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import Redis
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 
 # [ULTRA-HARDENED AGENTS] Import the four new sovereign agents
-from agentic_core.L5_safety.policy.neural_auto_immune_agent import NeuralAutoImmuneAgent
-from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
-from agentic_core.L0_maintenance.scripts.sovereign_watchdog_agent import SovereignWatchdogAgent
+try:
+    from agentic_core.L5_safety.guardrails.neural_auto_immune_agent import NeuralAutoImmuneAgent
+except ImportError:
+    NeuralAutoImmuneAgent = None
+try:
+    from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
+except ImportError:
+    MissionResumeAgent = None
+try:
+    from agentic_core.L0_maintenance.scripts.sovereign_watchdog_agent import SovereignWatchdogAgent
+except ImportError:
+    SovereignWatchdogAgent = None
 
 # Try to import MemoryArchitect (base.py has ValidationContext issue)
 try:
@@ -736,7 +743,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         
         # [AUTO-HEALING] Move files from unapproved folders to approved locations
         print(f"\n[AUTO-HEAL] Attempting to relocate files from unapproved folders...")
-        from agentic_core.runtime.shared.import_healer import ImportHealer
+        from agentic_core.runtime.shared_runtime.import_healer import ImportHealer
         import shutil
         
         healer = ImportHealer(project_root)
