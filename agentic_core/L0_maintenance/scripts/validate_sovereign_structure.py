@@ -5,21 +5,13 @@ Enforces the 3-level depth law for agentic architecture.
 import os
 import sys
 
-BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/P1_core"
-if BLUEPRINT_DIR not in sys.path:
-    sys.path.append(BLUEPRINT_DIR)
-
-try:
-    from structure_blueprint import (
-        APPS_LIC_SUBFOLDER_MAP,
-        APPS_RG_SUBFOLDER_MAP,
-        APPS_SHARED_SUBFOLDER_MAP,
-        CORE_SUBFOLDER_MAP,
-        TESTS_SUBFOLDER_MAP,
-    )
-except ImportError:
-    print(f"❌ ERROR: Could not find structure_blueprint.py in {BLUEPRINT_DIR}")
-    sys.exit(1)
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
+    TESTS_SUBFOLDER_MAP,
+)
 
 def check_sovereign_law(root_path):
     violations = []

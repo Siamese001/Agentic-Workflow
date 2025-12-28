@@ -5,7 +5,7 @@ SSOT-aligned integration using SovereignConfig.
 import time
 from typing import List, Optional, Dict, Any
 from pinecone import Pinecone, ServerlessSpec, PineconeApiException
-from agentic_core.config.P1_core.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 class SovereignPineconeStore:
     """Sovereign wrapper for Pinecone serverless index."""

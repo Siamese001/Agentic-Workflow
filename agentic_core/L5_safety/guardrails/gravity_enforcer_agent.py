@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 from typing import Dict, Set
 
-from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 
 

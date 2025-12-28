@@ -24,7 +24,7 @@ class TerritoryHealerAgent:
         self.root = project_root
         self.ctx = ctx
         
-        from agentic_core.config.P1_core.structure_blueprint import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
             ROOT_PROTECTED_FILES,
             SOVEREIGN_REGISTRY,

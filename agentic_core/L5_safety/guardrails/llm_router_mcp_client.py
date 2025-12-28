@@ -5,7 +5,7 @@ L3 routed, L5 shielded, L6 observable.
 """
 import logging
 from typing import Any, Dict, Optional
-from agentic_core.config.P1_core.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 logger = logging.getLogger(__name__)
 

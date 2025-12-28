@@ -190,7 +190,7 @@ def main():
         sys.exit(0)
     else:
         print(f"❌ VIOLATIONS: {violations}/{total} files have hardcoded config")
-        print("\nFix by importing: from agentic_core.config.P1_core.sovereign_config import config")
+        print("\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config")
         sys.exit(1)
 
 if __name__ == "__main__":
