@@ -8,20 +8,20 @@ import sys
 import os
 from pathlib import Path
 
-# [CONSTITUTIONAL ARMING] Verify SSOT Blueprint before mission
+# [CONSTITUTIONAL ARMING] Key 2 Compliance ✓
 try:
     from agentic_core.config.P1_core.structure_blueprint import ACTIVE_CANON_KEYS
-    print(f"   [OK] SSOT Physics Loaded: {len(ACTIVE_CANON_KEYS)} keys active.")
+    print(f"   [OK] SSOT Physics Loaded: {len(ACTIVE_CANON_KEYS)} keys active.") # Should show 19
 except ImportError:
-    print("[!] [L6 FAILURE] Blueprint missing. Mission Aborted.")
+    print("[!] [L6 FAILURE] CRITICAL GRAVITY LOSS: SSOT Blueprint missing.")
     sys.exit(1)
 
 def run_mission_step(args: list, stage: str):
-    cmd_str = " ".join(str(a) for a in args)
-    print(f"\n[ORCHESTRATOR - {stage}] {cmd_str}")
+    """Executes a mission stage with process isolation and return-code enforcement."""
+    cmd_preview = " ".join(map(str, args))
+    print(f"\n[ORCHESTRATOR - {stage}] {cmd_preview}")
     
-    # Use list-based execution for safety and cross-platform path handling
-    result = subprocess.run(args, capture_output=False)
+    result = subprocess.run(args, capture_output=False, check=False)
     
     if result.returncode != 0:
         print(f"[L6 FAILURE] Stage {stage} failed with code {result.returncode}")
