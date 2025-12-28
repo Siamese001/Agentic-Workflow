@@ -83,20 +83,8 @@ except KeyboardInterrupt:
 except Exception as e:
     print(f"   [!] Territory bootstrap failed (non-fatal): {e}") 
 
-# [TRACER FIX] Simple no-op tracer for telemetry spans
-class NoOpTracer:
-    """No-op tracer context manager for when OpenTelemetry is not available"""
-    class NoOpSpan:
-        def __enter__(self): return self
-        def __exit__(self, *args): pass
-        def set_attribute(self, *args): pass
-        def set_status(self, *args): pass
-        def record_exception(self, *args): pass
-        def add_event(self, *args, **kwargs): pass
-        def end(self): pass
-    def start_as_current_span(self, name): return self.NoOpSpan()
-    def start_span(self, name): return self.NoOpSpan()
-
+# === SINGLE, HARDENED TELEMETRY BLOCK (Remove duplicate lower in file) ===
+# Keep only ONE instance – the later duplicate was causing metric registry conflicts
 class MockSpan:
     def __enter__(self): return self
     def __exit__(self, *args): pass
@@ -109,6 +97,7 @@ class MockSpan:
 class MockTracer:
     def start_as_current_span(self, name): return MockSpan()
     def start_span(self, name): return MockSpan()
+
 class MockTrace:
     def get_tracer(self, name): return MockTracer()
     class Status:
@@ -117,7 +106,7 @@ class MockTrace:
         ERROR = 1
         OK = 0
 
-# Default to Mock (Safe Mode)
+# Default safe mode
 tracer = MockTracer()
 trace = MockTrace()
 
@@ -131,32 +120,24 @@ try:
     from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
     from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
-    # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
     otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
     if otlp_endpoint:
-        trace = otel_trace # Assign real module
-        # Assign the real module only if import succeeded
-        trace = otel_trace
-        
         resource = Resource(attributes={
             SERVICE_NAME: "canon-validator-agentic",
             SERVICE_VERSION: "v2.9",
         })
-        trace.set_tracer_provider(TracerProvider(resource=resource))
-        otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
-        span_processor = BatchSpanProcessor(otlp_exporter)
-        trace.get_tracer_provider().add_span_processor(span_processor)
+        provider = TracerProvider(resource=resource)
+        provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)))
+        set_tracer_provider(provider)
         AsyncioInstrumentor().instrument()
         LoggingInstrumentor().instrument()
-
-        print(f"   [OK] Distributed tracing ACTIVE → {otlp_endpoint}")
-        print(f"   [OK] Trace ID propagation enabled across agents and async tasks")
-        # Update global tracer to real one
-        tracer = trace.get_tracer(__name__)
+        tracer = otel_trace.get_tracer(__name__)
+        trace = otel_trace
+        print(f"   [OK] Distributed tracing enabled -> {otlp_endpoint}")
     else:
         print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
-except ImportError:
-    pass
+except Exception as e:
+    print(f"   [!] Telemetry setup failed (non-fatal): {e}")
 
 # [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
@@ -233,28 +214,10 @@ def verify_neural_link():
 
 verify_neural_link()
 
-# [FINAL PRE-FLIGHT] Reconciliation of all legacy territories
-print(f"\n[FINAL PRE-FLIGHT] Reconciling remaining legacy imports...")
-import re
-patterns = [
-    (r'agentic_core\.L2_execution\.mcp', 'agentic_core.L2_execution.tool_registry'),
-    (r'agentic_core\.L3_orchestration\.mcp', 'agentic_core.L3_orchestration.workflow_engines'),
-    (r'agentic_core\.L4_state\.filesystem', 'agentic_core.L4_state.validation_context'),
-    (r'agentic_core\.L1_cognition\.discovery', 'agentic_core.L1_cognition.thought_engine'),
-    (r'agentic_core\.L2_execution\.P4_agents', 'agentic_core.L2_execution.tool_registry'),
-]
-fixed = 0
-for py_file in Path(project_root / "agentic_core").rglob("*.py"):
-    try:
-        content = py_file.read_text(encoding="utf-8")
-        original = content
-        for old, new in patterns:
-            content = re.sub(old, new, content)
-        if content != original:
-            py_file.write_text(content, encoding="utf-8")
-            fixed += 1
-    except: pass
-print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
+# [HARDENING] Remove auto-mutation of legacy imports on every run
+# This was writing files every launch -> risk of loops and conflicts
+# If needed once, run manually or via separate script
+print("\n[INFO] Legacy import reconciliation skipped (run manually if needed)")
 print("-" * 70)
 
 # ===========================================================================
@@ -608,27 +571,36 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
         if cfg["depth"] == 4  # Only the heavy core
     } | {"prompt_governance", "schemas", "config", "scripts"}
     
-    # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
+    # [HARDENING] Add safety limits + better pruning
+    scanned = 0
+    MAX_SCAN_FILES = 2000  # Prevent runaway on huge repos
+    scan_limit_reached = False
     if target_path.is_dir():
         for root, dirs, files in os.walk(target_path):
-            # Prune protected dirs to avoid scanning archives, .git, etc.
+            if scan_limit_reached:
+                break
+            # Aggressive pruning
             dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
             for file in files:
+                if scanned >= MAX_SCAN_FILES:
+                    print(f"   [!] Scan limit reached ({MAX_SCAN_FILES} files) - skipping remaining")
+                    scan_limit_reached = True
+                    break
                 if not file.endswith('.py'):
                     continue
+                scanned += 1
                 py_file = Path(root) / file
-                
                 try:
                     rel_path = py_file.relative_to(project_root)
                     root_folder = rel_path.parts[0] if rel_path.parts else ""
-                    
-                    # Only enforce gravity on Sovereign territory to avoid noise in downstream apps.
                     if root_folder in SOVEREIGN_ROOTS:
                         violations = check_import_waterfall_violations(py_file, project_root)
                         if violations:
                             waterfall_violations.extend([(py_file, v) for v in violations])
                 except (ValueError, IndexError):
                     continue
+        if not scan_limit_reached:
+            print(f"   [OK] Scanned {scanned} Python files for gravity violations")
     
     results["gravity"] = len(waterfall_violations)
     if waterfall_violations:
@@ -1946,7 +1918,7 @@ CURRENT CODE:
         
         try:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                content_preview = f.read(500)  # First 500 chars for heuristics
+                content_preview = f.read(1024)[:500]  # Double buffer, truncate safely
                 loc_count = len(f.readlines())
         except: loc_count = 0
         
@@ -1999,7 +1971,7 @@ CURRENT CODE:
             # Read file content to determine suggested home
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                    content_preview = f.read(500)  # First 500 chars for heuristics
+                    content_preview = f.read(1024)[:500]  # Double buffer, truncate safely
                 
                 # [SSOT] Use void_compliance heuristics for L-layer alignment
                 suggested_home = get_placement_guidance(content_preview)
@@ -2044,7 +2016,13 @@ CURRENT CODE:
         initial_violations = 0
         file_healed = False
         
+        # [HARDENING] Add absolute max rounds guard + early exit on no progress
+        consecutive_no_change = 0
         for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
+            if consecutive_no_change >= 3:
+                print(f"     No progress in last 3 rounds - stopping early")
+                break
+                
             violations_this_round = initial_violations
             changes_this_round = 0
             
@@ -2203,8 +2181,14 @@ CURRENT CODE:
             
             # If no violations and we're past round 1, we've converged
             if total_violations == 0 and round_idx > 1:
-                print(f"     [] Converged after {round_idx-1} rounds")
+                print(f"     Converged after {round_idx-1} rounds")
                 break
+
+            # Track consecutive rounds with no changes
+            if changes_this_round == 0:
+                consecutive_no_change += 1
+            else:
+                consecutive_no_change = 0
         
         if file_healed:
             print(f"   [HEALING] Complete: {file_name}")
