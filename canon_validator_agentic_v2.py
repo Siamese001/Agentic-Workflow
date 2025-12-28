@@ -509,12 +509,6 @@ try:
     from agentic_core.L6_meta.eternal_convergence_agent import EternalConvergenceAgent
 except ImportError:
     EternalConvergenceAgent = None
-
-# Try to import ultra-hardening agents
-try:
-    from agentic_core.L4_state.dependencies.dependency_pinner_agent import DependencyPinnerAgent
-except ImportError:
-    DependencyPinnerAgent = None
 try:
     from agentic_core.L5_safety.red_teaming.security_vuln_scanner_agent import SecurityVulnScannerAgent
 except ImportError:
@@ -577,6 +571,7 @@ async def retry_agent_execution_async(agent, file_path, ctx):
                         result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
                     else:
                         result = await method() if inspect.iscoroutinefunction(method) else method()
+                    return result
                 except Exception:
                     # Fallback for signature inspection failures
                     try:
@@ -584,8 +579,7 @@ async def retry_agent_execution_async(agent, file_path, ctx):
                     except Exception:
                         # Final fallback - try parameterless
                         result = await method() if inspect.iscoroutinefunction(method) else method()
-                
-                return result
+                    return result
         except (asyncio.CancelledError, SystemExit):
             raise
         except Exception as e:
@@ -620,6 +614,7 @@ class MockTrace:
         OK = 0
 
 # Default to Mock (Safe Mode)
+tracer = MockTracer() # Define global 'tracer' immediately
 trace = MockTrace()
 
 try:
@@ -637,8 +632,60 @@ try:
     if otlp_endpoint:
         # Assign the real module only if import succeeded
         trace = otel_trace
+        
+        resource = Resource(attributes={
+            SERVICE_NAME: "canon-validator-agentic",
+            SERVICE_VERSION: "v2.8",
+        })
+        trace.set_tracer_provider(TracerProvider(resource=resource))
+        otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
+        span_processor = BatchSpanProcessor(otlp_exporter)
+        trace.get_tracer_provider().add_span_processor(span_processor)
+        AsyncioInstrumentor().instrument()
+        LoggingInstrumentor().instrument()
+
+        print(f"   [OK] Distributed tracing ACTIVE → {otlp_endpoint}")
+        print(f"   [OK] Trace ID propagation enabled across agents and async tasks")
+        # Update global tracer to real one
+        tracer = trace.get_tracer(__name__)
+    else:
+        print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
 except ImportError:
     pass
+
+# ==============================================================================
+# [L6 OBSERVABILITY] Prometheus Metrics Bootstrap
+# ==============================================================================
+try:
+    from prometheus_client import Counter, Gauge, Histogram, start_http_server
+    
+    # Sovereign metrics
+    c_violations_total = Counter('canon_violations_total', 'Total canon violations detected', ['type', 'severity'])
+    c_healing_attempts = Counter('canon_healing_attempts_total', 'Total healing attempts', ['agent', 'outcome'])
+    c_agent_failures = Counter('canon_agent_failures_total', 'Total agent failures', ['agent', 'error_type'])
+    g_active_files = Gauge('canon_active_files', 'Number of files currently being processed')
+    g_circuit_state = Gauge('canon_circuit_state', 'Circuit breaker state (0=closed, 1=open)', ['circuit'])
+    
+    # Start metrics endpoint if configured
+    metrics_port = int(os.getenv('PROMETHEUS_PORT', '8000'))
+    if os.getenv('PROMETHEUS_ENABLED', 'false').lower() == 'true':
+        start_http_server(metrics_port)
+        print(f"   [OK] Prometheus metrics ACTIVE on port {metrics_port}")
+    else:
+        print("   [INFO] Prometheus metrics disabled (set PROMETHEUS_ENABLED=true to enable)")
+        
+except ImportError:
+    print("   [!] prometheus_client missing — using dummy metrics")
+    # Dummy classes to prevent crashes if import fails
+    class DummyMetric: 
+        def labels(self, **kwargs): return self
+        def inc(self, amt=1): pass
+        def dec(self, amt=1): pass
+        def state(self, s): pass
+        def _inc(self, amt=1): pass
+    c_violations_total = c_healing_attempts = c_agent_failures = g_active_files = g_circuit_state = DummyMetric()
+except Exception as e:
+    print(f"   [!] Metrics bootstrap failed (non-fatal): {e}")
 
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
