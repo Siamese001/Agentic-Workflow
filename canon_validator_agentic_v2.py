@@ -16,6 +16,9 @@ VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM
 import asyncio
 import hashlib
 import importlib
+import uuid
+from datetime import datetime
+import os
 import inspect
 import logging
 import os
@@ -48,6 +51,63 @@ for parent in current_file_path.parents:
 if not project_root:
     print(f"\n[!] [L6 ERROR] CRITICAL GRAVITY LOSS: Could not locate .env root from {current_file_path}")
     sys.exit(1)
+
+# [L6 ETERNAL FORENSICS] Global mission identifiers
+MISSION_START_TIME = datetime.now().isoformat(timespec='seconds')
+MISSION_UUID = str(uuid.uuid4())[:8]  # Short unique ID for this run
+print(f"\n[MISSION {MISSION_UUID}] STARTED at {MISSION_START_TIME}")
+
+# Global healing budget (prevents runaway mutation across files)
+GLOBAL_HEALING_ATTEMPTS = 0
+MAX_GLOBAL_HEALING_ATTEMPTS = 500  # Hard cap — adjust only for global sweeps
+
+# Per-file attempt tracking (prevents infinite per-file loops)
+file_healing_attempts = {} # type: dict[str, int]
+MAX_ATTEMPTS_PER_FILE = 5
+
+# ==============================================================================
+# [L6 OBSERVABILITY] Distributed Tracing — OpenTelemetry Bootstrap
+# ==============================================================================
+# Sovereign-safe: zero-overhead, no external calls unless OTEL_EXPORTER_OTLP_ENDPOINT set
+try:
+    from opentelemetry import trace
+    from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.trace import set_tracer_provider
+    from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
+    from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+    # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
+    otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    if otlp_endpoint:
+        resource = Resource(attributes={
+            SERVICE_NAME: "canon-validator-agentic",
+            SERVICE_VERSION: "v2.8",
+            "mission.date": datetime.now().isoformat()[:10],
+            "deployment.environment": os.getenv("ENV", "local")
+        })
+
+        provider = TracerProvider(resource=resource)
+        set_tracer_provider(provider)
+
+        # Insecure for local Jaeger, add credentials if needed for production
+        processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True))
+        provider.add_span_processor(processor)
+
+        # Instrument asyncio and logging for auto-tracing
+        AsyncioInstrumentor().instrument()
+        LoggingInstrumentor().instrument()
+
+        print(f"   [OK] Distributed tracing ACTIVE → {otlp_endpoint}")
+        print(f"   [OK] Trace ID propagation enabled across agents and async tasks")
+    else:
+        print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
+except ImportError:
+    print("   [!] OpenTelemetry packages missing — install via DependencyPinnerAgent if needed")
+except Exception as e:
+    print(f"   [!] Tracing bootstrap failed (non-fatal): {e}")
 
 # [SOVEREIGN ANCHOR] Force project root into sys.path for Discovery
 project_root_str = str(project_root)
@@ -990,6 +1050,14 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     
     print(f"\n[*] MISSION START: Validating {target_scope}")
     print(f"DEBUG: VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM")
+
+    # [L6 OBSERVABILITY] Start Root Mission Span
+    tracer = trace.get_tracer(__name__)
+    root_span = tracer.start_span("mission.run_mission")
+    root_span.set_attribute("mission.uuid", MISSION_UUID)
+    root_span.set_attribute("mission.start_time", MISSION_START_TIME)
+    root_span.set_attribute("target.scope", target_scope)
+    root_span.set_attribute("mode.structural_only", structural_only)
     
     # Apply healing mode flags
     if structural_only:
@@ -1015,7 +1083,8 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
-    l6_compliant = run_l6_preflight(target_scope, project_root)
+    with tracer.start_as_current_span("l6.preflight_void_compliance"):
+        l6_compliant = run_l6_preflight(target_scope, project_root)
     if not l6_compliant:
         print("\n[!] [L6 WARNING] Physical structure violations detected.")
         print("    Proceeding with validation, but auto-healing may be restricted.")
@@ -2498,6 +2567,7 @@ CURRENT CODE:
     print("    Code purity absolute — dead elements pruned")
     print("    Territory double-locked — positive + negative signals")
     print("    Ghost Embeddings — Purged from Redis cache")
+    root_span.end() # End mission span
     print("    Configuration eternal — .env SSOT gateway")
     print("    L3 Orchestration: Memory-Aware (Redis) — instant routing & fission")
     print("    L4 Semantic Cache: AST + Embeddings + Metadata reflected — territory sovereign truth")
