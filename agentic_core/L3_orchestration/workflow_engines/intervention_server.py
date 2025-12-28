@@ -37,7 +37,6 @@ def create_intervention_app():
         """Returns HTML dashboard with current plan and signals."""
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
-        logger.info("[L6_AUDIT] Action at line 40")
         plan = getattr(ctx, 'strategic_plan', 'No plan available') if ctx else 'No context'
         modified = list(ctx.modified_files) if ctx else []
 
@@ -49,7 +48,6 @@ def create_intervention_app():
             <style>
                 body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }}
                 .warning {{ background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 8px; }}
-                logger.info("[L6_AUDIT] Action at line 52")
                 .signals {{ background: #f8d7da; padding: 10px; border-radius: 4px; margin: 10px 0; }}
                 .plan {{ background: #d1ecf1; padding: 10px; border-radius: 4px; margin: 10px 0; }}
                 .files {{ background: #d4edda; padding: 10px; border-radius: 4px; margin: 10px 0; }}
@@ -67,9 +65,6 @@ def create_intervention_app():
                 <div class="signals">
                     <h3>Active Signals:</h3>
                     <ul>{"".join(f"<li>{s}</li>" for s in signals) or "<li>None</li>"}</ul>
-                logger.info("[L6_AUDIT] Action at line 70")
-                logger.info("[L6_AUDIT] Action at line 71")
-                logger.info("[L6_AUDIT] Action at line 72")
                 </div>
 
                 <div class="plan">

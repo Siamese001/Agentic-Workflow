@@ -12,7 +12,6 @@ Architecture:
 Integration:
     Monitors Atomic Blackboard for file_health transitions (FAIL → PASS)
     Analyzes before/after AST diffs
-    logger.info("[L6_AUDIT] Action at line 15")
     Synthesizes generalized patterns with Gemini Deep Think
     Upserts to Pinecone structural_patterns namespace
 """
@@ -179,7 +178,6 @@ class MemoryArchitect(SubAtomicAgent):
     
     Four-Stage Process:
     1. Detection: Monitor Atomic Blackboard for FAIL → PASS transitions
-    logger.info("[L6_AUDIT] Action at line 182")
     2. Reflection: Analyze before/after AST diffs
     3. Generalization: Synthesize reusable pattern with Gemini Deep Think
     4. Inoculation: Upsert to Pinecone structural_patterns namespace
@@ -339,7 +337,6 @@ class MemoryArchitect(SubAtomicAgent):
     
     async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: Dict) -> Optional[DistilledPattern]:
         """
-        logger.info("[L6_AUDIT] Action at line 342")
         Stage 3: Generalization - Rule Synthesis
         
         Use Gemini Deep Think to convert the fix into a generalized Subatomic Pattern.
@@ -353,9 +350,6 @@ class MemoryArchitect(SubAtomicAgent):
         """
         # Build prompt for Gemini Deep Think
         prompt = self._build_synthesis_prompt(success, diff_analysis)
-         logger.info("[L6_AUDIT] Action at line 356")
-        
-        logger.info("[L6_AUDIT] Action at line 358")
         try:
             # Use Gemini with maximum thinking budget
             response = await self.ctx.generate_with_thinking(
@@ -403,7 +397,6 @@ class MemoryArchitect(SubAtomicAgent):
             f"```",
             f"",
             f"## Task",
-            logger.info("[L6_AUDIT] Action at line 406")
             f"Analyze this successful refactoring and extract a **generalized Subatomic Pattern** that can be applied to ANY file in the codebase with similar complexity issues.",
             f"",
             f"Your response must include:",
@@ -467,7 +460,6 @@ class MemoryArchitect(SubAtomicAgent):
         """Create fallback pattern when parsing fails."""
         return {
             'trigger_condition': 'method > 40 lines OR nesting > 3',
-            logger.info("[L6_AUDIT] Action at line 470")
             'transformation_steps': [
                 'Identify complex nested blocks',
                 'Extract into private helper methods',

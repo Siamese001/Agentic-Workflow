@@ -54,13 +54,11 @@ class HandleServiceErrors:
         *args,
         **kwargs: Dict[str, object]) -> object:
         """Execute with fallback."""
-        logger.info("[L6_AUDIT] Action at line 57")
         result = self.execute(primary, *args, **kwargs) # Changed RESULT to result
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
-    logger.info("[L6_AUDIT] Action at line 64")
     """Execute with retry."""
     return HandleServiceErrors(config).execute(func)

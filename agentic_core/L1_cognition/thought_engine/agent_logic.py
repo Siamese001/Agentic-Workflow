@@ -44,7 +44,6 @@ logger = logging.getLogger(__name__)
 
 class CanonValidator:
     """
-    logger.info("[L6_AUDIT] Action at line 47")
     The L5 Meta-Learner that validates code against the Canon.
 
     This class implements the core logic for:
@@ -128,9 +127,6 @@ class CanonValidator:
             ast_structure=ast_representation,
             metadata=entry_metadata
         )
- logger.info("[L6_AUDIT] Action at line 131")
-
-    logger.info("[L6_AUDIT] Action at line 133")
     def check_and_learn(self, new_code: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Check code against the Canon and learn from results.
@@ -140,7 +136,6 @@ class CanonValidator:
         2. Query L1 (Redis) with similarity > 0.9 and filter failures
         3. If miss, query L2 (Qdrant)
         4. Compare AST structures if hit found
-        logger.info("[L6_AUDIT] Action at line 143")
         5. Return validation result
 
         Args:
@@ -213,8 +208,6 @@ class CanonValidator:
 
         if error_dict and isinstance(error_dict, dict) and "error" in error_dict:
             return error_dict["error"]
-
-        logger.info("[L6_AUDIT] Action at line 217")
         return None
 
     def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> Optional[Dict[str, Any]]:
@@ -236,13 +229,10 @@ class CanonValidator:
             return {
                 "is_match": False,
                 "is_valid": False,
-                logger.info("[L6_AUDIT] Action at line 239")
                 "confidence": 0.0,
                 "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
             }
         return None
-
-    logger.info("[L6_AUDIT] Action at line 245")
     def _validate_ast_match(
         self,
         new_entry: CanonEntry,
@@ -335,7 +325,6 @@ class CanonValidator:
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
         """Generate recommendation based on similarity and success rate."""
-        logger.info("[L6_AUDIT] Action at line 338")
         if similarity > 0.8 and success_rate > 0.8:
             return "Code matches a highly successful pattern - proceed"
         elif similarity > 0.7 and success_rate > 0.5:
@@ -350,7 +339,6 @@ class CanonValidator:
         return {
             "is_valid": True,
             "confidence": 1.0,
-            logger.info("[L6_AUDIT] Action at line 353")
             "matched_pattern": None,
             "source": "no_match",
             "ast_match": False,
@@ -366,7 +354,6 @@ class CanonValidator:
             "source": "L1_Redis",
             "ast_match": validation["is_match"],
             "confidence": validation["confidence"],
-            logger.info("[L6_AUDIT] Action at line 369")
             "is_valid": validation["is_valid"],
             "recommendation": validation["recommendation"]
         }
@@ -466,7 +453,6 @@ class CanonValidator:
         return stats
 
     def _format_search_result(self, result: CanonEntry) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 469")
         """
         Helper method to format a single CanonEntry into a dictionary
         for search results, reducing nesting in search_similar_patterns.

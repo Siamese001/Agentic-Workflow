@@ -50,14 +50,11 @@ class RecursiveSpanHealerAgent:
             return {'path': str(path), 'action': 'flatten', 'dry_run': True}
         
         # Implementation would move contents up one level
-        logger.info("[L6_AUDIT] Action at line 53")
         return {'path': str(path), 'action': 'flatten', 'executed': False}
     
     def run_healing(self, target_dir: Path, dry_run: bool = True) -> Dict[str, Any]:
         """Run healing process on target directory."""
         violations = self.detect_span_violations(target_dir)
-        
-        logger.info("[L6_AUDIT] Action at line 60")
         healed = []
         for violation_path, reason in violations:
             result = self.heal_violation(violation_path, dry_run)

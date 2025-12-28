@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-logger.info("[L6_AUDIT] Action at line 3")
 QueryPlanner - L1 Cognition Query Decomposition and Expansion
 """
 
@@ -16,9 +15,7 @@ from agentic_core.L4_state.validation_context.semantic_cache_sovereign import (
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 logger = logging.getLogger(__name__)
- logger.info("[L6_AUDIT] Action at line 19")
 
-logger.info("[L6_AUDIT] Action at line 21")
 class QueryPlanner:
     """
     Sovereign L1 Query Planner – transforms queries for maximum recall/precision
@@ -28,7 +25,6 @@ class QueryPlanner:
         self.cache = cache or SemanticCache()
         self.expansion_temperature = 0.7
         self.reflection_temperature = 0.3
- logger.info("[L6_AUDIT] Action at line 31")
 
     def _clean_json_response(self, raw_text: str) -> str:
         """

@@ -28,7 +28,6 @@ class KeywordAnalysis:
     classification: KeywordClassification
     frequency_score: float
     competitive_density: float
-    logger.info("[L6_AUDIT] Action at line 31")
     reasoning: str
 
 
@@ -49,6 +48,5 @@ class PeerIntelligenceResult:
     table_stakes: List[str]
     differentiators: List[str]
     validation_results: List[ValidationResult]
-    logger.info("[L6_AUDIT] Action at line 52")
     success: bool
     total_searches_executed: int

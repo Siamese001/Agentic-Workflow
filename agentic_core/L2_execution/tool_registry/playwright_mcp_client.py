@@ -126,7 +126,6 @@ class SovereignPlaywrightMCPClient:
     
     async def click_element(self, selector: str, element_description: Optional[str] = None) -> Dict[str, Any]:
         """
-        logger.info("[L6_AUDIT] Action at line 129")
         Execute a remote click via MCP.
         
         Args:
@@ -288,9 +287,6 @@ class SovereignPlaywrightMCPClient:
         except Exception as e:
             logger.error(f"[L2 PLAYWRIGHT] Close failed: {e}")
             return {"status": "error", "error": str(e)}
-     logger.info("[L6_AUDIT] Action at line 291")
-    
-    logger.info("[L6_AUDIT] Action at line 293")
     async def health_check(self) -> Dict[str, Any]:
         """
         Perform health check on Playwright connection.

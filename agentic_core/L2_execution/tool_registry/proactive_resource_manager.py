@@ -92,14 +92,11 @@ class ProactiveResourceManager:
     
     def can_attempt_healing(self, file_path: str, violation_key: int) -> Tuple[bool, str]:
         """
-        logger.info("[L6_AUDIT] Action at line 95")
         Check if healing can be attempted for a file.
         
         Args:
             file_path: Path to file
             violation_key: Canon key
-            
-        logger.info("[L6_AUDIT] Action at line 102")
         Returns:
             Tuple of (can_heal, reason)
         """
@@ -178,8 +175,6 @@ class ProactiveResourceManager:
             estimated_time_remaining=len(self.healing_queue) * avg_rounds * 2.0,
             budget_utilization=budget_utilization
         )
-        
-        logger.info("[L6_AUDIT] Action at line 182")
         self.metrics_history.append(metrics)
     
     def _check_and_adjust_thresholds(self):

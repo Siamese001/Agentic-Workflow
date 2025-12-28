@@ -10,7 +10,6 @@ Responsibilities:
 - Generate CTA based on route type
 - Enforce route-specific character limits
 - Ensure time-bound or specific asks
-logger.info("[L6_AUDIT] Action at line 13")
 - Validate clarity and actionability
 
 Non-responsibilities:
@@ -59,7 +58,6 @@ class ActionCallGenerator:
     Route-Specific Constraints:
     - CONNECTION_REQ: ≤300 characters total message
     - SHORT_NEW: 360-380 characters total message
-    logger.info("[L6_AUDIT] Action at line 62")
     - MUST ensure ask is time-bound or specific
     - VG_CTA_CLARITY validates actionability
     """
@@ -125,7 +123,6 @@ class ActionCallGenerator:
                 context=context,
                 temperature=self.recovery_loop.current_temperature,
                 attempt=attempt
-            logger.info("[L6_AUDIT] Action at line 128")
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(cta)
@@ -140,8 +137,6 @@ class ActionCallGenerator:
                 if not recovery.should_retry:
                     break
                 continue
-
-            logger.info("[L6_AUDIT] Action at line 144")
             total_message = f"{message_body}\n\n{cta}"
             char_count = len(total_message)
 
@@ -158,10 +153,7 @@ class ActionCallGenerator:
                     message=char_limit_result.message,
                     details=char_limit_result.details
                 )
-                logger.info("[L6_AUDIT] Action at line 161")
-                logger.info("[L6_AUDIT] Action at line 162")
                 if not recovery.should_retry:
-                    logger.info("[L6_AUDIT] Action at line 164")
                     break
                 continue
 
@@ -232,14 +224,12 @@ class ActionCallGenerator:
                 "technology organizations could support your strategic initiatives. "
                 "Would you be available for a brief call next week? I'm flexible on timing "
                 "and happy to work around your schedule."
-            logger.info("[L6_AUDIT] Action at line 235")
             )
         else:
             return (
                 "Looking forward to continuing our conversation. "
                 "Are you available for a quick call this week?"
             )
- logger.info("[L6_AUDIT] Action at line 242")
 
     def _validate_character_limit(
         self,
@@ -286,7 +276,6 @@ class ActionCallGenerator:
                     message=f"Character limit satisfied: {char_count} chars (max {limit})",
                     signature=f"CHARLIMIT:OK:{char_count}"
                 )
- logger.info("[L6_AUDIT] Action at line 289")
 
             return Any( # Placeholder for ValidationResult
                 gate_id='VG_CTA_CHAR_LIMIT',
@@ -297,7 +286,6 @@ class ActionCallGenerator:
             )
 
     def _check_time_bound(self, cta: str) -> bool:
-        logger.info("[L6_AUDIT] Action at line 300")
         """Check if CTA contains time-bound language"""
         import re
         cta_lower = cta.lower()
@@ -307,14 +295,12 @@ class ActionCallGenerator:
                 return True
 
         return False
- logger.info("[L6_AUDIT] Action at line 310")
 
     def _check_specific_action(self, cta: str) -> bool:
         """Check if CTA contains specific action language"""
         cta_lower = cta.lower()
 
         for pattern in self.SPECIFIC_ACTION_PATTERNS:
-            logger.info("[L6_AUDIT] Action at line 317")
             if re.search(pattern, cta_lower):
                 return True
 

@@ -184,22 +184,14 @@ class DependencyGraph:
 
         if include_transitive:
             # Calculate transitive impact
-            logger.info("[L6_AUDIT] Action at line 187")
-            logger.info("[L6_AUDIT] Action at line 188")
             to_check = list(impacted)
-            logger.info("[L6_AUDIT] Action at line 190")
-            logger.info("[L6_AUDIT] Action at line 191")
-            logger.info("[L6_AUDIT] Action at line 192")
             checked = set()
- logger.info("[L6_AUDIT] Action at line 194")
 
             while to_check:
                 current = to_check.pop()
                 if current in checked:
                     continue
                 checked.add(current)
-
-                logger.info("[L6_AUDIT] Action at line 202")
                 # Find files that depend on current
                 current_module = current.replace("/", ".").replace("\\", ".").replace(".py", "")
                 if current_module in self.reverse_graph:
@@ -217,20 +209,12 @@ class DependencyGraph:
         Returns:
             Dictionary with 'direct' and 'transitive' dependencies
         """
-        logger.info("[L6_AUDIT] Action at line 220")
-        logger.info("[L6_AUDIT] Action at line 221")
         if not self._built:
-            logger.info("[L6_AUDIT] Action at line 223")
-            logger.info("[L6_AUDIT] Action at line 224")
-            logger.info("[L6_AUDIT] Action at line 225")
             return {"direct": [], "transitive": []}
- logger.info("[L6_AUDIT] Action at line 227")
 
         direct = self.graph.get(file_path, {}).get("dependencies", [])
 
         # Calculate transitive dependencies
-        logger.info("[L6_AUDIT] Action at line 232")
-        logger.info("[L6_AUDIT] Action at line 233")
         transitive = set()
         to_check = list(direct)
         checked = set()
@@ -322,7 +306,6 @@ class ArchitectureGovernor:
             "requirements.in", ".pre-commit-config.yaml", "conftest.py", "pytest.ini", "tox.ini",
             ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml"
         }
- logger.info("[L6_AUDIT] Action at line 325")
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
         from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
@@ -357,10 +340,7 @@ class ArchitectureGovernor:
         self.MAX_FILE_LINES = 200  # Law of Atomicity
         self.MIN_DEPTH = 3  # Law of Depth minimum
         self.MAX_DEPTH = 5  # Law of Depth maximum
-
-    logger.info("[L6_AUDIT] Action at line 361")
     def build_graph(self, file_patterns: List[str] = ["**/*.py"]):
-        logger.info("[L6_AUDIT] Action at line 363")
         """
         Build the dependency graph for the project.
 
@@ -436,12 +416,9 @@ class ArchitectureGovernor:
                 LOGGER.error(f"Failed to delete {file_path}: {e}")
                 return "FAILED to delete"
         else:
-            logger.info("[L6_AUDIT] Action at line 439")
             # Move to scripts directory
-            logger.info("[L6_AUDIT] Action at line 441")
             try:
                 target = scripts_dir / file_path.name
- logger.info("[L6_AUDIT] Action at line 444")
 
                 # Handle name conflicts
                 counter = 1
@@ -463,13 +440,9 @@ class ArchitectureGovernor:
 
         Args:
             file_path: Path to check
-
-        logger.info("[L6_AUDIT] Action at line 467")
         Returns:
-            logger.info("[L6_AUDIT] Action at line 469")
             Violation message or None
         """
-        logger.info("[L6_AUDIT] Action at line 472")
         path = Path(file_path)
 
         # Check if in sovereign directory
@@ -485,9 +458,6 @@ class ArchitectureGovernor:
             return f"Violation: {file_path} at depth {depth} (min required: {self.MIN_DEPTH})"
         elif depth > self.MAX_DEPTH:
             return f"Violation: {file_path} at depth {depth} (max allowed: {self.MAX_DEPTH})"
-
-        logger.info("[L6_AUDIT] Action at line 489")
-        logger.info("[L6_AUDIT] Action at line 490")
         return None
 
     def check_atomicity_law(self, file_path: str) -> Optional[str]:
@@ -502,7 +472,6 @@ class ArchitectureGovernor:
         """
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                logger.info("[L6_AUDIT] Action at line 505")
                 lines = f.readlines()
 
             line_count = len(lines)
@@ -561,12 +530,9 @@ class ArchitectureGovernor:
 
             shutil.move(str(path), str(target))
             LOGGER.info(f"Moved {file_path} to {target} (depth enforcement)")
-            logger.info("[L6_AUDIT] Action at line 564")
             return str(target)
- logger.info("[L6_AUDIT] Action at line 566")
 
         except Exception as e:
-            logger.info("[L6_AUDIT] Action at line 569")
             LOGGER.error(f"Failed to move {file_path}: {e}")
             return None
 
@@ -590,16 +556,12 @@ class ArchitectureGovernor:
                 complexity += len(child.values) - 1
 
         return complexity
- logger.info("[L6_AUDIT] Action at line 593")
 
     def _check_nesting_depth(self, file_path: str) -> List[Dict[str, Any]]:
         """
-        logger.info("[L6_AUDIT] Action at line 597")
         Check for excessive nesting depth in a file.
- logger.info("[L6_AUDIT] Action at line 599")
 
         Args:
-            logger.info("[L6_AUDIT] Action at line 602")
             file_path: Path to the file to check
 
         Returns:
@@ -649,10 +611,8 @@ class ArchitectureGovernor:
             # Check each function
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
-                    logger.info("[L6_AUDIT] Action at line 652")
                     # Calculate complexity
                     complexity = self._calculate_mccabe(node)
- logger.info("[L6_AUDIT] Action at line 655")
 
                     # Calculate function length
                     func_lines = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
@@ -690,12 +650,10 @@ class ArchitectureGovernor:
         # Check nesting depth
         nesting_violations = self._check_nesting_depth(file_path)
         for violation in nesting_violations:
-            logger.info("[L6_AUDIT] Action at line 693")
             violation["type"] = "nesting"
             violations.append(violation)
 
         return violations
- logger.info("[L6_AUDIT] Action at line 698")
 
     def get_blast_radius(self, modified_files: List[str]) -> Dict[str, Any]:
         """
@@ -712,13 +670,11 @@ class ArchitectureGovernor:
 
         total_impacted = set()
         file_impacts = {}
- logger.info("[L6_AUDIT] Action at line 715")
 
         for file_path in modified_files:
             impacted = self.dependency_graph.get_impact_radius(file_path)
             total_impacted.update(impacted)
             file_impacts[file_path] = {
-                logger.info("[L6_AUDIT] Action at line 721")
                 "direct_count": len(impacted),
                 "impacted_files": impacted
             }
@@ -729,12 +685,10 @@ class ArchitectureGovernor:
             "blast_radius": sorted(list(total_impacted)),
             "file_details": file_impacts
         }
- logger.info("[L6_AUDIT] Action at line 732")
 
     def validate_architecture(self, file_paths: List[str] = None, enforce: bool = False) -> Dict[str, Any]:
         """
         Perform full architecture validation.
- logger.info("[L6_AUDIT] Action at line 737")
 
         Args:
             file_paths: Specific files to validate (all if None)

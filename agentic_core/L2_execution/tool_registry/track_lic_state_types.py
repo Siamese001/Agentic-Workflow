@@ -7,13 +7,11 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-logger.info("[L6_AUDIT] Action at line 10")
 class StateCheckpoint:
     """Checkpoint for a HOP state."""
 
     _hop_id: str
     _mission_id: str
-    logger.info("[L6_AUDIT] Action at line 16")
     _timestamp: str
     _checksum: str
     _filepath: str

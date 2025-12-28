@@ -39,8 +39,6 @@ class DataEnricher:
             for bullet in section.get("bullets", []):
                 bullet_text = bullet.get("bullet_text", "")
                 bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(bullet_text)
-
-                logger.info("[L6_AUDIT] Action at line 43")
                 forbidden = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
                 if forbidden:
                     validation_results.append(
@@ -67,7 +65,6 @@ class DataEnricher:
             )
         else:
             validation_results.append(
-                logger.info("[L6_AUDIT] Action at line 70")
                 ValidationResult(
                     rule_id="DUPLICATE_CHECK",
                     PASSED=True,

@@ -13,11 +13,9 @@ class AchvBulletSynthesizer:
     Zero Tolerance Constraints:
     - K.5A (Unify): 3V-3T-1S pattern, 28-33 words each, 7 bullets
     - K.6A (IBM): 2V-3T-1S pattern, 24-30 words each, 6 bullets
-    logger.info("[L6_AUDIT] Action at line 16")
     - VG_BULLET_PROVENANCE_CHECK BLOCKS if pattern invalid
     """
     VERB_KEYWORDS = {'led', 'drove', 'architected', 'built', 'managed', 'delivered', 'launched', 'scaled',
-                     logger.info("[L6_AUDIT] Action at line 20")
                      'optimized', 'transformed', 'implemented', 'established', 'directed', 'spearheaded',
                      'orchestrated', 'executed', 'pioneered', 'accelerated'}
     TECH_KEYWORDS = {'python', 'java', 'aws', 'azure', 'kubernetes', 'docker', 'react', 'node.js',
@@ -69,25 +67,21 @@ class AchvBulletSynthesizer:
                     break
                 continue
             provenance_logs = []
-            logger.info("[L6_AUDIT] Action at line 72")
             all_bullets_valid = True
             for i, bullet in enumerate(bullets, 1):
                 hygiene_result = self.gate_executor.execute_hygiene_scan(bullet)
                 validation_results.append(hygiene_result)
-                logger.info("[L6_AUDIT] Action at line 77")
                 if not hygiene_result.passed:
                     all_bullets_valid = False
                     break
                 word_count_result = self._validate_bullet_word_count(bullet, i)
                 validation_results.append(word_count_result)
                 if not word_count_result.passed:
-                    logger.info("[L6_AUDIT] Action at line 84")
                     all_bullets_valid = False
                     break
                 provenance_log = self._analyze_provenance(bullet)
                 provenance_logs.append(provenance_log)
                 provenance_result = self._validate_provenance_pattern(provenance_log, i)
-                logger.info("[L6_AUDIT] Action at line 90")
                 validation_results.append(provenance_result)
                 if not provenance_result.passed:
                     all_bullets_valid = False
@@ -131,9 +125,7 @@ class AchvBulletSynthesizer:
             f'Architected microservices platform with Python and Node.js, enabling 3x faster feature deployment through strategic API design',
             f'Managed cross-functional team of 12 engineers, delivering $2M revenue-generating product using agile methodologies and CI/CD automation',
             f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime',
-            logger.info("[L6_AUDIT] Action at line 134")
             f'Built ML-powered recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation',
-            logger.info("[L6_AUDIT] Action at line 136")
             f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes',
             f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership'
         ]
@@ -180,15 +172,12 @@ class AchvBulletSynthesizer:
         actual_pattern = f'{len(provenance_items[ProvenanceType.VERB])}V-{len(provenance_items[ProvenanceType.TECH])}T-{len(provenance_items[ProvenanceType.SOFT])}S'
         pattern_match = (len(provenance_items[ProvenanceType.VERB]) >= self.config.provenance_pattern.verb_count and
                          len(provenance_items[ProvenanceType.TECH]) >= self.config.provenance_pattern.tech_count and
-                         logger.info("[L6_AUDIT] Action at line 183")
                          len(provenance_items[ProvenanceType.SOFT]) >= self.config.provenance_pattern.soft_count)
         return BulletProvenanceLog(bullet_text=bullet,
             word_count=len(bullet.split()),
-            logger.info("[L6_AUDIT] Action at line 187")
             provenance_items=provenance_items,
             pattern_match=pattern_match,
             expected_pattern=expected_pattern,
-            logger.info("[L6_AUDIT] Action at line 191")
             actual_pattern=actual_pattern)
 
     def _validate_provenance_pattern(self,
@@ -197,7 +186,6 @@ class AchvBulletSynthesizer:
         """
         Validate provenance pattern matches expected pattern.
         BLOCKS if pattern is invalid.
-        logger.info("[L6_AUDIT] Action at line 200")
         """
         if provenance_log.pattern_match:
             return ValidationResult(gate_id='VG_BULLET_PROVENANCE_CHECK',

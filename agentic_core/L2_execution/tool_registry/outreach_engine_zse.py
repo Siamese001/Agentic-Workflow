@@ -22,7 +22,6 @@ from agentic_core.utils.P1_core.shadow_mode import ShadowModeEngine
 logger = logging.getLogger(__name__)
 
 
-logger.info("[L6_AUDIT] Action at line 25")
 class ExitReason(Enum):
     """Exit reasons for Outreach Engine."""
     ZSE_SUCCESS = "ZSE_SUCCESS"
@@ -71,16 +70,12 @@ class OutreachEngineZSE:
         logger.info("============================================================")
         logger.info("ZSE ENGINE START: Outreach Engine (E3)")
         logger.info("============================================================")
- logger.info("[L6_AUDIT] Action at line 74")
-
-    logger.info("[L6_AUDIT] Action at line 76")
     def execute_outreach(self, company_url: str, contact_email: str) -> tuple:
         """
         Execute full outreach sequence with ZSE policy.
 
         Args:
             company_url: URL to fetch company context
-            logger.info("[L6_AUDIT] Action at line 83")
             contact_email: Target contact email
 
         Returns:
@@ -93,7 +88,6 @@ class OutreachEngineZSE:
             log_action("L1_FETCH_START", {"company_url": company_url})
 
             # Check egress filter first
-            logger.info("[L6_AUDIT] Action at line 96")
             egress_result = strict_egress_filter(company_url)
             if egress_result.status == "FAIL":
                 logger.error(f"P8_BLOCK: {egress_result.reason}")
@@ -134,7 +128,6 @@ class OutreachEngineZSE:
                 # Check refinement limit
                 if self.refinement_count >= self.MAX_PITCH_REFINEMENTS:
                     logger.error("ZSE_FAIL: Max refinement attempts reached")
-                    logger.info("[L6_AUDIT] Action at line 137")
                     log_action("ZSE_FAIL_MAX_REFINEMENTS", {"count": self.refinement_count})
                     self.knowledge.add_observations({
                         "event": "ZSE_FAIL_MAX_REFINEMENTS",
@@ -151,7 +144,6 @@ class OutreachEngineZSE:
                     pitch=pitch_draft.content,
                     guidelines=self._get_brand_guidelines()
                 )
- logger.info("[L6_AUDIT] Action at line 154")
 
                 # ----------------------------------------------------------------
                 # Action 5: ZSE Vetting Gate
@@ -159,7 +151,6 @@ class OutreachEngineZSE:
                 if p6_result["status"] == "FAIL":
                     logger.warning(f"VET_FAIL: P6 Compliance Failure - {p6_result['reason']}")
                     log_action("P6_COMPLIANCE_FAIL", {"reason": p6_result["reason"]})
- logger.info("[L6_AUDIT] Action at line 162")
 
                     # Trigger P10 Shadow Mode
                     self.refinement_count += 1
@@ -219,7 +210,6 @@ class OutreachEngineZSE:
                 })
 
                 return (ExitReason.ZSE_SUCCESS, {
-                    logger.info("[L6_AUDIT] Action at line 222")
                     "email_result": send_result,
                     "pitch": pitch_draft,
                     "refinements": self.refinement_count
@@ -227,7 +217,6 @@ class OutreachEngineZSE:
 
         except Exception as e:
             logger.error(f"CRITICAL_ERROR: {e}")
-            logger.info("[L6_AUDIT] Action at line 230")
             log_action("CRITICAL_ERROR", {"error": str(e)})
             return (ExitReason.CRITICAL_ERROR, None)
 

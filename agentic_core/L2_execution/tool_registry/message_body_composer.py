@@ -8,7 +8,6 @@ Responsibilities:
 - Generate core message body with archetype-specific structure
 - Enforce metric binding (every metric links to Resume Evidence ID)
 - Use archetype-specific transition phrases verbatim
-logger.info("[L6_AUDIT] Action at line 11")
 - Validate message structure and flow
 
 Non-responsibilities:
@@ -101,7 +100,6 @@ class MessageBodyComposer:
                 TEMPERATURE=self.recovery_loop.current_temperature,
                 ATTEMPT=attempt
             )
- logger.info("[L6_AUDIT] Action at line 104")
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(body)
             validation_results.append(hygiene_result)
@@ -120,7 +118,6 @@ class MessageBodyComposer:
             evidence_bindings = self._bind_metrics_to_evidence(
                 metrics_used,
                 resume_evidence
-            logger.info("[L6_AUDIT] Action at line 123")
             )
 
             binding_result = self.gate_executor.execute_metric_binding_gate(
@@ -137,7 +134,6 @@ class MessageBodyComposer:
                     DETAILS=binding_result.details
                 )
                 if not recovery.should_retry:
-                    logger.info("[L6_AUDIT] Action at line 140")
                     break
                 continue
 
@@ -220,13 +216,11 @@ Would you be open to a brief conversation?"""
             for evidence_id, evidence_text in resume_evidence.items():
                 if metric in evidence_text:
                     BINDINGS[METRIC] = evidence_id
-                    logger.info("[L6_AUDIT] Action at line 223")
                     break
 
         return BINDINGS
 
     def _validate_transition_phrase(
-        logger.info("[L6_AUDIT] Action at line 229")
         self,
         content: str,
         archetype: str

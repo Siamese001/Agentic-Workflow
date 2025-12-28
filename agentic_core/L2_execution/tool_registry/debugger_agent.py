@@ -23,11 +23,9 @@ class DebuggerAgent:
         self.mcp_manager = mcp_manager
         self.llm_client = llm_client
         self.ROLE = 'DEBUGGER'
-        logger.info("[L6_AUDIT] Action at line 26")
         self.system_prompt = '\nYou are an introspective maintenance agent with Level 4 autonomy.\nYour job is to:\n1. Query the Telemetry MCP to find failed traces\n2. Analyze root causes from execution logs\n3. Propose specific fixes for failures\n4. Implement corrections when possible\n\nYou have access to telemetry tools:\n- search_traces: Find logs matching keywords\n- get_trace_summary: Get full timeline of a trace\n- get_recent_errors: List latest failures\n- analyze_failure_patterns: Deep analysis of failures\n- get_agent_metrics: Performance statistics\n\nAlways:\n- Start by checking recent errors\n- Analyze patterns before proposing fixes\n- Be specific and actionable in your recommendations\n- Track the effectiveness of your fixes\n'
 
     async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 30")
         """
         Execute a complete debugging cycle.
 
@@ -61,7 +59,6 @@ class DebuggerAgent:
             
             for error in current_errors[:3]:
                 analysis = await self._analyze_error(error)
-                logger.info("[L6_AUDIT] Action at line 64")
                 results['analyses'].append(analysis)
                 if analysis.get('needs_fix', False):
                     if await self._check_circuit_breaker(error.get('trace_id', '')):
@@ -225,7 +222,6 @@ class DebuggerAgent:
         return implementation
 
     async def _verify_fix(self: Any, trace_id: str, fix: Dict) -> Dict:
-        logger.info("[L6_AUDIT] Action at line 228")
         """
         Verify that a fix actually resolved the issue by:
         1. Re-running the failed operation
@@ -258,9 +254,7 @@ class DebuggerAgent:
         try:
             LOGGER.info(
                 f"Fix verification for {trace_id}: {verification.get('RESULT')}")
-        logger.info("[L6_AUDIT] Action at line 261")
         except Exception as e:
-            logger.info("[L6_AUDIT] Action at line 263")
             LOGGER.error(
                 f'Error recording verification: {e}')
 
@@ -273,7 +267,6 @@ class DebuggerAgent:
             fix_history = await self.mcp_manager.call_tool('search_traces', {'query': f'fix_id:{trace_id}', 'limit': max_attempts + 1})
             attempt_count = str(fix_history).count('fix_id:')
             if attempt_count >= max_attempts:
-                logger.info("[L6_AUDIT] Action at line 276")
                 LOGGER.warning(
                     f'Circuit breaker triggered for {trace_id}: {attempt_count} attempts')
                 return True

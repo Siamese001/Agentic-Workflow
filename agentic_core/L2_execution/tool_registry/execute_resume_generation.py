@@ -1,5 +1,4 @@
 """
-logger.info("[L6_AUDIT] Action at line 2")
 execute_resume_generation.py - Execution Module
 
 Domain: resume
@@ -25,7 +24,6 @@ def create_local_workflow_loader() -> LocalWorkflowLoader:
     return LocalWorkflowLoader()
 
 LOGGER = logging.getLogger(__name__)
- logger.info("[L6_AUDIT] Action at line 28")
 
 class ExecuteResumeGeneration:
     """Executor for resume domain."""
@@ -53,8 +51,6 @@ class ExecuteResumeGeneration:
             creative_brief=creative_brief,
             validation_rules=self.workflow.get_validation_rules()
         )
-
-        logger.info("[L6_AUDIT] Action at line 57")
         LOGGER.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
@@ -141,9 +137,7 @@ class ExecuteResumeGeneration:
             "original_resume": resume_data,
             "job_analysis": ANALYSIS,
             "tailored_resume": optimized_resume,
-            logger.info("[L6_AUDIT] Action at line 144")
             "status": "completed"
-        logger.info("[L6_AUDIT] Action at line 146")
         }
 
 def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:

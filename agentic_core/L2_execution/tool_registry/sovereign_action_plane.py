@@ -97,8 +97,6 @@ class SovereignSandbox:
         """Stop the sandbox environment."""
         self._is_running = False
         LOGGER.info("Sovereign Sandbox stopped")
-
-    logger.info("[L6_AUDIT] Action at line 101")
     async def execute_tool(self, tool_path: str, args: List[str] = None) -> Dict[str, Any]:
         """Execute a tool in the sandbox."""
         if not self._is_running:
@@ -170,8 +168,6 @@ class SovereignSandbox:
                     except:
                         pass
 
- logger.info("[L6_AUDIT] Action at line 173")
-
 class SovereignActionPlane(IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
 
@@ -193,13 +189,11 @@ class SovereignActionPlane(IActionPlane):
 
     def get_available_tools(self) -> List[str]:
         """Get list of available tool names."""
-        logger.info("[L6_AUDIT] Action at line 196")
         return ["python", "shell", "diagnostic_tool"]
 
     async def execute(self, request: ActionRequest) -> ActionResult:
         """Execute an action request with L5 safety validation."""
         start_time = time.time()
- logger.info("[L6_AUDIT] Action at line 202")
 
         # L5 Safety Validation
         if self._safety_layer:
@@ -212,11 +206,9 @@ class SovereignActionPlane(IActionPlane):
                     execution_time=time.time() - start_time
                 )
                 await self._log_to_signal_ledger(request, result)
-                logger.info("[L6_AUDIT] Action at line 215")
                 return result
 
         try:
-            logger.info("[L6_AUDIT] Action at line 219")
             if request.action_type == "tool_execution":
                 result = await self._execute_tool(request, start_time)
             elif request.action_type == "diagnostic_tool_creation":
@@ -243,7 +235,6 @@ class SovereignActionPlane(IActionPlane):
                 execution_time=time.time() - start_time
             )
             await self._log_to_signal_ledger(request, result)
-            logger.info("[L6_AUDIT] Action at line 246")
             return result
 
     async def _log_to_signal_ledger(self, request: ActionRequest, result: ActionResult) -> None:
@@ -264,11 +255,9 @@ class SovereignActionPlane(IActionPlane):
                 "result": {
                     "success": result.success,
                     "output": result.output,
-                    logger.info("[L6_AUDIT] Action at line 267")
                     "error": result.error,
                     "execution_time": result.execution_time,
                     "metadata": getattr(result, 'metadata', {})
-                logger.info("[L6_AUDIT] Action at line 271")
                 }
             }
             await self._signal_ledger.append_result(execution_result)
@@ -280,11 +269,9 @@ class SovereignActionPlane(IActionPlane):
                 *[self.execute(req) for req in requests],
                 return_exceptions=True
             )
-            logger.info("[L6_AUDIT] Action at line 283")
             return [r if not isinstance(r, Exception) else ActionResult(
                 success=False,
                 output="",
-                logger.info("[L6_AUDIT] Action at line 287")
                 error=str(r),
                 execution_time=0
             ) for r in results]
@@ -297,7 +284,6 @@ class SovereignActionPlane(IActionPlane):
 
     async def _execute_tool(self, request: ActionRequest, start_time: float) -> ActionResult:
         """Execute a tool in the sandbox."""
-        logger.info("[L6_AUDIT] Action at line 300")
         tool_path = request.parameters.get("tool_path")
         args = request.parameters.get("args", [])
 
@@ -307,7 +293,6 @@ class SovereignActionPlane(IActionPlane):
                 output="",
                 error="Missing tool_path parameter",
                 execution_time=time.time() - start_time
-            logger.info("[L6_AUDIT] Action at line 310")
             )
 
         result = await self._sandbox.execute_tool(tool_path, args)
@@ -398,7 +383,6 @@ class SovereignActionPlane(IActionPlane):
         if tool_path:
             return ActionResult(
                 success=True,
-                logger.info("[L6_AUDIT] Action at line 401")
                 output=f"Created diagnostic tool: {tool_path}",
                 error="",
                 execution_time=time.time() - start_time,
@@ -437,7 +421,6 @@ class SovereignActionPlane(IActionPlane):
                 output=output,
                 error="",
                 execution_time=time.time() - start_time
-            logger.info("[L6_AUDIT] Action at line 440")
             )
         except Exception as e:
             return ActionResult(
@@ -445,9 +428,7 @@ class SovereignActionPlane(IActionPlane):
                 output="",
                 error=str(e),
                 execution_time=time.time() - start_time
-            logger.info("[L6_AUDIT] Action at line 448")
             )
- logger.info("[L6_AUDIT] Action at line 450")
 
     async def cleanup(self):
         """Cleanup resources."""

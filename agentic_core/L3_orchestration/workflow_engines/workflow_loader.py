@@ -91,7 +91,6 @@ class WorkflowLoader:
         self._cached_role_config: Optional[Dict[str, Any]] = None
         self._cached_task_pipeline: Optional[List[Dict[str, Any]]] = None
         self._cached_context_config: Optional[Dict[str, Any]] = None
-        logger.info("[L6_AUDIT] Action at line 94")
         self._cached_reasoning_config: Optional[Dict[str, Any]] = None
 
         self._load_workflow()
@@ -121,7 +120,6 @@ class WorkflowLoader:
                 "description": "Fallback configuration used when JSON file is unavailable"
             },
             "pre_flight_engine_validation": {
-                logger.info("[L6_AUDIT] Action at line 124")
                 "tests": [
                     {"test_id": "VALIDATE_ITERATION", "description": "Basic iteration check"}
                 ]
@@ -141,11 +139,9 @@ class WorkflowLoader:
                     "thresholds": {
                         "total_file_count_max": 5,
                         "total_file_size_mb_max": 10
-                    logger.info("[L6_AUDIT] Action at line 144")
                     }
                 },
                 "pre_flight_file_manifest_check": {
-                    logger.info("[L6_AUDIT] Action at line 148")
                     "required_file_manifest": ["App_Schema_v4.json"]
                 }
             },
@@ -192,16 +188,11 @@ class WorkflowLoader:
 
     def get_context_config(self) -> Dict[str, Any]:
         """Get the context management configuration."""
-        logger.info("[L6_AUDIT] Action at line 195")
         if self._cached_context_config is None:
-            logger.info("[L6_AUDIT] Action at line 197")
-            logger.info("[L6_AUDIT] Action at line 198")
-            logger.info("[L6_AUDIT] Action at line 199")
             self._cached_context_config = self._workflow_data.get("3.context", {})
         return self._cached_context_config
 
     def get_reasoning_config(self) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 204")
         """Get the reasoning configuration."""
         if self._cached_reasoning_config is None:
             self._cached_reasoning_config = self._workflow_data.get("4.reasoning", {})
@@ -241,7 +232,6 @@ class WorkflowLoader:
                     BRIEF.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30])
                 ),
                 cover_letter_para_word_count=WordCountConstraints.from_list(
-                    logger.info("[L6_AUDIT] Action at line 244")
                     BRIEF.get("cover_letter", {}).get("word_count_per_para", [85, 100])
                 )
             )
@@ -273,9 +263,7 @@ class WorkflowLoader:
                     )
 
             self._cached_knode_configs = CONFIGS
-        logger.info("[L6_AUDIT] Action at line 276")
         return self._cached_knode_configs
- logger.info("[L6_AUDIT] Action at line 278")
 
     def get_knode_config(self, node_id: str) -> Optional[KNodeConfig]:
         """Get a specific K-node configuration."""
@@ -302,7 +290,6 @@ class WorkflowLoader:
         return self._cached_pre_flight_tests
 
     def get_file_complexity_thresholds(self) -> Dict[str, int]:
-        logger.info("[L6_AUDIT] Action at line 305")
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
             CONTEXT = self.get_context_config()
@@ -327,7 +314,6 @@ class WorkflowLoader:
         return self._cached_enforcement_rules
 
     def reload(self) -> None:
-        logger.info("[L6_AUDIT] Action at line 330")
         """Reload the workflow from disk and clear all caches."""
         # Clear all cached values
         self._cached_metadata = None

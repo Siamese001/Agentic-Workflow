@@ -11,8 +11,6 @@ class GenerateSummarySection:
         SELF.CONFIG = config or {}
         SELF.TIMEOUT = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
-
-    logger.info("[L6_AUDIT] Action at line 15")
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START = time.time()
@@ -34,11 +32,9 @@ class GenerateSummarySection:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
- logger.info("[L6_AUDIT] Action at line 37")
 
 def execute(action: str,
             params: Dict[str, object],
-            logger.info("[L6_AUDIT] Action at line 41")
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return GenerateSummarySection(config).execute(action, params)

@@ -53,7 +53,6 @@ class ViolationPrediction:
     violation_key: int
     confidence: float
     recommended_pattern: Optional[HealingPattern]
-    logger.info("[L6_AUDIT] Action at line 56")
     reasoning: str
 
 
@@ -300,7 +299,6 @@ class AdaptiveLearningEngine:
                     file_path=file_path,
                     violation_key=violation_key,
                     confidence=best_pattern.confidence_score,
-                    logger.info("[L6_AUDIT] Action at line 303")
                     recommended_pattern=best_pattern,
                     reasoning=f"File has history of Key {violation_key} violations"
                 ))
@@ -318,7 +316,6 @@ class AdaptiveLearningEngine:
                     predictions.append(ViolationPrediction(
                         file_path=file_path,
                         violation_key=violation_key,
-                        logger.info("[L6_AUDIT] Action at line 321")
                         confidence=pattern.confidence_score * 0.8,
                         recommended_pattern=pattern,
                         reasoning=f"Similar files often have Key {violation_key} violations"

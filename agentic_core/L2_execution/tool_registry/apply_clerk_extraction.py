@@ -21,7 +21,6 @@ class ClerkExtractor:
         """Initialize the clerk extractor."""
         self.master_resume = master_resume
         self.hallucination_detector = HallucinationDetector()
-        logger.info("[L6_AUDIT] Action at line 24")
         self._validate_structure()
 
     def extract(self) -> Tuple[Dict, List[ValidationResult]]:
@@ -41,7 +40,6 @@ class ClerkExtractor:
             "education": self.master_resume.get("education", []),
             "certifications": self.master_resume.get("certifications", []),
         }, validation_results
- logger.info("[L6_AUDIT] Action at line 44")
 
     def _validate_structure(self) -> None:
         """Validate master resume has required keys."""

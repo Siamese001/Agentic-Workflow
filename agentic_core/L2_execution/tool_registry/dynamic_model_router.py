@@ -1,7 +1,6 @@
 """
 ⚛️ Dynamic Model Router - The Throttler
 
-logger.info("[L6_AUDIT] Action at line 4")
 Complexity-based model selection to prevent "Enough Thinking" wall.
 Analyzes AST complexity before healing and routes to appropriate model.
 
@@ -10,9 +9,7 @@ Strategy: Right-Sized Intelligence for optimal token usage
 
 Models:
 - Gemini 2.5 Flash: Simple linting, syntax fixes (cheap, fast)
-logger.info("[L6_AUDIT] Action at line 13")
 - Gemini 2.5 Flash (extended): Medium complexity refactoring
-logger.info("[L6_AUDIT] Action at line 15")
 - Gemini 3.0 Deep Think: High-nesting refactoring, complex logic
 
 Complexity-to-Budget Ratio ensures reasoning tokens never wasted on trivial tasks.
@@ -28,16 +25,11 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 
- logger.info("[L6_AUDIT] Action at line 31")
- logger.info("[L6_AUDIT] Action at line 32")
- logger.info("[L6_AUDIT] Action at line 33")
-
 class ModelTier(str, Enum):
     """Model tiers based on capability and cost."""
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
     DEEP_THINK = "gemini-3.0-deep-think"  # 24K+ thinking budget, expensive
- logger.info("[L6_AUDIT] Action at line 40")
 
 
 @dataclass
@@ -63,12 +55,10 @@ class ComplexityProfile:
     import_count: int
     class_count: int
     complexity_score: float  # 0-100
- logger.info("[L6_AUDIT] Action at line 66")
 
 
 class DynamicModelRouter(SubAtomicAgent):
     """
-    logger.info("[L6_AUDIT] Action at line 71")
     The Throttler - Dynamic Model Router
     
     Analyzes file complexity before healing and routes to appropriate model.
@@ -113,7 +103,6 @@ class DynamicModelRouter(SubAtomicAgent):
             self.engine = None
             self.safety = None
             self.fission = None
-         logger.info("[L6_AUDIT] Action at line 116")
         
         # Routing thresholds
         self.BASIC_THRESHOLD = 30
@@ -144,7 +133,6 @@ class DynamicModelRouter(SubAtomicAgent):
         # Analyze all files in context
         for file_path in self.ctx.python_files:
             profile = self._analyze_file_complexity(file_path)
-            logger.info("[L6_AUDIT] Action at line 147")
             decision = self._route_to_model(profile)
             
             # Store routing decision in context
@@ -302,19 +290,14 @@ class DynamicModelRouter(SubAtomicAgent):
         score = profile.complexity_score
         
         if score <= self.BASIC_THRESHOLD:
-            logger.info("[L6_AUDIT] Action at line 305")
-            logger.info("[L6_AUDIT] Action at line 306")
             # Simple file - use basic Flash
             model_tier = ModelTier.FLASH_BASIC
-            logger.info("[L6_AUDIT] Action at line 309")
             rationale = f"Low complexity ({score:.1f}/100) - simple linting/syntax fixes"
             
         elif score <= self.EXTENDED_THRESHOLD:
             # Medium complexity - use extended Flash
             model_tier = ModelTier.FLASH_EXTENDED
             rationale = f"Medium complexity ({score:.1f}/100) - refactoring needed"
-            
-        logger.info("[L6_AUDIT] Action at line 317")
         else:
             # High complexity - use Deep Think
             model_tier = ModelTier.DEEP_THINK
@@ -361,7 +344,6 @@ class DynamicModelRouter(SubAtomicAgent):
             Routing decision or None
         """
         if not hasattr(self.ctx, 'routing_decisions'):
-            logger.info("[L6_AUDIT] Action at line 364")
             return None
         
         return self.ctx.routing_decisions.get(file_path)
@@ -374,12 +356,10 @@ class DynamicModelRouter(SubAtomicAgent):
         decisions = self.ctx.routing_decisions
         
         # Group by model tier
-        logger.info("[L6_AUDIT] Action at line 377")
         by_tier = {
             ModelTier.FLASH_BASIC: [],
             ModelTier.FLASH_EXTENDED: [],
             ModelTier.DEEP_THINK: []
-        logger.info("[L6_AUDIT] Action at line 382")
         }
         
         for file_path, decision in decisions.items():

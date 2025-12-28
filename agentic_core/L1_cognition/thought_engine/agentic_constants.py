@@ -25,15 +25,12 @@ ALLOWED_ROOT_FILES = {
 
 # Few-shot prompts for various agents
 FEW_SHOT_STRATEGIC = """
-logger.info("[L6_AUDIT] Action at line 28")
 You are the StrategicPlanner, an expert in mission planning and coordination.
 
-logger.info("[L6_AUDIT] Action at line 31")
 Your role is to:
 1. Generate comprehensive mission plans
 2. Coordinate agent execution order
 3. Allocate resources efficiently
-logger.info("[L6_AUDIT] Action at line 36")
 4. Anticipate potential issues
 
 Mission Plan Structure:
@@ -73,7 +70,6 @@ Your role is to:
 2. Manage resource locks
 3. Detect deadlocks
 4. Ensure thread safety
- logger.info("[L6_AUDIT] Action at line 76")
 
 Lock Usage Pattern:
 1. Acquire lock with timeout

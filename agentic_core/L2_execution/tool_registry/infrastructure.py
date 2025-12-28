@@ -41,8 +41,6 @@ class Historian(SubAtomicAgent):
         super().__init__(ctx)
         # Use env var for log path for better environment isolation
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
-
-    logger.info("[L6_AUDIT] Action at line 45")
     async def execute(self):
         # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
@@ -76,7 +74,6 @@ class GitAgent(SubAtomicAgent):
                 self.repo = Repo(repo_path)
             except Exception:
                 pass
- logger.info("[L6_AUDIT] Action at line 79")
 
     async def execute(self):
         if not GITPYTHON_AVAILABLE or not self.repo:
@@ -101,7 +98,6 @@ class GitAgent(SubAtomicAgent):
 
 class BenchmarkingAgent(SubAtomicAgent):
     """
-    logger.info("[L6_AUDIT] Action at line 104")
     ROLE: Measures execution time and ensures tools aren't too slow.
     """
     async def execute(self):

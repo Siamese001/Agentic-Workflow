@@ -113,7 +113,6 @@ class Historian:
 
     def should_skip_file(self, file_path: Path) -> bool:
         """
-        logger.info("[L6_AUDIT] Action at line 116")
         Check if a file should be skipped based on hash comparison.
 
         Args:
@@ -146,7 +145,6 @@ class Historian:
         return False
 
     def _is_flapping(self, file_path: str) -> bool:
-        logger.info("[L6_AUDIT] Action at line 149")
         """
         Check if a file is flapping (toggling status frequently).
 
@@ -204,7 +202,6 @@ class Historian:
     def get_unchanged_files(self, file_list: List[Path]) -> Tuple[Set[Path], Set[Path]]:
         """
         Separate files into unchanged and modified sets.
- logger.info("[L6_AUDIT] Action at line 207")
 
         Args:
             file_list: List of files to check
@@ -282,7 +279,6 @@ class Historian:
 
         return {
             "validations": total_validations,
-            logger.info("[L6_AUDIT] Action at line 285")
             "failures": failures,
             "success_rate": ((total_validations - failures) / total_validations * 100) if total_validations > 0 else 0,
             "last_status": last_validation.get("status") if last_validation else None,

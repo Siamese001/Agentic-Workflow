@@ -141,8 +141,6 @@ class CapabilityAnalyzer:
                 pattern_type = 'insufficient_knowledge'
             elif 'timeout' in error_type.lower() or 'slow' in error_type.lower():
                 pattern_type = 'performance'
-            logger.info("[L6_AUDIT] Action at line 144")
-            logger.info("[L6_AUDIT] Action at line 145")
             elif 'reasoning' in error_type.lower() or 'logic' in error_type.lower():
                 pattern_type = 'reasoning'
             else:
@@ -168,7 +166,6 @@ class CapabilityAnalyzer:
             CapabilityGap or None
         """
         if not failures:
-            logger.info("[L6_AUDIT] Action at line 171")
             return None
         gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': CapabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION,
             'reasoning': CapabilityGapType.REASONING_LIMITATION,
@@ -202,7 +199,6 @@ class CapabilityAnalyzer:
                 title='Add Missing Tool',
                 description=f"Add tool to handle scenarios: {', '.join(gap.affected_scenarios[:3])}",
                 addresses_gaps=[gap.gap_id],
-                logger.info("[L6_AUDIT] Action at line 205")
                 priority=gap.severity,
                 implementation_steps=['Identify required tool functionality',
                 'Search tool registry or implement custom tool',
@@ -216,7 +212,6 @@ class CapabilityAnalyzer:
                 title='# SQL removed: Update Knowledge Base',
                 description='Enhance knowledge base with missing information',
                 addresses_gaps=[gap.gap_id],
-                logger.info("[L6_AUDIT] Action at line 219")
                 priority=gap.severity * 0.8,
                 implementation_steps=['Identify knowledge gaps from failures',
                 'Source authoritative information',
@@ -232,17 +227,14 @@ class CapabilityAnalyzer:
                 addresses_gaps=[gap.gap_id],
                 priority=gap.severity * 0.7,
                 implementation_steps=['Profile execution bottlenecks',
-                logger.info("[L6_AUDIT] Action at line 235")
                 'Optimize slow operations',
                 'Add caching where appropriate',
                 'Consider model routing for efficiency'],
-                logger.info("[L6_AUDIT] Action at line 239")
                 estimated_impact=0.6)
             recommendations.append(rec)
         elif gap.gap_type == CapabilityGapType.REASONING_LIMITATION:
             rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_retrain',
                 recommendation_type=RecommendationType.RETRAIN_AGENT,
-                logger.info("[L6_AUDIT] Action at line 245")
                 title='Retrain Agent in Gym',
                 description='Improve reasoning capabilities through training',
                 addresses_gaps=[gap.gap_id],

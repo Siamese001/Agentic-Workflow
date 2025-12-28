@@ -2,16 +2,13 @@
 Canon Validator Swarm Scheduler
 
 Orchestrates the execution of validation agents in phases for the
-logger.info("[L6_AUDIT] Action at line 5")
 Canon Validator system. Manages mission execution, convergence checking,
 and human-in-the-loop intervention.
 """
 import asyncio
-logger.info("[L6_AUDIT] Action at line 10")
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
-logger.info("[L6_AUDIT] Action at line 14")
 from agentic_core.domain.context import ValidationContext
 
 if TYPE_CHECKING:
@@ -23,7 +20,6 @@ if TYPE_CHECKING:
 
 class CanonSwarmScheduler:
     """
-    logger.info("[L6_AUDIT] Action at line 26")
     Orchestrates validation agent execution in phases.
 
     Phases:
@@ -205,8 +201,6 @@ class CanonSwarmScheduler:
 
         # Final mission report
         self._generate_mission_report()
-
-        logger.info("[L6_AUDIT] Action at line 209")
         # Restore original file list if we were in surgical mode
         if target_scope and 'original_files' in locals():
             self.ctx.python_files = original_files
@@ -304,7 +298,6 @@ class CanonSwarmScheduler:
 
     async def _run_sequential_with_scheduler(self, phase_name: str):
         """Execute a phase sequentially, passing scheduler reference to agents."""
-        logger.info("[L6_AUDIT] Action at line 307")
         agents = self.phases.get(phase_name, [])
         for agent in agents:
             # Pass scheduler reference to TestPilot for Sherlock integration
@@ -315,8 +308,6 @@ class CanonSwarmScheduler:
     async def _run_parallel(self, phase_name: str):
         """Execute a phase in parallel."""
         agents = self.phases.get(phase_name, [])
-        logger.info("[L6_AUDIT] Action at line 318")
-        logger.info("[L6_AUDIT] Action at line 319")
         if not agents:
             return
 

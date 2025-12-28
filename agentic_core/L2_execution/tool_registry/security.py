@@ -16,49 +16,36 @@ class SafetyInspector(SubAtomicAgent):
     """
     Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
-    logger.info("[L6_AUDIT] Action at line 19")
     Also checks for async blocking issues and performs intelligent remediation.
     """
- logger.info("[L6_AUDIT] Action at line 22")
 
     async def execute(self):
         # Key 2: Removed print statements in favor of context reporting
         await asyncio.sleep(0)
- logger.info("[L6_AUDIT] Action at line 27")
 
         # Key 0: No hardcoded secrets
         passed, details = await self.check_key_00_no_hardcoded_secrets()
-        logger.info("[L6_AUDIT] Action at line 31")
         self.ctx.report(self.name, 0, passed, details)
 
         # Key 1: No TODO/FIXME
-        logger.info("[L6_AUDIT] Action at line 35")
         passed, details = await self.check_key_01_no_todo_fixme()
         self.ctx.report(self.name, 1, passed, details)
-
-        logger.info("[L6_AUDIT] Action at line 39")
         # Key 2: No print statements
         passed, details = await self.check_key_02_no_print_statements()
         self.ctx.report(self.name, 2, passed, details)
- logger.info("[L6_AUDIT] Action at line 43")
 
         # Key 3: No debugger statements
         passed, details = await self.check_key_03_no_debugger_statements()
-        logger.info("[L6_AUDIT] Action at line 47")
         self.ctx.report(self.name, 3, passed, details)
 
         # Key 4: No empty except blocks
-        logger.info("[L6_AUDIT] Action at line 51")
         passed, details = await self.check_key_04_no_empty_except_blocks()
         self.ctx.report(self.name, 4, passed, details)
-
-        logger.info("[L6_AUDIT] Action at line 55")
         # Key 5: No bare except
         passed, details = await self.check_key_05_no_bare_except()
         self.ctx.report(self.name, 5, passed, details)
 
         # Key 6: No eval/exec
-        logger.info("[L6_AUDIT] Action at line 61")
         passed, details = await self.check_key_06_no_eval_exec()
         self.ctx.report(self.name, 6, passed, details)
 
@@ -105,14 +92,6 @@ class SafetyInspector(SubAtomicAgent):
         """Synchronous file helper for use in to_thread."""
         with open(file_path, "r", encoding="utf-8") as f:
             return f.read()
-
-    logger.info("[L6_AUDIT] Action at line 109")
-    logger.info("[L6_AUDIT] Action at line 110")
-    logger.info("[L6_AUDIT] Action at line 111")
-    logger.info("[L6_AUDIT] Action at line 112")
-    logger.info("[L6_AUDIT] Action at line 113")
-    logger.info("[L6_AUDIT] Action at line 114")
-    logger.info("[L6_AUDIT] Action at line 115")
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
         """Ask LLM to verify if an issue is actually a violation using async httpx."""
         try:

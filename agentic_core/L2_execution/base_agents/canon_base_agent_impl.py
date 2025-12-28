@@ -28,13 +28,9 @@ class CanonBaseAgent(CanonBaseAgentInterface):
         self.ctx = ctx
         self.name = self.__class__.__name__
         self._capabilities = ["file_read", "code_gen", "analysis", "validation"]
-    
-    logger.info("[L6_AUDIT] Action at line 32")
     async def execute(self, goal: str, context: Dict[str, Any]) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 34")
         """
         Execute primary mission.
-         logger.info("[L6_AUDIT] Action at line 37")
         
         Args:
             goal: The goal/task to execute
@@ -44,7 +40,6 @@ class CanonBaseAgent(CanonBaseAgentInterface):
             Dictionary with execution results
         """
         # Implementation preserved from original canon_base_agent.py
-        logger.info("[L6_AUDIT] Action at line 47")
         # This is a simplified version - full implementation would include
         # all the resilient_mutation, verify_fix, and other methods
         return {
@@ -59,9 +54,7 @@ class CanonBaseAgent(CanonBaseAgentInterface):
         Return list of supported capabilities.
         
         Returns:
-            logger.info("[L6_AUDIT] Action at line 62")
             List of capability strings
-        logger.info("[L6_AUDIT] Action at line 64")
         """
         return self._capabilities
     

@@ -24,8 +24,6 @@ class RetryGenerationFailures:
         self.max_retries = self.config.get("max_retries", 3)
         SELF.BACKOFF = self.config.get("backoff", 1.0)
         LOGGER.info(f"Initialized {self.__class__.__name__}")
-
-    logger.info("[L6_AUDIT] Action at line 28")
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
         last_error = None
@@ -44,14 +42,12 @@ class RetryGenerationFailures:
                  fallback: Callable,
                  *args,
                  **kwargs: Dict[str, object]) -> object:
-        logger.info("[L6_AUDIT] Action at line 47")
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if RESULT.success:
             return RESULT.result
         return fallback(*args, **kwargs)
 
-logger.info("[L6_AUDIT] Action at line 54")
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return RetryGenerationFailures(config).execute(func)

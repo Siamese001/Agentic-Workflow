@@ -68,12 +68,9 @@ def get_project_root() -> Path:
     return Path.cwd()
 
 
-logger.info("[L6_AUDIT] Action at line 71")
 def validate_sandbox(path: str) -> Path:
-    logger.info("[L6_AUDIT] Action at line 73")
     """
     Validate that a path is within the sandbox and not in excluded directories.
-     logger.info("[L6_AUDIT] Action at line 76")
     
     Args:
         path: Relative path to validate
@@ -146,7 +143,6 @@ def read_file(args: ReadFileArgs) -> str:
         File content as string
         
     Raises:
-        logger.info("[L6_AUDIT] Action at line 149")
         SandboxViolationError: If path violates sandbox
         FileNotFoundError: If file doesn't exist
     """
@@ -182,7 +178,6 @@ def write_file(
         override_preservation: Allow writes that delete >10% of lines (SystemArchitect only)
         
     Raises:
-        logger.info("[L6_AUDIT] Action at line 185")
         SandboxViolationError: If path violates sandbox
         HealingLeaseError: If agent doesn't hold HealingLease
         PreservationViolationError: If write would delete too much content
@@ -252,8 +247,6 @@ def move_file(
         agent_id: Optional agent ID for lease verification
         
     Raises:
-        logger.info("[L6_AUDIT] Action at line 255")
-        logger.info("[L6_AUDIT] Action at line 256")
         SandboxViolationError: If paths violate sandbox
         HealingLeaseError: If agent doesn't hold HealingLease
         FileNotFoundError: If source doesn't exist
@@ -280,8 +273,6 @@ def list_files(args: ListFilesArgs) -> List[str]:
     
     Args:
         args: ListFilesArgs with path, pattern, and options
-        
-    logger.info("[L6_AUDIT] Action at line 284")
     Returns:
         List of relative file paths
         
@@ -337,7 +328,6 @@ def delete_file(
     
     Args:
         args: DeleteFileArgs with path
-        logger.info("[L6_AUDIT] Action at line 340")
         blackboard: Optional AtomicBlackboard instance for lease verification
         agent_id: Optional agent ID for lease verification
         
@@ -358,7 +348,6 @@ def delete_file(
 
 
 def create_directory(args: CreateDirectoryArgs) -> None:
-    logger.info("[L6_AUDIT] Action at line 361")
     """
     Create a directory with sandbox validation.
     

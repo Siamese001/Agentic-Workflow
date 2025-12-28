@@ -4,21 +4,15 @@ import logging
 import re
 import time
 from datetime import datetime
-logger.info("[L6_AUDIT] Action at line 7")
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 from agentic_core.L1_cognition.P1_interfaces import (
     ActionRequest,
     ExecutionContext,
-    logger.info("[L6_AUDIT] Action at line 13")
-    logger.info("[L6_AUDIT] Action at line 14")
     ExecutionResult,
     IActionPlane,
     ICognitivePlane,
     OrchestratorConfig,
-logger.info("[L6_AUDIT] Action at line 19")
-logger.info("[L6_AUDIT] Action at line 20")
-logger.info("[L6_AUDIT] Action at line 21")
 )
 from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 
@@ -46,7 +40,6 @@ class NervousSystemCheckpointing:
         signal_ledger: SignalLedger,
         session_id: str,
         logger: logging.Logger,
-    logger.info("[L6_AUDIT] Action at line 49")
     ):
         self.checkpoint_manager = checkpoint_manager
         self.signal_ledger = signal_ledger
@@ -72,7 +65,6 @@ class NervousSystemCheckpointing:
             current_state: Current orchestrator state
             current_results: Current agent results
             current_signals: Current signals
-            logger.info("[L6_AUDIT] Action at line 75")
             current_modified_files: Current modified files
             current_iteration: Current iteration number
             mission: Mission description
@@ -97,11 +89,9 @@ class NervousSystemCheckpointing:
         # Save checkpoint
         try:
             await self.checkpoint_manager.save_checkpoint(
-                logger.info("[L6_AUDIT] Action at line 100")
                 session_id=self.session_id,
                 node_id=phase_name,
                 state=checkpoint_state
-            logger.info("[L6_AUDIT] Action at line 104")
             )
             self.logger.info(f"Checkpoint saved for phase: {phase_name}")
         except Exception as e:
@@ -114,8 +104,6 @@ class NervousSystemCheckpointing:
             Dictionary with checkpoint state or None if not found
         """
         # List all checkpoints for this session
-        logger.info("[L6_AUDIT] Action at line 117")
-        logger.info("[L6_AUDIT] Action at line 118")
         try:
             # Get list of phase names in order
             phase_order = [
@@ -128,13 +116,11 @@ class NervousSystemCheckpointing:
             for phase_name in reversed(phase_order):
                 if await self.checkpoint_manager.checkpoint_exists(self.session_id, phase_name):
                     checkpoint = await self.checkpoint_manager.load_checkpoint(
-                        logger.info("[L6_AUDIT] Action at line 131")
                         self.session_id,
                         phase_name,
                         verify=True
                     )
                     if checkpoint:
-                        logger.info("[L6_AUDIT] Action at line 137")
                         return checkpoint
 
             return None
@@ -364,13 +350,11 @@ class NervousSystemPhaseExecution:
             "resource_safety_parallel": [],
             "engineering_parallel": [],
             "refinement_parallel": [],
-            logger.info("[L6_AUDIT] Action at line 367")
             "benchmarking_seq": [],
             "optimization_conditional": [],
         }
 
         # Create mock agent objects from sovereign registry
-        logger.info("[L6_AUDIT] Action at line 373")
         for agent_info in agents:
             phase = agent_info.phase
 
@@ -538,10 +522,7 @@ class NervousSystemPhaseExecution:
                     if not prereq_result.get('satisfied', True):
                         self.logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
                         # Create a PlanningResult recommending re-run
-                        logger.info("[L6_AUDIT] Action at line 541")
-                        logger.info("[L6_AUDIT] Action at line 542")
                         if hasattr(agent, 'create_prereq_failure_result'):
-                            logger.info("[L6_AUDIT] Action at line 544")
                             result = await agent.create_prereq_failure_result(prereq_result)
                         else:
                             result = {
@@ -622,10 +603,7 @@ class NervousSystemPhaseExecution:
         # Create tasks for parallel execution
         tasks = []
         for agent in agents:
-            logger.info("[L6_AUDIT] Action at line 625")
-            logger.info("[L6_AUDIT] Action at line 626")
             if hasattr(agent, 'execute'):
-                logger.info("[L6_AUDIT] Action at line 628")
                 # Create wrapper for each agent to handle context and prerequisites
                 async def execute_agent_with_context(agent):
                     # Check prerequisite conditions if agent supports it
@@ -634,7 +612,6 @@ class NervousSystemPhaseExecution:
                         if not prereq_result.get('satisfied', True):
                             self.logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
                             result = {
-                                logger.info("[L6_AUDIT] Action at line 637")
                                 'passed': False,
                                 'error': 'Prerequisites not satisfied',
                                 'details': prereq_result.get('message', 'Unknown'),
@@ -663,15 +640,11 @@ class NervousSystemPhaseExecution:
         # Execute all agents in parallel
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-
-            logger.info("[L6_AUDIT] Action at line 667")
             # Check if phase passed and update failure count
             phase_passed = all(
                 results.get(agent.name, {}).get("passed", True)
                 for agent in agents if hasattr(agent, 'name')
             )
-
-            logger.info("[L6_AUDIT] Action at line 674")
             if not phase_passed:
                 self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
                 self.logger.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
@@ -693,7 +666,6 @@ class NervousSystemPhaseExecution:
         self,
         context: ExecutionContext,
         execution_trace: List[Dict[str, Any]],
-        logger.info("[L6_AUDIT] Action at line 696")
         signals: set,
     ):
         """
@@ -773,12 +745,8 @@ class NervousSystemArchitectureGovernance:
         """
         if modified_files is None:
             modified_files = list(current_modified_files) if current_modified_files else []
- logger.info("[L6_AUDIT] Action at line 776")
-
-        logger.info("[L6_AUDIT] Action at line 778")
         if not modified_files:
             return {
-                logger.info("[L6_AUDIT] Action at line 781")
                 "modified_count": 0,
                 "total_impacted": 0,
                 "blast_radius": [],
@@ -801,7 +769,6 @@ class NervousSystemArchitectureGovernance:
                 current_modified_files.add(file_path)
 
         return impact_analysis
- logger.info("[L6_AUDIT] Action at line 804")
 
     def validate_architecture(self, file_paths: List[str] = None) -> Dict[str, Any]:
         """
@@ -919,7 +886,6 @@ class NervousSystemPhaseOrchestrator:
                 resume_index = phase_order.index(resume_phase)
                 phase_index = phase_order.index(phase_name)
                 return phase_index <= resume_index
-            logger.info("[L6_AUDIT] Action at line 922")
             except ValueError:
                 return False
 
@@ -986,7 +952,6 @@ class NervousSystemPhaseOrchestrator:
 
         # Phase 10: Optimization (Conditional - Sequential)
         await self._process_phase("optimization_conditional", "conditional", 10, context, resume_phase)
- logger.info("[L6_AUDIT] Action at line 989")
 
         # Return convergence status
         return self._result_reporting._is_converged(self._results)
@@ -1013,41 +978,27 @@ class NervousSystemPhaseOrchestrator:
         else:
             max_cycles = self.config.max_iterations or 10
             for cycle in range(max_cycles):
-                logger.info("[L6_AUDIT] Action at line 1016")
-                logger.info("[L6_AUDIT] Action at line 1017")
                 self._iteration = cycle # Update iteration for current cycle
                 self.logger.info(f"Cycle {self._iteration + 1}/{max_cycles}")
-
-                logger.info("[L6_AUDIT] Action at line 1021")
-                logger.info("[L6_AUDIT] Action at line 1022")
-                logger.info("[L6_AUDIT] Action at line 1023")
                 # Execute all phases (only on first cycle when resuming)
                 if cycle == 0 or not resume_phase:
                     converged = await self.execute_all_phases_in_cycle(context, resume_phase=resume_phase)
                 else:
-                    logger.info("[L6_AUDIT] Action at line 1028")
-                    logger.info("[L6_AUDIT] Action at line 1029")
                     # On subsequent cycles, run without skipping
                     converged = await self.execute_all_phases_in_cycle(context, resume_phase=None)
 
                 # Execute any forced agents from telepathy
                 if hasattr(context, 'forced_agents') and context.forced_agents:
-                    logger.info("[L6_AUDIT] Action at line 1035")
-                    logger.info("[L6_AUDIT] Action at line 1036")
                     await self._phase_execution.execute_forced_agents(context, context.execution_trace, self._signals)
 
                 # Check for convergence
                 if converged:
                     self.logger.info("Convergence achieved - all checks passed!")
                     break
-
-                logger.info("[L6_AUDIT] Action at line 1044")
                 # Check for critical failures
                 if "CRITICAL_FAIL" in self._signals:
                     errors.append("Critical failure detected")
                     break
-         logger.info("[L6_AUDIT] Action at line 1049")
-         logger.info("[L6_AUDIT] Action at line 1050")
         
         return converged, errors
 
@@ -1068,8 +1019,6 @@ class NervousSystem:
     """
 
     def __init__(
-        logger.info("[L6_AUDIT] Action at line 1071")
-        logger.info("[L6_AUDIT] Action at line 1072")
         self,
         cognitive_plane: Optional[ICognitivePlane] = None,
         action_plane: Optional[IActionPlane] = None,
@@ -1087,7 +1036,6 @@ class NervousSystem:
 
         # Initialize L4 State Persistence
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
-        logger.info("[L6_AUDIT] Action at line 1090")
         self.checkpoint_manager = VerifiableCheckpointManager(storage_adapter)
         self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
         self.signal_ledger = SignalLedger(storage_adapter, self.session_id)
@@ -1120,7 +1068,6 @@ class NervousSystem:
         )
         self._result_reporting = NervousSystemResultReporting(self.config, LOGGER)
         self._state_management = NervousSystemStateManagement(LOGGER)
-        logger.info("[L6_AUDIT] Action at line 1123")
         self._phase_execution = NervousSystemPhaseExecution(
             self.brain,
             self.safety_layer, self.signal_ledger, self._modified_files, LOGGER # Pass _modified_files
@@ -1128,17 +1075,12 @@ class NervousSystem:
         self.phases = self._phase_execution.phases
 
         self._architecture_governance = NervousSystemArchitectureGovernance(
-            logger.info("[L6_AUDIT] Action at line 1131")
             self.architecture_governor, LOGGER
-        logger.info("[L6_AUDIT] Action at line 1133")
-        logger.info("[L6_AUDIT] Action at line 1134")
         )
         self._intervention_manager = NervousSystemInterventionManager(
-            logger.info("[L6_AUDIT] Action at line 1137")
             self.intervention_server, LOGGER
         )
         self._phase_orchestrator = NervousSystemPhaseOrchestrator( # New orchestrator
-            logger.info("[L6_AUDIT] Action at line 1141")
             self._phase_execution,
             self._checkpointing,
             self._result_reporting,
@@ -1196,9 +1138,7 @@ class NervousSystem:
                 "phases": list(self.phases.keys()),
                 "max_phases": max_phases,
                 "iteration": self._iteration
-            logger.info("[L6_AUDIT] Action at line 1199")
             },
-            logger.info("[L6_AUDIT] Action at line 1201")
             state=self._state.copy()
         )
 
@@ -1300,21 +1240,14 @@ class NervousSystem:
                 context, context.execution_trace, errors, start_time,
                 self._results, self._state, self._iteration, self._signals, self._modified_files
             )
-
-            logger.info("[L6_AUDIT] Action at line 1304")
             # Log result to signal ledger
             await self.signal_ledger.append_result(result)
-
-            logger.info("[L6_AUDIT] Action at line 1308")
             return result
         except Exception as e:
             return self._result_reporting.handle_execution_error(
                 context, context.execution_trace, start_time, e, self._iteration, self._state
             )
-
-    logger.info("[L6_AUDIT] Action at line 1315")
     async def should_continue(self, context: ExecutionContext) -> bool:
-        logger.info("[L6_AUDIT] Action at line 1317")
         """Determine if execution should continue.
 
         Args:
@@ -1338,17 +1271,12 @@ class NervousSystem:
         """Get current orchestrator state.
 
         Returns:
-            logger.info("[L6_AUDIT] Action at line 1341")
             Current state snapshot
-        logger.info("[L6_AUDIT] Action at line 1343")
         """
         return self._state_management.get_state(self._iteration, self._state, self.config)
- logger.info("[L6_AUDIT] Action at line 1346")
 
     async def save_state(self, path: str) -> None:
         """Save orchestrator state to disk.
-
-        logger.info("[L6_AUDIT] Action at line 1351")
         Args:
             path: Path to save state
         """

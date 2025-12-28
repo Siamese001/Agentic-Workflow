@@ -736,11 +736,11 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("    Proceeding with validation, but auto-healing may be restricted.")
         
     # Increment violation metrics from preflight results
-    mission_labels = {"severity": "preflight"}
-    c_violations_total.labels(type="depth_span", **mission_labels).inc(preflight_results["span"])
-    c_violations_total.labels(type="hierarchy", **mission_labels).inc(preflight_results["hierarchy"])
-    c_violations_total.labels(type="gravity_import", **mission_labels).inc(preflight_results["gravity"])
-    c_violations_total.labels(type="naming_signal", **mission_labels).inc(preflight_results["naming"])
+    # Note: c_violations_total only has 'type' label after hardening
+    c_violations_total.labels(type="depth_span").inc(preflight_results["span"])
+    c_violations_total.labels(type="hierarchy").inc(preflight_results["hierarchy"])
+    c_violations_total.labels(type="gravity_import").inc(preflight_results["gravity"])
+    c_violations_total.labels(type="naming_signal").inc(preflight_results["naming"])
 
     # --- L5 HARDENING INSTANTIATION ---
     # [GAP 6 FIX] Validate critical framework agents exist
@@ -1149,7 +1149,12 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                     fission_active=False
                 )
                 
-                # Safety: Ensure we didn't get an empty response
+                # Safety: Ensure we didn't get None or empty response
+                if fixed_code is None:
+                    print("      [!] Engine returned None - skipping")
+                    consecutive_failures += 1
+                    continue
+                    
                 if len(fixed_code) > 10:
                     is_safe, msg = ctx.safety.verify_change(broken_code, fixed_code, fission_active=False)
                     if not is_safe:

@@ -70,8 +70,6 @@ class ArchitectureGovernor(SubAtomicAgent):
         self.ctx.report(self.name, 19, not violations['complexity'], violations['complexity'])
         self.ctx.report(self.name, 40, not violations['system'], violations['system'])
         self.ctx.report(self.name, 41, True, ["Root hygiene maintained"])
-
-    logger.info("[L6_AUDIT] Action at line 74")
     def _check_depth(self, file_path: str) -> List[str]:
         """Check if file violates the Law of Depth (Key 49)."""
         # FIX: Use pathlib.Path to handle Windows drive letters correctly
@@ -87,9 +85,6 @@ class ArchitectureGovernor(SubAtomicAgent):
         except Exception as e:
             return [f"{file_path}: Cannot analyze depth: {e}"]
         return []
- logger.info("[L6_AUDIT] Action at line 90")
-
-    logger.info("[L6_AUDIT] Action at line 92")
     async def _check_atomicity(self, file_path: str) -> List[str]:
         """
         Check if file violates the Law of Atomicity (Key 50).
@@ -166,7 +161,6 @@ ANALYZE THIS CODE:
 ```
 
 OUTPUT FORMAT (JSON):
-logger.info("[L6_AUDIT] Action at line 169")
 {{
   "fission_event": true,
   "original_file": "{file_name}",
@@ -205,8 +199,6 @@ Generate the blueprint now:"""
                         return blueprint
             
             return None
-            
-        logger.info("[L6_AUDIT] Action at line 209")
         except Exception as e:
             print(f"   [!] Fission blueprint generation error: {e}")
             return None
@@ -226,7 +218,6 @@ Generate the blueprint now:"""
 
                     complexity = self._calculate_mccabe(node)
                     if complexity > self.MAX_COMPLEXITY:
-                        logger.info("[L6_AUDIT] Action at line 229")
                         v.append(f"{file_path}:{node.name} complex ({complexity})")
         except Exception:
             pass
@@ -305,7 +296,6 @@ class DependencySentinel(SubAtomicAgent):
             print("   [+] Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 subprocess.run([
-                    logger.info("[L6_AUDIT] Action at line 308")
                     "isort",
                     ".",
                     "--skip", ".venv",
@@ -313,20 +303,14 @@ class DependencySentinel(SubAtomicAgent):
                     "--skip", "archives",
                     "--skip", "data"
                 ], capture_output=True, check=False)
-                logger.info("[L6_AUDIT] Action at line 316")
                 self.ctx.report(self.name, 14, True, [])
             except Exception:
                 self.ctx.report(self.name, 14, False, ["isort failed"])
-        logger.info("[L6_AUDIT] Action at line 320")
         else:
             self.ctx.report(self.name, 14, False, ["isort not installed"])
-
-        logger.info("[L6_AUDIT] Action at line 324")
         # Key 7: Star imports
         passed, details = self.check_key_07_no_star_imports()
         self.ctx.report(self.name, 7, passed, details)
-
-        logger.info("[L6_AUDIT] Action at line 329")
         # Key 8: Relative imports
         passed, details = self.check_key_08_no_relative_imports()
         self.ctx.report(self.name, 8, passed, details)
@@ -340,7 +324,6 @@ class DependencySentinel(SubAtomicAgent):
     def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
         """Check for star imports."""
         violations = []
-        logger.info("[L6_AUDIT] Action at line 343")
         for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -354,7 +337,6 @@ class DependencySentinel(SubAtomicAgent):
 
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """Check for relative imports."""
-        logger.info("[L6_AUDIT] Action at line 357")
         violations = []
         for file_path in self.ctx.python_files:
             try:
@@ -376,8 +358,6 @@ class DependencySentinel(SubAtomicAgent):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-
-                logger.info("[L6_AUDIT] Action at line 380")
                 imported_modules = set()
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -386,9 +366,6 @@ class DependencySentinel(SubAtomicAgent):
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             imported_modules.add(node.module.split('.')[0])
- logger.info("[L6_AUDIT] Action at line 389")
-
-                logger.info("[L6_AUDIT] Action at line 391")
                 import_map[file_path] = imported_modules
             except Exception:
                 continue

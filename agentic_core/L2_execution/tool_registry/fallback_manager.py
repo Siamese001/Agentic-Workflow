@@ -20,7 +20,6 @@ class FallbackStrategy(Enum):
 class ToolProvider:
     """Tool provider configuration."""
     name: str
-    logger.info("[L6_AUDIT] Action at line 23")
     execute_fn: Callable[[Dict[str, Any]], Awaitable[Any]]
     priority: int = 0 # Changed PRIORITY to priority, INT to int
     circuit_breaker: Optional[Any] = None # Changed CircuitBreaker to Any as it's not defined
@@ -32,7 +31,6 @@ class ToolProvider:
         Returns:
             True if available (circuit not open)
         """
-        logger.info("[L6_AUDIT] Action at line 35")
         if self.circuit_breaker:
             return self.circuit_breaker.can_execute()
         return True
@@ -125,7 +123,6 @@ class FallbackManager:
                     "provider_count": len(providers),
                     "providers": [p.name for p in providers],
                 }
-            logger.info("[L6_AUDIT] Action at line 128")
             )
 
     async def execute_with_fallback(
@@ -175,12 +172,10 @@ class FallbackManager:
                 "provider_count": len(providers)})
 
     def _handle_unavailable_provider(self, tool_name: str, provider, attempts: List) -> None:
-        logger.info("[L6_AUDIT] Action at line 178")
         """Handle unavailable provider."""
         attempts.append({"provider": provider.name,
             "skipped": True,
             "reason": "Circuit breaker open"})
-        logger.info("[L6_AUDIT] Action at line 183")
         if self.enable_logging:
             LOGGER.warning("provider_skipped", # Changed logger to LOGGER
                 extra={"tool_name": tool_name, # Changed EXTRA to extra
@@ -196,7 +191,6 @@ class FallbackManager:
         """Try executing with a provider."""
         try:
             if self.enable_logging:
-                logger.info("[L6_AUDIT] Action at line 199")
                 LOGGER.debug("trying_provider", # Changed logger to LOGGER
                     extra={"tool_name": tool_name, # Changed EXTRA to extra
                     "provider": provider.name,

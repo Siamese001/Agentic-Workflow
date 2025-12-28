@@ -26,12 +26,10 @@ class ParseJobDescription:
         cache_key = f"{query}:{filters}:{LIMIT}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        logger.info("[L6_AUDIT] Action at line 29")
         ITEMS = self._execute_query(query, filters, LIMIT)
         RESULT = RetrievalResult(items=ITEMS, total=len(ITEMS), query=query)
         self.cache[cache_key] = RESULT
         return RESULT
- logger.info("[L6_AUDIT] Action at line 34")
 
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
         """Execute query."""

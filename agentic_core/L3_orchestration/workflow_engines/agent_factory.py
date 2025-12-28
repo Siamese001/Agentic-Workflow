@@ -76,8 +76,6 @@ class AgentFactory:
     def create_system_architect(ctx: Optional[Any] = None) -> SystemArchitect:
         """
         Create SystemArchitect with injected L2 implementation.
-        
-        logger.info("[L6_AUDIT] Action at line 80")
         Injects L2 execution capabilities into L1 strategic architecture reasoning.
         """
         return SystemArchitect(AgentFactory._create_impl(ctx))
@@ -104,7 +102,6 @@ class AgentFactory:
     def create_code_janitor(ctx: Optional[Any] = None) -> CodeJanitor:
         """
         Create CodeJanitor with injected L2 implementation.
-         logger.info("[L6_AUDIT] Action at line 107")
         
         Injects L2 action into L1 syntax reasoning.
         """
@@ -113,7 +110,6 @@ class AgentFactory:
     @staticmethod
     def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinel:
         """
-        logger.info("[L6_AUDIT] Action at line 116")
         Create DependencySentinel with injected L2 implementation.
         
         Injects L2 import management into L1 dependency reasoning.
@@ -122,7 +118,6 @@ class AgentFactory:
     
     @staticmethod
     def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspector:
-        logger.info("[L6_AUDIT] Action at line 125")
         """
         Create SafetyInspector with injected L2 implementation.
         
@@ -131,7 +126,6 @@ class AgentFactory:
         return SafetyInspector(AgentFactory._create_impl(ctx))
     
     @staticmethod
-    logger.info("[L6_AUDIT] Action at line 134")
     def create_pattern_enforcer(ctx: Optional[Any] = None) -> PatternEnforcer:
         """
         Create PatternEnforcer with injected L2 implementation.

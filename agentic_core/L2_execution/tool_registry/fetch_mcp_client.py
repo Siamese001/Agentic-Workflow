@@ -224,10 +224,7 @@ class SovereignFetchMCPClient:
         logger.info(f"✅ [L2 FETCH] Successfully fetched {successful}/{len(urls)} URLs")
         
         return results
-    
-    logger.info("[L6_AUDIT] Action at line 228")
     async def health_check(self) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 230")
         """
         Perform health check on Fetch connection.
         
