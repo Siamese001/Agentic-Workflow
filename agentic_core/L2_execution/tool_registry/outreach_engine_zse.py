@@ -10,14 +10,14 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.utils.P1_core.core_utilities import log_action, register_process
-from agentic_core.utils.P1_core.networking import (
+from agentic_core.utils.core_extensions.core_utilities import log_action, register_process
+from agentic_core.utils.core_extensions.networking import (
     get_networking_utility,
     send_email,
     strict_egress_filter,
 )
-from agentic_core.utils.P1_core.pitch_generator import PitchGenerator
-from agentic_core.utils.P1_core.shadow_mode import ShadowModeEngine
+from agentic_core.utils.core_extensions.pitch_generator import PitchGenerator
+from agentic_core.utils.core_extensions.shadow_mode import ShadowModeEngine
 
 logger = logging.getLogger(__name__)
 

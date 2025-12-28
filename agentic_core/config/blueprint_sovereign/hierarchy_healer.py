@@ -2,7 +2,7 @@ import logging
 import shutil
 from pathlib import Path
 
-from structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 
 class HierarchyHealer:

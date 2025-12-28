@@ -58,7 +58,7 @@ class HealerAgent(CanonBaseAgent):
         Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from agentic_core.runtime.shared.void_compliance import (
+        from agentic_core.runtime.shared_runtime.void_compliance import (
             FORBIDDEN_ROOT_FOLDERS,
             get_placement_guidance,
         )

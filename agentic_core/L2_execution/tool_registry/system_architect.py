@@ -96,7 +96,7 @@ class SystemArchitect(CanonBaseAgent):
         """
         violations = []
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from agentic_core.runtime.shared.void_compliance import (
+        from agentic_core.runtime.shared_runtime.void_compliance import (
             validate_canonical_hierarchy,
         )
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()

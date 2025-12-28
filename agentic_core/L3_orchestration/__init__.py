@@ -55,6 +55,6 @@ from agentic_core.L3_orchestration.workflow_engines.safety_guardrail import (
     SafetyGuardrail,
     SafetyResult,
 )
-from agentic_core.schemas.P1_core.context_passport import ThermalProfile
+from agentic_core.schemas.models.context_passport import ThermalProfile
 
 __all__ = ['DAGNode', 'DAGExecutionResult', 'DAGExecutor', 'apply_fission_blueprint', 'AutonomicMonitor', 'HealthStatus', 'AlertSeverity', 'HealthMetrics', 'HealthAlert', 'BenchmarkResult', 'BenchmarkSuite', 'BenchmarkingAgent', 'BenchmarkContext', 'TaskMonitor', 'DeadlockDetector', 'MemorySnapshot', 'MemoryLeakDetector', 'ThermalProfile', 'FissionResult', 'FissionManager', 'GitSafetyHandler', 'MCPRouter', 'SafetyResult', 'SafetyGuardrail']
