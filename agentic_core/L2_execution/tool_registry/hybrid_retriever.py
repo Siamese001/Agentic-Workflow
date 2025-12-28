@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+"""
+HybridRetriever - Dense + Sparse Retrieval with Reranking
+"""
+
+import asyncio
+import hashlib
+import json
+import os
+import tempfile
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from rank_bm25 import BM25Okapi
+
+
+@dataclass
+class RetrievalResult:
+    text: str
+    score: float
+    source: str
+    metadata: Dict
+
+class HybridRetriever:
+    """
+    Hybrid retrieval combining semantic search with BM25 sparse retrieval
+    """
+    def __init__(self, vector_store, guardrail):
+        self.vector_store = vector_store
+        self.guardrail = guardrail
+        self.bm25_index: Optional[BM25Okapi] = None
+        self.local_chunks: List[Dict] = []  # Synecdoche of text + metadata
+        self.index_ready = asyncio.Event()
+
+        # Load local index on init
+        self._init_task = asyncio.create_task(self._load_or_rebuild_local_index())
+
+    async def _load_or_rebuild_local_index(self):
+        """Thread-safe loading of the sovereign index"""
+        cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
+        
+        if cache_path.exists():
+            try:
+                # Offload heavy JSON load to a thread
+                data = await asyncio.to_thread(lambda: json.loads(cache_path.read_text(encoding="utf-8")))
+                self.local_chunks = data["chunks"]
+                
+                def _build_bm25():
+                    tokenized = [c["text"].lower().split() for c in self.local_chunks]
+                    return BM25Okapi(tokenized)
+
+                self.bm25_index = await asyncio.to_thread(_build_bm25)
+                self.index_ready.set()
+                print(f"   [OK] Sovereign local BM25 index loaded")
+                return
+            except Exception as e:
+                print(f"   [!] Local index cache corrupt — rebuilding: {e}")
+        
+        await self.rebuild_from_ingestion()
+
+    async def rebuild_from_ingestion(self):
+        """Rebuild local index from latest ingestion artifacts"""
+        try:
+            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import (
+                load_latest_ingested_chunks,
+            )
+            chunks = await asyncio.to_thread(load_latest_ingested_chunks)
+            self.local_chunks = chunks
+            
+            if chunks:
+                def _sync():
+                    tokenized = [c["text"].lower().split() for c in chunks]
+                    idx = BM25Okapi(tokenized)
+                    # Atomic Write
+                    cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
+                    cache_path.parent.mkdir(parents=True, exist_ok=True)
+                    with tempfile.NamedTemporaryFile('w', delete=False, dir=cache_path.parent) as tf:
+                        json.dump({"chunks": chunks}, tf, ensure_ascii=False)
+                        temp_name = tf.name
+                    os.replace(temp_name, cache_path)
+                    return idx
+                
+                self.bm25_index = await asyncio.to_thread(_sync)
+                self.index_ready.set()
+            print(f"   [OK] Sovereign local index synchronized")
+        except Exception as e:
+            print(f"   [X] Local index rebuild failed: {e}")
+
+    async def dense_search(self, query: str, top_k: int = 15) -> List[RetrievalResult]:
+        """Dense semantic search via vector store"""
+        try:
+            results = await self.vector_store.similarity_search(query, top_k=top_k)
+            return [
+                RetrievalResult(
+                    text=r.page_content,
+                    score=r.score if hasattr(r, 'score') else 0.0,
+                    source=r.metadata.get('source', 'unknown'),
+                    metadata=r.metadata
+                )
+                for r in results
+            ]
+        except Exception as e:
+            print(f"   [!] Dense search failed: {e}")
+            return []
+
+    def sparse_search(self, query: str, top_k: int = 15) -> List[RetrievalResult]:
+        """Sparse BM25 search on local chunks"""
+        if not self.index_ready.is_set():
+            print("   [!] BM25 search skipped: Index not ready")
+            return []
+
+        tokenized_query = query.lower().split()
+        doc_scores = self.bm25_index.get_scores(tokenized_query)
+        
+        # Get top-k results
+        top_indices = doc_scores.argsort()[-top_k:][::-1]
+        
+        results = []
+        for idx in top_indices:
+            if doc_scores[idx] > 0:
+                chunk = self.local_chunks[idx]
+                results.append(RetrievalResult(
+                    text=chunk["text"],
+                    score=float(doc_scores[idx]),
+                    source='local_bm25',
+                    metadata=chunk.get("metadata", {})
+                ))
+        return results
+
+    def deduplicate_by_hash(self, results: List[RetrievalResult], request_seen: set) -> List[RetrievalResult]:
+        """Deduplicate by content hash — prevents redundant chunks"""
+        unique = []
+        for r in results:
+            content_hash = hashlib.sha256(r.text.encode('utf-8')).hexdigest()
+            if content_hash not in request_seen:
+                request_seen.add(content_hash)
+                unique.append(r)
+        return unique
+
+    def reciprocal_rank_fusion(self, dense: List[RetrievalResult], sparse: List[RetrievalResult], k: int = 60) -> List[RetrievalResult]:
+        """
+        Fused rankings using optimized RRF (O(N) performance)
+        """
+        rank_map = {}  # {content_hash: {"result": R, "rrf_score": 0.0}}
+        
+        # Fuse Dense Ranking
+        for rank, r in enumerate(dense, start=1):
+            h = hashlib.sha256(r.text.encode()).hexdigest()
+            if h not in rank_map:
+                rank_map[h] = {"result": r, "rrf_score": 0.0}
+            rank_map[h]["rrf_score"] += 1 / (k + rank)
+
+        # Fuse Sparse Ranking
+        for rank, r in enumerate(sparse, start=1):
+            h = hashlib.sha256(r.text.encode()).hexdigest()
+            if h not in rank_map:
+                rank_map[h] = {"result": r, "rrf_score": 0.0}
+            rank_map[h]["rrf_score"] += 1 / (k + rank)
+
+        # Convert back and sort
+        fused = []
+        for info in rank_map.values():
+            res = info["result"]
+            res.score = info["rrf_score"]
+            fused.append(res)
+        
+        fused.sort(key=lambda x: x.score, reverse=True)
+        return fused
+
+    async def rerank_combined(self, combined: List[RetrievalResult], query: str) -> List[RetrievalResult]:
+        """L5 reranking via cross-encoder (guardrail)"""
+        if not combined:
+            return []
+        # Properly await the async guardrail
+        return await self.guardrail.rerank_documents(combined, query)
+
+    async def hybrid_search(self, query: str, top_k: int = 12) -> List[RetrievalResult]:
+        """Sovereign hybrid search with RRF fusion"""
+        # Run searches in parallel with thread offloading for BM25
+        dense_results, sparse_results = await asyncio.gather(
+            self.dense_search(query, top_k=top_k*2),
+            asyncio.to_thread(self.sparse_search, query, top_k=top_k*2)
+        )
+
+        if not dense_results and not sparse_results:
+            return []
+
+        # Hybrid Fusion via RRF
+        fused = self.reciprocal_rank_fusion(dense_results, sparse_results)
+        
+        # Final L5 Precision boost
+        return await self.guardrail.rerank_documents(fused[:min(50, len(fused))], query, top_k=top_k)
+
+    async def wait_for_index(self):
+        """Wait for BM25 index to be ready"""
+        await self.index_ready.wait()

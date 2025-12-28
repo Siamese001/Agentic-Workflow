@@ -1,0 +1,88 @@
+{
+  "migration_timestamp": "2025-12-22T21:12:29.687660",
+  "total_files": 10,
+  "successful_moves": 8,
+  "failed_moves": 2,
+  "operations": [
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node_modules\\core_executor.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\core_executor.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node_modules\\secure_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\secure_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node_modules\\__init__.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\__init__.py",
+      "success": false,
+      "reason": "Destination file already exists"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\file_io_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\file_io_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\git_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\git_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\mcp_stubs.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\mcp_stubs.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\redis_cache_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\redis_cache_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\time_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\time_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.684576",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\web_search_tools.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\web_search_tools.py",
+      "success": true,
+      "reason": "Dry run"
+    },
+    {
+      "timestamp": "2025-12-22T21:12:29.687107",
+      "operation": "move",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry_modules\\__init__.py",
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tools\\__init__.py",
+      "success": false,
+      "reason": "Destination file already exists"
+    }
+  ]
+}

@@ -1,0 +1,497 @@
+output_governance:
+  brand_governance:
+    visual_standards:
+      color_palette:
+        accent: '#E74C3C'
+        primary: '#2C3E50'
+        secondary: '#3498DB'
+      typography:
+        body: Arial Regular
+        emphasis: Arial Italic
+        headings: Arial Bold
+    voice_standards:
+      communication_style:
+        clarity: high
+        conciseness: medium
+        formality: professional
+      professional_tone:
+        avoid:
+        - casual
+        - overly_familiar
+        - aggressive
+        characteristics:
+        - authoritative
+        - helpful
+        - respectful
+  compliance_governance:
+    industry_compliance:
+      education:
+        academic_ethics: true
+        ferpa_compliant: true
+        student_privacy: true
+      finance:
+        financial_ethics: true
+        regulatory_disclosure: true
+        sec_compliant: true
+      healthcare:
+        hipaa_compliant: true
+        medical_ethics: true
+        patient_privacy: true
+    legal_compliance:
+      data_protection:
+        ccpa_compliant: true
+        data_encryption: true
+        gdpr_compliant: true
+        pii_handling:
+          consent_required: true
+          detection: true
+          redaction: true
+      employment_laws:
+        anti_discrimination: true
+        equal_opportunity: true
+        privacy_protection: true
+        prohibited_questions:
+        - age
+        - marital_status
+        - religion
+        - national_origin
+        - disability
+  content_governance:
+    outreach_content:
+      content_restrictions:
+        forbidden_content:
+        - spam_indicators
+        - misleading_claims
+        - excessive_urgency
+        - generic_templates
+        required_content:
+        - personalized_greeting
+        - context_reference
+        - value_proposition
+        - clear_next_step
+      quality_standards:
+        call_to_action:
+          actionability: immediate
+          required: true
+          specificity: high
+        personalization:
+          min_elements: 3
+          required: true
+          types:
+          - research_based
+          - connection_based
+          - interest_based
+        value_proposition:
+          clarity_score: 0.8
+          required: true
+          structure: benefit_focused
+    resume_content:
+      content_restrictions:
+        forbidden_content:
+        - personal_identifiers
+        - age_birth_date
+        - marital_status
+        - religious_information
+        - political_affiliations
+        required_content:
+        - professional_contact_info
+        - relevant_experience
+        - key_skills
+        - education_background
+      quality_standards:
+        achievements:
+          min_per_role: 2
+          required: true
+          structure: STAR_method
+        action_verbs:
+          min_count: 15
+          preferred_list:
+          - achieved
+          - implemented
+          - developed
+          - led
+          - managed
+          - created
+          - improved
+          - increased
+          required: true
+        quantification:
+          metric_types:
+          - percentages
+          - dollars
+          - time
+          - quantity
+          min_metrics: 5
+          required: true
+  enforcement:
+    automated_rules:
+      compliance_checking: true
+      content_filtering: true
+      format_enforcement: true
+    manual_review:
+      escalation_procedures:
+        level_1: automated_correction
+        level_2: human_review
+        level_3: management_approval
+      review_triggers:
+      - quality_score_below_threshold
+      - compliance_violation
+      - brand_misalignment
+  format_governance:
+    outreach_formats:
+      email_format:
+        formatting_rules:
+          no_html_tags: true
+          professional_tone: true
+          proper_spacing: true
+        structure:
+          body:
+            max_length: 500
+            max_paragraphs: 4
+            style: conversational_professional
+          closing:
+            include_signature: true
+            style: professional
+          greeting:
+            personalization: true
+            style: professional
+          subject_line:
+            max_length: 50
+            style: action_oriented
+      linkedin_format:
+        formatting_rules:
+          emoji_usage: minimal
+          hashtag_usage: relevant_only
+          max_length: 300
+        structure:
+          call_to_action: specific_next_step
+          opening: personalized_connection
+          value_proposition: mutual_benefit
+    resume_formats:
+      classic_format:
+        formatting_rules:
+          font_family:
+          - Times New Roman
+          - Georgia
+          font_size:
+          - 11
+          - 12
+          line_spacing: 2.0
+          margins: 1 inch
+        structure:
+          education:
+          - educational_background
+          experience:
+          - professional_experience
+          header:
+          - name
+          - contact_info
+          objective:
+          - career_objective
+          skills:
+          - technical_skills
+      modern_format:
+        formatting_rules:
+          font_family:
+          - Arial
+          - Calibri
+          - Helvetica
+          font_size:
+          - 10
+          - 11
+          - 12
+          line_spacing: 1.15
+          margins: 1 inch
+        structure:
+          education:
+            max_entries: 5
+            sections:
+            - education
+            style: reverse_chronological
+          experience:
+            max_bullets: 8
+            sections:
+            - work_experience
+            style: achievement_oriented
+          header:
+            max_length: 100
+            sections:
+            - contact_info
+            - professional_title
+          skills:
+            categories:
+            - technical
+            - soft
+            - certifications
+            max_per_category: 10
+            sections:
+            - skills
+          summary:
+            max_length: 300
+            sections:
+            - professional_summary
+            style: paragraph
+      technical_format:
+        formatting_rules:
+          include_github: true
+          include_portfolio: true
+          sections_order:
+          - skills
+          - projects
+          - experience
+        structure:
+          certifications:
+          - certifications
+          education:
+          - education
+          experience:
+          - work_experience
+          header:
+          - contact_info
+          - technical_summary
+          projects:
+          - technical_projects
+          skills:
+          - technical_skills
+          - programming_languages
+  global_principles:
+    enabled: true
+    governance_areas:
+      brand_consistency: true
+      compliance_enforcement: true
+      content_quality: true
+      format_standardization: true
+    governance_level: strict
+  last_updated: '2024-01-01T00:00:00Z'
+  monitoring:
+    compliance_monitoring:
+      reporting_frequency: weekly
+      trend_analysis: true
+      violation_tracking: true
+    performance_monitoring:
+      processing_time: true
+      success_rate: true
+      user_satisfaction: true
+    quality_monitoring:
+      benchmark_comparison: true
+      improvement_identification: true
+      score_tracking: true
+  quality_governance:
+    quality_assurance:
+      automated_checks:
+        content_completeness: true
+        format_validation: true
+        spelling_grammar: true
+      manual_review:
+        expert_review: true
+        peer_review: true
+        stakeholder_approval: true
+    quality_metrics:
+      outreach_quality:
+        engagement_score:
+          threshold: 0.7
+          weight: 0.3
+        personalization_score:
+          threshold: 0.8
+          weight: 0.4
+        professional_score:
+          threshold: 0.85
+          weight: 0.3
+      resume_quality:
+        completeness_score:
+          threshold: 0.9
+          weight: 0.3
+        professional_score:
+          threshold: 0.85
+          weight: 0.3
+        relevance_score:
+          threshold: 0.8
+          weight: 0.4
+  v5_output_injections:
+    enabled: true
+    error_envelope:
+      description: Standardize failures into simple, structured error objects
+      prompt_template: "ERROR ENVELOPE NORMALIZATION\n\nError Response Schema:\n{{\n\
+        \  \"success\": false,\n  \"error\": {{\n    \"code\": \"{error_code}\",\n\
+        \    \"message\": \"{error_message}\",\n    \"details\": \"{error_details}\"\
+        ,\n    \"timestamp\": \"{timestamp}\"\n  }}\n}}\n\nError Handling Rules:\n\
+        - Always use standardized error format\n- Include specific error codes\n-\
+        \ Provide clear error messages\n- Add relevant context details\n\nNormalize\
+        \ all failures into the structured error envelope format.\n"
+      success_criteria:
+      - Standardized error format
+      - Clear error codes
+      - Comprehensive error details
+      usage_context:
+      - Error handling
+      - API responses
+      - Failure reporting
+    injection_count: 5
+    minimality_constraints:
+      description: Limit output size to enforce clarity and conciseness
+      prompt_template: 'OUTPUT MINIMALITY CONSTRAINTS
+
+
+        Size Limits:
+
+        - Maximum Characters: {max_characters}
+
+        - Maximum Fields: {max_fields}
+
+        - Maximum Depth: {max_depth}
+
+        - Conciseness Required: {conciseness_level}
+
+
+        Minimality Rules:
+
+        - Include only essential information
+
+        - Avoid redundant content
+
+        - Use efficient data structures
+
+        - Prioritize clarity over verbosity
+
+
+        Generate minimal output that meets all requirements while respecting size
+        constraints.
+
+        '
+      success_criteria:
+      - Size constraints respected
+      - Essential information retained
+      - Output is concise
+      usage_context:
+      - Token optimization
+      - Performance requirements
+      - Clarity optimization
+    schema_enforcement:
+      description: Supply minimal schema and one valid illustrative example
+      prompt_template: 'SCHEMA ENFORCEMENT PROTOCOL
+
+
+        Required Schema:
+
+        {required_schema}
+
+
+        Valid Example:
+
+        {example_output}
+
+
+        Enforcement Rules:
+
+        - Follow exact schema structure
+
+        - Use specified field types
+
+        - Maintain required field order
+
+        - Reference example for format guidance
+
+
+        Generate output that conforms to schema while using example as format reference.
+
+        '
+      success_criteria:
+      - Schema structure followed
+      - Field types correct
+      - Example format referenced
+      usage_context:
+      - Complex data structures
+      - Format standardization
+      - Data validation
+    stability_contracts:
+      description: Preserve field order and naming across repeated outputs
+      prompt_template: 'OUTPUT STABILITY CONTRACT
+
+
+        Contract Requirements:
+
+        - Field Order: {field_order}
+
+        - Field Naming: {field_naming}
+
+        - Consistent Structure: true
+
+        - Stable Identifiers: true
+
+
+        Stability Guarantees:
+
+        - Same fields in same order
+
+        - Consistent naming conventions
+
+        - Stable data types
+
+        - Predictable structure
+
+
+        Maintain output stability across all generations for this task type.
+
+        '
+      success_criteria:
+      - Field order maintained
+      - Naming consistent
+      - Structure stable
+      usage_context:
+      - Repeated operations
+      - API consistency
+      - Data pipeline stability
+    strict_json_output:
+      description: Require deterministic, schema-compliant JSON without extra text
+      prompt_template: 'STRICT JSON OUTPUT MODE ACTIVATED
+
+
+        Output Requirements:
+
+        - Format: Valid JSON only
+
+        - Schema Compliance: {schema_requirements}
+
+        - No Additional Text: true
+
+        - Deterministic Structure: true
+
+
+        JSON Schema:
+
+        {json_schema}
+
+
+        Output must be valid JSON that strictly adheres to the provided schema.
+
+        Do not include any explanatory text, comments, or non-JSON content.
+
+        '
+      success_criteria:
+      - Valid JSON format
+      - Schema compliance
+      - No extra text content
+      usage_context:
+      - API responses
+      - Data exchange
+      - Structured output generation
+  validation_rules:
+    post_validation:
+      content_validation:
+        brand_alignment: true
+        compliance_check: true
+        quality_threshold: 0.8
+      format_validation:
+        readability_score: 0.8
+        structure_compliance: true
+        style_consistency: true
+    pre_validation:
+      context_validation:
+        accuracy_check: true
+        completeness_check: true
+        relevance_check: true
+      input_validation:
+        content_safety: true
+        data_format: true
+        required_fields: true
+  version: '1.0'

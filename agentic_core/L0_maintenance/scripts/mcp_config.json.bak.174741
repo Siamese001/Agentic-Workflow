@@ -1,0 +1,98 @@
+{
+  "integration_config": {
+    "auto_discover": true,
+    "enabled": true,
+    "retry_attempts": 3,
+    "timeout_seconds": 30
+  },
+  "mcpServers": {
+    "context7": {
+      "args": [
+        "-y",
+        "@context7/mcp-server"
+      ],
+      "capabilities": [
+        "semantic_search",
+        "context_retrieval",
+        "knowledge_graph"
+      ],
+      "command": "npx",
+      "description": "Advanced context management and semantic search"
+    },
+    "dockerhub": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-dockerhub"
+      ],
+      "capabilities": [
+        "search_images",
+        "get_image_details",
+        "list_tags"
+      ],
+      "command": "npx",
+      "description": "Access DockerHub for container image information and deployment automation"
+    },
+    "figma": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-figma"
+      ],
+      "capabilities": [
+        "get_file",
+        "get_comments",
+        "get_components"
+      ],
+      "command": "npx",
+      "description": "Access Figma designs for UI/UX analysis and design system integration",
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}"
+      }
+    },
+    "playwright": {
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ],
+      "capabilities": [
+        "navigate",
+        "click",
+        "fill_form",
+        "screenshot",
+        "extract_data"
+      ],
+      "command": "npx",
+      "description": "Browser automation for web scraping, testing, and interaction"
+    },
+    "reddit": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-reddit"
+      ],
+      "capabilities": [
+        "search_posts",
+        "get_subreddit",
+        "analyze_sentiment"
+      ],
+      "command": "npx",
+      "description": "Access Reddit for market research, sentiment analysis, and community insights",
+      "env": {
+        "REDDIT_CLIENT_ID": "${REDDIT_CLIENT_ID}",
+        "REDDIT_CLIENT_SECRET": "${REDDIT_CLIENT_SECRET}",
+        "REDDIT_USER_AGENT": "${REDDIT_USER_AGENT}"
+      }
+    },
+    "sequential-thinking": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "capabilities": [
+        "chain_of_thought",
+        "step_by_step_reasoning",
+        "problem_decomposition"
+      ],
+      "command": "npx",
+      "description": "Enhanced reasoning with chain-of-thought and step-by-step problem solving"
+    }
+  }
+}
