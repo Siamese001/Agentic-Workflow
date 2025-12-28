@@ -499,6 +499,221 @@ class GeminiSpy:
                 raise e
 
 # ==============================================================================
+# L6 HIERARCHY ENFORCEMENT: SUBFOLDER HEALING
+# ==============================================================================
+RUN_HIERARCHY_HEALING = True  # Toggle to enable/disable automatic subfolder enforcement
+
+def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
+    """
+    [L6 ENFORCEMENT] Heals hierarchy violations by:
+    1. Relocating files from non-approved subfolders to the nearest approved subfolder
+    2. Removing empty non-approved subfolders after relocation
+    
+    Returns:
+        Dict with counts of relocated files and removed folders
+    """
+    import shutil
+    from datetime import datetime
+    
+    results = {"files_relocated": 0, "folders_removed": 0, "errors": []}
+    
+    if not RUN_HIERARCHY_HEALING:
+        print("   [INFO] Hierarchy healing disabled (RUN_HIERARCHY_HEALING=False)")
+        return results
+    
+    print("\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
+    
+    # Get approved L1 folders for agentic_core from SSOT
+    approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
+    
+    agentic_core_path = project_root / "agentic_core"
+    if not agentic_core_path.exists():
+        return results
+    
+    # Phase 1: Find all non-approved L1 folders
+    actual_l1 = {p.name for p in agentic_core_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+    non_approved_l1 = actual_l1 - approved_l1
+    
+    for bad_l1 in non_approved_l1:
+        bad_path = agentic_core_path / bad_l1
+        print(f"   [!] Non-approved L1 folder: {bad_l1}")
+        
+        # Find best target based on folder name heuristics
+        target_l1 = _get_best_target_l1(bad_l1, approved_l1)
+        target_path = agentic_core_path / target_l1
+        
+        # Relocate all files from non-approved folder
+        for py_file in bad_path.rglob("*.py"):
+            if py_file.name == "__init__.py":
+                continue
+            try:
+                # Determine target L2 folder
+                target_l2 = _get_best_target_l2(target_l1, py_file.name)
+                final_target = target_path / target_l2
+                final_target.mkdir(parents=True, exist_ok=True)
+                
+                dest = final_target / py_file.name
+                if not dest.exists():
+                    shutil.move(str(py_file), str(dest))
+                    print(f"      [✓] RELOCATED: {py_file.name} -> {target_l1}/{target_l2}/")
+                    results["files_relocated"] += 1
+                else:
+                    print(f"      [!] SKIP (exists): {py_file.name}")
+            except Exception as e:
+                results["errors"].append(f"{py_file.name}: {e}")
+        
+        # Try to remove empty folder tree
+        try:
+            _remove_empty_dirs(bad_path)
+            if not bad_path.exists():
+                print(f"      [✓] REMOVED empty folder: {bad_l1}")
+                results["folders_removed"] += 1
+        except Exception as e:
+            results["errors"].append(f"Remove {bad_l1}: {e}")
+    
+    # Phase 2: Check L2 subfolders within approved L1 folders
+    for l1_name in approved_l1:
+        l1_path = agentic_core_path / l1_name
+        if not l1_path.exists():
+            continue
+        
+        approved_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
+        if not approved_l2:
+            continue  # No L2 enforcement for this L1
+        
+        actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+        non_approved_l2 = actual_l2 - approved_l2
+        
+        for bad_l2 in non_approved_l2:
+            bad_path = l1_path / bad_l2
+            print(f"   [!] Non-approved L2 folder: {l1_name}/{bad_l2}")
+            
+            # Find best target L2 folder
+            target_l2 = _get_best_target_l2(l1_name, bad_l2)
+            target_path = l1_path / target_l2
+            target_path.mkdir(parents=True, exist_ok=True)
+            
+            # Relocate all files
+            for py_file in bad_path.rglob("*.py"):
+                if py_file.name == "__init__.py":
+                    continue
+                try:
+                    dest = target_path / py_file.name
+                    if not dest.exists():
+                        shutil.move(str(py_file), str(dest))
+                        print(f"      [✓] RELOCATED: {py_file.name} -> {l1_name}/{target_l2}/")
+                        results["files_relocated"] += 1
+                    else:
+                        print(f"      [!] SKIP (exists): {py_file.name}")
+                except Exception as e:
+                    results["errors"].append(f"{py_file.name}: {e}")
+            
+            # Try to remove empty folder
+            try:
+                _remove_empty_dirs(bad_path)
+                if not bad_path.exists():
+                    print(f"      [✓] REMOVED empty folder: {l1_name}/{bad_l2}")
+                    results["folders_removed"] += 1
+            except Exception as e:
+                results["errors"].append(f"Remove {l1_name}/{bad_l2}: {e}")
+    
+    print(f"   [HIERARCHY HEALING COMPLETE] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed")
+    if results["errors"]:
+        print(f"   [!] {len(results['errors'])} errors occurred during healing")
+    
+    return results
+
+
+def _get_best_target_l1(folder_name: str, approved_l1: set) -> str:
+    """Heuristically determine the best approved L1 folder for a non-approved folder."""
+    name_lower = folder_name.lower()
+    
+    # Mapping based on common patterns
+    if any(x in name_lower for x in ["cognit", "thought", "reason", "intent", "strateg"]):
+        return "L1_cognition"
+    if any(x in name_lower for x in ["exec", "action", "tool", "handler"]):
+        return "L2_execution"
+    if any(x in name_lower for x in ["orchestr", "workflow", "fission", "route", "hop"]):
+        return "L3_orchestration"
+    if any(x in name_lower for x in ["state", "memory", "cache", "audit", "ledger", "context"]):
+        return "L4_state"
+    if any(x in name_lower for x in ["safe", "guard", "policy", "red_team", "gravity"]):
+        return "L5_safety"
+    if any(x in name_lower for x in ["maint", "script", "log", "bench"]):
+        return "L0_maintenance"
+    if any(x in name_lower for x in ["config", "env", "setting"]):
+        return "config"
+    if any(x in name_lower for x in ["schema", "model", "request", "response"]):
+        return "schemas"
+    if any(x in name_lower for x in ["prompt", "persona", "instruct"]):
+        return "prompt_governance"
+    if any(x in name_lower for x in ["runtime", "shared"]):
+        return "runtime"
+    if any(x in name_lower for x in ["observ", "metric", "telemetry"]):
+        return "observability"
+    if any(x in name_lower for x in ["util", "helper", "extension"]):
+        return "utils"
+    if any(x in name_lower for x in ["pattern", "role", "flow"]):
+        return "patterns"
+    if any(x in name_lower for x in ["semantic", "vector", "embed"]):
+        return "semantic_memory"
+    if any(x in name_lower for x in ["knowledge", "rag", "document", "research"]):
+        return "knowledge"
+    
+    # Default fallback
+    return "utils"
+
+
+def _get_best_target_l2(l1_name: str, item_name: str) -> str:
+    """Heuristically determine the best approved L2 folder within an L1."""
+    approved_l2 = CORE_SUBFOLDER_MAP.get(l1_name, [])
+    if not approved_l2:
+        return "P1_core"  # Fallback
+    
+    name_lower = item_name.lower()
+    
+    # Try to match based on name patterns
+    for l2 in approved_l2:
+        if l2.lower() in name_lower or name_lower in l2.lower():
+            return l2
+    
+    # Return first approved L2 as fallback
+    return approved_l2[0]
+
+
+def _remove_empty_dirs(path: Path):
+    """Recursively remove empty directories."""
+    if not path.is_dir():
+        return
+    
+    # First, recurse into subdirectories
+    for child in path.iterdir():
+        if child.is_dir():
+            _remove_empty_dirs(child)
+    
+    # Then check if this directory is now empty (ignoring __pycache__ and __init__.py)
+    remaining = [p for p in path.iterdir() 
+                 if p.name not in {"__pycache__", "__init__.py", ".gitkeep"}
+                 and not p.name.startswith(".")]
+    
+    if not remaining:
+        # Remove __init__.py if it exists
+        init_file = path / "__init__.py"
+        if init_file.exists():
+            init_file.unlink()
+        # Remove __pycache__ if it exists
+        pycache = path / "__pycache__"
+        if pycache.exists():
+            import shutil
+            shutil.rmtree(pycache)
+        # Remove the directory itself
+        try:
+            path.rmdir()
+        except OSError:
+            pass  # Directory not empty, skip
+
+
+# ==============================================================================
 # L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
 # ==============================================================================
 def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
@@ -548,6 +763,17 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
             print(f"   [X] {rel_path}: {reason}")
         if len(hierarchy_violations) > 3:
             print(f"   ... and {len(hierarchy_violations) - 3} more violations")
+        
+        # [L6 ENFORCEMENT] Heal hierarchy violations by relocating files
+        healing_results = heal_hierarchy_violations(project_root)
+        results["hierarchy_healed"] = healing_results["files_relocated"]
+        
+        # Re-check after healing
+        if healing_results["files_relocated"] > 0:
+            hierarchy_violations_after = validate_canonical_hierarchy(project_root)
+            hierarchy_violations_after = [v for v in hierarchy_violations_after if '.git' not in str(v[0]) and '__init__.py' not in str(v[0])]
+            results["hierarchy"] = len(hierarchy_violations_after)
+            print(f"   [POST-HEALING] {results['hierarchy']} hierarchy violations remaining")
     
     # Check 3: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
