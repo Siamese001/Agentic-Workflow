@@ -8,7 +8,6 @@ _logger = logging.getLogger(__name__)
 class AgentCapability(Enum):
     """Standard agent capabilities."""
     REASONING = "reasoning"
-    logger.info("[L6_AUDIT] Action at line 11")
     PLANNING = "planning"
     EXECUTION = "execution"
     MONITORING = "monitoring"

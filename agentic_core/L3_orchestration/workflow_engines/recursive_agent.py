@@ -1,5 +1,4 @@
 """
-logger.info("[L6_AUDIT] Action at line 2")
 Recursive Planner Agent - The Executive
 
 A specialized agent that doesn't 'do' work, but manages it.
@@ -25,7 +24,6 @@ class SubTask:
     priority: int
 
 
-logger.info("[L6_AUDIT] Action at line 28")
 @dataclass
 class RecursivePlan:
     """A plan that can spawn sub-workflows."""
@@ -34,7 +32,6 @@ class RecursivePlan:
     execution_strategy: str  # "sequential", "parallel", "adaptive"
     resource_requirements: Dict[str, Any]
     success_criteria: List[str]
- logger.info("[L6_AUDIT] Action at line 37")
 
 
 class RecursivePlannerAgent:
@@ -53,7 +50,6 @@ class RecursivePlannerAgent:
         architect,
         orchestrator_factory,
         max_depth: int = 3,
-        logger.info("[L6_AUDIT] Action at line 56")
         max_parallel_subtasks: int = 5
     ):
         """
@@ -67,16 +63,13 @@ class RecursivePlannerAgent:
         """
         self.architect = architect
         self.orchestrator_factory = orchestrator_factory
-        logger.info("[L6_AUDIT] Action at line 70")
         self.max_depth = max_depth
-        logger.info("[L6_AUDIT] Action at line 72")
         self.max_parallel = max_parallel_subtasks
         self.active_children: List[str] = []
 
         LOGGER.info(f"Recursive planner initialized (max_depth={max_depth})")
 
     async def plan_and_execute(
-        logger.info("[L6_AUDIT] Action at line 79")
         self,
         complex_goal: str,
         context: Dict[str, Any],
@@ -88,27 +81,19 @@ class RecursivePlannerAgent:
         Args:
             complex_goal: The high-level goal to achieve
             context: Execution context
-            logger.info("[L6_AUDIT] Action at line 91")
             current_depth: Current recursion depth
- logger.info("[L6_AUDIT] Action at line 93")
 
         Returns:
-            logger.info("[L6_AUDIT] Action at line 96")
             Execution results
         """
-        logger.info("[L6_AUDIT] Action at line 99")
-        logger.info("[L6_AUDIT] Action at line 100")
         if current_depth >= self.max_depth:
             LOGGER.warning(f"Max recursion depth ({self.max_depth}) reached")
-            logger.info("[L6_AUDIT] Action at line 103")
             return await self._execute_directly(complex_goal, context)
 
         LOGGER.info(f"Planning complex goal at depth {current_depth}: {complex_goal}")
 
         # Step 1: Decompose the goal
         plan = await self._decompose_goal(complex_goal, context)
-
-        logger.info("[L6_AUDIT] Action at line 111")
         # Step 2: Validate the plan
         if not await self._validate_plan(plan, context):
             return {"error": "Plan validation failed", "goal": complex_goal}
@@ -127,7 +112,6 @@ class RecursivePlannerAgent:
 
         decomposition_prompt = f"""
 Goal: {goal}
- logger.info("[L6_AUDIT] Action at line 130")
 
 Context: {self._format_context(context)}
 
@@ -153,10 +137,8 @@ Format as JSON:
             "task_id": "task_1",
             "description": "...",
             "agent_role": "...",
-            logger.info("[L6_AUDIT] Action at line 156")
             "dependencies": [],
             "estimated_duration": 30,
-            logger.info("[L6_AUDIT] Action at line 159")
             "priority": 1
         }}
     ],
@@ -166,21 +148,14 @@ Format as JSON:
 """
 
         response = await self.architect.llm.generate(decomposition_prompt)
-
-        logger.info("[L6_AUDIT] Action at line 170")
         # Parse the response
         try:
-            logger.info("[L6_AUDIT] Action at line 173")
             import json
-            logger.info("[L6_AUDIT] Action at line 175")
             plan_data = json.loads(response)
-
-            logger.info("[L6_AUDIT] Action at line 178")
             subtasks = []
             for task_data in plan_data.get("subtasks", []):
                 subtask = SubTask(
                     task_id=task_data["task_id"],
-                    logger.info("[L6_AUDIT] Action at line 183")
                     description=task_data["description"],
                     dependencies=task_data.get("dependencies", []),
                     estimated_duration=task_data.get("estimated_duration", 60),
@@ -195,9 +170,7 @@ Format as JSON:
                 execution_strategy=plan_data.get("execution_strategy", "sequential"),
                 resource_requirements={},
                 success_criteria=plan_data.get("success_criteria", [])
-            logger.info("[L6_AUDIT] Action at line 198")
             )
- logger.info("[L6_AUDIT] Action at line 200")
 
             return plan
 
@@ -210,7 +183,6 @@ Format as JSON:
                     task_id="main_task",
                     description=goal,
                     dependencies=[],
-                    logger.info("[L6_AUDIT] Action at line 213")
                     estimated_duration=300,
                     agent_role="RESEARCHER",
                     priority=1
@@ -222,20 +194,14 @@ Format as JSON:
 
     async def _validate_plan(
         self,
-        logger.info("[L6_AUDIT] Action at line 225")
         plan: RecursivePlan,
-        logger.info("[L6_AUDIT] Action at line 227")
         context: Dict[str, Any]
     ) -> bool:
         """Validate that the plan is executable."""
- logger.info("[L6_AUDIT] Action at line 231")
- logger.info("[L6_AUDIT] Action at line 232")
 
         # Check for circular dependencies
         visited = set()
-        logger.info("[L6_AUDIT] Action at line 236")
         rec_stack = set()
- logger.info("[L6_AUDIT] Action at line 238")
 
         def has_cycle(task_id):
             visited.add(task_id)
@@ -244,29 +210,19 @@ Format as JSON:
             for task in plan.subtasks:
                 if task.task_id == task_id:
                     for dep in task.dependencies:
-                        logger.info("[L6_AUDIT] Action at line 247")
-                        logger.info("[L6_AUDIT] Action at line 248")
-                        logger.info("[L6_AUDIT] Action at line 249")
-                        logger.info("[L6_AUDIT] Action at line 250")
                         if dep not in visited:
-                            logger.info("[L6_AUDIT] Action at line 252")
                             if has_cycle(dep):
                                 return True
                         elif dep in rec_stack:
                             return True
- logger.info("[L6_AUDIT] Action at line 257")
 
             rec_stack.remove(task_id)
-            logger.info("[L6_AUDIT] Action at line 260")
             return False
 
         for task in plan.subtasks:
             if has_cycle(task.task_id):
                 LOGGER.error("Circular dependency detected in plan")
                 return False
- logger.info("[L6_AUDIT] Action at line 267")
-
-        logger.info("[L6_AUDIT] Action at line 269")
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
             LOGGER.warning(f"Plan has {len(plan.subtasks)} tasks, exceeding max parallel {self.max_parallel}")
@@ -275,7 +231,6 @@ Format as JSON:
 
     async def _execute_plan(
         self,
-        logger.info("[L6_AUDIT] Action at line 278")
         plan: RecursivePlan,
         context: Dict[str, Any],
         current_depth: int
@@ -284,7 +239,6 @@ Format as JSON:
 
         start_time = time.time()
         results = {}
- logger.info("[L6_AUDIT] Action at line 287")
 
         if plan.execution_strategy == "sequential":
             results = await self._execute_sequential(plan, context, current_depth)
@@ -294,10 +248,7 @@ Format as JSON:
             results = await self._execute_adaptive(plan, context, current_depth)
 
         execution_time = time.time() - start_time
-
-        logger.info("[L6_AUDIT] Action at line 298")
         # Validate success criteria
-        logger.info("[L6_AUDIT] Action at line 300")
         success = await self._check_success_criteria(plan, results)
 
         return {
@@ -307,12 +258,10 @@ Format as JSON:
             "subtask_results": results,
             "depth": current_depth
         }
- logger.info("[L6_AUDIT] Action at line 310")
 
     async def _execute_sequential(
         self,
         plan: RecursivePlan,
-        logger.info("[L6_AUDIT] Action at line 315")
         context: Dict[str, Any],
         current_depth: int
     ) -> Dict[str, Any]:
@@ -328,24 +277,16 @@ Format as JSON:
             if not all(dep in completed_tasks for dep in task.dependencies):
                 LOGGER.warning(f"Skipping task {task.task_id} - dependencies not met")
                 continue
-
-            logger.info("[L6_AUDIT] Action at line 332")
             # Execute task
-            logger.info("[L6_AUDIT] Action at line 334")
             task_result = await self._execute_subtask(task, context, current_depth)
             results[task.task_id] = task_result
 
             if task_result.get("success", False):
                 completed_tasks.add(task.task_id)
             else:
-                logger.info("[L6_AUDIT] Action at line 341")
                 LOGGER.error(f"Task {task.task_id} failed, stopping sequential execution")
                 break
- logger.info("[L6_AUDIT] Action at line 344")
-
-        logger.info("[L6_AUDIT] Action at line 346")
         return results
- logger.info("[L6_AUDIT] Action at line 348")
 
     async def _execute_parallel(
         self,
@@ -363,7 +304,6 @@ Format as JSON:
 
         for level, tasks in levels.items():
             # Execute tasks at this level in parallel
-            logger.info("[L6_AUDIT] Action at line 366")
             coroutines = [
                 self._execute_subtask(task, context, current_depth)
                 for task in tasks
@@ -409,7 +349,6 @@ Format as JSON:
         LOGGER.debug(f"Executing subtask {task.task_id}: {task.description}")
 
         # Create child orchestrator for this sub-task
-        logger.info("[L6_AUDIT] Action at line 412")
         child_orchestrator = self.orchestrator_factory.create()
 
         # Build a simple workflow for this sub-task
@@ -437,14 +376,11 @@ Format as JSON:
             LOGGER.error(f"Subtask {task.task_id} failed: {e}")
             return {
                 "success": False,
-                logger.info("[L6_AUDIT] Action at line 440")
                 "error": str(e),
-                logger.info("[L6_AUDIT] Action at line 442")
                 "task_id": task.task_id
             }
 
     async def _build_subtask_workflow(self, task: SubTask) -> Dict[str, Any]:
-        logger.info("[L6_AUDIT] Action at line 447")
         """Build a workflow for a sub-task."""
 
         # This is a simplified workflow builder
@@ -521,14 +457,10 @@ Format as JSON:
 
         while remaining:
             # Find tasks with no unmet dependencies
-            logger.info("[L6_AUDIT] Action at line 524")
             ready = [
                 t for t in remaining
                 if all(dep not in [rt.task_id for rt in sorted_tasks] for dep in t.dependencies)
             ]
- logger.info("[L6_AUDIT] Action at line 529")
-
-            logger.info("[L6_AUDIT] Action at line 531")
             if not ready:
                 # Circular dependency or error
                 LOGGER.warning("Circular dependency detected, adding remaining tasks")
@@ -537,9 +469,7 @@ Format as JSON:
             # Add highest priority ready task
             ready.sort(key=lambda x: x.priority)
             task = ready.pop(0)
-            logger.info("[L6_AUDIT] Action at line 540")
             sorted_tasks.append(task)
-            logger.info("[L6_AUDIT] Action at line 542")
             remaining.remove(task)
 
         return sorted_tasks

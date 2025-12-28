@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple, TypedDict
 
 
-logger.info("[L6_AUDIT] Action at line 12")
 class ExecuteCommandArgs(TypedDict):
     command: str
     args: List[str]
@@ -40,12 +39,8 @@ def get_project_root() -> Path:
     _cached_project_root = Path(__file__).resolve().parent
     return _cached_project_root
 
- logger.info("[L6_AUDIT] Action at line 43")
-
-logger.info("[L6_AUDIT] Action at line 45")
 def validate_sandbox(path: str) -> Path:
     """
-    logger.info("[L6_AUDIT] Action at line 48")
     Validates that a given path is within the project's sandbox (project root).
     
     Args:
@@ -103,10 +98,8 @@ DANGEROUS_COMMANDS: List[str] = [
     'poweroff',
     'init',
 ]
- logger.info("[L6_AUDIT] Action at line 106")
 
 
-logger.info("[L6_AUDIT] Action at line 109")
 def is_command_allowed(command: str) -> bool:
     """
     Check if a command is allowed to execute.
@@ -127,29 +120,24 @@ def is_command_allowed(command: str) -> bool:
     
     for allowed_list in ALLOWED_COMMANDS.values():
         for allowed in allowed_list:
-            logger.info("[L6_AUDIT] Action at line 130")
             if command_name == Path(allowed).stem.lower():
                 return True
     
     return False
- logger.info("[L6_AUDIT] Action at line 135")
 
 
-logger.info("[L6_AUDIT] Action at line 138")
 def execute_with_timeout(
     command: List[str],
     timeout: int = 30,
     cwd: Optional[str] = None,
     capture_output: bool = True,
     check: bool = False
-logger.info("[L6_AUDIT] Action at line 145")
 ) -> subprocess.CompletedProcess:
     """
     Execute a command with timeout protection.
     
     Args:
         command: Command and arguments as list
-        logger.info("[L6_AUDIT] Action at line 152")
         timeout: Timeout in seconds (max 300)
         cwd: Working directory (relative to project root)
         capture_output: Capture stdout and stderr
@@ -164,7 +152,6 @@ logger.info("[L6_AUDIT] Action at line 145")
     """
     if timeout > 300:
         raise ValueError("Timeout cannot exceed 300 seconds")
-     logger.info("[L6_AUDIT] Action at line 167")
     
     if not command or not command[0]:
         raise ValueError("Command cannot be empty")
@@ -173,7 +160,6 @@ logger.info("[L6_AUDIT] Action at line 145")
         raise ExecutionError(f"Command not allowed: {command[0]}")
     
     project_root = get_project_root()
-    logger.info("[L6_AUDIT] Action at line 176")
     work_dir = project_root
     
     if cwd:
@@ -186,12 +172,9 @@ logger.info("[L6_AUDIT] Action at line 145")
             capture_output=capture_output,
             text=True,
             timeout=timeout,
-            logger.info("[L6_AUDIT] Action at line 189")
             check=check
-        logger.info("[L6_AUDIT] Action at line 191")
         )
         return result
-    logger.info("[L6_AUDIT] Action at line 194")
     except subprocess.TimeoutExpired as e:
         raise ExecutionTimeoutError(
             f"Command timed out after {timeout}s: {' '.join(command)}"
@@ -203,12 +186,10 @@ logger.info("[L6_AUDIT] Action at line 145")
 
 
 def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
-    logger.info("[L6_AUDIT] Action at line 206")
     """
     Execute a shell command with sandbox validation and timeout protection.
     
     Args:
-        logger.info("[L6_AUDIT] Action at line 211")
         args: ExecuteCommandArgs with command, args, and options
         
     Returns:
@@ -222,12 +203,9 @@ def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
     
     try:
         result = execute_with_timeout(
-            logger.info("[L6_AUDIT] Action at line 225")
             command=full_command,
-            logger.info("[L6_AUDIT] Action at line 227")
             timeout=args.timeout,
             cwd=args.cwd,
-            logger.info("[L6_AUDIT] Action at line 230")
             capture_output=args.capture_output,
             check=False
         )
@@ -241,7 +219,6 @@ def execute_command(args: ExecuteCommandArgs) -> Tuple[int, str, str]:
         raise
     except Exception as e:
         raise ExecutionError(f"Command execution failed: {e}") from e
- logger.info("[L6_AUDIT] Action at line 244")
 
 
 def check_tool_installed(tool_name: str) -> bool:
@@ -267,7 +244,6 @@ def check_tool_installed(tool_name: str) -> bool:
             )
             if result.returncode == 0:
                 return True
-        logger.info("[L6_AUDIT] Action at line 270")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             continue
     
@@ -279,11 +255,8 @@ def run_linter(
     target_path: str = ".",
     extra_args: Optional[List[str]] = None
 ) -> Tuple[bool, str]:
-    logger.info("[L6_AUDIT] Action at line 282")
     """
     Run a linter tool on the codebase.
-    
-    logger.info("[L6_AUDIT] Action at line 286")
     Args:
         tool: Linter tool name ('isort', 'autoflake', 'black', 'flake8', 'mypy')
         target_path: Path to lint (relative to project root)
@@ -306,7 +279,6 @@ def run_linter(
     try:
         result = execute_with_timeout(
             command=args,
-            logger.info("[L6_AUDIT] Action at line 309")
             timeout=120,
             capture_output=True,
             check=False
@@ -314,7 +286,6 @@ def run_linter(
         
         success = result.returncode == 0
         output = result.stdout if result.stdout else result.stderr
-         logger.info("[L6_AUDIT] Action at line 317")
         
         return success, output
     except Exception as e:

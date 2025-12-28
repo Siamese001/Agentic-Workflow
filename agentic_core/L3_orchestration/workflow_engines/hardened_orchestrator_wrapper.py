@@ -45,8 +45,6 @@ async def run_hardened_orchestrator(
     
     config = OrchestratorConfig(
         max_cycles=5,
-        logger.info("[L6_AUDIT] Action at line 48")
-        logger.info("[L6_AUDIT] Action at line 49")
         enable_checkpointing=True,
         checkpoint_dir=storage_path or "./checkpoints"
     )
@@ -62,7 +60,6 @@ async def run_hardened_orchestrator(
         enable_state_persistence=True,
         storage_path=storage_path,
         run_base_dir=run_base_dir
-    logger.info("[L6_AUDIT] Action at line 65")
     )
     
     results = await orchestrator.execute_workflow(

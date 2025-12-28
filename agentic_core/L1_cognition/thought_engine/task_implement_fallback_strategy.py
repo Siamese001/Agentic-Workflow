@@ -38,13 +38,11 @@ class ImplementFallbackStrategy:
                  *args,
                  **kwargs: Dict[str, object]) -> object:
         """Docstring."""
-        logger.info("[L6_AUDIT] Action at line 41")
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
-    logger.info("[L6_AUDIT] Action at line 48")
     """Execute with retry."""
     return ImplementFallbackStrategy(config).execute(func)

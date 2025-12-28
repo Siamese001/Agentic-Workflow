@@ -61,8 +61,6 @@ async def run_l5_outreach_orchestrator(
         quality_threshold=quality_threshold,
         enable_intervention=enable_intervention
     )
-    
-    logger.info("[L6_AUDIT] Action at line 65")
     results = await orchestrator.execute_workflow(
         workflow_id=f"outreach_{campaign_id}",
         agents=[outreach_agent]

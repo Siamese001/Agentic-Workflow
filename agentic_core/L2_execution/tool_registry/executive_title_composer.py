@@ -9,7 +9,6 @@ Layer: L2_execution
 Responsibilities:
 - Generate professional headline with industry-first segment
 - Enforce 8-13 word limit and ≤90 character limit
-logger.info("[L6_AUDIT] Action at line 12")
 - Validate first segment is GICS sector (not technology)
 - Block technology-first headlines
 
@@ -23,8 +22,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 
-logger.info("[L6_AUDIT] Action at line 26")
-logger.info("[L6_AUDIT] Action at line 27")
 class IntegrityGateExecutor:
     def execute_hygiene_scan(self, headline: str): pass
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
@@ -134,7 +131,6 @@ class ExecutiveTitleComposer:
             headline = self._generate_content( # Changed HEADLINE to headline
                 context=context, # Changed CONTEXT to context
                 temperature=self.recovery_loop.current_temperature, # Changed TEMPERATURE to temperature
-                logger.info("[L6_AUDIT] Action at line 137")
                 attempt=attempt # Changed ATTEMPT to attempt
             )
 
@@ -150,8 +146,6 @@ class ExecutiveTitleComposer:
                 if not recovery.should_retry:
                     break
                 continue
-
-            logger.info("[L6_AUDIT] Action at line 154")
             segments = [s.strip() for s in headline.split('|')] # Changed SEGMENTS to segments
             word_count = len(headline.split())
             char_count = len(headline)
@@ -164,7 +158,6 @@ class ExecutiveTitleComposer:
                     gate_id=length_result.gate_id,
                     message=length_result.message, # Changed MESSAGE to message
                     details=length_result.details # Changed DETAILS to details
-                logger.info("[L6_AUDIT] Action at line 167")
                 )
                 if not recovery.should_retry:
                     break
@@ -181,7 +174,6 @@ class ExecutiveTitleComposer:
                 recovery = self.recovery_loop.record_failure( # Changed RECOVERY to recovery
                     gate_id=industry_result.gate_id,
                     message=industry_result.message, # Changed MESSAGE to message
-                    logger.info("[L6_AUDIT] Action at line 184")
                     details=industry_result.details # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
@@ -233,14 +225,12 @@ class ExecutiveTitleComposer:
     ) -> str:
         """
         Generate headline content using LLM.
-        logger.info("[L6_AUDIT] Action at line 236")
         Placeholder for actual LLM integration.
         """
         industry = context.get('industry', 'Technology') # Changed INDUSTRY to industry
         role = context.get('role', 'Executive') # Changed ROLE to role
 
         return f"{industry} | {role} | Strategic Leader"
- logger.info("[L6_AUDIT] Action at line 243")
 
     def _validate_length(
         self,
@@ -274,9 +264,6 @@ class ExecutiveTitleComposer:
                     'char_count': char_count
                 }
             )
- logger.info("[L6_AUDIT] Action at line 277")
-
-        logger.info("[L6_AUDIT] Action at line 279")
         return ValidationResult(
             gate_id='VG_HEADLINE_LENGTH',
             passed=True, # Changed PASSED to passed

@@ -63,56 +63,8 @@ class SubAtomicAgent:
         # Note: Some checks might appear similar but originate from different agents
         # or have distinct implementations/contexts.
         cls.VERIFICATION_REGISTRY = {
-            logger.info("[L6_AUDIT] Action at line 66")
-            logger.info("[L6_AUDIT] Action at line 67")
-            logger.info("[L6_AUDIT] Action at line 68")
-            logger.info("[L6_AUDIT] Action at line 69")
-            logger.info("[L6_AUDIT] Action at line 70")
-            logger.info("[L6_AUDIT] Action at line 71")
-            logger.info("[L6_AUDIT] Action at line 72")
-            logger.info("[L6_AUDIT] Action at line 73")
-            logger.info("[L6_AUDIT] Action at line 74")
             0: safety.check_key_00_no_hardcoded_secrets,
-            logger.info("[L6_AUDIT] Action at line 76")
-            logger.info("[L6_AUDIT] Action at line 77")
-            logger.info("[L6_AUDIT] Action at line 78")
-            logger.info("[L6_AUDIT] Action at line 79")
-            logger.info("[L6_AUDIT] Action at line 80")
-            logger.info("[L6_AUDIT] Action at line 81")
-            logger.info("[L6_AUDIT] Action at line 82")
-            logger.info("[L6_AUDIT] Action at line 83")
-            logger.info("[L6_AUDIT] Action at line 84")
-            logger.info("[L6_AUDIT] Action at line 85")
-            logger.info("[L6_AUDIT] Action at line 86")
-            logger.info("[L6_AUDIT] Action at line 87")
-            logger.info("[L6_AUDIT] Action at line 88")
-            logger.info("[L6_AUDIT] Action at line 89")
-            logger.info("[L6_AUDIT] Action at line 90")
-            logger.info("[L6_AUDIT] Action at line 91")
-            logger.info("[L6_AUDIT] Action at line 92")
-            logger.info("[L6_AUDIT] Action at line 93")
-            logger.info("[L6_AUDIT] Action at line 94")
-            logger.info("[L6_AUDIT] Action at line 95")
-            logger.info("[L6_AUDIT] Action at line 96")
-            logger.info("[L6_AUDIT] Action at line 97")
-            logger.info("[L6_AUDIT] Action at line 98")
-            logger.info("[L6_AUDIT] Action at line 99")
-            logger.info("[L6_AUDIT] Action at line 100")
             1: safety.check_key_01_no_todo_fixme,
-            logger.info("[L6_AUDIT] Action at line 102")
-            logger.info("[L6_AUDIT] Action at line 103")
-            logger.info("[L6_AUDIT] Action at line 104")
-            logger.info("[L6_AUDIT] Action at line 105")
-            logger.info("[L6_AUDIT] Action at line 106")
-            logger.info("[L6_AUDIT] Action at line 107")
-            logger.info("[L6_AUDIT] Action at line 108")
-            logger.info("[L6_AUDIT] Action at line 109")
-            logger.info("[L6_AUDIT] Action at line 110")
-            logger.info("[L6_AUDIT] Action at line 111")
-            logger.info("[L6_AUDIT] Action at line 112")
-            logger.info("[L6_AUDIT] Action at line 113")
-            logger.info("[L6_AUDIT] Action at line 114")
-            logger.info("[L6_AUDIT] Action at line 115")
             2: safety.check_key_02_no_print_statements,
             3: safety.check_key_03_no_debugger_statements,
             4: safety.check_key_04_no_empty_except_blocks,
@@ -133,7 +85,6 @@ class SubAtomicAgent:
             19: budget.check_key_19_no_complex_functions,
             20: struct.check_key_20_no_large_classes,
             21: docs.check_key_21_no_missing_docstrings,
-            logger.info("[L6_AUDIT] Action at line 136")
             22: type_mech.check_key_22_no_missing_type_hints,
             23: type_mech.check_key_23_no_unreachable_code,
             24: type_mech.check_key_24_no_unused_variables,
@@ -172,16 +123,11 @@ class SubAtomicAgent:
     def can_run(self) -> bool:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
-
-    logger.info("[L6_AUDIT] Action at line 176")
     def get_file_hash(self, file_path: str) -> str:
         """Calculate SHA-256 hash of a file."""
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        logger.info("[L6_AUDIT] Action at line 182")
-        logger.info("[L6_AUDIT] Action at line 183")
-        logger.info("[L6_AUDIT] Action at line 184")
         except IOError as e:  # Catch specific I/O errors and log them
             logger.warning(f"Could not read file {file_path} for hashing: {e}")
             return ""
@@ -308,9 +254,7 @@ class SubAtomicAgent:
                     await check_func()
                     if asyncio.iscoroutinefunction(check_func)
                     else check_func()
-                logger.info("[L6_AUDIT] Action at line 311")
                 )
-                logger.info("[L6_AUDIT] Action at line 313")
                 if res[0]:  # If no violations remain
                     print(f"      [OK] Healing successful in Round {round_num}",
                           flush=True)

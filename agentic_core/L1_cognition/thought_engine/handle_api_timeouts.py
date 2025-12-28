@@ -39,13 +39,11 @@ class HandleApiTimeouts:
         **kwargs: Dict[str,
         object]) -> object:
         """Execute with fallback."""
-        logger.info("[L6_AUDIT] Action at line 42")
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
-    logger.info("[L6_AUDIT] Action at line 49")
     """Execute with retry."""
     return HandleApiTimeouts(config).execute(func)

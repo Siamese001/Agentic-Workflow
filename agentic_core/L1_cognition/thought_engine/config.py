@@ -12,15 +12,12 @@ class OrchestratorConfig:
 
     Attributes:
         mission_id: Unique identifier for the mission
-        logger.info("[L6_AUDIT] Action at line 15")
-        logger.info("[L6_AUDIT] Action at line 16")
         max_iterations: Maximum Think-Act-Observe iterations
         max_phases: Maximum number of phases to execute
         enable_tri_brain: Whether to enable tri-brain routing
         enable_reflection: Whether to run reflection phase
         enable_state_persistence: Whether to persist state between runs
         timeout_seconds: Overall execution timeout
-        logger.info("[L6_AUDIT] Action at line 23")
         retry_on_failure: Whether to retry failed actions
         max_retries: Maximum retry attempts
         parallel_actions: Whether to execute actions in parallel
@@ -57,10 +54,7 @@ class OrchestratorConfig:
 
 @dataclass
 class CognitiveConfig:
-    logger.info("[L6_AUDIT] Action at line 60")
     """Configuration for the cognitive plane.
-
-    logger.info("[L6_AUDIT] Action at line 63")
     Attributes:
         model: LLM model to use for reasoning
         temperature: Sampling temperature

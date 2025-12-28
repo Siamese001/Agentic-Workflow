@@ -10,7 +10,6 @@ Responsibilities:
 - Generate executive summary from bullet pool
 - Enforce 118-135 word count (strict)
 - Block first-person pronouns (I, My, We)
-logger.info("[L6_AUDIT] Action at line 13")
 - Validate all claims against evidence
 
 Non-responsibilities:
@@ -98,7 +97,6 @@ class StrategistBioWriter:
                 temperature=self.recovery_loop.current_temperature, # Changed TEMPERATURE to temperature
                 attempt=attempt # Changed ATTEMPT to attempt
             )
- logger.info("[L6_AUDIT] Action at line 101")
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(summary)
             validation_results.append(hygiene_result)
@@ -111,7 +109,6 @@ class StrategistBioWriter:
                 )
                 if not recovery.should_retry:
                     break
-                logger.info("[L6_AUDIT] Action at line 114")
                 continue
 
             voice_result = self._validate_voice(summary)
@@ -124,7 +121,6 @@ class StrategistBioWriter:
                     details=voice_result.details # Changed DETAILS to details
                 )
                 if not recovery.should_retry:
-                    logger.info("[L6_AUDIT] Action at line 127")
                     break
                 continue
 
@@ -142,10 +138,8 @@ class StrategistBioWriter:
                     message=word_count_result.message, # Changed MESSAGE to message
                     details=word_count_result.details # Changed DETAILS to details
                 )
-                logger.info("[L6_AUDIT] Action at line 145")
                 if not recovery.should_retry:
                     break
-                logger.info("[L6_AUDIT] Action at line 148")
                 continue
 
             grounding_result = self.gate_executor.execute_grounding_check(
@@ -223,9 +217,7 @@ EVIDENCE POOL:
 TARGET INDUSTRY: {context.get('industry', 'Technology')}
 SENIORITY: {context.get('seniority', 'Senior')}
 
-logger.info("[L6_AUDIT] Action at line 226")
 ATTEMPT: {attempt}/3
- logger.info("[L6_AUDIT] Action at line 228")
 
 Generate the executive summary now:"""
 

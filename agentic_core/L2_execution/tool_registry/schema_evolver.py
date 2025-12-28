@@ -2,7 +2,6 @@
 ⚛️ Schema Evolver - The Structural Guard
 
 Monitors Pydantic models and database schemas to prevent Schema Drift.
-logger.info("[L6_AUDIT] Action at line 5")
 Runs forward-propagation checks when SystemArchitect proposes structural changes.
 
 Mission: Eliminate "Breaking Change" bottleneck in multi-stage pipelines
@@ -67,8 +66,6 @@ class SchemaRegistry:
 class SchemaEvolver(SubAtomicAgent):
     """
     The Structural Guard - Schema Evolution Agent
-    
-    logger.info("[L6_AUDIT] Action at line 71")
     Monitors all Pydantic definitions and database schemas.
     Runs forward-propagation checks to prevent breaking changes.
     

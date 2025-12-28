@@ -26,8 +26,6 @@ class GitSafetyHandler:
     
     Process:
     1. Create backup branch before L4 mutation
-    logger.info("[L6_AUDIT] Action at line 29")
-    logger.info("[L6_AUDIT] Action at line 30")
     2. Execute fission with L1 Cognition
     3. Verify with Sequential Thinking MCP
     4. Commit only if verification passes

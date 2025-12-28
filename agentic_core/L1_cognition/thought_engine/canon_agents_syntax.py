@@ -116,10 +116,7 @@ class CodeJanitor:
 
         self.agent.ctx.signal_ast_valid()
         print(f"[<<<] {self.agent.name} FINISHED.")
-
-    logger.info("[L6_AUDIT] Action at line 120")
     def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 122")
         """
         Checks for trailing whitespace on lines (excluding the final newline character).
         Reports file paths and line numbers.
@@ -137,9 +134,7 @@ class CodeJanitor:
             except (IOError, OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 11 check: {e}")
                 continue
-        logger.info("[L6_AUDIT] Action at line 140")
         return (len(violations) == 0, violations)
- logger.info("[L6_AUDIT] Action at line 142")
 
     def check_key_12_no_missing_newline(self) -> Tuple[bool, List[str]]:
         """
@@ -154,9 +149,7 @@ class CodeJanitor:
                     if content and not content.endswith("\n"):
                         violations.append(file_path)
             except (IOError, OSError, UnicodeDecodeError) as e:
-                logger.info("[L6_AUDIT] Action at line 157")
                 print(f"      [!]  Could not read {file_path} for Key 12 check: {e}")
-                logger.info("[L6_AUDIT] Action at line 159")
                 continue
         return (len(violations) == 0, violations)
 
@@ -171,9 +164,7 @@ class CodeJanitor:
                 with open(file_path, "r", encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
                         if "\t" in line:
-                            logger.info("[L6_AUDIT] Action at line 174")
                             violations.append(f"{file_path}:{i}")
-            logger.info("[L6_AUDIT] Action at line 176")
             except (IOError, OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {file_path} for Key 13 check: {e}")
                 continue
@@ -191,9 +182,7 @@ class CodeJanitor:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
-                        logger.info("[L6_AUDIT] Action at line 194")
                         # Check length excluding the newline character
-                        logger.info("[L6_AUDIT] Action at line 196")
                         if len(line.rstrip('\n')) > max_line_length:
                             violations.append(f"{file_path}:{i}")
             except (IOError, OSError, UnicodeDecodeError) as e:
@@ -222,9 +211,7 @@ class CodeJanitor:
                     # Check for numeric constants
                     if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
                         # Check if the constant is not in the allowed list
-                        logger.info("[L6_AUDIT] Action at line 225")
                         if node.value not in ALLOWED_MAGIC_NUMBERS:
-                            logger.info("[L6_AUDIT] Action at line 227")
                             violations.append(f"{fp}:{node.lineno}")
             except (IOError, OSError, UnicodeDecodeError) as e:
                 print(f"      [!]  Could not read {fp} for Key 15 check: {e}")
@@ -363,15 +350,12 @@ class DependencySentinel:
             try:
                 result = subprocess.run(["isort", "."], capture_output=True, text=True, check=True)
                 print("      [OK] Imports sorted by isort.")
-                logger.info("[L6_AUDIT] Action at line 366")
                 if result.stdout:
                     print(f"         isort output: {result.stdout.strip()}")
-            logger.info("[L6_AUDIT] Action at line 369")
             except subprocess.CalledProcessError as e:
                 print(f"      [X] isort failed: {e}")
                 print(f"         Stdout: {e.stdout.strip()}")
                 print(f"         Stderr: {e.stderr.strip()}")
-            logger.info("[L6_AUDIT] Action at line 374")
             except Exception as e:
                 print(f"      [X] An unexpected error occurred during isort execution: {e}")
         else:
@@ -383,9 +367,6 @@ class DependencySentinel:
 
         passed, details = self.check_key_08_no_relative_imports()
         self.agent.ctx.report(self.agent.name, 8, passed, details)
- logger.info("[L6_AUDIT] Action at line 386")
-
-        logger.info("[L6_AUDIT] Action at line 388")
         # Key 9 (Unused Imports) is largely handled by autoflake.
         # The AST check below is a fallback/verification, but less robust.
         passed, details = self.check_key_09_no_unused_imports()
@@ -405,9 +386,7 @@ class DependencySentinel:
         Checks for 'from module import *' (star imports).
         Reports file paths and line numbers.
         """
-        logger.info("[L6_AUDIT] Action at line 408")
         violations = []
-        logger.info("[L6_AUDIT] Action at line 410")
         for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
@@ -427,11 +406,7 @@ class DependencySentinel:
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """
         Checks for relative imports (e.g., 'from agentic_core. import module', 'from agentic_core. import package').
-        logger.info("[L6_AUDIT] Action at line 430")
         Reports file paths and line numbers.
-        logger.info("[L6_AUDIT] Action at line 432")
-        logger.info("[L6_AUDIT] Action at line 433")
-        logger.info("[L6_AUDIT] Action at line 434")
         """
         violations = []
         for fp in self.agent.ctx.python_files:
@@ -482,10 +457,7 @@ class DependencySentinel:
                             imported_names_with_lines[name] = node.lineno
 
                 # Collect all names used in the code
-                logger.info("[L6_AUDIT] Action at line 485")
                 used_names = set()
-                logger.info("[L6_AUDIT] Action at line 487")
-                logger.info("[L6_AUDIT] Action at line 488")
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Load, ast.Store, ast.Del)):
                         used_names.add(node.id)
@@ -540,7 +512,6 @@ class DependencySentinel:
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        logger.info("[L6_AUDIT] Action at line 543")
                         module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             imported_name = alias.asname if alias.asname else alias.name

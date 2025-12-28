@@ -28,7 +28,6 @@ class SafetyResult:
 
 class SafetyGuardrail:
     """
-    logger.info("[L6_AUDIT] Action at line 31")
     L5 Safety Layer: Decides if code change is constructive or destructive.
     
     Modes:
@@ -54,7 +53,6 @@ class SafetyGuardrail:
     
     def verify_change(self, original_lines: List[str], new_lines: List[str], 
                      mode: str = "HEAL") -> Tuple[bool, str]:
-        logger.info("[L6_AUDIT] Action at line 57")
         """
         L5 Safety: Decides if a code change is constructive or destructive.
         

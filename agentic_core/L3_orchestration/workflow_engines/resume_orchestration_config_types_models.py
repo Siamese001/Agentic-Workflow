@@ -12,8 +12,6 @@ class WordCountConstraint:
     _max: Optional[int] = None
     _scope: str = 'total'
     _unit: str = 'words'
-
-    logger.info("[L6_AUDIT] Action at line 16")
     def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
@@ -27,7 +25,6 @@ class CharCountConstraint:
     """Character count constraint for a section."""
     min: Optional[int] = None
     max: Optional[int] = None
- logger.info("[L6_AUDIT] Action at line 30")
 
     def validate(self: Any, count: int) -> bool:
         """Validate character count against constraints."""
@@ -36,7 +33,6 @@ class CharCountConstraint:
         if self.max is not None and count > self.max:
             return False
         return True
- logger.info("[L6_AUDIT] Action at line 39")
 
 @dataclass
 class ReasoningConfig:
@@ -75,7 +71,6 @@ class ProvenanceRule:
 class ValidationGate:
     """Validation gate configuration."""
     _gate_id: str
-    logger.info("[L6_AUDIT] Action at line 78")
     _execution_point: str
     _blocking: bool
     _severity: ValidationSeverity

@@ -16,13 +16,11 @@ except ImportError:
 from agentic_core.L2_execution.tool_registry.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
-    logger.info("[L6_AUDIT] Action at line 19")
     ExecuteCommandArgs,
     ListFilesArgs,
     MoveFileArgs,
     ReadFileArgs,
     WriteFileArgs,
-logger.info("[L6_AUDIT] Action at line 25")
 )
 from agentic_core.L2_execution.tool_registry.execution import execute_command
 from agentic_core.L2_execution.tool_registry.filesystem import (
@@ -88,10 +86,6 @@ class ToolRegistry:
             args_model=CreateDirectoryArgs,
             function=create_directory
         )
-         logger.info("[L6_AUDIT] Action at line 91")
-         logger.info("[L6_AUDIT] Action at line 92")
-         logger.info("[L6_AUDIT] Action at line 93")
-         logger.info("[L6_AUDIT] Action at line 94")
         
         self.register_tool(
             name="execute_command",
@@ -108,7 +102,6 @@ class ToolRegistry:
         function: Callable
     ):
         """
-        logger.info("[L6_AUDIT] Action at line 111")
         Register a tool with its Pydantic model and function.
         
         Args:
@@ -195,14 +188,12 @@ class ToolRegistry:
             "string": "string",
             "integer": "integer",
             "number": "number",
-            logger.info("[L6_AUDIT] Action at line 198")
             "boolean": "boolean",
             "array": "array",
             "object": "object",
         }
         
         return type_mapping.get(pydantic_type, "string")
-     logger.info("[L6_AUDIT] Action at line 205")
     
     def execute_tool(
         self,
@@ -223,9 +214,7 @@ class ToolRegistry:
             
         Raises:
             ValueError: If tool not found
-            logger.info("[L6_AUDIT] Action at line 226")
             ValidationError: If arguments are invalid
-        logger.info("[L6_AUDIT] Action at line 228")
         """
         if name not in self.tools:
             raise ValueError(f"Tool not found: {name}")
@@ -265,13 +254,11 @@ def create_tool_registry() -> ToolRegistry:
     return _global_registry
 
 
-logger.info("[L6_AUDIT] Action at line 268")
 def get_function_declarations() -> List:
     """
     Get FunctionDeclarations for all registered tools.
     
     Returns:
-        logger.info("[L6_AUDIT] Action at line 274")
         List of FunctionDeclaration objects for Gemini
     """
     registry = create_tool_registry()
@@ -282,7 +269,6 @@ def execute_tool_call(
     name: str,
     args: Dict[str, Any],
     **kwargs
-logger.info("[L6_AUDIT] Action at line 285")
 ) -> Any:
     """
     Execute a tool call from the global registry.

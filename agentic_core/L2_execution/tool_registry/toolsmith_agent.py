@@ -84,10 +84,7 @@ class {name}:
     def __init__(self{init_params}):
         """Initialize the {name} tool."""
 {init_body}
-
-    logger.info("[L6_AUDIT] Action at line 88")
     async def execute{method_params} -> {return_type}:
-        logger.info("[L6_AUDIT] Action at line 90")
         """
         Execute the tool.
 
@@ -104,8 +101,6 @@ class {name}:
 class ToolsmithAgent:
     """
     Creates and manages tools dynamically.
-
-    logger.info("[L6_AUDIT] Action at line 108")
     Features:
     - Generates tools from specifications
     - Validates tool implementations
@@ -118,7 +113,6 @@ class ToolsmithAgent:
         self.tools: Dict[str, GeneratedTool] = {}
         self.templates: Dict[str, str] = {}
         self.categories = {
-            logger.info("[L6_AUDIT] Action at line 121")
             "file": "File manipulation tools",
             "network": "Network and API tools",
             "data": "Data processing tools",
@@ -156,15 +150,11 @@ class ToolsmithAgent:
             f.write(content)
         return True
     except Exception as e:
-        logger.info("[L6_AUDIT] Action at line 159")
         logger.error(f"Failed to write file: {e}")
         return False'''
-            logger.info("[L6_AUDIT] Action at line 162")
-            logger.info("[L6_AUDIT] Action at line 163")
             ),
             "json_validator": ToolTemplate.FUNCTION_TEMPLATE.format(
                 name="validate_json",
-                logger.info("[L6_AUDIT] Action at line 167")
                 params="data: Any, schema: Dict",
                 return_type="Dict[str, Any]",
                 description="Validate data against JSON schema",

@@ -111,8 +111,6 @@ class SpecificityProseEngine:
                 TEMPERATURE=self.recovery_loop.current_temperature,
                 ATTEMPT=attempt
             )
-
-            logger.info("[L6_AUDIT] Action at line 115")
             hygiene_result = self.gate_executor.execute_hygiene_scan(cover_letter)
             validation_results.append(hygiene_result)
 
@@ -127,7 +125,6 @@ class SpecificityProseEngine:
                 continue
 
             PARAGRAPHS = self._split_paragraphs(cover_letter)
- logger.info("[L6_AUDIT] Action at line 130")
 
             paragraph_result = self._validate_paragraph_structure(paragraphs)
             validation_results.append(paragraph_result)
@@ -145,7 +142,6 @@ class SpecificityProseEngine:
             company_specifics = self._extract_company_specifics(
                 cover_letter,
                 company_research
-            logger.info("[L6_AUDIT] Action at line 148")
             )
 
             specificity_result = self._validate_company_specifics(company_specifics)
@@ -158,7 +154,6 @@ class SpecificityProseEngine:
                     DETAILS={'company_specifics_count': len(company_specifics)}
                 )
                 if not recovery.should_retry:
-                    logger.info("[L6_AUDIT] Action at line 161")
                     break
                 continue
 
@@ -244,9 +239,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             of contributing to your innovative work in transforming the industry."""
 
     def _split_paragraphs(self, text: str) -> List[str]:
-        logger.info("[L6_AUDIT] Action at line 247")
         """Split text into paragraphs"""
-        logger.info("[L6_AUDIT] Action at line 249")
         PARAGRAPHS = [p.strip() for p in text.split('\n\n') if p.strip()]
         return paragraphs
 
@@ -320,12 +313,9 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                         if value in cover_letter:
                             SPECIFICS.append(CompanySpecificDetail(
                                 DETAIL=value,
-                                logger.info("[L6_AUDIT] Action at line 323")
                                 CATEGORY=category,
                                 SOURCE=f'company_research.{key}'
                             ))
-
-        logger.info("[L6_AUDIT] Action at line 328")
         return SPECIFICS[:10]
 
     def _validate_company_specifics(
@@ -354,13 +344,11 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         return ValidationResult(
             gate_id='VG_COMPANY_SPECIFICS',
             PASSED=False,
-            logger.info("[L6_AUDIT] Action at line 357")
             SEVERITY='BLOCK',
             MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (min {self.config.min_company_specifics})",
 
 
             DETAILS={'count': len(company_specifics),
-                logger.info("[L6_AUDIT] Action at line 363")
                 'min_required': self.config.min_company_specifics}
         )
 

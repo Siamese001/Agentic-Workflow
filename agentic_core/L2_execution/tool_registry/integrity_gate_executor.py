@@ -4,7 +4,6 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 
-logger.info("[L6_AUDIT] Action at line 7")
 class ValidationRejectionReason(Enum):
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
     UNBOUND_METRICS = "UNBOUND_METRICS"
@@ -12,8 +11,6 @@ class ValidationRejectionReason(Enum):
     ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
     MISSING_CITATIONS = "MISSING_CITATIONS"
 
-logger.info("[L6_AUDIT] Action at line 15")
-logger.info("[L6_AUDIT] Action at line 16")
 class Violation:
     def __init__(self, reason: ValidationRejectionReason, message: str):
         self.reason = reason
@@ -22,9 +19,7 @@ class Violation:
 class IntegrityGateResult:
     def __init__(self, passed: bool, depth_score: float):
         self.passed = passed
-        logger.info("[L6_AUDIT] Action at line 25")
         self.depth_score = depth_score
-        logger.info("[L6_AUDIT] Action at line 27")
         self.violations: List[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
@@ -81,7 +76,6 @@ class DeepResearchOutput:
         self.citation_map = citation_map
 
 # --- End Inlined Type Definitions ---
- logger.info("[L6_AUDIT] Action at line 84")
 
 
 class IntegrityGateExecutor:
@@ -101,33 +95,23 @@ class IntegrityGateExecutor:
     TECHNICAL_NOUNS = {
         "architecture", "model", "algorithm", "framework", "platform",
         "system", "infrastructure", "stack", "pipeline", "engine",
-        logger.info("[L6_AUDIT] Action at line 104")
         "service", "API", "database", "network", "protocol"
     }
-
-    logger.info("[L6_AUDIT] Action at line 108")
     def __init__(self, min_depth_score: float = 0.7):
         self.min_depth_score = min_depth_score
 
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
         """Execute integrity gate validation on research output.
-
-        logger.info("[L6_AUDIT] Action at line 115")
-        logger.info("[L6_AUDIT] Action at line 116")
-        logger.info("[L6_AUDIT] Action at line 117")
-        logger.info("[L6_AUDIT] Action at line 118")
         Args:
             research_output: The research output to validate
 
         Returns:
             IntegrityGateResult: Validation result with any violations
-        logger.info("[L6_AUDIT] Action at line 124")
         """
         RESULT = IntegrityGateResult(passed=True, depth_score=0.0)
 
         self._check_unbound_metrics(research_output, RESULT)
         self._check_fluff_language(research_output, RESULT)
-        logger.info("[L6_AUDIT] Action at line 130")
         self._check_orphaned_claims(research_output, RESULT)
         self._check_citation_coverage(research_output, RESULT)
 
@@ -135,30 +119,23 @@ class IntegrityGateExecutor:
 
         if RESULT.depth_score < self.min_depth_score:
             RESULT.add_violation(
-                logger.info("[L6_AUDIT] Action at line 138")
                 ValidationRejectionReason.INSUFFICIENT_DEPTH,
                 f"Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}"
             )
 
         return RESULT
- logger.info("[L6_AUDIT] Action at line 144")
 
     def _check_unbound_metrics(
         self,
-        logger.info("[L6_AUDIT] Action at line 148")
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
         for metric in research_output.strategic_layer.financial_proof_points:
-            logger.info("[L6_AUDIT] Action at line 153")
             if not metric.source_citation:
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
                     f"Metric '{metric.metric_name}' has no source citation"
                 )
- logger.info("[L6_AUDIT] Action at line 159")
-
-            logger.info("[L6_AUDIT] Action at line 161")
             if not self._has_specific_value(metric.value):
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
@@ -170,11 +147,9 @@ class IntegrityGateExecutor:
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
-        logger.info("[L6_AUDIT] Action at line 173")
         text_to_check = [
             research_output.strategic_layer.core_thesis,
             research_output.technical_layer.implementation_summary or "",
-        logger.info("[L6_AUDIT] Action at line 177")
         ]
 
         for tech in research_output.technical_layer.key_technologies:
@@ -189,18 +164,15 @@ class IntegrityGateExecutor:
             for i, word in enumerate(WORDS):
                 if word in self.FLUFF_WORDS:
                     next_words = WORDS[i+1:i+3] if i+1 < len(WORDS) else []
- logger.info("[L6_AUDIT] Action at line 192")
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
-                            logger.info("[L6_AUDIT] Action at line 196")
                             ValidationRejectionReason.FLUFF_LANGUAGE,
                             f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'"
                         )
 
     def _check_orphaned_claims(
         self,
-        logger.info("[L6_AUDIT] Action at line 203")
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
@@ -215,13 +187,11 @@ class IntegrityGateExecutor:
             if not (has_tech_link or has_exec_link):
                 result.add_violation(
                     ValidationRejectionReason.ORPHANED_CLAIMS,
-                    logger.info("[L6_AUDIT] Action at line 218")
                     f"Initiative '{initiative}' not linked to specific technology or executive"
                 )
 
     def _check_citation_coverage(
         self,
-        logger.info("[L6_AUDIT] Action at line 224")
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
@@ -260,14 +230,11 @@ class IntegrityGateExecutor:
             1.0
         )
         SCORES.append(financial_score)
-
-        logger.info("[L6_AUDIT] Action at line 264")
         technical_score = min(
             len(research_output.technical_layer.key_technologies) / 3.0,
             1.0
         )
         SCORES.append(technical_score)
- logger.info("[L6_AUDIT] Action at line 270")
 
         leadership_score = min(
             len(research_output.leadership_layer.key_executives) / 3.0,

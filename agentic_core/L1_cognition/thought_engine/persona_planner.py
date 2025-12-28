@@ -4,8 +4,6 @@ import sys
 
 """Persona Planner - L1 planning for persona parameters and messaging approaches.
 
-logger.info("[L6_AUDIT] Action at line 7")
-logger.info("[L6_AUDIT] Action at line 8")
 Incorporated from L1 lic_persona_planner.py to provide deterministic persona
 planning that maps archetype and profile analysis to specific messaging parameters
 including tone style, detail level, risk tolerance, and drift thresholds.
@@ -19,7 +17,6 @@ from dataclasses import dataclass, field  # Added missing import
 from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
- logger.info("[L6_AUDIT] Action at line 22")
 
 @dataclass
 class PersonaPlan:
@@ -32,10 +29,8 @@ class PersonaPlan:
     communication_style: str             # "formal" | "professional" | "casual" | "technical"
     decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "direct...
     time_preference: str                 # "immediate" | "considered" | "deliberate"
-    logger.info("[L6_AUDIT] Action at line 35")
     confidence_score: float = 0.0        # persona match confidence
     metadata: Dict[str, object] = field(default_factory=dict)
- logger.info("[L6_AUDIT] Action at line 38")
 
 class PersonaPlanner:
     """L1 pure planner for persona parameter generation.
@@ -136,24 +131,17 @@ class PersonaPlanner:
                 "detail_level": "high"
             },
             "sales": {
-                logger.info("[L6_AUDIT] Action at line 139")
                 "tone_style": "friendly_recruiter",
                 "time_preference": "immediate"
             }
         }
- logger.info("[L6_AUDIT] Action at line 144")
-
-    logger.info("[L6_AUDIT] Action at line 146")
     def plan(
         self,
         *,
         archetype: str,
         recipient_profile: Dict[str, object],
-        logger.info("[L6_AUDIT] Action at line 152")
-        logger.info("[L6_AUDIT] Action at line 153")
         grounding_plan: Optional[Any] = None,
         outreach_context: Dict[str, object] = None,
-    logger.info("[L6_AUDIT] Action at line 156")
     ) -> PersonaPlan:
         """Generate a deterministic persona plan.
 
@@ -169,7 +157,6 @@ class PersonaPlanner:
         outreach_context = outreach_context or {}
 
         # 1. Get base persona from archetype
-        logger.info("[L6_AUDIT] Action at line 172")
         base_persona = self._get_base_persona(archetype)
 
         # 2. Apply seniority-based adjustments
@@ -187,7 +174,6 @@ class PersonaPlanner:
         confidence_score = self._calculate_confidence_score(archetype,
             recipient_profile,
             final_persona)
- logger.info("[L6_AUDIT] Action at line 190")
 
         # 6. Build metadata
         metadata = { # Changed METADATA to metadata for consistency with parameter name
@@ -201,9 +187,7 @@ class PersonaPlanner:
 
         # 7. Create persona plan
         plan = PersonaPlan( # Changed PLAN to plan for consistency with return value
-            logger.info("[L6_AUDIT] Action at line 204")
             archetype=archetype, # Changed ARCHETYPE to archetype
-            logger.info("[L6_AUDIT] Action at line 206")
             tone_style=final_persona["tone_style"],
             detail_level=final_persona["detail_level"],
             risk_tolerance=final_persona["risk_tolerance"],
@@ -269,17 +253,13 @@ class PersonaPlanner:
 
         adjustments = {} # Changed ADJUSTMENTS to adjustments
         for ind_key, ind_adj in self.industry_adjustments.items():
-            logger.info("[L6_AUDIT] Action at line 272")
             if ind_key in industry:
                 adjustments.update(ind_adj)
-                logger.info("[L6_AUDIT] Action at line 275")
                 break
 
         adjusted = persona.copy() # Changed ADJUSTED to adjusted
         for key, value in adjustments.items():
             if key in adjusted:
-                logger.info("[L6_AUDIT] Action at line 281")
-                logger.info("[L6_AUDIT] Action at line 282")
                 adjusted[key] = value # Changed ADJUSTED[KEY] to adjusted[key]
 
         LOGGER.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes") # Changed logger.debug to LOGGER.debug
@@ -292,8 +272,6 @@ class PersonaPlanner:
         object]:
         """Apply grounding-based refinements to persona."""
         if not grounding_plan:
-            logger.info("[L6_AUDIT] Action at line 295")
-            logger.info("[L6_AUDIT] Action at line 296")
             return persona
 
         refined = persona.copy() # Changed REFINED to refined
@@ -313,7 +291,6 @@ class PersonaPlanner:
                     refined["risk_tolerance"] = "medium"
 
         # Adjust detail level based on number of allowed claims
-        logger.info("[L6_AUDIT] Action at line 316")
         if hasattr(grounding_plan, 'allowed_claims'):
             claim_count = len(grounding_plan.allowed_claims)
             if claim_count > 5:
@@ -338,7 +315,6 @@ class PersonaPlanner:
         base_score = 0.7  # Start with reasonable confidence
 
         # Boost for clear archetype match
-        logger.info("[L6_AUDIT] Action at line 341")
         if archetype.upper() in ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"]:
             base_score += 0.2
 
@@ -352,38 +328,21 @@ class PersonaPlanner:
             base_score += 0.05
 
         return round(min(base_score, 1.0), 3)
- logger.info("[L6_AUDIT] Action at line 355")
 
     def _count_adjustments(self, base: Dict[str, object], final: Dict[str, object]) -> int:
-        logger.info("[L6_AUDIT] Action at line 358")
-        logger.info("[L6_AUDIT] Action at line 359")
-        logger.info("[L6_AUDIT] Action at line 360")
-        logger.info("[L6_AUDIT] Action at line 361")
-        logger.info("[L6_AUDIT] Action at line 362")
-        logger.info("[L6_AUDIT] Action at line 363")
-        logger.info("[L6_AUDIT] Action at line 364")
-        logger.info("[L6_AUDIT] Action at line 365")
-        logger.info("[L6_AUDIT] Action at line 366")
-        logger.info("[L6_AUDIT] Action at line 367")
-        logger.info("[L6_AUDIT] Action at line 368")
         """Count how many adjustments were made to base persona."""
         count = 0 # Changed COUNT to count
-        logger.info("[L6_AUDIT] Action at line 371")
         for key in base:
             if base.get(key) != final.get(key):
                 count += 1
         return count
- logger.info("[L6_AUDIT] Action at line 376")
 
     def _safe_record_telemetry(self, plan: PersonaPlan) -> None:
-        logger.info("[L6_AUDIT] Action at line 379")
         """Record telemetry data (best-effort)."""
         try:
-            logger.info("[L6_AUDIT] Action at line 382")
             if self.telemetry_bus:
                 self.telemetry_bus.record("persona_plan_created", {
                     "archetype": plan.archetype,
-                    logger.info("[L6_AUDIT] Action at line 386")
                     "tone_style": plan.tone_style,
                     "detail_level": plan.detail_level,
                     "risk_tolerance": plan.risk_tolerance,

@@ -17,9 +17,7 @@ from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAg
 
 class SystemArchitect(CanonBaseAgent):
     """
-    logger.info("[L6_AUDIT] Action at line 20")
     System Architect validates core architecture and import dependencies.
-     logger.info("[L6_AUDIT] Action at line 22")
     
     Validates Canon Keys 40-50:
     - Key 40: Core modules exist and are accessible
@@ -67,10 +65,7 @@ class SystemArchitect(CanonBaseAgent):
             print(f"   [{self.name}] ❌ Key 42: FAIL ({len(violations)} violations)")
             await self._heal_violations(42, violations)
         else:
-            logger.info("[L6_AUDIT] Action at line 70")
             print(f"   [{self.name}] ✅ Key 42: PASS - All files within size limits")
-    
-    logger.info("[L6_AUDIT] Action at line 73")
     async def _check_file_headers(self) -> List[str]:
         """
         [KEY 40] Documentation Sovereignty Pass.
@@ -89,7 +84,6 @@ class SystemArchitect(CanonBaseAgent):
                 # Special Requirement for tests/
                 if "tests" in str(file_path) and "Test Protocol" not in content:
                     violations.append(f"{file_path}: Missing Test Protocol in header")
-            logger.info("[L6_AUDIT] Action at line 92")
             except Exception:
                 continue
         return violations
@@ -97,18 +91,14 @@ class SystemArchitect(CanonBaseAgent):
     def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
         """
         [L6 HARDENING] Core Hierarchy SSOT Verification.
-        logger.info("[L6_AUDIT] Action at line 100")
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
         from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
-        logger.info("[L6_AUDIT] Action at line 105")
-        logger.info("[L6_AUDIT] Action at line 106")
         from agentic_core.runtime.shared.void_compliance import (
             validate_canonical_hierarchy,
         )
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
-         logger.info("[L6_AUDIT] Action at line 111")
         
         # 1. Centralized hierarchy drift check
         hierarchy_violations = validate_canonical_hierarchy(project_root)
@@ -135,10 +125,8 @@ class SystemArchitect(CanonBaseAgent):
                     if config["depth"] == 4:
                         from agentic_core.config.P1_core.structure_blueprint import (
                             CORE_SUBFOLDER_MAP,
-                        logger.info("[L6_AUDIT] Action at line 138")
                         )
                         l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
-                        logger.info("[L6_AUDIT] Action at line 141")
                         for l2_name in l2_list:
                             l2_path = l1_path / l2_name
                             if l2_path.exists() and not (l2_path / '__init__.py').exists():
@@ -179,9 +167,7 @@ class SystemArchitect(CanonBaseAgent):
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth = SOVEREIGN_REGISTRY[root_folder]["depth"]
                 if depth != required_depth:
-                    logger.info("[L6_AUDIT] Action at line 182")
                     violations.append(f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.")
-                logger.info("[L6_AUDIT] Action at line 184")
                 continue
 
             # All other folders: min 3, max 5

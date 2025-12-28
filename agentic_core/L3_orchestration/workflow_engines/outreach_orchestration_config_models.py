@@ -15,7 +15,6 @@ class CharLimitConstraint:
     _max: Optional[int] = None
 
 
-logger.info("[L6_AUDIT] Action at line 18")
 def validate(self: Any, count: int) -> bool:
     """Validate character count against constraints."""
     if self.min is not None and count < self.min:
@@ -31,8 +30,6 @@ class WordLimitConstraint:
 
     min: Optional[int] = None
     max: Optional[int] = None
-
- logger.info("[L6_AUDIT] Action at line 35")
 
 def validate(self: Any, count: int) -> bool:
     """Validate word count against constraints."""

@@ -34,10 +34,7 @@ class TelepathyInterface:
         self.instructions_path.parent.mkdir(parents=True, exist_ok=True)
 
         LOGGER.info(f"Telepathy interface initialized: {self.instructions_path}")
-
-    logger.info("[L6_AUDIT] Action at line 38")
     def check_instructions(self, cycle: int) -> Optional[str]:
-        logger.info("[L6_AUDIT] Action at line 40")
         """
         Check for new human instructions.
 
@@ -240,7 +237,6 @@ async def process_telepathy_instructions(context: Any, cycle: int) -> Any:
         Modified context with telepathic instructions applied
     """
     telepathy = get_telepathy_interface()
- logger.info("[L6_AUDIT] Action at line 243")
 
     # Check for new instructions
     instructions = telepathy.check_instructions(cycle)

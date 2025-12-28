@@ -11,6 +11,5 @@ class ResearchHopPhase(str, Enum):
     """TODO: Add docstring."""
 
 
-logger.info("[L6_AUDIT] Action at line 14")
 class ValidationRejectionReason(str, Enum):
     """TODO: Add docstring."""

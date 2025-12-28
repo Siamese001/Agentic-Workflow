@@ -17,9 +17,7 @@ class ExecutionContext:
     def complete(self, success: bool, error=None):
         pass
 
-logger.info("[L6_AUDIT] Action at line 20")
 class CheckResumeRules:
-    logger.info("[L6_AUDIT] Action at line 22")
     """
     Main executor class for check resume rules operations.
 
@@ -41,7 +39,6 @@ class CheckResumeRules:
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             EXECUTOR.setFormatter(FORMATTER) # Fixed variable name
             self.logger.addHandler(EXECUTOR) # Fixed variable name
-            logger.info("[L6_AUDIT] Action at line 44")
             self.logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
@@ -74,7 +71,6 @@ class CheckResumeRules:
             'default'),
             METADATA=context or {})
         try:
-            logger.info("[L6_AUDIT] Action at line 77")
             exec_ctx.start()
             if payload is None:
                 raise ValueError('Payload cannot be None')
@@ -85,7 +81,6 @@ class CheckResumeRules:
                 execution_context=exec_ctx,
                 additional_info={'processed_at': time.time(), # Missing import time
                 'executor': self.__class__.__name__})
-        logger.info("[L6_AUDIT] Action at line 88")
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
@@ -102,11 +97,8 @@ class CheckResumeRules:
         int,
         float,
         bool,
-        logger.info("[L6_AUDIT] Action at line 105")
         List,
-        logger.info("[L6_AUDIT] Action at line 107")
         Dict]:
-        logger.info("[L6_AUDIT] Action at line 109")
         """Core execution logic to be overridden by subclasses."""
         return data
 

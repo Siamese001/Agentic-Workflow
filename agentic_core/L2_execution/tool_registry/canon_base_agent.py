@@ -142,21 +142,16 @@ class CanonBaseAgent(ABC):
         return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
     @abstractmethod
-    logger.info("[L6_AUDIT] Action at line 145")
     async def execute(self):
-        logger.info("[L6_AUDIT] Action at line 147")
         """Execute agent's validation logic. Must be implemented by subclasses."""
         raise NotImplementedError(f"{self.name} must implement execute()")
 
     @abstractmethod
     def get_validation_keys(self) -> List[int]:
         """Return list of canon keys this agent validates. Must be implemented by subclasses."""
-        logger.info("[L6_AUDIT] Action at line 154")
         raise NotImplementedError(f"{self.name} must implement get_validation_keys()")
- logger.info("[L6_AUDIT] Action at line 156")
 
     def check_negative_constraints(self, code: str) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 159")
         """
         Check if generated code violates negative constraints (banned imports).
 
@@ -255,7 +250,6 @@ class CanonBaseAgent(ABC):
 
         # Fallback if no text part
         print(f"      [!] Malformed response from Gemini (no text part)", flush=True)
-        logger.info("[L6_AUDIT] Action at line 258")
         return code
     
     def _extract_python_code(self, text: str) -> str:
@@ -297,7 +291,6 @@ class CanonBaseAgent(ABC):
             python_lines.append(line)
             # Add remaining lines
             python_lines.extend(lines[lines.index(line) + 1:])
-            logger.info("[L6_AUDIT] Action at line 300")
             break
         
         return '\n'.join(python_lines) if python_lines else text
@@ -321,7 +314,6 @@ class CanonBaseAgent(ABC):
         previous_failure: Optional[str] = None
     ) -> str:
         """
-        logger.info("[L6_AUDIT] Action at line 324")
         Core healing logic using Gemini 2.5 Flash with dynamic prompt loading.
 
         Args:
@@ -377,8 +369,6 @@ class CanonBaseAgent(ABC):
                 lesson_learned=lesson_learned
             )
         except Exception as e:
-            logger.info("[L6_AUDIT] Action at line 380")
-            logger.info("[L6_AUDIT] Action at line 381")
             # Fallback to basic prompt if loader fails
             print(f"      [!] Prompt loader failed ({e}), using fallback", flush=True)
             prompt = self._build_fallback_prompt(task, code, original_line_count, lesson_learned)
@@ -405,7 +395,6 @@ class CanonBaseAgent(ABC):
         except Exception as e:
             print(f"      [X] Gemini API error: {e}", flush=True)
             return code
- logger.info("[L6_AUDIT] Action at line 408")
 
     def _build_fallback_prompt(self, task: str, code: str, original_line_count: int, lesson_learned: str) -> str:
         """Build fallback prompt if dynamic loading fails."""
@@ -435,7 +424,6 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             prompt += f"\n\n📚 LESSON LEARNED: {lesson_learned}\n"
         prompt += f"\n{code}"
         return prompt
- logger.info("[L6_AUDIT] Action at line 438")
 
     async def verify_fix(self, original_code: str, fixed_code: str, violation_key: int) -> Tuple[bool, str]:
         """
@@ -458,7 +446,6 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
         # 2. Zero-tolerance deletion check (10% max)
         original_lines = len(original_code.splitlines())
         fixed_lines = len(fixed_code.splitlines())
-        logger.info("[L6_AUDIT] Action at line 461")
         max_allowed_deletion = int(original_lines * 0.1)
         deletion_count = original_lines - fixed_lines
 

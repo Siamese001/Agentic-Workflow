@@ -60,8 +60,6 @@ class ReflectionAgent:
         except Exception as e:
             LOGGER.error(f"Failed to initialize Pinecone: {str(e)}")
             self.pinecone_client = None
-
-    logger.info("[L6_AUDIT] Action at line 64")
     async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
         """
         Process successful traces and internalize them to memory.

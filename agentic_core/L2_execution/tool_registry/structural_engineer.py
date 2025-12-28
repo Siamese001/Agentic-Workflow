@@ -16,9 +16,7 @@ from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAg
 
 class StructuralEngineer(CanonBaseAgent):
     """
-    logger.info("[L6_AUDIT] Action at line 19")
     Structural Engineer validates code structure and organization.
-     logger.info("[L6_AUDIT] Action at line 21")
     
     Validates Canon Keys 20-30:
     - Key 20: No large classes (>20 methods or >500 lines)
@@ -51,9 +49,7 @@ class StructuralEngineer(CanonBaseAgent):
             print(f"   [{self.name}] ❌ Key 21: FAIL ({len(violations)} violations) - Large functions detected")
             await self._heal_violations(21, violations)
         else:
-            logger.info("[L6_AUDIT] Action at line 54")
             print(f"   [{self.name}] ✅ Key 21: PASS - All functions within limits")
-     logger.info("[L6_AUDIT] Action at line 56")
     
     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
@@ -94,9 +90,7 @@ class StructuralEngineer(CanonBaseAgent):
                         if class_lines > max_lines:
                             violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' has {class_lines} lines (max {max_lines})")
             except Exception:
-                logger.info("[L6_AUDIT] Action at line 97")
                 continue
-         logger.info("[L6_AUDIT] Action at line 99")
         
         return len(violations) == 0, violations
     
@@ -126,9 +120,7 @@ class StructuralEngineer(CanonBaseAgent):
                             func_lines = node.end_lineno - node.lineno + 1
                             
                             if func_lines > max_lines:
-                                logger.info("[L6_AUDIT] Action at line 129")
                                 violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' has {func_lines} lines (max {max_lines})")
-            logger.info("[L6_AUDIT] Action at line 131")
             except Exception:
                 continue
         

@@ -87,8 +87,6 @@ class StructuralEngineer(SubAtomicAgent):
         self.ctx.report(self.name, 46, passed, details)
 
         print(f"   [{self.name}] ✅ Structural analysis complete")
-
-    logger.info("[L6_AUDIT] Action at line 91")
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding MAX_LINES."""
         violations = []
@@ -105,7 +103,6 @@ class StructuralEngineer(SubAtomicAgent):
             except Exception:
                 continue
         return (len(violations) == 0, violations)
- logger.info("[L6_AUDIT] Action at line 108")
 
     def check_key_18_no_many_parameters(self) -> Tuple[bool, List[str]]:
         """Check for functions with too many parameters (>5)."""
@@ -127,7 +124,6 @@ class StructuralEngineer(SubAtomicAgent):
                             violations.append(f"{file_path}:{node.lineno} {node.name}() ({total_params} params)")
             except Exception:
                 continue
-        logger.info("[L6_AUDIT] Action at line 130")
         return (len(violations) == 0, violations)
 
     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
@@ -145,7 +141,6 @@ class StructuralEngineer(SubAtomicAgent):
                             if class_lines > 200:
                                 violations.append(f"{file_path}:{node.lineno} {node.name} ({class_lines} lines)")
             except Exception:
-                logger.info("[L6_AUDIT] Action at line 148")
                 continue
         return (len(violations) == 0, violations)
 
@@ -161,7 +156,6 @@ class StructuralEngineer(SubAtomicAgent):
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 violations.append(f"{file_path}:{node.lineno} global {target.id}")
-            logger.info("[L6_AUDIT] Action at line 164")
             except Exception:
                 continue
         return (len(violations) == 0, violations)
@@ -174,7 +168,6 @@ class StructuralEngineer(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
                     if len(lines) > 500:
-                        logger.info("[L6_AUDIT] Action at line 177")
                         violations.append(f"{file_path} ({len(lines)} lines)")
             except Exception:
                 continue
@@ -188,7 +181,6 @@ class StructuralEngineer(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 classes = [n for n in tree.body if isinstance(n, ast.ClassDef)]
-                logger.info("[L6_AUDIT] Action at line 191")
                 if len(classes) > 10:
                     violations.append(f"{file_path} ({len(classes)} classes)")
             except Exception:
@@ -214,23 +206,12 @@ class StructuralEngineer(SubAtomicAgent):
 
 class PatternEnforcer(SubAtomicAgent):
     """
-    logger.info("[L6_AUDIT] Action at line 217")
-    logger.info("[L6_AUDIT] Action at line 218")
-    logger.info("[L6_AUDIT] Action at line 219")
-    logger.info("[L6_AUDIT] Action at line 220")
-    logger.info("[L6_AUDIT] Action at line 221")
-    logger.info("[L6_AUDIT] Action at line 222")
-    logger.info("[L6_AUDIT] Action at line 223")
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
-    logger.info("[L6_AUDIT] Action at line 226")
     """
- logger.info("[L6_AUDIT] Action at line 228")
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
-
-        logger.info("[L6_AUDIT] Action at line 233")
         pattern_checks = [
             (26, self.check_key_26_single_responsibility),
             (31, self.check_key_31_no_hardcoded_paths),
@@ -246,7 +227,6 @@ class PatternEnforcer(SubAtomicAgent):
                 self.ctx.report(self.name, key, passed, details)
             except Exception as e:
                 self.ctx.report(self.name, key, False, [str(e)])
- logger.info("[L6_AUDIT] Action at line 249")
 
     def check_key_26_single_responsibility(self) -> Tuple[bool, List[str]]:
         """Check for classes violating single responsibility principle."""
@@ -256,7 +236,6 @@ class PatternEnforcer(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 for node in ast.walk(tree):
-                    logger.info("[L6_AUDIT] Action at line 259")
                     if isinstance(node, ast.ClassDef):
                         method_types = set()
                         for item in node.body:
@@ -273,7 +252,6 @@ class PatternEnforcer(SubAtomicAgent):
                             violations.append(f"{file_path}:{node.lineno} {node.name}")
             except Exception:
                 continue
-        logger.info("[L6_AUDIT] Action at line 276")
         return (len(violations) == 0, violations)
 
     def check_key_31_no_hardcoded_paths(self) -> Tuple[bool, List[str]]:
@@ -290,7 +268,6 @@ class PatternEnforcer(SubAtomicAgent):
                                 violations.append(f"{file_path}:{i}")
                                 break
             except Exception:
-                logger.info("[L6_AUDIT] Action at line 293")
                 continue
         return (len(violations) == 0, violations)
 
@@ -310,8 +287,6 @@ class PatternEnforcer(SubAtomicAgent):
             except Exception:
                 continue
         return (len(violations) == 0, violations)
-
-    logger.info("[L6_AUDIT] Action at line 314")
     def check_key_33_error_handling(self) -> Tuple[bool, List[str]]:
         """Check for proper error handling."""
         violations = []
@@ -327,7 +302,6 @@ class PatternEnforcer(SubAtomicAgent):
                         has_try = any(isinstance(stmt, ast.Try) for stmt in ast.walk(node))
                         for stmt in ast.walk(node):
                             if isinstance(stmt, ast.Call) and isinstance(stmt.func, ast.Name):
-                                logger.info("[L6_AUDIT] Action at line 330")
                                 if stmt.func.id in critical_ops and not has_try:
                                     violations.append(f"{file_path}:{stmt.lineno}")
             except Exception:

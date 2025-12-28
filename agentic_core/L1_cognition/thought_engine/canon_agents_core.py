@@ -23,7 +23,6 @@ EXCLUDED_DIRS = [
 
 def is_excluded(file_path: str) -> bool:
     """
-    logger.info("[L6_AUDIT] Action at line 26")
     Checks if a file path or any of its parent directories are in the EXCLUDED_DIRS list.
     """
     path_parts = Path(file_path).parts
@@ -34,7 +33,6 @@ def is_excluded(file_path: str) -> bool:
 
 
 class NestVisitor(ast.NodeVisitor):
-    logger.info("[L6_AUDIT] Action at line 37")
     """
     AST visitor to check nesting depth within a file.
     Moved to module level to reduce nesting depth in SystemArchitect.
@@ -63,7 +61,6 @@ class NestVisitor(ast.NodeVisitor):
         """Visits a class definition, pushing its name onto the scope stack."""
         self.scope_stack.append(f"class {node.name}")
         self.generic_visit(node)
-        logger.info("[L6_AUDIT] Action at line 66")
         self.scope_stack.pop()
     
     def _check_and_report_nesting(self, node: ast.AST):
@@ -82,7 +79,6 @@ class NestVisitor(ast.NodeVisitor):
         if not is_nest: # Use a guard clause to reduce nesting
             super().visit(node)
             return
- logger.info("[L6_AUDIT] Action at line 85")
 
         # If it is a nester:
         self.depth += 1
@@ -100,9 +96,7 @@ class SystemArchitect(CanonBaseAgentInterface):
 
     def __init__(self, ctx: Any):
         self.impl = CanonBaseAgent(ctx)
-        logger.info("[L6_AUDIT] Action at line 103")
         self.ctx = ctx
-        logger.info("[L6_AUDIT] Action at line 105")
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
@@ -119,19 +113,14 @@ class SystemArchitect(CanonBaseAgentInterface):
 
     async def _execute_validation(self):
         """
-        logger.info("[L6_AUDIT] Action at line 122")
         Executes the SystemArchitect's checks for core architectural integrity.
         Reports on metaclass usage, nesting depth, directory depth, and root-level file content.
         """
-        logger.info("[L6_AUDIT] Action at line 126")
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
 
         # Key 40: No Metaclasses
-        logger.info("[L6_AUDIT] Action at line 130")
         passed_40, details_40 = self.check_key_40_no_metaclasses()
         self.ctx.report(self.name, 40, passed_40, details_40)
-
-        logger.info("[L6_AUDIT] Action at line 134")
         # Key 41: Scoped Nesting
         passed_41, details_41 = self.check_key_41_scoped_nesting()
         if not passed_41 and self.ctx.intelligence_enabled:
@@ -148,7 +137,6 @@ class SystemArchitect(CanonBaseAgentInterface):
             self.ctx.signal_critical_failure()
         
         # Key 50: Law of Void
-        logger.info("[L6_AUDIT] Action at line 151")
         passed_50, details_50 = self.check_key_50_law_of_void()
         self.ctx.report(self.name, 50, passed_50, details_50)
 
@@ -157,10 +145,7 @@ class SystemArchitect(CanonBaseAgentInterface):
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 return ast.parse(f.read(), filename=file_path)
-        logger.info("[L6_AUDIT] Action at line 160")
         except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-            logger.info("[L6_AUDIT] Action at line 162")
-            logger.info("[L6_AUDIT] Action at line 163")
             print(
                 f"Warning: Could not parse {file_path} for check: {e}",
                 file=sys.stderr
@@ -169,9 +154,7 @@ class SystemArchitect(CanonBaseAgentInterface):
 
     def _has_metaclass_keyword(self, node: ast.ClassDef) -> bool:
         """Helper to check if a ClassDef node has a metaclass keyword."""
-        logger.info("[L6_AUDIT] Action at line 172")
         return any(kw.arg == "metaclass" for kw in node.keywords)
- logger.info("[L6_AUDIT] Action at line 174")
 
     def _check_tree_for_metaclasses(self, tree: ast.AST, file_path: str) -> List[str]:
         """
@@ -183,13 +166,10 @@ class SystemArchitect(CanonBaseAgentInterface):
             if isinstance(node, ast.ClassDef):
                 if self._has_metaclass_keyword(node):
                     violations_in_tree.append(f"{file_path}:{node.lineno}")
-        logger.info("[L6_AUDIT] Action at line 186")
         return violations_in_tree
 
     def check_key_40_no_metaclasses(self) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 190")
         """
-        logger.info("[L6_AUDIT] Action at line 192")
         Checks for metaclass usage in Python files.
 
         Returns:
@@ -210,9 +190,6 @@ class SystemArchitect(CanonBaseAgentInterface):
         """
         Checks for excessive nesting depth within functions and classes,
         considering a maximum depth from environment variable.
- logger.info("[L6_AUDIT] Action at line 213")
-
-        logger.info("[L6_AUDIT] Action at line 215")
         Returns:
             A tuple containing:
             - bool: True if no nesting depth violations are found, False otherwise.
@@ -246,7 +223,6 @@ class SystemArchitect(CanonBaseAgentInterface):
             - List[str]: A list of strings, each indicating a file path and its depth
                           for both violations and warnings.
         """
-        logger.info("[L6_AUDIT] Action at line 249")
         violations = []
         warnings = []
         for file_path in self.ctx.python_files:
@@ -257,13 +233,9 @@ class SystemArchitect(CanonBaseAgentInterface):
             
             if depth > 5:
                 violations.append(f"{file_path} (Invalid depth: {depth})")
-            logger.info("[L6_AUDIT] Action at line 260")
             elif depth < 3 and not file_path.endswith("__init__.py"):  # Files too shallow, but __init__.py can be depth 2
                 violations.append(f"{file_path} (Invalid depth: {depth} - minimum depth is 3)")
         return len(violations) == 0, violations
- logger.info("[L6_AUDIT] Action at line 264")
-
-    logger.info("[L6_AUDIT] Action at line 266")
     def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
         """Helper to check if an AST tree contains class or function definitions."""
         for node in ast_tree.body:
@@ -303,18 +275,13 @@ class SystemArchitect(CanonBaseAgentInterface):
         for file_path in self.ctx.python_files:
             if self._is_root_file_with_definitions(file_path):
                 root_violations.append(file_path)
-        logger.info("[L6_AUDIT] Action at line 306")
         return len(root_violations) == 0, root_violations
- logger.info("[L6_AUDIT] Action at line 308")
 
     async def _handle_key_41_fix_attempts(self, details_41: List[str]):
         """Helper to attempt smart fixes for Key 41 violations."""
         unique_fps_to_fix = list(
             {v.split(":")[0] for v in details_41}
-        logger.info("[L6_AUDIT] Action at line 314")
-        logger.info("[L6_AUDIT] Action at line 315")
         )
-        logger.info("[L6_AUDIT] Action at line 317")
         # Limit fixes to the first 3 files to avoid excessive calls
         for fp in unique_fps_to_fix[:3]:
             await self.smart_fix(fp, 41)
@@ -339,7 +306,6 @@ class HealerAgent(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-        logger.info("[L6_AUDIT] Action at line 342")
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
@@ -418,9 +384,7 @@ class HealerAgent(CanonBaseAgentInterface):
         for file_path in self.ctx.python_files:
             has_error, _ = self._check_file_for_syntax_error(file_path)
             if has_error:
-                logger.info("[L6_AUDIT] Action at line 421")
                 remaining_syntax_errors.append(file_path)
- logger.info("[L6_AUDIT] Action at line 423")
 
         if not remaining_syntax_errors:
             print("   [OK] Architecture verified. Core integrity intact.")

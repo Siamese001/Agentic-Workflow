@@ -36,8 +36,6 @@ class DeterministicCleaner:
         self.enable_autopep8 = enable_autopep8
 
         # Check if tools are available
-        logger.info("[L6_AUDIT] Action at line 39")
-        logger.info("[L6_AUDIT] Action at line 40")
         self.has_isort = self._check_tool("isort")
         self.has_autopep8 = self._check_tool("autopep8")
 
@@ -47,10 +45,7 @@ class DeterministicCleaner:
 
         if self.enable_autopep8 and not self.has_autopep8:
             LOGGER.warning("autopep8 not available - PEP8 formatting disabled")
-            logger.info("[L6_AUDIT] Action at line 50")
             self.enable_autopep8 = False
-
-    logger.info("[L6_AUDIT] Action at line 53")
     def _check_tool(self, tool_name: str) -> bool:
         """Check if a formatting tool is available."""
         try:
@@ -132,7 +127,6 @@ class DeterministicCleaner:
 
             try:
                 # Run isort
-                logger.info("[L6_AUDIT] Action at line 135")
                 result = subprocess.run(
                     ["isort", "--profile", "black", temp_file],
                     capture_output=True,
@@ -156,7 +150,6 @@ class DeterministicCleaner:
         """Apply autopep8 for PEP8 formatting."""
         try:
             # Run autopep8 on the code
-            logger.info("[L6_AUDIT] Action at line 159")
             result = subprocess.run(
                 ["autopep8", "--", "-"],
                 input=code,
@@ -192,7 +185,6 @@ class DeterministicCleaner:
         result = '\n'.join(cleaned_lines)
         if result and not result.endswith('\n'):
             result += '\n'
- logger.info("[L6_AUDIT] Action at line 195")
 
         return result
 
@@ -200,7 +192,6 @@ class DeterministicCleaner:
 class CompliantFileWriter:
     """
     Writes files with compliance checks and validation.
-    logger.info("[L6_AUDIT] Action at line 203")
     """
 
     def __init__(self, root_dir: Optional[str] = None):
@@ -209,7 +200,6 @@ class CompliantFileWriter:
 
         Args:
             root_dir: Root directory for hygiene checks
-        logger.info("[L6_AUDIT] Action at line 212")
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.cleaner = DeterministicCleaner()
@@ -223,7 +213,6 @@ class CompliantFileWriter:
         Args:
             file_path: Path to write the file
             content: Content to write
-            logger.info("[L6_AUDIT] Action at line 226")
             pre_clean: Whether to apply deterministic cleaning first
 
         Returns:
@@ -234,7 +223,6 @@ class CompliantFileWriter:
 
             # Check root hygiene
             if not self._check_root_hygiene(path):
-                logger.info("[L6_AUDIT] Action at line 237")
                 LOGGER.error(f"Root hygiene violation: {file_path}")
                 return False
 
@@ -251,8 +239,6 @@ class CompliantFileWriter:
 
             # Ensure directory exists
             path.parent.mkdir(parents=True, exist_ok=True)
-
-            logger.info("[L6_AUDIT] Action at line 255")
             # Write the file
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -261,7 +247,6 @@ class CompliantFileWriter:
             return True
 
         except Exception as e:
-            logger.info("[L6_AUDIT] Action at line 264")
             LOGGER.error(f"Failed to write compliant file {file_path}: {e}")
             return False
 
@@ -311,8 +296,6 @@ def get_compliant_writer(root_dir: Optional[str] = None) -> CompliantFileWriter:
 def deterministic_clean(code: str, file_path: Optional[str] = None) -> Tuple[str, bool]:
     """
     Apply deterministic cleaning to code.
-
-    logger.info("[L6_AUDIT] Action at line 315")
     Args:
         code: The code to clean
         file_path: Optional file path for context

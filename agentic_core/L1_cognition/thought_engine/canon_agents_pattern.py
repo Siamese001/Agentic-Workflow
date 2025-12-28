@@ -4,7 +4,6 @@ Canon Validator Pattern Agents
 This module defines a set of SubAtomicAgents responsible for enforcing coding patterns,
 validating UI components, and performing semantic analysis within a codebase.
 
-logger.info("[L6_AUDIT] Action at line 7")
 - PatternEnforcer: Checks for common Python coding patterns and best practices.
 - UIValidationAgent: Integrates with UI design tools (e.g., Figma MCP) for UI pattern validation.
 - SemanticMapper: Analyzes code structure to identify refactoring opportunities.
@@ -23,7 +22,6 @@ logger = logging.getLogger(__name__)
 class PatternEnforcer:
     """
     Enforces coding patterns and best practices across Python files.
- logger.info("[L6_AUDIT] Action at line 26")
 
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
@@ -47,23 +45,8 @@ class PatternEnforcer:
         Executes all defined pattern checks and reports violations.
         """
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...")
-
-        logger.info("[L6_AUDIT] Action at line 51")
-        logger.info("[L6_AUDIT] Action at line 52")
-        logger.info("[L6_AUDIT] Action at line 53")
-        logger.info("[L6_AUDIT] Action at line 54")
-        logger.info("[L6_AUDIT] Action at line 55")
-        logger.info("[L6_AUDIT] Action at line 56")
-        logger.info("[L6_AUDIT] Action at line 57")
-        logger.info("[L6_AUDIT] Action at line 58")
-        logger.info("[L6_AUDIT] Action at line 59")
-        logger.info("[L6_AUDIT] Action at line 60")
-        logger.info("[L6_AUDIT] Action at line 61")
-        logger.info("[L6_AUDIT] Action at line 62")
-        logger.info("[L6_AUDIT] Action at line 63")
         # List of (key, check_function) tuples for all pattern checks
         keys = [
-            logger.info("[L6_AUDIT] Action at line 66")
             (26, self.check_key_26_no_mutable_defaults),
             (27, self.check_key_27_prefer_str_join),
             (28, self.check_key_28_no_bare_except),
@@ -91,9 +74,7 @@ class PatternEnforcer:
         except FileNotFoundError:
             logger.warning(f"File not found: {filepath}")
         except SyntaxError as e:
-            logger.info("[L6_AUDIT] Action at line 94")
             logger.error(f"Syntax error in {filepath}: {e}")
-        logger.info("[L6_AUDIT] Action at line 96")
         except Exception as e:
             logger.error(f"Error parsing AST for {filepath}: {e}")
         return None
@@ -106,11 +87,7 @@ class PatternEnforcer:
         except FileNotFoundError:
             logger.warning(f"File not found: {filepath}")
         except Exception as e:
-            logger.info("[L6_AUDIT] Action at line 109")
             logger.error(f"Error reading lines from {filepath}: {e}")
-        logger.info("[L6_AUDIT] Action at line 111")
-        logger.info("[L6_AUDIT] Action at line 112")
-        logger.info("[L6_AUDIT] Action at line 113")
         return None
 
     def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
@@ -126,9 +103,7 @@ class PatternEnforcer:
                         for default in node.args.defaults:
                             if isinstance(default, (ast.List, ast.Dict, ast.Set)):
                                 violations.append(f"{fp}:{node.lineno} in function '{node.name}'")
-        logger.info("[L6_AUDIT] Action at line 129")
         return len(violations) == 0, violations
- logger.info("[L6_AUDIT] Action at line 131")
 
     def check_key_27_prefer_str_join(self) -> Tuple[bool, List[str]]:
         """
@@ -140,9 +115,7 @@ class PatternEnforcer:
         for fp in self.agent.ctx.python_files:
             lines = self._read_file_lines(fp)
             if lines:
-                logger.info("[L6_AUDIT] Action at line 143")
                 for i, line in enumerate(lines, 1):
-                    logger.info("[L6_AUDIT] Action at line 145")
                     # Look for string literals or variables being concatenated with '+'
                     # This is a heuristic and might not catch all cases or might have false positives.
                     if re.search(r'\s*\+\s*["\']', line) or re.search(r'["\']\s*\+\s*', line):
@@ -153,9 +126,7 @@ class PatternEnforcer:
         return len(violations) == 0, violations
 
     def check_key_28_no_bare_except(self) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 156")
         """
-        logger.info("[L6_AUDIT] Action at line 158")
         Checks for bare `except:` clauses without specifying an exception type.
         """
         violations = []
@@ -167,24 +138,17 @@ class PatternEnforcer:
                         if node.type is None:  # This indicates a bare except
                             violations.append(f"{fp}:{node.lineno}")
         return len(violations) == 0, violations
- logger.info("[L6_AUDIT] Action at line 170")
-
-    logger.info("[L6_AUDIT] Action at line 172")
     def check_key_29_no_assert_in_prod(self) -> Tuple[bool, List[str]]:
         """
         Checks for `assert` statements, which should generally be avoided in production code.
         """
         violations = []
-        logger.info("[L6_AUDIT] Action at line 178")
         for fp in self.agent.ctx.python_files:
-            logger.info("[L6_AUDIT] Action at line 180")
             tree = self._parse_file_ast(fp)
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Assert):
-                        logger.info("[L6_AUDIT] Action at line 185")
                         violations.append(f"{fp}:{node.lineno}")
-        logger.info("[L6_AUDIT] Action at line 187")
         return len(violations) == 0, violations
 
     def check_key_30_prefer_fstrings(self) -> Tuple[bool, List[str]]:
@@ -200,10 +164,7 @@ class PatternEnforcer:
                     if re.search(r'\.format\(|%\s*\(', line):
                         violations.append(f"{fp}:{i}")
         return len(violations) == 0, violations
-
-    logger.info("[L6_AUDIT] Action at line 204")
     def check_key_31_no_complex_comprehensions(self) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 206")
         """
         Placeholder: Checks for overly complex list/dict/set comprehensions.
         Implementation would require defining 'complexity' (e.g., multiple `if`s, nested loops).
@@ -219,9 +180,7 @@ class PatternEnforcer:
         return True, []
 
     def check_key_33_no_float_equality(self) -> Tuple[bool, List[str]]:
-        logger.info("[L6_AUDIT] Action at line 222")
         """
-        logger.info("[L6_AUDIT] Action at line 224")
         Checks for direct equality comparisons (`==`) involving floating-point numbers.
         """
         violations = []
@@ -237,23 +196,17 @@ class PatternEnforcer:
                             if any(isinstance(val, ast.Constant) and isinstance(val.value, float)
                                    for val in operands):
                                 violations.append(f"{fp}:{node.lineno}")
-        logger.info("[L6_AUDIT] Action at line 240")
         return len(violations) == 0, violations
- logger.info("[L6_AUDIT] Action at line 242")
 
     def check_key_34_use_is_for_none(self) -> Tuple[bool, List[str]]:
         """
         Checks for `== None` or `!= None` comparisons, preferring `is None` or `is not None`.
-        logger.info("[L6_AUDIT] Action at line 247")
         """
-        logger.info("[L6_AUDIT] Action at line 249")
         violations = []
         for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
             if tree:
-                logger.info("[L6_AUDIT] Action at line 254")
                 for node in ast.walk(tree):
-                    logger.info("[L6_AUDIT] Action at line 256")
                     if isinstance(node, ast.Compare):
                         # Check if any comparator is 'None'
                         if any(isinstance(comp, ast.Constant) and comp.value is None
@@ -273,7 +226,6 @@ class PatternEnforcer:
 
         for fp in self.agent.ctx.python_files:
             tree = self._parse_file_ast(fp)
-            logger.info("[L6_AUDIT] Action at line 276")
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):

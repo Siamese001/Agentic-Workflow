@@ -162,7 +162,6 @@ class ImportPatcher:
         """Applies the patched content to the file and logs the outcome."""
         if self.ctx.write_compliant_file(file_path, updated_content):
             print(f"   [OK] Imports patched: {os.path.basename(file_path)}")
-            logger.info("[L6_AUDIT] Action at line 165")
             # Added a new line here
 
     async def _execute_import_mutation(
@@ -204,7 +203,6 @@ class ImportPatcher:
             "3. Preserve relative imports where possible\n"
             "4. Return ONLY the updated Python code with corrected imports"
         )
-        logger.info("[L6_AUDIT] Action at line 205")
 
         updated_content = await self._execute_import_mutation(
             source_agent, patch_task, content, file_path

@@ -44,15 +44,12 @@ class StructuredEngine:
         self.model = "gpt-4"
 
         LOGGER.info(f"Structured engine initialized with AsyncOpenAI client")
-
-    logger.info("[L6_AUDIT] Action at line 48")
     async def think_structured(
         self,
         system_prompt: str,
         user_prompt: str,
         max_retries: int = 3
     ) -> AgentThoughtProcess:
-        logger.info("[L6_AUDIT] Action at line 55")
         """
         Executes an inference call that is GUARANTEED to match AgentThoughtProcess.
 
@@ -62,7 +59,6 @@ class StructuredEngine:
             system_prompt: System instructions for the agent
             user_prompt: User query or task
             max_retries: Maximum number of retry attempts
- logger.info("[L6_AUDIT] Action at line 65")
 
         Returns:
             Validated AgentThoughtProcess instance

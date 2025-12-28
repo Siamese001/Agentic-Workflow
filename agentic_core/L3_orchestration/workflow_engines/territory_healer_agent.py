@@ -50,14 +50,10 @@ class TerritoryHealerAgent:
             11: {"script", "tool", "cli", "operational", "backup"},  # L1_cognition: no ops
             12: {"test", "fixture", "mock"},                         # L3_orchestration: no tests
             13: {"heal", "fix", "prune"},                            # L4_state: no healing
-            logger.info("[L6_AUDIT] Action at line 53")
             15: {"strategy", "reasoning", "planner"},                # Domain agents: no core cognition
             17: {"agent", "manager", "engine", "healer"},            # tests/: no production agents
             19: {"script", "test", "heal"},                          # L5_safety: no ops/tests/healing
         }
- logger.info("[L6_AUDIT] Action at line 58")
-
-    logger.info("[L6_AUDIT] Action at line 60")
     def check_depth_precision(self, file_path: Path) -> Optional[dict]:
         """
         Check if file violates precision depth requirements.
@@ -91,7 +87,6 @@ class TerritoryHealerAgent:
             suggested = self.get_placement_guidance("")
             target_path = self.root / suggested / rel_path.name
             return {
-                logger.info("[L6_AUDIT] Action at line 94")
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
@@ -100,14 +95,12 @@ class TerritoryHealerAgent:
         elif parts[0] == "agentic_core" and len(parts) > 4:
             # Need to flatten - move to appropriate L4 location
             target_path = self.root / parts[0] / parts[1] / parts[2] / parts[3] / rel_path.name
-            logger.info("[L6_AUDIT] Action at line 103")
             return {
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
                 "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
             }
-         logger.info("[L6_AUDIT] Action at line 110")
         
         return None
 
@@ -118,7 +111,6 @@ class TerritoryHealerAgent:
         Returns move dict if stray, else None.
         """
         current_territory = None
-        logger.info("[L6_AUDIT] Action at line 121")
         for key, paths in self.key_folders.items():
             if any(rel_path.startswith(p + "/") or rel_path == p for p in paths):
                 current_territory = key
@@ -139,9 +131,7 @@ class TerritoryHealerAgent:
             return None  # Sovereign — strong belonging
 
         # [ETERNAL LOCK] Moderate positive + no negative -> protect core code
-        logger.info("[L6_AUDIT] Action at line 142")
         if positive_score >= 2 and not has_negative:
-            logger.info("[L6_AUDIT] Action at line 144")
             return None  # Belongs — do not move
 
         if has_negative or positive_score < 2:
@@ -151,7 +141,6 @@ class TerritoryHealerAgent:
                     move["reason"] += f" (negative signals detected)"
                 if positive_score < 2:
                     move["reason"] += f" (weak positive: {positive_score}/3)"
-                logger.info("[L6_AUDIT] Action at line 154")
                 return move
         
         # [FINAL FALLBACK] Unknown but no negative -> archive safely (never delete)
@@ -174,7 +163,6 @@ class TerritoryHealerAgent:
         
         for k, folders in self.key_folders.items():
             if any(suggested.startswith(f) for f in folders):
-                logger.info("[L6_AUDIT] Action at line 177")
                 target_key = k
                 target_folder = next(f for f in folders if suggested.startswith(f))
                 break
@@ -218,7 +206,6 @@ class TerritoryHealerAgent:
                 stem_lower = py_file.stem.lower()
             except:
                 continue
-             logger.info("[L6_AUDIT] Action at line 221")
             
             # Check if file is in unmapped territory (root stray)
             is_mapped = any(rel_str.startswith(p + "/") or rel_str == p for p in self.all_mapped_paths)
@@ -281,13 +268,10 @@ class TerritoryHealerAgent:
         
         for action in moved:
             source_path = Path(action["source"])
-            logger.info("[L6_AUDIT] Action at line 284")
             target_path = Path(action["target"])
             
             # Ensure target directory exists
             target_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            logger.info("[L6_AUDIT] Action at line 290")
             # Move the file
             import shutil
             shutil.move(source_path, target_path)

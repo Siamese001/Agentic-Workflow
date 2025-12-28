@@ -20,7 +20,6 @@ logger = logging.getLogger("ActionNode")
 class ActionNode:
     """
     The 'Hands' of the Agent.
-    logger.info("[L6_AUDIT] Action at line 23")
     Responsibility: Execute the Cognitive Node's plan safely.
     Security: STRICT WHITELIST of allowed tools.
     """
@@ -54,19 +53,13 @@ class ActionNode:
             self.work_dir.mkdir(parents=True)
         else:
             logger.info(f"Using existing workspace directory: {self.work_dir}")
- logger.info("[L6_AUDIT] Action at line 57")
-
-    logger.info("[L6_AUDIT] Action at line 59")
     def execute_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """
-        logger.info("[L6_AUDIT] Action at line 62")
         Executes a full plan sequence from the Cognitive Node.
 
         Args:
             plan (Dict[str, Any]): A dictionary representing the plan,
-                                   logger.info("[L6_AUDIT] Action at line 67")
                                    expected to contain 'goal' and 'steps'.
- logger.info("[L6_AUDIT] Action at line 69")
 
         Returns:
             Dict[str, Any]: A dictionary containing the overall status and results

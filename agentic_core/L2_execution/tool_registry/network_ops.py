@@ -128,7 +128,6 @@ def brave_search(query: str, count: int = 5) -> str:
     return json.dumps(results[:count])
 
 
-logger.info("[L6_AUDIT] Action at line 131")
 def execute_cost_controlled_search(
     query: str,
     logger_instance: Optional[Any] = None

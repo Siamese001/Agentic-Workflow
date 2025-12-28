@@ -53,7 +53,6 @@ def canonicalize(self: Any, text: str) -> List[str]:
     return canonical
 
 
-logger.info("[L6_AUDIT] Action at line 56")
 def check_for_forbidden_verbs(self: Any, text: str) -> List[str]:
     """Check for forbidden verbs in the text."""
     found_verbs = []

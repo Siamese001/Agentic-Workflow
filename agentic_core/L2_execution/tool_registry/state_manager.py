@@ -138,7 +138,6 @@ class StateSerializer:
 
     def exists(self, hop_num: int) -> bool:
         """
-        logger.info("[L6_AUDIT] Action at line 141")
         Checks if a hop's output file exists.
 
         Args:
@@ -257,7 +256,6 @@ class ManifestManager:
 
     This class handles:
     - Creating initial manifests for new runs
-    logger.info("[L6_AUDIT] Action at line 260")
     - Loading manifests for resumed runs
     - Updating manifests with checkpoint data
     """
@@ -292,7 +290,6 @@ class ManifestManager:
             "run_id": run_id,
             "engine_version": engine_version,
             "start_time_utc": datetime.utcnow().isoformat() + "Z",
-            logger.info("[L6_AUDIT] Action at line 295")
             "job_input": job_input,
             "master_resume_hash": master_resume_hash,
             "hop_checkpoints": []
@@ -313,55 +310,33 @@ class ManifestManager:
         """
         if not os.path.exists(self.manifest_path):
             raise FileNotFoundError(f"Manifest not found at {self.manifest_path}")
-
-        logger.info("[L6_AUDIT] Action at line 317")
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
-            logger.info("[L6_AUDIT] Action at line 319")
             return json.load(f)
-
-    logger.info("[L6_AUDIT] Action at line 322")
     def add_checkpoint(self, checkpoint: HopCheckpoint) -> None:
         """
         Appends a checkpoint to the manifest.
-
-        logger.info("[L6_AUDIT] Action at line 327")
         Args:
             checkpoint: The HopCheckpoint to add
-        logger.info("[L6_AUDIT] Action at line 330")
         """
         MANIFEST = self.load_manifest()
- logger.info("[L6_AUDIT] Action at line 333")
 
         # Convert checkpoint to dict with enum serialization
         checkpoint_dict = asdict(checkpoint)
- logger.info("[L6_AUDIT] Action at line 337")
 
         # Convert HopStatus enum to string name
-        logger.info("[L6_AUDIT] Action at line 340")
         checkpoint_dict['status'] = checkpoint.status.name
- logger.info("[L6_AUDIT] Action at line 342")
 
         # Convert ValidationSeverity enums in validation_results
         for vr in checkpoint_dict.get('validation_results', []):
             if 'severity' in vr and hasattr(vr['severity'], 'name'):
                 vr['severity'] = vr['severity'].name
-
-        logger.info("[L6_AUDIT] Action at line 349")
-        logger.info("[L6_AUDIT] Action at line 350")
-        logger.info("[L6_AUDIT] Action at line 351")
         MANIFEST['hop_checkpoints'].append(checkpoint_dict)
         self._save_manifest(MANIFEST)
-
-    logger.info("[L6_AUDIT] Action at line 355")
     def update_checkpoint(self, hop_id: str, updates: dict) -> None:
-        logger.info("[L6_AUDIT] Action at line 357")
         """
         Updates an existing checkpoint in the manifest.
- logger.info("[L6_AUDIT] Action at line 360")
 
         Args:
-            logger.info("[L6_AUDIT] Action at line 363")
-            logger.info("[L6_AUDIT] Action at line 364")
             hop_id: The hop_id to update (e.g., "HOP-3")
             updates: Dictionary of fields to update
         """
@@ -374,9 +349,7 @@ class ManifestManager:
 
     def get_checkpoints(self) -> List[HopCheckpoint]:
         """
-        logger.info("[L6_AUDIT] Action at line 377")
         Gets all checkpoints from the manifest as HopCheckpoint objects.
- logger.info("[L6_AUDIT] Action at line 379")
 
         Returns:
             List of HopCheckpoint objects

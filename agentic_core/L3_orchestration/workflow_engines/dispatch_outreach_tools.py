@@ -18,8 +18,6 @@ class DispatchOutreachTools:
         SELF.CONFIG = config or {}
         SELF.TIMEOUT = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
-
-    logger.info("[L6_AUDIT] Action at line 22")
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START = time.time()
@@ -41,12 +39,10 @@ class DispatchOutreachTools:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
- logger.info("[L6_AUDIT] Action at line 44")
 
 def execute(action: str,
     params: Dict[str,
     object],
-    logger.info("[L6_AUDIT] Action at line 49")
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachTools(config).execute(action, params)

@@ -21,17 +21,12 @@ class TruthKeeper:
         Initialize the TruthKeeper agent.
 
         Args:
-            logger.info("[L6_AUDIT] Action at line 24")
             llm_client: LLM client for consistency checking
         """
         self.llm_client = llm_client
         self.api_key = os.getenv("GOOGLE_API_KEY")
- logger.info("[L6_AUDIT] Action at line 29")
-
-    logger.info("[L6_AUDIT] Action at line 31")
     async def check_file_consistency(self, file_path: str) -> Dict[str, Any]:
         """
-        logger.info("[L6_AUDIT] Action at line 34")
         Check docstring consistency for all public functions in a file.
 
         Args:
@@ -53,7 +48,6 @@ class TruthKeeper:
                 content = f.read()
 
             tree = ast.parse(content)
- logger.info("[L6_AUDIT] Action at line 56")
 
             # Check each function
             for node in ast.walk(tree):
@@ -73,17 +67,13 @@ class TruthKeeper:
 
         except SyntaxError as e:
             violations.append({
-                logger.info("[L6_AUDIT] Action at line 76")
                 "type": "syntax",
                 "file": file_path,
                 "message": f"Syntax error: {e}"
             })
         except Exception as e:
             LOGGER.error(f"Error checking {file_path}: {e}")
-
-        logger.info("[L6_AUDIT] Action at line 84")
         return {
-            logger.info("[L6_AUDIT] Action at line 86")
             "violations": violations,
             "fixes": fixes,
             "file": file_path

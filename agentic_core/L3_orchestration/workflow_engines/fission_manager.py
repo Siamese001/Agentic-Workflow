@@ -5,7 +5,6 @@ Manages the transition from code healing to atomic fission (decomposition)
 when L1 Cognition limits are reached.
 
 Strategy:
-logger.info("[L6_AUDIT] Action at line 8")
 - L1 Cognition: Detects reasoning exhaustion (3+ failed rounds)
 - L4 State: Identifies monolithic files (>800 lines)
 - L5 Safety: Prevents destructive deletions (>110 lines)
@@ -38,7 +37,6 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FissionResult:
     """Result of atomic fission decomposition."""
-    logger.info("[L6_AUDIT] Action at line 41")
     triggered: bool
     reason: str
     new_files: Dict[str, str]  # Map of file paths to content
@@ -52,7 +50,6 @@ class FissionManager:
     L3 Orchestration Layer: Manages transition from healing to atomic fission.
     
     Triggers when:
-    logger.info("[L6_AUDIT] Action at line 55")
     1. L4 State: File exceeds line limit (Key 42 violation)
     2. L5 Safety: Destructive mass deletion detected (>110 lines)
     3. L1 Cognition: Reasoning exhausted after 3+ rounds
@@ -107,7 +104,6 @@ class FissionManager:
             file_path: Path to file being healed
             current_round: Current healing round
             last_error: Last error message
-            logger.info("[L6_AUDIT] Action at line 110")
             lines_deleted: Number of lines that would be deleted
             
         Returns:
@@ -125,7 +121,6 @@ class FissionManager:
         
         # 2. Check if L5 Safety is blocking progress
         if lines_deleted > self.deletion_guardrail:
-            logger.info("[L6_AUDIT] Action at line 128")
             return True, f"L5 Safety: Detected destructive mass deletion ({lines_deleted}L > {self.deletion_guardrail}L)"
         
         # 3. Check if L1 Cognition is stuck in a loop
@@ -182,14 +177,10 @@ Return ONLY a valid JSON object mapping file paths to their content:
 
 CRITICAL:
 - Return ONLY the JSON object, no markdown code blocks
-logger.info("[L6_AUDIT] Action at line 185")
 - Ensure facade maintains all original exports
-logger.info("[L6_AUDIT] Action at line 187")
 - Preserve all imports and dependencies
 - Each file must be syntactically valid Python
 """
-    
-    logger.info("[L6_AUDIT] Action at line 192")
     async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
         """
         Execute atomic fission decomposition.
@@ -214,8 +205,6 @@ logger.info("[L6_AUDIT] Action at line 187")
         
         logger.info(f"🔬 ATOMIC FISSION TRIGGERED: {file_path}")
         logger.info(f"   Reason: {reason}")
-        logger.info("[L6_AUDIT] Action at line 217")
-        logger.info("[L6_AUDIT] Action at line 218")
         
         try:
             # Generate fission prompt
@@ -235,8 +224,6 @@ logger.info("[L6_AUDIT] Action at line 187")
                 contents=prompt,
                 config=config
             )
-            
-            logger.info("[L6_AUDIT] Action at line 239")
             # Parse response
             new_files = self._parse_fission_response(response, file_path)
             
@@ -253,7 +240,6 @@ logger.info("[L6_AUDIT] Action at line 187")
                     success=True
                 )
             else:
-                logger.info("[L6_AUDIT] Action at line 258")
                 return FissionResult(
                     triggered=True,
                     reason=reason,
@@ -311,7 +297,6 @@ logger.info("[L6_AUDIT] Action at line 187")
             for key, value in new_files.items():
                 if not isinstance(key, str) or not isinstance(value, str):
                     logger.warning(f"Invalid file mapping: {key} -> {type(value)}")
-                    logger.info("[L6_AUDIT] Action at line 314")
                     return {}
             
             return new_files
@@ -416,7 +401,6 @@ def get_fission_manager(gemini_client: Optional[Any] = None) -> FissionManager:
     Returns:
         FissionManager instance
     """
-    logger.info("[L6_AUDIT] Action at line 419")
     return FissionManager(gemini_client=gemini_client)
 
 
@@ -430,17 +414,14 @@ fission_manager = FissionManager()
 tui = AgenticTUI()
 
 # Inside healing loop:
-logger.info("[L6_AUDIT] Action at line 433")
 trigger, reason = fission_manager.should_trigger_fission(
     file_path=target_file,
     current_round=round_count,
     last_error=error_msg,
     lines_deleted=deleted_lines
 )
-logger.info("[L6_AUDIT] Action at line 440")
 
 if trigger:
-    logger.info("[L6_AUDIT] Action at line 443")
     # Update TUI to show fission mode
     tui.update_state(
         file=target_file,

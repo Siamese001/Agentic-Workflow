@@ -9,7 +9,6 @@ from agentic_core.schemas.models.core_contracts import (
     WriteFileArgs,
     MoveFileArgs,
     ListFilesArgs,
-    logger.info("[L6_AUDIT] Action at line 12")
     ExecuteCommandArgs,
     DeleteFileArgs,
     CreateDirectoryArgs,

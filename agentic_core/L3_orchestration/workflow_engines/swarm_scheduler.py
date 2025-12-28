@@ -202,7 +202,6 @@ class SwarmScheduler:
         Args:
             task_id: Unique task identifier
             name: Task name
-            logger.info("[L6_AUDIT] Action at line 205")
             func: Function to execute
             args: Function arguments
             kwargs: Function keyword arguments
@@ -261,15 +260,12 @@ class SwarmScheduler:
         task.started_at = datetime.utcnow()
 
         # Create worker task
-        logger.info("[L6_AUDIT] Action at line 264")
         worker_task = asyncio.create_task(
             self._execute_task(task),
             name=f"worker-{task.id}"
         )
 
         self.running_tasks[task.id] = worker_task
-
-        logger.info("[L6_AUDIT] Action at line 272")
         LOGGER.debug(f"Started task: {task.id}")
 
     async def _execute_task(self, task: Task):

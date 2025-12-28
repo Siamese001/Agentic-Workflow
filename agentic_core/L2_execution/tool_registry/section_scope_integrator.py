@@ -37,7 +37,6 @@ class ValidationResult: # Placeholder for ValidationResult
 class IntegrityGateExecutor: # Placeholder for IntegrityGateExecutor
     def __init__(self):
         self.results = []
-    logger.info("[L6_AUDIT] Action at line 40")
     def execute_hygiene_scan(self, overview):
         return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
 
@@ -141,7 +140,6 @@ class SectionScopeIntegrator:
                 temperature=self.recovery_loop.current_temperature, # Fixed: Changed TEMPERATURE to temperature
                 attempt=attempt # Fixed: Changed ATTEMPT to attempt
             )
- logger.info("[L6_AUDIT] Action at line 144")
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(overview)
             validation_results.append(hygiene_result)
@@ -154,7 +152,6 @@ class SectionScopeIntegrator:
                 )
                 if not recovery.should_retry:
                     break
-                logger.info("[L6_AUDIT] Action at line 157")
                 continue
 
             prefix_result = self._validate_no_redundant_prefix(overview)
@@ -169,7 +166,6 @@ class SectionScopeIntegrator:
                 if not recovery.should_retry:
                     break
                 continue
- logger.info("[L6_AUDIT] Action at line 172")
 
             similarity_score = self._calculate_similarity(overview, master_baseline)
 
@@ -217,9 +213,7 @@ class SectionScopeIntegrator:
         Generate overview content using LLM.
         Placeholder for actual LLM integration.
         """
-        logger.info("[L6_AUDIT] Action at line 220")
         return """Directed strategic technology initiatives across cloud infrastructure and data engineering,
-        logger.info("[L6_AUDIT] Action at line 222")
         delivering scalable solutions that drove measurable business impact and
             operational excellence.""" # Fixed: Multi-line string syntax
 
@@ -261,13 +255,11 @@ class SectionScopeIntegrator:
 
         if not words1 or not words2:
             return 0.0
- logger.info("[L6_AUDIT] Action at line 264")
 
         overlap = len(words1 & words2) # Fixed: Changed OVERLAP to overlap
         union = len(words1 | words2) # Fixed: Changed UNION to union
 
         return overlap / union if union > 0 else 0.0
- logger.info("[L6_AUDIT] Action at line 270")
 
     def _validate_deduplication(
         self,

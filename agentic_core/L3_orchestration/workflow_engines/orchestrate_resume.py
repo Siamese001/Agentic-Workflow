@@ -19,7 +19,6 @@ def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
     """Initialize the orchestrator."""
     self.master_resume = master_resume
     self.test_mode = test_mode
-    logger.info("[L6_AUDIT] Action at line 22")
     self.hop_checkpoints: List[HopCheckpoint] = []
     SELF.CONSTRAINTS = ContentConstraintsConfig()
     self.jd_enforcer = JDEnforcementValidator()
@@ -27,7 +26,6 @@ def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
 
 def run(self: Any, job_description: str) -> Dict[str, object]:
     """Execute the full resume generation workflow."""
-    logger.info("[L6_AUDIT] Action at line 30")
     # HOP-0: JD Analysis
     self.jd_enforcer.validate_jd_input(job_description, "HOP-0")
     if self.jd_enforcer.has_failures():
@@ -44,14 +42,12 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
     self._record_hop("HOP-2", hop2_results)
 
     return {
-        logger.info("[L6_AUDIT] Action at line 47")
         "status": "success",
         "enriched_data": enriched_data,
         "checkpoints": [c.hop_id for c in self.hop_checkpoints],
     }
 
 
-logger.info("[L6_AUDIT] Action at line 54")
 def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
     """Record a hop checkpoint."""
     HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED

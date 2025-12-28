@@ -13,7 +13,6 @@ class Episode:
     """A single episode in an agent's experience."""
     goal_embedding: List[float]
     _task_description: str
-    logger.info("[L6_AUDIT] Action at line 16")
     _successful_plan: str
     _tools_used: List[str]
     _outcome_summary: str
@@ -28,7 +27,6 @@ class Episode:
 @dataclass
 class EpisodeData:
     """Data for creating a new episode."""
-    logger.info("[L6_AUDIT] Action at line 31")
     _task: str
     _plan: str
     _result: str
@@ -40,7 +38,6 @@ class EpisodeData:
 
 
 class EpisodicMemory:
-    logger.info("[L6_AUDIT] Action at line 43")
     """
     Long-term memory for agent experiences.
     Allows agents to clone successful plans from the past and avoid known pitfalls.

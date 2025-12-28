@@ -118,7 +118,6 @@ class SecureToolsImpl:
 
     def tool_run_command(self, command: str) -> str:
         """
-        logger.info("[L6_AUDIT] Action at line 121")
         Executes a shell command within the workspace.
         WARNING: This tool is highly dangerous. In a production environment,
         it MUST be wrapped in a secure, isolated execution environment (e.g., Docker).

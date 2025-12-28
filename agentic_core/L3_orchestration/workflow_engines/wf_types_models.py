@@ -19,7 +19,6 @@ class Artifact:
 
 
 @dataclass
-logger.info("[L6_AUDIT] Action at line 22")
 class HopCheckpoint:
     """Checkpoint for a completed hop."""
 
