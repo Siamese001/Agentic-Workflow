@@ -879,7 +879,8 @@ async def run_mission(target_scope: str = "agentic_core"):
                     f'agentic_core.L3_orchestration.P1_core.{module_name}',
                     f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
                     f'agentic_core.L3_orchestration.fission_logic.{module_name}',
-                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}'
+                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}',
+                    f'agentic_core.L5_safety.guardrails.{module_name}'
                 ]
             elif key_num == 13:  # L4_state
                 search_paths = [

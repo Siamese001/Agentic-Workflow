@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-28 06:21:31
+MISSION LOG - 2025-12-28 06:23:21
 ================================================================================
-COMMAND: python -m agentic_core.L0_maintenance.auditors.sovereign_auditor_v3
+COMMAND: python canon_validator_agentic_v2.py
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 0
 ================================================================================
