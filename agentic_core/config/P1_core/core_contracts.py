@@ -107,14 +107,11 @@ from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
 
 # Final Centralized SSOT Registry
 FINAL_REGISTRY = {
-    # Base
     "SovereignBaseModel": SovereignBaseModel,
     "Territory": Territory,
-    # Messaging
     "AgentMessage": AgentMessage,
     "ResidualAgentMessage": ResidualAgentMessage,
     "MessageType": MessageType,
-    # Tool Args
     "ReadFileArgs": ReadFileArgs,
     "WriteFileArgs": WriteFileArgs,
     "MoveFileArgs": MoveFileArgs,
@@ -122,50 +119,40 @@ FINAL_REGISTRY = {
     "ExecuteCommandArgs": ExecuteCommandArgs,
     "DeleteFileArgs": DeleteFileArgs,
     "CreateDirectoryArgs": CreateDirectoryArgs,
-    # Reasoning
     "AgentThoughtProcess": AgentThoughtProcess,
     "CodeGenerationResult": CodeGenerationResult,
     "ResearchResult": ResearchResult,
     "AgentPlan": AgentPlan,
-    # Consensus
     "ConsensusVerdict": ConsensusVerdict,
     "ModelOpinion": ModelOpinion,
-    # Tone
     "ToneType": ToneType,
     "StyleProfile": StyleProfile,
     "GenerationConfig": GenerationConfig,
-    # Micro Runtime
     "MicroStage": MicroStage,
     "HopState": HopState,
     "RetryPolicy": RetryPolicy,
     "MicroCheckpoint": MicroCheckpoint,
     "StageTransition": StageTransition,
-    # Injection
     "InjectionType": InjectionType,
     "InjectionScope": InjectionScope,
     "InjectionPattern": InjectionPattern,
-    # Context Passport
     "ThermalProfile": ThermalProfile,
     "HardState": HardState,
     "SoftState": SoftState,
     "ThermalConfig": ThermalConfig,
     "SignedClaim": SignedClaim,
     "SignalContext": SignalContext,
-    # Profiles
     "SafetyProfile": SafetyProfile,
     "BudgetProfile": BudgetProfile,
-    # Simulation & Metacognition
     "SimScenario": SimScenario,
     "SimOutcome": SimOutcome,
     "Hypothesis": Hypothesis,
     "MetacognitionReport": MetacognitionReport,
-    # Golden State
     "GoldenStateTestCase": GoldenStateTestCase,
     "JudgeVerdict": JudgeVerdict,
     "EvalResult": EvalResult,
     "GoldenCase": GoldenCase,
     "GoldenOutput": GoldenOutput,
-    # Runtime Shared
     "LLMResponse": LLMResponse,
     "AgentResponse": AgentResponse,
     "ResidualValidationResult": ResidualValidationResult,
