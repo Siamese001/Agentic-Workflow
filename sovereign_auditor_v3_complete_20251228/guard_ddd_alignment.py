@@ -11,12 +11,8 @@ def check_bounded_contexts(filepath: Path) -> List[str]:
     issues = []
     file_str = str(filepath).replace("\\", "/")
     
-    # Determine current context - Phase 10 Constitution Update (Dict[str, Dict])
-    # BOUNDED_CONTEXTS is now {Name: {"path": "...", "rank": X}}
-    current_context = next(
-        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), 
-        None
-    )
+    # Determine current context
+    current_context = next((ctx for ctx, paths in BOUNDED_CONTEXTS.items() if any(p in file_str for p in paths)), None)
     if not current_context: return [] # Skip files outside mapped contexts
 
     # Standard library modules to exclude from DDD checks
@@ -40,12 +36,11 @@ def check_bounded_contexts(filepath: Path) -> List[str]:
                     continue  # SharedContracts are allowed across all contexts
                 
                 # Check for illegal cross-context imports
-                for ctx, info in BOUNDED_CONTEXTS.items():
+                for ctx, paths in BOUNDED_CONTEXTS.items():
                     if ctx == current_context: continue
-                    if ctx == "SharedContracts": continue
+                    if ctx == "SharedContracts": continue  # SharedContracts can be imported anywhere
                     
-                    target_path = info.get("path", "")
-                    if target_path.replace("/", ".") in node.module:
+                    if any(p.replace("/", ".") in node.module for p in paths):
                         # Allow imports from contracts/interfaces, flag logic imports
                         if "contracts" not in node.module and "interfaces" not in node.module:
                             issues.append(f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}")
