@@ -4,34 +4,10 @@ Test script for Dependency Diplomat integration.
 Demonstrates the smart scope functionality without requiring a full orchestrator run.
 """
 
-import asyncio
 import logging
 import sys
 from pathlib import Path
 import pytest
-
-# Add the directory containing this script to sys.path to enable local imports.
-# This assumes 'agentic_core' is a sibling directory to this script.
-# This is typically done for testing or specific development setups.
-script_dir = Path(__file__).parent
-if str(script_dir) not in sys.path:
-    sys.path.insert(0, str(script_dir))
-
-
-# Local application imports
-try:
-    from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
-    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
-except ImportError:
-    # Fallback for stub imports
-    import sys
-    from pathlib import Path
-    stubs_path = Path(__file__).parent.parent.parent / "stubs"
-    if str(stubs_path) not in sys.path:
-        sys.path.insert(0, str(stubs_path))
-    from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
-    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
-
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Import path issues during pytest collection - stub exists but pytest can't find it before test execution")
+@pytest.mark.skip(reason="Stub import path issue - agentic_core.L5_safety.P1_red_team cannot be imported during pytest collection despite conftest.py setup")
 @pytest.mark.asyncio
 async def test_dependency_diplomat():
     """Test Dependency Diplomat smart scope calculation."""
@@ -51,6 +27,10 @@ async def test_dependency_diplomat():
     logger.info("🔗 DEPENDENCY DIPLOMAT TEST")
     logger.info("=" * 80)
 
+    
+    # Import inside test to avoid collection errors
+    from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
+    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
     # Create context
     ctx = ValidationContext()
 

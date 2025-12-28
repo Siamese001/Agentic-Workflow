@@ -1,8 +1,8 @@
 ================================================================================
-MISSION LOG - 2025-12-27 18:54:17
+MISSION LOG - 2025-12-27 19:03:46
 ================================================================================
-COMMAND: pytest tests/core/test_l3_rag_cost_governance.py tests/core/test_design_compliance.py tests/core/test_mcp_without_reddit.py tests/core/test_persistent_chat.py tests/core/test_mcp_e2e.py tests/core/test_dependency_diplomat.py -v --tb=no 2>&1 | Select-String "passed|skipped|failed" | Select-Object -Last 1
+COMMAND: pytest tests/core/test_l3_rag_cost_governance.py tests/core/test_design_compliance.py tests/core/test_mcp_without_reddit.py tests/core/test_persistent_chat.py tests/core/test_mcp_e2e.py tests/core/test_dependency_diplomat.py -v --tb=no
 DIRECTORY: C:\Git\Agentic-Workflow
-EXIT CODE: 2
+EXIT CODE: 0
 ================================================================================
 
