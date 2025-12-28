@@ -2,13 +2,14 @@
 
 ## Overview
 
-Five new L5 safety validators have been added to enforce code quality and eliminate technical debt:
+Six new L5 safety validators have been added to enforce code quality and eliminate technical debt:
 
 1. **DuplicateCodeDetectorAgent** - Detects duplicate code blocks
 2. **CodeFormatterAgent** - Enforces Black + Ruff formatting
 3. **UnusedCleanupAgent** - Removes unused imports and variables
 4. **DependencyPruningAgent** - Removes unused Python dependencies
 5. **GitHygieneAgent** - Enforces Git repository hygiene
+6. **TestCoverageGuardianAgent** - Enforces high test coverage
 
 ## Validators
 
@@ -134,6 +135,83 @@ agent.dry_run = True  # Default: comment out instead of delete
 ```
 
 **Use Case**: Keep requirements.txt lean and reduce installation time/size.
+
+### 5. GitHygieneAgent
+
+**Type**: Batch Validator  
+**Location**: `agentic_core/L5_safety/guardrails/git_hygiene_agent.py`
+
+**Purpose**: Enforces Git repository hygiene by detecting stale branches, large files, and uncommitted changes.
+
+**Features**:
+- Detects stale branches (no commits in >90 days)
+- Identifies uncommitted changes
+- Detects unpushed commits
+- Dry-run mode by default (reports without deleting)
+- Configurable stale threshold
+
+**Configuration**:
+```python
+agent.dry_run = True       # Default: report only
+agent.stale_days = 90      # Days before branch is stale
+agent.large_file_mb = 10   # MB threshold for large files
+```
+
+**Output**:
+```python
+{
+    "stale_branches": 5,
+    "uncommitted": True,
+    "unpushed": True,
+    "actions_taken": 0,
+    "dry_run": True
+}
+```
+
+**Use Case**: Keep repository clean and prevent branch sprawl.
+
+### 6. TestCoverageGuardianAgent
+
+**Type**: Batch Validator  
+**Location**: `agentic_core/L5_safety/verifiability/test_coverage_guardian_agent.py`
+
+**Purpose**: Advanced test coverage enforcement with branch coverage, HTML reports, and historical tracking.
+
+**Features**:
+- Runs coverage.py with `--branch` for branch coverage analysis
+- Generates interactive HTML coverage reports
+- Tracks coverage history (last 30 runs) in `coverage_history.json`
+- Identifies files below line and branch coverage thresholds
+- Separate thresholds for line coverage (95%) and branch coverage (90%)
+
+**Dependencies**:
+```bash
+pip install coverage pytest
+```
+
+**Configuration**:
+```python
+agent.min_line_coverage = 95      # Minimum line coverage threshold
+agent.min_branch_coverage = 90    # Minimum branch coverage threshold
+agent.auto_generate = True        # Auto-generate test stubs
+```
+
+**Output**:
+```python
+{
+    "line_coverage": 87.5,
+    "branch_coverage": 82.3,
+    "low_coverage_files": 12,
+    "html_report": "/path/to/htmlcov/index.html"
+}
+```
+
+**Reports Generated**:
+- `coverage.json` - Machine-readable coverage data
+- `htmlcov/index.html` - Interactive HTML coverage report
+- `coverage_history.json` - Historical coverage trends (last 30 runs)
+
+**Use Case**: Ensure comprehensive test coverage with branch analysis and track coverage trends over time.
 
 ## Integration with Canon Validator
 
