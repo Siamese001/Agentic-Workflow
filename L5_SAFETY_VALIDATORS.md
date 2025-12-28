@@ -218,17 +218,33 @@ agent.property_testing_enabled = True # Generate Hypothesis property tests
 - `test_property_*.py` - Auto-generated Hypothesis property tests
 
 **Property Testing**:
-The agent automatically discovers functions and classes in `agentic_core`, analyzes their signatures, and generates Hypothesis property tests with appropriate strategies:
-- `str` → `st.text(min_size=1)`
+The agent automatically discovers functions and classes in `agentic_core`, analyzes their signatures, and generates Hypothesis property tests with advanced type-aware strategies:
+- `Path` → `st.from_type(pathlib.Path)` with path safety hints
+- `datetime` → `st.datetimes(min_value=datetime(2020,1,1))`
+- `UUID` → `st.uuids()`
+- `str` → `st.text(min_size=1, max_size=100)`
 - `int` → `st.integers()`
-- `float` → `st.floats(allow_nan=False)`
+- `float` → `st.floats(allow_nan=False, allow_infinity=False)`
 - `bool` → `st.booleans()`
 - Unknown → `st.text() | st.integers()`
+
+Generated tests include invariant templates:
+- Idempotency: `f(f(x)) == f(x)`
+- Round-trip: `decode(encode(x)) == x`
+- No exceptions on valid input
+
+**Stateful Testing**:
+Discovers classes ending in `Agent`, `Manager`, or `Engine` in L2/L3/L4 layers and generates `RuleBasedStateMachine` tests:
+- Creates state machine harness for each class
+- Generates `@rule()` methods for each public method
+- Includes `@invariant()` for state integrity checks
+- Tests complex state transitions and interactions
+- Targets: `L4_state`, `L3_orchestration`, `L2_execution`
 
 **Mutation Testing**:
 Uses mutmut to introduce mutations (e.g., `+` → `-`, `==` → `!=`) and verifies tests catch them. Low mutation scores indicate weak tests that pass even when code is broken.
 
-**Use Case**: Ensure ultimate test quality with coverage, mutation analysis, and property-based testing for comprehensive verification.
+**Use Case**: Ensure ultimate test quality with coverage, mutation analysis, property-based testing, and stateful verification for mathematically rigorous code validation.
 
 ## Integration with Canon Validator
 
