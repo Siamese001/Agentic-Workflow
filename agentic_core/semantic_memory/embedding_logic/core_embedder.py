@@ -6,7 +6,7 @@ SSOT for all embedding calls in the agentic core.
 """
 from typing import List
 import openai
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 def get_embedding(
     text: str,

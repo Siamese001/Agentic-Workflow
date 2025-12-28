@@ -5,7 +5,7 @@ Validates sovereign caching operations through MCP architecture.
 import asyncio
 import pytest
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client, SovereignRedisMCPClient
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestRedisMCPIntegration:

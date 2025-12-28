@@ -5,8 +5,8 @@ Validates autonomous documentation drift correction with DeepWiki MCP integratio
 import asyncio
 import pytest
 from pathlib import Path
-from agentic_core.L0_maintenance.healing.deepwiki_healing_strategy import DeepWikiHealingStrategy, create_deepwiki_healing_strategy
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy, create_deepwiki_healing_strategy
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestDeepWikiHealingStrategy:
@@ -144,14 +144,14 @@ class TestDeepWikiHealingStrategyRegistry:
     
     def test_strategy_in_registry(self):
         """Test DeepWikiHealingStrategy is in global registry."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         strategy_names = [s.name for s in HEALING_STRATEGIES]
         assert "DeepWikiHealing" in strategy_names
     
     def test_strategy_priority(self):
         """Test DeepWikiHealingStrategy has correct priority."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         deepwiki_strategy = next((s for s in HEALING_STRATEGIES if s.name == "DeepWikiHealing"), None)
         assert deepwiki_strategy is not None

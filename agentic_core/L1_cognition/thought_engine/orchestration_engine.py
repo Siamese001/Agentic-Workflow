@@ -35,7 +35,7 @@ from agentic_core.agents.specialized import (
 )
 
 # Import Domain
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # Global Event for Intervention
 approval_event = asyncio.Event()

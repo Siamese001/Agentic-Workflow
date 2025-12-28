@@ -195,7 +195,7 @@ def bootstrap_territory_index():
     import hashlib
     
     try:
-        from agentic_core.semantic_memory.vector_stores.pinecone.pinecone_store import SovereignPineconeStore
+        from agentic_core.semantic_memory.vector_stores.pinecone_pinecone_store import SovereignPineconeStore
         # Assumes basic embedding logic exists in the mapped territory
         from agentic_core.semantic_memory.embedding_logic.core_embedder import get_embedding 
         

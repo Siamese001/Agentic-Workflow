@@ -5,7 +5,7 @@ Validates sovereign L5 safety validation operations through MCP architecture.
 import asyncio
 import pytest
 from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client, SovereignLLMRouterMCPClient
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestLLMRouterMCPIntegration:

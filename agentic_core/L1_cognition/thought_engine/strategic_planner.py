@@ -246,7 +246,7 @@ class StrategicPlanner:
         Returns:
             Generated mission plan
         """
-        from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+        from agentic_core.config.P1_core.sovereign_config import config
         
         # Check if Sequential Thinking MCP is enabled
         if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.mcp_router:
@@ -261,7 +261,7 @@ class StrategicPlanner:
     async def _generate_plan_with_mcp(self, objective: str, cycle_id: int,
                                       priority: MissionPriority, context: Dict) -> MissionPlan:
         """Generate plan using Sequential Thinking MCP."""
-        from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+        from agentic_core.config.P1_core.sovereign_config import config
         # Build MCP payload
         mcp_payload = {
             "task": f"Generate comprehensive sovereign mission plan for objective: {objective}",

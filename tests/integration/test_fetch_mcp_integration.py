@@ -7,7 +7,7 @@ import pytest
 import tempfile
 from pathlib import Path
 from agentic_core.L2_execution.tool_registry.fetch_mcp_client import SovereignFetchMCPClient, get_fetch_client
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestFetchMCPIntegration:

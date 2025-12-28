@@ -97,7 +97,7 @@ def check_file(filepath: Path) -> bool:
     for pattern, desc in filesystem_patterns:
         for match in re.finditer(pattern, content):
             line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_filesystem_client() from agentic_core.L0_maintenance.filesystem_mcp_client"))
+            violations.append((line_no, desc, "Use get_filesystem_client() from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client"))
     
     # Check 7: Phase 16D - Block direct git operations
     git_patterns = [
@@ -110,7 +110,7 @@ def check_file(filepath: Path) -> bool:
     for pattern, desc in git_patterns:
         for match in re.finditer(pattern, content):
             line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_git_client() from agentic_core.L0_maintenance.gitkraken_mcp_client"))
+            violations.append((line_no, desc, "Use get_git_client() from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client"))
     
     # Check 8: Phase 16F - Block legacy Pinecone SDK
     pinecone_patterns = [
@@ -190,7 +190,7 @@ def main():
         sys.exit(0)
     else:
         print(f"❌ VIOLATIONS: {violations}/{total} files have hardcoded config")
-        print("\nFix by importing: from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config")
+        print("\nFix by importing: from agentic_core.config.P1_core.sovereign_config import config")
         sys.exit(1)
 
 if __name__ == "__main__":

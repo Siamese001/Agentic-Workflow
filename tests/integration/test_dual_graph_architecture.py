@@ -341,7 +341,7 @@ async def test_knowledge_graph_with_config_disabled():
     """
     Test that Knowledge Graph respects config disable flag.
     """
-    from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+    from agentic_core.config.P1_core.sovereign_config import config
     
     graph_client = MockSovereignGraphClient()
     await graph_client.initialize()
@@ -358,7 +358,7 @@ async def test_deepwiki_with_config_disabled():
     """
     Test that DeepWiki respects config disable flag.
     """
-    from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+    from agentic_core.config.P1_core.sovereign_config import config
     
     deepwiki_client = MockSovereignDeepWikiClient()
     await deepwiki_client.initialize()

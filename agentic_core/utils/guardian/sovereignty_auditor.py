@@ -100,7 +100,7 @@ class SovereigntyAuditor:
         if self.violations:
             logger.warning("[L0 AUDIT] Violations found. Handing over to Healing Engine.")
             try:
-                from agentic_core.L0_maintenance.healing.healing_engine import run_autonomous_healing
+                from agentic_core.L0_maintenance.P1_core.healing_engine import run_autonomous_healing
                 healing_result = await run_autonomous_healing(self.violations)
                 logger.info(f"[L0 AUDIT] Healing result: {healing_result.get('status', 'unknown')}")
             except Exception as e:
