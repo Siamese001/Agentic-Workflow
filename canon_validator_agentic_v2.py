@@ -2120,160 +2120,143 @@ CURRENT CODE:
             print(f"     Round {round_idx}/{MAX_HEALING_ROUNDS}...", end=' ')
             
             for agent in atomic_validators:
-                try:
-                    method = getattr(agent, 'execute', getattr(agent, 'run', None))
-                    if method:
-                        result = None
-                        # Attempt execution with path-awareness
-                        try:
-                            result = await method(file_path)
-                        except TypeError:
-                            result = await method()
+                # [L5 RESILIENCE] Execute with retries
+                result = await retry_agent_execution_async(agent, file_path, ctx)
+                
+                if result:
+                    # Detect successful healing signals
+                    if isinstance(result, dict):
+                        # [L1 MEMORY RECORDING] Capture reasoning steps if provided
+                        if ctx.reasoning_memory and result.get('reasoning_steps'):
+                            for i, thought in enumerate(result['reasoning_steps'], 1):
+                                ctx.reasoning_memory.add_thought(file_path, result.get('key_id', 0), thought, i)
                         
-                        # Detect successful healing signals
-                        if isinstance(result, dict):
-                            # [L1 MEMORY RECORDING] Capture reasoning steps if provided
-                            if ctx.reasoning_memory and result.get('reasoning_steps'):
-                                for i, thought in enumerate(result['reasoning_steps'], 1):
-                                    ctx.reasoning_memory.add_thought(file_path, result.get('key_id', 0), thought, i)
-                            
-                            if ctx.reasoning_memory and result.get('scratchpad_update'):
-                                ctx.reasoning_memory.update_scratchpad(file_path, result['scratchpad_update'])
-
-                            # [MCP HEALING ESCALATION] Route persistent violations to sovereign tools
-                            if result.get('persistent') and ctx.mcp_router:
-                                key_id = result.get('key_id', 0)
-                                mcp_res = await ctx.mcp_router.resolve_violation(
-                                    key_id, str(Path(file_path).relative_to(project_root)), result.get('msg', '')
-                                )
-                                if mcp_res.get('status') in {'success', 'l2_research', 'l1_sequential', 'l1_policy', 'l0_cleanup', 'l0_diagnostics'}:
-                                    tool_name = mcp_res.get('tool', 'unknown')
-                                    print(f"     [MCP HEAL] Resolved Key {key_id} via sovereign tool: {tool_name}")
-                                    
-                                    if mcp_res.get('status') == 'l2_research':
-                                        print(f"     [L2 INSIGHT] External knowledge retrieved from {tool_name}")
-                                    
-                                    # [L1 SEQUENTIAL HANDLING]
-                                    if mcp_res.get('status') == 'l1_sequential':
-                                        steps = mcp_res.get('steps', [])
-                                        print(f"     [L1 SEQUENTIAL] {len(steps)} reasoning steps completed.")
-                                        if mcp_res.get('cached'):
-                                            print(f"     [OPTIMIZED] Applied eternal thought template.")
-                                        # Inject these steps into the agent context for the final heal
-                                    elif mcp_res.get('status') == 'l1_policy':
-                                        guidance = mcp_res.get('guidance', '')[:100]
-                                        print(f"     [L1 POLICY] Sovereign guidance received: {guidance}...")
-                                    
-                                    # [L2 DEEPWIKI HANDLING]
-                                    if mcp_res.get('status') in {'l2_deepwiki_structure', 'l2_deepwiki_qa'}:
-                                        guidance = mcp_res.get('guidance') or mcp_res.get('answer', '')
-                                        print(f"     [L2 DEEPWIKI] Knowledge retrieved: {guidance[:100]}...")
-                                        # Caching this guidance in L4 for next time
-                                        if ctx.semantic_cache:
-                                            await ctx.semantic_cache.cache_file(f"wiki_key{key_id}.txt", guidance, metadata={"source": "DeepWiki"})
-                                    
-                                    # [L5/L4/L3 REINFORCEMENT]
-                                    if mcp_res.get('status') in {'l5_redteam', 'l4_semantic', 'l3_recovery', 'l4_memory_recall'}:
-                                        tool = mcp_res.get('tool')
-                                        print(f"     [L{mcp_res.get('status')[1:2]} REINFORCE] {tool} executed — sovereignty absolute.")
-                                        if 'findings' in mcp_res:
-                                            print(f"     [ALERT] {len(mcp_res['findings'])} potential exploits identified.")
-                                    
-                                    # [L0 MAINTENANCE HANDLING]
-                                    if mcp_res.get('status') == 'l0_cleanup':
-                                        pruned = mcp_res.get('pruned', [])
-                                        print(f"     [L0 HYGIENE] {len(pruned)} dead artifacts pruned. Foundation restored.")
-                                    elif mcp_res.get('status') == 'l0_diagnostics':
-                                        print(f"     [L0 DIAGNOSTICS] Foundation issues identified and logged.")
-                                        
-                                    ctx.report(agent.__class__.__name__, key_id, True, f"MCP-healed: {mcp_res.get('status')}")
-                                    changes_this_round += 1
-                                    file_healed = True
-
-                            # [L6 HARDENING] Physical Relocation & Import Sync
-                            if result.get('move_to'):
-                                target_move_path = result['move_to']
-                                target_root = target_move_path.split('/')[0] if '/' in target_move_path else target_move_path
+                        # [MCP HEALING ESCALATION] Route persistent violations to sovereign tools
+                        if result.get('persistent') and ctx.mcp_router:
+                            key_id = result.get('key_id', 0)
+                            mcp_res = await ctx.mcp_router.resolve_violation(
+                                key_id, str(Path(file_path).relative_to(project_root)), result.get('msg', '')
+                            )
+                            if mcp_res.get('status') in {'success', 'l2_research', 'l1_sequential', 'l1_policy', 'l0_cleanup', 'l0_diagnostics'}:
+                                tool_name = mcp_res.get('tool', 'unknown')
+                                print(f"     [MCP HEAL] Resolved Key {key_id} via sovereign tool: {tool_name}")
                                 
-                                # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
-                                if target_root in FORBIDDEN_ROOT_FOLDERS:
-                                    print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
-                                else:
-                                    # 1. Apply import fixes if provided by the agent
-                                    if result.get('healed_code'):
-                                        with open(file_path, 'w', encoding='utf-8') as f:
-                                            f.write(result['healed_code'])
-                                        print("     [✓] Imports Refactored for new path.")
-                                    continue
+                                if mcp_res.get('status') == 'l2_research':
+                                    print(f"     [L2 INSIGHT] External knowledge retrieved from {tool_name}")
+                                
+                                # [L1 SEQUENTIAL HANDLING]
+                                if mcp_res.get('status') == 'l1_sequential':
+                                    steps = mcp_res.get('steps', [])
+                                    print(f"     [L1 SEQUENTIAL] {len(steps)} reasoning steps completed.")
+                                    if mcp_res.get('cached'):
+                                        print(f"     [OPTIMIZED] Applied eternal thought template.")
+                                elif mcp_res.get('status') == 'l1_policy':
+                                    guidance = mcp_res.get('guidance', '')[:100]
+                                    print(f"     [L1 POLICY] Sovereign guidance received: {guidance}...")
+                                
+                                # [L2 DEEPWIKI HANDLING]
+                                if mcp_res.get('status') in {'l2_deepwiki_structure', 'l2_deepwiki_qa'}:
+                                    guidance = mcp_res.get('guidance') or mcp_res.get('answer', '')
+                                    print(f"     [L2 DEEPWIKI] Knowledge retrieved: {guidance[:100]}...")
+                                    # Caching this guidance in L4 for next time
+                                    if ctx.semantic_cache:
+                                        await ctx.semantic_cache.cache_file(f"wiki_key{key_id}.txt", guidance, metadata={"source": "DeepWiki"})
+                                
+                                # [L5/L4/L3 REINFORCEMENT]
+                                if mcp_res.get('status') in {'l5_redteam', 'l4_semantic', 'l3_recovery', 'l4_memory_recall'}:
+                                    tool = mcp_res.get('tool')
+                                    print(f"     [L{mcp_res.get('status')[1:2]} REINFORCE] {tool} executed — sovereignty absolute.")
+                                    if 'findings' in mcp_res:
+                                        print(f"     [ALERT] {len(mcp_res['findings'])} potential exploits identified.")
+                                
+                                # [L0 MAINTENANCE HANDLING]
+                                if mcp_res.get('status') == 'l0_cleanup':
+                                    pruned = mcp_res.get('pruned', [])
+                                    print(f"     [L0 HYGIENE] {len(pruned)} dead artifacts pruned. Foundation restored.")
+                                elif mcp_res.get('status') == 'l0_diagnostics':
+                                    print(f"     [L0 DIAGNOSTICS] Foundation issues identified and logged.")
+                                    
+                                ctx.report(agent.__class__.__name__, key_id, True, f"MCP-healed: {mcp_res.get('status')}")
+                                changes_this_round += 1
+                                file_healed = True
 
+                        # [L6 HARDENING] Physical Relocation & Import Sync
+                        if result.get('move_to'):
+                            target_move_path = result['move_to']
+                            target_root = target_move_path.split('/')[0] if '/' in target_move_path else target_move_path
+                            
+                            # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
+                            if target_root in FORBIDDEN_ROOT_FOLDERS:
+                                print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
+                            else:
                                 # 1. Apply import fixes if provided by the agent
                                 if result.get('healed_code'):
                                     with open(file_path, 'w', encoding='utf-8') as f:
                                         f.write(result['healed_code'])
                                     print("     [✓] Imports Refactored for new path.")
+                                continue
 
-                                # 2. Execute Physical Move
-                                target_dir = project_root / target_move_path
-                                target_dir.mkdir(parents=True, exist_ok=True)
-                                target_path = target_dir / Path(file_path).name
-                                
-                                import shutil
-                                shutil.move(file_path, target_path)
-                                print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
-                                
-                                # [KEY 48] Log relocation to the audit ledger
-                                audit_log.record(
-                                    file_name=Path(file_path).name,
-                                    action="RELOCATED",
-                                    source=str(Path(file_path).parent),
-                                    destination=result['move_to'],
-                                    reason=result.get('reason', 'Structural Re-homing')
-                                )
-                                
-                                # Update python_files list to reflect the new location
-                                if hasattr(ctx, 'python_files'):
-                                    ctx.python_files = [f if f != file_path else str(target_path) for f in ctx.python_files]
-                                
-                                changes_this_round += 1
-                                file_healed = True
-                                
-                                # [CRITICAL] Break out of agent loop since file_path is now stale
-                                print(f"     [!] File moved - breaking agent loop for {file_name}")
-                                break
+                            # 1. Apply import fixes if provided by the agent
+                            if result.get('healed_code'):
+                                with open(file_path, 'w', encoding='utf-8') as f:
+                                    f.write(result['healed_code'])
+                                print("     [✓] Imports Refactored for new path.")
+
+                            # 2. Execute Physical Move
+                            target_dir = project_root / target_move_path
+                            target_dir.mkdir(parents=True, exist_ok=True)
+                            target_path = target_dir / Path(file_path).name
                             
-                            if result.get('healed'):
-                                changes_this_round += 1
-                                file_healed = True
-
-                                # [L4 FAST INVALIDATION]
-                                if ctx.semantic_cache:
-                                    await ctx.semantic_cache.invalidate(file_path)
-
-                                # [L4 CACHE UPDATE] Re-embed healed file with new AST
-                                if ctx.semantic_cache:
-                                    try:
-                                        healed_code = Path(file_path).read_text(encoding='utf-8', errors='replace')
-                                        await ctx.semantic_cache.cache_file(
-                                            file_path, healed_code,
-                                            metadata={
-                                                "keys": list(applicable_keys) if applicable_keys else [],
-                                                "healed": True,
-                                                "round": round_idx
-                                            }
-                                        )
-                                    except Exception as cache_e:
-                                        logger.warning(f"[L4 CACHE] Failed to update semantic cache: {cache_e}")
-                        elif result is True:
+                            import shutil
+                            shutil.move(file_path, target_path)
+                            print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
+                            
+                            # [KEY 48] Log relocation to the audit ledger
+                            audit_log.record(
+                                file_name=Path(file_path).name,
+                                action="RELOCATED",
+                                source=str(Path(file_path).parent),
+                                destination=result['move_to'],
+                                reason=result.get('reason', 'Structural Re-homing')
+                            )
+                            
+                            # Update python_files list to reflect the new location
+                            if hasattr(ctx, 'python_files'):
+                                ctx.python_files = [f if f != file_path else str(target_path) for f in ctx.python_files]
+                            
                             changes_this_round += 1
                             file_healed = True
                             
-                except Exception as e:
-                    # [CRITICAL] Ensure the round cannot converge if an agent is crashing
-                    error_msg = f"FATAL CRASH [{agent.__class__.__name__}]: {str(e)}"
-                    print(f"\n   [!] {error_msg}")
-                    ctx.report(agent.__class__.__name__, 0, False, error_msg)
-                    violations_this_round += 1
-            
+                            # [CRITICAL] Break out of agent loop since file_path is now stale
+                            print(f"     [!] File moved - breaking agent loop for {file_name}")
+                            break
+                        
+                        if result.get('healed'):
+                            changes_this_round += 1
+                            file_healed = True
+
+                            # [L4 FAST INVALIDATION]
+                            if ctx.semantic_cache:
+                                await ctx.semantic_cache.invalidate(file_path)
+
+                            # [L4 CACHE UPDATE] Re-embed healed file with new AST
+                            if ctx.semantic_cache:
+                                try:
+                                    healed_code = Path(file_path).read_text(encoding='utf-8', errors='replace')
+                                    await ctx.semantic_cache.cache_file(
+                                        file_path, healed_code,
+                                        metadata={
+                                            "keys": list(applicable_keys) if applicable_keys else [],
+                                            "healed": True,
+                                            "round": round_idx
+                                        }
+                                    )
+                                except Exception as cache_e:
+                                    logger.warning(f"[L4 CACHE] Failed to update semantic cache: {cache_e}")
+                    elif result is True:
+                        changes_this_round += 1
+                        file_healed = True
+                        
             # Check for convergence (no new violations in this round)
             # Get current report entries for this file and round
             current_round_reports = [r for r in ctx.report if file_name in str(r) and r.get('round', 1) == round_idx]
