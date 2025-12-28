@@ -50,16 +50,11 @@ class StructureHealing(HealingStrategy):
         super().__init__("Structure", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-        """Diagnose structural issues and propose relocations."""
         fixes = []
-        
         for issue in issues:
             description = issue.get("description", "").lower()
-            
-            # Forbidden root folder violations
             if "forbidden root" in description or "root folder" in description:
                 source = Path(issue.get("file", ""))
-                
                 # Determine target directory based on file type
                 if "legacy" in str(source) or "archive" in str(source):
                     target_dir = "agentic_core/L0_maintenance/scripts"
@@ -76,51 +71,27 @@ class StructureHealing(HealingStrategy):
                     "priority": self.priority,
                     "strategy": self.name
                 })
-            
-            # Directory depth violations
-            elif "depth" in description and "invalid" in description:
-                source = Path(issue.get("file", ""))
-                # Suggest flattening or restructuring
-                fixes.append({
-                    "action": "restructure",
-                    "source": str(source),
-                    "reason": "Directory depth violation",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
-        
         return fixes
 
     async def apply(self, fix: Dict, ctx: Any = None) -> bool:
-        """Physically relocate files to enforce structural sovereignty."""
+        """Physically relocate files to compliant territories."""
         try:
             import shutil
-            action = fix.get("action")
+            source = Path(fix["source"])
+            target = Path(fix["target"])
             
-            if action == "move":
-                source = Path(fix["source"])
-                target = Path(fix["target"])
-                
-                if not source.exists():
-                    logger.warning(f"[L0 STRUCTURE HEALING] Source not found: {source}")
-                    return False
-                
-                # Create target directory
-                target.parent.mkdir(parents=True, exist_ok=True)
-                
-                # Move file with metadata preservation
-                shutil.move(str(source), str(target))
-                logger.info(f"[L0 STRUCTURE HEALING] Moved {source} -> {target}")
-                return True
-                
-            elif action == "restructure":
-                # For depth violations, log for manual review
-                logger.warning(f"[L0 STRUCTURE HEALING] Manual restructuring required: {fix['source']}")
+            if not source.exists():
                 return False
                 
-            return False
+            # Ensure target parent exists
+            target.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Execute physical move
+            shutil.move(str(source), str(target))
+            logger.info(f"[L0 STRUCTURE] Relocated {source.name} to {target.parent}")
+            return True
         except Exception as e:
-            logger.error(f"[L0 STRUCTURE HEALING] Failed: {e}")
+            logger.error(f"[L0 STRUCTURE] Move failed: {e}")
             return False
 
 
@@ -131,69 +102,53 @@ class UnderscoreFieldHealing(HealingStrategy):
         super().__init__("UnderscoreFields", priority=2)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-        """Diagnose underscore field violations and propose replacements."""
         fixes = []
-        
         for issue in issues:
             description = issue.get("description", "").lower()
+            # If the auditor parsed the field specifically
+            field_name = issue.get("field")
             
-            if "underscore" in description or "_" in description:
-                field_name = issue.get("field", "")
-                if field_name.startswith("_"):
-                    fixes.append({
-                        "action": "replace",
-                        "file": issue.get("file", ""),
-                        "pattern": f"{field_name}:",
-                        "replacement": f"{field_name.lstrip('_')}:",
-                        "reason": "Underscore field in SSOT model",
-                        "priority": self.priority,
-                        "strategy": self.name,
-                        "field": field_name
-                    })
-        
+            # If not, try to extract from description
+            if not field_name and "field '" in description:
+                try:
+                    field_name = description.split("field '")[1].split("'")[0]
+                except (IndexError, ValueError):
+                    pass
+                    
+            if field_name and field_name.startswith("_") and not field_name.startswith("__"):
+                fixes.append({
+                    "action": "rename_field",
+                    "file": issue.get("file"),
+                    "old_name": field_name,
+                    "new_name": field_name.lstrip("_"),
+                    "reason": "Underscore field in SSOT model",
+                    "priority": self.priority,
+                    "strategy": self.name
+                })
         return fixes
 
     async def apply(self, fix: Dict, ctx: Any = None) -> bool:
-        """Rename underscore-prefixed fields to enforce public schema."""
+        """Rename illegal underscore fields in SSOT schema files."""
         try:
             import re
             file_path = Path(fix["file"])
-            if not file_path.exists(): return False
-
-            content = file_path.read_text(encoding="utf-8")
-            field_name = fix.get("field", "")
-            
-            if not field_name or not field_name.startswith("_"):
+            if not file_path.exists():
                 return False
+                
+            old_name = fix["old_name"]
+            new_name = fix["new_name"]
             
-            public_name = field_name.lstrip("_")
+            content = file_path.read_text(encoding="utf-8")
+            # Use word boundaries to prevent partial matches
+            new_content = re.sub(rf"\b{old_name}\b", new_name, content)
             
-            # Replace field definitions (e.g., _field: str -> field: str)
-            content = re.sub(
-                rf"\b{re.escape(field_name)}\s*:",
-                f"{public_name}:",
-                content
-            )
-            
-            # Replace field references (e.g., self._field -> self.field)
-            content = re.sub(
-                rf"\bself\.{re.escape(field_name)}\b",
-                f"self.{public_name}",
-                content
-            )
-            
-            # Replace direct references
-            content = re.sub(
-                rf"\b{re.escape(field_name)}\b",
-                public_name,
-                content
-            )
-            
-            file_path.write_text(content, encoding="utf-8")
-            logger.info(f"[L0 UNDERSCORE HEALING] Renamed {field_name} -> {public_name} in {file_path}")
-            return True
+            if new_content != content:
+                file_path.write_text(new_content, encoding="utf-8")
+                logger.info(f"[L0 SSOT HEALING] Renamed {old_name} -> {new_name} in {file_path}")
+                return True
+            return False
         except Exception as e:
-            logger.error(f"[L0 UNDERSCORE HEALING] Failed: {e}")
+            logger.error(f"[L0 SSOT HEALING] Failed: {e}")
             return False
 
 
