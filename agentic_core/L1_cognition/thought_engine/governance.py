@@ -309,11 +309,14 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.P1_core.structure_blueprint import (
+            SOVEREIGN_REGISTRY, ROOT_WHITELIST, MIN_DEPTH, MAX_DEPTH, MAX_LINES
+        )
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
 
         # Law of Depth: MAX 5 levels from root
-        self.MAX_DEPTH = 5
+        self.MIN_DEPTH = MIN_DEPTH
+        self.MAX_DEPTH = MAX_DEPTH
 
         # Complexity thresholds
         self.MAX_COMPLEXITY = 10
@@ -327,20 +330,14 @@ class ArchitectureGovernor:
             "files_sanitized": 0
         }
 
-        # Sovereign directories (exempt from depth limit)
-        # This set defines directories that are considered part of the core or standard project infrastructure
-        # and are exempt from depth law enforcement. This list does not include downstream application directories.
-        self.sovereign_dirs = {
-            "agentic_core", "schemas", "scripts", "docs", "tests", "config", "data", "cache", "observability",
-            '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv',
-            'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage',
-            ".github", "htmlcov", ".mypy_cache", ".coverage", "eggs", ".eggs", "*.egg-info"
-        }
+        # [SSOT] Sovereign directories (exempt from depth limit) - derived from ROOT_WHITELIST
+        # Combines active roots with system/environment folders
+        self.sovereign_dirs = ROOT_WHITELIST
 
         # Governance thresholds
-        self.MAX_FILE_LINES = 200  # Law of Atomicity
-        self.MIN_DEPTH = 3  # Law of Depth minimum
-        self.MAX_DEPTH = 5  # Law of Depth maximum
+        self.MAX_FILE_LINES = MAX_LINES  # Law of Atomicity
+        self.MIN_DEPTH = MIN_DEPTH  # Law of Depth minimum
+        self.MAX_DEPTH = MAX_DEPTH  # Law of Depth maximum
 
     def build_graph(self, file_patterns: List[str] = ["**/*.py"]):
         """

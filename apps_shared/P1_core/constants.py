@@ -1,12 +1,10 @@
 """Global architectural constants and governance laws."""
 
-# Law 1: The Law of Depth - All functional files must exist at Depth 3-5
-MIN_DEPTH = 3                      # e.g., domain/component/unit.py
-MAX_DEPTH = 5                      # Maximum nesting depth
-
-# Law 2: The Law of Atomicity - Files must be subatomic, not noise or monoliths
-MAX_LINES = 200                    # Maximum file size (subatomic limit)
-MIN_LINES = 10                     # Minimum file size (anti-noise limit)
+# [SSOT] Import from structure_blueprint.py instead of hardcoding
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "agentic_core" / "config" / "P1_core"))
+from structure_blueprint import MIN_DEPTH, MAX_DEPTH, MAX_LINES, MIN_LINES, ROOT_WHITELIST
 
 # Law 3: The Law of The Void - Root directory is sacred
 # [SSOT HARDENING] Import derived roots from the Sovereign Enforcer

@@ -7,13 +7,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
-
-# Architectural Constants
-MIN_DEPTH = 3
-MAX_DEPTH = 5
-MAX_LINES = 200
-MIN_LINES = 10
+from structure_blueprint import (
+    ROOT_WHITELIST, 
+    SOVEREIGN_REGISTRY,
+    MIN_DEPTH,
+    MAX_DEPTH,
+    MAX_LINES,
+    MIN_LINES
+)
 
 # Exclusion Zones
 EXCLUDED_DIRS = {

@@ -6,6 +6,17 @@ Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 import re
 from typing import Any, Dict, List, Optional, Protocol
 
+# ==============================================================================
+# THE THREE LAWS OF SUBATOMIC GOVERNANCE [SSOT]
+# ==============================================================================
+# Law 1: The Law of Depth - All functional files must exist at Depth 3-5
+MIN_DEPTH = 3                      # e.g., domain/component/unit.py
+MAX_DEPTH = 5                      # Maximum nesting depth
+
+# Law 2: The Law of Atomicity - Files must be subatomic, not noise or monoliths
+MAX_LINES = 200                    # Maximum file size (subatomic limit)
+MIN_LINES = 10                     # Minimum file size (anti-noise limit)
+
 SOVEREIGN_REGISTRY = {
     # === THE HEAVY CORE (Depth 4: Root > Layer > Stage > File) ===
     "agentic_core": {
