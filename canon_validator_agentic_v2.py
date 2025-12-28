@@ -1137,21 +1137,31 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     if not target_path.is_relative_to(project_root_path):
         raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
     
-    # === PROTECTED FOLDERS: Skip archives and legacy code ===
-    PROTECTED_FOLDERS = {
-        'archives',        # [VOID ZONE] Strictly ignored
-        'data',            # [VOID ZONE] Strictly ignored
-        'legacy_code',     # Deprecated
-        'legacy_engines',
-        'legacy_resume_gen',
-        '.git',
-        '__pycache__',
-        'node_modules',
-        '.venv',
-        'venv',
-        'env',
-        'test',            # New addition
-    }
+    # === PROTECTED FOLDERS: Dynamic .gitignore ingestion ===
+    def load_gitignore_patterns():
+        """Dynamically ingest Sovereign Protection rules from .gitignore."""
+        patterns = {'.git', '__pycache__', '.env'}  # Hard defaults
+        gitignore_path = project_root / ".gitignore"
+        if gitignore_path.exists():
+            for line in gitignore_path.read_text(encoding='utf-8').splitlines():
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    # Extract folder name from patterns like 'data/cache/', 'logs/', '*.pyc'
+                    clean_pattern = line.rstrip('/')
+                    # For patterns with paths, take the first component
+                    if '/' in clean_pattern:
+                        clean_pattern = clean_pattern.split('/')[0]
+                    # Remove wildcards but keep the base name
+                    clean_pattern = clean_pattern.replace('*', '').strip()
+                    if clean_pattern and not clean_pattern.startswith('.'):
+                        patterns.add(clean_pattern)
+                    # Also add the full pattern without wildcards for exact matches
+                    full_pattern = line.rstrip('/').replace('*', '').strip()
+                    if full_pattern:
+                        patterns.add(full_pattern)
+        return patterns
+    
+    PROTECTED_FOLDERS = load_gitignore_patterns()
     
     # Discover all Python files in target scope, excluding protected folders
     # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
