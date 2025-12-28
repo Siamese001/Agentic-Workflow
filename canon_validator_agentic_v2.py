@@ -528,8 +528,8 @@ logger = logging.getLogger(__name__)
 
 # [L6 HARDENING] Healing Configuration
 MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '10'))
-MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '20'))
-GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '100'))
+MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
+GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 
 # ==============================================================================
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
@@ -585,13 +585,14 @@ class GeminiSpy:
                     print(f"   [!] ALERT: Zero-latency mutation detected. Check engine logic.")
                 print(f"[SPY] GEMINI SPY LLM Success ({duration:.2f}s).")
                 return result
+            except (asyncio.CancelledError, SystemExit):
+                raise
             except Exception as e:
                 # Log detailed failure for debugging telemetry mismatches
                 print(f"[SPY] GEMINI SPY LLM OR TELEMETRY FAILURE: {e}")
                 if "successful_traces" in str(e):
                     print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
-        return wrapper  # [CRITICAL FIX] Actually return the wrapper function
 # ==============================================================================
 # [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
 # ==============================================================================
@@ -627,19 +628,14 @@ except ImportError:
 # L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
 # ==============================================================================
 
-def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
+def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     """
     Integrates Void Compliance into the Master Validation Sweep.
-    HARDENING: Only scans Sovereign Roots for gravity leaks (Apps are allowed to depend on Upstream).
-    
-    Args:
-        target_sector: Target directory to validate
-        project_root: Project root directory
-        
-    Returns:
-        True if sector is void-compliant, False otherwise
+    HARDENING: Only scans Sovereign Roots for gravity leaks.
+    MODIFIED: Returns a results dict for L6 Metric ingestion.
     """
     print(f"\n[*] L6 PRE-FLIGHT: Enforcing Void Compliance on {target_sector}...")
+    results = {"compliant": True, "span": 0, "hierarchy": 0, "naming": 0, "gravity": 0}
     
     # Cross-reference with IDE Rules
     rules_path = project_root / "windsurfrules.md"
@@ -652,6 +648,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     span_violations = []
     if target_path != project_root:
         span_violations = check_span_of_two_violations(project_root)
+    results["span"] = len(span_violations)
     if span_violations:
         print(f"[!] L6 ALERT: Found {len(span_violations)} span violations:")
         for folder_path, reason in span_violations[:3]:
@@ -665,6 +662,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     # Check 2: Hierarchy Alignment (SSOT Verification)
     hierarchy_violations = validate_canonical_hierarchy(project_root)
+    results["hierarchy"] = len(hierarchy_violations)
     # Filter Preflight Results
     hierarchy_violations = [v for v in hierarchy_violations if '.git' not in str(v[0]) and '__init__.py' not in str(v[0])]
     if hierarchy_violations:
@@ -707,9 +705,10 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
                 except (ValueError, IndexError):
                     continue
     
+    results["gravity"] = len(waterfall_violations)
     if waterfall_violations:
         print(f"[!] L6 ALERT: Found {len(waterfall_violations)} import waterfall violations:")
-        for file_path, reason in waterfall_violations[:3]:
+        for file_path, reason in waterfall_violations[:3]:  # Show first 3
             print(f"   [X] {file_path.name}: {reason}")
         if len(waterfall_violations) > 3:
             print(f"   ... and {len(waterfall_violations) - 3} more violations")
@@ -750,6 +749,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         if v[0].name not in autonomous_agents 
         and not any(s in str(v[0]) for s in allowed_stages)
     ]
+    results["naming"] = len(location_violations)
     
     if location_violations:
         print(f"[!] L6 ALERT: Found {len(location_violations)} file location violations:")
@@ -768,10 +768,10 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     print("="*70)
     
     metrics = [
-        ("DEPTH / SPAN OF TWO", len(span_violations)),
-        ("HIERARCHY ALIGNMENT", len(hierarchy_violations)), # Drift prevention
-        ("NAMING / SIGNAL",    len(location_violations)),    # Key 49 enforcement
-        ("GRAVITY / IMPORTS",  len(waterfall_violations))    # Authority ranking
+        ("DEPTH / SPAN OF TWO", results["span"]),
+        ("HIERARCHY ALIGNMENT", results["hierarchy"]), # Drift prevention
+        ("NAMING / SIGNAL",    results["naming"]),    # Key 49 enforcement
+        ("GRAVITY / IMPORTS",  results["gravity"])    # Authority ranking
     ]
     
     for label, count in metrics:
@@ -785,13 +785,13 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     if total_violations == 0:
         print("[SUCCESS] All structural laws satisfied. Neural Link established.")
         print("="*70 + "\n")
-        return True
+        results["compliant"] = True
+        return results
     else:
         print(f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)")
         print("="*70 + "\n")
-        # If auto-healing is enabled (e.g. HealerAgent), we allow it to proceed to heal.
-        return False
-
+        results["compliant"] = False
+        return results
 
 # ==============================================================================
 # L4 ORCHESTRATION: THE RUNNER (Mission Logic)
@@ -843,8 +843,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
-    l6_compliant = run_l6_preflight(target_scope, project_root)
-    if not l6_compliant:
+    with tracer.start_as_current_span("l6.preflight_void_compliance"):
+        preflight_results = run_l6_preflight(target_scope, project_root)
+    if not preflight_results["compliant"]:
         print("\n[!] [L6 WARNING] Physical structure violations detected.")
         print("    Proceeding with validation, but auto-healing may be restricted.")
 
@@ -1895,12 +1896,11 @@ IF (task == "GRAVITY_REFACTOR"):
                         print(f"      - {violation_msg}")
                 
                 # Read current file content
-                try:
-                    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                        current_code = f.read()
-                    
-                    # Construct refactor prompt for SubAtomicEngine
-                    refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                    current_code = f.read()
+                
+                # Construct refactor prompt for SubAtomicEngine
+                refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
 
 FILE: {file_path}
 VIOLATIONS: {len(violations)} Hierarchy breaches detected.
@@ -1942,51 +1942,47 @@ OUTPUT: Return ONLY the complete refactored Python code. No explanations, no mar
 CURRENT CODE:
 {current_code}
 """
-                    
-                    print(f"      [>] Invoking SubAtomicEngine for autonomous refactor...")
-                    
-                    # Generate refactored code using LLM
-                    try:
-                        # Use resilient_mutation method (correct API for SubAtomicEngine)
-                        refactored_code = await subatomic_engine.resilient_mutation(
-                            file_path=str(file_path),
-                            code=current_code,
-                            task=refactor_prompt,
-                            round_num=1,
-                            fission_active=False
-                        )
-                        
-                        # Extract code if wrapped in markdown
-                        if isinstance(refactored_code, str):
-                            # Remove markdown code blocks if present
-                            if refactored_code.startswith("```python"):
-                                refactored_code = refactored_code.split("```python", 1)[1]
-                                refactored_code = refactored_code.rsplit("```", 1)[0]
-                            elif refactored_code.startswith("```"):
-                                refactored_code = refactored_code.split("```", 1)[1]
-                                refactored_code = refactored_code.rsplit("```", 1)[0]
-                            refactored_code = refactored_code.strip()
-                        
-                        # Validate the change with SafetyGuardrail
-                        is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
-                        if is_safe:
-                            # Apply the fix physically
-                            with open(file_path, 'w', encoding='utf-8') as f:
-                                f.write(refactored_code)
-                            
-                            print(f"      [OK] Gravity Refactored. File updated.")
-                            gravity_violations_fixed += len(violations)
-                            ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
-                        else:
-                            print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
-                            ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
-                    
-                    except Exception as e:
-                        print(f"      [!] Refactor failed: {str(e)[:100]}")
-                        ctx.report("GravityRefactor", 0, False, f"Engine error: {str(e)[:50]}")
                 
+                print(f"      [>] Invoking SubAtomicEngine for autonomous refactor...")
+                
+                # Generate refactored code using LLM
+                try:
+                    # Use resilient_mutation method (correct API for SubAtomicEngine)
+                    refactored_code = await subatomic_engine.resilient_mutation(
+                        file_path=str(file_path),
+                        code=current_code,
+                        task=refactor_prompt,
+                        round_num=1,
+                        fission_active=False
+                    )
+                    
+                    # Extract code if wrapped in markdown
+                    if isinstance(refactored_code, str):
+                        # Remove markdown code blocks if present
+                        if refactored_code.startswith("```python"):
+                            refactored_code = refactored_code.split("```python", 1)[1]
+                            refactored_code = refactored_code.rsplit("```", 1)[0]
+                        elif refactored_code.startswith("```"):
+                            refactored_code = refactored_code.split("```", 1)[1]
+                            refactored_code = refactored_code.rsplit("```", 1)[0]
+                        refactored_code = refactored_code.strip()
+                    
+                    # Validate the change with SafetyGuardrail
+                    is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
+                    if is_safe:
+                        # Apply the fix physically
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.write(refactored_code)
+                        
+                        print(f"      [OK] Gravity Refactored. File updated.")
+                        gravity_violations_fixed += len(violations)
+                        ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
+                    else:
+                        print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
+                        ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
                 except Exception as e:
-                    print(f"      [!] Could not read file: {e}")
+                    print(f"      [!] Refactor failed: {str(e)[:100]}")
+                    ctx.report("GravityRefactor", 0, False, f"Engine error: {str(e)[:50]}")
         
         if gravity_violations_total > 0:
             print(f"\n   [PHASE 0 COMPLETE] Fixed {gravity_violations_fixed}/{gravity_violations_total} gravity violations")
@@ -2397,6 +2393,51 @@ CURRENT CODE:
         reviewer.review_and_heal()
     except Exception as e:
         print(f"   [!] SRR failed: {e} — manual archive review needed")
+
+    # [L6 ALERTING] Auto-generate/update Prometheus alerting rules (idempotent)
+    rules_path = project_root / "alert.rules.yml"
+    rules_content = """# alert.rules.yml — Sovereign Canon Validator Alerting Rules (December 28, 2025)
+groups:
+  - name: canon_validator_alerts
+    rules:
+      - alert: CanonHighStructuralViolations
+        expr: canon_validator_violations_total{type="final_total"} > 50
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High violations in canon validator"
+          description: "Total violations >50. Sovereignty breach."
+
+      - alert: CanonCircuitBreakerOpen
+        # Note: PromEnum exports state as label value 1. 
+        # Adjust expr based on exact metric format (Gauge vs Enum)
+        expr: canon_validator_circuit_breaker_state{circuit_breaker_state="open"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Circuit breaker open"
+          description: "External service failing — fast fail active."
+
+      - alert: CanonAgentHighFailureRate
+        expr: rate(canon_validator_agent_failures_total[10m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Agent failure spike"
+          description: "Agent failing rapidly — investigate."
+"""
+
+    try:
+        if not rules_path.exists() or rules_path.read_text(encoding='utf-8').strip() != rules_content.strip():
+            rules_path.write_text(rules_content.strip() + "\n", encoding='utf-8')
+            print(f"   [OK] Alerting rules written to {rules_path}")
+        else:
+            print(f"   [INFO] Alerting rules up-to-date at {rules_path}")
+    except Exception as e:
+        print(f"   [!] Failed to write alerting rules: {e}")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
     total_violations = len([r for r in ctx.report_list if not r.get("success", True)])
