@@ -103,14 +103,38 @@ class SovereignReport:
             return report
     
     def get_all_issues(self) -> List[Dict]:
-        """Get all issues in structured format for healing engine."""
+        """
+        Parse guardian issues into structured format expected by Healing Strategies.
+        Supports: "path/to/file.py: Message (line X)" or simple strings.
+        """
+        import re
         all_issues = []
-        for dimension, issues in self.issues.items():
-            for issue in issues:
+        
+        for dimension, raw_issues in self.issues.items():
+            for raw in raw_issues:
+                file_path = str(raw)
+                message = str(raw)
+                line_num = None
+
+                # Attempt to split "File: Message" securely
+                if ":" in raw:
+                    # Split on the first colon that looks like a separator (followed by space)
+                    # or just the first colon if not on Windows (no drive letter check here for simplicity)
+                    parts = raw.split(":", 1)
+                    if len(parts) == 2:
+                        file_path = parts[0].strip()
+                        message = parts[1].strip()
+
+                # Extract line number if present in message
+                match = re.search(r"(?:line|Line)\s+(\d+)", message)
+                if match:
+                    line_num = int(match.group(1))
+
                 all_issues.append({
                     "dimension": dimension,
-                    "description": issue,
-                    "file": issue.split(":")[0] if ":" in str(issue) else str(issue)
+                    "description": message,
+                    "file": file_path,
+                    "line": line_num
                 })
         return all_issues
 
@@ -192,12 +216,13 @@ def main():
 
     overall_score = report.print_summary()
     
-    # Phase 10: Sovereign Healing Engine
-    if overall_score < 95 and HEALING_STRATEGIES:
-        print("\n[⚠] SOVEREIGNTY COMPROMISED — INITIATING L0 HEALING")
-        asyncio.run(sovereign_self_correction(report.get_all_issues()))
-    elif overall_score >= 95:
+    # Phase 10: Sovereign Healing Engine - DISABLED (breaks syntax)
+    # Automatic healing disabled - causes syntax errors in try-except blocks
+    # Manual fixes required for remaining violations
+    if overall_score >= 95:
         print("\n[✓] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
+    else:
+        print("\n[⚠] SOVEREIGNTY COMPROMISED — Manual fixes required")
     
     return report
 

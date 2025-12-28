@@ -335,20 +335,39 @@ class DirectRedisHealing(HealingStrategy):
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
-            message = issue.get("message", "").lower()
-            if "redis" in desc or "redis" in message or "import redis" in desc:
+            # Handle both formats from auditor
+            if "redis" in desc:
                 fixes.append({
-                    "action": "replace_import",
+                    "action": "replace_redis",
                     "file": issue["file"],
-                    "old_import": r"import\s+redis|from\s+redis\s+import.*",
-                    "new_import": "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client",
-                    "old_usage": r"redis\.Redis\(.*?\)",
-                    "new_usage": "get_redis_client()",
                     "reason": "Direct redis-py usage — sovereignty breach",
                     "priority": self.priority,
                     "strategy": self.name
                 })
         return fixes
+
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        try:
+            import re
+            file_path = Path(fix["file"])
+            if not file_path.exists(): return False
+            
+            content = file_path.read_text(encoding="utf-8")
+            
+            # 1. Replace Imports
+            new_import = "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client"
+            content = re.sub(r"^\s*import\s+redis.*$", new_import, content, flags=re.MULTILINE)
+            content = re.sub(r"^\s*from\s+redis\s+import.*$", new_import, content, flags=re.MULTILINE)
+            
+            # 2. Replace Usage (redis.Redis(...) -> get_redis_client())
+            content = re.sub(r"redis\.Redis\([^)]*\)", "get_redis_client()", content)
+            
+            file_path.write_text(content, encoding="utf-8")
+            logger.info(f"[L0 REDIS HEALING] Replaced direct redis usage in {file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 REDIS HEALING] Failed: {e}")
+            return False
 
 
 class DirectLLMHealing(HealingStrategy):
