@@ -18,6 +18,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
+    VOID_COMPLIANCE_RULES,
 )
 
 logger = logging.getLogger(__name__)
