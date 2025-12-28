@@ -9,18 +9,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
-
-# ==============================================================================
-# THE THREE LAWS OF SUBATOMIC GOVERNANCE
-# ==============================================================================
-# Law 1: The Law of Depth - All functional files must exist at Depth 3-5
-MIN_DEPTH = 3
-MAX_DEPTH = 5
-
-# Law 2: The Law of Atomicity - Files must be subatomic, not noise or monoliths
-MAX_LINES = 200
-MIN_LINES = 10
+from structure_blueprint import (
+    ROOT_WHITELIST, 
+    SOVEREIGN_REGISTRY,
+    MIN_DEPTH,
+    MAX_DEPTH,
+    MAX_LINES,
+    MIN_LINES
+)
 
 # Law 3: The Law of The Void - Root directory is sacred
 # [SSOT] Import from structure_blueprint.py instead of hardcoding
