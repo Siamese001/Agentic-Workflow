@@ -4,6 +4,7 @@ L6 Runtime: Void Compliance Enforcer
 Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapping.
 """
 import ast
+import logging
 import os
 import re
 from pathlib import Path
