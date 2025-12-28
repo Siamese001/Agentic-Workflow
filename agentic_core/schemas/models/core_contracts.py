@@ -117,27 +117,27 @@ class AgentThoughtProcess(BaseModel):
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
     """
-    _reasoning_trace: List[str] = Field(
+    reasoning_trace: List[str] = Field(
         ...,
         description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
     )
-    _relevant_context_keys: List[str] = Field(...)
+    relevant_context_keys: List[str] = Field(...)
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
         ...,
         description="The action type to take"
     )
-    _tool_arguments: Dict[str, Any] = Field(
+    tool_arguments: Dict[str, Any] = Field(
         default_factory=dict,
         description="Arguments for the chosen tool"
     )
-    _confidence_score: float = Field(
+    confidence_score: float = Field(
         ...,
         ge=0.0,
         le=1.0,
         description="Confidence in this decision (0.0 to 1.0)"
     )
 
-    @field_validator('_tool_arguments')
+    @field_validator('tool_arguments')
     @classmethod
     def validate_args(cls, v, info):
         """Self-validation inside the schema."""
@@ -554,39 +554,39 @@ class MetacognitionReport(BaseModel):
 @dataclass
 class GoldenStateTestCase:
     """Single golden-state test case."""
-    _id: str
-    _input_text: str
-    _expected_behavior: str
-    _metadata: Dict[str, Any] = field(default_factory=dict)
+    id: str
+    input_text: str
+    expected_behavior: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class JudgeVerdict:
     """LM-as-a-judge style verdict."""
-    _score: float
-    _rating: str
-    _explanation: str
+    score: float
+    rating: str
+    explanation: str
 
 @dataclass
 class EvalResult:
     """Result of running a golden test case through the system."""
-    _test_id: str
-    _verdict: JudgeVerdict
-    _raw_output: str
-    _reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
+    test_id: str
+    verdict: JudgeVerdict
+    raw_output: str
+    reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
 
 class GoldenCase(BaseModel):
     """Golden test case for evaluation."""
     id: str
     input_text: str
-    _agent_sequence: List[str]
-    _expected_keypoints: List[str]
-    _correctness_criteria: Dict[str, Any]
+    agent_sequence: List[str]
+    expected_keypoints: List[str]
+    correctness_criteria: Dict[str, Any]
 
 class GoldenOutput(BaseModel):
     """Golden test output results."""
-    _case_id: str
-    _produced_keypoints: List[str]
-    _correctness_map: Dict[str, bool]
+    case_id: str
+    produced_keypoints: List[str]
+    correctness_map: Dict[str, bool]
     _safety_decisions: Dict[str, Any]
     _metacognition_summary: Dict[str, Any]
     _final_verdict: Literal["pass", "fail", "borderline"]
