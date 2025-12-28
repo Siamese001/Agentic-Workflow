@@ -571,13 +571,19 @@ async def retry_agent_execution_async(agent, file_path, ctx):
             if method:
                 try:
                     # Support both path-aware and parameterless agents
-                    if hasattr(method, '__code__') and method.__code__.co_argcount > 1:
+                    # [HARDENING] Robust check for callable signature to avoid NoneType errors
+                    sig = inspect.signature(method)
+                    if len(sig.parameters) > 0:
                         result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
                     else:
                         result = await method() if inspect.iscoroutinefunction(method) else method()
-                except TypeError:
-                    # Fallback for complex callables or wrapped methods
-                    result = await method() if inspect.iscoroutinefunction(method) else method()
+                except Exception:
+                    # Fallback for signature inspection failures
+                    try:
+                        result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
+                    except Exception:
+                        # Final fallback - try parameterless
+                        result = await method() if inspect.iscoroutinefunction(method) else method()
                 
                 return result
         except (asyncio.CancelledError, SystemExit):
@@ -589,6 +595,50 @@ async def retry_agent_execution_async(agent, file_path, ctx):
             else:
                 ctx.report(agent_name, 0, False, f"Final Failure: {str(e)[:100]}")
     return None
+
+# ==============================================================================
+# [L6 OBSERVABILITY] Distributed Tracing — OpenTelemetry Bootstrap
+# ==============================================================================
+# [L6 FALLBACK] Pre-define Mock Tracer to guarantee 'trace' exists even if OTel fails
+class MockSpan:
+    def __enter__(self): return self
+    def __exit__(self, *args): pass
+    def set_attribute(self, *args): pass
+    def set_status(self, *args): pass
+    def record_exception(self, *args): pass
+    def add_event(self, *args, **kwargs): pass
+    def end(self): pass
+class MockTracer:
+    def start_as_current_span(self, name): return MockSpan()
+    def start_span(self, name): return MockSpan()
+class MockTrace:
+    def get_tracer(self, name): return MockTracer()
+    class Status:
+        def __init__(self, code, description=None): pass
+    class StatusCode:
+        ERROR = 1
+        OK = 0
+
+# Default to Mock (Safe Mode)
+trace = MockTrace()
+
+try:
+    from opentelemetry import trace as otel_trace
+    from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.trace import set_tracer_provider
+    from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
+    from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+    # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
+    otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    if otlp_endpoint:
+        # Assign the real module only if import succeeded
+        trace = otel_trace
+except ImportError:
+    pass
 
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
