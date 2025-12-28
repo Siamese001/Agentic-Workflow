@@ -294,6 +294,7 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     10: ["apps_rg/agents", "apps_lic/agents"],
     11: ["apps_shared/utils"],
     12: ["tests"],
+    15: ["apps_rg/logic_nodes", "apps_lic/logic_nodes"],
     # The Shield (Safety Layer)
     18: ["agentic_core/L5_safety", "agentic_core/L5_safety/gravity", "agentic_core/L5_safety/guardrails"]
 }
@@ -304,8 +305,9 @@ CANON_AGENT_REGISTRY = {
          "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent", "TerritoryHealerAgent", 
          "SemanticTerritoryMapperAgent", "DeadCodePrunerAgent"],
     6: ["MissionHistorian", "KeyCoverageAuditorAgent"],
-    12: ["PreCommitGuardianAgent"],
-    18: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent", "GravityEnforcerAgent"],
+    12: [],
+    15: ["RankingSpecialist", "NarrativeScorer"],
+    18: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent", "GravityEnforcerAgent", "PreCommitGuardianAgent"],
     7: ["DriftDetectorAgent", "NamingLawHealerAgent", "GlobalComplianceAggregatorAgent"]
 }
 
