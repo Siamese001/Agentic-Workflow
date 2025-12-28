@@ -91,6 +91,38 @@ class StructureHealing(HealingStrategy):
         
         return fixes
 
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Physically relocate files to enforce structural sovereignty."""
+        try:
+            import shutil
+            action = fix.get("action")
+            
+            if action == "move":
+                source = Path(fix["source"])
+                target = Path(fix["target"])
+                
+                if not source.exists():
+                    logger.warning(f"[L0 STRUCTURE HEALING] Source not found: {source}")
+                    return False
+                
+                # Create target directory
+                target.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Move file with metadata preservation
+                shutil.move(str(source), str(target))
+                logger.info(f"[L0 STRUCTURE HEALING] Moved {source} -> {target}")
+                return True
+                
+            elif action == "restructure":
+                # For depth violations, log for manual review
+                logger.warning(f"[L0 STRUCTURE HEALING] Manual restructuring required: {fix['source']}")
+                return False
+                
+            return False
+        except Exception as e:
+            logger.error(f"[L0 STRUCTURE HEALING] Failed: {e}")
+            return False
+
 
 class UnderscoreFieldHealing(HealingStrategy):
     """Heals underscore-prefixed fields in SSOT models."""
@@ -121,6 +153,49 @@ class UnderscoreFieldHealing(HealingStrategy):
         
         return fixes
 
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Rename underscore-prefixed fields to enforce public schema."""
+        try:
+            import re
+            file_path = Path(fix["file"])
+            if not file_path.exists(): return False
+
+            content = file_path.read_text(encoding="utf-8")
+            field_name = fix.get("field", "")
+            
+            if not field_name or not field_name.startswith("_"):
+                return False
+            
+            public_name = field_name.lstrip("_")
+            
+            # Replace field definitions (e.g., _field: str -> field: str)
+            content = re.sub(
+                rf"\b{re.escape(field_name)}\s*:",
+                f"{public_name}:",
+                content
+            )
+            
+            # Replace field references (e.g., self._field -> self.field)
+            content = re.sub(
+                rf"\bself\.{re.escape(field_name)}\b",
+                f"self.{public_name}",
+                content
+            )
+            
+            # Replace direct references
+            content = re.sub(
+                rf"\b{re.escape(field_name)}\b",
+                public_name,
+                content
+            )
+            
+            file_path.write_text(content, encoding="utf-8")
+            logger.info(f"[L0 UNDERSCORE HEALING] Renamed {field_name} -> {public_name} in {file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 UNDERSCORE HEALING] Failed: {e}")
+            return False
+
 
 class DarkReasoningHealing(HealingStrategy):
     """Heals Dark Reasoning violations by injecting L6 logging."""
@@ -129,33 +204,42 @@ class DarkReasoningHealing(HealingStrategy):
         super().__init__("DarkReasoning", priority=3)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-        """Diagnose Dark Reasoning violations and propose logging injections."""
         fixes = []
-        
         for issue in issues:
-            description = issue.get("description", "").lower()
-            
-            if "dark reasoning" in description or "l6 footprint" in description:
-                # Extract line number from description
-                line_num = None
-                if "line" in description:
-                    try:
-                        parts = description.split("line")
-                        if len(parts) > 1:
-                            line_num = int(parts[1].strip().split(":")[0].strip())
-                    except (ValueError, IndexError):
-                        pass
-                
+            desc = issue.get("description", "").lower()
+            if "dark reasoning" in desc or "l6 footprint" in desc:
                 fixes.append({
                     "action": "inject_logging",
                     "file": issue.get("file", ""),
-                    "line": line_num,
+                    "line": issue.get("line"),
                     "reason": "Dark Reasoning - missing L6 observability footprint",
                     "priority": self.priority,
                     "strategy": self.name
                 })
-        
         return fixes
+
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Inject structured logging around dark reasoning calls."""
+        try:
+            file_path = Path(fix["file"])
+            line_num = fix.get("line")
+            if not file_path.exists() or line_num is None:
+                return False
+
+            lines = file_path.read_text(encoding="utf-8").splitlines()
+            if line_num > len(lines): return False
+
+            target_line = lines[line_num - 1]
+            indent = len(target_line) - len(target_line.lstrip())
+            log_stmt = " " * indent + f'logger.info("[L1 REASONING] Observed: {target_line.strip()}")'
+            
+            lines.insert(line_num, log_stmt)
+            file_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            logger.info(f"[L0 DARK REASONING] Injected log at {file_path}:{line_num}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 DARK REASONING] Failed: {e}")
+            return False
 
 
 class DDDAlignmentHealing(HealingStrategy):
@@ -380,9 +464,8 @@ class DirectLLMHealing(HealingStrategy):
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
-            message = issue.get("message", "").lower()
-            if any(sdk in desc or sdk in message for sdk in ["openai", "anthropic"]):
-                sdk_name = "OpenAI" if "openai" in desc or "openai" in message else "Anthropic"
+            if any(sdk in desc for sdk in ["openai", "anthropic"]):
+                sdk_name = "OpenAI" if "openai" in desc else "Anthropic"
                 fixes.append({
                     "action": "replace_llm_sdk",
                     "file": issue["file"],
@@ -394,6 +477,30 @@ class DirectLLMHealing(HealingStrategy):
                     "strategy": self.name
                 })
         return fixes
+
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Replace direct OpenAI/Anthropic calls with sovereign LLM router."""
+        try:
+            import re
+            file_path = Path(fix["file"])
+            if not file_path.exists(): return False
+
+            content = file_path.read_text(encoding="utf-8")
+            
+            # 1. Replace Imports
+            old_import = r"^(import (openai|anthropic)|from (openai|anthropic) import.*)$"
+            content = re.sub(old_import, fix["import_path"], content, flags=re.MULTILINE)
+
+            # 2. Replace SDK usage (e.g. openai.ChatCompletion -> get_llm_router_client())
+            sdk = fix["sdk"].lower()
+            content = re.sub(rf"{sdk}\.[a-zA-Z_]+\(", f"{fix['new_client']}.(", content)
+
+            file_path.write_text(content, encoding="utf-8")
+            logger.info(f"[L0 LLM HEALING] Routed {fix['sdk']} through L5 MCP in {file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 LLM HEALING] Failed: {e}")
+            return False
 
 
 class FilesystemBypassHealing(HealingStrategy):
@@ -419,6 +526,39 @@ class FilesystemBypassHealing(HealingStrategy):
                     "strategy": self.name
                 })
         return fixes
+
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Flag direct filesystem operations for MCP routing."""
+        try:
+            import re
+            file_path = Path(fix["file"])
+            if not file_path.exists(): return False
+
+            content = file_path.read_text(encoding="utf-8")
+            
+            # Comment out direct file operations with sovereignty warnings
+            content = re.sub(
+                r"(\s*)(open\()",
+                r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
+                content
+            )
+            content = re.sub(
+                r"(\s*)(Path\([^)]+\)\.(read_text|write_text|read_bytes|write_bytes)\()",
+                r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
+                content
+            )
+            content = re.sub(
+                r"(\s*)(shutil\.(copy|move|rmtree)\()",
+                r"\1# SOVEREIGNTY: Use filesystem MCP - \2",
+                content
+            )
+            
+            file_path.write_text(content, encoding="utf-8")
+            logger.info(f"[L0 FILESYSTEM HEALING] Flagged direct file I/O in {file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 FILESYSTEM HEALING] Failed: {e}")
+            return False
 
 
 # Import Phase 17B Vector Healing Strategy
