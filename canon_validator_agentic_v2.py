@@ -546,8 +546,9 @@ AGENT_RETRY_COUNT = int(os.getenv("AGENT_RETRY_COUNT", "3"))
 AGENT_RETRY_BACKOFF_BASE = float(os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5"))
 
 async def retry_agent_execution_async(agent, file_path, ctx):
-    """[L5 RESILIENCE] Execute agent with retries and exponential backoff.
-    Hardenened to ensure no blocking calls enter the async event loop.
+    """
+    [L5 RESILIENCE] Execute agent with retries and exponential backoff.
+    Hardened to ensure no blocking calls enter the async event loop.
     """
     agent_name = agent.__class__.__name__
     for attempt in range(1, AGENT_RETRY_COUNT + 1):
@@ -556,18 +557,19 @@ async def retry_agent_execution_async(agent, file_path, ctx):
             if method:
                 try:
                     # Support both path-aware and parameterless agents
-                    if method.__code__.co_argcount > 1:
+                    if hasattr(method, '__code__') and method.__code__.co_argcount > 1:
                         result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
                     else:
                         result = await method() if inspect.iscoroutinefunction(method) else method()
                 except TypeError:
+                    # Fallback for complex callables or wrapped methods
                     result = await method() if inspect.iscoroutinefunction(method) else method()
+                
                 return result
         except (asyncio.CancelledError, SystemExit):
             raise
         except Exception as e:
             delay = AGENT_RETRY_BACKOFF_BASE * (2 ** (attempt - 1))
-            error_msg = f"{agent_name}: attempt {attempt}/{AGENT_RETRY_COUNT} failed"
             if attempt < AGENT_RETRY_COUNT:
                 await asyncio.sleep(delay)
             else:
@@ -808,7 +810,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     import sys  # Ensure sys is available in this scope
     
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM")
+    print(f"DEBUG: VERSION 2.9 - INFINITE LOOP PREVENTION + LAZY LLM")
     
     # Use the GLOBALLY defined project_root from the Gravity Anchor
     global project_root 
@@ -1093,7 +1095,7 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # [L2 FIGMA] Sovereign design context client
     ctx.figma_client = None
-    if os.getenv("FIGMA_OAUTH_TOKEN"):
+    if os.getenv("FIGMA_TOKEN"):
         try:
             from agentic_core.L2_execution.mcp.figma_client_sovereign import SovereignFigmaClient
             ctx.figma_client = SovereignFigmaClient(cache=ctx.semantic_cache)
