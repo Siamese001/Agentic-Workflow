@@ -375,7 +375,7 @@ if __name__ == "__main__":
         print(f"   [!] {len(ghost_folders)} approved SSOT folders are ghost territory (empty beyond __init__/.gitkeep):")
         for f in sorted(ghost_folders):
             print(f"      -> {f}")
-        print("   [ACTION REQUIRED] Run scripts/populate_ssot_folders.py to inject sovereign signal")
+        print("   [ACTION REQUIRED] Run agentic_core/L0_maintenance/scripts/populate_ssot_folders.py to inject sovereign signal")
         # We don't increment global stats['violations'] here as this is a pre-flight check, 
         # but you could add logic to fail the mission if strictness is required.
     else:
