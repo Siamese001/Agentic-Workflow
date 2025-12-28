@@ -41,6 +41,8 @@ class TestCoverageGuardianAgent:
         self.auto_generate = True
         self.mutation_hints = True
         self.property_testing_enabled = True
+        # [FIX] distinct scope for coverage vs. root
+        self.target_scope = getattr(ctx, 'target_scope', 'agentic_core')
 
     def _load_history(self) -> List[Dict]:
         """Load coverage history from JSON file."""
@@ -63,6 +65,7 @@ class TestCoverageGuardianAgent:
     def _run_advanced_coverage(self) -> Dict[str, Any]:
         """Run pytest with branch coverage and generate reports."""
         try:
+            # [FIX] Run coverage on the dynamic target scope
             # Run coverage with branch analysis
             subprocess.run(
                 [
@@ -71,7 +74,7 @@ class TestCoverageGuardianAgent:
                     "--branch",
                     "-m",
                     "pytest",
-                    str(self.project_root / "agentic_core"),
+                    str(self.project_root / self.target_scope),
                     "--quiet",
                 ],
                 check=True,
@@ -108,9 +111,13 @@ class TestCoverageGuardianAgent:
         return {"files": {}}
 
     def _discover_property_candidates(self) -> List[Dict]:
-        """Scan agentic_core for functions suitable for property testing."""
+        """Scan target scope for functions suitable for property testing."""
         candidates = []
-        core_path = self.project_root / "agentic_core"
+        # [FIX] Use dynamic target scope instead of hardcoded agentic_core
+        core_path = self.project_root / self.target_scope
+        if not core_path.exists():
+            return []
+        
         for py_file in core_path.rglob("*.py"):
             if "__init__" in str(py_file):
                 continue
@@ -149,7 +156,8 @@ class TestCoverageGuardianAgent:
 
     def _generate_property_test(self, candidate: Dict) -> tuple:
         """Generate advanced Hypothesis property test with type-aware strategies."""
-        rel = Path(candidate["file"]).relative_to("agentic_core")
+        # [FIX] Relative path handling for generalized scopes
+        rel = Path(candidate["file"]).relative_to(self.target_scope)
         test_name = f"test_property_{rel.with_suffix('').as_posix().replace('/', '_')}_{candidate['name']}.py"
         test_path = self.test_dir / test_name
 
@@ -283,9 +291,10 @@ class TestCoverageGuardianAgent:
     def _run_mutmut(self) -> Dict[str, Any]:
         """Run mutation testing using mutmut."""
         try:
+            # [FIX] Mutate the dynamic target scope
             # Run mutmut
             result = subprocess.run(
-                ["mutmut", "run", "--paths-to-mutate", "agentic_core/"],
+                ["mutmut", "run", "--paths-to-mutate", f"{self.target_scope}/"],
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,

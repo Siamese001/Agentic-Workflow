@@ -328,6 +328,61 @@ if __name__ == "__main__":
     print(f"   [PHASE -3 COMPLETE] {stats['violations']} violations | {stats['fixed']} items healed.")
     print("-" * 70)
 
+    # [PHASE -1] SSOT Folder Population Enforcement – No Ghost Territory
+    print(f"\n[PHASE -1] Enforcing meaningful population of all approved SSOT folders...")
+
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP
+    )
+
+    core_root = project_root / "agentic_core"
+    approved_subfolders = set()
+
+    # Collect all L1 folders
+    l1_folders = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
+    for l1 in l1_folders:
+        l1_path = core_root / l1
+        if l1_path.exists():
+            approved_subfolders.add(l1_path)
+
+        # Collect all approved L2 under this L1
+        l2_list = CORE_SUBFOLDER_MAP.get(l1, [])
+        for l2 in l2_list:
+            l2_path = l1_path / l2
+            if l2_path.exists():
+                approved_subfolders.add(l2_path)
+
+            # Include known depth-3 (e.g., vector_stores, embedding_logic)
+            if l2_path.exists():
+                for depth3 in l2_path.iterdir():
+                    if depth3.is_dir() and depth3.name not in {"__pycache__"}:
+                        approved_subfolders.add(depth3)
+
+    ghost_folders = []
+    for folder in approved_subfolders:
+        # Check for meaningful content beyond standard markers
+        contents = [p for p in folder.iterdir() 
+                    if p.name not in {"__init__.py", ".gitkeep", "__pycache__"}]
+        
+        # Check if __init__.py exists and has meaningful content (>100 bytes)
+        init_file = folder / "__init__.py"
+        has_signal = init_file.exists() and init_file.stat().st_size > 100
+        
+        if not contents and not has_signal:
+            ghost_folders.append(str(folder.relative_to(project_root)))
+
+    if ghost_folders:
+        print(f"   [!] {len(ghost_folders)} approved SSOT folders are ghost territory (empty beyond __init__/.gitkeep):")
+        for f in sorted(ghost_folders):
+            print(f"      -> {f}")
+        print("   [ACTION REQUIRED] Run scripts/populate_ssot_folders.py to inject sovereign signal")
+        # We don't increment global stats['violations'] here as this is a pre-flight check, 
+        # but you could add logic to fail the mission if strictness is required.
+    else:
+        print("   [✓] All approved SSOT folders carry meaningful signal — no ghost territory")
+
+    print("-" * 70)
+
 # ===========================================================================
 # [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
 # ===========================================================================
