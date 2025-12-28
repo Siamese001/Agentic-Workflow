@@ -175,25 +175,29 @@ agent.large_file_mb = 10   # MB threshold for large files
 **Type**: Batch Validator  
 **Location**: `agentic_core/L5_safety/verifiability/test_coverage_guardian_agent.py`
 
-**Purpose**: Advanced test coverage enforcement with branch coverage, HTML reports, and historical tracking.
+**Purpose**: Ultimate verification agent with coverage, mutation testing, and property-based testing.
 
 **Features**:
-- Runs coverage.py with `--branch` for branch coverage analysis
-- Generates interactive HTML coverage reports
-- Tracks coverage history (last 30 runs) in `coverage_history.json`
-- Identifies files below line and branch coverage thresholds
-- Separate thresholds for line coverage (95%) and branch coverage (90%)
+- **Coverage Analysis**: Line + branch coverage with `--branch` flag
+- **Mutation Testing**: Detects test quality via mutmut (killed vs survived mutants)
+- **Property Testing**: Auto-generates Hypothesis property tests with strategy mapping
+- **HTML Reports**: Interactive coverage visualization
+- **Historical Tracking**: Tracks coverage, mutation score, and property tests over time
+- **Sovereignty Check**: Passes only if all metrics meet thresholds
 
 **Dependencies**:
 ```bash
-pip install coverage pytest
+pip install coverage pytest mutmut hypothesis
 ```
 
 **Configuration**:
 ```python
-agent.min_line_coverage = 95      # Minimum line coverage threshold
-agent.min_branch_coverage = 90    # Minimum branch coverage threshold
-agent.auto_generate = True        # Auto-generate test stubs
+agent.min_line_coverage = 95          # Minimum line coverage threshold
+agent.min_branch_coverage = 90        # Minimum branch coverage threshold
+agent.min_mutation_score = 95         # Minimum mutation score (killed/total)
+agent.auto_generate = True            # Auto-generate test stubs
+agent.mutation_hints = True           # Show hints for surviving mutants
+agent.property_testing_enabled = True # Generate Hypothesis property tests
 ```
 
 **Output**:
@@ -201,17 +205,30 @@ agent.auto_generate = True        # Auto-generate test stubs
 {
     "line_coverage": 87.5,
     "branch_coverage": 82.3,
-    "low_coverage_files": 12,
-    "html_report": "/path/to/htmlcov/index.html"
+    "mutation_score": 91.2,
+    "property_tests_generated": 10,
+    "passed_sovereignty": False
 }
 ```
 
 **Reports Generated**:
 - `coverage.json` - Machine-readable coverage data
 - `htmlcov/index.html` - Interactive HTML coverage report
-- `coverage_history.json` - Historical coverage trends (last 30 runs)
+- `coverage_history.json` - Historical trends (coverage, mutation, property tests)
+- `test_property_*.py` - Auto-generated Hypothesis property tests
 
-**Use Case**: Ensure comprehensive test coverage with branch analysis and track coverage trends over time.
+**Property Testing**:
+The agent automatically discovers functions and classes in `agentic_core`, analyzes their signatures, and generates Hypothesis property tests with appropriate strategies:
+- `str` → `st.text(min_size=1)`
+- `int` → `st.integers()`
+- `float` → `st.floats(allow_nan=False)`
+- `bool` → `st.booleans()`
+- Unknown → `st.text() | st.integers()`
+
+**Mutation Testing**:
+Uses mutmut to introduce mutations (e.g., `+` → `-`, `==` → `!=`) and verifies tests catch them. Low mutation scores indicate weak tests that pass even when code is broken.
+
+**Use Case**: Ensure ultimate test quality with coverage, mutation analysis, and property-based testing for comprehensive verification.
 
 ## Integration with Canon Validator
 
