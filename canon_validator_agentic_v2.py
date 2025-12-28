@@ -659,6 +659,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         v for v in hierarchy_violations 
         if '.git' not in str(v[0]) 
         and 'archives' not in str(v[0])
+        and '__pycache__' not in str(v[0])
     ]
     if hierarchy_violations:
         print(f"[!] L6 ALERT: Found {len(hierarchy_violations)} hierarchy violations:")
@@ -670,6 +671,105 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
             print(f"   [X] {rel_path}: {reason}")
         if len(hierarchy_violations) > 3:
             print(f"   ... and {len(hierarchy_violations) - 3} more violations")
+        
+        # [AUTO-HEALING] Move files from unapproved folders to approved locations
+        print(f"\n[AUTO-HEAL] Attempting to relocate files from unapproved folders...")
+        from agentic_core.runtime.shared.import_healer import ImportHealer
+        import shutil
+        
+        healer = ImportHealer(project_root)
+        relocated_count = 0
+        folders_removed = []
+        
+        # Group violations by unapproved folder
+        unapproved_folders = {}
+        for folder_path, reason in hierarchy_violations:
+            if 'Unapproved L1 folder' in reason or 'Unapproved subfolder' in reason:
+                parent = folder_path.parent
+                if parent not in unapproved_folders:
+                    unapproved_folders[parent] = []
+                unapproved_folders[parent].append((folder_path, reason))
+        
+        for parent_path, violations in unapproved_folders.items():
+            for folder_path, reason in violations:
+                if not folder_path.exists() or not folder_path.is_dir():
+                    continue
+                
+                # Get all Python files in the unapproved folder
+                py_files = list(folder_path.rglob("*.py"))
+                if not py_files:
+                    # Empty folder, just remove it
+                    try:
+                        shutil.rmtree(folder_path)
+                        folders_removed.append(str(folder_path.relative_to(project_root)))
+                        print(f"   [✓] Removed empty folder: {folder_path.relative_to(project_root)}")
+                    except Exception as e:
+                        print(f"   [!] Failed to remove {folder_path.name}: {e}")
+                    continue
+                
+                # Determine target location based on parent and SSOT
+                try:
+                    rel_parent = parent_path.relative_to(project_root)
+                    parts = rel_parent.parts
+                    
+                    # For agentic_core L1 layers, move to first approved L2 subfolder
+                    if len(parts) >= 2 and parts[0] == 'agentic_core':
+                        l1_layer = parts[1]
+                        approved_l2 = CORE_SUBFOLDER_MAP.get(l1_layer, [])
+                        if approved_l2:
+                            target_folder = parent_path / approved_l2[0]
+                            target_folder.mkdir(parents=True, exist_ok=True)
+                            
+                            # Move all Python files
+                            for py_file in py_files:
+                                try:
+                                    target_file = target_folder / py_file.name
+                                    if target_file.exists():
+                                        print(f"   [!] Skipping {py_file.name}: already exists in {approved_l2[0]}")
+                                        continue
+                                    
+                                    # Register relocation for import healing
+                                    old_path = str(py_file.relative_to(project_root)).replace('\\', '/')
+                                    new_path = str(target_file.relative_to(project_root)).replace('\\', '/')
+                                    healer.register_relocation(old_path, new_path)
+                                    
+                                    shutil.move(str(py_file), str(target_file))
+                                    relocated_count += 1
+                                    print(f"   [✓] Moved: {py_file.name} → {approved_l2[0]}/")
+                                except Exception as e:
+                                    print(f"   [!] Failed to move {py_file.name}: {e}")
+                            
+                            # Remove empty source folder
+                            try:
+                                if folder_path.exists() and not any(folder_path.iterdir()):
+                                    shutil.rmtree(folder_path)
+                                    folders_removed.append(str(folder_path.relative_to(project_root)))
+                            except Exception as e:
+                                print(f"   [!] Failed to remove {folder_path.name}: {e}")
+                
+                except Exception as e:
+                    print(f"   [!] Error processing {folder_path.name}: {e}")
+        
+        # Fix all imports after relocations
+        if relocated_count > 0:
+            print(f"\n[IMPORT-HEAL] Fixing imports after {relocated_count} file relocations...")
+            results = healer.heal_all_imports_in_directory(project_root / 'agentic_core')
+            if results:
+                print(f"   [✓] Fixed imports in {len(results)} files")
+                for file_path, message in list(results.items())[:5]:
+                    print(f"      • {Path(file_path).name}: {message}")
+                if len(results) > 5:
+                    print(f"      ... and {len(results) - 5} more files")
+        
+        if relocated_count > 0 or folders_removed:
+            print(f"\n[AUTO-HEAL SUMMARY]")
+            print(f"   Files relocated: {relocated_count}")
+            print(f"   Folders removed: {len(folders_removed)}")
+            if folders_removed:
+                for folder in folders_removed[:5]:
+                    print(f"      • {folder}")
+                if len(folders_removed) > 5:
+                    print(f"      ... and {len(folders_removed) - 5} more")
     
     # Check 3: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
