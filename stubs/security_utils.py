@@ -1,4 +1,13 @@
-"""Stub for security_utils module."""
+"""
+Security Utils Stub - Security Operations
+
+PURPOSE:
+    Stub implementation for security utility functions.
+    Provides input validation, sanitization, and encryption for testing.
+
+STATUS: Active - Used for testing security controls
+PLANNED: Full implementation with cryptographic primitives
+"""
 
 class SecurityUtils:
     """Stub for security utility functions."""

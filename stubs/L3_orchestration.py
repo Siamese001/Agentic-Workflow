@@ -1,4 +1,13 @@
-"""Stub for L3_orchestration module."""
+"""
+L3 Orchestration Stub - Mission Orchestrator
+
+PURPOSE:
+    Stub implementation for L3 orchestration module.
+    Provides mission execution and status tracking.
+
+STATUS: Active - Used for testing orchestration
+PLANNED: Full implementation with multi-agent coordination in Phase 3
+"""
 
 class Orchestrator:
     """Stub for L3 orchestration."""

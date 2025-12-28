@@ -1,4 +1,13 @@
-"""Stub for fact_checker module."""
+"""
+Fact Checker Stub - Claim Verification
+
+PURPOSE:
+    Stub implementation for fact checking functionality.
+    Verifies claims and provides confidence scores for testing.
+
+STATUS: Active - Used for testing fact verification
+PLANNED: Full implementation with external knowledge base integration
+"""
 
 class FactChecker:
     """Stub for fact checking functionality."""

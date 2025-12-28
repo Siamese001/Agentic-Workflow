@@ -1,4 +1,14 @@
-"""Stub for L5 Safety module."""
+"""
+L5 Safety Layer Stub - Security & Red Team
+
+PURPOSE:
+    Stub implementations for L5 Safety layer components.
+    Provides red team agents, hallucination detection, and security validation.
+
+STATUS: Active - Used for testing safety layer
+SUBPACKAGES:
+    - P1_red_team: DependencyDiplomat, RegressionOracle, HallucinationHunter
+"""
 
 # Re-export from P1_red_team for convenience
 from .P1_red_team import (

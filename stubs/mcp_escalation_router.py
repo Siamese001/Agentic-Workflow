@@ -1,4 +1,19 @@
-"""Stub for MCP Escalation Router."""
+"""
+MCP Escalation Router Stub - Planned Feature
+
+PURPOSE:
+    Provides stub for MCP-based escalation routing between L1-L5 layers.
+    Enables testing of escalation logic without live MCP connections.
+
+STATUS: Stub - Planned for Phase 2 MCP Integration
+PLANNED FEATURES:
+    - L2 Research escalation (Brave Search, Pinecone RAG)
+    - L1 Sequential Thinking escalation
+    - L5 Red Team security escalation
+
+CLASSES:
+    - MCPEscalationRouter: Routes violations to appropriate MCP-powered agents
+"""
 from typing import Dict, Any
 from unittest.mock import MagicMock
 

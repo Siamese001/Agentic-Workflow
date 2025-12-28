@@ -1,4 +1,13 @@
-"""Firewall stub."""
+"""
+Firewall Stub - Access Control
+
+PURPOSE:
+    Stub implementation for firewall access control.
+    Provides whitelist/blacklist filtering for testing.
+
+STATUS: Active - Used for testing security controls
+PLANNED: Full implementation with rule-based filtering
+"""
 
 class Firewall:
     """Stub firewall class."""

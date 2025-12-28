@@ -1,4 +1,13 @@
-"""Stub for Vector Healing Engine."""
+"""
+Vector Healing Engine Stub - Vector Maintenance
+
+PURPOSE:
+    Stub implementation for vector healing operations.
+    Provides stale vector detection and healing for testing.
+
+STATUS: Active - Used for testing L4 vector maintenance
+PLANNED: Full implementation with Pinecone vector refresh
+"""
 from typing import Dict, Any, List
 from unittest.mock import MagicMock
 

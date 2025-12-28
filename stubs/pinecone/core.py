@@ -1,5 +1,21 @@
+"""
+Pinecone Core Stub - Vector Database Operations
+
+PURPOSE:
+    Stub implementations for Pinecone index operations.
+    Provides in-memory vector storage for testing.
+
+STATUS: Active - Used when Pinecone is unavailable
+"""
+
+
 class Index:
-    """Sovereign Stub for Pinecone Indexing."""
+    """
+    Sovereign Stub for Pinecone Indexing.
+    
+    Provides in-memory vector storage that mimics Pinecone API.
+    Used for testing vector operations without network calls.
+    """
     def __init__(self, name: str):
         self.name = name
         self.store = {}

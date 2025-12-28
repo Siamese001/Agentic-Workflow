@@ -1,4 +1,13 @@
-"""Stub for action_registry module."""
+"""
+Action Registry Stub - Tool Management
+
+PURPOSE:
+    Stub implementation for action registration and management.
+    Provides tool mapping and action execution for testing.
+
+STATUS: Active - Used for testing tool registry
+PLANNED: Full implementation with MCP tool integration in Phase 2
+"""
 
 class ActionRegistry:
     """Stub for action registration and management."""

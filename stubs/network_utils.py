@@ -1,4 +1,13 @@
-"""Stub for network_utils module."""
+"""
+Network Utils Stub - Network Operations
+
+PURPOSE:
+    Stub implementation for network utility functions.
+    Provides connectivity checks and HTTP requests for testing.
+
+STATUS: Active - Used for testing network operations
+PLANNED: Full implementation with async HTTP client
+"""
 
 class NetworkUtils:
     """Stub for network utility functions."""

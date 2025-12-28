@@ -1,4 +1,13 @@
-"""Stub for canon_validator_agentic_v2 module."""
+"""
+Canon Validator Agentic V2 Stub - LLM-Powered Validation
+
+PURPOSE:
+    Stub implementation for LLM-powered canon validation.
+    Provides Gemini client and validator mocks for testing.
+
+STATUS: Active - Used for testing LLM-based validation
+PLANNED: Full implementation with Gemini API integration
+"""
 from typing import Dict, Any, List
 from unittest.mock import MagicMock
 

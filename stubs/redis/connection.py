@@ -1,4 +1,12 @@
-"""Stub for redis.connection module."""
+"""
+Redis Connection Stub - Connection Management
+
+PURPOSE:
+    Stub implementations for Redis connection and connection pool.
+    Enables testing of connection-dependent code without live Redis.
+
+STATUS: Active - Used when Redis is unavailable
+"""
 
 class Connection:
     """Stub for Redis connection."""

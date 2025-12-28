@@ -1,4 +1,20 @@
-"""Stub for MCP adapter module."""
+"""
+MCP Adapter Stub - Planned Feature
+
+PURPOSE:
+    Provides stub implementations for Model Context Protocol (MCP) client integration.
+    Used for testing MCP-dependent code when actual MCP servers are unavailable.
+
+STATUS: Stub - Planned for Phase 2 MCP Integration
+PLANNED FEATURES:
+    - Full MCP server connection management
+    - Tool discovery and execution
+    - Multi-server orchestration
+
+CLASSES:
+    - UniversalMCPClient: Stub for connecting to multiple MCP servers
+    - MCPAdapter: Legacy adapter stub for backward compatibility
+"""
 import asyncio
 import json
 

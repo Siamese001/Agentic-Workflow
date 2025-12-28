@@ -1,4 +1,13 @@
-"""Stub for canon_validator module."""
+"""
+Canon Validator Stub - Code Compliance
+
+PURPOSE:
+    Stub implementation for canon validation.
+    Validates code against design compliance rules.
+
+STATUS: Active - Used for testing validation logic
+PLANNED: Full implementation with Figma design token integration
+"""
 
 
 class CanonValidator:
