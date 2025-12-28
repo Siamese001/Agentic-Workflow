@@ -97,6 +97,15 @@ class NoOpTracer:
     def start_as_current_span(self, name): return self.NoOpSpan()
     def start_span(self, name): return self.NoOpSpan()
 
+class MockSpan:
+    def __enter__(self): return self
+    def __exit__(self, *args): pass
+    def set_attribute(self, *args): pass
+    def set_status(self, *args): pass
+    def record_exception(self, *args): pass
+    def add_event(self, *args, **kwargs): pass
+    def end(self): pass
+
 class MockTracer:
     def start_as_current_span(self, name): return MockSpan()
     def start_span(self, name): return MockSpan()
@@ -451,70 +460,6 @@ async def retry_agent_execution_async(agent, file_path, ctx):
     return None
 
 # ==============================================================================
-# [L6 OBSERVABILITY] Distributed Tracing — OpenTelemetry Bootstrap
-# ==============================================================================
-# [L6 FALLBACK] Pre-define Mock Tracer to guarantee 'trace' exists even if OTel fails
-class MockSpan:
-    def __enter__(self): return self
-    def __exit__(self, *args): pass
-    def set_attribute(self, *args): pass
-    def set_status(self, *args): pass
-    def record_exception(self, *args): pass
-    def add_event(self, *args, **kwargs): pass
-    def end(self): pass
-class MockTracer:
-    def start_as_current_span(self, name): return MockSpan()
-    def start_span(self, name): return MockSpan()
-class MockTrace:
-    def get_tracer(self, name): return MockTracer()
-    class Status:
-        def __init__(self, code, description=None): pass
-    class StatusCode:
-        ERROR = 1
-        OK = 0
-
-# Default to Mock (Safe Mode)
-tracer = MockTracer()
-trace = MockTrace()
-
-try:
-    from opentelemetry import trace as otel_trace
-    from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-    from opentelemetry.trace import set_tracer_provider
-    from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
-    from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
-    # Only enable if exporter endpoint configured (e.g., Jaeger, Tempo, Honeycomb)
-    otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-    if otlp_endpoint:
-        trace = otel_trace # Assign real module
-        # Assign the real module only if import succeeded
-        trace = otel_trace
-        
-        resource = Resource(attributes={
-            SERVICE_NAME: "canon-validator-agentic",
-            SERVICE_VERSION: "v2.9",
-        })
-        trace.set_tracer_provider(TracerProvider(resource=resource))
-        otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)
-        span_processor = BatchSpanProcessor(otlp_exporter)
-        trace.get_tracer_provider().add_span_processor(span_processor)
-        AsyncioInstrumentor().instrument()
-        LoggingInstrumentor().instrument()
-
-        print(f"   [OK] Distributed tracing ACTIVE → {otlp_endpoint}")
-        print(f"   [OK] Trace ID propagation enabled across agents and async tasks")
-        # Update global tracer to real one
-        tracer = trace.get_tracer(__name__)
-    else:
-        print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
-except ImportError:
-    pass
-
-# ==============================================================================
 # [L6 OBSERVABILITY] Prometheus Metrics Bootstrap
 # ==============================================================================
 try:
@@ -828,6 +773,13 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not preflight_results["compliant"]:
         print("\n[!] [L6 WARNING] Physical structure violations detected.")
         print("    Proceeding with validation, but auto-healing may be restricted.")
+        
+    # Increment violation metrics from preflight results
+    mission_labels = {"severity": "preflight"}
+    c_violations_total.labels(type="depth_span", **mission_labels).inc(preflight_results["span"])
+    c_violations_total.labels(type="hierarchy", **mission_labels).inc(preflight_results["hierarchy"])
+    c_violations_total.labels(type="gravity_import", **mission_labels).inc(preflight_results["gravity"])
+    c_violations_total.labels(type="naming_signal", **mission_labels).inc(preflight_results["naming"])
 
     # --- L5 HARDENING INSTANTIATION ---
     # [GAP 6 FIX] Validate critical framework agents exist
