@@ -160,8 +160,12 @@ class GitKrakenHealingStrategy:
         Returns:
             True if PR created successfully, False otherwise
         """
+        # Safe config retrieval
+        prefix = getattr(config, "GITKRAKEN_PR_TITLE_PREFIX", "[SOVEREIGN]")
+        healing_branch = getattr(config, "GITKRAKEN_HEALING_BRANCH", "healing/auto-fix")
+        
         try:
-            full_title = f"{config.GITKRAKEN_PR_TITLE_PREFIX} {title}"
+            full_title = f"{prefix} {title}"
             full_description = f"Autonomous system correction:\n{description}"
             
             logger.info(f"[L0 GITKRAKEN HEALING] Creating PR: {full_title}")
@@ -170,7 +174,7 @@ class GitKrakenHealingStrategy:
             pr_result = await self.git_client.create_pr(
                 title=full_title,
                 description=full_description,
-                source_branch=config.GITKRAKEN_HEALING_BRANCH,
+                source_branch=healing_branch,
                 target_branch="main"
             )
             
