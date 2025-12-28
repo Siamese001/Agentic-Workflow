@@ -1,1 +1,0 @@
-# Hierarchy enforcement package
