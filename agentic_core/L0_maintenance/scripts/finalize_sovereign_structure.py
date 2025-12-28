@@ -5,7 +5,15 @@ Creates all missing directories to enforce the 3-level depth law.
 import os
 import sys
 
-BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/P1_core"
+# Import from proper location
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    CORE_SUBFOLDER_MAP,
+    TESTS_SUBFOLDER_MAP,
+)
+BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/blueprint_sovereign"
 if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)
 

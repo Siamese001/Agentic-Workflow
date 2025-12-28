@@ -24,7 +24,7 @@ import time
 import traceback
 from pathlib import Path
 from typing import Any, Optional, List, Dict
-from agentic_core.config.P1_core.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
     APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
     FORBIDDEN_ROOT_FOLDERS,
@@ -32,7 +32,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     CANON_AGENT_REGISTRY, # [GAP 2]
     ROOT_PROTECTED_FILES
 )
-from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
 import sys
@@ -78,7 +78,7 @@ if not _INIT_COMPLETE and __name__ == "__main__":
     # WRAPPED TO PREVENT HANGS
     try:
         print("   [INFO] Attempting territory index bootstrap (non-critical, will continue on failure)...")
-        from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import bootstrap_territory_index
         bootstrap_territory_index()
         print("   [OK] Semantic territory index ready")
     except KeyboardInterrupt:
@@ -306,7 +306,7 @@ except Exception as e:
     sys.exit(1)
 
 # Load void_compliance from runtime (allowed - same layer)
-from agentic_core.runtime.shared.void_compliance import (
+from agentic_core.runtime.shared_runtime.void_compliance import (
     ALLOWED_ROOT_FOLDERS,
     FORBIDDEN_ROOT_FOLDERS,
     check_import_waterfall_violations,
@@ -530,8 +530,9 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
     if not agentic_core_path.exists():
         return results
     
-    # Phase 1: Find all non-approved L1 folders
-    actual_l1 = {p.name for p in agentic_core_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+    # Phase 1: Find all non-approved L1 folders (exclude __pycache__ and hidden folders)
+    SYSTEM_FOLDERS = {"__pycache__", ".pytest_cache", ".ruff_cache", ".git", ".venv", "venv"}
+    actual_l1 = {p.name for p in agentic_core_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS}
     non_approved_l1 = actual_l1 - approved_l1
     
     for bad_l1 in non_approved_l1:
@@ -581,7 +582,7 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
         if not approved_l2:
             continue  # No L2 enforcement for this L1
         
-        actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+        actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS}
         non_approved_l2 = actual_l2 - approved_l2
         
         for bad_l2 in non_approved_l2:

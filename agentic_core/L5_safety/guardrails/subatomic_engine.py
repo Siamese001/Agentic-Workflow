@@ -322,7 +322,7 @@ class SubAtomicEngine:
             return {"route": "fallback", "reason": "Hybrid routing offline", "confidence": 0.0}
 
         # Extract keywords from canon signals
-        from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         keywords = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
 
         # [L6 HARDENING] Defensive hybrid search with fallback

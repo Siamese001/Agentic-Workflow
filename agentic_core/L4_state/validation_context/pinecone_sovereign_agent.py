@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 
-from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
@@ -194,7 +194,7 @@ class PineconeSovereignAgent:
 
     def _get_sparse_vector(self, text: str) -> Dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
-        from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         text_low = text.lower()
         # Simple TF-based sparse vector
         indices = []
@@ -231,7 +231,7 @@ class PineconeSovereignAgent:
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
         """
-        from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
         
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():

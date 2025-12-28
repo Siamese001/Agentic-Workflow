@@ -62,7 +62,7 @@ class RescueReviewer:
             return
 
         print(f"\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---")
-        from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS_MK2, CANON_KEY_TO_FOLDER_MAP
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS_MK2, CANON_KEY_TO_FOLDER_MAP
         
         for arch_file in self.archive_path.rglob("*.py"):
             rel = arch_file.relative_to(self.archive_path)

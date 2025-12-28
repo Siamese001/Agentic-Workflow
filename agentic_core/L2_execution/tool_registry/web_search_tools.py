@@ -7,7 +7,7 @@ import logging
 import json
 from typing import Any, Dict, List, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.P1_core.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 logger = logging.getLogger("ActionRegistry.WebSearch")
 

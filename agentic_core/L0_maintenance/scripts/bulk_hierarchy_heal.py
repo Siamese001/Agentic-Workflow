@@ -25,7 +25,7 @@ if not project_root:
 # === IMPORT SSOT ===
 sys.path.insert(0, str(project_root))
 try:
-    from agentic_core.config.P1_core.structure_blueprint import CORE_SUBFOLDER_MAP
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 except ImportError:
     print("[!] Critical Failure: Cannot find CORE_SUBFOLDER_MAP in structure_blueprint.py")
     sys.exit(1)

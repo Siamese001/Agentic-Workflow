@@ -16,7 +16,7 @@ from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
 from agentic_core.L2_execution.base_agents.mock_canon_agent import MockCanonBaseAgent
-from agentic_core.config.P1_core.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # Import L1 Agent Classes
 from agentic_core.L1_cognition.thought_engine.canon_agents_core import (

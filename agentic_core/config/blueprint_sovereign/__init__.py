@@ -2,6 +2,27 @@
 Blueprint Sovereign Configuration Module
 """
 
-from .environments.sovereign_config import config, SovereignConfig
+# Exports from structure_blueprint
+from .structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    FORBIDDEN_ROOT_FOLDERS,
+    ACTIVE_CANON_KEYS,
+    CANON_AGENT_REGISTRY,
+    ROOT_PROTECTED_FILES,
+)
 
-__all__ = ["config", "SovereignConfig"]
+__all__ = [
+    "SOVEREIGN_REGISTRY",
+    "CORE_SUBFOLDER_MAP", 
+    "APPS_RG_SUBFOLDER_MAP",
+    "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_SHARED_SUBFOLDER_MAP",
+    "FORBIDDEN_ROOT_FOLDERS",
+    "ACTIVE_CANON_KEYS",
+    "CANON_AGENT_REGISTRY",
+    "ROOT_PROTECTED_FILES",
+]
