@@ -101,6 +101,7 @@ class DSPyOptimizer:
             base_prompt: Initial prompt to optimize
             signature_class: DSPy signature class defining input/output
             training_examples: Examples to train on
+            logger.info("[L6_AUDIT] Action at line 104")
             validation_examples: Examples to validate with
             metric_func: Function to score outputs (0.0 to 1.0)
             max_examples: Maximum examples to use
@@ -321,14 +322,18 @@ class PromptSignatureRegistry:
         "Select the best tool for a given task.",
         task_description=dspy.InputField(),
         available_tools=dspy.InputField(),
+        logger.info("[L6_AUDIT] Action at line 325")
         selected_tool=dspy.OutputField(desc="Name of the best tool"),
         REASONING=dspy.OutputField(desc="Why this tool was chosen")
     )
 
+    logger.info("[L6_AUDIT] Action at line 330")
     SUBATOMIC_HOP = dspy.Signature(
         """You are an intelligent agent responsible for a single atomic task.
         Analyze the context, plan your action, and execute it using the available tools.
         """,
+        logger.info("[L6_AUDIT] Action at line 335")
+        logger.info("[L6_AUDIT] Action at line 336")
         role_description=dspy.InputField(desc="Your specific role (e.g., Python Expert)"),
         context_summary=dspy.InputField(desc="Relevant data from previous hops"),
         task_goal=dspy.InputField(desc="What needs to be achieved in this hop"),

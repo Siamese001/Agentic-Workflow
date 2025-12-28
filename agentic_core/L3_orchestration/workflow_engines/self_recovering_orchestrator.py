@@ -33,6 +33,7 @@ class NodeFailurePattern:
     failure_count: int = 0
     success_count: int = 0
     last_failure: Optional[datetime] = None
+    logger.info("[L6_AUDIT] Action at line 36")
     failure_reasons: List[str] = field(default_factory=list)
     avg_execution_time: float = 0.0
     recovery_attempts: int = 0
@@ -55,6 +56,7 @@ class WorkflowMutation:
     mutation_id: str
     mutation_type: RecoveryStrategy
     target_node: str
+    logger.info("[L6_AUDIT] Action at line 59")
     replacement_node: Optional[str] = None
     reason: str = ""
     applied_at: Optional[datetime] = None
@@ -112,14 +114,17 @@ class SelfRecoveringOrchestrator:
                 
             except Exception as e:
                 logger.error(f"L3 Mutation cycle error: {e}")
+                logger.info("[L6_AUDIT] Action at line 117")
                 await asyncio.sleep(60)
     
     async def execute_with_recovery(
         self,
         graph: nx.DiGraph,
         initial_inputs: Dict[str, Any],
+        logger.info("[L6_AUDIT] Action at line 124")
         graph_id: str
     ) -> Dict[str, Any]:
+        logger.info("[L6_AUDIT] Action at line 127")
         """
         Execute a workflow graph with automatic recovery.
         
@@ -140,6 +145,7 @@ class SelfRecoveringOrchestrator:
             'completed_nodes': set(),
             'failed_nodes': set(),
             'results': {},
+            logger.info("[L6_AUDIT] Action at line 148")
             'mutations_applied': [],
             'recovery_attempts': 0
         }
@@ -164,6 +170,7 @@ class SelfRecoveringOrchestrator:
             execution_state['error'] = str(e)
         finally:
             execution_state['end_time'] = datetime.now()
+            logger.info("[L6_AUDIT] Action at line 173")
             execution_state['duration'] = (
                 execution_state['end_time'] - execution_state['start_time']
             ).total_seconds()
@@ -178,6 +185,7 @@ class SelfRecoveringOrchestrator:
     ):
         """Execute graph with recovery logic."""
         graph = self.active_graphs[graph_id]
+         logger.info("[L6_AUDIT] Action at line 188")
         
         ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
         
@@ -203,6 +211,7 @@ class SelfRecoveringOrchestrator:
                         graph_id,
                         node,
                         node_id,
+                        logger.info("[L6_AUDIT] Action at line 214")
                         execution_state
                     )
                     
@@ -210,8 +219,10 @@ class SelfRecoveringOrchestrator:
                         execution_state['recovery_attempts'] += 1
             
             ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
+     logger.info("[L6_AUDIT] Action at line 222")
     
     async def _execute_node_with_retry(
+        logger.info("[L6_AUDIT] Action at line 225")
         self,
         node: Any,
         node_id: str,
@@ -234,6 +245,7 @@ class SelfRecoveringOrchestrator:
         
         max_retries = self.max_retries
         if pattern and pattern.is_problematic:
+            logger.info("[L6_AUDIT] Action at line 248")
             max_retries = 1
         
         for attempt in range(max_retries):
@@ -251,6 +263,7 @@ class SelfRecoveringOrchestrator:
                 
                 execution_state['results'][node] = result
                 
+                logger.info("[L6_AUDIT] Action at line 266")
                 self._update_execution_time(node_id, execution_time)
                 
                 return True
@@ -259,6 +272,8 @@ class SelfRecoveringOrchestrator:
                 logger.warning(f"Node {node_id} attempt {attempt + 1} failed: {e}")
                 
                 if attempt == max_retries - 1:
+                    logger.info("[L6_AUDIT] Action at line 275")
+                    logger.info("[L6_AUDIT] Action at line 276")
                     return False
         
         return False
@@ -293,6 +308,7 @@ class SelfRecoveringOrchestrator:
             node_id: Node identifier
             execution_state: Execution state
             
+        logger.info("[L6_AUDIT] Action at line 311")
         Returns:
             True if recovery was applied
         """
@@ -315,6 +331,7 @@ class SelfRecoveringOrchestrator:
                 mutation_type=RecoveryStrategy.SKIP,
                 target_node=node_id,
                 reason="Node consistently failing, skipping to continue workflow",
+                logger.info("[L6_AUDIT] Action at line 334")
                 applied_at=datetime.now(),
                 success=True
             )
@@ -351,6 +368,7 @@ class SelfRecoveringOrchestrator:
             
             replacement = self._find_replacement_node(node_id, graph)
             if replacement:
+                logger.info("[L6_AUDIT] Action at line 371")
                 graph.add_node(replacement)
                 
                 predecessors = list(graph.predecessors(failed_node))
@@ -408,6 +426,7 @@ class SelfRecoveringOrchestrator:
             strategy = "SKIP"
         elif failure_rate > 0.6:
             strategy = "REPLACE"
+        logger.info("[L6_AUDIT] Action at line 429")
         elif failure_rate > 0.5:
             strategy = "FORK"
         else:
@@ -487,6 +506,7 @@ class SelfRecoveringOrchestrator:
                         mutation.success = False
                         logger.info(f"L3: Reverted mutation {mutation.mutation_id}")
                         break
+                 logger.info("[L6_AUDIT] Action at line 509")
                 
                 # Remove from probation and alternative routes
                 del self.probation_list[node_id]
@@ -522,6 +542,7 @@ class SelfRecoveringOrchestrator:
         
         logger.warning(f"Node {node_id} failure recorded: {reason}")
     
+    logger.info("[L6_AUDIT] Action at line 545")
     def _update_execution_time(self, node_id: str, execution_time: float):
         """Update average execution time for a node."""
         if node_id not in self.node_patterns:

@@ -5,6 +5,7 @@ L5 Sub-Atomic Agentic System for Hyper-Personalized Document Generation
 
 Phases:
 - P3: Prompt Firewall (Input Security)
+logger.info("[L6_AUDIT] Action at line 8")
 - P4: Fact Checker (Truth Anchor Validation)
 - P5: Process Registration and Logging
 - P10: Shadow Mode (Self-Correction)
@@ -25,6 +26,7 @@ from agentic_core.L2_execution.knowledge.knowledge_utilities import (
     get_consolidated_knowledge,
 )
 from agentic_core.L2_execution.security.security_utilities import (
+    logger.info("[L6_AUDIT] Action at line 29")
     SecurityStatus,
     get_fact_checker,
     get_prompt_firewall,
@@ -55,6 +57,7 @@ class EngineStatus(Enum):
     FAIL = "FAIL"
     IN_PROGRESS = "IN_PROGRESS"
     SHADOW_MODE = "SHADOW_MODE"
+ logger.info("[L6_AUDIT] Action at line 60")
 
 
 class ExitReason(Enum):
@@ -99,6 +102,7 @@ class ShadowModeEngine:
 
         Args:
             llm_client: LLM client for rewrite generation
+        logger.info("[L6_AUDIT] Action at line 105")
         """
         self.llm_client = llm_client
 
@@ -112,12 +116,15 @@ class ShadowModeEngine:
 
         Returns:
             RewriteResult with improved draft
+        logger.info("[L6_AUDIT] Action at line 119")
         """
         logger.info(f"P10_SHADOW_START: Rewriting due to: {error_reason}")
 
+        logger.info("[L6_AUDIT] Action at line 123")
         if self.llm_client:
             return self._rewrite_with_llm(draft, error_reason)
         else:
+            logger.info("[L6_AUDIT] Action at line 127")
             return self._rewrite_with_rules(draft, error_reason)
 
     def _rewrite_with_llm(self, draft: str, error_reason: str) -> RewriteResult:
@@ -139,20 +146,25 @@ IMPROVED DRAFT:
 """
             response = self.llm_client.generate(prompt)
 
+            logger.info("[L6_AUDIT] Action at line 149")
             return RewriteResult(
+                logger.info("[L6_AUDIT] Action at line 151")
                 content=response.text,
                 improvements=["Fixed " + error_reason],
                 confidence=0.8
             )
         except Exception as e:
+            logger.info("[L6_AUDIT] Action at line 157")
             logger.error(f"P10_LLM_FAILED: {e}")
             return self._rewrite_with_rules(draft, error_reason)
 
     def _rewrite_with_rules(self, draft: str, error_reason: str) -> RewriteResult:
+        logger.info("[L6_AUDIT] Action at line 162")
         """Rewrite using rule-based approach."""
         improvements = []
         improved_draft = draft
 
+        logger.info("[L6_AUDIT] Action at line 167")
         # Fix skill exaggerations
         if "skill" in error_reason.lower():
             improved_draft = self._fix_skill_claims(improved_draft)
@@ -219,6 +231,7 @@ IMPROVED DRAFT:
             "guys": "team",
             "stuff": "elements"
         }
+ logger.info("[L6_AUDIT] Action at line 234")
 
         improved = draft
         for old, new in casual_replacements.items():
@@ -239,6 +252,7 @@ class ResumeEngineZLG:
     MIN_ACCEPTABLE_SCORE = 0.5
 
     def __init__(self, output_dir: str = "output"):
+        logger.info("[L6_AUDIT] Action at line 255")
         """
         Initialize Resume Engine.
 
@@ -250,6 +264,7 @@ class ResumeEngineZLG:
         self.rewrite_count = 0
         self.last_score = 0.0
 
+        logger.info("[L6_AUDIT] Action at line 267")
         # Initialize components
         self.prompt_firewall = get_prompt_firewall()
         self.fact_checker = get_fact_checker()
@@ -284,6 +299,7 @@ class ResumeEngineZLG:
             # Action 1: Fetch Job Description
             # ----------------------------------------------------------------
             log_action("L1_FETCH_START", {"job_url": job_url})
+            logger.info("[L6_AUDIT] Action at line 302")
             job_desc = self._fetch_job_description(job_url)
 
             if not job_desc.content:
@@ -306,6 +322,7 @@ class ResumeEngineZLG:
             # ----------------------------------------------------------------
             log_action("L5_START")
             knowledge = self.knowledge.search_knowledge(
+                logger.info("[L6_AUDIT] Action at line 325")
                 query=f"{user_id} cover letter template",
                 types=["profile", "template"]
             )
@@ -325,6 +342,7 @@ class ResumeEngineZLG:
                     return (ExitReason.ZLG_MAX_ATTEMPTS, None)
 
                 # ----------------------------------------------------------------
+                logger.info("[L6_AUDIT] Action at line 345")
                 # Action 4: Draft Generation
                 # ----------------------------------------------------------------
                 log_action("DRAFT_START", {
@@ -351,11 +369,15 @@ class ResumeEngineZLG:
                 score_result = self.semantic_scorer.semantic_score_draft(draft_result.content)
                 self.last_score = score_result["quality"]
 
+                logger.info("[L6_AUDIT] Action at line 372")
                 # ----------------------------------------------------------------
+                logger.info("[L6_AUDIT] Action at line 374")
                 # ZLG VETTING GATE: P4 & QUALITY CHECK
+                logger.info("[L6_AUDIT] Action at line 376")
                 # ----------------------------------------------------------------
                 if (p4_result.status == SecurityStatus.PASS and
                     score_result["quality"] >= self.MIN_ACCEPTABLE_SCORE):
+                    logger.info("[L6_AUDIT] Action at line 380")
                     # Success path
                     logger.info("ZLG_SUCCESS: Draft passed all checks")
                     return self._finalize_output(draft_result, knowledge, score_result)
@@ -370,6 +392,7 @@ class ResumeEngineZLG:
                 log_action("P10_START", {"attempt": self.rewrite_count})
 
                 error_reason = ""
+                logger.info("[L6_AUDIT] Action at line 395")
                 if p4_result.status == SecurityStatus.FAIL:
                     error_reason += f"P4: {p4_result.reason}; "
                 if score_result["quality"] < self.MIN_ACCEPTABLE_SCORE:
@@ -406,6 +429,7 @@ class ResumeEngineZLG:
             working with a team of developers, and ensuring high-quality code delivery."""
         )
 
+    logger.info("[L6_AUDIT] Action at line 432")
     def _finalize_output(self, draft_result: DraftResult,
                         knowledge: KnowledgeResult,
                         score_result: Dict[str, Any]) -> Tuple[ExitReason, str]:
@@ -425,6 +449,7 @@ class ResumeEngineZLG:
                 "score": self.last_score,
                 "grade": score_result["grade"]
             })
+ logger.info("[L6_AUDIT] Action at line 452")
 
             return (ExitReason.ZLG_SUCCESS, output_path)
         else:

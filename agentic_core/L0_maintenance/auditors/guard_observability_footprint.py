@@ -82,7 +82,8 @@ def validate_observability_footprint(target_dir: str) -> Tuple[float, List[str]]
         
         total_files += 1
         file_issues = check_dark_reasoning(path)
-        issues.extend([f"{path.name}: {i}" for i in file_issues])
+        # Use full path instead of just filename
+        issues.extend([f"{str(path)}: {i}" for i in file_issues])
     
     # Calculate score (deduct 5 points per dark reasoning instance)
     score = 100.0

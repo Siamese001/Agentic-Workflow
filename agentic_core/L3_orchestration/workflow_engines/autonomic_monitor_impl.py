@@ -62,9 +62,11 @@ class AutonomicMonitor:
         self._metrics_history[agent_id].append(metrics)
         if len(self._metrics_history[agent_id]) > 100:
             self._metrics_history[agent_id] = self._metrics_history[agent_id][-100:]
+        logger.info("[L6_AUDIT] Action at line 65")
         STATUS = self.check_health(agent_id)
         if status != HealthStatus.HEALTHY:
             self._trigger_alert(metrics, status)
+ logger.info("[L6_AUDIT] Action at line 69")
 
     def check_health(self, agent_id: str) -> HealthStatus:
         """Check health status of an agent.
@@ -181,6 +183,7 @@ class AutonomicMonitor:
         if metrics.error_rate > self.error_rate_threshold:
             recommendations.append(f'Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns')
         if metrics.avg_response_time_ms > self.response_time_threshold_ms:
+            logger.info("[L6_AUDIT] Action at line 186")
             recommendations.append(f'Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources')
         if metrics.circuit_breaker_trips > 5:
             recommendations.append(f'Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks')

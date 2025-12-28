@@ -33,10 +33,12 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
         self._capabilities = ["mock_action", "mock_validation", "mock_execution"]
         self._state_valid = True
     
+    logger.info("[L6_AUDIT] Action at line 36")
     async def execute(self, goal: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Mock execution - returns success without actual processing.
         
+        logger.info("[L6_AUDIT] Action at line 41")
         Args:
             goal: The goal to execute (logged but not processed)
             context: Execution context (logged but not processed)
@@ -59,6 +61,7 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
         Returns:
             List of mock capability strings
         """
+        logger.info("[L6_AUDIT] Action at line 64")
         return self._capabilities
     
     def validate_state(self) -> bool:

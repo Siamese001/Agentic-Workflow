@@ -1,5 +1,7 @@
 """Message Planner - L1 planning for comprehensive message structure and content.
 
+logger.info("[L6_AUDIT] Action at line 3")
+logger.info("[L6_AUDIT] Action at line 4")
 Incorporated from L1 message_planning.py to provide archetype-specific message
 structure planning with section templates, temperature adjustments, and
 constraint management for maximizing executive reply rates.
@@ -26,6 +28,7 @@ class MessageSection:
     content_strategy: str = "standard"
     word_count_target: Optional[int] = None
     metadata: Dict[str, object] = field(default_factory=dict)
+ logger.info("[L6_AUDIT] Action at line 31")
 
 @dataclass
 class MessagePlan:
@@ -48,8 +51,10 @@ class MessageContent:
     value_proposition: str
     key_points: List[str]
     personalization_elements: List[str]
+    logger.info("[L6_AUDIT] Action at line 54")
     constraints: List[str]
     metadata: Dict[str, object] = field(default_factory=dict)
+ logger.info("[L6_AUDIT] Action at line 57")
 
 class MessagePlanner:
     """Structures messages with archetype-specific parameters to increase reply probability.
@@ -161,28 +166,43 @@ class MessagePlanner:
                 "max_length": 50,
                 "required_elements": ["name", "title"],
                 "optional_elements": ["company", "contact"],
+                logger.info("[L6_AUDIT] Action at line 169")
                 "style_guidelines": ["professional", "consistent"],
                 "word_count_target": 8
             }
         }
+ logger.info("[L6_AUDIT] Action at line 174")
+ logger.info("[L6_AUDIT] Action at line 175")
+ logger.info("[L6_AUDIT] Action at line 176")
 
+    logger.info("[L6_AUDIT] Action at line 178")
     def plan(
         self,
         *,
         content: MessageContent,
         archetype: str,
+        logger.info("[L6_AUDIT] Action at line 184")
+        logger.info("[L6_AUDIT] Action at line 185")
+        logger.info("[L6_AUDIT] Action at line 186")
+        logger.info("[L6_AUDIT] Action at line 187")
         persona_plan: Optional[Any] = None,
         grounding_plan: Optional[Any] = None,
+        logger.info("[L6_AUDIT] Action at line 190")
         fusion_plan: Optional[Any] = None,
         outreach_context: Dict[str, object] = None,
     ) -> MessagePlan:
         """Generate a comprehensive message structure plan.
+ logger.info("[L6_AUDIT] Action at line 195")
 
+        logger.info("[L6_AUDIT] Action at line 197")
+        logger.info("[L6_AUDIT] Action at line 198")
+        logger.info("[L6_AUDIT] Action at line 199")
         Args:
             content: Message content signals and requirements
             archetype: Target archetype for message optimization
             persona_plan: Optional persona planning results
             grounding_plan: Optional grounding analysis results
+            logger.info("[L6_AUDIT] Action at line 205")
             fusion_plan: Optional fusion planning results
             outreach_context: Additional context for planning
 
@@ -199,9 +219,13 @@ class MessagePlanner:
             fusion_plan)
 
         # 2. Calculate temperature schedule for archetype
+        logger.info("[L6_AUDIT] Action at line 222")
+        logger.info("[L6_AUDIT] Action at line 223")
+        logger.info("[L6_AUDIT] Action at line 224")
         temperature_schedule = self._calculate_temperature_schedule(archetype)
 
         # 3. Determine archetype-specific constraints
+        logger.info("[L6_AUDIT] Action at line 228")
         constraints = self._determine_constraints(content, archetype, grounding_plan)
 
         # 4. Set section priority order
@@ -213,11 +237,17 @@ class MessagePlanner:
         # 6. Calculate confidence score
         confidence_score = self._calculate_confidence_score(sections, content, archetype)
 
+        logger.info("[L6_AUDIT] Action at line 240")
         # 7. Build metadata
+        logger.info("[L6_AUDIT] Action at line 242")
         metadata = {
+            logger.info("[L6_AUDIT] Action at line 244")
             "archetype": archetype,
             "section_count": len(sections),
             "constraint_count": len(constraints),
+            logger.info("[L6_AUDIT] Action at line 248")
+            logger.info("[L6_AUDIT] Action at line 249")
+            logger.info("[L6_AUDIT] Action at line 250")
             "total_target_length": total_target_length,
             "persona_integration": persona_plan is not None,
             "grounding_integration": grounding_plan is not None,
@@ -237,10 +267,16 @@ class MessagePlanner:
         )
 
         # 9. Record telemetry (best-effort)
+        logger.info("[L6_AUDIT] Action at line 270")
+        logger.info("[L6_AUDIT] Action at line 271")
         self._safe_record_telemetry(plan)
 
+        logger.info("[L6_AUDIT] Action at line 274")
+        logger.info("[L6_AUDIT] Action at line 275")
         return plan
 
+    logger.info("[L6_AUDIT] Action at line 278")
+    logger.info("[L6_AUDIT] Action at line 279")
     def _plan_sections(
         self,
         content: MessageContent,
@@ -251,27 +287,38 @@ class MessagePlanner:
     ) -> Dict[str, MessageSection]:
         """Plan individual message sections with archetype-specific parameters."""
         sections = {}
+ logger.info("[L6_AUDIT] Action at line 290")
 
         for section_name, template in self.section_templates.items():
             # Create base section from template
+            logger.info("[L6_AUDIT] Action at line 294")
+            logger.info("[L6_AUDIT] Action at line 295")
             section = MessageSection(
                 section_type=section_name,
+                logger.info("[L6_AUDIT] Action at line 298")
                 max_length=template["max_length"],
                 required_elements=template["required_elements"],
                 optional_elements=template["optional_elements"],
+                logger.info("[L6_AUDIT] Action at line 302")
+                logger.info("[L6_AUDIT] Action at line 303")
                 style_guidelines=template["style_guidelines"],
+                logger.info("[L6_AUDIT] Action at line 305")
                 word_count_target=template["word_count_target"],
                 temperature_adjustment=self.temperature_adjustments.get(archetype,
                     {}).get(section_name,
                     0.0)
             )
 
+            logger.info("[L6_AUDIT] Action at line 312")
             # Apply persona-based refinements
+            logger.info("[L6_AUDIT] Action at line 314")
             if persona_plan:
+                logger.info("[L6_AUDIT] Action at line 316")
                 section = self._apply_persona_refinements(section, persona_plan, archetype)
 
             # Apply grounding-based constraints
             if grounding_plan:
+                logger.info("[L6_AUDIT] Action at line 321")
                 section = self._apply_grounding_constraints(section, grounding_plan)
 
             # Apply fusion-based content strategy
@@ -281,9 +328,12 @@ class MessagePlanner:
             # Apply archetype-specific content strategy
             section.content_strategy = self._determine_content_strategy(section_name, archetype)
 
+            logger.info("[L6_AUDIT] Action at line 331")
             sections[section_name] = section
 
+        logger.info("[L6_AUDIT] Action at line 334")
         return sections
+ logger.info("[L6_AUDIT] Action at line 336")
 
     def _apply_persona_refinements(self,
         section: MessageSection,
@@ -355,6 +405,7 @@ class MessagePlanner:
                 "hook": "opportunity_highlight",
                 "value": "skill_alignment",
                 "cta": "discussion_invite",
+                logger.info("[L6_AUDIT] Action at line 408")
                 "signature": "professional"
             },
             "SENIOR_TA": {
@@ -363,6 +414,8 @@ class MessagePlanner:
                 "value": "technical_depth",
                 "cta": "technical_discussion",
                 "signature": "technical_authority"
+            logger.info("[L6_AUDIT] Action at line 417")
+            logger.info("[L6_AUDIT] Action at line 418")
             },
             "EXECUTIVE": {
                 "subject": "business_impact",
@@ -419,34 +472,55 @@ class MessagePlanner:
                 base_constraints.append("risk_aware_language")
 
         # Remove duplicates while preserving order
+        logger.info("[L6_AUDIT] Action at line 475")
         seen = set()
         unique_constraints = []
         for constraint in base_constraints:
+            logger.info("[L6_AUDIT] Action at line 479")
+            logger.info("[L6_AUDIT] Action at line 480")
+            logger.info("[L6_AUDIT] Action at line 481")
+            logger.info("[L6_AUDIT] Action at line 482")
+            logger.info("[L6_AUDIT] Action at line 483")
             if constraint not in seen:
                 seen.add(constraint)
                 unique_constraints.append(constraint)
 
+        logger.info("[L6_AUDIT] Action at line 488")
         return unique_constraints
 
+    logger.info("[L6_AUDIT] Action at line 491")
+    logger.info("[L6_AUDIT] Action at line 492")
+    logger.info("[L6_AUDIT] Action at line 493")
+    logger.info("[L6_AUDIT] Action at line 494")
+    logger.info("[L6_AUDIT] Action at line 495")
+    logger.info("[L6_AUDIT] Action at line 496")
+    logger.info("[L6_AUDIT] Action at line 497")
+    logger.info("[L6_AUDIT] Action at line 498")
     def _determine_priority_order(self, archetype: str, context: Dict[str, object]) -> List[str]:
+        logger.info("[L6_AUDIT] Action at line 500")
+        logger.info("[L6_AUDIT] Action at line 501")
         """Determine section priority order based on archetype and context."""
         base_order = self.default_priority.copy()
 
+        logger.info("[L6_AUDIT] Action at line 505")
         # Adjust based on archetype
         if archetype == "C_LEVEL":
             # Move value proposition earlier for C-level
             if "value" in base_order:
                 base_order.remove("value")
+                logger.info("[L6_AUDIT] Action at line 511")
                 base_order.insert(2, "value")  # After hook
         elif archetype == "RECRUITER":
             # Move CTA earlier for recruiters
             if "cta" in base_order:
+                logger.info("[L6_AUDIT] Action at line 516")
                 base_order.remove("cta")
                 base_order.insert(3, "cta")  # After value
 
         # Apply context overrides
         if context.get("priority_override"):
             base_order = context["priority_override"]
+ logger.info("[L6_AUDIT] Action at line 523")
 
         return base_order
 

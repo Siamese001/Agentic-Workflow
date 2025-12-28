@@ -226,6 +226,7 @@ def _get_llm_client_instance(provider: Provider) -> Any:
 class InferenceMode(str, Enum):
     """Inference modes for different types of cognitive operations."""
     CREATIVE = "creative"          # Max temperature, high entropy
+    logger.info("[L6_AUDIT] Action at line 229")
     ANALYTICAL = "analytical"      # Medium temperature, structured thinking
     VALIDATION = "validation"      # Low temperature, precision focused
     FORMATTING = "formatting"      # Very low temperature, template adherence

@@ -33,12 +33,22 @@ class SafetyInspector:
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Security Audit...")
 
         keys = [
+            logger.info("[L6_AUDIT] Action at line 36")
+            logger.info("[L6_AUDIT] Action at line 37")
+            logger.info("[L6_AUDIT] Action at line 38")
+            logger.info("[L6_AUDIT] Action at line 39")
+            logger.info("[L6_AUDIT] Action at line 40")
+            logger.info("[L6_AUDIT] Action at line 41")
+            logger.info("[L6_AUDIT] Action at line 42")
             (0, self.check_key_00_no_hardcoded_secrets),
             (1, self.check_key_01_no_todo_fixme),
+            logger.info("[L6_AUDIT] Action at line 45")
+            logger.info("[L6_AUDIT] Action at line 46")
             (2, self.check_key_02_no_print_statements),
             (3, self.check_key_03_no_debugger_statements),
             (4, self.check_key_04_no_empty_except_blocks),
             (5, self.check_key_05_no_bare_except),
+            logger.info("[L6_AUDIT] Action at line 51")
             (6, self.check_key_06_no_eval_exec),
         ]
 
@@ -60,10 +70,13 @@ class SafetyInspector:
         try:
             with open(fp, "r", encoding="utf-8") as f:
                 return f.read(), True
+        logger.info("[L6_AUDIT] Action at line 73")
         except Exception:
             # print(f"Error reading file {fp}: {e}")
             return "", False
+ logger.info("[L6_AUDIT] Action at line 77")
 
+    logger.info("[L6_AUDIT] Action at line 79")
     def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
         """Helper to find hardcoded secrets in a single file."""
         content, success = self._read_file_content(fp)
@@ -95,7 +108,9 @@ class SafetyInspector:
         violations = []
         for i, line in enumerate(f_obj, 1):
             if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
+                logger.info("[L6_AUDIT] Action at line 111")
                 violations.append(f"{fp}:{i}")
+        logger.info("[L6_AUDIT] Action at line 113")
         return violations
 
     def _find_todo_fixme_violations_in_file(self, fp: str) -> List[str]:
@@ -161,6 +176,7 @@ class SafetyInspector:
         """
         violations = []
         for fp in self.agent.ctx.python_files:
+            logger.info("[L6_AUDIT] Action at line 179")
             violations.extend(self._find_debugger_violations_in_file(fp))
         return len(violations) == 0, violations
 
@@ -187,6 +203,7 @@ class SafetyInspector:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_empty_except_violations_in_tree(tree, fp))
             except Exception:
+                logger.info("[L6_AUDIT] Action at line 206")
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
@@ -213,6 +230,7 @@ class SafetyInspector:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_bare_except_violations_in_tree(tree, fp))
+            logger.info("[L6_AUDIT] Action at line 233")
             except Exception:
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
@@ -239,6 +257,7 @@ class SafetyInspector:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
+                logger.info("[L6_AUDIT] Action at line 260")
                 violations.extend(self._find_eval_exec_violations_in_tree(tree, fp))
             except Exception:
                 # print(f"Error processing AST for file {fp}: {e}")
@@ -253,6 +272,7 @@ class DocumentationAgent(SubAtomicAgent):
     """
 
     def execute(self) -> None:
+        logger.info("[L6_AUDIT] Action at line 275")
         """
         Executes the documentation check, specifically for missing docstrings.
         """
@@ -279,6 +299,7 @@ class DocumentationAgent(SubAtomicAgent):
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
+                logger.info("[L6_AUDIT] Action at line 302")
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
@@ -299,7 +320,9 @@ class NamingAgent(SubAtomicAgent):
         Executes the naming convention check.
         """
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...")
+        logger.info("[L6_AUDIT] Action at line 323")
         passed, details = self.check_key_47_naming_conventions()
+        logger.info("[L6_AUDIT] Action at line 325")
         self.agent.ctx.report(self.agent.name, 47, passed, details)
 
     def _is_invalid_function_name(self, name: str) -> bool:

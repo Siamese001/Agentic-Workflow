@@ -11,12 +11,14 @@ from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAg
 
 class TestGeneratorAgent(CanonBaseAgent):
     """
+    logger.info("[L6_AUDIT] Action at line 14")
     Validates Canon Key 47: QA & Telemetry.
     Ensures that every high-signal file has a corresponding test coverage path.
     """
     
     def get_validation_keys(self) -> List[int]:
         return [47]
+ logger.info("[L6_AUDIT] Action at line 21")
 
     async def execute(self, file_path: str = None):
         """

@@ -74,7 +74,9 @@ class TestPilot:
             from agentic_core.conversational_repair import get_conversational_repair
             self.conversational_repair = get_conversational_repair()
 
+    logger.info("[L6_AUDIT] Action at line 77")
     async def execute(self, modified_files: List[str] = None) -> Dict[str, Any]:
+        logger.info("[L6_AUDIT] Action at line 79")
         """
         Execute tests and return results.
 
@@ -197,6 +199,7 @@ class TestPilot:
             "details": []
         }
 
+        logger.info("[L6_AUDIT] Action at line 202")
         for file_path in modified_files:
             if file_path.endswith('.py'):
                 result = await self._run_property_check(file_path)
@@ -206,6 +209,7 @@ class TestPilot:
                     results["passed"] = False
                     results["violations"] += result.get("violations", 0)
                     results["details"].extend(result.get("details", []))
+ logger.info("[L6_AUDIT] Action at line 212")
 
         return results
 
@@ -249,6 +253,7 @@ class TestPilot:
             # Write test to temporary file
             with tempfile.NamedTemporaryFile(mode='w', suffix='_property_test.py', delete=False) as f:
                 f.write(test_code)
+                logger.info("[L6_AUDIT] Action at line 256")
                 test_file = f.name
 
             try:
@@ -278,6 +283,7 @@ class TestPilot:
             finally:
                 # Clean up temporary file
                 try:
+                    logger.info("[L6_AUDIT] Action at line 286")
                     os.unlink(test_file)
                 except:
                     pass
@@ -435,6 +441,7 @@ def test_{func_name}_properties({', '.join(args)}):
             elif "list" in arg.lower():
                 strategies.append("st.lists(st.integers())")
             elif "dict" in arg.lower():
+                logger.info("[L6_AUDIT] Action at line 444")
                 strategies.append("st.dictionaries(st.text(), st.integers())")
             else:
                 strategies.append("st.integers()")

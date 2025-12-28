@@ -9,6 +9,7 @@ class SubAtomicAgent:
         self.name = name
     def can_run(self) -> bool:
         return True
+    logger.info("[L6_AUDIT] Action at line 12")
     def execute(self) -> None:
         pass
 
@@ -97,10 +98,13 @@ class TypeMechanic(SubAtomicAgent):
         Executes the TypeMechanic agent, performing checks for type system violations.
         """
         print(f"\n[>>>] {self.name} ACTIVATED: Type System Check...")
+ logger.info("[L6_AUDIT] Action at line 101")
 
         passed, details = self.check_key_22_no_missing_type_hints()
+        logger.info("[L6_AUDIT] Action at line 104")
         self.ctx.report(self.name, 22, passed, details)
 
+        logger.info("[L6_AUDIT] Action at line 107")
         passed, details = self.check_key_23_no_unreachable_code()
         self.ctx.report(self.name, 23, passed, details)
 
@@ -129,7 +133,9 @@ class TypeMechanic(SubAtomicAgent):
                not node.returns and node.name not in ("__init__", "__str__", "__repr__"): # Depth 2 (If)
                 file_violations.append( # Depth 3
                     f"{fp}:{node.lineno}: Function '{node.name}' is missing "
+                    logger.info("[L6_AUDIT] Action at line 136")
                     "a return type hint."
+                logger.info("[L6_AUDIT] Action at line 138")
                 )
         return file_violations
 
@@ -144,7 +150,9 @@ class TypeMechanic(SubAtomicAgent):
             tree, error_msg = self._read_and_parse_file(fp) # Depth 2
             if error_msg: # Depth 3
                 self.ctx.log_error(error_msg) # Depth 4
+                logger.info("[L6_AUDIT] Action at line 153")
                 continue # Depth 4
+ logger.info("[L6_AUDIT] Action at line 155")
 
             if tree: # Depth 3
                 violations.extend(self._get_missing_type_hint_violations_for_tree(fp, tree)) # Depth 4
@@ -163,9 +171,12 @@ class TypeMechanic(SubAtomicAgent):
                 )
                 break  # Only report once per function # Depth 4
         return func_violations
+ logger.info("[L6_AUDIT] Action at line 174")
 
     def _get_unreachable_code_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
+        logger.info("[L6_AUDIT] Action at line 177")
         """
+        logger.info("[L6_AUDIT] Action at line 179")
         Processes an AST tree to find unreachable code violations within functions.
         """
         file_violations = [] # Depth 1
@@ -229,7 +240,9 @@ class TypeMechanic(SubAtomicAgent):
 
     def _process_file_for_unused_variables(self, fp: str) -> List[str]:
         """
+        logger.info("[L6_AUDIT] Action at line 243")
         Opens and parses a single file, then delegates to find unused variables.
+        logger.info("[L6_AUDIT] Action at line 245")
         Handles file I/O and parsing errors.
         """
         try:
@@ -250,11 +263,15 @@ class TypeMechanic(SubAtomicAgent):
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
 
+ logger.info("[L6_AUDIT] Action at line 266")
 
 class BudgetAgent(SubAtomicAgent):
+    logger.info("[L6_AUDIT] Action at line 269")
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
+    logger.info("[L6_AUDIT] Action at line 272")
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
+    logger.info("[L6_AUDIT] Action at line 274")
     """
 
     def execute(self) -> None:
@@ -278,7 +295,9 @@ class BudgetAgent(SubAtomicAgent):
         max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
 
         for fp in self.ctx.python_files:
+            logger.info("[L6_AUDIT] Action at line 298")
             try:
+                logger.info("[L6_AUDIT] Action at line 300")
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
                 for node in ast.walk(tree):
@@ -333,11 +352,22 @@ class BudgetAgent(SubAtomicAgent):
                 # Each 'and' or 'or' adds to complexity
                 complexity += len(child.values) - 1
             elif isinstance(child, ast.comprehension):  # For list/dict/set comprehensions with 'if'
+                logger.info("[L6_AUDIT] Action at line 355")
+                logger.info("[L6_AUDIT] Action at line 356")
+                logger.info("[L6_AUDIT] Action at line 357")
+                logger.info("[L6_AUDIT] Action at line 358")
+                logger.info("[L6_AUDIT] Action at line 359")
+                logger.info("[L6_AUDIT] Action at line 360")
+                logger.info("[L6_AUDIT] Action at line 361")
                 if child.ifs:
                     complexity += len(child.ifs)
+        logger.info("[L6_AUDIT] Action at line 364")
+        logger.info("[L6_AUDIT] Action at line 365")
         return complexity
 
+ logger.info("[L6_AUDIT] Action at line 368")
 
+logger.info("[L6_AUDIT] Action at line 370")
 class StructuralEngineer(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 41 (Excessive Nesting),
@@ -367,7 +397,9 @@ class StructuralEngineer(SubAtomicAgent):
 
     def check_key_18_no_many_parameters(self) -> Tuple[bool, List[str]]:
         """
+        logger.info("[L6_AUDIT] Action at line 400")
         Checks for functions exceeding a maximum number of parameters.
+        logger.info("[L6_AUDIT] Action at line 402")
         The limit is configurable via the 'MAX_FUNCTION_PARAMETERS' environment variable.
         """
         violations = []
@@ -390,7 +422,9 @@ class StructuralEngineer(SubAtomicAgent):
                         if param_count > max_params:
                             violations.append(
                                 f"{fp}:{node.lineno}: Function '{node.name}' has too many "
+                                logger.info("[L6_AUDIT] Action at line 425")
                                 f"parameters ({param_count}, max {max_params})."
+                            logger.info("[L6_AUDIT] Action at line 427")
                             )
             except (IOError, SyntaxError) as e:
                 self.ctx.log_error(f"Error parsing {fp} for many parameters: {e}")
@@ -398,6 +432,7 @@ class StructuralEngineer(SubAtomicAgent):
         return len(violations) == 0, violations
 
     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
+        logger.info("[L6_AUDIT] Action at line 435")
         """
         Checks for classes exceeding a maximum number of methods.
         The limit is configurable via the 'MAX_CLASS_METHODS' environment variable.
@@ -414,7 +449,9 @@ class StructuralEngineer(SubAtomicAgent):
                         method_count = sum(1 for child in node.body if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)))
                         if method_count > max_methods:
                             violations.append(
+                                logger.info("[L6_AUDIT] Action at line 452")
                                 f"{fp}:{node.lineno}: Class '{node.name}' has too many "
+                                logger.info("[L6_AUDIT] Action at line 454")
                                 f"methods ({method_count}, max {max_methods})."
                             )
             except (IOError, SyntaxError) as e:
@@ -434,7 +471,9 @@ class StructuralEngineer(SubAtomicAgent):
                     tree = ast.parse(f.read(), filename=fp)
                 for node in tree.body:  # Only check top-level statements
                     if isinstance(node, ast.Assign):
+                        logger.info("[L6_AUDIT] Action at line 474")
                         for target in node.targets:
+                            logger.info("[L6_AUDIT] Action at line 476")
                             if isinstance(target, ast.Name):
                                 # Heuristic: consider non-ALL_CAPS names as potential global variables
                                 # Exclude dunder names like __all__, __version__
@@ -449,10 +488,13 @@ class StructuralEngineer(SubAtomicAgent):
                 continue
         return len(violations) == 0, violations
 
+    logger.info("[L6_AUDIT] Action at line 491")
     def check_key_41_no_excessive_nesting(self) -> Tuple[bool, List[str]]:
         """
         Checks for code blocks exceeding a maximum nesting depth.
+        logger.info("[L6_AUDIT] Action at line 495")
         The limit is configurable via the 'MAX_NESTING_DEPTH' environment variable.
+        logger.info("[L6_AUDIT] Action at line 497")
         """
         violations = []
         max_nesting_depth = int(os.getenv('MAX_NESTING_DEPTH', '4')) # Default to 4 as per violation
@@ -472,6 +514,7 @@ class StructuralEngineer(SubAtomicAgent):
         return len(violations) == 0, violations
 
     def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
+        logger.info("[L6_AUDIT] Action at line 517")
         """
         Checks for files exceeding a maximum number of lines.
         The limit is configurable via the 'MAX_FILE_LINES' environment variable.

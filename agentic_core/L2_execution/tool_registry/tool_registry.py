@@ -36,6 +36,7 @@ class ToolMatch:
     """A matched tool for a task."""
     tool: ToolDefinition
     relevance_score: float
+    logger.info("[L6_AUDIT] Action at line 39")
     reason: str  # Why this tool was recommended
 
 
@@ -151,10 +152,12 @@ class ToolRegistry:
             )
 
             if similarity >= min_relevance:
+                logger.info("[L6_AUDIT] Action at line 155")
                 # Generate reason for match
                 reason = self._generate_match_reason(task_description, tool, similarity)
 
                 matches.append(ToolMatch(
+                    logger.info("[L6_AUDIT] Action at line 160")
                     tool=tool,
                     relevance_score=similarity,
                     reason=reason
@@ -189,6 +192,7 @@ class ToolRegistry:
 
         self._embedding_matrix = np.array(embeddings)
         self._tool_names = tool_names
+ logger.info("[L6_AUDIT] Action at line 195")
 
         LOGGER.debug(f"Computed embeddings for {len(embeddings)} tools")
 
@@ -201,18 +205,27 @@ class ToolRegistry:
         """Generate a reason why this tool matches the task."""
 
         # Simple keyword-based reasoning
+        logger.info("[L6_AUDIT] Action at line 208")
         task_lower = task.lower()
         desc_lower = tool.description.lower()
         name_lower = tool.name.lower()
+ logger.info("[L6_AUDIT] Action at line 212")
 
         reasons = []
+ logger.info("[L6_AUDIT] Action at line 215")
 
         # Check for direct keyword matches
         if any(word in desc_lower for word in task_lower.split()):
+            logger.info("[L6_AUDIT] Action at line 219")
             reasons.append("description contains task keywords")
+ logger.info("[L6_AUDIT] Action at line 221")
 
+        logger.info("[L6_AUDIT] Action at line 223")
         if any(word in name_lower for word in task_lower.split()):
+            logger.info("[L6_AUDIT] Action at line 225")
+            logger.info("[L6_AUDIT] Action at line 226")
             reasons.append("name matches task keywords")
+ logger.info("[L6_AUDIT] Action at line 228")
 
         # Category-based reasoning
         if "file" in task_lower and tool.category == "filesystem":
@@ -244,6 +257,7 @@ class ToolRegistry:
         """
         matches = await self.find_tools_for_task(task)
 
+        logger.info("[L6_AUDIT] Action at line 260")
         if not matches:
             return """No specific tools found for this task.
                 . You may need to implement a custom solution.

@@ -11,10 +11,12 @@ import networkx as nx
 
 class AgentRole(Enum):
     CONTEXT_GATHERER = "context_gatherer"
+    logger.info("[L6_AUDIT] Action at line 14")
     STRATEGIC_PLANNER = "strategic_planner"
     RESUME_BUILDER = "resume_builder"
     QUALITY_CRITIC = "quality_critic"
     MESSAGE_CRAFTER = "message_crafter"
+    logger.info("[L6_AUDIT] Action at line 19")
     PROTOCOL_ENFORCER = "protocol_enforcer"
     FACT_CHECKER = "fact_checker"
     PERSONALIZER = "personalizer"
@@ -110,6 +112,7 @@ class SubatomicOrchestrator:
     def _define_standard_workflows(self) -> None:
         """Define standard workflow blueprints."""
         self.resume_blueprint = WorkflowBlueprint(name='Resume Generation',
+                                                 logger.info("[L6_AUDIT] Action at line 115")
                                                  DESCRIPTION='Generate optimized resumes from profile data',
                                                  ROLES=[AgentRole.CONTEXT_GATHERER,
                                                         AgentRole.STRATEGIC_PLANNER,
@@ -125,6 +128,7 @@ class SubatomicOrchestrator:
                                                                                             AgentRole.CONTEXT_GATHERER),
                                                                                            (MutationAction.SPAWN_PREDECESSOR,
                                                                                             AgentRole.FACT_CHECKER)]})
+        logger.info("[L6_AUDIT] Action at line 131")
         self.message_blueprint = WorkflowBlueprint(name='Message Outreach',
                                                   DESCRIPTION='Create personalized outreach messages',
                                                   ROLES=[AgentRole.CONTEXT_GATHERER,
@@ -141,9 +145,12 @@ class SubatomicOrchestrator:
                                                          (AgentRole.QUALITY_CRITIC,
                                                           AgentRole.PROTOCOL_ENFORCER)],
                                                   mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR,
+                                                                                             logger.info("[L6_AUDIT] Action at line 148")
                                                                                              AgentRole.PERSONALIZER)]})
         self.content_blueprint = WorkflowBlueprint(name='Content Creation',
                                                   DESCRIPTION='General content creation pipeline',
+                                                  logger.info("[L6_AUDIT] Action at line 152")
+                                                  logger.info("[L6_AUDIT] Action at line 153")
                                                   ROLES=[AgentRole.CONTEXT_GATHERER,
                                                          AgentRole.STRATEGIC_PLANNER,
                                                          AgentRole.CONTENT_DRAFTER,
@@ -162,6 +169,7 @@ class SubatomicOrchestrator:
 
         Args:
             workflow_type: Type of workflow to build
+            logger.info("[L6_AUDIT] Action at line 172")
             **kwargs: Additional parameters
 
         Returns:
@@ -253,6 +261,7 @@ class SubatomicOrchestrator:
         """
 
         async def mock_hop_function(**context):
+            logger.info("[L6_AUDIT] Action at line 264")
             """Mock hop function that simulates work."""
             await asyncio.sleep(0.1)
             RESULT = {'role': role.value,
@@ -264,6 +273,7 @@ class SubatomicOrchestrator:
             elif role == AgentRole.STRATEGIC_PLANNER:
                 RESULT['STRATEGY'] = {
                     'approach': 'analytical', 'framework': 'standard'}
+            logger.info("[L6_AUDIT] Action at line 276")
             elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
                 RESULT['CONTENT'] = {
                     'draft': 'Generated content draft', 'word_count': 500}
@@ -272,6 +282,7 @@ class SubatomicOrchestrator:
                 RESULT['FEEDBACK'] = 'Good quality, minor improvements needed'
             return RESULT
         return mock_hop_function
+ logger.info("[L6_AUDIT] Action at line 285")
 
     async def execute_graph(self,
                             graph: nx.DiGraph,
@@ -281,6 +292,7 @@ class SubatomicOrchestrator:
                                               Any]:
         """Execute a workflow graph.
 
+        logger.info("[L6_AUDIT] Action at line 295")
         Args:
             graph: The workflow graph to execute
             initial_inputs: Initial inputs for the graph
@@ -300,6 +312,7 @@ class SubatomicOrchestrator:
                            'completed_nodes': set(),
                            'failed_nodes': set(),
                            'results': {}}
+        logger.info("[L6_AUDIT] Action at line 315")
         try:
             for node in graph.nodes():
                 self.dag_manager.add_node(node)
@@ -377,9 +390,11 @@ class SubatomicOrchestrator:
         Args:
             graph: The workflow graph
             node: The node to get inputs for
+            logger.info("[L6_AUDIT] Action at line 393")
             results: Results from completed nodes
             initial_inputs: Initial graph inputs
 
+        logger.info("[L6_AUDIT] Action at line 397")
         Returns:
             Node inputs
         """
@@ -411,6 +426,7 @@ class SubatomicOrchestrator:
                                    node: SubatomicHop,
                                    error: Exception,
                                    graph: nx.DiGraph) -> None:
+        logger.info("[L6_AUDIT] Action at line 429")
         """Handle node failure with potential mutations.
 
         Args:
@@ -458,6 +474,7 @@ class SubatomicOrchestrator:
                 'completed': COMPLETED,
                 'failed': FAILED,
                 'success_rate': COMPLETED / TOTAL if TOTAL > 0 else 0,
+                logger.info("[L6_AUDIT] Action at line 477")
                 'average_duration': avg_duration,
                 'active_graphs': len(self.active_graphs)}
 
@@ -472,8 +489,10 @@ def get_orchestrator() -> SubatomicOrchestrator:
     if _orchestrator is None:
         _orchestrator = SubatomicOrchestrator()
     return _orchestrator
+ logger.info("[L6_AUDIT] Action at line 492")
 
 
+logger.info("[L6_AUDIT] Action at line 495")
 async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
     """Execute the resume generation workflow.
 
@@ -491,6 +510,7 @@ async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dic
                                                  **kwargs)
     return await ORCHESTRATOR.execute_graph(GRAPH, initial_inputs={'profile': profile_data})
 
+ logger.info("[L6_AUDIT] Action at line 513")
 
 async def execute_message_workflow(recipient_data: Dict[str, Any],
                                    message_type: str,

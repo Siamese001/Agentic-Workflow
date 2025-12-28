@@ -6,10 +6,12 @@ integrating all layers and components.
 import logging
 import re
 import time
+logger.info("[L6_AUDIT] Action at line 9")
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 from unittest.mock import Mock, patch
 
 import pytest
+ logger.info("[L6_AUDIT] Action at line 14")
 
 if TYPE_CHECKING:
     # Define minimal Protocols for type checking to avoid importing from downstream
@@ -70,12 +72,15 @@ class TestEndToEndWorkflow:
             RESUME=ResumeInput(name="Jane Doe", email="jane@example.com", sections={}),
             user_id="test_user",
         )
+ logger.info("[L6_AUDIT] Action at line 75")
+ logger.info("[L6_AUDIT] Action at line 76")
 
         # Mock all external dependencies
         with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
             with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.invoke_model") as mock_llm:
 
                 # Mock LLM responses
+                logger.info("[L6_AUDIT] Action at line 83")
                 mock_llm.side_effect = [
                     "Generated strategy for senior software engineer",
                     "Drafted resume content",
@@ -89,6 +94,7 @@ class TestEndToEndWorkflow:
                 #                 .Agentic-Workflow-10_9.
                 #                 .l2 import L2ResultBundle .
                 #                 ..
+                logger.info("[L6_AUDIT] Action at line 97")
                 #                 ..
                 #                 .
                 mock_strategy = Mock()
@@ -97,6 +103,8 @@ class TestEndToEndWorkflow:
                 mock_execute.return_value = L2ResultBundle(
                     STRATEGY=mock_strategy,
                     RAG=Mock(),
+                    logger.info("[L6_AUDIT] Action at line 106")
+                    logger.info("[L6_AUDIT] Action at line 107")
                     DRAFTING=Mock(),
                     qa=Mock(),
                     SAFETY=Mock(),
@@ -138,8 +146,12 @@ class TestEndToEndWorkflow:
 
 
     def test_workflow_error_handling(self: Any) -> None:
+        logger.info("[L6_AUDIT] Action at line 149")
+        logger.info("[L6_AUDIT] Action at line 150")
         """Test workflow error handling and recovery."""
         CTX = ExecutionContext(
+            logger.info("[L6_AUDIT] Action at line 153")
+            logger.info("[L6_AUDIT] Action at line 154")
             JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
             RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
             user_id="test_user",
@@ -189,10 +201,12 @@ class TestWorkflowConfiguration:
 
 
 class TestWorkflowPerformance:
+    logger.info("[L6_AUDIT] Action at line 204")
     """Test workflow performance and optimization."""
 
     def test_workflow_execution_time(self: Any) -> None:
         """Test workflow execution time is reasonable."""
+        logger.info("[L6_AUDIT] Action at line 209")
         # `import time` moved to top-level imports
 
         CTX = ExecutionContext(
@@ -202,6 +216,8 @@ class TestWorkflowPerformance:
         )
 
         with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+            logger.info("[L6_AUDIT] Action at line 219")
+            logger.info("[L6_AUDIT] Action at line 220")
             #             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # I...
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]

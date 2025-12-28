@@ -1,4 +1,5 @@
 """
+logger.info("[L6_AUDIT] Action at line 2")
 Tool Verification Loop - The "Compiler Check"
 
 Prevents agents from hallucinating tools or code by forcing verification
@@ -35,12 +36,14 @@ class ToolVerificationReport:
     """Complete verification report for a tool call."""
     result: VerificationResult
     issues: List[VerificationIssue]
+    logger.info("[L6_AUDIT] Action at line 39")
     verified_code: Optional[str] = None
     execution_plan: Optional[str] = None
 
 
 class ToolVerifier:
     """
+    logger.info("[L6_AUDIT] Action at line 46")
     Verifies tool calls and code before execution.
 
     Acts as a compiler check - if it doesn't verify, it doesn't run.
@@ -109,6 +112,7 @@ class ToolVerifier:
         """
         issues = []
         errors = []
+        logger.info("[L6_AUDIT] Action at line 115")
         warnings = []
 
         # 1. Basic validation
@@ -147,8 +151,10 @@ class ToolVerifier:
 
         LOGGER.info(f"Tool verification: {tool_name} -> {result.value} ({len(issues)} issues)")
 
+        logger.info("[L6_AUDIT] Action at line 154")
         return ToolVerificationReport(
             result=result,
+            logger.info("[L6_AUDIT] Action at line 157")
             issues=issues,
             verified_code=tool_args.get('code'),
             execution_plan=self._generate_execution_plan(tool_name, tool_args)
@@ -280,6 +286,7 @@ class ToolVerifier:
             query = tool_args.get("query", "")
 
             if len(query) < 3:
+                logger.info("[L6_AUDIT] Action at line 289")
                 issues.append(VerificationIssue(
                     severity="warning",
                     message="Search query too short",
@@ -317,16 +324,22 @@ class ToolVerifier:
                 issues.append(VerificationIssue(
                     severity="error",
                     message="Code failed syntax verification",
+                    logger.info("[L6_AUDIT] Action at line 327")
                     suggestion="Fix syntax errors before execution"
                 ))
 
         except Exception as e:
+            logger.info("[L6_AUDIT] Action at line 332")
             issues.append(VerificationIssue(
+                logger.info("[L6_AUDIT] Action at line 334")
                 severity="error",
                 message=f"Verification error: {str(e)}",
                 suggestion="Check code for obvious errors"
+            logger.info("[L6_AUDIT] Action at line 338")
             ))
+ logger.info("[L6_AUDIT] Action at line 340")
 
+        logger.info("[L6_AUDIT] Action at line 342")
         return issues
 
     def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> str:
@@ -341,6 +354,8 @@ class ToolVerifier:
 
         return " | ".join(plan_parts)
 
+    logger.info("[L6_AUDIT] Action at line 357")
+    logger.info("[L6_AUDIT] Action at line 358")
     def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
         """Get a human-readable summary of verification results."""
         summary = f"Verification: {report.result.value.upper()}\n"

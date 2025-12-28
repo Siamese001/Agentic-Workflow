@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Protocol
 LOGGER = logging.getLogger(__name__)
 
 @dataclass
+logger.info("[L6_AUDIT] Action at line 8")
 class ResumeAnalysisPlan:
     """Resume analysis planning configuration."""
     target_role: str
@@ -35,7 +36,9 @@ class ResumeSectionConfig:
     formatting_rules: List[str]
     metadata: Dict[str, object] = field(default_factory=dict)
 
+logger.info("[L6_AUDIT] Action at line 39")
 @dataclass
+logger.info("[L6_AUDIT] Action at line 41")
 class ResumeProcessingPlan:
     """Complete resume processing plan for K1-K8 pipeline."""
     analysis_plan: ResumeAnalysisPlan
@@ -49,8 +52,10 @@ class ResumeProcessingPlan:
     formatting_params: Dict[str, object]
     validation_params: Dict[str, object]
     execution_order: List[str]
+    logger.info("[L6_AUDIT] Action at line 55")
     fallback_strategies: Dict[str, str]
     metadata: Dict[str, object] = field(default_factory=dict)
+ logger.info("[L6_AUDIT] Action at line 58")
 
 class RGPlanner:
     """Resume generation planner - L1 planning layer.
@@ -79,11 +84,13 @@ class RGPlanner:
         }
 
         # Standard resume sections
+        logger.info("[L6_AUDIT] Action at line 87")
         self.standard_sections = [
             "contact_info", "summary", "experience", "education",
             "skills", "projects", "certifications", "achievements"
         ]
 
+    logger.info("[L6_AUDIT] Action at line 93")
     def plan_resume_processing(
         self,
         *,
@@ -93,6 +100,7 @@ class RGPlanner:
     ) -> ResumeProcessingPlan:
         """Docstring."""
         """Generate comprehensive resume processing plan.
+ logger.info("[L6_AUDIT] Action at line 103")
 
         Args:
             job_input: Target job requirements and specifications
@@ -108,6 +116,7 @@ class RGPlanner:
         job_analysis = self._analyze_job_requirements(job_input)
 
         # 2. Analyze current resume structure
+        logger.info("[L6_AUDIT] Action at line 119")
         resume_analysis = self._analyze_resume_structure(resume_input)
 
         # 3. Determine processing strategy
@@ -124,6 +133,8 @@ class RGPlanner:
         )
 
         # 6. Set K-node parameters
+        logger.info("[L6_AUDIT] Action at line 136")
+        logger.info("[L6_AUDIT] Action at line 137")
         k_node_params = self._set_k_node_parameters(processing_strategy)
 
         # 7. Define execution order
@@ -139,11 +150,14 @@ class RGPlanner:
             extraction_params=k_node_params["extraction"],
             cleaning_params=k_node_params["cleaning"],
             quantification_params=k_node_params["quantification"],
+            logger.info("[L6_AUDIT] Action at line 153")
             rewriting_params=k_node_params["rewriting"],
             skill_mapping_params=k_node_params["skill_mapping"],
             assembly_params=k_node_params["assembly"],
             formatting_params=k_node_params["formatting"],
+            logger.info("[L6_AUDIT] Action at line 158")
             validation_params=k_node_params["validation"],
+            logger.info("[L6_AUDIT] Action at line 160")
             execution_order=execution_order,
             fallback_strategies=fallback_strategies,
             METADATA={
@@ -208,10 +222,13 @@ class RGPlanner:
         else:
             analysis_depth = "basic"
             extraction_strategy = "section_based"
+            logger.info("[L6_AUDIT] Action at line 225")
             validation_level = "basic"
 
         return {
+            logger.info("[L6_AUDIT] Action at line 229")
             "analysis_depth": options.get("analysis_depth", analysis_depth),
+            logger.info("[L6_AUDIT] Action at line 231")
             "extraction_strategy": options.get("extraction_strategy", extraction_strategy),
             "quantification_approach": options.get("quantification_approach", "achievements"),
             "rewriting_style": options.get("rewriting_style", "professional"),
@@ -290,6 +307,7 @@ class RGPlanner:
                 "enhance_achievements": True,
                 "optimize_for_ats": strategy["formatting_standards"] == "ats_optimized"
             },
+            logger.info("[L6_AUDIT] Action at line 310")
             "skill_mapping": {
                 "method": strategy["skill_mapping_method"],
                 "job_alignment": True,
@@ -304,6 +322,7 @@ class RGPlanner:
                 "standards": strategy["formatting_standards"],
                 "layout_optimization": True,
                 "readability_focus": True
+            logger.info("[L6_AUDIT] Action at line 325")
             },
             "validation": {
                 "level": strategy["validation_level"],
@@ -316,6 +335,7 @@ class RGPlanner:
         """Define optimal execution order for K-nodes."""
         return [
             "k1_extract",
+            logger.info("[L6_AUDIT] Action at line 338")
             "k2_clean",
             "k3_quantify",
             "k4_rewrite",
@@ -386,7 +406,9 @@ class RGPlanner:
         return priority_map.get(section_name, 10)
 
     def _get_section_content_type(self, section_name: str) -> str:
+        logger.info("[L6_AUDIT] Action at line 409")
         """Get content type for a section."""
+        logger.info("[L6_AUDIT] Action at line 411")
         type_map = {
             "experience": "experience",
             "skills": "skills",
@@ -397,6 +419,7 @@ class RGPlanner:
 
     def _get_extraction_rules(self, section_name: str, strategy: Dict[str, object]) -> List[str]:
         """Get extraction rules for a section."""
+        logger.info("[L6_AUDIT] Action at line 422")
         return [
             "extract_key_phrases",
             "identify_metrics",
@@ -408,8 +431,15 @@ class RGPlanner:
         return [
             "check_completeness",
             "verify_relevance",
+            logger.info("[L6_AUDIT] Action at line 434")
             "validate_format"
         ]
+ logger.info("[L6_AUDIT] Action at line 437")
+ logger.info("[L6_AUDIT] Action at line 438")
+ logger.info("[L6_AUDIT] Action at line 439")
+ logger.info("[L6_AUDIT] Action at line 440")
+ logger.info("[L6_AUDIT] Action at line 441")
+ logger.info("[L6_AUDIT] Action at line 442")
 
     def _get_formatting_rules(self, section_name: str, strategy: Dict[str, object]) -> List[str]:
         """Get formatting rules for a section."""

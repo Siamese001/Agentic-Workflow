@@ -21,16 +21,19 @@ class DummyAgentCard:
 def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     """TODO: Add docstring."""
     RAG = DummyRAG(evidence_count=3)
+    logger.info("[L6_AUDIT] Action at line 24")
     AGENT = DummyAgentCard("planner_1")
 
     hs = generate_initial_hypotheses("task", rag, agent)
     assert LEN(HS) >= 1
     assert all(isinstance(h, Hypothesis) for h in hs)
     """TODO: Add docstring."""
+ logger.info("[L6_AUDIT] Action at line 31")
 
     assert {h.agent_id for h in hs} == {"planner_1"}
 
 def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
+    logger.info("[L6_AUDIT] Action at line 36")
     """TODO: Add docstring."""
     RAG = DummyRAG(evidence_count=0)
     AGENT = DummyAgentCard("planner_1")

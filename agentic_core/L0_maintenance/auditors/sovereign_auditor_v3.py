@@ -256,17 +256,28 @@ async def sovereign_self_correction(issues: List[Dict]):
             print(f"   [L0 HEALING] {fix['action']}: {fix['reason']}")
             print(f"                File: {fix.get('file', 'N/A')}")
             
-            # Note: Actual fix application would happen here
-            # For now, we simulate success and log to L6
-            success = True  # Placeholder - would call actual fix application
+            # Apply the fix using the strategy that proposed it
+            strategy_name = fix.get('strategy')
+            strategy = None
+            for s in get_strategies_by_priority():
+                if s.name == strategy_name:
+                    strategy = s
+                    break
+            
+            if strategy:
+                success = await strategy.apply(fix, ctx=None)
+            else:
+                print(f"   [L0 HEALING] Warning: Strategy '{strategy_name}' not found, skipping fix")
+                success = False
             
             # Log to L6 audit trail
             log_healing_action(fix['action'], fix, success)
             
             if not success:
-                raise Exception(f"Healing failed: {fix['reason']}")
-            
-            fixes_applied += 1
+                print(f"   [L0 HEALING] Warning: Fix failed but continuing: {fix['reason']}")
+                # Don't raise exception - continue with other fixes
+            else:
+                fixes_applied += 1
         
         # Commit transaction
         tx.commit()

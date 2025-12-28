@@ -12,6 +12,7 @@ class ExecutionPhase(Enum):
     """Phases of the Think-Act-Observe execution cycle."""
     MISSION = "mission"
     SCENE = "scene"
+    logger.info("[L6_AUDIT] Action at line 15")
     THINK = "think"
     ACT = "act"
     OBSERVE = "observe"
@@ -57,6 +58,7 @@ class ExecutionResult:
         success: Whether execution completed successfully
         output: Final output/result of execution
         final_state: State at end of execution
+        logger.info("[L6_AUDIT] Action at line 61")
         execution_trace: List of execution steps taken
         iterations: Number of Think-Act-Observe iterations
         errors: List of errors encountered

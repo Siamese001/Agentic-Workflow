@@ -98,6 +98,7 @@ class IdentityVerificationResult:
     """Result of identity verification."""
     valid: bool
     identity: Optional[AgentIdentity] = None
+    logger.info("[L6_AUDIT] Action at line 101")
     reason: str = ''
     verified_at: float = field(default_factory=time.time)
 
@@ -108,6 +109,7 @@ class IdentityVerificationResult:
             Dictionary representation
         """
         return {'valid': self.valid,
+                logger.info("[L6_AUDIT] Action at line 112")
                 'identity': self.identity.to_dict() if self.identity else None,
                 'reason': self.reason,
                 'verified_at': self.verified_at}

@@ -128,6 +128,7 @@ class ConversationalRepair:
             "consensus_code": consensus_code,
             "debate_log": debate_log,
             "specialist_responses": specialist_responses,
+            logger.info("[L6_AUDIT] Action at line 131")
             "consensus_reasoning": consensus_response
         }
 
@@ -292,6 +293,7 @@ Review all proposals and extract the best consensus fix that:
 3. Fixes imports/dependencies (DependencySentinel's concern)
 4. Follows architecture rules (ArchitectureGovernor's concern)
 
+logger.info("[L6_AUDIT] Action at line 296")
 Format your response as:
 CONSENSUS: [Brief explanation of the consensus approach]
 

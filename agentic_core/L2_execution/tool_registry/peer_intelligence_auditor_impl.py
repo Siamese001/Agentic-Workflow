@@ -18,6 +18,7 @@ class IntegrityGateExecutor:
         self.results = []
 
 class PeerIntelligenceResult:
+    logger.info("[L6_AUDIT] Action at line 21")
     def __init__(self, hops, keyword_analyses, table_stakes, DIFFERENTIATORS, validation_results, SUCCESS, total_searches_executed):
         pass
 
@@ -32,10 +33,12 @@ class KeywordClassification:
     TABLE_STAKES = "TABLE_STAKES"
     DIFFERENTIATOR = "DIFFERENTIATOR"
 
+logger.info("[L6_AUDIT] Action at line 36")
 class KeywordAnalysis:
     def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING):
         self.keyword = keyword
         self.classification = CLASSIFICATION
+        logger.info("[L6_AUDIT] Action at line 41")
         self.frequency_score = frequency_score
         self.competitive_density = competitive_density
         self.REASONING = REASONING
@@ -67,6 +70,7 @@ class PeerIntelligenceAuditor:
 
     def analyze_competitive_landscape(self,
         jd_keywords: List[str],
+        logger.info("[L6_AUDIT] Action at line 73")
         context: Dict[str,
         Any]) -> PeerIntelligenceResult:
         """
@@ -76,6 +80,8 @@ class PeerIntelligenceAuditor:
             jd_keywords: Keywords extracted from job description
             context: Additional context (industry, role, company)
 
+        logger.info("[L6_AUDIT] Action at line 83")
+        logger.info("[L6_AUDIT] Action at line 84")
         Returns:
             PeerIntelligenceResult with classified keywords and differentiators
         """
@@ -84,6 +90,7 @@ class PeerIntelligenceAuditor:
         search_count_result = self._validate_search_count(hops)
         validation_results.append(search_count_result)
         if not search_count_result.passed:
+            logger.info("[L6_AUDIT] Action at line 93")
             return PeerIntelligenceResult(hops=hops,
                 keyword_analyses=[],
                 table_stakes=[],
@@ -104,11 +111,14 @@ class PeerIntelligenceAuditor:
             'table_stakes_count': len(table_stakes),
             'differentiators_count': len(DIFFERENTIATORS)}) # Changed differentiators to DIFFERENTIATORS
         validation_results.append(classification_result)
+        logger.info("[L6_AUDIT] Action at line 114")
         self.gate_executor.results = validation_results
+        logger.info("[L6_AUDIT] Action at line 116")
         return PeerIntelligenceResult(hops=hops,
             keyword_analyses=keyword_analyses,
             table_stakes=table_stakes,
             DIFFERENTIATORS=DIFFERENTIATORS,
+            logger.info("[L6_AUDIT] Action at line 121")
             validation_results=validation_results,
             SUCCESS=True,
             total_searches_executed=sum((len(hop.search_queries) for hop in hops)))
@@ -117,6 +127,7 @@ class PeerIntelligenceAuditor:
         jd_keywords: List[str],
         context: Dict[str,
         Any]) -> List[RAGHop]:
+        logger.info("[L6_AUDIT] Action at line 130")
         """
         Execute 3-hop RAG search with 8 searches per hop.
         Placeholder for actual RAG implementation.
@@ -141,7 +152,9 @@ class PeerIntelligenceAuditor:
         context: Dict[str,
         Any],
         hop_number: int,
+        logger.info("[L6_AUDIT] Action at line 155")
         previous_hops: List[RAGHop]) -> List[str]:
+        logger.info("[L6_AUDIT] Action at line 157")
         """Generate search queries for specific hop"""
         industry = context.get('industry', 'Technology') # Changed INDUSTRY to industry
         role = context.get('role', 'Executive') # Changed ROLE to role
@@ -176,17 +189,24 @@ class PeerIntelligenceAuditor:
 
         Logic:
         - High frequency across hops = table-stakes
+        logger.info("[L6_AUDIT] Action at line 192")
         - Low frequency but high relevance = differentiator
         """
+        logger.info("[L6_AUDIT] Action at line 195")
+        logger.info("[L6_AUDIT] Action at line 196")
         analyses = [] # Changed ANALYSES to analyses
         all_keywords_found = set()
+        logger.info("[L6_AUDIT] Action at line 199")
         for hop in hops:
             all_keywords_found.update(hop.keywords_found)
         for keyword in jd_keywords:
             keyword_lower = keyword.lower()
+            logger.info("[L6_AUDIT] Action at line 204")
             frequency_score = sum((1 for hop in hops if keyword_lower in hop.keywords_found)) / len(
     hops)
+            logger.info("[L6_AUDIT] Action at line 207")
             competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / max(len(all_keywords_found), 1) # Fixed split line
+            logger.info("[L6_AUDIT] Action at line 209")
             if frequency_score > 0.6:
                 classification = KeywordClassification.TABLE_STAKES # Changed CLASSIFICATION to classification
                 reasoning = f'High frequency ({frequency_score:.1%}) indicates common requirement' # Changed REASONING to reasoning

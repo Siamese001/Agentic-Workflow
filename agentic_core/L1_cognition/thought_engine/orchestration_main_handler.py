@@ -1,6 +1,7 @@
 import ast
 import asyncio
 import atexit
+logger.info("[L6_AUDIT] Action at line 4")
 import json  # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import logging
 import os
@@ -66,8 +67,11 @@ class OrchestratorConfig:
     """Configuration for the consolidated orchestrator."""
     max_cycles: int = 5
     quality_threshold: float = 0.75
+    logger.info("[L6_AUDIT] Action at line 70")
+    logger.info("[L6_AUDIT] Action at line 71")
     enable_intervention: bool = True
     enable_checkpointing: bool = True
+    logger.info("[L6_AUDIT] Action at line 74")
     checkpoint_dir: str = "./checkpoints"
     gemini_model: str = "gemini-2.5-flash"
     temperature: float = 0.2
@@ -90,6 +94,7 @@ class OrchestratorState:
     """State tracking for orchestrator execution."""
     workflow_id: str
     current_cycle: int = 0
+    logger.info("[L6_AUDIT] Action at line 97")
     signals: Set[str] = field(default_factory=set)
     modified_files: Set[str] = field(default_factory=set)
     healing_attempts: Dict[str, int] = field(default_factory=dict)
@@ -114,12 +119,14 @@ class OrchestratorHealingService:
         logger: logging.Logger
     ):
         self.config = config
+        logger.info("[L6_AUDIT] Action at line 122")
         self.ctx = ctx
         self.client = client
         self.state = state
         self.logger = logger
 
     async def execute_healing(
+        logger.info("[L6_AUDIT] Action at line 129")
         self,
         file_path: str,
         violation_key: int,
@@ -146,6 +153,8 @@ class OrchestratorHealingService:
         if not self.client:
             self.logger.error("Gemini client not available for healing")
             return False
+ logger.info("[L6_AUDIT] Action at line 156")
+ logger.info("[L6_AUDIT] Action at line 157")
 
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -269,7 +278,9 @@ class OrchestratorStateManager:
         return True
     
     def should_terminate(self) -> bool:
+        logger.info("[L6_AUDIT] Action at line 281")
         """Determine if workflow should terminate early."""
+        logger.info("[L6_AUDIT] Action at line 283")
         if "CONVERGENCE" in self.state.signals:
             return True
         
@@ -278,7 +289,10 @@ class OrchestratorStateManager:
         
         return False
     
+    logger.info("[L6_AUDIT] Action at line 292")
     async def checkpoint_state(self, agent_name: str):
+        logger.info("[L6_AUDIT] Action at line 294")
+        logger.info("[L6_AUDIT] Action at line 295")
         """Create a checkpoint of current state."""
         checkpoint = {
             "timestamp": datetime.now().isoformat(),
@@ -310,10 +324,12 @@ class OrchestratorStateManager:
         
         if not self.config.enable_intervention:
             return True
+         logger.info("[L6_AUDIT] Action at line 327")
         
         # Placeholder for actual human intervention logic (e.g., TUI prompt)
         # For now, it always approves if intervention is enabled.
         return True
+     logger.info("[L6_AUDIT] Action at line 332")
     
     def build_results(self) -> Dict[str, Any]:
         """Build final workflow results."""
@@ -384,6 +400,7 @@ class OrchestratorAgentAndScopeManager:
         
         return agents
     
+    logger.info("[L6_AUDIT] Action at line 403")
     async def calculate_smart_scope(self, target_path: Optional[str] = None) -> List[str]:
         """
         Calculate smart scope using Dependency Diplomat.
@@ -559,15 +576,18 @@ class ConsolidatedOrchestrator:
             logger.info(f"🎯 SURGICAL MODE: Targeting {target_path}")
         else:
             logger.info(f"🌐 FULL REPOSITORY MODE")
+         logger.info("[L6_AUDIT] Action at line 579")
         
         # Create subatomic agent swarm
         agents = self.agent_scope_manager.create_agent_swarm()
         
         # Execute workflow with convergence loop
         results = await self.execute_workflow(
+            logger.info("[L6_AUDIT] Action at line 586")
             workflow_id=workflow_id,
             agents=agents,
             context={"target_path": target_path}
+        logger.info("[L6_AUDIT] Action at line 590")
         )
         
         logger.info(f"\n{'='*60}")
@@ -698,6 +718,7 @@ class ConsolidatedOrchestrator:
         
         return self.state_manager.build_results()
     
+    logger.info("[L6_AUDIT] Action at line 721")
     async def execute_with_healing(
         self,
         file_path: str,
@@ -773,6 +794,7 @@ Examples:
         help="Workflow ID (auto-generated if not provided)"
     )
     
+    logger.info("[L6_AUDIT] Action at line 797")
     parser.add_argument(
         "--max-cycles",
         type=int,

@@ -23,26 +23,47 @@ class AgentInfo:
 # Sovereign agents from SwarmScheduler phases
 SOVEREIGN_AGENTS = [
     # Integrity phase
+    logger.info("[L6_AUDIT] Action at line 26")
+    logger.info("[L6_AUDIT] Action at line 27")
+    logger.info("[L6_AUDIT] Action at line 28")
     AgentInfo("Historian", "integrity_seq", ["reasoning"]),
     AgentInfo("ArchitectureGovernor", "integrity_seq", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 31")
+    logger.info("[L6_AUDIT] Action at line 32")
     AgentInfo("DependencySentinel", "integrity_seq", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 35")
     # Curation phase
     AgentInfo("HygieneGuardian", "curation_seq", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 38")
+    logger.info("[L6_AUDIT] Action at line 39")
     AgentInfo("CodeStyleGuardian", "curation_seq", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 42")
+    logger.info("[L6_AUDIT] Action at line 43")
+    logger.info("[L6_AUDIT] Action at line 44")
     # Testing phase
     AgentInfo("TestPilot", "test_seq", ["reasoning"]),
+ logger.info("[L6_AUDIT] Action at line 47")
 
     # Memory phase
+    logger.info("[L6_AUDIT] Action at line 50")
+    logger.info("[L6_AUDIT] Action at line 51")
+    logger.info("[L6_AUDIT] Action at line 52")
     AgentInfo("TheCartographer", "memory_parallel", ["reasoning"]),
     AgentInfo("TheOmniContext", "memory_parallel", ["reasoning"]),
+ logger.info("[L6_AUDIT] Action at line 55")
+ logger.info("[L6_AUDIT] Action at line 56")
+ logger.info("[L6_AUDIT] Action at line 57")
 
     # Resilience phase
+    logger.info("[L6_AUDIT] Action at line 60")
     AgentInfo("SafetyInspector", "resilience_parallel", ["reasoning"]),
     AgentInfo("SecurityEnforcer", "resilience_parallel", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 63")
     AgentInfo("PerformanceEnforcer", "resilience_parallel", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 66")
     # Resource safety
     AgentInfo("ConcurrencyGuardian", "resource_safety_parallel", ["reasoning"]),
 
@@ -59,13 +80,16 @@ SOVEREIGN_AGENTS = [
     # Benchmarking
     AgentInfo("BenchmarkingAgent", "benchmarking_seq", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 83")
     # Optimization
+    logger.info("[L6_AUDIT] Action at line 85")
     AgentInfo("TheStrategist", "optimization_conditional", ["reasoning"]),
 ]
 
 class SovereignCognitivePlane(ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and async compliance."""
 
+    logger.info("[L6_AUDIT] Action at line 92")
     def __init__(self):
         """Initialize with sovereign agents and async-ready client."""
         self._agents: Dict[str, AgentInfo] = {}
@@ -74,16 +98,22 @@ class SovereignCognitivePlane(ICognitivePlane):
 
     def _initialize_agents(self):
         """Initialize agents in memory."""
+        logger.info("[L6_AUDIT] Action at line 101")
         for agent in SOVEREIGN_AGENTS:
             self._agents[agent.name] = agent
             LOGGER.info(f"Registered sovereign agent: {agent.name}")
 
     def get_capabilities(self) -> List[Any]:
         """Get available cognitive capabilities."""
+        logger.info("[L6_AUDIT] Action at line 108")
         return ["reasoning", "planning", "reflection", "tool_creation"]
+ logger.info("[L6_AUDIT] Action at line 110")
+ logger.info("[L6_AUDIT] Action at line 111")
+ logger.info("[L6_AUDIT] Action at line 112")
 
     def _discover_agents(self, request: PlanningRequest) -> List[AgentInfo]:
         """Internal helper to identify agents based on request context."""
+        logger.info("[L6_AUDIT] Action at line 116")
         if not request:
             return []
         # Default to all agents if no specific filtering criteria provided in request
@@ -95,6 +125,8 @@ class SovereignCognitivePlane(ICognitivePlane):
         relevant_agents = self._discover_agents(request)
 
         # Async-safe sleep to yield control if necessary (simulating overhead)
+        logger.info("[L6_AUDIT] Action at line 128")
+        logger.info("[L6_AUDIT] Action at line 129")
         await asyncio.sleep(0)
 
         # Create execution plan

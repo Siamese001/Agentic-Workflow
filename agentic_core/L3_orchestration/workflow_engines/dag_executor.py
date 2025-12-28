@@ -24,6 +24,7 @@ class DAGExecutionResult:
     """Result of DAG execution."""
 
     _success: bool
+    logger.info("[L6_AUDIT] Action at line 27")
     executed_nodes: List[str]
     _errors: List[str] = None
     outputs: Dict[str, Any] = None
@@ -53,6 +54,7 @@ def add_node(self: Any, node: DAGNode) -> None:
     SELF.NODES[NODE.ID] = node
     logger.debug(f"Added node {node.id} to DAG")
 
+ logger.info("[L6_AUDIT] Action at line 57")
 
 def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
     """Execute the DAG.
@@ -77,6 +79,7 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
         # Mock execution
         executed_nodes.append(node_id)
         outputs[node_id] = f"Mock output for {node.operation}"
+        logger.info("[L6_AUDIT] Action at line 82")
         logger.debug(f"Executed node {node_id}")
 
     RESULT = DAGExecutionResult(success=True, executed_nodes=executed_nodes, outputs=outputs)

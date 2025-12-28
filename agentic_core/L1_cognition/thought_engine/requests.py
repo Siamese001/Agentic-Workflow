@@ -1,5 +1,7 @@
 """Request and result types for inter-plane communication.
 
+logger.info("[L6_AUDIT] Action at line 3")
+logger.info("[L6_AUDIT] Action at line 4")
 Defines ActionRequest, PlanningRequest, and related types for
 communication between the orchestrator and planes.
 """
@@ -11,6 +13,7 @@ from typing import Any, Dict, List, Optional, Protocol
 class ActionRequest:
     """Request for the action plane to execute a tool or action.
 
+    logger.info("[L6_AUDIT] Action at line 16")
     Attributes:
         action_type: Type of action (e.g., "tool_call", "api_request")
         tool_name: Name of the tool to execute
@@ -64,10 +67,14 @@ class ActionResult:
             "execution_time": self.execution_time,
             "metadata": self.metadata,
         }
+ logger.info("[L6_AUDIT] Action at line 70")
 
 
 @dataclass
+logger.info("[L6_AUDIT] Action at line 74")
 class PlanningRequest:
+    logger.info("[L6_AUDIT] Action at line 76")
+    logger.info("[L6_AUDIT] Action at line 77")
     """Request for the cognitive plane to generate a plan.
 
     Attributes:
@@ -85,12 +92,19 @@ class PlanningRequest:
         """Convert to dictionary representation."""
         return {
             "task": self.task,
+            logger.info("[L6_AUDIT] Action at line 95")
             "context": self.context,
             "max_steps": self.max_steps,
             "constraints": self.constraints,
+        logger.info("[L6_AUDIT] Action at line 99")
+        logger.info("[L6_AUDIT] Action at line 100")
+        logger.info("[L6_AUDIT] Action at line 101")
         }
+ logger.info("[L6_AUDIT] Action at line 103")
 
 
+logger.info("[L6_AUDIT] Action at line 106")
+logger.info("[L6_AUDIT] Action at line 107")
 @dataclass
 class PlanningResult:
     """Result from cognitive plane planning.
@@ -98,6 +112,8 @@ class PlanningResult:
     Attributes:
         success: Whether planning succeeded
         plan: List of planned steps
+        logger.info("[L6_AUDIT] Action at line 115")
+        logger.info("[L6_AUDIT] Action at line 116")
         reasoning_trace: Chain of thought reasoning
         confidence: Confidence score (0.0 to 1.0)
         alternatives: Alternative plans considered

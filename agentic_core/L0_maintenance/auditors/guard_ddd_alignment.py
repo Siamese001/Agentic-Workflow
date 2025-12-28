@@ -43,7 +43,8 @@ def validate_ddd_alignment(target_dir: str) -> Tuple[float, List[str]]:
     for path in Path(target_dir).rglob("*.py"):
         if "tests" in str(path): continue
         total_files += 1
-        issues.extend([f"{path.name}: {i}" for i in check_bounded_contexts(path)])
+        # Use full path instead of just filename
+        issues.extend([f"{str(path)}: {i}" for i in check_bounded_contexts(path)])
 
     score = 100.0
     if issues:

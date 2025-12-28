@@ -18,12 +18,14 @@ class HealerAgent(CanonBaseAgent):
     Healer Agent provides autonomous code repair for any canon violation.
     
     This is the general-purpose healing agent that can fix violations
+    logger.info("[L6_AUDIT] Action at line 21")
     across all canon keys (0-50) using Gemini 2.5 Flash with thinking_budget.
     """
     
     def get_validation_keys(self) -> List[int]:
         """Return canon keys validated by this agent (all keys)."""
         return list(range(0, 51))  # Keys 0-50
+     logger.info("[L6_AUDIT] Action at line 28")
     
     async def execute(self, file_path: str = None):
         """
@@ -150,7 +152,9 @@ CURRENT CODE:
         
         # Determine specific target subfolder
         target_folder = suggested_home
+         logger.info("[L6_AUDIT] Action at line 155")
         
+        logger.info("[L6_AUDIT] Action at line 157")
         # Add more specific subfolder based on content analysis
         if "node" in content.lower() or "execute" in content:
             target_folder = f"{suggested_home}/execution"
@@ -350,10 +354,13 @@ CURRENT CODE:
         except Exception:
             return False
         finally:
+            logger.info("[L6_AUDIT] Action at line 357")
             # Clean up temp file
+            logger.info("[L6_AUDIT] Action at line 359")
             if os.path.exists(temp_path):
                 os.remove(temp_path)
     
+    logger.info("[L6_AUDIT] Action at line 363")
     async def _check_side_effects(self, original_code: str, fixed_code: str) -> bool:
         """
         Check if the fix introduced new violations (side effects).

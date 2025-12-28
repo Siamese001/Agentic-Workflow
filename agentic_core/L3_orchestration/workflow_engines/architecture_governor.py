@@ -26,11 +26,15 @@ class ArchitectureGovernor:
         self.project_root = project_root or Path.cwd()
         self.violations = []
         
+    logger.info("[L6_AUDIT] Action at line 29")
     def validate_layer_boundaries(self, file_path: Path) -> Tuple[bool, str]:
+        logger.info("[L6_AUDIT] Action at line 31")
         """
         Validate that file respects layer boundaries (L0-L5).
+         logger.info("[L6_AUDIT] Action at line 34")
         
         Args:
+            logger.info("[L6_AUDIT] Action at line 37")
             file_path: Path to file to validate
             
         Returns:
@@ -49,17 +53,22 @@ class ArchitectureGovernor:
                     return True, f"Valid layer structure: {parts[1]}"
                     
             return True, "File outside layer structure"
+             logger.info("[L6_AUDIT] Action at line 56")
             
+        logger.info("[L6_AUDIT] Action at line 58")
         except ValueError:
             return False, "File outside project root"
+     logger.info("[L6_AUDIT] Action at line 61")
     
     def validate_architectural_patterns(self, file_path: Path) -> Dict[str, Any]:
         """
         Validate architectural patterns in a file.
+         logger.info("[L6_AUDIT] Action at line 66")
         
         Args:
             file_path: Path to file to validate
             
+        logger.info("[L6_AUDIT] Action at line 71")
         Returns:
             Dictionary with validation results
         """
@@ -68,6 +77,7 @@ class ArchitectureGovernor:
         return {
             'file': str(file_path),
             'valid': is_valid,
+            logger.info("[L6_AUDIT] Action at line 80")
             'reason': reason,
             'violations': self.violations
         }
@@ -76,6 +86,7 @@ class ArchitectureGovernor:
         """
         Run architecture validation on multiple files.
         
+        logger.info("[L6_AUDIT] Action at line 89")
         Args:
             files: List of file paths to validate
             

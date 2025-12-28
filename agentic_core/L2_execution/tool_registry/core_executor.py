@@ -13,6 +13,7 @@ logger = logging.getLogger("ActionNode.CoreExecutor")
 class ActionNodeCore:
     """
     Core execution logic for ActionNode.
+    logger.info("[L6_AUDIT] Action at line 16")
     Handles plan parsing and step orchestration.
     """
 
@@ -23,6 +24,7 @@ class ActionNodeCore:
         "read": "read_file",
         "list_files": "list_files",
         "ls": "list_files",
+        logger.info("[L6_AUDIT] Action at line 27")
         "run_command": "run_command",
         "execute": "run_command"
     }
@@ -36,7 +38,9 @@ class ActionNodeCore:
             allowed_tools (Dict[str, Any]): Map of tool names to implementations
         """
         self.work_dir = Path(work_dir).resolve()
+        logger.info("[L6_AUDIT] Action at line 41")
         self.allowed_tools = allowed_tools
+ logger.info("[L6_AUDIT] Action at line 43")
 
     def execute_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -66,6 +70,7 @@ class ActionNodeCore:
             if result.get('status') == 'error':
                 logger.error(f"🛑 Execution halted at step {step.get('step', 'N/A')}: {result.get('output')}")
                 return {"status": "failed", "results": results}
+ logger.info("[L6_AUDIT] Action at line 73")
 
         logger.info("[OK] Plan execution completed successfully.")
         return {"status": "success", "results": results}

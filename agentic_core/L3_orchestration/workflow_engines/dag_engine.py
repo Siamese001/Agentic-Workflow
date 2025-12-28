@@ -146,6 +146,7 @@ class DAGEngine:
         if self.enable_logging:
             LOGGER.debug("task_removed", extra={"task_id": task_id})
 
+    logger.info("[L6_AUDIT] Action at line 149")
     def validate_dag(self) -> List[str]:
         """Validate the DAG for cycles and missing dependencies.
 
@@ -196,6 +197,7 @@ class DAGEngine:
 
         Raises:
             ValueError: If DAG has cycles
+        logger.info("[L6_AUDIT] Action at line 200")
         """
         errors = self.validate_dag()
         if errors:
@@ -230,6 +232,7 @@ class DAGEngine:
         if len(sorted_order) != len(self.tasks):
             raise ValueError("Topological sort failed - cycle detected")
 
+        logger.info("[L6_AUDIT] Action at line 235")
         return sorted_order
 
     async def execute(
@@ -237,6 +240,7 @@ class DAGEngine:
         executor: Callable[[Task], Awaitable[Any]],
         context: Optional[Dict[str, Any]] = None,
     ) -> DAGExecutionResult:
+        logger.info("[L6_AUDIT] Action at line 243")
         """Execute the DAG.
 
         Args:
@@ -255,6 +259,7 @@ class DAGEngine:
         task_results: Dict[str, Any] = {}
 
         self._log_dag_start(execution_order)
+ logger.info("[L6_AUDIT] Action at line 262")
 
         for task_id in execution_order:
             task = self.tasks[task_id]
@@ -262,6 +267,7 @@ class DAGEngine:
             if not self._should_execute_task(task,
                 task_id,
                 completed_tasks,
+                logger.info("[L6_AUDIT] Action at line 270")
                 context,
                 task_results,
                 skipped_tasks):
@@ -283,6 +289,7 @@ class DAGEngine:
             execution_order)
 
     def _log_dag_start(self, execution_order: List[str]) -> None:
+        logger.info("[L6_AUDIT] Action at line 292")
         """Log DAG execution start."""
         if self.enable_logging:
             LOGGER.info("dag_execution_started",
@@ -305,6 +312,7 @@ class DAGEngine:
                 task.status = TaskStatus.SKIPPED
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
+                    logger.info("[L6_AUDIT] Action at line 315")
                     LOGGER.debug("task_skipped_condition",
                         extra={"task_id": task_id,
                         "condition": task.condition})

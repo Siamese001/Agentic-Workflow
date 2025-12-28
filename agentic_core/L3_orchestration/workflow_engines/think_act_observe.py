@@ -37,6 +37,7 @@ class CycleState:
     current_phase: str = "mission"
     observations: List[Dict[str, Any]] = field(default_factory=list)
     actions_taken: List[Dict[str, Any]] = field(default_factory=list)
+    logger.info("[L6_AUDIT] Action at line 40")
     reasoning_traces: List[Dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -48,18 +49,23 @@ class CycleState:
             "iteration": self.iteration,
             "current_phase": self.current_phase,
             "observations": self.observations,
+            logger.info("[L6_AUDIT] Action at line 52")
             "actions_taken": self.actions_taken,
             "reasoning_traces": self.reasoning_traces,
             "metadata": self.metadata,
+        logger.info("[L6_AUDIT] Action at line 56")
         }
 
 class ThinkActObserveEngine:
+    logger.info("[L6_AUDIT] Action at line 60")
     """Engine for executing the Think-Act-Observe cycle.
 
     Integrates:
     - ReAct engine for structured reasoning (Pillar 6)
     - DAG engine for task dependencies (Pillar 4)
     - State persistence for pause/resume
+ logger.info("[L6_AUDIT] Action at line 67")
+ logger.info("[L6_AUDIT] Action at line 68")
 
     5-Step Cycle:
     1. MISSION - Define the goal
@@ -98,12 +104,15 @@ class ThinkActObserveEngine:
             # from agentic_core.dag_engine import DAGEngine # Example import
             self.dag_engine = DAGEngine(enable_logging=enable_logging)
         else:
+            logger.info("[L6_AUDIT] Action at line 107")
             self.dag_engine = None
 
         self.state: Optional[CycleState] = None
+ logger.info("[L6_AUDIT] Action at line 111")
 
         if self.enable_logging:
             LOGGER.info(
+                logger.info("[L6_AUDIT] Action at line 115")
                 "think_act_observe_engine_initialized",
                 extra={"config": self.config.to_dict()}
             )
@@ -111,6 +120,7 @@ class ThinkActObserveEngine:
     async def execute_cycle(
         self,
         mission: str,
+        logger.info("[L6_AUDIT] Action at line 123")
         scene: Dict[str, Any],
         think_fn: Any,
         act_fn: Any,
@@ -148,16 +158,20 @@ class ThinkActObserveEngine:
         self.state.current_phase = "scene"
 
         # Main loop: THINK -> ACT -> OBSERVE
+        logger.info("[L6_AUDIT] Action at line 161")
         while self.state.iteration < self.config.max_iterations:
+            logger.info("[L6_AUDIT] Action at line 163")
             self.state.iteration += 1
 
             if self.enable_logging:
                 LOGGER.info(
+                    logger.info("[L6_AUDIT] Action at line 168")
                     "iteration_started",
                     extra={"iteration": self.state.iteration}
                 )
 
             # Step 3: THINK
+            logger.info("[L6_AUDIT] Action at line 174")
             think_result = await self._think_phase(think_fn)
 
             if not think_result.get("success"):
@@ -176,6 +190,7 @@ class ThinkActObserveEngine:
             )
 
             # Check if mission is complete
+            logger.info("[L6_AUDIT] Action at line 193")
             if observe_result.get("mission_complete"):
                 if self.enable_logging:
                     LOGGER.info(
@@ -190,14 +205,19 @@ class ThinkActObserveEngine:
             "iterations": self.state.iteration,
             "observations": self.state.observations,
             "actions_taken": self.state.actions_taken,
+            logger.info("[L6_AUDIT] Action at line 208")
             "reasoning_traces": self.state.reasoning_traces,
             "final_state": self.state.to_dict(),
         }
+ logger.info("[L6_AUDIT] Action at line 212")
 
         if self.enable_logging:
+            logger.info("[L6_AUDIT] Action at line 215")
             LOGGER.info(
+                logger.info("[L6_AUDIT] Action at line 217")
                 "cycle_completed",
                 extra={
+                    logger.info("[L6_AUDIT] Action at line 220")
                     "iterations": self.state.iteration,
                     "observations_count": len(self.state.observations),
                 }
@@ -221,6 +241,7 @@ class ThinkActObserveEngine:
 
         # Use ReAct engine if enabled
         if self.react_engine:
+            logger.info("[L6_AUDIT] Action at line 244")
             try:
                 # Create context for ReAct
                 context = {
@@ -235,11 +256,13 @@ class ThinkActObserveEngine:
                 # Assuming ReActEngine.run returns a trace object
                 trace = await self.react_engine.run(
                     task=self.state.mission,
+                    logger.info("[L6_AUDIT] Action at line 259")
                     think_fn=think_fn,
                     act_fn=lambda action: {"type": "plan", "action": action},
                 )
 
                 # Convert trace to reasoning trace
+                logger.info("[L6_AUDIT] Action at line 265")
                 reasoning_trace = trace.to_reasoning_trace()
                 self.state.reasoning_traces.append(reasoning_trace.to_dict())
 
@@ -252,6 +275,7 @@ class ThinkActObserveEngine:
                             "action": step.action,
                             "thought": step.thought,
                         })
+ logger.info("[L6_AUDIT] Action at line 278")
 
                 return {
                     "success": True,
@@ -271,6 +295,7 @@ class ThinkActObserveEngine:
                     "error": str(e),
                     "actions": [],
                 }
+ logger.info("[L6_AUDIT] Action at line 298")
 
         else:
             # Fallback: direct thinking without ReAct
@@ -309,6 +334,7 @@ class ThinkActObserveEngine:
                 extra={"action_count": len(actions)}
             )
 
+        logger.info("[L6_AUDIT] Action at line 337")
         if not actions:
             return {
                 "success": True,
@@ -358,11 +384,13 @@ class ThinkActObserveEngine:
                 return {
                     "success": False,
                     "error": str(e),
+                    logger.info("[L6_AUDIT] Action at line 387")
                     "results": [],
                 }
 
         else:
             # Fallback: sequential execution
+            logger.info("[L6_AUDIT] Action at line 393")
             results = []
             for action in actions:
                 try:
@@ -376,6 +404,7 @@ class ThinkActObserveEngine:
                             extra={"action": action, "error": str(e)}
                         )
                     results.append({"success": False, "error": str(e)})
+ logger.info("[L6_AUDIT] Action at line 407")
 
             return {
                 "success": True,
@@ -439,6 +468,7 @@ class ThinkActObserveEngine:
 
         Args:
             path: Path to save state
+        logger.info("[L6_AUDIT] Action at line 471")
         """
         if not self.state:
             raise ValueError("No state to save")

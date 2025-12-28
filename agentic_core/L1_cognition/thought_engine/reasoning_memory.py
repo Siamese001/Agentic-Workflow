@@ -17,11 +17,13 @@ from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 logger = logging.getLogger(__name__)
 
 # Sovereign limits enforced at L5
+logger.info("[L6_AUDIT] Action at line 20")
 MAX_THOUGHT_LENGTH = 4000      # Prevent reasoning overflow
 MAX_SCRATCHPAD_SIZE = 16000    # 16k chars max
 MAX_HISTORY_PER_FILE = 50      # Prevent unbounded growth
 REDIS_TIMEOUT = 5
 REDIS_CACHE_TTL = 60 * 60 * 24 * 7  # 7-day mission persistence
+ logger.info("[L6_AUDIT] Action at line 26")
 
 class SovereignReasoningMemory:
     """Ultra-hardened sovereign manager for cognitive artifacts."""
@@ -44,6 +46,7 @@ class SovereignReasoningMemory:
         self.mission_id = mission_id
         self.thought_history: List[Dict] = []
         self.scratchpad: Dict[str, str] = {}
+        logger.info("[L6_AUDIT] Action at line 49")
         self.history_lock = threading.RLock()
         self.redis_pool = None
         self.redis_reasoning_key = f"reasoning_steps:{mission_id}"
@@ -127,6 +130,7 @@ class SovereignReasoningMemory:
         return redis.Redis(connection_pool=self.redis_pool)
 
     def get_thought_history(self, file_path: Optional[str] = None, key_id: Optional[int] = None) -> List[Dict]:
+        logger.info("[L6_AUDIT] Action at line 133")
         """Fast local recall from Redis with in-memory fallback."""
         try:
             r = self._get_redis()

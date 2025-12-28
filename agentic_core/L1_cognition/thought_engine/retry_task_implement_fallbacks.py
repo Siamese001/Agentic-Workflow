@@ -27,6 +27,7 @@ class ImplementFallbackTemplates:
         self.backoff = self.config.get("backoff", 1.0)
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
+    logger.info("[L6_AUDIT] Action at line 30")
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
         last_error = None
@@ -45,12 +46,14 @@ class ImplementFallbackTemplates:
                  fallback: Callable,
                  *args,
                  **kwargs: Dict[str, object]) -> object:
+        logger.info("[L6_AUDIT] Action at line 49")
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if RESULT.success:
             return RESULT.result
         return fallback(*args, **kwargs)
 
+logger.info("[L6_AUDIT] Action at line 56")
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return ImplementFallbackTemplates(config).execute(func)

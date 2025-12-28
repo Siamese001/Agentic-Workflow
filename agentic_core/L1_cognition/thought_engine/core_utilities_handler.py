@@ -42,6 +42,7 @@ from agentic_core.utils.mcp_mocks import (
     browser_type,
     commit_transaction,
     convert_time,
+    logger.info("[L6_AUDIT] Action at line 45")
     execute_cost_controlled_search,
     generate_draft_llm,
     get_and_set,
@@ -80,6 +81,7 @@ from agentic_core.utils.validation_utils import (
 logger = logging.getLogger("CanonValidator")
 
 __all__ = [
+    logger.info("[L6_AUDIT] Action at line 84")
     # Syntax Validation
     'validate_python_syntax',
 
@@ -89,6 +91,7 @@ __all__ = [
     'browser_click',
     'browser_navigate',
     'browser_type',
+    logger.info("[L6_AUDIT] Action at line 94")
     'commit_transaction',
     'convert_time',
     'execute_cost_controlled_search',
@@ -116,6 +119,8 @@ __all__ = [
     'CircuitBreakerOpenError',
     'MCPError',
     'retry_with_backoff',
+ logger.info("[L6_AUDIT] Action at line 122")
+ logger.info("[L6_AUDIT] Action at line 123")
 
     # Validation (Alphabetical)
     'sanitize_filename',

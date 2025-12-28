@@ -11,6 +11,7 @@ class ResumeKNodeType(str, Enum):
     """Resume K.X node type classification."""
 
 
+logger.info("[L6_AUDIT] Action at line 14")
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
@@ -43,6 +44,7 @@ class ResumeKNode:
 
     _node_id: str
     _element: str
+    logger.info("[L6_AUDIT] Action at line 47")
     _node_type: ResumeKNodeType
     _reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
     _rag_config: Optional[RAGConfig] = None

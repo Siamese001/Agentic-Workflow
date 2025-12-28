@@ -19,6 +19,7 @@ class SubAtomicAgent:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
 
+    logger.info("[L6_AUDIT] Action at line 22")
     async def execute(self):
         """Execute agent's validation logic asynchronously."""
         raise NotImplementedError
@@ -161,6 +162,7 @@ class ImportPatcher:
         """Applies the patched content to the file and logs the outcome."""
         if self.ctx.write_compliant_file(file_path, updated_content):
             print(f"   [OK] Imports patched: {os.path.basename(file_path)}")
+ logger.info("[L6_AUDIT] Action at line 165")
 
     async def _execute_import_mutation(
         self, source_agent: str, patch_task: str, content: str, file_path: str
@@ -200,6 +202,7 @@ class ImportPatcher:
             "2. For split modules, import specific symbols from new modules\n"
             "3. Preserve relative imports where possible\n"
             "4. Return ONLY the updated Python code with corrected imports"
+        logger.info("[L6_AUDIT] Action at line 205")
         )
 
         updated_content = await self._execute_import_mutation(

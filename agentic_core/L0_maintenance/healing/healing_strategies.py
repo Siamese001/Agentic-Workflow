@@ -188,6 +188,51 @@ class DDDAlignmentHealing(HealingStrategy):
                         })
         
         return fixes
+    
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Apply DDD import refactoring by commenting out illegal imports."""
+        try:
+            file_path = Path(fix.get("file", ""))
+            if not file_path.exists():
+                logger.warning(f"[L0 DDD HEALING] File not found: {file_path}")
+                return False
+            
+            module_info = fix.get("module", "")
+            if not module_info:
+                logger.warning(f"[L0 DDD HEALING] No module info in fix")
+                return False
+            
+            # Read file content
+            content = file_path.read_text(encoding="utf-8")
+            lines = content.splitlines(keepends=True)
+            
+            # Find and comment out the illegal import
+            modified = False
+            for i, line in enumerate(lines):
+                if "import" in line and any(part in line for part in module_info.split()):
+                    # Check if already commented
+                    if line.strip().startswith("#"):
+                        logger.info(f"[L0 DDD HEALING] Import already commented at line {i+1}")
+                        return True
+                    
+                    # Comment out the import with explanation
+                    indent = len(line) - len(line.lstrip())
+                    lines[i] = " " * indent + f"# DDD VIOLATION: {line.lstrip()}"
+                    modified = True
+                    logger.info(f"[L0 DDD HEALING] Commented illegal import at {file_path}:{i+1}")
+                    break
+            
+            if modified:
+                # Write back to file
+                file_path.write_text("".join(lines), encoding="utf-8")
+                return True
+            else:
+                logger.warning(f"[L0 DDD HEALING] Could not find import to fix in {file_path}")
+                return False
+            
+        except Exception as e:
+            logger.error(f"[L0 DDD HEALING] Failed to refactor import: {e}")
+            return False
 
 
 class ObservabilityHealing(HealingStrategy):
@@ -241,6 +286,43 @@ class ObservabilityHealing(HealingStrategy):
                 })
         
         return fixes
+    
+    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+        """Apply observability logging injection."""
+        try:
+            file_path = Path(fix.get("file", ""))
+            if not file_path.exists():
+                logger.warning(f"[L0 OBSERVABILITY HEALING] File not found: {file_path}")
+                return False
+            
+            # Read file content
+            content = file_path.read_text(encoding="utf-8")
+            lines = content.splitlines(keepends=True)
+            
+            line_num = fix.get("line")
+            if not line_num or line_num < 1 or line_num > len(lines):
+                logger.warning(f"[L0 OBSERVABILITY HEALING] Invalid line number: {line_num}")
+                return False
+            
+            # Check if logging already exists at this line
+            target_line = lines[line_num - 1]
+            if "logger.info" in target_line or "REASONING" in target_line:
+                logger.info(f"[L0 OBSERVABILITY HEALING] Logging already exists at line {line_num}")
+                return True  # Already fixed
+            
+            # Insert logging statement before the target line
+            indent = len(target_line) - len(target_line.lstrip())
+            log_statement = " " * indent + f'logger.info("[L6_AUDIT] Action at line {line_num}")\n'
+            lines.insert(line_num - 1, log_statement)
+            
+            # Write back to file
+            file_path.write_text("".join(lines), encoding="utf-8")
+            logger.info(f"[L0 OBSERVABILITY HEALING] Injected logging at {file_path}:{line_num}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"[L0 OBSERVABILITY HEALING] Failed to inject logging: {e}")
+            return False
 
 
 class DirectRedisHealing(HealingStrategy):

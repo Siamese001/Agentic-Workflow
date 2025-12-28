@@ -57,7 +57,9 @@ class GitKrakenHealingStrategy:
             fixes.append({
                 "action": "git_healing_commit",
                 "files": [file_path],
+                "file": file_path,
                 "summary": f"Sovereignty Fix: {len(file_issues)} violations in {file_path}",
+                "reason": f"Sovereignty Fix: {len(file_issues)} violations in {file_path}",
                 "details": file_issues,
                 "priority": self.priority,
                 "strategy": self.name

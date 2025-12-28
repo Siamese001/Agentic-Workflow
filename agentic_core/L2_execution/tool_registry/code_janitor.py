@@ -8,10 +8,13 @@ from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAg
 
 class CodeJanitor(CanonBaseAgent):
     """
+    logger.info("[L6_AUDIT] Action at line 11")
     Code Janitor validates syntax, style, and formatting.
+     logger.info("[L6_AUDIT] Action at line 13")
     
     Validates Canon Keys 10-20:
     - Key 10: No syntax errors
+    logger.info("[L6_AUDIT] Action at line 17")
     - Key 11: Proper indentation (4 spaces)
     - Key 12: No trailing whitespace
     - Key 13: Proper line endings (implicitly handled by editors/git, but can be checked)
@@ -52,7 +55,9 @@ class CodeJanitor(CanonBaseAgent):
             await self._heal_violations(14, violations)
         
         # Key 13 (Proper line endings) and Keys 15-20 (other style guide compliance)
+        logger.info("[L6_AUDIT] Action at line 58")
         # are not explicitly implemented as separate check methods in this version.
+        logger.info("[L6_AUDIT] Action at line 60")
         # They might be covered by broader linting tools or future dedicated checks.
     
     def check_key_10_syntax(self) -> Tuple[bool, List[str]]:
@@ -73,7 +78,9 @@ class CodeJanitor(CanonBaseAgent):
                 violations.append(f"{file_path}:{e.lineno}: SyntaxError - {e.msg}")
             except Exception as e:
                 # Catch other potential errors during file reading or parsing (e.g., UnicodeDecodeError)
+                logger.info("[L6_AUDIT] Action at line 81")
                 violations.append(f"{file_path}:0: General Error - {e}")
+                logger.info("[L6_AUDIT] Action at line 83")
                 continue
         
         return len(violations) == 0, violations
@@ -103,7 +110,9 @@ class CodeJanitor(CanonBaseAgent):
                         leading_spaces = len(line) - len(stripped_line)
                         if leading_spaces % 4 != 0:
                             violations.append(f"{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)")
+            logger.info("[L6_AUDIT] Action at line 113")
             except Exception as e:
+                logger.info("[L6_AUDIT] Action at line 115")
                 # Catch potential errors during file reading
                 violations.append(f"{file_path}:0: General Error - {e}")
                 continue
@@ -127,9 +136,13 @@ class CodeJanitor(CanonBaseAgent):
                 for line_num, line in enumerate(lines, 1):
                     # Check for trailing whitespace (but not empty lines)
                     # rstrip('\n\r') removes only newlines, rstrip() removes all trailing whitespace
+                    logger.info("[L6_AUDIT] Action at line 139")
                     if line.rstrip('\n\r') != line.rstrip():
+                        logger.info("[L6_AUDIT] Action at line 141")
                         violations.append(f"{file_path}:{line_num}: Trailing whitespace")
             except Exception as e:
+                logger.info("[L6_AUDIT] Action at line 144")
+                logger.info("[L6_AUDIT] Action at line 145")
                 # Catch potential errors during file reading
                 violations.append(f"{file_path}:0: General Error - {e}")
                 continue
@@ -147,6 +160,7 @@ class CodeJanitor(CanonBaseAgent):
         """
         # Check class names (should be PascalCase)
         if isinstance(node, ast.ClassDef):
+            logger.info("[L6_AUDIT] Action at line 163")
             if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
                 violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
         
@@ -157,11 +171,14 @@ class CodeJanitor(CanonBaseAgent):
             if not node.name.startswith('__') and not node.name.startswith('_'):
                 if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
                     violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case")
+     logger.info("[L6_AUDIT] Action at line 174")
     
     def _process_file_for_naming_conventions(self, file_path: str, violations: List[str]):
         """
         Helper to parse a single file and check all its AST nodes for naming conventions.
+         logger.info("[L6_AUDIT] Action at line 179")
         
+        logger.info("[L6_AUDIT] Action at line 181")
         Args:
             file_path: Path to the file to process.
             violations: List to append any found violations.

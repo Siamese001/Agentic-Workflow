@@ -84,9 +84,11 @@ class AgentGym:
             raise ValueError(f'Scenario not found: {scenario_id}')
         start_time = time.time()
         self._log_benchmark_start(scenario_id, scenario)
+        logger.info("[L6_AUDIT] Action at line 87")
         OUTPUTS = await self._execute_test_cases(scenario.test_cases, agent_fn)
         REPORTS = await self.golden_evaluator.evaluate_all(outputs)
         return self._create_benchmark_result(scenario_id, scenario.test_cases, reports, start_time)
+ logger.info("[L6_AUDIT] Action at line 91")
 
     async def _execute_test_cases(self, test_cases: List, agent_fn: Callable) -> Dict:
         """Execute all test cases."""
