@@ -79,6 +79,20 @@ try:
 except Exception as e:
     print(f"   [!] Territory bootstrap (non-fatal): {e}") 
 
+# [TRACER FIX] Simple no-op tracer for telemetry spans
+class NoOpTracer:
+    """No-op tracer context manager for when OpenTelemetry is not available"""
+    class NoOpSpan:
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+    
+    def start_as_current_span(self, name):
+        return self.NoOpSpan()
+
+tracer = NoOpTracer()
+
 # [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
     """
