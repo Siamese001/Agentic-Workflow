@@ -169,7 +169,7 @@ class HyDEProcessor:
         max_retries: int = 2,
         fallback_enabled: bool = True
     ):
-            """Initialize the HyDE processor.
+        """Initialize the HyDE processor.
 
         Args:
             llm_client: LLM client for document generation
@@ -212,14 +212,13 @@ class HyDEProcessor:
 
         logger.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
 
-        """Docstring."""
     def expand_query(
         self,
         original_query: str,
         archetype: str,
         industry: Optional[str] = None
     ) -> HyDEResult:
-            """Expand query using archetype-aware HyDE.
+        """Expand query using archetype-aware HyDE.
 
         Args:
             original_query: Original search query
@@ -284,14 +283,13 @@ class HyDEProcessor:
                 error_message=str(e)
             )
 
-        """Docstring."""
     def generate_hypothetical_doc(
         self,
         query: str,
         archetype: str,
         industry: str
     ) -> Optional[HyDEDocument]:
-            """Generate a hypothetical document for query expansion.
+        """Generate a hypothetical document for query expansion.
 
         Args:
             query: Original query keywords

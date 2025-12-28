@@ -101,7 +101,6 @@ class SemanticCache:
         return hashlib.sha256(cache_input.encode()).hexdigest()
 
     def get(
-        """Docstring."""
         self,
         prompt: str,
         context: Optional[Dict[str, Any]] = None,
