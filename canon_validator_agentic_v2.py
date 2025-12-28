@@ -797,7 +797,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
 # L4 ORCHESTRATION: THE RUNNER (Mission Logic)
 # ==============================================================================
 
-async def run_mission(target_scope: str = "agentic_core"):
+async def run_mission(target_scope: str = "agentic_core", structural_only: bool = False, no_llm: bool = False, batch_size: int = 50):
     """
     [L3 ORCHESTRATOR]
     Executes the full Agentic Validation Mission.
@@ -807,6 +807,13 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     print(f"\n[*] MISSION START: Validating {target_scope}")
     print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
+    
+    # Apply healing mode flags
+    if structural_only:
+        print(f"   [MODE] Structural-only healing enabled - LLM agents skipped")
+    if no_llm:
+        print(f"   [MODE] No-LLM mode enabled - All API calls disabled")
+    print(f"   [CONFIG] Batch size: {batch_size}")
     
     # Use the GLOBALLY defined project_root from the Gravity Anchor
     global project_root 
@@ -1432,17 +1439,46 @@ IF (task == "GRAVITY_REFACTOR"):
     # ===========================================================================
     # [ENHANCEMENT 3] L3 ORCHESTRATION: Categorize Agents (Fixes "Too Fast" Bug)
     # ===========================================================================
+
     atomic_validators = [] # Run PER FILE (takes file_path arg)
     batch_validators = []  # Run ONCE (takes no args)
     monitors = []          # Run ONCE at end
 
     print(f"\n[AGENT CATEGORIZATION] Categorizing {len(ctx.cleaning_crew)} agents...")
     
+    # Define agents that require LLM API calls
+    LLM_DEPENDENT_AGENTS = {
+        'HallucinationHunter', 'ImportLawAgent', 'DeadCodePurgerAgent',
+        'SignalAmplifierAgent', 'FissionExecutorAgent', 'ComplexityGovernorAgent',
+        'DocstringSovereignAgent', 'TypeHintEnforcerAgent', 'EntropyMaximizerAgent',
+        'ArchitectureGovernor', 'RecursiveSpanHealerAgent', 'ScriptsConsolidatorAgent',
+        'TerritoryHealerAgent', 'SemanticTerritoryMapperAgent', 'AgentRegistryValidatorAgent',
+        'MissionHistorian', 'KeyCoverageAuditorAgent', 'RankingSpecialist',
+        'NarrativeScorer', 'DriftDetectorAgent', 'NamingLawHealerAgent',
+        'GlobalComplianceAggregatorAgent'
+    }
+    
+    # Filter agents based on flags
+    filtered_agents = []
     for agent in ctx.cleaning_crew:
         name = agent.__class__.__name__
-        # Note: HallucinationHunter and MemoryArchitect will be handled in dedicated hardening blocks below
         
-        # [FINAL SOVEREIGNTY] Classify Watchtower guardians properly
+        # Skip LLM-dependent agents if flags are set
+        if structural_only and name in LLM_DEPENDENT_AGENTS:
+            print(f"     [-] {name} SKIPPED (structural-only mode)")
+            continue
+        if no_llm and name in LLM_DEPENDENT_AGENTS:
+            print(f"     [-] {name} SKIPPED (no-LLM mode)")
+            continue
+            
+        filtered_agents.append(agent)
+    
+    ctx.cleaning_crew = filtered_agents
+    print(f"   [OK] Filtered to {len(ctx.cleaning_crew)} agents based on mode flags")
+    
+    for agent in ctx.cleaning_crew:
+        name = agent.__class__.__name__
+        
         if name == 'GravityEnforcerAgent':
             # Gravity violations are file-local in origin -> run per-file for early healing
             atomic_validators.append(agent)
@@ -2539,6 +2575,22 @@ if __name__ == "__main__":
         action="store_true",
         help="Reset sovereign state before validation"
     )
+    parser.add_argument(
+        "--structural-only",
+        action="store_true",
+        help="Heal only deterministic structural issues (location, hierarchy, imports). Skip LLM agents."
+    )
+    parser.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Disable all Gemini API calls. Use rule-based healing only."
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=50,
+        help="Process files in batches to avoid rate limits (default 50)"
+    )
     args = parser.parse_args()
     
     # Global mission timeout: 30 minutes
@@ -2547,7 +2599,12 @@ if __name__ == "__main__":
     try:
         async def timed_mission():
             async with asyncio.timeout(MISSION_TIMEOUT):
-                await run_mission(args.target)
+                await run_mission(
+                    target_scope=args.target,
+                    structural_only=args.structural_only,
+                    no_llm=args.no_llm,
+                    batch_size=args.batch_size
+                )
         asyncio.run(timed_mission())
     except KeyboardInterrupt:
         print("\n[!] Mission interrupted by user")
