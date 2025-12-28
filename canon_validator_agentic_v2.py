@@ -942,32 +942,38 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
         sys.exit(1)
 
     # [AGENTIC UNLEASH] EXPLICIT CLIENT CONSTRUCTION
-    try:
-        # Use the new google.genai SDK (not google.generativeai)
-        pass
-        
-        api_key = os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            print("\n[CRITICAL] GOOGLE_API_KEY not set in .env!")
-            sys.exit(1)
-        
-        model_name = os.getenv("GEMINI_MODEL")
-        if not model_name:
-            print("\n[CRITICAL] GEMINI_MODEL not set in .env!")
-            print("   -> Add GEMINI_MODEL=gemini-2.5-flash to your .env file")
-            sys.exit(1)
+    # Skip entirely if no-llm mode is enabled
+    if no_llm:
+        print(f"   [MODE] No-LLM mode: Skipping Gemini client initialization")
+        _real_engine = None
+        subatomic_engine = None
+    else:
+        try:
+            # Use the new google.genai SDK (not google.generativeai)
+            pass
+            
+            api_key = os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                print("\n[CRITICAL] GOOGLE_API_KEY not set in .env!")
+                sys.exit(1)
+            
+            model_name = os.getenv("GEMINI_MODEL")
+            if not model_name:
+                print("\n[CRITICAL] GEMINI_MODEL not set in .env!")
+                print("   -> Add GEMINI_MODEL=gemini-2.5-flash to your .env file")
+                sys.exit(1)
 
-        # Initialize Engine with NO client (it will create its own genai.Client)
-        _real_engine = SubAtomicEngine(gemini_client=None)
-        # Wrap in Spy for Visibility
-        subatomic_engine = GeminiSpy(_real_engine)
-        
-        print(f"   [OK] AGENTIC UNLEASHED: {model_name}")
-        print(f"   [OK] TELEMETRY: GEMINI SPY ACTIVE")
+            # Initialize Engine with NO client (it will create its own genai.Client)
+            _real_engine = SubAtomicEngine(gemini_client=None)
+            # Wrap in Spy for Visibility
+            subatomic_engine = GeminiSpy(_real_engine)
+            
+            print(f"   [OK] AGENTIC UNLEASHED: {model_name}")
+            print(f"   [OK] TELEMETRY: GEMINI SPY ACTIVE")
 
-    except Exception as e:
-        print(f"[CRITICAL] Failed to unleash Gemini: {e}")
-        sys.exit(1)
+        except Exception as e:
+            print(f"[CRITICAL] Failed to unleash Gemini: {e}")
+            sys.exit(1)
 
     # 2. Initialize Fission Logic with HIGH threshold to validate all files
     # Set to 10000 to effectively disable fission and validate everything
@@ -1062,10 +1068,13 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     # [ETERNAL MCP INTEGRATION] Sovereign L3 MCP Router
     ctx.mcp_router = None
     try:
+        import asyncio
         mcp_router = SovereignMCPRouter(role=target_scope)
-        await mcp_router.initialize()
+        await asyncio.wait_for(mcp_router.initialize(), timeout=5.0)
         ctx.mcp_router = mcp_router
         print(f"   [OK] Sovereign MCP Router ETERNALLY ARMED — tools ready for L4 healing")
+    except asyncio.TimeoutError:
+        print(f"   [!] MCP Router initialization timed out — continuing without MCP")
     except Exception as e:
         print(f"   [!] MCP Router failed to arm: {e} — continuing with LLM-only healing")
 
@@ -1091,8 +1100,10 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
         from agentic_core.L4_state.filesystem.filesystem_mcp_sovereign import SovereignFilesystemMCP
         ctx.fs_mcp = SovereignFilesystemMCP(ctx.mcp_router.manager, getattr(ctx, 'session_id', 'standalone'))
         # Lock the gates: only allow access to mission-specific folders
-        await ctx.fs_mcp.set_roots(["agentic_core", "apps_shared", "apps_rg", "tests"])
+        await asyncio.wait_for(ctx.fs_mcp.set_roots(["agentic_core", "apps_shared", "apps_rg", "tests"]), timeout=5.0)
         print(f"   [OK] Sovereign Filesystem MCP ARMED — atomic operations eternal")
+    except asyncio.TimeoutError:
+        print(f"   [!] Filesystem MCP initialization timed out — falling back to direct writes")
     except Exception as e:
         print(f"   [!] Filesystem MCP failed: {e} — falling back to direct writes")
 
@@ -1124,7 +1135,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
             cache=ctx.semantic_cache
         )
         print(f"   [OK] Sovereign DeepWiki client armed — repository knowledge online")
-        ctx.semantic_cache = SovereignSemanticCache(mission_id=getattr(ctx, 'session_id', 'standalone'), engine=subatomic_engine)
+        ctx.semantic_cache = SovereignSemanticCache(mission_id=getattr(ctx, 'session_id', 'standalone'), engine=subatomic_engine if not no_llm else None)
         print(f"   [OK] Sovereign Semantic Cache armed — territory reflection active")
     except Exception as e:
         print(f"   [!] Semantic cache failed: {e} — territory reflection degraded")
@@ -1222,51 +1233,19 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     print(f"\n[PHASE -1] SYNTAX HEALING")
     import ast
     syntax_healed_count = 0
-    for file_path in ctx.python_files:
-        try:
-            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                code = f.read()
-            ast.parse(code, filename=file_path)
-        except SyntaxError as e:
-            print(f"   [SYNTAX-FIX] {Path(file_path).name}:{e.lineno} -> {e.msg}")
+    
+    if no_llm:
+        print(f"   [SKIP] Syntax healing disabled in no-LLM mode")
+    else:
+        for file_path in ctx.python_files:
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                    broken_code = f.read()
-                
-                repair_prompt = f"""### ROLE: SYNTAX_MEDIC
-### ERROR: {e.msg} at line {e.lineno}
-### TASK: Fix the syntax error (quotes, indents, or colons) only. Do not change logic.
-### FILE: {Path(file_path).name}
-
-Return ONLY the fixed Python code. No explanations, no markdown.
-"""
-                
-                fixed_code = await ctx.engine.resilient_mutation(
-                    file_path=str(file_path),
-                    code=broken_code,
-                    task=repair_prompt,
-                    round_num=1,
-                    fission_active=False
-                )
-                
-                # Safety: Ensure we didn't get an empty response
-                if len(fixed_code) > 10:
-                    is_safe, msg = ctx.safety.verify_change(broken_code, fixed_code, fission_active=False)
-                    if not is_safe:
-                        print(f"      [!] Safety check failed: {msg}")
-                        continue
-
-                    # HARDENING: Re-parse AST to confirm the repair didn't introduce new syntax errors.
-                    try:
-                        ast.parse(fixed_code, filename=file_path)
-                        with open(file_path, 'w', encoding='utf-8') as f:
-                            f.write(fixed_code)
-                        print(f"      [✓] Syntax Healed & Verified.")
-                        syntax_healed_count += 1
-                    except SyntaxError as e2:
-                        print(f"      [!] Healing failed: Fixed code still has syntax error at line {e2.lineno}")
-            except Exception as e:
-                print(f"      [!] Healing failed: {str(e)[:100]}")
+                    code = f.read()
+                ast.parse(code, filename=file_path)
+            except SyntaxError as e:
+                print(f"   [SYNTAX-FIX] {Path(file_path).name}:{e.lineno} -> {e.msg}")
+                # Skip healing in no-LLM mode - just report the error
+                print(f"      [!] Syntax error detected but not fixed (no-LLM mode)")
     
     if syntax_healed_count > 0:
         print(f"   [PHASE -1 COMPLETE] Healed {syntax_healed_count} files with syntax errors")
@@ -1292,8 +1271,12 @@ Return ONLY the fixed Python code. No explanations, no markdown.
         print(f"   [DISCOVERY] Mapping 50-key architectural components...")
         
         for base_dir in scan_targets:
-            if not base_dir.exists(): continue
+            if not base_dir.exists(): 
+                print(f"     [SKIP] {base_dir} does not exist")
+                continue
 
+            print(f"     [SCAN] Scanning {base_dir}...")
+            file_count = 0
             # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
             for root, dirs, files in os.walk(base_dir):
                 # Prune protected dirs to avoid scanning archives
@@ -1302,6 +1285,11 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                     if not file.endswith('.py') or file.startswith("__"):
                         continue
                     file_path = Path(root) / file
+                    file_count += 1
+                    
+                    # Progress update every 100 files
+                    if file_count % 100 == 0:
+                        print(f"       [PROGRESS] Scanned {file_count} files...")
                     
                     try:
                         rel_path = file_path.relative_to(project_root)
@@ -1324,9 +1312,10 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                         # Suppress known legacy noise to find real architectural breaks
                         noise = ["services.", "runtime_shared", "BaseModel", "Agent", "ClassVar"]
                         if any(n in str(e) for n in noise):
-                            print(f"     [!] Known legacy issue: {e}")
                             continue
-                        print(f"     [!] Failed to inspect {file_path.name}: {e}")
+                        print(f"     [!] Failed to inspect {file_path.name}: {str(e)[:100]}")
+            
+            print(f"     [DONE] Scanned {file_count} files in {base_dir}")
         
         return found_agents
 
