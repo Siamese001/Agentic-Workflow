@@ -249,149 +249,6 @@ print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
 print("-" * 70)
 
 # ===========================================================================
-# [PHASE -3] NON-PYTHON ASSET COMPLIANCE – COMPREHENSIVE AUTO-HEALING
-# Naming, Location, Syntax, and Semantic Healing
-# ===========================================================================
-print(f"\n[PHASE -3] Enforcing comprehensive purity on non-Python assets...")
-
-import re
-import json
-import shutil
-from datetime import datetime
-try:
-    import yaml
-    YAML_OK = True
-except ImportError: YAML_OK = False
-
-# CONFIGURATION
-AUTO_HEAL_NAMING = True
-AUTO_HEAL_LOCATION = True
-AUTO_HEAL_CONTENT = True  # Normalize + Schema Repair
-CREATE_BACKUP = True
-
-location_map = {
-    '.json': ['schemas', 'config', 'prompt_governance'],
-    '.yaml': ['config', 'prompt_governance'],
-    '.yml':  ['config', 'prompt_governance'],
-    '.csv':  ['data', 'audit'],
-    '.toml': ['config']
-}
-
-stats = {'violations': 0, 'fixed': 0}
-
-def perform_backup(p: Path):
-    if CREATE_BACKUP:
-        bak = p.with_suffix(p.suffix + ".bak." + datetime.now().strftime("%H%M%S"))
-        shutil.copy2(p, bak)
-
-# [MEMORY FIX] Replace rglob with memory-efficient walker
-PROTECTED = {'.git', '.venv', 'node_modules', 'archives', '__pycache__', 'data'}
-
-def get_assets(root_path):
-    """Memory-efficient asset walker that prunes protected directories."""
-    for root, dirs, files in os.walk(root_path):
-        # Prune protected dirs in-place to prevent os.walk from entering them
-        dirs[:] = [d for d in dirs if d not in PROTECTED]
-        for file in files:
-            yield Path(root) / file
-
-for asset in get_assets(project_root):
-    if asset.suffix == ".py" or ".git" in str(asset):
-        continue
-        
-    rel = asset.relative_to(project_root)
-    if not str(rel).startswith("agentic_core"):
-        continue
-
-    suffix = asset.suffix.lower()
-    targets = location_map.get(suffix)
-    if not targets and suffix not in {'.md'}:
-        continue
-
-    # 1. Structural Checks
-    name_ok = re.match(r'^[a-z_0-9-.]+\.[a-z]+$', asset.name) is not None
-    location_ok = any(t in asset.parts for t in targets) if targets else True
-        
-    # 2. Semantic Checks
-    content_healed = False
-    data = None
-    if suffix in {'.json', '.yaml', '.yml'}:
-        try:
-            raw = asset.read_text(encoding="utf-8")
-            if suffix == '.json':
-                # Syntax Auto-Repair (Trailing commas)
-                clean_raw = re.sub(r',\s*([}\]])', r'\1', raw)
-                data = json.loads(clean_raw)
-                
-                # Schema Healing
-                schema_p = asset.with_name(asset.stem + ".schema.json")
-                if schema_p.exists():
-                    schema = json.loads(schema_p.read_text())
-                    # Inject defaults for missing required keys
-                    for req in schema.get('required', []):
-                        if req not in data and 'default' in schema.get('properties', {}).get(req, {}):
-                            data[req] = schema['properties'][req]['default']
-                            content_healed = True
-                    
-                # Normalization
-                if AUTO_HEAL_CONTENT:
-                    norm = json.dumps(data, indent=2, sort_keys=True)
-                    if norm.strip() != raw.strip():
-                        perform_backup(asset)
-                        asset.write_text(norm, encoding="utf-8")
-                        content_healed = True
-                        
-            elif suffix in {'.yaml', '.yml'} and YAML_OK:
-                data = yaml.safe_load(raw)
-                if AUTO_HEAL_CONTENT:
-                    norm = yaml.safe_dump(data, sort_keys=True, indent=2)
-                    if norm.strip() != raw.strip():
-                        perform_backup(asset)
-                        asset.write_text(norm, encoding="utf-8")
-                        content_healed = True
-        except Exception as e:
-            print(f"   [!] CONTENT ERROR in {rel}: {str(e)[:50]}")
-
-    if name_ok and location_ok and not content_healed:
-        continue
-
-    # HEALING: Location (Layer-Aware)
-    if AUTO_HEAL_LOCATION and not location_ok:
-        layer_root = next((p for p in asset.parents if p.name.startswith("L")), None)
-        if layer_root:
-            target_dir = layer_root / targets[0]
-            target_dir.mkdir(parents=True, exist_ok=True)
-            new_p = target_dir / asset.name
-            if not new_p.exists():
-                perform_backup(asset)
-                shutil.move(str(asset), str(new_p))
-                print(f"      [✓] RELOCATED: {asset.name} -> {targets[0]}/")
-                # audit_log.record(asset.name, "ASSET_RELOCATE", str(rel), str(new_p.relative_to(project_root)), "Auto-placement")
-                asset = new_p
-                stats['fixed'] += 1
-
-    # HEALING: Naming
-    if AUTO_HEAL_NAMING and not name_ok:
-        clean_name = re.sub(r'[^a-z0-9.]', '_', asset.name.lower())
-        clean_name = re.sub(r'_+', '_', clean_name).strip('_')
-        new_path = asset.with_name(clean_name)
-        if not new_path.exists():
-            perform_backup(asset)
-            asset.rename(new_path)
-            print(f"      [✓] RENAMED: {asset.name} -> {clean_name}")
-            # audit_log.record(asset.name, "ASSET_RENAME", str(asset.relative_to(project_root)), str(new_path.relative_to(project_root)), "Signal purity")
-            stats['fixed'] += 1
-
-    if content_healed:
-        print(f"      [✓] CONTENT HEALED/NORMALIZED: {asset.name}")
-        stats['fixed'] += 1
-            
-    stats['violations'] += 1
-
-print(f"   [PHASE -3 COMPLETE] {stats['violations']} violations | {stats['fixed']} items healed.")
-print("-" * 70)
-
-# ===========================================================================
 # [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
 # ===========================================================================
 print(f"\n[PHASE 0] Naming Law Amplification: ARMED")
@@ -525,67 +382,6 @@ except Exception as e:
     print(f"   [!] Hybrid routing class import failed: {e}")
     PineconeSovereignAgent = None
 
-# [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
-from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
-from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
-from agentic_core.L4_state.validation_context.subatomic_registry import SubAtomicRegistry
-from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
-from agentic_core.L5_safety.guardrails.adversarial_red_teamer import AdversarialRedTeamer as SovereignRedTeamAgent
-from agentic_core.L5_safety.guardrails.sovereign_alerting_agent import SovereignAlertingAgent
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-
-# [ULTRA-HARDENED AGENTS] Import the four new sovereign agents
-from agentic_core.L5_safety.policy.neural_auto_immune_agent import NeuralAutoImmuneAgent
-from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
-from agentic_core.L0_maintenance.scripts.sovereign_watchdog_agent import SovereignWatchdogAgent
-
-# Try to import MemoryArchitect (base.py has ValidationContext issue)
-try:
-    from agentic_core.L2_execution.P4_agents.memory_architect import MemoryArchitect
-except ImportError:
-    MemoryArchitect = None
-
-# Try to import optional hardening agents
-try:
-    from agentic_core.L4_state.audit_trails.structural_drift_agent import StructuralDriftAgent
-except ImportError:
-    StructuralDriftAgent = None
-try:
-    from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
-except ImportError:
-    BudgetGuardianAgent = None
-
-# Try to import additional hardening agents
-try:
-    from agentic_core.L5_safety.policy.sovereign_policy_enforcer import SovereignPolicyEnforcer
-except ImportError:
-    SovereignPolicyEnforcer = None
-try:
-    from agentic_core.L6_meta.eternal_convergence_agent import EternalConvergenceAgent
-except ImportError:
-    EternalConvergenceAgent = None
-try:
-    from agentic_core.L5_safety.red_teaming.security_vuln_scanner_agent import SecurityVulnScannerAgent
-except ImportError:
-    SecurityVulnScannerAgent = None
-try:
-    from agentic_core.L3_vitality.performance_sentinel_agent import PerformanceSentinelAgent
-except ImportError:
-    PerformanceSentinelAgent = None
-try:
-    from agentic_core.L5_safety.verifiability.test_coverage_guardian import TestCoverageGuardian
-except ImportError:
-    TestCoverageGuardian = None
-try:
-    from agentic_core.L6_meta.legal.license_compliance_agent import LicenseComplianceAgent
-except ImportError:
-    LicenseComplianceAgent = None
-try:
-    from agentic_core.L6_meta.seal.sovereign_seal_agent import SovereignSealAgent
-except ImportError:
-    SovereignSealAgent = None
-
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -594,6 +390,22 @@ logger = logging.getLogger(__name__)
 MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '10'))
 MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
 GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
+
+# === PROTECTED FOLDERS: Skip archives and legacy code ===
+PROTECTED_FOLDERS = {
+    'archives',        # [VOID ZONE] Strictly ignored
+    'data',            # [VOID ZONE] Strictly ignored
+    'legacy_code',     # Deprecated
+    'legacy_engines',
+    'legacy_resume_gen',
+    '.git',
+    '__pycache__',
+    'node_modules',
+    '.venv',
+    'venv',
+    'env',
+    'test',            # New addition
+}
 
 # ==============================================================================
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
@@ -751,6 +563,9 @@ class GeminiSpy:
     def __getattr__(self, name):
         # Pass through non-callable attributes immediately
         attr = getattr(self._engine, name)
+        if attr is None:
+            raise AttributeError(f"Engine method '{name}' is None/Missing on {type(self._engine)}")
+            
         if not callable(attr) or name.startswith("_"):
             return attr
 
@@ -852,11 +667,12 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     if target_path.is_dir():
         for root, dirs, files in os.walk(target_path):
             # Prune protected dirs to avoid scanning archives, .git, etc.
-            dirs[:] = [d for d in dirs if d not in PROTECTED]
+            dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
             for file in files:
                 if not file.endswith('.py'):
                     continue
                 py_file = Path(root) / file
+                
                 try:
                     rel_path = py_file.relative_to(project_root)
                     root_folder = rel_path.parts[0] if rel_path.parts else ""
@@ -883,7 +699,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     if target_path.is_dir():
         for root, dirs, files in os.walk(target_path):
             # Prune protected dirs to avoid scanning archives, .git, etc.
-            dirs[:] = [d for d in dirs if d not in PROTECTED]
+            dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
             for file in files:
                 if not file.endswith('.py'):
                     continue
@@ -970,7 +786,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     import sys  # Ensure sys is available in this scope
     
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.9 - INFINITE LOOP PREVENTION + LAZY LLM")
+    print(f"DEBUG: VERSION 2.9 - SOVEREIGN HARDENING (Fixes: Boot Hangs, NoneType Crashes, Syntax Loops)")
     
     # Use the GLOBALLY defined project_root from the Gravity Anchor
     global project_root 
@@ -1312,22 +1128,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not target_path.is_relative_to(project_root_path):
         raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
     
-    # === PROTECTED FOLDERS: Skip archives and legacy code ===
-    PROTECTED_FOLDERS = {
-        'archives',        # [VOID ZONE] Strictly ignored
-        'data',            # [VOID ZONE] Strictly ignored
-        'legacy_code',     # Deprecated
-        'legacy_engines',
-        'legacy_resume_gen',
-        '.git',
-        '__pycache__',
-        'node_modules',
-        '.venv',
-        'venv',
-        'env',
-        'test',            # New addition
-    }
-    
     # Discover all Python files in target scope, excluding protected folders
     # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
     discovered_files = []
@@ -1433,6 +1233,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                             f.write(fixed_code)
                         print(f"      [✓] Healed.")
                         consecutive_failures = 0
+                        syntax_healed_count += 1
                     except SyntaxError as e2:
                         print(f"      [!] Healing failed: Fixed code still has syntax error at line {e2.lineno}")
                         consecutive_failures += 1
