@@ -4,8 +4,8 @@ Validates autonomous version control operations with GitKraken MCP integration.
 """
 import asyncio
 import pytest
-from agentic_core.L0_maintenance.healing.gitkraken_healing_strategy import GitKrakenHealingStrategy, create_gitkraken_healing_strategy
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy, create_gitkraken_healing_strategy
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestGitKrakenHealingStrategy:
@@ -117,14 +117,14 @@ class TestGitKrakenHealingStrategyRegistry:
     
     def test_strategy_in_registry(self):
         """Test GitKrakenHealingStrategy is in global registry."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         strategy_names = [s.name for s in HEALING_STRATEGIES]
         assert "GitKrakenHealing" in strategy_names
     
     def test_strategy_priority(self):
         """Test GitKrakenHealingStrategy has correct priority."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         gitkraken_strategy = next((s for s in HEALING_STRATEGIES if s.name == "GitKrakenHealing"), None)
         assert gitkraken_strategy is not None

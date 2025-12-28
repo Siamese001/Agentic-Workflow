@@ -10,7 +10,7 @@ import google.generativeai as genai
 
 # Load environment variables
 from dotenv import load_dotenv
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 load_dotenv()
 

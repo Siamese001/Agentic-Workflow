@@ -15,7 +15,7 @@ class TestMissionPlanModel:
         THEN: Valid MissionPlan instance created
         """
         # Arrange & Act
-        from agentic_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         
         plan = MissionPlan(
             mission_id="test-001",
@@ -37,7 +37,7 @@ class TestMissionPlanModel:
         THEN: Returns MissionResult with success status
         """
         # Arrange
-        from agentic_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         
         plan = MissionPlan(
             mission_id="exec-001",
@@ -62,7 +62,7 @@ class TestMissionPlanModel:
         THEN: Raises ValueError
         """
         # Arrange & Act & Assert
-        from agentic_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         
         with pytest.raises((ValueError, TypeError)):
             MissionPlan(
@@ -80,7 +80,7 @@ class TestMissionPlanModel:
         THEN: Status persists correctly
         """
         # Arrange
-        from agentic_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         
         plan = MissionPlan(
             mission_id=f"status-{status}",
@@ -104,7 +104,7 @@ class TestMissionResultModel:
         THEN: Returns dictionary representation
         """
         # Arrange
-        from agentic_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         
         result = MissionResult(
             mission_id="result-001",
@@ -129,7 +129,7 @@ class TestMissionResultModel:
         THEN: Success flag is True
         """
         # Arrange
-        from agentic_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         
         result = MissionResult(
             mission_id="success-001",
@@ -148,7 +148,7 @@ class TestMissionResultModel:
         THEN: Error information preserved
         """
         # Arrange
-        from agentic_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         
         result = MissionResult(
             mission_id="fail-001",
@@ -173,7 +173,7 @@ class TestAgenticCoreModel:
         THEN: Default attributes set correctly
         """
         # Arrange & Act
-        from agentic_core.core import AgenticCore
+        from agentic_core.L0_maintenance.P1_core.core import AgenticCore
         
         core = AgenticCore()
         
@@ -191,7 +191,7 @@ class TestAgenticCoreModel:
         THEN: Returns dict with status and metadata
         """
         # Arrange
-        from agentic_core.core import AgenticCore
+        from agentic_core.L0_maintenance.P1_core.core import AgenticCore
         
         core = AgenticCore()
         
@@ -210,7 +210,7 @@ class TestAgenticCoreModel:
         THEN: Reflection logged to history
         """
         # Arrange
-        from agentic_core.core import AgenticCore
+        from agentic_core.L0_maintenance.P1_core.core import AgenticCore
         
         core = AgenticCore()
         initial_history_len = len(core.history)
@@ -229,7 +229,7 @@ class TestAgenticCoreModel:
         THEN: Returns dict with healed, recovery, error fields
         """
         # Arrange
-        from agentic_core.core import AgenticCore
+        from agentic_core.L0_maintenance.P1_core.core import AgenticCore
         
         core = AgenticCore()
         
@@ -249,7 +249,7 @@ class TestAgenticCoreModel:
         THEN: Returns comprehensive status dict
         """
         # Arrange
-        from agentic_core.core import AgenticCore
+        from agentic_core.L0_maintenance.P1_core.core import AgenticCore
         
         core = AgenticCore()
         
@@ -274,7 +274,7 @@ class TestMissingClass:
         THEN: All reference same singleton
         """
         # Arrange & Act
-        from agentic_core.core import Missing
+        from agentic_core.L0_maintenance.P1_core.core import Missing
         
         missing1 = Missing()
         missing2 = Missing()
@@ -289,7 +289,7 @@ class TestMissingClass:
         THEN: Returns descriptive string
         """
         # Arrange
-        from agentic_core.core import Missing
+        from agentic_core.L0_maintenance.P1_core.core import Missing
         
         missing = Missing()
         

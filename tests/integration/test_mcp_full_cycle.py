@@ -314,7 +314,7 @@ async def test_mcp_full_pipeline_with_web_search_tools():
         tools.router.manager.call_tool = AsyncMock(return_value=mock_result)
         
         # Execute search
-        from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+        from agentic_core.config.P1_core.sovereign_config import config
         with patch.object(config, 'BRAVE_SEARCH_MCP_ENABLED', True):
             result = await tools.search_web("test query")
         

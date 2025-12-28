@@ -7,8 +7,8 @@ import pytest
 import json
 from pathlib import Path
 from datetime import datetime, timedelta
-from agentic_core.L0_maintenance.healing.l6_audit_healing_strategy import L6AuditHealingStrategy, create_l6_audit_healing_strategy
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.l6_audit_healing_strategy import L6AuditHealingStrategy, create_l6_audit_healing_strategy
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestL6AuditHealingStrategy:
@@ -103,14 +103,14 @@ class TestL6AuditHealingStrategyRegistry:
     
     def test_strategy_in_registry(self):
         """Test L6AuditHealingStrategy is in global registry."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         strategy_names = [s.name for s in HEALING_STRATEGIES]
         assert "L6AuditHealing" in strategy_names
     
     def test_strategy_priority(self):
         """Test L6AuditHealingStrategy has correct priority."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         l6_strategy = next((s for s in HEALING_STRATEGIES if s.name == "L6AuditHealing"), None)
         assert l6_strategy is not None

@@ -6,8 +6,8 @@ import asyncio
 import pytest
 import tempfile
 from pathlib import Path
-from agentic_core.L0_maintenance.filesystem_mcp_client import get_filesystem_client, SovereignFilesystemMCPClient
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client, SovereignFilesystemMCPClient
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestFilesystemMCPIntegration:
@@ -189,7 +189,7 @@ class TestGuardianEnforcement:
         
         # Create temp file with Filesystem MCP import
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write("from agentic_core.L0_maintenance.filesystem_mcp_client import get_filesystem_client\n")
+            f.write("from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client\n")
             f.write("client = get_filesystem_client()\n")
             f.write("content = await client.read_text('file.txt')\n")
             temp_path = Path(f.name)

@@ -1,0 +1,139 @@
+"""
+Sovereign Filesystem MCP Client – Phase 16C (Dec 27, 2025)
+All file operations routed through official Filesystem MCP (mcp5)
+L3 routed, L5 shielded, L6 observable
+"""
+import logging
+import re
+from pathlib import Path
+from typing import List, Dict, Any, Optional
+from agentic_core.config.P1_core.sovereign_config import config
+
+logger = logging.getLogger(__name__)
+
+
+class SovereignFilesystemMCPClient:
+    """Official Filesystem MCP client for sovereign file operations."""
+    
+    def __init__(self, role: str = "maintenance_files"):
+        if not config.FILESYSTEM_MCP_ENABLED:
+            raise ValueError("Filesystem MCP disabled in sovereign config")
+        
+        # Lazy import to avoid circular dependency
+        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        self.router = SovereignMCPRouter(role=role)
+        logger.info("[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized")
+    
+    def _validate_path(self, path: str) -> str:
+        """L5 safety validation — enforce allowed roots and forbidden patterns."""
+        # Canonicalize path to resolve '..'
+        path_obj = Path(path).resolve()
+        path_str = str(path_obj)
+        cwd = str(Path.cwd())
+        
+        # 1. Enforce Sandbox (Must be within CWD)
+        if not path_str.startswith(cwd):
+            # Exception: explicit allowed external roots if configured, otherwise strict sandbox
+            raise PermissionError(f"Security Violation: Path escapes execution context: {path}")
+
+        # 2. Enforce Allowed Subdirectories
+        # Using config.FILESYSTEM_ALLOWED_ROOTS to constrain scope further
+        is_allowed_root = any(
+            path_str.startswith(str(Path.cwd() / root)) 
+            for root in config.FILESYSTEM_ALLOWED_ROOTS
+        )
+        if not is_allowed_root:
+            # Fallback: if we are writing to root, allow it only if strictly safe, 
+            # but here we default to strictly obeying the list.
+            raise PermissionError(f"Access Denied: Path not in allowed sovereign roots: {path}")
+        
+        # 3. Check Forbidden Patterns (Regex)
+        for pattern in config.FILESYSTEM_FORBIDDEN_PATTERNS:
+            if re.search(pattern, path):
+                raise PermissionError(f"Security Violation: Path contains forbidden pattern '{pattern}'")
+        
+        return path_str
+    
+    async def read_text(self, path: str, encoding: str = "utf-8") -> str:
+        """Read file contents via MCP."""
+        safe_path = self._validate_path(path)
+        
+        try:
+            result = await self.router.manager.call_tool(
+                "mcp5_read_text_file",
+                {"path": safe_path}
+            )
+            
+            # MCP filesystem server usually returns content directly or in a specific key
+            content = result if isinstance(result, str) else result.get("content", "")
+            
+            if len(content.encode(encoding)) > config.FILESYSTEM_MAX_READ_SIZE:
+                raise ValueError(f"File exceeds sovereign read limit of {config.FILESYSTEM_MAX_READ_SIZE} bytes")
+                
+            logger.info(f"[L0 FILESYSTEM] Read access: {safe_path}")
+            return content
+        except Exception as e:
+            logger.error(f"[L0 FILESYSTEM] Read failed for {path}: {e}")
+            raise
+
+    async def write_text(self, path: str, content: str, encoding: str = "utf-8") -> bool:
+        """Write file contents via MCP."""
+        safe_path = self._validate_path(path)
+        
+        if len(content.encode(encoding)) > config.FILESYSTEM_MAX_READ_SIZE:
+            raise ValueError("Content exceeds sovereign write limit")
+
+        try:
+            result = await self.router.manager.call_tool(
+                "mcp5_write_file",
+                {"path": safe_path, "content": content}
+            )
+            logger.info(f"[L0 FILESYSTEM] Write access: {safe_path}")
+            return True  # Assuming success if no exception, or check result status
+        except Exception as e:
+            logger.error(f"[L0 FILESYSTEM] Write failed for {path}: {e}")
+            return False
+
+    async def list_directory(self, path: str) -> List[str]:
+        """List directory via MCP."""
+        safe_path = self._validate_path(path)
+        result = await self.router.manager.call_tool("mcp5_list_directory", {"path": safe_path})
+        return result if isinstance(result, list) else result.get("entries", [])
+
+    async def delete_file(self, path: str) -> bool:
+        """Delete file via MCP."""
+        safe_path = self._validate_path(path)
+        # Note: MCP Filesystem typically does not expose delete by default for safety.
+        # If your server supports it:
+        await self.router.manager.call_tool("mcp5_delete_file", {"path": safe_path})
+        logger.warning(f"[L0 FILESYSTEM] DELETE performed: {safe_path}")
+        return True
+
+    async def get_file_info(self, path: str) -> Dict[str, Any]:
+        """Get file metadata via MCP."""
+        safe_path = self._validate_path(path)
+        result = await self.router.manager.call_tool("mcp5_get_file_info", {"path": safe_path})
+        return result if isinstance(result, dict) else {}
+
+    async def create_directory(self, path: str) -> bool:
+        """Create directory via MCP."""
+        safe_path = self._validate_path(path)
+        try:
+            await self.router.manager.call_tool("mcp5_create_directory", {"path": safe_path})
+            logger.info(f"[L0 FILESYSTEM] Directory created: {safe_path}")
+            return True
+        except Exception as e:
+            logger.error(f"[L0 FILESYSTEM] Directory creation failed for {path}: {e}")
+            return False
+
+
+# Singleton
+_filesystem_client: Optional[SovereignFilesystemMCPClient] = None
+
+
+def get_filesystem_client() -> SovereignFilesystemMCPClient:
+    """Get or create the global Filesystem MCP client."""
+    global _filesystem_client
+    if _filesystem_client is None:
+        _filesystem_client = SovereignFilesystemMCPClient()
+    return _filesystem_client

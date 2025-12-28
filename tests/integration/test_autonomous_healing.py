@@ -6,9 +6,9 @@ import asyncio
 import pytest
 import tempfile
 from pathlib import Path
-from agentic_core.L0_maintenance.healing.healing_engine import SovereignHealingEngine, run_autonomous_healing
-from agentic_core.L0_maintenance.healing.transaction_manager import HealingTransaction
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.healing_engine import SovereignHealingEngine, run_autonomous_healing
+from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestHealingEngine:
@@ -118,7 +118,7 @@ class TestHealingStrategies:
     @pytest.mark.asyncio
     async def test_direct_redis_strategy(self):
         """Test DirectRedisHealing strategy."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import DirectRedisHealing
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import DirectRedisHealing
         
         strategy = DirectRedisHealing()
         issues = [
@@ -133,7 +133,7 @@ class TestHealingStrategies:
     @pytest.mark.asyncio
     async def test_direct_llm_strategy(self):
         """Test DirectLLMHealing strategy."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import DirectLLMHealing
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import DirectLLMHealing
         
         strategy = DirectLLMHealing()
         issues = [
@@ -148,7 +148,7 @@ class TestHealingStrategies:
     @pytest.mark.asyncio
     async def test_filesystem_bypass_strategy(self):
         """Test FilesystemBypassHealing strategy."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import FilesystemBypassHealing
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import FilesystemBypassHealing
         
         strategy = FilesystemBypassHealing()
         issues = [

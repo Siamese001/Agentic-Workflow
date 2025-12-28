@@ -5,8 +5,8 @@ Validates autonomous KG drift correction with Memory MCP integration.
 import asyncio
 import pytest
 from datetime import datetime
-from agentic_core.L0_maintenance.healing.kg_healing_strategy import KnowledgeGraphHealingStrategy, create_kg_healing_strategy
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy, create_kg_healing_strategy
+from agentic_core.config.P1_core.sovereign_config import config
 
 
 class TestKGHealingStrategy:
@@ -163,14 +163,14 @@ class TestKGHealingStrategyRegistry:
     
     def test_strategy_in_registry(self):
         """Test KnowledgeGraphHealingStrategy is in global registry."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         strategy_names = [s.name for s in HEALING_STRATEGIES]
         assert "KnowledgeGraphHealing" in strategy_names
     
     def test_strategy_priority(self):
         """Test KnowledgeGraphHealingStrategy has correct priority."""
-        from agentic_core.L0_maintenance.healing.healing_strategies import HEALING_STRATEGIES
+        from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
         
         kg_strategy = next((s for s in HEALING_STRATEGIES if s.name == "KnowledgeGraphHealing"), None)
         assert kg_strategy is not None

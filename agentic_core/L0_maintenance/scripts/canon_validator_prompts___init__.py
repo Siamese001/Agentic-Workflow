@@ -3,7 +3,7 @@ Canon Validator Prompts Package.
 All few-shot prompting constants re-exported for backward compatibility.
 """
 
-from agentic_core.core import (
+from agentic_core.L0_maintenance.P1_core.core import (
     FEW_SHOT_GITOPS,
     FEW_SHOT_SHERLOCK,
     POSITIVE_INSTRUCTIONAL_CONTEXT,

@@ -1,5 +1,5 @@
 """Agentic Core - Sovereign AI Architecture"""
-from . import core
-from . import L6_observability
+# Core modules moved to L0_maintenance/P1_core/ for depth compliance
+# Observability merged into observability/ folder
 
-__all__ = ['core', 'L6_observability']
+__all__ = []

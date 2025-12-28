@@ -28,7 +28,7 @@ from agentic_core.L2_execution.tool_registry import (
 )
 
 # Phase 3: UniversalContext
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # Phase 5: L1-L5 Unified Architecture
 

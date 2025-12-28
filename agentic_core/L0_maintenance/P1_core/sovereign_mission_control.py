@@ -7,7 +7,7 @@ REPO_ROOT = Path(__file__).parent.parent
 sys.path.append(str(REPO_ROOT))
 
 # 2. Sequential Import Link
-from agentic_core.L0_maintenance.auditors.sovereign_auditor_v3 import main as run_audit
+from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
 async def execute_unified_mission(target="agentic_core"):

@@ -4,7 +4,7 @@ import uuid
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.schemas.models.core_contracts import AgentPlan
-from agentic_core.config.blueprint_sovereign import ConfigurationService
+from agentic_core.config.P1_core import ConfigurationService
 from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
 LOGGER = logging.getLogger(__name__)

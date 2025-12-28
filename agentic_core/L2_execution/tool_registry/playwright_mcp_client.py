@@ -8,7 +8,7 @@ Designed for L6 Observability to ensure external outputs meet Sovereign Canon.
 import logging
 from typing import Dict, Any, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+from agentic_core.config.P1_core.sovereign_config import config
 
 logger = logging.getLogger("L2.Playwright")
 
