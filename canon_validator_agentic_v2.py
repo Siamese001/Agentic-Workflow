@@ -428,13 +428,6 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
 
-# [SYSTEM] Dashboard Integration excised December 28, 2025. 
-print("    [OK] Running in pure CLI mode (UI Deprecated)")
-dashboard_available = False
-dashboard_metrics = None
-dashboard = None
-web_thread = None
-
 # [GRAVITY FIX] DYNAMIC IMPORT SYSTEM
 # Utils layer cannot import from L1-L5 directly - use dynamic loading
 def dynamic_import(module_path, class_name):
@@ -463,12 +456,8 @@ try:
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 
-    # [ETERNAL HARDENING] Early instantiation removed.
-    # Engine is now exclusively instantiated inside run_mission() to ensure
-    # full ValidationContext availability and prevent "double-boot" side effects.
-    print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 except Exception as e:
-    print(f"   [CRITICAL] Dynamic import failed: {e}")
+    print(f"   [CRITICAL] Dynamic import failed during startup: {e}")
     sys.exit(1)
 
 # Load void_compliance from runtime (allowed - same layer)
@@ -528,27 +517,22 @@ try:
 except ImportError:
     SovereignWatchdogAgent = None
 
-# Try to import MemoryArchitect (base.py has ValidationContext issue)
+# Optional Agent Imports (Memory, Policy, Hardening)
 try:
     from agentic_core.L2_execution.P4_agents.memory_architect import MemoryArchitect
 except ImportError:
     MemoryArchitect = None
 
-# Try to import optional hardening agents
 try:
     from agentic_core.L4_state.audit_trails.structural_drift_agent import StructuralDriftAgent
 except ImportError:
     StructuralDriftAgent = None
-try:
-    from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
-except ImportError:
-    BudgetGuardianAgent = None
 
-# Try to import additional hardening agents
 try:
     from agentic_core.L5_safety.policy.sovereign_policy_enforcer import SovereignPolicyEnforcer
 except ImportError:
     SovereignPolicyEnforcer = None
+
 try:
     from agentic_core.L6_observability.meta.eternal_convergence_agent import EternalConvergenceAgent
 except ImportError:
@@ -563,6 +547,10 @@ try:
     from agentic_core.L5_safety.red_teaming.security_vuln_scanner_agent import SecurityVulnScannerAgent
 except ImportError:
     SecurityVulnScannerAgent = None
+try:
+    from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
+except ImportError:
+    BudgetGuardianAgent = None
 try:
     from agentic_core.L3_vitality.performance_sentinel_agent import PerformanceSentinelAgent
 except ImportError:
@@ -590,14 +578,35 @@ MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '20'))
 GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '100'))
 
 # ==============================================================================
-# [FINAL HARDENING] SURGERY CONTROL FLAGS
+# [FINAL HARDENING] SURGERY CONTROL FLAGS — SAFE DEFAULTS FOR DAILY USE
 # ==============================================================================
-# Toggle these to False for daily work after global sweep is complete
-RUN_GRAVITY_REFACTOR = os.getenv("RUN_GRAVITY_REFACTOR", "False") == "True"
-RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
+# These are the most common causes of watcher-triggered infinite loops
+RUN_GRAVITY_REFACTOR = False   # FORCE OFF — only enable manually for global sweeps
+RUN_SPRAWL_SURGERY = False     # Disable automatic sprawl consolidation
 
-# [DEBUG GUARD] Prevent infinite pre-flight loop
-print("\n[FORCE PROGRESS] Gravity refactor temporarily disabled to enable mutation cascade.")
+print("\n[SAFE MODE] Gravity refactor and sprawl surgery DISABLED — prevents watcher loops")
+
+# ==============================================================================
+# [HELPER] AGENT HARDENING FACTORY
+# ==============================================================================
+def harden_agent_execute(agent, agent_name: str, ctx):
+    """Standard hardening wrapper for atomic agents — shields crashes and adds telemetry."""
+    original = getattr(agent, 'execute', getattr(agent, 'run', None))
+    if not original:
+        return agent
+
+    import inspect
+    async def wrapper(file_path):
+        print(f"   [{agent_name}] Processing {Path(file_path).name}")
+        try:
+            return await original(file_path) if inspect.iscoroutinefunction(original) else original(file_path)
+        except Exception as e:
+            print(f"   [!] {agent_name} shielded crash: {e}")
+            ctx.report(agent_name, 0, False, f"Crash: {str(e)[:100]}")
+            return None
+
+    agent.execute = wrapper
+    return agent
 
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
@@ -1004,13 +1013,6 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
-    # === METRICS INITIALIZATION (CLI MODE) ===
-    # [METRICS] Initialize metrics for CLI reporting
-    dashboard_metrics = None
-    dashboard = None
-    web_thread = None
-    dashboard_available = False  # CLI mode only
-    
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
     l6_compliant = run_l6_preflight(target_scope, project_root)
@@ -1088,11 +1090,7 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
 
     # 1. Initialize Safety Components
     if SafetyGuardrail is None:
-        print("\n[CRITICAL] SafetyGuardrail class not loaded!")
-        print("   -> Check import paths in canon_validator_agentic_v2.py")
-        print("      - agentic_core.L5_safety.P1_core.safety_guardrail")
-        print("      - agentic_core.L3_orchestration.S3_vitality.safety_guardrail")
-        import sys
+        print("\n[CRITICAL] SafetyGuardrail class not loaded! Checked multiple fallback paths.")
         sys.exit(1)
     
     safety_guard = SafetyGuardrail(deletion_limit=110)
@@ -1142,10 +1140,6 @@ async def run_mission(target_scope: str = "agentic_core", structural_only: bool 
     # Set to 10000 to effectively disable fission and validate everything
     if FissionManager is None:
         print("\n[CRITICAL] FissionManager class not loaded!")
-        print("   -> Check import paths in canon_validator_agentic_v2.py")
-        print("   -> Expected locations:")
-        print("      - agentic_core.L3_orchestration.P1_core.fission_manager")
-        print("      - agentic_core.L3_orchestration.S3_vitality.fission_manager")
         sys.exit(1)
     
     fission_mgr = FissionManager(line_limit=10000, max_rounds=3)
@@ -1662,32 +1656,9 @@ IF (task == "GRAVITY_REFACTOR"):
             
         # [L5 PURITY HARDENING] DeadCodePurgerAgent — eliminate unreachable code
         if name == 'DeadCodePurgerAgent':
+            harden_agent_execute(agent, "DeadCodePurgerAgent", ctx)
             agent.prune_threshold = 0.98  # High confidence only
             agent.backup_before_prune = True
-            original_execute = getattr(agent, 'execute', None)
-            if original_execute:
-                async def purger_wrapper(file_path):
-                    print(f"   [PURGER] Pruning dead code in {Path(file_path).name}")
-                    
-                    # [L5 PURITY] Banned Pattern Scan (Zero-Tolerance)
-                    try:
-                        content = Path(file_path).read_text(encoding="utf-8", errors="ignore")
-                        BANNED = ["# noqa", "print(", "pdb.", "TODO:", "FIXME:"]
-                        for b in BANNED:
-                            if b in content:
-                                ctx.report("CodePurity", 0, False, f"Banned pattern '{b}' found in {Path(file_path).name}")
-                    except Exception:
-                        pass
-                    
-                    try:
-                        result = await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
-                        pruned = getattr(result, 'pruned_lines', 0)
-                        if pruned > 0:
-                            audit_log.record(Path(file_path).name, "PRUNED", "", "", f"{pruned} lines")
-                        return result
-                    except Exception as e:
-                        ctx.report("DeadCodePurgerAgent", 0, False, f"Prune crash: {str(e)[:80]}")
-                agent.execute = purger_wrapper
             atomic_validators.append(agent)
             print(f"     [+] DeadCodePurgerAgent HARDENED — code purity absolute")
             continue
@@ -1701,15 +1672,8 @@ IF (task == "GRAVITY_REFACTOR"):
 
         # [L3 FISSION HARDENING] FissionExecutorAgent — physical module split
         if name == 'FissionExecutorAgent':
+            harden_agent_execute(agent, "FissionExecutorAgent", ctx)
             agent.safety_verify_post_split = True
-            original_execute = getattr(agent, 'execute', None)
-            if original_execute:
-                async def fission_wrapper(file_path):
-                    try:
-                        return await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
-                    except Exception as e:
-                        ctx.report("FissionExecutorAgent", 0, False, str(e)[:80])
-                agent.execute = fission_wrapper
             atomic_validators.append(agent)
             print(f"     [+] FissionExecutorAgent HARDENED — atomicity enforced")
             continue
@@ -1748,22 +1712,9 @@ IF (task == "GRAVITY_REFACTOR"):
             
         # [L1 HARDENING] ArchitectureGovernor — per-file structural enforcement
         if name == 'ArchitectureGovernor':
-            # Inject safety limits to prevent runaway fission/refactor
+            harden_agent_execute(agent, "ArchitectureGovernor", ctx)
             agent.max_fission_rounds = min(getattr(agent, 'max_fission_rounds', 3), 3)
-            agent.max_line_threshold = 800  # Hard cap
-            
-            # Telemetry wrapper to isolate crashes
-            original_execute = getattr(agent, 'execute', None)
-            if original_execute:
-                async def governor_wrapper(file_path):
-                    print(f"   [GOVERNOR] Enforcing structural law on {Path(file_path).name}")
-                    try:
-                        return await original_execute(file_path)
-                    except Exception as e:
-                        print(f"   [!] Governor shielded crash: {e}")
-                        ctx.report("ArchitectureGovernor", 0, False, str(e)[:100])
-                        return None
-                agent.execute = governor_wrapper
+            agent.max_line_threshold = 800
             
             atomic_validators.append(agent)
             print(f"     [+] ArchitectureGovernor HARDENED — atomic structural healing enabled")
@@ -1953,18 +1904,7 @@ IF (task == "GRAVITY_REFACTOR"):
             ctx=ctx,  # Targets weak heals and persistent FAILs
             engine=ctx.engine
         )
-        original_execute = getattr(red_team_agent, 'execute', None)
-        if original_execute:
-            async def red_team_wrapper(*args, **kwargs):
-                print(f"   [RED TEAM] Initiating adversarial sweep...")
-                try:
-                    result = await (original_execute(*args, **kwargs) if inspect.iscoroutinefunction(original_execute) else original_execute(*args, **kwargs))
-                    print(f"   [RED TEAM] Sweep complete — findings: {getattr(result, 'summary', 'none')}")
-                    return result
-                except Exception as e:
-                    print(f"   [!] RedTeam CRASH shielded: {e}")
-                    ctx.report("SovereignRedTeamAgent", 0, False, f"Adversarial sweep failed: {str(e)[:100]}")
-            red_team_agent.execute = red_team_wrapper
+        harden_agent_execute(red_team_agent, "SovereignRedTeamAgent", ctx)
         monitors.append(red_team_agent)
         print(f"     [+] SovereignRedTeamAgent HARDENED — targeted adversarial attacks enabled")
     except Exception as e:
@@ -2033,6 +1973,8 @@ IF (task == "GRAVITY_REFACTOR"):
     # ===========================================================================
     if RUN_GRAVITY_REFACTOR:
         print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
+        print("   [!] WARNING: Gravity refactor ENABLED — this writes files and WILL trigger watcher restarts!")
+        print("   [!] Stop any file watchers (VS Code tasks, nodemon, entr) or you will get an infinite loop.")
         print(f"   [>] Scanning for Sovereign → Downstream violations...")
         
         gravity_violations_fixed = 0
@@ -2210,7 +2152,8 @@ CURRENT CODE:
             print(f"\n    [ERR] Skipping {file_name} due to read error: {e}")
             continue
         
-        print(f"[{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
+        # PowerShell-friendly: use full line writes instead of \r overwrites
+        print(f"[{idx:3}/{len(ctx.python_files)}] Processing {file_name.ljust(40)} ({loc_count:4} LOC)")
 
         # CLI mode - no dashboard file tracking
         ctx.current_file_path = file_path  # Store for report callback
@@ -2309,7 +2252,7 @@ CURRENT CODE:
             # Update round tracking in reports
             ctx.report._current_round = round_idx
             
-            print(f"     Round {round_idx}/{MAX_HEALING_ROUNDS}...", end=' ')
+            print(f"     Round {round_idx}/{MAX_HEALING_ROUNDS}...", flush=True)
             
             for agent in atomic_validators:
                 try:
@@ -2474,7 +2417,7 @@ CURRENT CODE:
             # Add structural violations to the total count
             total_violations = fail_count + violations_this_round
             
-            print(f"Changes: {changes_this_round} | Violations: {total_violations}")
+            print(f"    -> Round {round_idx}: {changes_this_round} changes | {total_violations} violations remaining")
             
             # If no violations and we're past round 1, we've converged
             if total_violations == 0 and round_idx > 1:
@@ -2693,6 +2636,24 @@ def get_subatomic_engine(gemini_client: Optional[Any] = None) -> SubAtomicEngine
     """
     return SubAtomicEngine(gemini_client=gemini_client)
 
+
+# ==============================================================================
+# FALLBACK CLASSES
+# ==============================================================================
+class FallbackValidationContext:
+    def __init__(self):
+        self.target_scope = None
+        self.python_files = []
+        self.report = []
+        self.results = {}
+        self.signals = set()
+        self.successful_traces = []
+        self.failed_traces = []
+        self.engine = None
+        self.safety = None
+        self.fission = None
+        self.dashboard_metrics = None
+        self._client = None
 
 # ==============================================================================
 # USAGE EXAMPLE
