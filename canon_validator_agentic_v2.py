@@ -171,7 +171,7 @@ for py_file in Path(project_root / "agentic_core").rglob("*.py"):
         if content != original:
             py_file.write_text(content, encoding="utf-8")
             fixed += 1
-    except: pass
+    except Exception as e: print(f"   [!] Legacy fix failed for {py_file.name}: {e}")
 print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
 print("-" * 70)
 
@@ -489,7 +489,7 @@ try:
 except ImportError:
     SovereignPolicyEnforcer = None
 try:
-    from agentic_core.L6_meta.eternal_convergence_agent import EternalConvergenceAgent
+    from agentic_core.L6_observability.meta.eternal_convergence_agent import EternalConvergenceAgent
 except ImportError:
     EternalConvergenceAgent = None
 
@@ -511,11 +511,11 @@ try:
 except ImportError:
     TestCoverageGuardian = None
 try:
-    from agentic_core.L6_meta.legal.license_compliance_agent import LicenseComplianceAgent
+    from agentic_core.L6_observability.meta.legal.license_compliance_agent import LicenseComplianceAgent
 except ImportError:
     LicenseComplianceAgent = None
 try:
-    from agentic_core.L6_meta.seal.sovereign_seal_agent import SovereignSealAgent
+    from agentic_core.L6_observability.meta.seal.sovereign_seal_agent import SovereignSealAgent
 except ImportError:
     SovereignSealAgent = None
 
@@ -553,11 +553,11 @@ class GeminiSpy:
     def __getattr__(self, name):
         # Pass through non-callable attributes immediately
         attr = getattr(self._engine, name)
-        if not callable(attr) or name.startswith("_"):
+        if not callable(attr) or name.startswith("_") or isinstance(attr, (bool, int, float, str)):
             return attr
 
         # Intercept method calls (e.g., generate_content, query, chat)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             # [GAP 20 HARDENING] Block unauthorized models at the wire
             if args:
                 prompt_text = str(args[0]).lower()
@@ -565,17 +565,17 @@ class GeminiSpy:
                 if any(bad in prompt_text for bad in forbidden):
                     raise ValueError(f"[L5 SECURITY BLOCK] Unauthorized model reference detected in prompt.")
             
-            print(f"\n[SPY] GEMINI SPY Agent triggering: {name}")
-            # Log prompt preview if available
-            if args:
-                try:
-                    preview = str(args[0])[:120].replace('\n', ' ')
-                    print(f"   -> Prompt: {preview}...")
-                except: pass
+            print(f"\n[SPY] GEMINI SPY triggering: {name}")
+            if args and hasattr(args[0], '__str__'):
+                preview = str(args[0])[:80].replace('\n', ' ')
+                print(f"   -> IO: {preview}...")
             
             start_t = time.time()
             try:
-                result = attr(*args, **kwargs)
+                if inspect.iscoroutinefunction(attr):
+                    result = await attr(*args, **kwargs)
+                else:
+                    result = attr(*args, **kwargs)
                 duration = time.time() - start_t
                 # [L5 HARDENING] Detect and flag suspicious zero-latency responses
                 if duration < 0.05 and name == "resilient_mutation":
@@ -701,7 +701,8 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
                         violations = check_import_waterfall_violations(py_file, project_root)
                         if violations:
                             waterfall_violations.extend([(py_file, v) for v in violations])
-                except (ValueError, IndexError):
+                except (ValueError, IndexError) as e:
+                    print(f"   [!] Waterfall scan error {py_file.name}: {e}")
                     continue
     
     if waterfall_violations:
