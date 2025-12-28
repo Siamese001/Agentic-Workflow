@@ -15,10 +15,22 @@ def check_bounded_contexts(filepath: Path) -> List[str]:
     current_context = next((ctx for ctx, paths in BOUNDED_CONTEXTS.items() if any(p in file_str for p in paths)), None)
     if not current_context: return [] # Skip files outside mapped contexts
 
+    # Standard library modules to exclude from DDD checks
+    stdlib_modules = {
+        'pathlib', 'os', 'sys', 'json', 'logging', 'typing', 'datetime', 
+        'collections', 'itertools', 'functools', 're', 'asyncio', 'abc',
+        'dataclasses', 'enum', 'copy', 'io', 'time', 'uuid', 'hashlib'
+    }
+
     try:
         tree = ast.parse(filepath.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
+                # Skip standard library imports
+                module_root = node.module.split('.')[0]
+                if module_root in stdlib_modules:
+                    continue
+                
                 # Phase 9A: Allow SharedContracts imports (neutral interface layer)
                 if "apps_shared.base_agents" in node.module:
                     continue  # SharedContracts are allowed across all contexts
