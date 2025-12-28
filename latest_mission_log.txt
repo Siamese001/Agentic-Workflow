@@ -1,7 +1,7 @@
 ================================================================================
-MISSION LOG - 2025-12-28 05:21:04
+MISSION LOG - 2025-12-28 05:31:15
 ================================================================================
-COMMAND: .\remove_auto_logging.ps1
+COMMAND: $globalProfile = $PROFILE.CurrentUserAllHosts; if (Test-Path $globalProfile) { Get-Content $globalProfile | Select-String -Pattern "mission_log|latest_mission_log|AUTO-LOGGING" -Context 2 } else { "No global profile found at $globalProfile" }
 DIRECTORY: C:\Git\Agentic-Workflow
 EXIT CODE: 0
 ================================================================================

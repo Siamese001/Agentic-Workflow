@@ -117,9 +117,11 @@ def verify_neural_link():
                 "ssl_check_hostname": False
             })
 
-        r = redis.Redis(**connection_kwargs)
-        r.ping()
-        print(f"   [OK] Redis State Active: Langcache connected.")
+        r = redis.Redis(**connection_kwargs, decode_responses=True)
+        if r.ping():
+            print(f"   [OK] Redis State Active: Langcache connected.")
+            # [NEW] Heartbeat for Forensics
+            r.set("sovereign:heartbeat", str(time.time()), ex=60)
     except Exception as e:
         print(f"   [!] [L4 STATE WARNING] Redis offline: {e}")
 
@@ -532,7 +534,7 @@ GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '100'))
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
 # ==============================================================================
 # Toggle these to False for daily work after global sweep is complete
-RUN_GRAVITY_REFACTOR = False  # TEMPORARY: Disabled to allow healing cascade to run without stalling
+RUN_GRAVITY_REFACTOR = os.getenv("RUN_GRAVITY_REFACTOR", "False") == "True"
 RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
 
 # [DEBUG GUARD] Prevent infinite pre-flight loop
@@ -662,8 +664,12 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     # Check 2: Hierarchy Alignment (SSOT Verification)
     hierarchy_violations = validate_canonical_hierarchy(project_root)
-    # Filter Preflight Results
-    hierarchy_violations = [v for v in hierarchy_violations if '.git' not in str(v[0]) and '__init__.py' not in str(v[0])]
+    # [STRICTNESS] Do not skip __init__.py if it contains logic breaching SSOT
+    hierarchy_violations = [
+        v for v in hierarchy_violations 
+        if '.git' not in str(v[0]) 
+        and 'archives' not in str(v[0])
+    ]
     if hierarchy_violations:
         print(f"[!] L6 ALERT: Found {len(hierarchy_violations)} hierarchy violations:")
         for folder_path, reason in hierarchy_violations[:3]:
