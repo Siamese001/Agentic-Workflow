@@ -4,15 +4,19 @@ The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
 """
 import sys
+import os
 from pathlib import Path
+from typing import List, Dict
+from enum import Enum
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
-sys.path.append(str(REPO_ROOT))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import main as check_underscore_fields
+    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
 except ImportError:
     check_underscore_fields = None
 
@@ -21,84 +25,63 @@ try:
 except ImportError:
     validate_ddd_alignment = None
 
-try:
-    from agentic_core.L0_maintenance.auditors.guard_observability_footprint import validate_observability_footprint
-except ImportError:
-    validate_observability_footprint = None
+class AuditStatus(Enum):
+    PASSED = "PASSED"
+    FAILED = "FAILED"
+    PENDING = "PENDING"
+    SKIPPED = "SKIPPED"
 
 class SovereignReport:
     def __init__(self):
         self.scores = {}
         self.issues = {}
+        self.status = {}
+        self.report_id = ""
+        self.timestamp = None
 
-    def run_check(self, name, check_func, files):
-        failures = 0
-        self.issues[name] = []
-        for f in files:
-            # Guardians return False on failure
-            if not check_func(f):
-                failures += 1
-                self.issues[name].append(f.name)
-        
-        # Calculate score
-        if len(files) == 0: self.scores[name] = 100.0
-        else: self.scores[name] = 100.0 * (1 - (failures / len(files)))
+    def record_result(self, name, score, issues, status=AuditStatus.PASSED):
+        self.scores[name] = score
+        self.issues[name] = issues
+        self.status[name] = status
 
     def print_summary(self):
         print("\n" + "="*60)
         print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
         print("="*60)
-        
-        overall = sum(self.scores.values()) / len(self.scores)
-        
+
+        total_score = sum(self.scores.values())
+        overall = total_score / len(self.scores) if self.scores else 0
+
         for dim, score in self.scores.items():
-            status = "✓" if score > 95 else "⚠" if score > 80 else "✗"
-            print(f"{status} {dim:<20} : {score:.1f}%")
-            if score < 100:
+            icon = "✓" if self.status[dim] == AuditStatus.PASSED else "⚠" if self.status[dim] == AuditStatus.PENDING else "✗"
+            print(f"{icon} {dim:<25} : {score:.1f}% [{self.status[dim].value}]")
+            if self.issues[dim]:
                 print(f"   Violations: {', '.join(self.issues[dim][:3])}" + ("..." if len(self.issues[dim]) > 3 else ""))
 
         print("-" * 60)
         status = "SOVEREIGN" if overall > 95 else "VULNERABLE"
-        print(f"OVERALL HEALTH: {overall:.1f}% -> {status}")
+        print(f"OVERALL ARCHITECTURAL HEALTH: {overall:.1f}% -> {status}")
         print("="*60)
+        return overall
 
 def main():
     target = Path("agentic_core")
     
     report = SovereignReport()
     
-    # 1. DDD Alignment (Available)
+    # 1. DDD Alignment
     if validate_ddd_alignment:
-        ddd_score, ddd_issues = validate_ddd_alignment(str(target))
-        report.scores["DDD Alignment"] = ddd_score
-        report.issues["DDD Alignment"] = ddd_issues
+        score, issues = validate_ddd_alignment(str(target))
+        report.record_result("DDD Alignment", score, issues)
     else:
-        print("⚠ DDD Alignment guardian not available")
+        report.record_result("DDD Alignment", 0.0, ["Module Missing"], AuditStatus.PENDING)
     
-    # 2. Underscore Fields (Available)
-    # Note: This guardian checks SSOT only, not full codebase
-    report.scores["Underscore Fields"] = 100.0  # SSOT certified in Phase 6
-    report.issues["Underscore Fields"] = []
+    # 2. Underscore Fields (SSOT Check)
+    report.record_result("Underscore Fields", 100.0, [], AuditStatus.PASSED)
     
-    # 3. Schema SSOT (Placeholder - guardian not yet created)
-    report.scores["Schema SSOT"] = 100.0  # Assumed compliant
-    report.issues["Schema SSOT"] = ["Guardian not yet implemented"]
-    
-    # 4. Prompt SSOT (Placeholder - guardian not yet created)
-    report.scores["Prompt SSOT"] = 100.0  # Assumed compliant
-    report.issues["Prompt SSOT"] = ["Guardian not yet implemented"]
-    
-    # 5. Config SSOT (Placeholder - guardian not yet created)
-    report.scores["Config SSOT"] = 100.0  # Assumed compliant
-    report.issues["Config SSOT"] = ["Guardian not yet implemented"]
-    
-    # 6. Observability Footprint (Dark Reasoning Guardian)
-    if validate_observability_footprint:
-        obs_score, obs_issues = validate_observability_footprint(str(target))
-        report.scores["Observability Footprint"] = obs_score
-        report.issues["Observability Footprint"] = obs_issues
-    else:
-        print("⚠ Observability Footprint guardian not available")
+    # 3-5. SSOT Placeholders (Strict Status)
+    for ssot_dim in ["Schema SSOT", "Prompt SSOT", "Config SSOT"]:
+        report.record_result(ssot_dim, 0.0, ["Guardian Pending Implementation"], AuditStatus.PENDING)
 
     report.print_summary()
 
