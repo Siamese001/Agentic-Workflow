@@ -1,0 +1,295 @@
+approval_workflow:
+  approval_criteria:
+    business_review:
+      rejection_reasons:
+      - Insufficient business value
+      - Stakeholder misalignment
+      - Inadequate resource planning
+      - Unacceptable risks
+      requirements:
+      - business_value: Clear business value proposition
+      - stakeholder_alignment: Stakeholder requirements aligned
+      - resource_planning: Resource requirements planned
+      - risk_assessment: Risks identified and mitigated
+    compliance_review:
+      rejection_reasons:
+      - Regulatory compliance violations
+      - Ethical concerns
+      - Privacy issues
+      - Accessibility barriers
+      requirements:
+      - regulatory_compliant: Meets all regulatory requirements
+      - ethical_standards: Ethical guidelines compliance
+      - data_privacy: Privacy requirements satisfied
+      - accessibility_met: Accessibility standards met
+    final_approval:
+      rejection_reasons:
+      - Previous stage not approved
+      - Not deployment ready
+      - Insufficient monitoring plan
+      - Inadequate rollback procedures
+      requirements:
+      - all_previous_approved: All previous stages approved
+      - deployment_ready: Ready for production deployment
+      - monitoring_planned: Post-deployment monitoring planned
+      - rollback_ready: Rollback procedures prepared
+    initial_review:
+      rejection_reasons:
+      - Unclear or ambiguous objectives
+      - Scope creep or inappropriate scope
+      - Insufficient documentation
+      - Missing or inadequate test cases
+      requirements:
+      - prompt_objective_clear: Clear and specific prompt objective
+      - scope_appropriate: Scope appropriate for intended use
+      - documentation_complete: Comprehensive documentation provided
+      - test_cases_defined: Adequate test cases defined
+    technical_review:
+      rejection_reasons:
+      - Technical implementation flaws
+      - Performance below standards
+      - Security vulnerabilities
+      - Integration issues
+      requirements:
+      - implementation_correct: Technically sound implementation
+      - performance_acceptable: Meets performance benchmarks
+      - security_compliant: Security requirements met
+      - integration_ready: Integration points validated
+  audit_trail:
+    compliance_reporting:
+      monthly_reports:
+      - approval_cycle_times: Average time per approval stage
+      - rejection_rates: Rejection rates by stage and reason
+      - emergency_usage: Emergency procedure usage statistics
+      quarterly_reports:
+      - compliance_metrics: Overall compliance metrics
+      - process_efficiency: Workflow efficiency analysis
+      - risk_assessment: Risk assessment and mitigation
+    required_events:
+    - workflow_initiated: Who initiated workflow and when
+    - stage_approvals: All approval decisions with timestamps
+    - rejections: All rejections with reasons
+    - escalations: All escalations and their resolutions
+    - emergency_actions: All emergency approvals and rollbacks
+    retention_policy:
+      approval_documents: 5 years
+      audit_data_retention: 7 years
+      emergency_records: 10 years
+  automation_rules:
+    automatic_transitions:
+    - action: advance_to_next_stage
+      conditions: all_approvers_approved
+      trigger: stage_approved
+    - action: return_to_submitter
+      conditions: any_rejection
+      trigger: stage_rejected
+    - action: escalate_to_manager
+      conditions: timeout_hours_exceeded
+      trigger: timeout_exceeded
+    notifications:
+      stage_approved:
+        recipients:
+        - submitter
+        - next_stage_approvers
+        template: stage_approval_notification
+      stage_rejected:
+        recipients:
+        - submitter
+        - rejection_approvers
+        template: rejection_notification
+      submission_received:
+        recipients:
+        - submitter
+        - initial_review_approvers
+        template: submission_notification
+      workflow_completed:
+        recipients:
+        - submitter
+        - all_approvers
+        - release_team
+        template: workflow_completion_notification
+  emergency_procedures:
+    emergency_approval:
+      approval_authority:
+      - required_roles:
+        - technical_lead
+        - release_manager
+        - governance_committee
+      - minimum_approvers: 2
+      - documentation_requirement: Detailed justification required
+      expedited_workflow:
+      - skip_stages:
+        - business_review
+      - reduced_approvers: 50% reduction in required approvers
+      - accelerated_timeouts: 50% reduction in timeout periods
+      - enhanced_monitoring: Post-deployment enhanced monitoring
+      trigger_conditions:
+      - critical_production_issue: Production system affected
+      - security_vulnerability: Security vulnerability requiring immediate fix
+      - regulatory_deadline: Regulatory compliance deadline
+    emergency_rollback:
+      rollback_authority:
+      - authorized_roles:
+        - technical_lead
+        - release_manager
+      - approval_requirement: At least one authorized role approval
+      - documentation_requirement: Incident report and impact assessment
+      trigger_conditions:
+      - production_impact: Significant production impact
+      - security_breach: Security breach detected
+      - compliance_violation: Regulatory compliance violation
+  improvement_process:
+    feedback_collection:
+    - user_surveys: Quarterly user satisfaction surveys
+    - stakeholder_interviews: Annual stakeholder interviews
+    - performance_reviews: Monthly performance reviews
+    - incident_analysis: Post-incident analysis
+    optimization_activities:
+    - process_streamlining: Regular process optimization reviews
+    - automation_enhancement: Continuous automation improvement
+    - policy_updates: Regular policy review and updates
+    - training_improvement: Training program enhancements
+    success_metrics:
+    - cycle_time_reduction: 'Target: 20% reduction in cycle time'
+    - approval_accuracy: 'Target: 95% approval accuracy'
+    - user_satisfaction: 'Target: 85% user satisfaction'
+    - compliance_rate: 'Target: 98% compliance rate'
+  last_updated: '2024-01-01T00:00:00Z'
+  performance_metrics:
+    compliance_metrics:
+    - policy_adherence: Adherence to approval policies
+    - audit_compliance: Compliance with audit requirements
+    - regulatory_alignment: Alignment with regulatory requirements
+    - ethical_standards: Adherence to ethical guidelines
+    efficiency_metrics:
+    - average_cycle_time: Average time from submission to final approval
+    - stage_efficiency: Efficiency metrics for each approval stage
+    - bottlenecks: Identification of workflow bottlenecks
+    - escalation_rates: Frequency and reasons for escalations
+    quality_metrics:
+    - rejection_rates: Rejection rates by category and stage
+    - approval_accuracy: Accuracy of approval decisions
+    - post_deployment_issues: Issues detected post-deployment
+    - rollback_frequency: Frequency of emergency rollbacks
+  role_permissions:
+    business_stakeholder:
+      can_approve:
+      - business_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: false
+    compliance_officer:
+      can_approve:
+      - compliance_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: false
+    ethics_reviewer:
+      can_approve:
+      - compliance_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: false
+    governance_committee:
+      can_approve:
+      - final_approval
+      can_deploy: true
+      can_review: true
+      can_rollback: true
+      can_submit: false
+    product_manager:
+      can_approve:
+      - business_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: true
+    prompt_engineer:
+      can_approve:
+      - initial_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: true
+    quality_assurance:
+      can_approve:
+      - technical_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: false
+    release_manager:
+      can_approve:
+      - final_approval
+      can_deploy: true
+      can_review: true
+      can_rollback: true
+      can_submit: false
+    subject_matter_expert:
+      can_approve:
+      - initial_review
+      - technical_review
+      can_deploy: false
+      can_review: true
+      can_rollback: false
+      can_submit: false
+    technical_lead:
+      can_approve:
+      - technical_review
+      - final_approval
+      can_deploy: true
+      can_review: true
+      can_rollback: true
+      can_submit: true
+  version: '1.0'
+  workflow_configuration:
+    approval_stages:
+    - approver_roles:
+      - prompt_engineer
+      - subject_matter_expert
+      auto_approve: false
+      description: Initial review of prompt proposal
+      name: initial_review
+      required_approvers: 1
+      timeout_hours: 48
+    - approver_roles:
+      - technical_lead
+      - quality_assurance
+      auto_approve: false
+      description: Technical implementation and quality review
+      name: technical_review
+      required_approvers: 2
+      timeout_hours: 72
+    - approver_roles:
+      - compliance_officer
+      - ethics_reviewer
+      auto_approve: false
+      description: Compliance and ethical review
+      name: compliance_review
+      required_approvers: 1
+      timeout_hours: 96
+    - approver_roles:
+      - product_manager
+      - business_stakeholder
+      auto_approve: false
+      description: Business impact and strategy review
+      name: business_review
+      required_approvers: 1
+      timeout_hours: 48
+    - approver_roles:
+      - governance_committee
+      - release_manager
+      auto_approve: false
+      description: Final approval for deployment
+      name: final_approval
+      required_approvers: 1
+      timeout_hours: 24
+    workflow_rules:
+      emergency_expedite: critical_fixes can skip business_review
+      parallel_processing: true
+      rollback_authority: technical_lead + release_manager
+      sequential_dependencies:
+      - technical_review -> compliance_review -> final_approval

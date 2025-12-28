@@ -1,0 +1,124 @@
+exclude: "(?x)^(\n  ^data/|\n  ^archives/|\n  ^__pycache__/\n)\n"
+fail_fast: true
+repos:
+- hooks:
+  - entry: python scripts/sovereign_promoter_2025.py
+    exclude: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config|data|archives)/
+    files: \.py$
+    id: sovereign-auto-promoter-2025
+    language: system
+    name: "Sovereign Auto-Promoter \u2014 Eternal 2025 (auto-creates folders)"
+    pass_filenames: true
+    stages:
+    - pre-commit
+    verbose: true
+  repo: local
+- hooks:
+  - entry: python scripts/auto_init_py.py
+    files: ^.*/[^/]+\.py$
+    id: auto-init-py
+    language: system
+    name: '[Breakout] Auto-create __init__.py in new packages'
+    pass_filenames: true
+    stages:
+    - pre-commit
+  - entry: ruff check --select I --fix
+    files: \.py$
+    id: auto-sort-imports
+    language: system
+    name: '[Breakout] Auto-sort imports with ruff'
+    stages:
+    - pre-commit
+  - entry: python scripts/auto_ruff_path.py
+    files: \.py$
+    id: auto-ruff-path
+    language: system
+    name: '[Breakout] Auto-register new .py in pyproject.toml ruff paths'
+    stages:
+    - pre-commit
+  - entry: python scripts/enforce_verb_noun.py --auto-rename
+    files: \.py$
+    id: auto-verb-noun-naming
+    language: system
+    name: '[Breakout] Enforce & auto-rename to verb_noun.py canon'
+    pass_filenames: true
+    stages:
+    - pre-commit
+  - entry: python scripts/update_readme_toc.py
+    files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
+    id: auto-update-readme-toc
+    language: system
+    name: '[Breakout] Auto-update README.md sovereign TOC'
+    stages:
+    - pre-commit
+  - entry: python scripts/auto_create_test.py
+    files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/.*\.py$
+    id: auto-create-test
+    language: system
+    name: '[Breakout] Auto-create missing test_*.py for sovereign modules'
+    stages:
+    - pre-commit
+  repo: local
+- hooks:
+  - args:
+    - --fix
+    - --exit-non-zero-on-fix
+    files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+    id: ruff
+  - files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+    id: ruff-format
+  repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.9.4
+- hooks:
+  - entry: pyright --verifytypes agentic_core apps_lic apps_rg apps_shared schemas
+      prompt_governance observability config --ignoreexternal --level strict
+    id: pyright-strict
+    language: system
+    name: "PYRIGHT \u2014 SOVEREIGN ONLY"
+    pass_filenames: false
+  - entry: pytest --cov=agentic_core --cov=apps_lic --cov=apps_rg --cov=apps_shared
+      --cov=schemas --cov=prompt_governance --cov=observability --cov=config --cov-fail-under=100
+      -q
+    id: 100-percent-coverage
+    language: system
+    name: "100% COVERAGE \u2014 SOVEREIGN ONLY"
+    pass_filenames: false
+    require_serial: true
+  repo: local
+- hooks:
+  - id: check-yaml
+  - id: check-json
+  - args:
+    - --maxkb=500
+    id: check-added-large-files
+  - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+- hooks:
+  - always_run: true
+    entry: python scripts/validate_data_immortality.py
+    id: validate-data-immortality
+    language: system
+    name: Validate data immortality
+  - entry: python scripts/check_canonical_structure.py
+    id: check-canonical-structure
+    language: system
+    name: Check canonical project structure
+  - entry: python scripts/validate_sdk_files.py
+    files: ^data/sdks_mcps/.*\.py$
+    id: validate-sdk-files
+    language: system
+    name: Validate SDK files are executable
+  repo: local
+- hooks:
+  - entry: python scripts/update_readme.py
+    files: ^(agentic_core|apps_lic|apps_rg|apps_shared|schemas|prompt_governance|observability|config)/
+    id: update-main-readme
+    language: system
+    name: AUTO-UPDATE README ON SOVEREIGN CHANGES
+    pass_filenames: false
+    stages:
+    - pre-commit
+  repo: local

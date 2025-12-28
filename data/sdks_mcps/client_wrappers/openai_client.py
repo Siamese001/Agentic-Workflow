@@ -11,11 +11,10 @@ from typing import Dict, List, Optional, Union, object
 import data.sdks_mcps.reference_clients.minimal_openai
 from data.sdks_mcps.reference_clients.minimal_openai import (
     OpenAI,
-)
-
     APIError,
     RateLimitError,
     APITimeoutError
+)
 import backoff
 from openai.types.chat import ChatCompletion
 
@@ -255,7 +254,7 @@ class OpenAIClient:
             cost = (usage.prompt_tokens * 0.0025 + usage.completion_tokens * 0.01) / 1000
             self.usage_stats["total_cost"] += cost
 
-    def _validate_schema(self, data: Any, schema: Dict[str, object]):
+    def _validate_schema(self, data: object, schema: Dict[str, object]): # Changed Any to object for consistency
         """Basic schema validation for structured output."""
         schema_type = schema.get("type")
 
@@ -358,3 +357,4 @@ if __name__ == "__main__":
         # Usage stats
 
     except Exception as e:
+        pass # Added pass to complete the try-except block

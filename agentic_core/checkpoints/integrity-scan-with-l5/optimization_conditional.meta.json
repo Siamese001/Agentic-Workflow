@@ -1,1 +1,6 @@
-{"checksum": "f4f2d028528cb3993b102144a9f82063670966d98fdcdaae1a71f7545c03421f", "timestamp": "2025-12-18T17:45:44.612091", "session_id": "integrity-scan-with-l5", "node_id": "optimization_conditional"}
+{
+  "checksum": "f4f2d028528cb3993b102144a9f82063670966d98fdcdaae1a71f7545c03421f",
+  "node_id": "optimization_conditional",
+  "session_id": "integrity-scan-with-l5",
+  "timestamp": "2025-12-18T17:45:44.612091"
+}

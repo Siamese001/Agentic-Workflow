@@ -1,0 +1,182 @@
+{
+  "migration_timestamp": "2025-12-22T20:41:29.221111",
+  "operations": [
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\action_node.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.223681"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\action_registry.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.223681"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\agent_capabilities.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_capabilities.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.223681"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\agent_logic.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.223681"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\agent_logic_connectivity.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic_connectivity.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.226720"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_core.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_core.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.226720"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_pattern.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_pattern.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.226720"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_quality.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_quality.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.227771"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_structural.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_structural.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.228309"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_syntax.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_syntax.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.228309"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\canon_base_agent.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_base_agent.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.228309"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\canon_orchestrator.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'canon_orchestrator.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_orchestrator.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.228309"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\cognitive_node.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\cognitive_node.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.230340"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\consensus_engine.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\consensus_engine.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.230695"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\constants.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'constants.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\constants.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.230695"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\core_utils.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'core_utils.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utils.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.231881"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\core_utils_wrapper.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'core_utils_wrapper.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utils_wrapper.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.231881"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\orchestrator.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'orchestrator.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestrator.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.231881"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\orchestrator_main.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'orchestrator_main.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestrator_main.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.233922"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\proactive_audit.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'proactive_audit.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\proactive_audit.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.234515"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\test_action_registry.py",
+      "operation": "move",
+      "reason": "Dry run",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_action_registry.py",
+      "success": true,
+      "timestamp": "2025-12-22T20:41:29.234515"
+    },
+    {
+      "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\test_orphan.py",
+      "operation": "move",
+      "reason": "SIGNAL VIOLATION: 'test_orphan.py' lacks high-signal canon keyword.",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_orphan.py",
+      "success": false,
+      "timestamp": "2025-12-22T20:41:29.234515"
+    }
+  ],
+  "total_operations": 22
+}

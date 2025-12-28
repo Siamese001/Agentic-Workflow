@@ -1,0 +1,1802 @@
+{
+  "files": {
+    "01_agentic_core/L1_cognition/P1_retrieve/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy/check.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/check_registry_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/enforce_boundaries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/enforce_core_boundaries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/validate_constraints.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/check_rules/policy_check_safety/validate_core_constraints.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/embedding/match.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/embedding/retrieve_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/embedding/search.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/build.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/extract.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/fetch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/parse.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/query.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/understand/retrieve.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/utility/build.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather-context-inputs/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/retrieve_core_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/search_core_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/match.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/retrieve_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/embedding/search.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/build_core_query.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/extract_layer_parameters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/fetch_core_history.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/parse_registry_intent.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/query_core_store.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/build.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/extract.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/fetch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/parse.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/query.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/understand/retrieve.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/build.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/utility_prepare_information/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/utility_prepare_information/build_core_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/utility_prepare_information/format_registry_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/gather_context_inputs/utility/utility_prepare_information/prepare_core_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/get_info/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/get_info/understand_request/parse_registry_intent.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/utility_prepare_information/build_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/utility_prepare_information/format_registry_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P1_retrieve/utility_prepare_information/prepare_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/check_structure/policy_check_safety/check_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/check_structure/policy_check_safety/enforce_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/check_structure/policy_check_safety/validate_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/find_problems/diagnostics_ops/capture_core_diagnostics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/find_problems/diagnostics_ops/inspect_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/business_ops/find_problems/diagnostics_ops/log_core_inspection.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy/check.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy_check_safety/check_core_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy_check_safety/enforce_core_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/policy_check_safety/validate_core_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/assess.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/compute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/semantic_adjust_scores/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/semantic_adjust_scores/assess_core_confidence.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/semantic_adjust_scores/compute_core_validation.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/semantic_adjust_scores/validate_core_quality.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/check_structure/semantic/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/embedding/calculate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/embedding/compute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/embedding/normalize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/semantic/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/semantic/compute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_content/semantic/normalize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/embedding/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/embedding/embedding_compare_meaning/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/embedding/embedding_compare_meaning/calculate_core_similarity.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/embedding/embedding_compare_meaning/compute_core_embeddings.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/embedding/embedding_compare_meaning/normalize_core_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/semantic/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/semantic/semantic_adjust_scores/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/semantic/semantic_adjust_scores/apply_core_weights.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/semantic/semantic_adjust_scores/compute_core_confidence.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/convert_core_content/semantic/semantic_adjust_scores/normalize_core_scores.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect-anomalies/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect-anomalies/update/capture.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect-anomalies/update/inspect.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect-anomalies/update/log.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/analyze_symptoms/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/analyze_symptoms/update_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/analyze_symptoms/update_memory/capture_core_diagnostics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/analyze_symptoms/update_memory/inspect_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/analyze_symptoms/update_memory/log_core_inspection.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/update/capture.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/update/inspect.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/detect_anomalies/update/log.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/adjust_confidence.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/assess_confidence.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/calculate_relevance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/compute_validation.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/rank_results.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/scoring_ops/validate_quality.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/apply_weights.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/compute_confidence.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P2_inspect/semantic_adjust_scores/normalize_scores.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/01_agentic_core_freeze_report.json": {
+      "sha256": "6733717c28a6a12077f379af36e0cdbc505b6b988b586f61f146a79c43fc6153",
+      "size_bytes": 94171
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/routing/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/routing/handle.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/routing/implement.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/use/execute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute-actions/use/process.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/invoke_functions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/invoke_functions/use_a_tool/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/invoke_functions/use_a_tool/execute_core_action.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/invoke_functions/use_a_tool/invoke_core_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/invoke_functions/use_a_tool/process_core_response.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/handle.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/implement.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/retry_task/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/retry_task/apply_core_backoff.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/retry_task/handle_core_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/routing/retry_task/implement_core_retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/use/execute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/execute_actions/use/process.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/refinement_adjust_scores/adjust_weights.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/refinement_adjust_scores/optimize_order.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/refinement_adjust_scores/refine_ranking.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/understand_request/apply_core_algorithm.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/understand_request/rank_core_components.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/pick_best_result/understand_request/sort_core_results.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/refinement/adjust.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/refinement/optimize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/refinement/refine.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/understand/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/understand/rank.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select-optimal/understand/sort.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/evaluate_options/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/evaluate_options/understand_request/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/evaluate_options/understand_request/apply_core_algorithm.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/evaluate_options/understand_request/rank_core_components.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/evaluate_options/understand_request/sort_core_results.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/adjust.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/optimize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/refine.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/semantic_adjust_scores/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/semantic_adjust_scores/adjust_core_weights.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/semantic_adjust_scores/optimize_core_order.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/refinement/semantic_adjust_scores/refine_core_ranking.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/rank.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/select_optimal/understand/sort.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/aggregate_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/consolidate_core_updates.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/format_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/merge_core_contexts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/prepare_snapshot.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/state_update_ops/serialize_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/update/aggregate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/update/consolidate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/update/merge.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync-status/utility/serialize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update/aggregate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update/consolidate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update/merge.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update_memory/update_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update_memory/update_memory/aggregate_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update_memory/update_memory/consolidate_core_updates.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/update_memory/update_memory/merge_core_contexts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/serialize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/utility_prepare_information/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/utility_prepare_information/format_core_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/utility_prepare_information/prepare_core_snapshot.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/sync_status/utility/utility_prepare_information/serialize_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/routing_retry_task/apply_backoff.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/routing_retry_task/handle_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/routing_retry_task/implement_retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/use_a_tool/execute_core_action.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/use_a_tool/invoke_core_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P3_aggregate/use_tools/use_a_tool/process_core_response.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_core_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/apply_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/enforce_core_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/enforce_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/validate_core_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/check_rules/policy_check_safety/validate_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control-resources/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control-resources/update/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control-resources/update/track.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control-resources/update/update.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/track_usage/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/track_usage/update_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/track_usage/update_memory/enforce_core_limits.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/track_usage/update_memory/track_core_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/track_usage/update_memory/update_core_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/update/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/update/track.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/control_resources/update/update.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/manage_costs/state_update_ops/enforce_core_limits.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/manage_costs/state_update_ops/track_core_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/P4_safety/manage_costs/state_update_ops/update_core_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L1_cognition/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P1_retrieve/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P2_inspect/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P2_inspect/business_ops/check_structure/policy_check_safety/check_execution_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/business_ops/check_structure/policy_check_safety/enforce_execution_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/business_ops/check_structure/policy_check_safety/validate_execution_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check_safety/check_execution_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check_safety/enforce_execution_contracts.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/check_safety/validate_execution_schema.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P2_inspect/check_structure/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/use/execute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/use/perform.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute-actions/utility/serialize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/invoke_functions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/invoke_functions/use_a_tool/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/invoke_functions/use_a_tool/execute_core_execution.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/invoke_functions/use_a_tool/invoke_core_tool.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/invoke_functions/use_a_tool/perform_core_operation.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/use/execute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/use/perform.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/format.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/prepare.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/prepare_information/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/prepare_information/format_execution_request.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/prepare_information/prepare_execution_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/prepare_information/serialize_execution_params.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/execute_actions/utility/serialize.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/use_a_tool/execute_core_execution.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/use_a_tool/invoke_core_tool.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/use_a_tool/perform_core_operation.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/utility_prepare_information/format_execution_request.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/utility_prepare_information/prepare_execution_payload.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P3_aggregate/use_tools/utility_prepare_information/serialize_execution_params.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/check_safety/apply_execution_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/check_safety/enforce_execution_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/check_safety/validate_execution_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy_check_safety/apply_execution_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy_check_safety/enforce_execution_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/P4_safety/check_rules/policy_check_safety/validate_execution_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L2_execution/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather-context-inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather-context-inputs/understand/coordinate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather-context-inputs/understand/manage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather-context-inputs/understand/orchestrate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/integrate_source_signals/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/coordinate_core_queries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/manage_core_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/orchestrate_core_planning.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/understand/coordinate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/understand/manage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/gather_context_inputs/understand/orchestrate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/get_info/understand_request/coordinate_core_queries.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/get_info/understand_request/manage_core_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P1_retrieve/get_info/understand_request/orchestrate_core_planning.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P2_inspect/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/routing/handle.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/routing/implement.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/routing/retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/use/call.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/use/dispatch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute-actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/invoke_functions/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/invoke_functions/use_a_tool/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/invoke_functions/use_a_tool/call_orchestration_api.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/invoke_functions/use_a_tool/dispatch_orchestration_tools.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/invoke_functions/use_a_tool/invoke_orchestration_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/handle.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/implement.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/retry.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/retry_task/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/retry_task/handle_orchestration_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/retry_task/implement_orchestration_fallback.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/routing/retry_task/retry_orchestration_operations.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/use/call.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/use/dispatch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/execute_actions/use/invoke.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/routing_retry_task/handle_orchestration_failures.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/routing_retry_task/implement_orchestration_fallback.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/routing_retry_task/retry_orchestration_operations.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/use_a_tool/call_orchestration_api.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/use_a_tool/dispatch_orchestration_tools.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P3_aggregate/use_tools/use_a_tool/invoke_orchestration_service.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy_check_safety/apply_orchestration_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy_check_safety/enforce_orchestration_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/P4_safety/check_rules/policy_check_safety/validate_orchestration_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L3_orchestration/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/embedding/find.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/embedding/match.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/embedding/search.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/understand/fetch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/understand/query.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather-context-inputs/understand/retrieve.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/find_core_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/match_core_patterns.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/embedding_compare_meaning/search_core_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/find.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/match.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/embedding/search.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/integrate_source_signals/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/fetch_core_history.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/query_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/integrate_source_signals/understand_request/retrieve_core_memory.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/understand/fetch.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/understand/query.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/gather_context_inputs/understand/retrieve.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/find_context.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/match_patterns.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/embedding_compare_meaning/search_vectors.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/understand_request/fetch_core_history.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/understand_request/query_core_state.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P1_retrieve/get_info/understand_request/retrieve_core_memory.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P2_inspect/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P3_aggregate/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P4_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy_check_safety/apply_memory_safety.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy_check_safety/enforce_memory_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/P4_safety/check_rules/policy_check_safety/validate_memory_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L4_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P1_retrieve/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P2_inspect/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P3_aggregate/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy/apply.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy/validate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy_check_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy_check_safety/apply_safety_policy.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy_check_safety/enforce_safety_filters.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/policy_check_safety/validate_safety_ethics.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/assess.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/compute.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/evaluate.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/semantic_adjust_scores/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/semantic_adjust_scores/assess_safety_risk.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/semantic_adjust_scores/compute_safety_score.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic/semantic_adjust_scores/evaluate_safety_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/assess_safety_risk.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/compute_safety_score.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/check_rules/semantic_adjust_scores/evaluate_safety_compliance.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control-resources/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/control-resources/update/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control-resources/update/track.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control-resources/update/update.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/track_usage/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/track_usage/update_memory/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/track_usage/update_memory/enforce_safety_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/track_usage/update_memory/track_safety_cost.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/track_usage/update_memory/update_safety_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/update/enforce.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/update/track.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/control_resources/update/update.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/manage_costs/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/manage_costs/state_update_ops/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/L5_safety/P4_safety/manage_costs/state_update_ops/enforce_safety_budget.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/manage_costs/state_update_ops/track_safety_cost.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/P4_safety/manage_costs/state_update_ops/update_safety_usage.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "01_agentic_core/L5_safety/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    },
+    "01_agentic_core/__init__.py": {
+      "sha256": "5bf2bf0830f5579a8e143c000c069a0516bc14c532b112dfe3cba899f6261775",
+      "size_bytes": 2702
+    }
+  },
+  "root": "01_agentic_core/",
+  "schema_version": "v1"
+}

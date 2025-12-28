@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canon Validator - Agent Architecture Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- HARDENING: Match main dashboard dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    
+    <style>
+        body {
+            background: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+            border-bottom: 2px solid #30363d;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-title {
+            color: #58a6ff;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .dashboard-subtitle {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        #agent-network {
+            background: #161b22 !important;
+            height: 75vh;
+            min-height: 75vh;
+            width: 100%;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .details-panel {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            padding: 24px;
+            min-height: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .details-panel h5 {
+            color: #58a6ff;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-idle { background-color: #6c757d; }
+        .status-running { background-color: #28a745; }
+        .status-healing { background-color: #ffc107; }
+        .status-error { background-color: #dc3545; }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .level-L1 { background-color: #dc3545; }
+        .level-L2 { background-color: #fd7e14; }
+        .level-L3 { background-color: #ffc107; }
+        .level-L4 { background-color: #28a745; }
+        .level-L5 { background-color: #007bff; }
+        .level-L6 { background-color: #6c757d; }
+        
+        .graph-controls {
+            margin-bottom: 20px;
+        }
+        
+        .btn-dark {
+            background: #21262d;
+            border-color: #30363d;
+            color: #c9d1d9;
+        }
+        
+        .btn-dark:hover {
+            background: #30363d;
+            border-color: #484f58;
+            color: #ffffff;
+        }
+        
+        .refresh-info {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-project-diagram"></i> Agent Architecture Dashboard
+                    </h1>
+                    <p class="dashboard-subtitle">Real-time visualization of Canon Validator agents and their relationships</p>
+                </div>
+                <div class="col-auto">
+                    <a href="/" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left"></i> Back to Main Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- HARDENING: Add unified live indicator (matches main dashboard) -->
+        <div class="live-indicator" style="position:fixed;bottom:28px;right:28px;z-index:9999;">
+            <div class="pulse" style="width:12px;height:12px;background:#28a745;border-radius:50%;animation:live-pulse 1.8s infinite;box-shadow:0 0 12px #28a745;"></div>
+            <div>
+                <div style="font-size:12px;opacity:0.8;">Real-Time Feed</div>
+                <div style="font-weight:600;">Live • <span id="agent-time"></span></div>
+            </div>
+        </div>
+        <script>
+            setInterval(() => {
+                document.getElementById('agent-time').textContent = new Date().toLocaleTimeString();
+            }, 1000);
+            // Pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes live-pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(40,167,69,0.7); }
+                    70% { box-shadow: 0 0 0 12px rgba(40,167,69,0); }
+                    100% { box-shadow: 0 0 0 0 rgba(40,167,69,0); }
+                }
+            `;
+            document.head.appendChild(style);
+        </script>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="graph-controls">
+                    <button class="btn btn-dark" onclick="updateGraph()">
+                        <i class="fas fa-sync-alt"></i> Refresh Now
+                    </button>
+                    <span class="refresh-info">
+                        <i class="fas fa-clock"></i> Auto-refreshes every 3 seconds
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-9">
+                <div id="agent-network"></div>
+            </div>
+            <div class="col-lg-3">
+                <div id="details-panel" class="details-panel">
+                    <h5><i class="fas fa-info-circle"></i> Agent Intelligence Panel</h5>
+                    <strong>Selected Agent:</strong> <span id="selected-name">None</span><br>
+                    <strong>Level:</strong> <span id="selected-level">-</span><br>
+                    <strong>Status:</strong> <span id="selected-status">Idle</span><br>
+                    <strong>Current Task:</strong> <span id="selected-task">-</span><br>
+                    <strong>Description:</strong> <span id="selected-desc">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- HARDENING: Local bundled vis-network v10.0.2 — latest stable standalone UMD -->
+    <!-- Path: apps_shared/canon_dashboard_web/static/js/vis-network.min.js -->
+    <script src="/static/js/vis-network.min.js" defer></script>
+
+    <script defer>
+    // Ultra-hardened initialization with comprehensive error handling and diagnostics
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("%c[AGENT DASH] DOM loaded, initializing Agent Architecture Dashboard", "color: #58a6ff; font-weight: bold;");
+
+        const container = document.getElementById('agent-network');
+        if (!container) {
+            console.error("[AGENT DASH] Critical: #agent-network container not found in DOM");
+            return;
+        }
+
+        const detailsPanel = {
+            name: document.getElementById('selected-name'),
+            level: document.getElementById('selected-level'),
+            status: document.getElementById('selected-status'),
+            task: document.getElementById('selected-task'),
+            desc: document.getElementById('selected-desc')
+        };
+
+        // HARDENING: Verify local vis-network loaded
+        if (!window.vis || !window.vis.Network || !window.vis.DataSet) {
+            console.error("[AGENT DASH] FATAL: Local vis-network.min.js failed to load or is corrupt!");
+            container.innerHTML = `
+                <div style="color:#dc3545;padding:60px;text-align:center;font-size:18px;">
+                    <h4><i class="fas fa-exclamation-triangle fa-2x"></i><br><br>Local vis-network Failed</h4>
+                    <p style="margin:20px 0;">File path: <code>/static/js/vis-network.min.js</code></p>
+                    <p>Steps to fix:</p>
+                    <ol style="text-align:left;max-width:600px;margin:0 auto;">
+                        <li>Create folder: apps_shared/canon_dashboard_web/static/js/</li>
+                        <li>Create file: vis-network.min.js</li>
+                        <li>Paste full content from: <a href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/10.0.2/standalone/umd/vis-network.min.js" target="_blank">this link</a></li>
+                        <li>Restart validator and hard refresh (Ctrl+F5)</li>
+                    </ol>
+                </div>`;
+            return;
+        }
+        console.log("%c[AGENT DASH] vis-network v10.0.2 loaded successfully from local bundle", "color: #28a745; font-weight: bold;");
+
+        let refreshCount = 0;
+
+        function updateGraph() {
+            refreshCount++;
+            console.log(`[AGENT DASH] Refresh #${refreshCount}: Fetching latest agent graph data...`);
+            console.log("[AGENT DASH] vis.DataSet available:", typeof vis.DataSet !== 'undefined');
+            console.log("[AGENT DASH] vis.Network available:", typeof vis.Network !== 'undefined');
+
+            fetch('/api/agent_graph?' + new Date().getTime()) // Cache-busting
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`[AGENT DASH] Success: Received ${data.nodes.length} nodes, ${data.edges.length} edges`);
+                    console.log("[AGENT DASH] Sample node:", data.nodes[0]);
+                    console.log("[AGENT DASH] Sample edge:", data.edges[0]);
+                    
+                    // Convert string levels to integers for hierarchical layout
+                    const processedNodes = data.nodes.map(node => ({
+                        ...node,
+                        level: parseInt(node.level.replace('L', '')) || 0
+                    }));
+                    console.log("[AGENT DASH] Processed nodes with numeric levels:", processedNodes);
+                    
+                    // Create new data sets
+                    const nodes = new vis.DataSet(processedNodes);
+                    const edges = new vis.DataSet(data.edges);
+                    console.log("[AGENT DASH] Created DataSets:", nodes.length, "nodes,", edges.length, "edges");
+                    
+                    if (window.network) {
+                        console.log("[AGENT DASH] Destroying existing network");
+                        window.network.destroy();
+                    }
+                    
+                    // Network options
+                    const options = {
+                        layout: {
+                            hierarchical: {
+                                enabled: true,
+                                direction: "UD",
+                                sortMethod: "directed",
+                                levelSeparation: 220,
+                                nodeSpacing: 160,
+                                treeSpacing: 350,
+                                blockShifting: true,
+                                edgeMinimization: true,
+                                parentCentralization: true
+                            }
+                        },
+                        nodes: {
+                            shape: 'box',
+                            font: {
+                                size: 16,
+                                color: 'white',
+                                face: 'monospace',
+                                strokeWidth: 3,
+                                strokeColor: '#0d1117'
+                            },
+                            shadow: true,
+                            borderWidth: 3,
+                            margin: 12,
+                            widthConstraint: { minimum: 120, maximum: 250 }
+                        },
+                        edges: {
+                            arrows: { to: { enabled: true, scaleFactor: 0.8 } },
+                            smooth: { type: 'cubicBezier', roundness: 0.65 },
+                            color: { color: '#848484', highlight: '#58a6ff', hover: '#58a6ff' },
+                            width: 2.5,
+                            shadow: true
+                        },
+                        interaction: {
+                            hover: true,
+                            tooltipDelay: 200
+                        }
+                    };
+                    
+                    console.log("[AGENT DASH] Creating new vis.Network...");
+                    window.network = new vis.Network(container, {
+                        nodes: nodes,
+                        edges: edges
+                    }, options);
+                    console.log("[AGENT DASH] Network created successfully:", typeof window.network);
+                    
+                    // Force redraw and fit to view
+                    setTimeout(() => {
+                        window.network.fit();
+                        window.network.redraw();
+                        console.log("[AGENT DASH] Network fit and redraw completed");
+                    }, 100);
+
+                    // Enhanced click handler with visual feedback
+                    window.network.on("click", params => {
+                        if (params.nodes.length > 0) {
+                            const nodeId = params.nodes[0];
+                            const node = nodes.get(nodeId);
+                            if (node) {
+                                detailsPanel.name.textContent = node.label;
+                                detailsPanel.level.innerHTML = `<span class="level-badge level-${node.level}">${node.level}</span>`;
+                                detailsPanel.status.innerHTML = `<span class="status-indicator status-${(node.status || 'idle').toLowerCase().replace(' ', '-')}"></span>${node.status || 'Idle'}`;
+                                detailsPanel.task.textContent = node.task || 'No active task';
+                                detailsPanel.desc.textContent = node.title || 'No description available';
+                                console.log(`[AGENT DASH] Selected: ${node.label} (${node.level}) - Status: ${node.status}`);
+                            }
+                        } else {
+                            // Clear on background click
+                            detailsPanel.name.textContent = 'None';
+                            detailsPanel.level.textContent = '-';
+                            detailsPanel.status.textContent = 'Idle';
+                            detailsPanel.task.textContent = '-';
+                            detailsPanel.desc.textContent = '-';
+                        }
+                    });
+
+                    // Auto-fit with slight delay for stabilization
+                    setTimeout(() => network.fit(), 500);
+                })
+                .catch(err => {
+                    console.error("[AGENT DASH] Failed to load graph data:", err);
+                    container.innerHTML = `
+                        <div style="color:#dc3545;padding:40px;text-align:center;">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Connection Error</h4>
+                            <p>Cannot reach /api/agent_graph</p>
+                            <p><strong>${err.message}</strong></p>
+                            <button class="btn btn-outline-light mt-3" onclick="updateGraph()">Retry</button>
+                        </div>`;
+                });
+        }
+
+        // Initial load
+        updateGraph();
+
+        // Auto-refresh every 3 seconds
+        setInterval(updateGraph, 3000);
+
+        // Pulsing live indicator with enhanced visibility
+        const dot = document.createElement('div');
+        dot.innerHTML = '<i class="fas fa-circle" style="color:#28a745;"></i>';
+        dot.style.position = 'fixed';
+        dot.style.bottom = '25px';
+        dot.style.right = '25px';
+        dot.style.fontSize = '20px';
+        dot.style.textShadow = '0 0 15px #28a745';
+        dot.style.animation = 'pulse 1.5s infinite';
+        dot.title = 'Live Real-Time Updates Active';
+        document.body.appendChild(dot);
+
+        // Enhanced pulse animation
+        const pulseStyle = document.createElement('style');
+        pulseStyle.textContent = `
+            @keyframes pulse {
+                0% { text-shadow: 0 0 0 #28a745; }
+                70% { text-shadow: 0 0 20px #28a745; }
+                100% { text-shadow: 0 0 0 #28a745; }
+            }
+        `;
+        document.head.appendChild(pulseStyle);
+    });
+</script>
+</body>
+</html>

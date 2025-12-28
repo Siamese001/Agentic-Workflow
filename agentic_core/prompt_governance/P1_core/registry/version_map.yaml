@@ -1,0 +1,274 @@
+version_map:
+  backup:
+    backup_strategy:
+      backup_types:
+      - frequency: weekly
+        name: full_backup
+      - frequency: daily
+        name: incremental_backup
+      frequency: daily
+      retention: 90_days
+    recovery:
+      disaster_recovery:
+        rpo: 1_hour
+        rto: 4_hours
+      point_in_time_recovery:
+        enabled: true
+        granularity: 1_hour
+  communication:
+    notifications:
+      critical_updates:
+        channels:
+        - email
+        - slack
+        - pagerduty
+        recipients:
+        - ops_team
+        - developers
+      release_announcement:
+        channels:
+        - email
+        - slack
+        recipients:
+        - all_stakeholders
+    release_notes:
+      sections:
+      - overview
+      - new_features
+      - improvements
+      - bug_fixes
+      - breaking_changes
+      - migration_guide
+      template: release_notes_template.md
+  compatibility_matrix:
+    engines:
+      outreach_engine:
+        1.0.0:
+          compatible_injections:
+          - 1.0.0
+          compatible_models:
+          - gpt-4
+          - gpt-3.5-turbo
+          - claude-3
+          compatible_templates:
+          - 1.0.0
+      resume_engine:
+        1.0.0:
+          compatible_injections:
+          - 1.0.0
+          compatible_models:
+          - gpt-4
+          - gpt-3.5-turbo
+          - claude-3
+          compatible_templates:
+          - 1.0.0
+    injections:
+      constraints:
+        1.0.0:
+          compatible_engines:
+          - 1.0.0
+          compatible_injections:
+          - 1.0.0
+      safety:
+        1.0.0:
+          compatible_engines:
+          - 1.0.0
+          required_for_all: true
+  current_versions:
+    engines:
+      outreach_engine: 1.0.0
+      resume_engine: 1.0.0
+    global: 1.0.0
+    injections:
+      constraints: 1.0.0
+      context_engineering: 1.0.0
+      framing: 1.0.0
+      output_governance: 1.0.0
+      reasoning: 1.0.0
+      safety: 1.0.0
+      tool_use: 1.0.0
+    templates:
+      outreach_cold: 1.0.0
+      outreach_connection: 1.0.0
+      outreach_followup: 1.0.0
+      resume_experience: 1.0.0
+      resume_skills: 1.0.0
+      resume_summary: 1.0.0
+  dependencies:
+    1.0.0:
+      external:
+      - openai:gpt-4
+      - anthropic:claude-3
+      optional:
+      - context_engineering:1.0.0
+      - reasoning:1.0.0
+      required:
+      - safety:1.0.0
+      - constraints:1.0.0
+  deployments:
+    development:
+      current_version: 1.1.0-beta
+      deployed_at: '2024-01-01T00:00:00Z'
+      status: testing
+    production:
+      current_version: 1.0.0
+      deployed_at: '2024-01-01T00:00:00Z'
+      deployment_history:
+      - deployed_at: '2024-01-01T00:00:00Z'
+        deployed_by: system
+        status: success
+        version: 1.0.0
+      rollback_versions:
+      - 0.9.0
+      status: active
+    staging:
+      current_version: 1.0.0
+      deployed_at: '2024-01-01T00:00:00Z'
+      next_version: 1.1.0
+      scheduled_deployment: '2024-01-15T00:00:00Z'
+      status: active
+  last_updated: '2024-01-01T00:00:00Z'
+  metrics:
+    performance_metrics:
+    - name: version_deployment_time
+      type: histogram
+    - name: version_rollback_rate
+      type: counter
+    - name: version_stability_score
+      type: gauge
+    usage_metrics:
+    - name: version_adoption_rate
+      type: gauge
+    - name: version_error_rate
+      type: counter
+    - name: version_performance_score
+      type: histogram
+  migration_paths:
+    upgrades:
+      from: 0.9.0
+      rollback_procedure:
+      - description: Stop version 1.0.0
+        name: stop_new_version
+      - description: Restore 0.9.0 configuration
+        name: restore_backup
+      - description: Validate rollback success
+        name: validate_rollback
+      steps:
+      - description: Backup existing configuration
+        name: backup_current_config
+      - description: Update registry to new format
+        name: update_registry_structure
+      - description: Migrate existing prompts to new structure
+        name: migrate_prompts
+      - description: Validate migration results
+        name: validate_migration
+      - description: Deploy new version
+        name: deploy_new_version
+      to: 1.0.0
+  policies:
+    lifecycle:
+      deprecation:
+        notice_period: 30_days
+        support_period: 90_days
+      development:
+        duration: 2_weeks
+        testing_required: true
+      production:
+        min_stability_period: 2_weeks
+        monitoring_required: true
+      staging:
+        approval_required: true
+        duration: 1_week
+    promotion_criteria:
+      dev_to_staging:
+      - all_tests_passing
+      - code_review_complete
+      - security_scan_clear
+      staging_to_prod:
+      - performance_benchmarks_met
+      - safety_validations_pass
+      - stakeholder_approval
+  security:
+    access_control:
+      production_deployment:
+        required_roles:
+        - ops_manager
+        - security_team
+      version_promotion:
+        required_roles:
+        - developer
+        - ops_team
+    security_scanning:
+      enabled: true
+      scan_types:
+      - vulnerability_scan
+      - dependency_check
+      - content_safety_scan
+  semantic_versioning:
+    enabled: true
+    format: semantic
+    pattern: '{major}.{minor}.{patch}'
+    version_components:
+      major:
+        description: Breaking changes
+        increment_triggers:
+        - api_breaking_change
+        - schema_change
+        - dependency_breaking_change
+      minor:
+        description: New features, backward compatible
+        increment_triggers:
+        - new_prompt_added
+        - new_injection_added
+        - feature_enhancement
+      patch:
+        description: Bug fixes, improvements
+        increment_triggers:
+        - bug_fix
+        - performance_improvement
+        - documentation_update
+  validation:
+    post_deployment:
+      health_check:
+        duration: 24h
+        enabled: true
+      performance_monitoring:
+        enabled: true
+        metrics:
+        - latency
+        - error_rate
+        - throughput
+      safety_monitoring:
+        enabled: true
+        real_time_analysis: true
+    pre_deployment:
+      compatibility_check:
+        check_dependencies: true
+        enabled: true
+      performance_test:
+        baseline_comparison: true
+        enabled: true
+      safety_validation:
+        content_filtering: true
+        enabled: true
+      schema_validation:
+        enabled: true
+        strict_mode: true
+  version: '1.0'
+  version_history:
+    1.0.0:
+      changelog:
+      - Initial release of prompt governance system
+      - Complete registry structure
+      - All engine prompts defined
+      - Safety and governance frameworks
+      compatibility:
+        max_version: 1.0.0
+        min_version: 1.0.0
+      components:
+        all_injections: 1.0.0
+        all_templates: 1.0.0
+        outreach_engine: 1.0.0
+        resume_engine: 1.0.0
+      released_at: '2024-01-01T00:00:00Z'
+      status: stable

@@ -1,0 +1,37 @@
+import logging
+from typing import Any, Dict, List, Optional, Protocol
+
+
+class AirlockProtocol:
+    """
+    L5 Safety Guardrail: The Execution Airlock.
+    Validates tool calls against a mission-specific permission matrix.
+    """
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        # Bedrock permissions
+        self.allowed_tools = config.get("allowed_tools", ["read_file", "search_web", "get_status"])
+        self.high_risk_tools = ["run_python", "write_file", "delete_file", "execute_shell"]
+
+    async def acquire_permission(self, tool_name: str, args: Dict[str, Any]) -> bool:
+        """Determines if a tool execution is safe to proceed under Zero-Trust."""
+        # 1. Check Registry Whitelist
+        if tool_name not in self.allowed_tools and tool_name not in self.high_risk_tools:
+            raise PermissionError(f"Airlock Block: Tool '{tool_name}' is not in the Sovereign Registry.")
+
+        # 2. Risk Mitigation for Critical Tools
+        if tool_name in self.high_risk_tools:
+            logging.info(f"Airlock: Evaluating High-Risk tool '{tool_name}'...")
+            return self._validate_risk_parameters(tool_name, args)
+        
+        return True
+
+    def _validate_risk_parameters(self, tool: str, args: Dict) -> bool:
+        # Prevent agents from touching system files or the .env soul
+        path = str(args.get("path", "")).lower()
+        protected_targets = [".env", ".git", "/etc/", "c:/windows/", "system32"]
+        
+        if any(bad in path for bad in protected_targets):
+            logging.error(f"Airlock: Blocked access attempt to protected path: {path}")
+            return False
+        return True

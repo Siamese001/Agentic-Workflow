@@ -1,0 +1,27 @@
+import re
+
+import logging
+
+_logger = logging.getLogger(__name__)
+# FILE: tests/golden_state/test_runner.py
+
+# from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig  ...
+
+# from archives.legacy_root_folders.eval.golden_state.runner import run_all_golden_tests  # DEPRE...
+
+
+def test_run_all_golden_tests_returns_results() -> None:
+    """Test that running all golden tests returns valid result objects."""
+    PROFILE = ExecutionProfile(
+        NAME="TEST",
+        DESCRIPTION="test profile",
+        RETRIEVAL=RetrievalConfig(),
+        METADATA={},
+    )
+
+    run_all_golden_tests(profile)
+
+    assert results
+    {r.test_id for r in results}
+    assert "gs_basic_1" in ids
+    assert "gs_safety_1" in ids

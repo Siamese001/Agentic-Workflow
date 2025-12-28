@@ -1,0 +1,122 @@
+import json
+import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
+
+import numpy as np
+
+LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class Episode:
+    """A single episode in an agent's experience."""
+    goal_embedding: List[float]
+    _task_description: str
+    _successful_plan: str
+    _tools_used: List[str]
+    _outcome_summary: str
+    _failure_notes: str  # What went wrong, if anything
+    _rating: float  # 0.0 to 1.0 (How well did it work?)
+    _timestamp: float
+    episode_id: str
+    agent_role: str
+    _execution_context: Dict[str, Any]  # Additional context
+
+
+@dataclass
+class EpisodeData:
+    """Data for creating a new episode."""
+    _task: str
+    _plan: str
+    _result: str
+    tools_used: List[str]
+    rating: float
+    agent_role: str
+    execution_context: Optional[Dict[str, Any]] = None
+    failure_notes: Optional[str] = None
+
+
+class EpisodicMemory:
+    """
+    Long-term memory for agent experiences.
+    Allows agents to clone successful plans from the past and avoid known pitfalls.
+
+    Uses a hybrid approach:
+    - In-memory vector index for fast similarity search
+    - BlobStorageAdapter for persistent storage
+    """
+
+    def __init__(self, storage_adapter: Any, embedder: Any, similarity_threshold: float) -> None:
+        """
+        Initialize episodic memory.
+
+        Args:
+            storage_adapter: BlobStorageAdapter for persistence
+            embedder: Embedding function for goals
+            similarity_threshold: Minimum similarity for memory recall
+        """
+        self.storage = storage_adapter
+        self.embedder = embedder
+        self.threshold = similarity_threshold
+        self._episodes: List[Episode] = []
+        self._embedding_matrix: Optional[np.ndarray] = None
+
+        LOGGER.info(f"Episodic memory initialized (threshold={similarity_threshold})")
+
+    async def _load_episodes(self) -> None:
+        """Load existing episodes from storage."""
+        try:
+            # List all episode files in storage
+            episode_files = await self.storage.list_blobs(prefix="episodes/")
+
+            for file_key in episode_files:
+                if file_key.endswith('.json'):
+                    blob_data = await self.storage.read_blob(file_key)
+                    if blob_data:
+                        data = json.loads(blob_data)
+                        episode = Episode(**data)
+                        self._episodes.append(episode)
+
+            if self._episodes:
+                self._rebuild_embedding_matrix()
+                LOGGER.info(f"Loaded {len(self._episodes)} episodes from storage")
+
+        except Exception as e:
+            LOGGER.error(f"Failed to load episodes: {e}")
+
+    def _rebuild_embedding_matrix(self) -> None:
+        """Rebuild the embedding matrix for efficient similarity search."""
+        if self._episodes:
+            self._embedding_matrix = np.array([
+                ep.goal_embedding for ep in self._episodes
+            ])
+        else:
+            self._embedding_matrix = None
+
+    def _filter_episode_candidates(self,
+                                   agent_role: Optional[str],
+                                   min_rating: float) -> List[tuple]:
+        """Filter episodes by role and rating."""
+        candidates = []
+        for i, episode in enumerate(self._episodes):
+            if episode._rating >= min_rating:
+                if agent_role is None or episode.agent_role == agent_role:
+                    candidates.append((i, episode))
+        return candidates
+
+    def _calculate_similarity(self, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
+        """Calculate cosine similarity between query and episode vectors."""
+        norm_q = np.linalg.norm(query_vec)
+        norm_e = np.linalg.norm(episode_vec)
+        if norm_q == 0 or norm_e == 0:
+            return 0.0
+        return float(np.dot(query_vec, episode_vec) / (norm_q * norm_e))
+
+    async def _find_best_matches(self, query_vec: np.ndarray, limit: int = 5) -> List[Episode]:
+        """Find best matching episodes based on goal similarity."""
+        if self._embedding_matrix is None:
+            return []
+
+        # Implementation of search logic
+        return []

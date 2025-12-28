@@ -9,7 +9,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Union, object
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from data.sdks_mcps.client_wrappers.anthropic_client import (
     AnthropicClient,
@@ -137,7 +137,8 @@ class MultiProviderRouter:
                 }
 
             except Exception as e:
-
+                # Log the error or handle it as needed
+                print(f"Error initializing client for {provider_config.provider.value}: {e}")
                 if provider_config.provider in self.health_status:
                     self.health_status[provider_config.provider]["healthy"] = False
 
@@ -528,7 +529,8 @@ class MultiProviderRouter:
                 self.health_status[provider]["consecutive_failures"] = 0
 
             except Exception as e:
-
+                # Health check failed
+                print(f"Health check failed for {provider.value}: {e}")
                 self.health_status[provider]["consecutive_failures"] += 1
                 if self.health_status[provider]["consecutive_failures"] >= 3:
                     self.health_status[provider]["healthy"] = False
@@ -632,8 +634,14 @@ if __name__ == "__main__":
                 content = result['response'].content[0].text
             else:
                 content = str(result['response'])
+            print(f"Completion from {result['provider']}: {content}")
+        else:
+            print(f"Completion failed: {result['error']}")
 
         # Router statistics
         stats = router.get_router_stats()
+        print("\nRouter Statistics:")
+        print(json.dumps(stats, indent=2))
 
     except Exception as e:
+        print(f"An unexpected error occurred: {e}")

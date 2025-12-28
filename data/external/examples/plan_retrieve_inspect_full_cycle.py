@@ -23,6 +23,79 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 # Import our production SDKs
+# Assuming these are defined elsewhere or are placeholders
+# from agentic_workflow_sdk.router import MultiProviderRouter, RouterConfig, Provider
+# from agentic_workflow_sdk.tracing import setup_tracing
+
+# Placeholder for SDK imports if not available
+class Provider(Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    VERTEX = "vertex"
+
+@dataclass
+class RouterConfig:
+    providers: List[Provider]
+    primary_provider: Provider
+    fallback_enabled: bool
+    circuit_breaker_enabled: bool
+
+class MockLLMClient:
+    async def generate(self, message: str, temperature: float, max_tokens: int) -> object:
+        logger.info(f"MockLLMClient generating response for: {message[:100]}...")
+        # Simulate LLM response based on prompt
+        if "strategic talent intelligence operations planner" in message:
+            return MockResponse(json.dumps({
+                "strategy": "Comprehensive talent acquisition and market analysis",
+                "information_needed": ["candidate skills", "experience", "location", "salary expectations", "market demand"],
+                "data_sources": ["resume_database", "job_postings", "market_data"],
+                "analysis_steps": ["skill gap analysis", "salary benchmarking", "geographical talent mapping"],
+                "success_criteria": ["5 qualified candidates identified", "market report generated"],
+                "risks": ["data quality issues", "LLM hallucination"]
+            }))
+        elif "talent intelligence analyst" in message:
+            return MockResponse(json.dumps({
+                "data_quality_assessment": "High for resume and job postings, medium for market data",
+                "key_insights": ["High demand for Python/AWS engineers", "San Francisco is a competitive market"],
+                "information_gaps": ["Specific salary expectations per candidate"],
+                "confidence_levels": "High",
+                "recommendations_for_action": ["Prioritize candidates with specific skills", "Focus on Austin market for React/Node.js"]
+            }))
+        elif "Generate specific actions to take" in message:
+            return MockResponse(json.dumps([
+                {"action_type": "generate_report", "target": "Hiring Manager", "content": "Talent Market Report Q4", "priority": "High", "success_metrics": "Report delivered"},
+                {"action_type": "send_email", "target": ["john.doe@example.com"], "content": "Interview invitation for John Smith", "priority": "Medium", "success_metrics": "Email sent"},
+                {"action_type": "update_database", "target": "ATS", "data": [{"candidate_id": "candidate_001", "status": "shortlisted"}], "priority": "High", "success_metrics": "Database updated"}
+            ]))
+        return MockResponse(json.dumps({"content": "Mock response"}))
+
+class MockResponse:
+    def __init__(self, content):
+        self.content = content
+
+class MultiProviderRouter:
+    def __init__(self, config: RouterConfig):
+        self.config = config
+        self.clients = {
+            Provider.OPENAI: MockLLMClient(),
+            Provider.ANTHROPIC: MockLLMClient(),
+            Provider.VERTEX: MockLLMClient()
+        }
+
+    async def get_primary_client(self):
+        return self.clients[self.config.primary_provider]
+
+def setup_tracing(service_name: str):
+    class MockTracer:
+        def start_as_current_span(self, name: str):
+            class MockSpan:
+                def __enter__(self):
+                    logger.debug(f"Span '{name}' started.")
+                    return self
+                def __exit__(self, exc_type, exc_val, exc_tb):
+                    logger.debug(f"Span '{name}' finished.")
+            return MockSpan()
+    return MockTracer()
 
 # Setup logging and tracing
 logging.basicConfig(level=logging.INFO)
@@ -163,8 +236,7 @@ class TalentIntelligenceAgent:
                 Information Needed: {json.dumps(plan["information_needed"], indent=2)}
 
                 Retrieved Data Summary:
-                {json.dumps({k: f"{len(v) if isinstance(v,
-                     list) else 'summary'} items" for k,
+                {json.dumps({k: f"{len(v) if isinstance(v, list) else 'summary'} items" for k,
                      v in retrieved_data.items()},
                      indent=2)}
 
@@ -204,7 +276,7 @@ class TalentIntelligenceAgent:
         with tracer.start_as_current_span("action_stage"):
             try:
                 analysis = context.data["analysis"]
-                plan = context["plan"]
+                plan = context.data["plan"] # Corrected: context["plan"] to context.data["plan"]
 
                 # Generate action plan
                 action_prompt = f"""
@@ -397,18 +469,30 @@ async def main():
     orchestrator = WorkflowOrchestrator()
 
     for objective in objectives:
-
+        logger.info(f"\n--- Starting workflow for objective: {objective} ---")
         context = await orchestrator.execute_full_cycle(objective)
 
         # Print results summary
+        logger.info(f"\n--- Workflow Summary for Objective: {objective} ---")
+        logger.info(f"Final Stage: {context.stage.value}")
+        logger.info(f"Errors: {context.errors if context.errors else 'None'}")
 
         if context.insights:
-
+            logger.info("Key Insights:")
             for insight in context.insights[:3]:  # Show top 3
+                logger.info(f"- {insight}")
+        else:
+            logger.info("No insights generated.")
 
         if context.actions_taken:
-
+            logger.info("Actions Taken:")
             for action in context.actions_taken[:3]:  # Show top 3
+                logger.info(f"- {action}")
+        else:
+            logger.info("No actions taken.")
+
+        logger.info(f"Total Duration: {context.metadata.get('duration', 'N/A'):.2f} seconds")
+        logger.info("--------------------------------------------------")
 
 if __name__ == "__main__":
     # Run the complete agentic workflow

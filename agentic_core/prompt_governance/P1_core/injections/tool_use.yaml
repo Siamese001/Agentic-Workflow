@@ -1,0 +1,446 @@
+tool_use_injection:
+  global_principles:
+    enabled: true
+    optimization_level: maximum
+    tool_areas:
+      integration_coordination: true
+      performance_monitoring: true
+      tool_selection: true
+      usage_optimization: true
+  governance:
+    access_control:
+      role_based_access:
+        permissions:
+          admin:
+          - all_tools
+          - tool_configuration
+          advanced_user:
+          - standard_tools
+          - advanced_tools
+          basic_user:
+          - standard_tools
+        roles:
+        - basic_user
+        - advanced_user
+        - admin
+    usage_policies:
+      data_privacy:
+        audit_logging: true
+        consent_required: true
+        data_retention: 30_days
+      fair_usage:
+        daily_limits:
+          admin: unlimited
+          advanced_user: 500
+          basic_user: 100
+  integration:
+    api_integration:
+      authentication:
+        methods:
+        - api_key_authentication
+        - oauth2_authentication
+        - jwt_authentication
+      error_handling:
+        fallback_behavior: graceful_degradation
+        max_retries: 3
+        retry_strategy: exponential_backoff
+      rate_limiting:
+        default_limits:
+          requests_per_hour: 1000
+          requests_per_minute: 60
+        enabled: true
+    data_flow:
+      error_propagation:
+        error_logging: true
+        recovery_attempts: true
+        user_notification: true
+      input_validation:
+        content_validation: true
+        format_validation: true
+        schema_validation: true
+      output_standardization:
+        consistent_format: true
+        metadata_inclusion: true
+        quality_metrics: true
+  last_updated: '2024-01-01T00:00:00Z'
+  maintenance:
+    monitoring:
+      alerting:
+        channels:
+        - email
+        - slack
+        - pagerduty
+        escalation_rules: severity_based
+      health_checks:
+        alert_thresholds: performance_degradation
+        enabled: true
+        frequency: 5_minutes
+    updates:
+      automatic_updates: true
+      rollback_capability: true
+      testing_before_deployment: true
+      update_schedule:
+        feature_updates: weekly
+        major_versions: monthly
+        security_patches: immediate
+  optimization:
+    cost_management:
+      api_cost_monitoring:
+        cost_per_request_tracking: true
+        enabled: true
+        monthly_budget_limits: true
+      tool_selection_optimization:
+        budget_constrained_selection: true
+        cost_effectiveness_analysis: true
+        performance_cost_ratio: true
+    resource_management:
+      cpu_optimization:
+        batch_operations: true
+        load_balancing: true
+        parallel_processing: true
+      memory_optimization:
+        caching_strategy: lru_cache
+        garbage_collection: aggressive
+        memory_limits: 2GB
+      network_optimization:
+        compression_enabled: true
+        connection_pooling: true
+        request_batching: true
+  performance_monitoring:
+    metrics:
+      processing_metrics:
+      - labels:
+        - tool_name
+        - input_type
+        name: tool_processing_time
+        type: histogram
+      - labels:
+        - tool_name
+        name: tool_success_rate
+        type: gauge
+      - labels:
+        - tool_name
+        - task_type
+        name: tool_accuracy_score
+        type: histogram
+      quality_metrics:
+      - labels:
+        - tool_name
+        - output_type
+        name: output_quality_score
+        type: gauge
+      - labels:
+        - tool_name
+        name: user_satisfaction_rating
+        type: histogram
+    thresholds:
+      accuracy:
+        minimum_acceptable: 0.85
+        target_optimal: 0.95
+      processing_time:
+        max_acceptable: 30
+        target_optimal: 10
+      success_rate:
+        minimum_acceptable: 0.9
+        target_optimal: 0.98
+  testing:
+    automated_tests:
+      integration_tests:
+        coverage_requirement: 80
+        test_frequency: daily
+      performance_tests:
+        baseline_comparison: true
+        regression_detection: true
+        test_frequency: weekly
+      unit_tests:
+        coverage_requirement: 90
+        test_frequency: on_commit
+    manual_testing:
+      quality_assurance:
+        approval_workflow: true
+        documentation_requirements: true
+        review_process: true
+      user_acceptance_testing:
+        required: true
+        test_scenarios:
+        - happy_path
+        - edge_cases
+        - error_conditions
+  tool_selection:
+    outreach_tools:
+      personalization_tools:
+        message_generator:
+          description: Generate personalized outreach messages
+          recommended_tools:
+          - name: contextual_message_generator
+            strengths:
+            - deep_personalization
+            - tone_control
+            use_case: high_value_outreach
+          selection_criteria:
+          - personalization_quality
+          - tone_adaptability
+          - template_flexibility
+      research_tools:
+        company_researcher:
+          description: Gather and analyze company information
+          recommended_tools:
+          - name: web_research_aggregator
+            strengths:
+            - comprehensive_sources
+            - real_time_data
+            use_case: company_intelligence_gathering
+          selection_criteria:
+          - data_source_coverage
+          - information_freshness
+          - relevance_scoring
+        contact_enricher:
+          description: Enrich contact information with professional details
+          recommended_tools:
+          - name: professional_network_enricher
+            strengths:
+            - professional_focus
+            - verified_data
+            use_case: contact_profile_enhancement
+          selection_criteria:
+          - data_accuracy
+          - privacy_compliance
+          - coverage_breadth
+    resume_tools:
+      analysis_tools:
+        experience_classifier:
+          description: Classify work experience by relevance and impact
+          recommended_tools:
+          - name: impact_classifier
+            strengths:
+            - achievement_focused
+            - quantification_support
+            use_case: experience_optimization
+          selection_criteria:
+          - relevance_scoring
+          - achievement_detection
+          - career_progression_analysis
+        skill_analyzer:
+          description: Analyze and categorize skills from resume content
+          recommended_tools:
+          - name: taxonomy_skill_analyzer
+            strengths:
+            - comprehensive_taxonomy
+            - industry_mapping
+            use_case: skill_gap_analysis
+          selection_criteria:
+          - skill_taxonomy_coverage
+          - industry_specific_recognition
+          - proficiency_level_detection
+      parsing_tools:
+        resume_parser:
+          description: Extract structured data from resume documents
+          recommended_tools:
+          - name: nlp_resume_parser
+            strengths:
+            - high_accuracy
+            - format_flexible
+            use_case: complex_resume_formats
+          - name: structured_parser
+            strengths:
+            - fast_processing
+            - standard_formats
+            use_case: high_volume_processing
+          selection_criteria:
+          - format_support
+          - accuracy_rate
+          - processing_speed
+          - field_extraction
+  usage_optimization:
+    coordination:
+      sequential_workflows:
+        outreach_processing:
+          steps:
+          - input: company_identifier
+            output: company_profile
+            tool: company_researcher
+          - input: contact_information
+            output: enriched_contact_profile
+            tool: contact_enricher
+          - input: company_profile, enriched_contact_profile
+            output: personalized_message
+            tool: message_generator
+        resume_processing:
+          steps:
+          - input: raw_resume_document
+            output: structured_resume_data
+            tool: resume_parser
+          - input: structured_resume_data
+            output: categorized_skills
+            tool: skill_analyzer
+          - input: structured_resume_data
+            output: classified_experience
+            tool: experience_classifier
+          - input: classified_experience, categorized_skills
+            output: resume_quality_score
+            tool: quality_scorer
+    parallel_workflows:
+      resume_optimization:
+        parallel_tasks:
+        - focus: skill_extraction_and_categorization
+          tool: skill_analyzer
+        - focus: experience_relevance_scoring
+          tool: experience_classifier
+        - focus: format_compliance_check
+          tool: format_validator
+        synchronization_point: quality_assessment
+  v5_tooling_injections:
+    cross_tool_reconciliation:
+      description: Resolve conflicting outputs across RAG, QA, and drafting tools
+      prompt_template: 'Cross-Tool Reconciliation Process:
+
+        Tool A Output: {tool_a_output}
+
+        Tool B Output: {tool_b_output}
+
+        Tool C Output: {tool_c_output}
+
+
+        Conflict Analysis: {conflict_analysis}
+
+        Resolution Strategy: {resolution_strategy}
+
+        Reconciled Output: {reconciled_output}
+
+
+        Identify and resolve conflicts between tool outputs for consistent results.
+
+        '
+      success_criteria:
+      - Conflicts identified and resolved
+      - Consistent output achieved
+      - Tool integration optimized
+      usage_context:
+      - Multi-tool analysis
+      - Conflict resolution
+      - Output harmonization
+    enabled: true
+    evidence_binding:
+      description: Ground claims to explicit retrieved strings or verified evidence
+      prompt_template: 'Evidence Binding Requirements:
+
+        - Claim: {claim_statement}
+
+        - Evidence Source: {evidence_source}
+
+        - Citation Anchor: {citation_anchor}
+
+        - Verification Status: {verification_status}
+
+
+        All claims must be grounded in explicit evidence with proper citations.
+
+        Use citation anchors to reference specific evidence locations.
+
+        '
+      success_criteria:
+      - Claims properly evidenced
+      - Citations accurately anchored
+      - Evidence verification complete
+      usage_context:
+      - Fact verification
+      - Evidence-based analysis
+      - Citation management
+    injection_count: 5
+    model_switch_aware:
+      description: Adapt instructions based on fast versus high-accuracy model usage
+      prompt_template: 'Model-Switch Adaptation:
+
+        Current Model: {current_model_type}
+
+        Model Characteristics: {model_characteristics}
+
+        Adaptation Strategy: {adaptation_strategy}
+
+
+        Fast Model Mode:
+
+        - Processing Style: {fast_processing_style}
+
+        - Output Format: {fast_output_format}
+
+        - Quality Threshold: {fast_quality_threshold}
+
+
+        High-Accuracy Model Mode:
+
+        - Processing Style: {accurate_processing_style}
+
+        - Output Format: {accurate_output_format}
+
+        - Quality Threshold: {accurate_quality_threshold}
+
+
+        Adapt approach based on current model capabilities and constraints.
+
+        '
+      success_criteria:
+      - Instructions adapted to model
+      - Optimal performance achieved
+      - Resource constraints respected
+      usage_context:
+      - Multi-model environments
+      - Resource optimization
+      - Model-specific adaptation
+    shadow_validation:
+      description: Run rapid internal sanity check before returning final output
+      prompt_template: 'Shadow Validation Protocol:
+
+        1. Primary Output: {primary_output}
+
+        2. Validation Criteria: {validation_criteria}
+
+        3. Sanity Check: {sanity_check}
+
+        4. Error Detection: {error_detection}
+
+        5. Final Validation: {final_validation}
+
+
+        Perform internal validation before output finalization.
+
+        Correct any issues before returning results.
+
+        '
+      success_criteria:
+      - Internal validation completed
+      - Errors detected and corrected
+      - Quality standards met
+      usage_context:
+      - Quality assurance
+      - Error prevention
+      - Output validation
+    tool_feedback_loop:
+      description: Incorporate structured tool outputs into subsequent reasoning steps
+      prompt_template: 'Tool-Feedback Loop Protocol:
+
+        1. Tool Input: {tool_input}
+
+        2. Tool Output: {tool_output}
+
+        3. Output Analysis: {output_analysis}
+
+        4. Integration Steps: {integration_steps}
+
+        5. Next Action: {next_action}
+
+
+        Use tool output to inform and improve subsequent reasoning and actions.
+
+        Maintain feedback loop throughout the entire process.
+
+        '
+      success_criteria:
+      - Tool outputs effectively integrated
+      - Feedback loop maintained
+      - Process optimization achieved
+      usage_context:
+      - Multi-tool workflows
+      - Iterative analysis
+      - Tool coordination
+  version: '1.0'
