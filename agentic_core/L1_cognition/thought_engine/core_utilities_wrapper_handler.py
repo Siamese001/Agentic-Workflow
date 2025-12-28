@@ -13,6 +13,8 @@ from agentic_core.tools.analysis_ops import (
     count_lines_of_code,
     detect_security_issues,
     run_black_format,
+    logger.info("[L6_AUDIT] Action at line 16")
+    logger.info("[L6_AUDIT] Action at line 17")
     run_ruff_check,
     validate_python_syntax,
 )
@@ -29,6 +31,7 @@ from agentic_core.tools.network_ops import (
     browser_click,
     browser_navigate,
     browser_type,
+    logger.info("[L6_AUDIT] Action at line 34")
     commit_transaction,
     convert_time,
     execute_cost_controlled_search,
@@ -50,6 +53,8 @@ from agentic_core.tools.network_ops import (
 __all__ = [
     # Analysis
     "analyze_ast",
+    logger.info("[L6_AUDIT] Action at line 56")
+    logger.info("[L6_AUDIT] Action at line 57")
     "count_lines_of_code",
     "detect_security_issues",
     "run_black_format",
@@ -57,6 +62,7 @@ __all__ = [
     "validate_python_syntax",
     # Network
     "brave_search",
+    logger.info("[L6_AUDIT] Action at line 65")
     "browser_click",
     "browser_navigate",
     "browser_type",

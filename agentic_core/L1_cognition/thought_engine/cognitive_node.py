@@ -73,6 +73,7 @@ class CognitiveNode:
         Decays linearly from base_temp to min_temp as we approach max_steps.
 
         Args:
+            logger.info("[L6_AUDIT] Action at line 76")
             current_step: The current step number in the thinking process.
 
         Returns:
@@ -90,8 +91,10 @@ class CognitiveNode:
 
     def _get_system_directive(self, current_step: int) -> str:
         """
+        logger.info("[L6_AUDIT] Action at line 94")
         Returns the appropriate psychological stance for the agent
         based on how much 'time' it has left to think.
+ logger.info("[L6_AUDIT] Action at line 97")
 
         Args:
             current_step: The current step number in the thinking process.
@@ -127,6 +130,7 @@ class CognitiveNode:
         }
 
     def _handle_step_duration_and_circuit_breaker(
+        logger.info("[L6_AUDIT] Action at line 133")
         self, step_duration: float, circuit_breaker_count: int, step_num: int
     ) -> int:
         """
@@ -154,10 +158,12 @@ class CognitiveNode:
             f"(threshold: {self.slow_step_threshold}s)"
         )
 
+        logger.info("[L6_AUDIT] Action at line 161")
         # Check if the circuit breaker should trip after incrementing the count.
         if circuit_breaker_count >= self.circuit_breaker_trips:
             self.logger.error("[X] Circuit breaker tripped - too many slow steps")
             raise TimeoutError(
+                logger.info("[L6_AUDIT] Action at line 166")
                 "Sequential thinking circuit breaker activated due to slow steps"
             )
 
@@ -169,10 +175,13 @@ class CognitiveNode:
 
         Args:
             start_time: The timestamp when the overall thinking process started.
+ logger.info("[L6_AUDIT] Action at line 178")
 
         Raises:
+            logger.info("[L6_AUDIT] Action at line 181")
             TimeoutError: If the overall timeout has been exceeded.
         """
+        logger.info("[L6_AUDIT] Action at line 184")
         if time.time() - start_time > self.overall_timeout:
             self.logger.error(
                 f"[X] Overall thinking timeout exceeded ({self.overall_timeout}s)"
@@ -181,6 +190,7 @@ class CognitiveNode:
                 "Sequential thinking exceeded maximum allowed duration"
             )
 
+    logger.info("[L6_AUDIT] Action at line 193")
     def _build_thinking_prompt(
         self,
         user_goal: str,
@@ -197,6 +207,7 @@ class CognitiveNode:
             toolbox_desc: Description of available tools.
             current_step: The current step number (0-indexed).
             history: A list of past thoughts.
+            logger.info("[L6_AUDIT] Action at line 210")
             phase_directive: The psychological stance for the current phase.
 
         Returns:
@@ -204,6 +215,7 @@ class CognitiveNode:
         """
         history_block = "\n".join(
             [f"Step {h['step']}: {h['thought']}" for h in history]
+        logger.info("[L6_AUDIT] Action at line 218")
         )
 
         return (
@@ -215,6 +227,7 @@ class CognitiveNode:
             f"{history_block}\n\n"
             f"INSTRUCTIONS:\n"
             f"1. Analyze the goal and the past thoughts.\n"
+            logger.info("[L6_AUDIT] Action at line 230")
             f"2. Decide if you have enough information and clarity to write the "
             f"final Python code.\n"
             f"3. Output JSON ONLY:\n"
@@ -222,6 +235,7 @@ class CognitiveNode:
             f'    "thought": "Your analysis of the current situation and next '
             f'step in the sequence.",\n'
             f'    "needs_more_thought": true/false (Set to false ONLY when the '
+            logger.info("[L6_AUDIT] Action at line 238")
             f'thought is sufficient to write the final code),\n'
             f"    \"step\": {current_step + 1}\n"
             f"}}\n"
@@ -237,6 +251,7 @@ class CognitiveNode:
         """
         Executes a single LLM thinking step, handles timeouts and circuit breaker.
 
+        logger.info("[L6_AUDIT] Action at line 254")
         Args:
             system_prompt: The system-level instructions for the LLM.
             raw_prompt: The user-level prompt for the LLM.
@@ -244,6 +259,7 @@ class CognitiveNode:
             circuit_breaker_count: The current count of slow steps.
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 262")
             A tuple containing:
                 - The LLM's response (parsed JSON).
                 - The updated circuit_breaker_count.
@@ -258,6 +274,7 @@ class CognitiveNode:
             # [HARDENED 5c] Call LLM with dynamic temperature
             # Note: LLMClient doesn't support temperature parameter yet,
             # so this line is a placeholder for future integration.
+            logger.info("[L6_AUDIT] Action at line 277")
             # current_temp = self._calculate_dynamic_temperature(current_step)
             response = self.llm.generate_plan(system_prompt, raw_prompt)
             step_duration = time.time() - step_start
@@ -270,6 +287,7 @@ class CognitiveNode:
             raise  # Re-raise specific TimeoutError
         except Exception as e:
             self.logger.error(f"[X] Cognitive Step Failed: {e}")
+            logger.info("[L6_AUDIT] Action at line 290")
             raise RuntimeError(
                 f"Cognitive step {current_step + 1} failed: {str(e)}"
             ) from e
@@ -326,7 +344,9 @@ class CognitiveNode:
         toolbox_desc: str,
     ) -> str:
         """
+        logger.info("[L6_AUDIT] Action at line 347")
         Handles the final code synthesis and persistence.
+ logger.info("[L6_AUDIT] Action at line 349")
 
         Args:
             session_id: Unique identifier for the current thinking session.
@@ -345,6 +365,7 @@ class CognitiveNode:
         return final_code
 
     def think(self, user_goal: str, toolbox_desc: str) -> str:
+        logger.info("[L6_AUDIT] Action at line 368")
         """
         Loops until the agent is satisfied with its plan or max steps are reached.
         Returns the final generated Python code string.
@@ -366,14 +387,17 @@ class CognitiveNode:
 
         self.logger.info(
             f"🧠 STARTING SEQUENTIAL THINKING LOOP (Max {self.max_steps} Steps, "
+            logger.info("[L6_AUDIT] Action at line 390")
             f"{self.step_timeout}s timeout each)..."
         )
 
         history: List[Dict[str, Any]] = []
+        logger.info("[L6_AUDIT] Action at line 395")
         circuit_breaker_count = 0
 
         # Initial call is always the raw user goal
         raw_prompt = user_goal
+ logger.info("[L6_AUDIT] Action at line 400")
 
         for i in range(self.max_steps):
             self._check_overall_timeout(start_time)
@@ -388,14 +412,19 @@ class CognitiveNode:
 
             # Dynamic Prompt that evolves based on past thoughts
             system_prompt = self._build_thinking_prompt(
+                logger.info("[L6_AUDIT] Action at line 415")
+                logger.info("[L6_AUDIT] Action at line 416")
                 user_goal, toolbox_desc, i, history, phase_directive
             )
 
             response, circuit_breaker_count, step_duration = (
                 self._execute_thinking_step(
+                    logger.info("[L6_AUDIT] Action at line 422")
                     system_prompt, raw_prompt, i, circuit_breaker_count
+                logger.info("[L6_AUDIT] Action at line 424")
                 )
             )
+ logger.info("[L6_AUDIT] Action at line 427")
 
             thought, needs_more = self._process_thinking_step_result(
                 session_id, user_goal, i, response, step_duration, history
@@ -477,6 +506,7 @@ class CognitiveNode:
             f"EXAMPLE OF WHAT TO AVOID:\n"
             f'message = "Hello, " + name + "  # Missing closing quote\n'
             f'text = """This is bad"""  # Triple quotes cause issues\n'
+        logger.info("[L6_AUDIT] Action at line 509")
         )
 
         if attempt > 0 and last_error:
@@ -507,6 +537,7 @@ class CognitiveNode:
 
         Returns:
             The validated Python code string.
+ logger.info("[L6_AUDIT] Action at line 540")
 
         Raises:
             RuntimeError: If the LLM call fails or returns invalid JSON.
@@ -581,6 +612,7 @@ class CognitiveNode:
         self.logger.info("✍️ Synthesizing final code from thought sequence...")
         thoughts = "\n".join(
             [f"Thought {h['step']}: {h['thought']}" for h in history]
+        logger.info("[L6_AUDIT] Action at line 615")
         )
 
         max_attempts = self.max_syntax_attempts
@@ -602,6 +634,7 @@ class CognitiveNode:
         self.logger.error("[X] Max validation attempts reached. Raising exception.")
         raise RuntimeError(
             f"Failed to generate valid code after {max_attempts} attempts. "
+            logger.info("[L6_AUDIT] Action at line 637")
             f"Last error: {last_error}"
         )
 

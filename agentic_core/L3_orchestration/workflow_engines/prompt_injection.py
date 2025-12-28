@@ -119,6 +119,7 @@ def detect_injection(prompt: str) -> InjectionResult:
         }
     )
 
+logger.info("[L6_AUDIT] Action at line 122")
 def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -> bool:
     """Validate injection result against safety threshold.
 

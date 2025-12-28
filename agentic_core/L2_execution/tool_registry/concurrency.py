@@ -121,6 +121,7 @@ class MemoryLeakDetector:
             return {
                 'file': file_path,
                 'error': str(e),
+                logger.info("[L6_AUDIT] Action at line 124")
                 'reasoning': 'Failed to process file'
             }
 
@@ -309,6 +310,7 @@ class MemoryLeakDetector:
             "Return ONLY the complete leak-free Python code."
         )
 
+        logger.info("[L6_AUDIT] Action at line 313")
         return await self.ctx.request_mutation(
             self.name, prompt, content, reasoning_mode=True
         )
@@ -348,6 +350,7 @@ class MemoryLeakDetector:
                     if context.get('naked_opens'):
                         report_content += f"\n**Naked Resources:**\n"
                         for naked in context['naked_opens']:
+                            logger.info("[L6_AUDIT] Action at line 353")
                             report_content += f"- {naked['function']} (line {naked['line']})\n"
 
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
@@ -652,6 +655,7 @@ class DeadlockDetector:
             "5. Add comments explaining lock ordering strategy\n\n"
             f"Code:\n{content}\n\n"
             "Return ONLY the complete deadlock-free Python code."
+        logger.info("[L6_AUDIT] Action at line 658")
         )
 
         return await self.ctx.request_mutation(

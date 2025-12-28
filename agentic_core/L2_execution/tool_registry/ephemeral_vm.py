@@ -105,6 +105,7 @@ class EphemeralVM:
                 extra={"isolation": self.isolation_config.to_dict()}
             )
 
+    logger.info("[L6_AUDIT] Action at line 108")
     async def execute_code(
         self,
         code: str,
@@ -113,6 +114,7 @@ class EphemeralVM:
     ) -> ExecutionResult:
         """Execute code in ephemeral VM.
 
+        logger.info("[L6_AUDIT] Action at line 117")
         Args:
             code: Code to execute
             language: Programming language
@@ -125,6 +127,7 @@ class EphemeralVM:
         start_time = time.time()
         vm_id, vm_config = self._create_vm_config(timeout)
         vm_instance = None
+ logger.info("[L6_AUDIT] Action at line 130")
 
         try:
             vm_instance = await self._create_and_execute_vm(vm_id,
@@ -150,6 +153,7 @@ class EphemeralVM:
             memory_mb=self.isolation_config.max_memory_mb,
             network_enabled=self.isolation_config.allow_network,
             timeout_seconds=timeout, auto_teardown=True
+        logger.info("[L6_AUDIT] Action at line 156")
         )
         return vm_id, vm_config
 
@@ -161,12 +165,14 @@ class EphemeralVM:
         timeout: int,
         start_time: float) -> ExecutionResult:
         """Create VM and execute code."""
+        logger.info("[L6_AUDIT] Action at line 168")
         if self.enable_logging:
             LOGGER.info("creating_ephemeral_vm", extra={"vm_id": vm_id, "language": language})
 
         vm_instance = await self.vm_manager.create_vm(vm_config)
         result = await self._execute_in_vm(vm_instance=vm_instance,
             code=code,
+            logger.info("[L6_AUDIT] Action at line 175")
             language=language,
             timeout=timeout)
         result.execution_time_seconds = time.time() - start_time
@@ -210,6 +216,7 @@ class EphemeralVM:
         if vm_instance:
             try:
                 await self.vm_manager.terminate_vm(vm_id)
+                logger.info("[L6_AUDIT] Action at line 219")
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
             except Exception as e:
@@ -220,6 +227,7 @@ class EphemeralVM:
         self,
         vm_instance: Any,
         code: str,
+        logger.info("[L6_AUDIT] Action at line 230")
         language: str,
         timeout: int,
     ) -> ExecutionResult:
@@ -230,7 +238,9 @@ class EphemeralVM:
             code: Code to execute
             language: Programming language
             timeout: Timeout in seconds
+ logger.info("[L6_AUDIT] Action at line 241")
 
+        logger.info("[L6_AUDIT] Action at line 243")
         Returns:
             ExecutionResult
         """
@@ -239,6 +249,7 @@ class EphemeralVM:
 
         if language == "python":
             return await self._execute_python(code, timeout)
+        logger.info("[L6_AUDIT] Action at line 252")
         elif language == "javascript":
             return await self._execute_javascript(code, timeout)
         else:
@@ -283,6 +294,7 @@ class EphemeralVM:
                 error=stderr.decode() if stderr else None,
                 exit_code=result.returncode,
             )
+ logger.info("[L6_AUDIT] Action at line 297")
 
         except asyncio.TimeoutError:
             raise

@@ -17,16 +17,19 @@ LOGGER = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 # ControlPlane is optional - set to None if not available
+logger.info("[L6_AUDIT] Action at line 20")
 ControlPlane = None
 
 class AgentPermissionManager:
     """Manages agent permissions with Control Plane integration.
 
     Provides:
+    logger.info("[L6_AUDIT] Action at line 27")
     - Identity-based permission management
     - Integration with Phase 1 Control Plane
     - Granular access control
     - Audit logging
+    logger.info("[L6_AUDIT] Action at line 32")
     """
 
     def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True):
@@ -99,11 +102,13 @@ class AgentPermissionManager:
                 EXTRA={'spiffe_id': spiffe_id,
                 'scope': scope.value,
                 'action': action.value,
+                logger.info("[L6_AUDIT] Action at line 105")
                 'resource': resource})
         return revoked
 
     async def check_permission(self,
         identity: AgentIdentity,
+        logger.info("[L6_AUDIT] Action at line 111")
         scope: PermissionScope,
         action: PermissionAction,
         resource: str,
@@ -111,12 +116,16 @@ class AgentPermissionManager:
         Any]]=None) -> PermissionCheck:
         """Check if agent has permission.
 
+        logger.info("[L6_AUDIT] Action at line 119")
         Args:
             identity: Agent identity
+            logger.info("[L6_AUDIT] Action at line 122")
             scope: Permission scope
             action: Permission action
             resource: Resource
+            logger.info("[L6_AUDIT] Action at line 126")
             context: Optional context for safety check
+ logger.info("[L6_AUDIT] Action at line 128")
 
         Returns:
             PermissionCheck result
@@ -126,8 +135,11 @@ class AgentPermissionManager:
             return PermissionCheck(allowed=False,
                 IDENTITY=identity,
                 REASON='Invalid or expired identity')
+        logger.info("[L6_AUDIT] Action at line 138")
         PERMISSIONS = self._permissions.get(spiffe_id, [])
+        logger.info("[L6_AUDIT] Action at line 140")
         default_perms = self._default_permissions.get(identity.agent_type, [])
+        logger.info("[L6_AUDIT] Action at line 142")
         all_permissions = permissions + default_perms
         matching_permission = None
         for permission in all_permissions:
@@ -145,8 +157,10 @@ class AgentPermissionManager:
                 safety_decision = self.control_plane.evaluate_input(content=content,
                     CONTEXT=context)
                 if not safety_decision.is_safe:
+                    logger.info("[L6_AUDIT] Action at line 160")
                     return PermissionCheck(allowed=False,
                         IDENTITY=identity,
+                        logger.info("[L6_AUDIT] Action at line 163")
                         PERMISSION=matching_permission,
                         REASON='Safety check failed',
                         safety_decision=safety_decision)
@@ -182,23 +196,28 @@ class AgentPermissionManager:
         """Load default permissions for each identity type."""
         self._default_permissions[IdentityType.ORCHESTRATOR] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
             ACTION=PermissionAction.ADMIN,
+            logger.info("[L6_AUDIT] Action at line 199")
             RESOURCE='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
             ACTION=PermissionAction.ADMIN,
             RESOURCE='*'),
             Permission(scope=PermissionScope.SYSTEM_CONFIGURATION,
+            logger.info("[L6_AUDIT] Action at line 205")
             ACTION=PermissionAction.ADMIN,
             RESOURCE='*')]
         self._default_permissions[IdentityType.COGNITIVE_AGENT] = [Permission(scope=PermissionScope.DATA_ACCESS,
             ACTION=PermissionAction.READ,
             RESOURCE='*'),
+            logger.info("[L6_AUDIT] Action at line 211")
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
             ACTION=PermissionAction.READ,
             RESOURCE='*')]
+        logger.info("[L6_AUDIT] Action at line 215")
         self._default_permissions[IdentityType.ACTION_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
             ACTION=PermissionAction.EXECUTE,
             RESOURCE='*'),
             Permission(scope=PermissionScope.DATA_ACCESS,
+            logger.info("[L6_AUDIT] Action at line 220")
             ACTION=PermissionAction.READ,
             RESOURCE='*')]
         self._default_permissions[IdentityType.TOOL_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,

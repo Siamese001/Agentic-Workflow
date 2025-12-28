@@ -26,6 +26,7 @@ class ClaimVerificationMode(Enum):
     NONE = "NONE"
 
 # Local validation function to avoid architectural violation
+logger.info("[L6_AUDIT] Action at line 29")
 def validate_research_output_local(output: DeepResearchOutput) -> bool:
     """Local validation for research output to avoid L2 dependency."""
     if not output or not output.content:
@@ -34,6 +35,7 @@ def validate_research_output_local(output: DeepResearchOutput) -> bool:
     # Assuming output has confidence_score for this basic validation
     return len(output.content) > 100 and getattr(output, 'confidence_score', 0.0) > 0.5
 
+logger.info("[L6_AUDIT] Action at line 38")
 # Local config to avoid architectural violation
 K25_REASONING_CONFIG = {
     "temperature": 0.3,
@@ -53,6 +55,7 @@ class K25DeepResearchAgent:
     """
 
     def __init__(self, company_name: str, company_url: Optional[str] = None):
+        logger.info("[L6_AUDIT] Action at line 58")
         self.company_name = company_name
         self.company_url = company_url
         self.config = K25_REASONING_CONFIG
@@ -69,6 +72,7 @@ class K25DeepResearchAgent:
         return self._get_default_prompt()
 
     def _get_default_prompt(self) -> str:
+        logger.info("[L6_AUDIT] Action at line 75")
         return """
 # MISSION: DEEP RESEARCH & ENTITY EXTRACTION (K.2.5)
 
@@ -79,6 +83,7 @@ Execute multi-hop research with 3 phases:
 
 Requirements:
 - Extract hard metrics with citations
+logger.info("[L6_AUDIT] Action at line 86")
 - Identify specific technologies with performance gains
 - Map executives to strategic initiatives
 """
@@ -89,14 +94,18 @@ Requirements:
         Performs multi-hop research across financial, strategic, technical,
         and organizational dimensions.
 
+        logger.info("[L6_AUDIT] Action at line 97")
         Returns:
             DeepResearchOutput: Comprehensive research results
+        logger.info("[L6_AUDIT] Action at line 100")
         """
         hop_results = []
+ logger.info("[L6_AUDIT] Action at line 103")
 
         hop1_result = self._execute_hop_1_financial_strategic()
         hop_results.append(hop1_result)
 
+        logger.info("[L6_AUDIT] Action at line 108")
         hop2_result = self._execute_hop_2_technical_product()
         hop_results.append(hop2_result)
 
@@ -105,6 +114,7 @@ Requirements:
 
         research_output = self._assemble_research_output(hop_results)
 
+        logger.info("[L6_AUDIT] Action at line 117")
         integrity_result = validate_research_output_local(research_output)
 
         if not integrity_result:
@@ -122,6 +132,7 @@ Requirements:
         - Cost reduction or margin expansion drivers
         - Sources: 10-K, 10-Q, earnings calls, investor letters
         """
+ logger.info("[L6_AUDIT] Action at line 135")
 
         RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.FINANCIAL_STRATEGIC,
@@ -139,6 +150,7 @@ Requirements:
         - Infrastructure stack (cloud, orchestration, ML platforms)
         - Quantified performance gains or improvements
         - Sources: engineering blogs, tech stack documentation, patents
+        logger.info("[L6_AUDIT] Action at line 153")
         """
 
         RESULT = ResearchHopResult(
@@ -210,8 +222,10 @@ Requirements:
         Returns:
             Formatted research prompt string with all phases and instructions
         """
+        logger.info("[L6_AUDIT] Action at line 225")
         return f"""
 {self.prompt_template}
+ logger.info("[L6_AUDIT] Action at line 228")
 
 ---
 

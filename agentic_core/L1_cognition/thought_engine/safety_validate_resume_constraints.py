@@ -9,10 +9,12 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
+logger.info("[L6_AUDIT] Action at line 12")
 def validate_resume_constraints(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate resume constraints data."""
     return {"status": "processed", "input_keys": list(data.keys())}
 
+ logger.info("[L6_AUDIT] Action at line 17")
 
 def get_validate_resume_constraints_config() -> Dict[str, object]:
     """Get configuration for validate_resume_constraints."""

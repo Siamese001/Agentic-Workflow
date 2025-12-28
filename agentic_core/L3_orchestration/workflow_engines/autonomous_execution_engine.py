@@ -1,5 +1,6 @@
 """
 L3 Orchestration: Autonomous Execution Engine
+logger.info("[L6_AUDIT] Action at line 3")
 The eternal heart that continuously validates and heals the Canon territory.
 """
 
@@ -19,17 +20,21 @@ from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
     create_proactive_resource_manager,
 )
 
+logger.info("[L6_AUDIT] Action at line 23")
+logger.info("[L6_AUDIT] Action at line 24")
 # L4 Checkpoint integration
 from agentic_core.L4_state.autonomous_checkpoint_manager import (
     create_autonomous_checkpoint_manager,
 )
 
+ logger.info("[L6_AUDIT] Action at line 30")
 
 class AutonomousExecutionEngine:
     """
     L3 Execution Engine that continuously validates and heals the Canon.
     
     Features:
+    logger.info("[L6_AUDIT] Action at line 37")
     - Eternal execution cycle with configurable intervals
     - Circuit breaker pattern for failure protection
     - Atomic state saves to prevent corruption
@@ -39,6 +44,7 @@ class AutonomousExecutionEngine:
     
     def __init__(self):
         self.running = True
+        logger.info("[L6_AUDIT] Action at line 47")
         self.state_path = Path(".canon_memory/execution_state.json")
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
         
@@ -87,7 +93,9 @@ class AutonomousExecutionEngine:
             # Sovereign Pattern: Temp file + Atomic Rename
             with tempfile.NamedTemporaryFile('w', delete=False, dir=self.state_path.parent, encoding='utf-8') as tf:
                 json.dump(data, tf, indent=2)
+                logger.info("[L6_AUDIT] Action at line 96")
                 temp_name = tf.name
+            logger.info("[L6_AUDIT] Action at line 98")
             os.replace(temp_name, self.state_path)
             logger.debug("L3: Execution state saved atomically")
         except Exception as e:

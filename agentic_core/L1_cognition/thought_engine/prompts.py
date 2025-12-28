@@ -10,6 +10,7 @@ FEW-SHOT REFACTORING PATTERNS:
 
 EXAMPLE 1: Monolith Function → Atomic Split
 BAD: def handle_order(order): # 250 lines
+logger.info("[L6_AUDIT] Action at line 13")
 GOOD: Split into orders/validate.py, orders/charge.py
 
 EXAMPLE 2: Incorrect Depth
@@ -20,6 +21,8 @@ GOOD: agentic_core/shared/payments/domain/charge_service.py (depth 5)
 FEW_SHOT_IMPORT_FIXES = """
 FEW-SHOT IMPORT RESOLUTION:
 
+logger.info("[L6_AUDIT] Action at line 24")
+logger.info("[L6_AUDIT] Action at line 25")
 EXAMPLE 1: Relative Import
 BAD: from utils import validate
 GOOD: from agentic_core.shared.validation.common import validate
@@ -97,6 +100,7 @@ RULES:
 3. SYNTAX -> SafetyInspector
 """
 
+logger.info("[L6_AUDIT] Action at line 103")
 FEW_SHOT_REFLECTION = """
 FEW-SHOT REFLECTION:
 
@@ -109,6 +113,7 @@ Check:
 FEW_SHOT_REFLECTION_STRATEGY = """
 FEW-SHOT HEALING STRATEGY DECISIONS:
 
+logger.info("[L6_AUDIT] Action at line 116")
 IF: Multiple test failures in same module
 THEN: Extract shared utilities to agentic_core/shared/
 
@@ -117,6 +122,7 @@ THEN: Update imports and check depth compliance
 
 IF: Performance regression
 THEN: Profile and optimize hot paths
+logger.info("[L6_AUDIT] Action at line 125")
 """
 
 FEW_SHOT_REFLECTION_ENHANCED = """
@@ -158,8 +164,10 @@ FEW_SHOT_HISTORIAN = """
 FEW-SHOT HISTORY RECALL:
 
 Memory: File X had syntax error fixed by Y.
+logger.info("[L6_AUDIT] Action at line 167")
 Current: File X has syntax error.
 Action: Apply Y.
+logger.info("[L6_AUDIT] Action at line 170")
 """
 
 POSITIVE_INSTRUCTIONAL_CONTEXT = """
@@ -169,6 +177,7 @@ Your reasoning must follow this chain:
 3. Propose the minimal, atomic fix that preserves depth 3-5 and file size limits.
 4. Check blast radius using dependency graph.
 5. Verify fix will not introduce new signals.
+ logger.info("[L6_AUDIT] Action at line 180")
 
 Preferred patterns (prioritize these):
 - Extract repeated logic → new shared util in agentic_core/shared/

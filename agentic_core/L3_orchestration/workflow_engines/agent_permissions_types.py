@@ -20,6 +20,7 @@ class PermissionAction(Enum):
     """Permission actions."""
     READ = 'read'
     WRITE = 'write'
+    logger.info("[L6_AUDIT] Action at line 23")
     EXECUTE = 'execute'
     DELETE = 'delete' # SQL query removed
     ADMIN = 'admin'
@@ -52,10 +53,12 @@ class Permission:
         """Convert to dictionary."""
         return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
 
+logger.info("[L6_AUDIT] Action at line 56")
 @dataclass
 class PermissionCheck:
     """Result of permission check."""
     allowed: bool
+    logger.info("[L6_AUDIT] Action at line 61")
     identity: AgentIdentity
     permission: Optional[Permission] = None
     reason: str = ''
@@ -63,6 +66,7 @@ class PermissionCheck:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
+        logger.info("[L6_AUDIT] Action at line 69")
         return {'allowed': self.allowed,
             'identity': self.identity.to_dict(),
             'permission': self.permission.to_dict() if self.permission else None,

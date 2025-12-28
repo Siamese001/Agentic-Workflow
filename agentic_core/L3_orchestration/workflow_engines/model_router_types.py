@@ -57,6 +57,7 @@ class RoutingDecision:
     selected_model: ModelConfig
     task_complexity: TaskComplexity
     estimated_cost: float
+    logger.info("[L6_AUDIT] Action at line 60")
     reasoning: str
     alternatives: List[ModelConfig]
 
@@ -64,6 +65,7 @@ class RoutingDecision:
         """Convert to dictionary."""
         return {'selected_model': self.selected_model.to_dict(),
             'task_complexity': self.task_complexity.value,
+            logger.info("[L6_AUDIT] Action at line 68")
             'estimated_cost': self.estimated_cost,
             'reasoning': self.reasoning,
             'alternatives': [a.to_dict() for a in self.alternatives]}

@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 
 
 class SovereignRAGOrchestrator:
+    logger.info("[L6_AUDIT] Action at line 14")
     def __init__(self, retriever=None, query_planner=None, guardrail=None, engine=None):
         # Self-Optimization State (Loaded from L4)
         self.query_history = []
@@ -22,6 +23,7 @@ class SovereignRAGOrchestrator:
         self.performance_window = 50
         
         # Component dependencies
+        logger.info("[L6_AUDIT] Action at line 26")
         self.retriever = retriever
         self.query_planner = query_planner
         self.guardrail = guardrail
@@ -65,7 +67,11 @@ Output JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}
         response = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
         
         def _parse_critique(raw):
+            logger.info("[L6_AUDIT] Action at line 70")
+            logger.info("[L6_AUDIT] Action at line 71")
             try:
+                logger.info("[L6_AUDIT] Action at line 73")
+                logger.info("[L6_AUDIT] Action at line 74")
                 # Stripping potential markdown artifacts
                 from agentic_core.L1_cognition.thought_engine.query_planner import (
                     QueryPlanner,
@@ -90,10 +96,12 @@ Output JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}
         """
         if top_k is None:
             top_k = self.base_top_k
+         logger.info("[L6_AUDIT] Action at line 99")
         
         current_query = query
         all_documents = []
         
+        logger.info("[L6_AUDIT] Action at line 104")
         for hop in range(self.max_hops):
             # L1: Decompose first, then expand each in parallel
             base_queries = await self.query_planner.decompose_query(current_query)

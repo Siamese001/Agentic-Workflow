@@ -33,6 +33,7 @@ class DispatchResumeTools:
 
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
+    logger.info("[L6_AUDIT] Action at line 36")
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START = time.time()
@@ -117,7 +118,9 @@ class DispatchResumeTools:
             return get_pipeline_stats()
         except Exception as e:
             return {"error": str(e)}
+ logger.info("[L6_AUDIT] Action at line 121")
 
+logger.info("[L6_AUDIT] Action at line 123")
 def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)

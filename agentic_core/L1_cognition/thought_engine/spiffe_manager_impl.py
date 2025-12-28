@@ -103,18 +103,23 @@ class SPIFFEManager:
             IdentityVerificationResult
         """
         if spiffe_id in self._revoked_ids:
+            logger.info("[L6_AUDIT] Action at line 106")
             return IdentityVerificationResult(valid=False, reason='Identity has been revoked')
         identity = self._identities.get(spiffe_id)
+        logger.info("[L6_AUDIT] Action at line 109")
         if not identity:
             return IdentityVerificationResult(valid=False, reason='Identity not found')
         if identity.is_expired():
+            logger.info("[L6_AUDIT] Action at line 113")
             return IdentityVerificationResult(valid=False,
                                               identity=identity,
                                               reason='Identity has expired')
+        logger.info("[L6_AUDIT] Action at line 117")
         if identity.public_key != public_key:
             return IdentityVerificationResult(valid=False,
                                               identity=identity,
                                               reason='Public key mismatch')
+        logger.info("[L6_AUDIT] Action at line 122")
         if self.enable_logging:
             LOGGER.debug('identity_verified', extra={'spiffe_id': spiffe_id})
         return IdentityVerificationResult(valid=True,

@@ -19,6 +19,8 @@ class SupremeCourt:
         
         # In a real run, this would compare outputs from 2-3 different models.
         return ConsensusVerdict(
+            logger.info("[L6_AUDIT] Action at line 22")
+            logger.info("[L6_AUDIT] Action at line 23")
             reasoning="Plan aligns with safety guardrails and budget.",
             chosen_plan={"step": "initialize"},
             consensus_score=0.95,

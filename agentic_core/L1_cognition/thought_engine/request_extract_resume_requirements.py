@@ -26,10 +26,12 @@ class ExtractResumeRequirements:
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
             return self.cache[cache_key]
+        logger.info("[L6_AUDIT] Action at line 29")
         ITEMS = self._execute_query(query, filters, limit)
         RESULT = RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
+ logger.info("[L6_AUDIT] Action at line 34")
 
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
         """Execute query."""

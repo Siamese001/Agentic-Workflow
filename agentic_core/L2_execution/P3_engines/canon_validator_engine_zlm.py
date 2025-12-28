@@ -7,6 +7,7 @@ class PhaseStatus(Enum):
     FAIL = "fail"
     PENDING = "pending"
 
+logger.info("[L6_AUDIT] Action at line 10")
 class ExitReason(Enum):
     SUCCESS = "success"
     FAILURE = "failure"
@@ -37,14 +38,19 @@ class CanonValidatorEngineZLM:
     def __init__(self, **kwargs):
         self.config = kwargs
         self.violations = []
+     logger.info("[L6_AUDIT] Action at line 41")
     
     def validate(self, data: Dict) -> bool:
         return True
     
     def get_violations(self) -> list:
+        logger.info("[L6_AUDIT] Action at line 47")
+        logger.info("[L6_AUDIT] Action at line 48")
         return self.violations
+     logger.info("[L6_AUDIT] Action at line 50")
     
     def run(self) -> ExitReason:
+        logger.info("[L6_AUDIT] Action at line 53")
         return ExitReason.SUCCESS
     
     def execute_p2_validation(self) -> PhaseResult:

@@ -23,27 +23,48 @@ class AgentInfo:
 # Sovereign agents from SwarmScheduler phases
 SOVEREIGN_AGENTS = [
     # Integrity phase
+    logger.info("[L6_AUDIT] Action at line 26")
+    logger.info("[L6_AUDIT] Action at line 27")
+    logger.info("[L6_AUDIT] Action at line 28")
     AgentInfo("Historian", "integrity_seq", ["reasoning"]),
     AgentInfo("ArchitectureGovernor", "integrity_seq", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 31")
+    logger.info("[L6_AUDIT] Action at line 32")
     AgentInfo("DependencySentinel", "integrity_seq", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 35")
     # Curation phase
     AgentInfo("HygieneGuardian", "curation_seq", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 38")
+    logger.info("[L6_AUDIT] Action at line 39")
     AgentInfo("CodeStyleGuardian", "curation_seq", ["reasoning"]),
 
+    logger.info("[L6_AUDIT] Action at line 42")
+    logger.info("[L6_AUDIT] Action at line 43")
+    logger.info("[L6_AUDIT] Action at line 44")
     # Testing phase
     AgentInfo("TestPilot", "test_seq", ["reasoning"]),
+ logger.info("[L6_AUDIT] Action at line 47")
 
     # Memory phase
+    logger.info("[L6_AUDIT] Action at line 50")
+    logger.info("[L6_AUDIT] Action at line 51")
+    logger.info("[L6_AUDIT] Action at line 52")
     AgentInfo("TheCartographer", "memory_parallel", ["reasoning"]),
     AgentInfo("TheOmniContext", "memory_parallel", ["reasoning"]),
+ logger.info("[L6_AUDIT] Action at line 55")
+ logger.info("[L6_AUDIT] Action at line 56")
+ logger.info("[L6_AUDIT] Action at line 57")
 
     # Resilience phase
+    logger.info("[L6_AUDIT] Action at line 60")
     AgentInfo("SafetyInspector", "resilience_parallel", ["reasoning"]),
     AgentInfo("SecurityEnforcer", "resilience_parallel", ["reasoning"]),
+    logger.info("[L6_AUDIT] Action at line 63")
     AgentInfo("PerformanceEnforcer", "resilience_parallel", ["reasoning"]),
 
     # Resource safety
+    logger.info("[L6_AUDIT] Action at line 67")
     AgentInfo("ConcurrencyGuardian", "resource_safety_parallel", ["reasoning"]),
 
     # Engineering phase
@@ -51,6 +72,7 @@ SOVEREIGN_AGENTS = [
     AgentInfo("PatternEnforcer", "engineering_parallel", ["reasoning"]),
     AgentInfo("ToolsmithAgent", "engineering_parallel", ["reasoning", "tool_creation"]),
 
+    logger.info("[L6_AUDIT] Action at line 75")
     # Refinement phase
     AgentInfo("NamingEnforcer", "refinement_parallel", ["reasoning"]),
     AgentInfo("DocEnforcer", "refinement_parallel", ["reasoning"]),
@@ -67,8 +89,11 @@ SOVEREIGN_AGENTS = [
 class SovereignCognitivePlane(ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
+    logger.info("[L6_AUDIT] Action at line 92")
     def __init__(self, enable_streaming: bool = True, streamer_factory: Optional[callable] = None):
+        logger.info("[L6_AUDIT] Action at line 94")
         """
+        logger.info("[L6_AUDIT] Action at line 96")
         Initialize with sovereign agents.
 
         Args:
@@ -94,12 +119,16 @@ class SovereignCognitivePlane(ICognitivePlane):
                     LOGGER.warning(f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled")
             else:
                 LOGGER.warning("L5 Streamer not provided via factory - reasoning broadcast disabled")
+ logger.info("[L6_AUDIT] Action at line 122")
 
     async def start_streaming(self):
+        logger.info("[L6_AUDIT] Action at line 125")
         """Start the L5 streamer if enabled."""
         if self._streamer:
             await self._streamer.start_streamer()
 
+    logger.info("[L6_AUDIT] Action at line 130")
+    logger.info("[L6_AUDIT] Action at line 131")
     async def stop_streaming(self):
         """Stop the L5 streamer."""
         if self._streamer:

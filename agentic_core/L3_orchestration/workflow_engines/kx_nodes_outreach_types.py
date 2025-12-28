@@ -11,6 +11,7 @@ class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""
 
 
+logger.info("[L6_AUDIT] Action at line 14")
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
@@ -42,6 +43,7 @@ class OutreachKNode:
 
     _node_id: str
     _element: str
+    logger.info("[L6_AUDIT] Action at line 46")
     _node_type: OutreachKNodeType
     _reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
     _rag_config: Optional[RAGConfig] = None

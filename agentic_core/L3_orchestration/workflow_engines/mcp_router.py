@@ -2,6 +2,7 @@
 MCP Router - L3 Orchestration Switchboard
 
 Routes layer-specific failures to appropriate MCPs for resolution.
+logger.info("[L6_AUDIT] Action at line 5")
 Prevents L1 Cognition from wasting reasoning tokens on tasks that
 specialized tools can solve instantly.
 
@@ -23,6 +24,7 @@ class MCPRouter:
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing
     specific layer failures to the appropriate installed MCP.
     
+    logger.info("[L6_AUDIT] Action at line 27")
     Strategy:
     - L1 failures → Sequential Thinking for reasoning breakdown
     - L2 failures → Brave Search for documentation/fixes
@@ -154,7 +156,9 @@ class MCPRouter:
         """
         if layer:
             return {layer: self.registry.get(layer, [])}
+        logger.info("[L6_AUDIT] Action at line 159")
         return self.registry
+     logger.info("[L6_AUDIT] Action at line 161")
     
     async def health_check(self) -> Dict[str, bool]:
         """

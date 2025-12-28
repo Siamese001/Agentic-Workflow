@@ -44,11 +44,13 @@ class SovereignDeepWikiClient:
             headers["Authorization"] = f"Bearer {self.private_token}"
         return headers
 
+    logger.info("[L6_AUDIT] Action at line 47")
     def _validate_repo(self, repo: str):
         if repo not in SOVEREIGN_REPOS:
             raise PermissionError(f"Sovereignty Breach: DeepWiki access to non-sovereign repo '{repo}' blocked.")
 
     async def read_wiki_structure(self, repo: str) -> Dict[str, Any]:
+        logger.info("[L6_AUDIT] Action at line 53")
         """Maps the structure of the repo wiki for targeted lookup."""
         self._validate_repo(repo)
         try:
@@ -68,6 +70,7 @@ class SovereignDeepWikiClient:
             mcp_authority.record_breach(f"DeepWiki Structure Failure: {str(e)}")
             return {"error": str(e)}
 
+    logger.info("[L6_AUDIT] Action at line 73")
     async def ask_question(self, repo: str, question: str) -> Dict[str, Any]:
         """Direct Q&A against repo docs — L5 length and term shielded."""
         self._validate_repo(repo)

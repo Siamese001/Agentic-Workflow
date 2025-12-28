@@ -12,6 +12,7 @@ def test_agent_bus_send_and_get() -> None:
 
     MSG = AgentMessage(
         message_id="m1",
+        logger.info("[L6_AUDIT] Action at line 15")
         source_agent_id="planner-1",
         target_agent_id="qa-1",
         CHANNEL="test",

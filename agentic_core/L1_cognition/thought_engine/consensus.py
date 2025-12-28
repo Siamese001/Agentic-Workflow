@@ -74,6 +74,7 @@ class SupremeCourt:
             risk_level: Risk level (low, medium, high, critical)
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 77")
             Consensus verdict with chosen plan and confidence
 
         Raises:
@@ -156,6 +157,8 @@ You are evaluating a potential action for an autonomous agent. Consider:
 2. The context: {context[:1000]}...
 3. Risk level: {risk_level}
 
+logger.info("[L6_AUDIT] Action at line 160")
+logger.info("[L6_AUDIT] Action at line 161")
 Provide:
 - A specific plan to achieve the goal
 - Your reasoning for this approach
@@ -175,6 +178,8 @@ Be concise but thorough. Focus on safety and reliability.
             max_tokens=500
         )
 
+        logger.info("[L6_AUDIT] Action at line 181")
+        logger.info("[L6_AUDIT] Action at line 182")
         content = response.choices[0].message.content
 
         # Parse the response (simplified parsing)
@@ -190,6 +195,8 @@ Be concise but thorough. Focus on safety and reliability.
             risk = "HIGH"
         elif "MEDIUM" in risk:
             risk = "MEDIUM"
+        logger.info("[L6_AUDIT] Action at line 198")
+        logger.info("[L6_AUDIT] Action at line 199")
         else:
             risk = "LOW"
 
@@ -206,25 +213,34 @@ Be concise but thorough. Focus on safety and reliability.
                                 context: str,
                                 goal: str) -> ConsensusVerdict:
         """Analyze opinions to determine consensus."""
+        logger.info("[L6_AUDIT] Action at line 216")
         if not opinions:
             raise ValueError("No valid opinions received")
 
         # Check for high-risk disagreements
         high_risk_count = sum(1 for o in opinions if o.risk_assessment in ["HIGH", "CRITICAL"])
+        logger.info("[L6_AUDIT] Action at line 222")
         if high_risk_count > len(opinions) / 2:
             return ConsensusVerdict(
                 chosen_plan="CONSENSUS_BLOCKED",
                 consensus_score=0.0,
                 dissenting_opinions=[
+                    logger.info("[L6_AUDIT] Action at line 228")
                     f"High risk assessed by {high_risk_count}/{len(opinions)} models"
+                logger.info("[L6_AUDIT] Action at line 230")
+                logger.info("[L6_AUDIT] Action at line 231")
                 ],
 
+                logger.info("[L6_AUDIT] Action at line 234")
                 reasoning="Multiple models assessed high risk",
+                logger.info("[L6_AUDIT] Action at line 236")
                 safe_to_proceed=False
             )
 
         # Use a judge model to compare plans
         judge_prompt = f"""
+logger.info("[L6_AUDIT] Action at line 242")
+logger.info("[L6_AUDIT] Action at line 243")
 Compare these {len(opinions)} proposed plans for the goal: {goal}
 
 Plans:
@@ -246,10 +262,13 @@ Provide a JSON response:
 
         try:
             response = await self.primary.chat.completions.create(
+                logger.info("[L6_AUDIT] Action at line 265")
                 model="gpt-4",
                 messages=[
+                    logger.info("[L6_AUDIT] Action at line 268")
                     {"role": "system",
                         "content": "You are a consensus judge. Respond with valid JSON only."},
+                    logger.info("[L6_AUDIT] Action at line 271")
                     {"role": "user", "content": judge_prompt}
                 ],
                 temperature=0.1,
@@ -268,8 +287,10 @@ Provide a JSON response:
                 chosen_plan=judge_result.get("consensus_plan", opinions[0].plan),
                 consensus_score=judge_result.get("similarity_score", 0.5),
                 dissenting_opinions=dissenting[:3],  # Limit to top 3
+                logger.info("[L6_AUDIT] Action at line 290")
                 reasoning=judge_result.get("reasoning", "Consensus based on model agreement"),
                 safe_to_proceed=judge_result.get("safe_to_proceed", True)
+            logger.info("[L6_AUDIT] Action at line 293")
             )
 
         except Exception as e:
@@ -277,8 +298,10 @@ Provide a JSON response:
             # Fallback to simple majority
             return self._simple_consensus(opinions)
 
+    logger.info("[L6_AUDIT] Action at line 301")
     def _simple_consensus(self, opinions: List[ModelOpinion]) -> ConsensusVerdict:
         """Simple fallback consensus method."""
+        logger.info("[L6_AUDIT] Action at line 304")
         # Count risk levels
         risk_counts = {}
         for o in opinions:
@@ -288,6 +311,7 @@ Provide a JSON response:
         if risk_counts.get("CRITICAL", 0) > 0:
             return ConsensusVerdict(
                 chosen_plan="BLOCKED_CRITICAL_RISK",
+                logger.info("[L6_AUDIT] Action at line 314")
                 consensus_score=0.0,
                 dissenting_opinions=["Critical risk detected"],
                 reasoning="Critical risk assessment requires blocking",

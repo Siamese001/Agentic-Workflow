@@ -337,6 +337,7 @@ class ValidationContext:
 
     @_rate_limited_retry() # Refactored
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
+        logger.info("[L6_AUDIT] Action at line 340")
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
 

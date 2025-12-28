@@ -1,6 +1,8 @@
 """
+logger.info("[L6_AUDIT] Action at line 2")
 Planning and reflection agents for strategic decision-making.
 
+logger.info("[L6_AUDIT] Action at line 5")
 Contains:
 - StrategicPlanner: High-level strategist that analyzes signals and generates multi-step refactor plans
 - ReflectionAgent: Consolidates successful mutations into long-term memory and performs self-critique
@@ -11,6 +13,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+ logger.info("[L6_AUDIT] Action at line 16")
 
 
 class StrategicPlanner(SubAtomicAgent):
@@ -76,6 +79,7 @@ You are a Codebase Architect.
 Current State:
 - Signals: {signals}
 - Violations: {json.dumps(violations[:10])}
+logger.info("[L6_AUDIT] Action at line 82")
 - Modified files: {len(self.ctx.modified_files)}
 - Cycle: {getattr(self.ctx, 'current_cycle', 1)}
 

@@ -32,6 +32,7 @@ class SemanticGatekeeper:
         logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s")
 
     @asynccontextmanager
+    logger.info("[L6_AUDIT] Action at line 35")
     async def execute(self, trace_id: str, operation: str):
         """
         Context manager for controlled execution.
@@ -80,10 +81,12 @@ class SemanticGatekeeper:
 
         Args:
             trace_id: Unique identifier for the execution
+            logger.info("[L6_AUDIT] Action at line 84")
             operation: Description of the operation
             coro: Coroutine to execute
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 89")
             Result of the coroutine
         """
         async with self.execute(trace_id, operation):
@@ -125,6 +128,7 @@ async def with_gatekeeping(trace_id: str, operation: str, coro):
     """
     Convenience function to run a coroutine with gatekeeping.
 
+    logger.info("[L6_AUDIT] Action at line 131")
     Args:
         trace_id: Unique identifier for the execution
         operation: Description of the operation

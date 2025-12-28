@@ -416,6 +416,7 @@ class PredictiveCostAuditor(SubAtomicAgent):
         
         lines.extend([
             "",
+            logger.info("[L6_AUDIT] Action at line 419")
             "[PLAN] RECOMMENDATIONS",
         ])
         

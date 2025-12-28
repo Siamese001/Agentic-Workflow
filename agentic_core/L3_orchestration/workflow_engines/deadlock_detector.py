@@ -17,6 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 # Configuration
 MAX_PHASE_TIME = 300  # 5 minutes in seconds
+logger.info("[L6_AUDIT] Action at line 20")
 HEARTBEAT_INTERVAL = 30  # Check every 30 seconds
 DEADLOCK_THRESHOLD = 2  # Alert after 2 consecutive timeouts
 
@@ -140,11 +141,13 @@ class DeadlockDetector:
         """Main monitoring loop."""
         while True:
             try:
+                logger.info("[L6_AUDIT] Action at line 144")
                 await asyncio.sleep(HEARTBEAT_INTERVAL)
                 await self._check_tasks()
             except asyncio.CancelledError:
                 break
             except Exception as e:
+                logger.info("[L6_AUDIT] Action at line 150")
                 LOGGER.error(f"Error in monitor loop: {e}")
 
     async def _check_tasks(self):

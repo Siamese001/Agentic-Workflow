@@ -10,9 +10,12 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 logger = logging.getLogger(__name__)
 
 
+logger.info("[L6_AUDIT] Action at line 13")
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
+    logger.info("[L6_AUDIT] Action at line 15")
     """
     Parse a Python file to check for syntax errors without executing it.
+     logger.info("[L6_AUDIT] Action at line 18")
     
     Args:
         file_path: Path to the file to check
@@ -35,15 +38,18 @@ def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
     except Exception as e:
         error_msg = f"Unexpected error validating {file_path}: {str(e)}"
         logger.error(error_msg)
+        logger.info("[L6_AUDIT] Action at line 41")
         return False, error_msg
 
 
 def run_ruff_check(file_path: str, fix: bool = False) -> Tuple[int, str, str]:
+    logger.info("[L6_AUDIT] Action at line 46")
     """
     Run Ruff linter on a file.
     
     Args:
         file_path: Path to the file to check
+        logger.info("[L6_AUDIT] Action at line 52")
         fix: Whether to apply fixes automatically
         
     Returns:
@@ -57,6 +63,7 @@ def run_ruff_check(file_path: str, fix: bool = False) -> Tuple[int, str, str]:
         result = subprocess.run(
             cmd,
             capture_output=True,
+            logger.info("[L6_AUDIT] Action at line 66")
             text=True,
             timeout=30
         )
@@ -65,16 +72,20 @@ def run_ruff_check(file_path: str, fix: bool = False) -> Tuple[int, str, str]:
     except subprocess.TimeoutExpired:
         return -1, "", "Ruff check timed out"
     
+    logger.info("[L6_AUDIT] Action at line 75")
     except FileNotFoundError:
         return -1, "", "Ruff not installed"
     
     except Exception as e:
         return -1, "", str(e)
+ logger.info("[L6_AUDIT] Action at line 81")
 
 
 def run_black_format(file_path: str, check_only: bool = False) -> Tuple[int, str, str]:
     """
     Run Black formatter on a file.
+     logger.info("[L6_AUDIT] Action at line 87")
+     logger.info("[L6_AUDIT] Action at line 88")
     
     Args:
         file_path: Path to the file to format

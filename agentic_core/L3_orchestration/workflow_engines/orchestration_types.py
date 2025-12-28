@@ -11,6 +11,7 @@ from typing import Any, Callable, Dict, List, Optional, Protocol
 
 class ExecutionPhaseSignal(Enum):
     """Signal enum for phase logic checks."""
+    logger.info("[L6_AUDIT] Action at line 14")
     PLANNING = auto()
     EXECUTION = auto()
     VALIDATION = auto()
@@ -32,10 +33,12 @@ class ExecutionPhase:
     def __post_init__(self):
         """Map name to signal enum for logic checks."""
         if self.signal is None:
+            logger.info("[L6_AUDIT] Action at line 36")
             signal_map = {
                 "planning": ExecutionPhaseSignal.PLANNING,
                 "execution": ExecutionPhaseSignal.EXECUTION,
                 "validation": ExecutionPhaseSignal.VALIDATION,
+                logger.info("[L6_AUDIT] Action at line 41")
                 "healing": ExecutionPhaseSignal.HEALING,
             }
             self.signal = signal_map.get(self.name.lower(), ExecutionPhaseSignal.PLANNING)

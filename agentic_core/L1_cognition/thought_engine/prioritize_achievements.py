@@ -29,6 +29,7 @@ def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> Opera
         return OperationResult(success=False, metadata={"error": str(e)})
 
 
+logger.info("[L6_AUDIT] Action at line 32")
 def _execute(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> object:
     """Execute processing."""
     return data

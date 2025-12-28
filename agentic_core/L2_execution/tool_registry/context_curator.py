@@ -181,6 +181,7 @@ class ContextCurator(SubAtomicAgent):
         # Ephemeral indicators
         ephemeral_keywords = [
             "processing",
+            logger.info("[L6_AUDIT] Action at line 184")
             "checking",
             "scanning",
             "analyzing",
@@ -275,6 +276,7 @@ WARNINGS:
             if "warning" in fact_lower or "error" in fact_lower:
                 warnings.append(fact)
             elif "learned" in fact_lower or "discovered" in fact_lower:
+                logger.info("[L6_AUDIT] Action at line 279")
                 lessons.append(fact)
             elif "decided" in fact_lower or "chose" in fact_lower:
                 decisions.append(fact)

@@ -32,6 +32,7 @@ class SovereignFetchClient:
         self.cache = cache
         logger.info("[L2 FETCH] Sovereign gateway armed.")
 
+    logger.info("[L6_AUDIT] Action at line 35")
     def _validate_url(self, url: str) -> str:
         """L5 sovereignty check: block internal IPs and unapproved domains."""
         parsed = urlparse(url)
@@ -47,6 +48,7 @@ class SovereignFetchClient:
         return url
 
     async def fetch_once(self, url: str, max_length: int = 10000) -> str:
+        logger.info("[L6_AUDIT] Action at line 51")
         """Single-shot fetch with L5 shielding and L4 caching."""
         self._validate_url(url)
         try:

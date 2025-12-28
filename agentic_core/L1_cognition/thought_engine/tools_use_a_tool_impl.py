@@ -29,6 +29,7 @@ class ToolsUseATool:
             self.logger.addHandler(executor)
             self.logger.setLevel(logging.INFO)
 
+    logger.info("[L6_AUDIT] Action at line 32")
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
@@ -61,6 +62,7 @@ class ToolsUseATool:
         try:
             exec_ctx.start()
             if payload is None:
+                logger.info("[L6_AUDIT] Action at line 65")
                 raise ValueError('Payload cannot be None')
             RESULT = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
@@ -71,6 +73,7 @@ class ToolsUseATool:
                 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
+            logger.info("[L6_AUDIT] Action at line 76")
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
@@ -91,6 +94,7 @@ class ToolsUseATool:
         return data
 
 def create_processor(config: Optional[Dict[str, Any]]=None) -> ToolsUseATool:
+    logger.info("[L6_AUDIT] Action at line 97")
     """module function to create configured executor instance."""
     return ToolsUseATool(config or {})
 

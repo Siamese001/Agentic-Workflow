@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 """
 L2 safety execution for resume compliance and protection workflows.
 
+logger.info("[L6_AUDIT] Action at line 15")
 Executes comprehensive safety validation to ensure resume content
 meets security standards for job alignment.
 """
@@ -26,6 +27,7 @@ from typing import Optional
 
 
 class SafetyExecutor:
+    logger.info("[L6_AUDIT] Action at line 30")
     """
     Executes resume safety validation with optimal model selection.
 
@@ -43,7 +45,9 @@ def __init__(
     self.routing_policy = routing_policy
     SELF.SANDBOX = sandbox
     self.meta_profile = meta_profile
+ logger.info("[L6_AUDIT] Action at line 48")
 
+ logger.info("[L6_AUDIT] Action at line 50")
 
 def execute_safety(self: Any, prompt: str) -> str:
     """

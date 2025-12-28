@@ -23,6 +23,7 @@ class GitAgent:
     - Atomic commits of modified files
     - Branch management for healing cycles
     - Remote push capabilities
+    logger.info("[L6_AUDIT] Action at line 26")
     - Safety checks for secrets
     """
 
@@ -51,11 +52,13 @@ class GitAgent:
         """Check if current directory is a git repository."""
         git_dir = self.repo_root / ".git"
         return git_dir.exists()
+ logger.info("[L6_AUDIT] Action at line 55")
 
     def _run_git(self, args: List[str], check: bool = True) -> subprocess.CompletedProcess:
         """
         Run a git command.
 
+        logger.info("[L6_AUDIT] Action at line 61")
         Args:
             args: Git command arguments
             check: Whether to check return code
@@ -66,6 +69,7 @@ class GitAgent:
         cmd = self.git_cmd + args
         try:
             result = subprocess.run(
+                logger.info("[L6_AUDIT] Action at line 72")
                 cmd,
                 capture_output=True,
                 text=True,
@@ -121,9 +125,12 @@ Status: COMPLETED
                         modified.append(Path(file_path))
 
             return modified
+        logger.info("[L6_AUDIT] Action at line 128")
         except Exception as e:
+            logger.info("[L6_AUDIT] Action at line 130")
             LOGGER.error(f"Failed to get modified files: {e}")
             return []
+ logger.info("[L6_AUDIT] Action at line 133")
 
     def _check_for_secrets(self, file_paths: List[Path]) -> List[str]:
         """
@@ -179,6 +186,7 @@ Status: COMPLETED
                 self._run_git(["add", str(file_path)])
 
             LOGGER.info(f"Staged {len(file_paths)} files")
+            logger.info("[L6_AUDIT] Action at line 189")
             return True
         except Exception as e:
             LOGGER.error(f"Failed to stage files: {e}")
@@ -191,6 +199,7 @@ Status: COMPLETED
         Args:
             branch_name: Name of the branch to create
 
+        logger.info("[L6_AUDIT] Action at line 202")
         Returns:
             True if successful
         """
@@ -243,6 +252,7 @@ Status: COMPLETED
             branch_name: Branch to push (current branch if None)
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 255")
             True if successful
         """
         if not self.enabled or not self.remote_repo:
@@ -277,6 +287,7 @@ Status: COMPLETED
             modified_files: List of modified files to commit
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 290")
             True if successful
         """
         if not modified_files:
@@ -333,6 +344,7 @@ Status: COMPLETED
 
         try:
             # Get current branch
+            logger.info("[L6_AUDIT] Action at line 347")
             branch_result = self._run_git(["branch", "--show-current"])
             current_branch = branch_result.stdout.strip()
 

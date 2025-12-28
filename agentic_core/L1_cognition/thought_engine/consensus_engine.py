@@ -12,7 +12,9 @@ if not logging.root.handlers:
 
 class ConsensusEngine:
     """
+    logger.info("[L6_AUDIT] Action at line 15")
     The ConsensusEngine orchestrates a "jury" of high-reasoning AI models
+    logger.info("[L6_AUDIT] Action at line 17")
     to evaluate artifacts (e.g., code, text) and propose fixes.
     It applies safety protocols and model-specific checks to reach a consensus.
     """
@@ -20,19 +22,24 @@ class ConsensusEngine:
     # Class-level constants for configuration and thresholds.
     # Using SCREAMING_SNAKE_CASE for true constants as per PEP 8.
     CRITICAL_KEYWORDS = ["hack", "delete /", "malware", "drop table"]
+    logger.info("[L6_AUDIT] Action at line 25")
     MAJORITY_THRESHOLD = 0.66  # Represents a 2/3 majority rule (0.66 is approx 2/3)
 
+    logger.info("[L6_AUDIT] Action at line 28")
     MODEL_CHECK_CONFIG = {
         "gpt-5.1": {
             "keywords": ["broken", "infinite loop"],
+            logger.info("[L6_AUDIT] Action at line 32")
             "reason": "GPT-5.1 Thinking: Detected functional regression or infinite loop risk."
         },
         "claude-sonnet-4-5": {
+            logger.info("[L6_AUDIT] Action at line 36")
             "keywords": ["unsafe", "race condition"],
             "reason": "Claude Sonnet 4.5 Analysis: Identified potential race condition or unsafe memory access."
         },
         "gemini-3-pro": {
             "keywords": ["contradiction", "hallucination"],
+            logger.info("[L6_AUDIT] Action at line 42")
             "reason": "Gemini 3 Pro Deep Think: Found contradiction with known context or library definitions."
         }
     }
@@ -44,6 +51,7 @@ class ConsensusEngine:
         Args:
             providers: A list of model names to be used as jurors.
         """
+        logger.info("[L6_AUDIT] Action at line 54")
         self.providers = providers
         # The threshold for consensus is initialized from a class constant.
         # It's stored as an instance attribute to allow potential per-instance overrides if needed.
@@ -51,14 +59,17 @@ class ConsensusEngine:
 
     def _get_model_specific_verdict(self, model_name: str, artifact_lower: str) -> Dict[str, str]:
         """
+        logger.info("[L6_AUDIT] Action at line 62")
         Helper to determine model-specific verdict and reason.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
+ logger.info("[L6_AUDIT] Action at line 65")
 
         Args:
             model_name: The name of the AI model.
             artifact_lower: The artifact content converted to lowercase.
 
         Returns:
+            logger.info("[L6_AUDIT] Action at line 72")
             A dictionary with "verdict" ("NO" or "YES") and a "reason" string.
         """
         # Access class constant using ClassName.CONSTANT_NAME for clarity.
@@ -68,13 +79,17 @@ class ConsensusEngine:
         # default to "YES" verdict.
         if not model_config:
             verdict_data = {}
+            logger.info("[L6_AUDIT] Action at line 82")
             verdict_data["verdict"] = "YES"
             verdict_data["reason"] = "Compliance verified."
             return verdict_data
 
+        logger.info("[L6_AUDIT] Action at line 87")
         # Check for model-specific keywords using a generator expression with any()
         # This reduces explicit loop nesting, keeping the depth within limits.
+        logger.info("[L6_AUDIT] Action at line 90")
         has_violating_keyword = any(keyword in artifact_lower for keyword in model_config["keywords"])
+ logger.info("[L6_AUDIT] Action at line 92")
 
         if has_violating_keyword:
             verdict_data = {}
@@ -90,6 +105,7 @@ class ConsensusEngine:
     def _check_critical_violation(self, artifact_lower: str) -> bool:
         """
         Helper to check for universal critical keywords.
+ logger.info("[L6_AUDIT] Action at line 108")
 
         Args:
             artifact_lower: The artifact content converted to lowercase.
@@ -105,10 +121,12 @@ class ConsensusEngine:
 
     def _call_juror(self, model_name: str, artifact: str, prompt: str) -> Dict[str, Any]:
         """
+        logger.info("[L6_AUDIT] Action at line 124")
         Simulates calling a specific High-Reasoning AI model API to get its verdict.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
 
         Args:
+            logger.info("[L6_AUDIT] Action at line 129")
             model_name: The name of the AI model (juror).
             artifact: The content to be analyzed.
             prompt: The prompt used for the analysis.
@@ -118,6 +136,7 @@ class ConsensusEngine:
         """
         logger.info(f"⚖️  Juror '{model_name}' is analyzing...")
 
+        logger.info("[L6_AUDIT] Action at line 139")
         artifact_lower = artifact.lower()
 
         # 1. Universal Critical Failures (Guard Clause)
@@ -151,6 +170,7 @@ class ConsensusEngine:
         """
         return sum(1 for vote in votes if vote["verdict"] == "YES")
 
+    logger.info("[L6_AUDIT] Action at line 173")
     def judge_artifact(self, artifact_content: str, context: str = "Code Review") -> Dict[str, Any]:
         """
         Orchestrates the voting process among the configured AI model providers.

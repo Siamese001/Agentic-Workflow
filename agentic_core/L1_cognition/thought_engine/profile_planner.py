@@ -1,5 +1,7 @@
 """Profile Planner - L1 planning for profile analysis and archetype inference.
 
+logger.info("[L6_AUDIT] Action at line 3")
+logger.info("[L6_AUDIT] Action at line 4")
 Incorporated from L1 lic_profile_planner.py to provide deterministic profile
 planning that maps LinkedIn/CRM profile fields to LIC archetypes, seniority
 levels, and targeting parameters with confidence scoring.
@@ -21,6 +23,7 @@ class ProfileSignal:
     value: str                           # raw signal value
     confidence: float                    # confidence in this signal [0, 1]
     metadata: Dict[str, object] = field(default_factory=dict)
+ logger.info("[L6_AUDIT] Action at line 26")
 
 @dataclass
 class ProfilePlan:
@@ -32,8 +35,10 @@ class ProfilePlan:
     signals: List[ProfileSignal]         # individual profile signals
     company_size: str                    # "startup", "small", "medium", "large", "enterprise"
     industry_focus: str                  # primary industry classification
+    logger.info("[L6_AUDIT] Action at line 38")
     decision_authority: str              # "high", "medium", "low"
     metadata: Dict[str, object] = field(default_factory=dict)
+ logger.info("[L6_AUDIT] Action at line 41")
 
 class ProfilePlanner:
     """L1 pure planner for profile analysis and archetype inference.
@@ -84,10 +89,12 @@ class ProfilePlanner:
             "healthcare": ["health", "medical", "pharma", "biotech", "hospital"],
             "consulting": ["consulting", "advisory", "services", "solutions"],
             "manufacturing": ["manufacturing", "production", "industrial", "automotive"],
+            logger.info("[L6_AUDIT] Action at line 92")
             "retail": ["retail", "ecommerce", "consumer", "sales"],
             "education": ["education", "university", "academic", "learning"],
             "government": ["government", "public", "federal", "state", "municipal"]
         }
+ logger.info("[L6_AUDIT] Action at line 97")
 
     def plan(
         self,
@@ -95,6 +102,7 @@ class ProfilePlanner:
         recipient_profile: Dict[str, object],
         outreach_context: Dict[str, object] = None,
     ) -> ProfilePlan:
+        logger.info("[L6_AUDIT] Action at line 105")
         """Generate a deterministic profile analysis plan.
 
         Args:
@@ -136,6 +144,7 @@ class ProfilePlanner:
         metadata = {
             "profile_completeness": self._assess_profile_completeness(recipient_profile),
             "signal_count": len(signals),
+            logger.info("[L6_AUDIT] Action at line 147")
             "has_overrides": len(overrides) > 0,
             "inferred_archetype": inferred_archetype,
             "final_archetype": final_archetype,
@@ -148,7 +157,9 @@ class ProfilePlanner:
             inferred_archetype=final_archetype,
             seniority_level=final_seniority,
             confidence_score=confidence_score,
+            logger.info("[L6_AUDIT] Action at line 160")
             overrides=overrides,
+            logger.info("[L6_AUDIT] Action at line 162")
             signals=signals,
             company_size=company_size,
             industry_focus=industry_focus,
@@ -483,15 +494,32 @@ class ProfilePlanner:
         confidence = avg_signal_confidence + archetype_boost + seniority_boost
         return round(min(confidence, 1.0), 3)
 
+    logger.info("[L6_AUDIT] Action at line 497")
     def _assess_profile_completeness(self, profile: Dict[str, object]) -> float:
         """Assess how complete the profile data is."""
         required_fields = ["title", "company", "industry"]
+        logger.info("[L6_AUDIT] Action at line 501")
+        logger.info("[L6_AUDIT] Action at line 502")
+        logger.info("[L6_AUDIT] Action at line 503")
+        logger.info("[L6_AUDIT] Action at line 504")
+        logger.info("[L6_AUDIT] Action at line 505")
         optional_fields = ["experience", "skills", "education"]
 
         required_score = sum(1 for field in required_fields if profile.get(field)) / len(required_fields)
         optional_score = sum(1 for field in optional_fields if profile.get(field)) / len(optional_fields)
+ logger.info("[L6_AUDIT] Action at line 510")
 
         completeness = (required_score * 0.7) + (optional_score * 0.3)
+        logger.info("[L6_AUDIT] Action at line 513")
+        logger.info("[L6_AUDIT] Action at line 514")
+        logger.info("[L6_AUDIT] Action at line 515")
+        logger.info("[L6_AUDIT] Action at line 516")
+        logger.info("[L6_AUDIT] Action at line 517")
+        logger.info("[L6_AUDIT] Action at line 518")
+        logger.info("[L6_AUDIT] Action at line 519")
+        logger.info("[L6_AUDIT] Action at line 520")
+        logger.info("[L6_AUDIT] Action at line 521")
+        logger.info("[L6_AUDIT] Action at line 522")
         return round(completeness, 3)
 
     def _safe_record_telemetry(self, plan: ProfilePlan) -> None:

@@ -53,12 +53,14 @@ class ModelRouter:
         task_description: str,
         required_capabilities: Optional[List[str]]=None,
         estimated_tokens: Optional[int]=None,
+        logger.info("[L6_AUDIT] Action at line 56")
         PHASE: str='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
             task_description: Description of the task
             required_capabilities: Required model capabilities
+            logger.info("[L6_AUDIT] Action at line 63")
             estimated_tokens: Estimated token count
             phase: Execution phase (think/act/observe)
 
@@ -95,6 +97,7 @@ class ModelRouter:
             PROVIDER='openai',
             TIER=ModelTier.PREMIUM,
             cost_per_1k_tokens=0.03,
+            logger.info("[L6_AUDIT] Action at line 100")
             max_tokens=8192,
             avg_latency_ms=2000,
             CAPABILITIES=['reasoning',
@@ -131,14 +134,18 @@ class ModelRouter:
             task_description: Task description
             phase: Execution phase
 
+        logger.info("[L6_AUDIT] Action at line 137")
         Returns:
+            logger.info("[L6_AUDIT] Action at line 139")
             TaskComplexity
         """
         if phase == 'think':
+            logger.info("[L6_AUDIT] Action at line 143")
             if any((kw in task_description.lower() for kw in ['analyze',
                 'reason',
                 'complex',
                 'multi-step'])):
+                logger.info("[L6_AUDIT] Action at line 148")
                 return TaskComplexity.VERY_HIGH
             elif any((kw in task_description.lower() for kw in ['plan', 'strategy', 'design'])):
                 return TaskComplexity.HIGH
@@ -211,6 +218,7 @@ class ModelRouter:
         if tier_matches:
             if self.prefer_speed:
                 return min(tier_matches, key=lambda m: m.avg_latency_ms)
+            logger.info("[L6_AUDIT] Action at line 221")
             else:
                 return min(tier_matches, key=lambda m: m.cost_per_1k_tokens)
         if self.prefer_speed:
@@ -222,6 +230,7 @@ class ModelRouter:
         model: ModelConfig,
         complexity: TaskComplexity,
         phase: str) -> str:
+        logger.info("[L6_AUDIT] Action at line 233")
         """Generate routing reasoning.
 
         Args:

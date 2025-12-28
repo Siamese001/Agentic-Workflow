@@ -66,8 +66,10 @@ class AutonomousRAGDaemon:
         
         print("[DAEMON] Autonomous RAG Daemon online")
     
+    logger.info("[L6_AUDIT] Action at line 69")
     async def health_check(self):
         """L5: Sovereign validation – testing the Canon against reality"""
+        logger.info("[L6_AUDIT] Action at line 72")
         while self.running:
             await asyncio.sleep(self.health_check_interval)
             

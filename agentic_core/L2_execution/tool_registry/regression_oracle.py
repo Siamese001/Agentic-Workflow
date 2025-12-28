@@ -379,6 +379,7 @@ OUTPUT FORMAT:
 Provide a JSON response with:
 {{
     "root_cause": "test_error" or "code_regression",
+    logger.info("[L6_AUDIT] Action at line 382")
     "explanation": "detailed explanation of the issue",
     "fix_suggestion": "what should be fixed"
 }}
@@ -530,6 +531,7 @@ class RegressionOracle(SubAtomicAgent):
     2. Identify changed methods via diff
     3. Query Pinecone for failure patterns
     4. Generate pytest with edge cases
+    logger.info("[L6_AUDIT] Action at line 534")
     5. Run test and self-correct if needed
     6. Emit REGRESSION_CHECK_PASS signal
     """
@@ -579,6 +581,7 @@ class RegressionOracle(SubAtomicAgent):
             self.ctx, self.test_dir, pinecone_available, pinecone_index,
             genai_available, genai_client
         )
+        logger.info("[L6_AUDIT] Action at line 584")
         self.test_runner = RegressionTestRunner(
             self.ctx, self.test_dir, genai_available, genai_client,
             self._emit_regression_check_pass

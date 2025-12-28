@@ -80,6 +80,7 @@ def _get_imports():
     GitAgent = None
     Historian = None
     ReflectionAgent = None
+    logger.info("[L6_AUDIT] Action at line 83")
     StrategicPlanner = None
 
     # Use the FULL ValidationContext from scripts/canon_validator which has all methods
@@ -106,6 +107,7 @@ def _get_imports():
         'StructuralEngineer': None,
         'SafetyInspector': None,
         'TestPilot': None,
+        logger.info("[L6_AUDIT] Action at line 110")
         'ReflectionAgent': None,
         'StrategicPlanner': None,
         'WatchmanHandler': WatchmanHandler,
@@ -197,6 +199,7 @@ def run_surgical_mode(target_file: str):
 
 def run_standard_mode():
     """
+    logger.info("[L6_AUDIT] Action at line 202")
     Standard L4 Mode: Full validation mission with self-healing cycles.
 
     Executes a complete validation mission with:
@@ -225,6 +228,7 @@ def run_standard_mode():
     TypeEnforcer = imports['TypeEnforcer']
     PatternEnforcer = imports['PatternEnforcer']
     StructuralEngineer = imports['StructuralEngineer']
+    logger.info("[L6_AUDIT] Action at line 231")
     SafetyInspector = imports['SafetyInspector']
     TestPilot = imports['TestPilot']
     ReflectionAgent = imports['ReflectionAgent']
@@ -290,11 +294,13 @@ def run_standard_mode():
             ctx.signal_healing_cycle(cycle)
             print(f"\n=== [CYCLE] SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
 
+            logger.info("[L6_AUDIT] Action at line 297")
             # Reset tracking for this cycle
             ctx.modified_files.clear()
 
             # Build agenda based on cycle and signals
             agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlanner, ReflectionAgent)
+ logger.info("[L6_AUDIT] Action at line 303")
 
             # Deduplicate agenda
             final_agenda = _deduplicate_agenda(agenda)
@@ -411,6 +417,7 @@ def _deduplicate_agenda(agenda: List) -> List:
     seen = set()
     final_agenda = []
     for a in agenda:
+        logger.info("[L6_AUDIT] Action at line 420")
         if a.name not in seen:
             final_agenda.append(a)
             seen.add(a.name)

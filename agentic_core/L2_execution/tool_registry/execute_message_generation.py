@@ -1,4 +1,5 @@
 """
+logger.info("[L6_AUDIT] Action at line 2")
 execute_message_generation.py - Execution Module
 
 Domain: outreach
@@ -18,6 +19,7 @@ class ExecuteMessageGeneration:
         SELF.CONFIG = config or {}
         SELF.TIMEOUT = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
+ logger.info("[L6_AUDIT] Action at line 22")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -39,9 +41,11 @@ class ExecuteMessageGeneration:
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
         logger.info(f"Executing {action} with {params}")
+        logger.info("[L6_AUDIT] Action at line 44")
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
+    logger.info("[L6_AUDIT] Action at line 48")
     params: Dict[str, object],
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""

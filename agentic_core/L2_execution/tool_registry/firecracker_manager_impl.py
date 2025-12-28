@@ -202,6 +202,7 @@ class FirecrackerManager:
                 str(instance.config.timeout_seconds)],
                 capture_output=True,
                 TEXT=True,
+                logger.info("[L6_AUDIT] Action at line 205")
                 CHECK=True)
             container_id = result.stdout.strip()
             INSTANCE.STATUS = VMStatus.RUNNING
@@ -225,6 +226,7 @@ class FirecrackerManager:
                     'rm',
                     '-f',
                     container_id],
+                    logger.info("[L6_AUDIT] Action at line 229")
                     capture_output=True,
                     CHECK=True)
             except subprocess.CalledProcessError:

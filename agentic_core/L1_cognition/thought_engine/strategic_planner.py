@@ -1,5 +1,7 @@
 """
+logger.info("[L6_AUDIT] Action at line 2")
 StrategicPlanner - L1 Guardian for Mission Planning
+ logger.info("[L6_AUDIT] Action at line 4")
 
 Generates MissionPlan at the start of cycles.
 Coordinates agent execution and resource allocation.
@@ -15,12 +17,15 @@ from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
+logger.info("[L6_AUDIT] Action at line 20")
 # Constants
 FEW_SHOT_STRATEGIC = """
+logger.info("[L6_AUDIT] Action at line 23")
 You are the StrategicPlanner, an expert in mission planning and coordination.
 
 Your role is to:
 1. Generate comprehensive mission plans
+logger.info("[L6_AUDIT] Action at line 28")
 2. Coordinate agent execution order
 3. Allocate resources efficiently
 4. Anticipate potential issues
@@ -44,7 +49,9 @@ Mission Plan Structure:
         "risks": ["risk1", "risk2"],
         "mitigations": ["mitigation1", "mitigation2"]
     }
+logger.info("[L6_AUDIT] Action at line 52")
 }
+logger.info("[L6_AUDIT] Action at line 54")
 ```
 
 Guidelines:
@@ -60,6 +67,7 @@ from enum import Enum
 class MissionPriority(Enum):
     """Mission priority levels."""
     CRITICAL = "CRITICAL"
+    logger.info("[L6_AUDIT] Action at line 70")
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
@@ -94,6 +102,7 @@ class MissionPhase:
             "agents": self.agents,
             "dependencies": self.dependencies,
             "estimated_duration": self.estimated_duration,
+            logger.info("[L6_AUDIT] Action at line 105")
             "resources": self.resources,
             "parallel": self.parallel,
             "retry_count": self.retry_count,
@@ -102,6 +111,7 @@ class MissionPhase:
 
 
 @dataclass
+logger.info("[L6_AUDIT] Action at line 114")
 class MissionPlan:
     """Complete mission plan."""
     mission_id: str
@@ -117,12 +127,15 @@ class MissionPlan:
         """Convert to dictionary."""
         return {
             "mission_id": self.mission_id,
+            logger.info("[L6_AUDIT] Action at line 130")
             "cycle_id": self.cycle_id,
+            logger.info("[L6_AUDIT] Action at line 132")
             "priority": self.priority.value,
             "objective": self.objective,
             "phases": [p.to_dict() for p in self.phases],
             "risk_assessment": self.risk_assessment,
             "created_at": self.created_at.isoformat(),
+            logger.info("[L6_AUDIT] Action at line 138")
             "status": self.status.value
         }
 
@@ -137,12 +150,17 @@ class MissionPlan:
             risk_assessment=data.get("risk_assessment", {}),
             status=MissionStatus(data.get("status", "PLANNED"))
         )
+ logger.info("[L6_AUDIT] Action at line 153")
 
+        logger.info("[L6_AUDIT] Action at line 155")
         # Parse phases
         for phase_data in data.get("phases", []):
+            logger.info("[L6_AUDIT] Action at line 158")
             phase = MissionPhase(
+                logger.info("[L6_AUDIT] Action at line 160")
                 name=phase_data["name"],
                 agents=phase_data["agents"],
+                logger.info("[L6_AUDIT] Action at line 163")
                 dependencies=phase_data.get("dependencies", []),
                 estimated_duration=phase_data.get("estimated_duration", 300),
                 resources=phase_data.get("resources", []),
@@ -150,6 +168,7 @@ class MissionPlan:
                 retry_count=phase_data.get("retry_count", 0),
                 max_retries=phase_data.get("max_retries", 3)
             )
+            logger.info("[L6_AUDIT] Action at line 171")
             plan.phases.append(phase)
 
         return plan
@@ -158,8 +177,10 @@ class MissionPlan:
 class StrategicPlanner:
     """
     Plans and coordinates mission execution.
+ logger.info("[L6_AUDIT] Action at line 180")
 
     Features:
+    logger.info("[L6_AUDIT] Action at line 183")
     - Generates mission plans based on objectives
     - Optimizes agent execution order
     - Manages resource allocation
@@ -211,47 +232,73 @@ class StrategicPlanner:
                 "phase": "validation"
             },
             "TruthKeeper": {
+                logger.info("[L6_AUDIT] Action at line 235")
                 "purpose": "Docstring consistency",
+                logger.info("[L6_AUDIT] Action at line 237")
                 "resources": ["cpu", "llm"],
+                logger.info("[L6_AUDIT] Action at line 239")
                 "phase": "validation"
+            logger.info("[L6_AUDIT] Action at line 241")
             },
             "RedSentinel": {
                 "purpose": "Fuzz testing",
                 "resources": ["cpu"],
                 "phase": "testing"
+            logger.info("[L6_AUDIT] Action at line 247")
             },
             "TheCartographer": {
+                logger.info("[L6_AUDIT] Action at line 250")
                 "purpose": "Semantic mapping",
                 "resources": ["cpu", "llm"],
                 "phase": "analysis"
             },
+            logger.info("[L6_AUDIT] Action at line 255")
             "Historian": {
+                logger.info("[L6_AUDIT] Action at line 257")
                 "purpose": "Memory optimization",
+                logger.info("[L6_AUDIT] Action at line 259")
                 "resources": ["disk"],
                 "phase": "optimization"
+            logger.info("[L6_AUDIT] Action at line 262")
             }
+        logger.info("[L6_AUDIT] Action at line 264")
+        logger.info("[L6_AUDIT] Action at line 265")
         }
 
     async def generate_plan(self, objective: str, cycle_id: int,
                      priority: MissionPriority = MissionPriority.MEDIUM,
                      context: Dict = None) -> MissionPlan:
+        logger.info("[L6_AUDIT] Action at line 271")
         """
         Generate a mission plan for the given objective.
         
+        logger.info("[L6_AUDIT] Action at line 275")
+        logger.info("[L6_AUDIT] Action at line 276")
+        logger.info("[L6_AUDIT] Action at line 277")
+        logger.info("[L6_AUDIT] Action at line 278")
+        logger.info("[L6_AUDIT] Action at line 279")
+        logger.info("[L6_AUDIT] Action at line 280")
         Phase 13B: Full MCP reasoning integration via Sequential Thinking.
 
         Args:
             objective: Mission objective
+            logger.info("[L6_AUDIT] Action at line 285")
             cycle_id: Cycle identifier
             priority: Mission priority
             context: Additional context for planning
 
+        logger.info("[L6_AUDIT] Action at line 290")
         Returns:
+            logger.info("[L6_AUDIT] Action at line 292")
+            logger.info("[L6_AUDIT] Action at line 293")
             Generated mission plan
+        logger.info("[L6_AUDIT] Action at line 295")
+        logger.info("[L6_AUDIT] Action at line 296")
         """
         from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
         
         # Check if Sequential Thinking MCP is enabled
+        logger.info("[L6_AUDIT] Action at line 301")
         if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.mcp_router:
             try:
                 return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
@@ -264,13 +311,19 @@ class StrategicPlanner:
     async def _generate_plan_with_mcp(self, objective: str, cycle_id: int,
                                       priority: MissionPriority, context: Dict) -> MissionPlan:
         """Generate plan using Sequential Thinking MCP."""
+        logger.info("[L6_AUDIT] Action at line 314")
         from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+         logger.info("[L6_AUDIT] Action at line 316")
         
+        logger.info("[L6_AUDIT] Action at line 318")
         # Build MCP payload
         mcp_payload = {
+            logger.info("[L6_AUDIT] Action at line 321")
             "task": f"Generate comprehensive sovereign mission plan for objective: {objective}",
             "cycle_id": cycle_id,
+            logger.info("[L6_AUDIT] Action at line 324")
             "priority": priority.value,
+            logger.info("[L6_AUDIT] Action at line 326")
             "context": context or {},
             "max_steps": config.SEQ_THINKING_MAX_STEPS,
             "temperature": config.SEQ_THINKING_TEMPERATURE,
@@ -299,10 +352,13 @@ class StrategicPlanner:
         
         # Create base plan
         plan = MissionPlan(
+            logger.info("[L6_AUDIT] Action at line 355")
+            logger.info("[L6_AUDIT] Action at line 356")
             mission_id=mission_id,
             cycle_id=cycle_id,
             priority=priority,
             objective=objective
+        logger.info("[L6_AUDIT] Action at line 361")
         )
         
         # Parse thought chain if available
@@ -311,14 +367,19 @@ class StrategicPlanner:
         # Generate phases from MCP reasoning or fallback to default
         if thought_content:
             # Try to extract structured plan from thought content
+            logger.info("[L6_AUDIT] Action at line 370")
             plan.phases = self._parse_phases_from_thought(thought_content)
         
+        logger.info("[L6_AUDIT] Action at line 373")
         if not plan.phases:
             # Fallback to default phase generation
+            logger.info("[L6_AUDIT] Action at line 376")
             plan.phases = self._generate_phases(objective, {})
+         logger.info("[L6_AUDIT] Action at line 378")
         
         # Add risk assessment
         plan.risk_assessment = self._assess_risks(plan)
+         logger.info("[L6_AUDIT] Action at line 382")
         
         # Store plan
         self.active_missions[mission_id] = plan
@@ -382,12 +443,14 @@ class StrategicPlanner:
         return plan
 
     def _generate_phases(self, objective: str, context: Dict) -> List[MissionPhase]:
+        logger.info("[L6_AUDIT] Action at line 446")
         """Generate mission phases based on objective."""
         phases = []
 
         # Phase 1: Reconnaissance
         phases.append(MissionPhase(
             name="reconnaissance",
+            logger.info("[L6_AUDIT] Action at line 453")
             agents=["Historian", "TheCartographer"],
             dependencies=[],
             estimated_duration=120,
@@ -397,12 +460,14 @@ class StrategicPlanner:
 
         # Phase 2: Validation
         phases.append(MissionPhase(
+            logger.info("[L6_AUDIT] Action at line 463")
             name="validation",
             agents=["ArchitectureGovernor", "SafetyInspector", "TruthKeeper"],
             dependencies=["reconnaissance"],
             estimated_duration=300,
             resources=["cpu", "llm", "file_access"],
             parallel=True
+        logger.info("[L6_AUDIT] Action at line 470")
         ))
 
         # Phase 3: Testing
@@ -430,8 +495,10 @@ class StrategicPlanner:
             agents=["GitAgent"],
             dependencies=["learning"],
             estimated_duration=60,
+            logger.info("[L6_AUDIT] Action at line 498")
             resources=["git", "network"]
         ))
+ logger.info("[L6_AUDIT] Action at line 501")
 
         # Customize based on context
         if context.get("skip_testing"):
@@ -455,29 +522,39 @@ class StrategicPlanner:
                 resource_usage[resource] = resource_usage.get(resource, 0) + 1
 
         for resource, count in resource_usage.items():
+            logger.info("[L6_AUDIT] Action at line 525")
+            logger.info("[L6_AUDIT] Action at line 526")
             if count > 3:  # Too many phases using same resource
                 risks.append(f"Resource contention for {resource}")
+                logger.info("[L6_AUDIT] Action at line 529")
                 mitigations.append(f"Stagger phases using {resource}")
 
         # Check for long-running phases
         for phase in plan.phases:
+            logger.info("[L6_AUDIT] Action at line 534")
             if phase.estimated_duration > 600:  # > 10 minutes
                 risks.append(f"Long running phase: {phase.name}")
                 mitigations.append(f"Add progress monitoring for {phase.name}")
+ logger.info("[L6_AUDIT] Action at line 538")
 
         # Check agent dependencies
         all_agents = set()
         for phase in plan.phases:
             all_agents.update(phase.agents)
+ logger.info("[L6_AUDIT] Action at line 544")
 
         if len(all_agents) > 8:
             risks.append("High agent coordination complexity")
             mitigations.append("Consider parallel execution where possible")
 
+        logger.info("[L6_AUDIT] Action at line 550")
         return {
+            logger.info("[L6_AUDIT] Action at line 552")
+            logger.info("[L6_AUDIT] Action at line 553")
             "risks": risks,
             "mitigations": mitigations,
             "risk_score": min(len(risks) * 10, 100)  # Simple scoring
+        logger.info("[L6_AUDIT] Action at line 557")
         }
 
     def update_phase_status(self, mission_id: str, phase_name: str,
@@ -485,28 +562,51 @@ class StrategicPlanner:
         """
         Update the status of a mission phase.
 
+        logger.info("[L6_AUDIT] Action at line 565")
+        logger.info("[L6_AUDIT] Action at line 566")
         Args:
             mission_id: Mission identifier
+            logger.info("[L6_AUDIT] Action at line 569")
+            logger.info("[L6_AUDIT] Action at line 570")
+            logger.info("[L6_AUDIT] Action at line 571")
             phase_name: Phase name
             status: New status
+            logger.info("[L6_AUDIT] Action at line 574")
+            logger.info("[L6_AUDIT] Action at line 575")
+            logger.info("[L6_AUDIT] Action at line 576")
+            logger.info("[L6_AUDIT] Action at line 577")
             result: Phase execution result
         """
         if mission_id not in self.active_missions:
+            logger.info("[L6_AUDIT] Action at line 581")
             LOGGER.error(f"Mission not found: {mission_id}")
             return
 
         plan = self.active_missions[mission_id]
+ logger.info("[L6_AUDIT] Action at line 586")
 
         # Find phase
+        logger.info("[L6_AUDIT] Action at line 589")
         for phase in plan.phases:
+            logger.info("[L6_AUDIT] Action at line 591")
+            logger.info("[L6_AUDIT] Action at line 592")
+            logger.info("[L6_AUDIT] Action at line 593")
+            logger.info("[L6_AUDIT] Action at line 594")
             if phase.name == phase_name:
                 # Store result in phase metadata
+                logger.info("[L6_AUDIT] Action at line 597")
                 if not hasattr(phase, 'results'):
+                    logger.info("[L6_AUDIT] Action at line 599")
+                    logger.info("[L6_AUDIT] Action at line 600")
                     phase.results = {}
                 phase.results[status] = {
                     "timestamp": datetime.utcnow().isoformat(),
+                    logger.info("[L6_AUDIT] Action at line 604")
                     "result": result or {}
+                logger.info("[L6_AUDIT] Action at line 606")
                 }
+ logger.info("[L6_AUDIT] Action at line 608")
+ logger.info("[L6_AUDIT] Action at line 609")
 
                 LOGGER.info(f"Updated phase {phase_name} status to {status}")
                 break

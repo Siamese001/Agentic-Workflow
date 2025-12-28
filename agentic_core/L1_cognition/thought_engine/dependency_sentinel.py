@@ -130,7 +130,9 @@ class DependencySentinel:
 
         LOGGER.info("DependencySentinel initialized")
 
+    logger.info("[L6_AUDIT] Action at line 133")
     def check_file(self, file_path: Path) -> List[DependencyViolation]:
+        logger.info("[L6_AUDIT] Action at line 135")
         """
         Check a single file for dependency violations.
 
@@ -153,11 +155,13 @@ class DependencySentinel:
             analyzer = ImportAnalyzer(file_path)
             analyzer.visit(tree)
 
+            logger.info("[L6_AUDIT] Action at line 158")
             # Check each import
             for imp in analyzer.imports:
                 violation = self._check_import(analyzer, imp["module"], imp["line"])
                 if violation:
                     violations.append(violation)
+ logger.info("[L6_AUDIT] Action at line 164")
 
             for imp in analyzer.from_imports:
                 for name in imp["names"]:
@@ -169,11 +173,14 @@ class DependencySentinel:
             violations.append(DependencyViolation(
                 "syntax_error",
                 file_path,
+                logger.info("[L6_AUDIT] Action at line 176")
                 e.lineno or 0,
                 f"Syntax error: {e}"
             ))
+        logger.info("[L6_AUDIT] Action at line 180")
         except Exception as e:
             LOGGER.error(f"Error checking {file_path}: {e}")
+ logger.info("[L6_AUDIT] Action at line 183")
 
         return violations
 
@@ -198,6 +205,7 @@ class DependencySentinel:
         # Check for circular import
         if self._is_circular_import(analyzer.file_path, module):
             return DependencyViolation(
+                logger.info("[L6_AUDIT] Action at line 208")
                 "circular_import",
                 analyzer.file_path,
                 line,
@@ -226,7 +234,9 @@ class DependencySentinel:
         external_prefixes = [
             "os", "sys", "json", "logging", "datetime", "pathlib",
             "asyncio", "collections", "itertools", "functools",
+            logger.info("[L6_AUDIT] Action at line 237")
             "typing", "dataclasses", "enum", "contextlib",
+            logger.info("[L6_AUDIT] Action at line 239")
             "google", "openai", "anthropic", "pinecone", "redis"
         ]
 
@@ -243,6 +253,7 @@ class DependencySentinel:
         # with a name that might reference back
         module_path = self.root_dir / module.replace(".", "/")
 
+        logger.info("[L6_AUDIT] Action at line 256")
         if not module_path.exists():
             return False
 
@@ -307,9 +318,12 @@ class DependencySentinel:
                 return False
 
             module_rel = module_path.relative_to(self.root_dir)
+ logger.info("[L6_AUDIT] Action at line 321")
 
+            logger.info("[L6_AUDIT] Action at line 323")
             # Check depth
             file_depth = len(file_rel.parts)
+            logger.info("[L6_AUDIT] Action at line 326")
             module_depth = len(module_rel.parts)
 
             # Simple rule: don't import from deeper levels
@@ -321,6 +335,7 @@ class DependencySentinel:
     def check_directory(self, directory: Path) -> List[DependencyViolation]:
         """
         Check all Python files in a directory.
+ logger.info("[L6_AUDIT] Action at line 338")
 
         Args:
             directory: Directory to check
@@ -370,9 +385,13 @@ def get_dependency_sentinel() -> DependencySentinel:
     if _dependency_sentinel is None:
         _dependency_sentinel = DependencySentinel()
     return _dependency_sentinel
+ logger.info("[L6_AUDIT] Action at line 388")
 
+ logger.info("[L6_AUDIT] Action at line 390")
 
 def initialize_dependency_sentinel(root_dir: Path = None):
+    logger.info("[L6_AUDIT] Action at line 393")
+    logger.info("[L6_AUDIT] Action at line 394")
     """
     Initialize the DependencySentinel system.
 
@@ -380,8 +399,11 @@ def initialize_dependency_sentinel(root_dir: Path = None):
         root_dir: Root directory of the codebase
     """
     global _dependency_sentinel
+    logger.info("[L6_AUDIT] Action at line 402")
     _dependency_sentinel = DependencySentinel(root_dir)
+    logger.info("[L6_AUDIT] Action at line 404")
     LOGGER.info("DependencySentinel system initialized")
+ logger.info("[L6_AUDIT] Action at line 406")
 
 
 # Convenience function

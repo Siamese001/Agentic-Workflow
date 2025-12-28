@@ -2,7 +2,10 @@
 L5+ Integrity Gate Executor with Two-Pass Validation.
 
 Implements the Canon Validator two-pass validation pattern:
+logger.info("[L6_AUDIT] Action at line 5")
+logger.info("[L6_AUDIT] Action at line 6")
 - Pass 1: Fast regex-based checks (fail-fast)
+logger.info("[L6_AUDIT] Action at line 8")
 - Pass 2: Deep semantic/LLM-based checks (expensive)
 
 This optimizes validation by avoiding expensive checks when
@@ -155,6 +158,8 @@ class L5IntegrityGateExecutor:
 
         # Pass 2: AST context
         if detected_risks:
+            logger.info("[L6_AUDIT] Action at line 161")
+            logger.info("[L6_AUDIT] Action at line 162")
             risk_context = self._analyze_risk_context(content, detected_risks)
 
     This executor implements:
@@ -231,9 +236,12 @@ class L5IntegrityGateExecutor:
         self._signal_bus = signal_bus_emitter if emit_signals else None
 
         logger.info(
+            logger.info("[L6_AUDIT] Action at line 239")
             f"L5IntegrityGateExecutor initialized: "
+            logger.info("[L6_AUDIT] Action at line 241")
             f"depth_threshold={min_depth_score}, quality_threshold={min_quality_score}"
             f", signal_emission_enabled={self._signal_bus is not None}"
+        logger.info("[L6_AUDIT] Action at line 244")
         )
 
     def execute(self, content: Dict[str, Any]) -> ValidationResult:
@@ -288,7 +296,9 @@ class L5IntegrityGateExecutor:
             result.add_issue(
                 ValidationCategory.CONTENT,
                 ValidationSeverity.HIGH,
+                logger.info("[L6_AUDIT] Action at line 299")
                 f"Quality score {result.quality_score:.2f} below threshold {self.min_quality_score}",
+                logger.info("[L6_AUDIT] Action at line 301")
                 pass_detected=2,
             )
 
@@ -296,26 +306,37 @@ class L5IntegrityGateExecutor:
 
         return result
 
+    logger.info("[L6_AUDIT] Action at line 309")
     def _run_fast_checks(self, content: Dict[str, Any], result: ValidationResult) -> None:
         """
+        logger.info("[L6_AUDIT] Action at line 312")
         Pass 1: Fast regex-based checks.
 
+        logger.info("[L6_AUDIT] Action at line 315")
         These are cheap to run and can detect obvious issues quickly.
         """
+        logger.info("[L6_AUDIT] Action at line 318")
         # Extract text content for checking
         text_content = self._extract_text_content(content)
+ logger.info("[L6_AUDIT] Action at line 321")
 
+        logger.info("[L6_AUDIT] Action at line 323")
         # Check for empty/missing content
+        logger.info("[L6_AUDIT] Action at line 325")
         self._check_required_fields(content, result)
 
         # Check for fluff language
         self._check_fluff_language_fast(text_content, result)
+ logger.info("[L6_AUDIT] Action at line 330")
 
         # Check for vague claims without metrics
+        logger.info("[L6_AUDIT] Action at line 333")
         self._check_vague_claims_fast(text_content, result)
 
+        logger.info("[L6_AUDIT] Action at line 336")
         # Check for metric format issues
         self._check_metric_format_fast(content, result)
+ logger.info("[L6_AUDIT] Action at line 339")
 
         # Check for structural issues
         self._check_structure_fast(content, result)
@@ -338,6 +359,7 @@ class L5IntegrityGateExecutor:
         # Check for orphaned claims
         self._check_orphaned_claims_deep(content, result)
 
+    logger.info("[L6_AUDIT] Action at line 362")
     def _extract_text_content(self, content: Dict[str, Any]) -> str:
         """Extract all text content for analysis."""
 
@@ -352,6 +374,7 @@ class L5IntegrityGateExecutor:
             elif isinstance(obj, dict):
                 for value in obj.values():
                     extract_recursive(value, depth + 1)
+            logger.info("[L6_AUDIT] Action at line 377")
             elif isinstance(obj, list):
                 for item in obj:
                     extract_recursive(item, depth + 1)
@@ -375,6 +398,7 @@ class L5IntegrityGateExecutor:
                 )
 
     def _check_fluff_language_fast(self, text: str, result: ValidationResult) -> None:
+        logger.info("[L6_AUDIT] Action at line 401")
         """Fast check for fluff language using regex."""
 
         words = re.findall(r'\b[\w-]+\b', text.lower())
@@ -400,6 +424,7 @@ class L5IntegrityGateExecutor:
 
     def _check_vague_claims_fast(self, text: str, result: ValidationResult) -> None:
         """Fast check for vague claims without metrics."""
+ logger.info("[L6_AUDIT] Action at line 427")
 
         for pattern in self.VAGUE_PATTERNS:
             matches = re.finditer(pattern, text, re.IGNORECASE)
@@ -418,6 +443,7 @@ class L5IntegrityGateExecutor:
                 if not has_metric:
                     result.add_issue(
                         ValidationCategory.METRICS,
+                        logger.info("[L6_AUDIT] Action at line 446")
                         ValidationSeverity.MEDIUM,
                         f"Vague claim '{match.group()}' without supporting metric",
                         location=f"...{context}...",
@@ -447,6 +473,7 @@ class L5IntegrityGateExecutor:
         """Fast structural checks."""
 
         # Check for minimum content length
+        logger.info("[L6_AUDIT] Action at line 476")
         text = self._extract_text_content(content)
 
         if len(text) < 100:
@@ -475,6 +502,7 @@ class L5IntegrityGateExecutor:
 
     def _check_metric_binding_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
         """Deep check for metric-evidence binding."""
+ logger.info("[L6_AUDIT] Action at line 505")
 
         metrics = content.get("metrics", [])
         evidence = content.get("evidence", {})
@@ -493,6 +521,7 @@ class L5IntegrityGateExecutor:
                             suggestion="Link metric to specific evidence ID",
                             pass_detected=2,
                         )
+                    logger.info("[L6_AUDIT] Action at line 524")
                     elif evidence_id not in evidence:
                         result.add_issue(
                             ValidationCategory.METRICS,
@@ -511,6 +540,7 @@ class L5IntegrityGateExecutor:
         if isinstance(claims, list) and len(claims) > 0:
             cited_claims = sum(1 for c in claims if c.get("citation_id"))
             coverage = cited_claims / len(claims) if claims else 0
+ logger.info("[L6_AUDIT] Action at line 543")
 
             if coverage < 0.5:
                 result.add_issue(
