@@ -95,7 +95,7 @@ class SystemArchitect(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
-        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         from agentic_core.runtime.shared.void_compliance import (
             validate_canonical_hierarchy,
         )
@@ -124,7 +124,7 @@ class SystemArchitect(CanonBaseAgent):
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
                     # Check L2 subfolders if depth is 4
                     if config["depth"] == 4:
-                        from agentic_core.config.P1_core.structure_blueprint import (
+                        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
                             CORE_SUBFOLDER_MAP,
                         )
                         l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
@@ -161,7 +161,7 @@ class SystemArchitect(CanonBaseAgent):
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
             # [SSOT] Dynamic depth check from structure_blueprint
-            from agentic_core.config.P1_core.structure_blueprint import (
+            from agentic_core.config.blueprint_sovereign.structure_blueprint import (
                 SOVEREIGN_REGISTRY,
             )
             

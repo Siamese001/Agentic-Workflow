@@ -57,7 +57,7 @@ class HealerAgent(CanonBaseAgent):
         [KEY 40/49 HARDENING] High-Signal Re-homing.
         Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
-        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         from agentic_core.runtime.shared.void_compliance import (
             FORBIDDEN_ROOT_FOLDERS,
             get_placement_guidance,

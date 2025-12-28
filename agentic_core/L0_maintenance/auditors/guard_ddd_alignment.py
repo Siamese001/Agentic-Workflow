@@ -5,7 +5,7 @@ Enforces Bounded Contexts and Aggregate Root access.
 import ast
 from pathlib import Path
 from typing import List, Tuple
-from agentic_core.domain.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
+from agentic_core.config.blueprint_sovereign.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
 
 def check_bounded_contexts(filepath: Path) -> List[str]:
     issues = []
