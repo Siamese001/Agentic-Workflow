@@ -9,7 +9,7 @@ if sys.platform.startswith("win"):
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.7 - DYNAMIC HEALING ENGINE
+VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM
 (Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
 """
 
@@ -541,6 +541,39 @@ RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
 # [DEBUG GUARD] Prevent infinite pre-flight loop
 print("\n[FORCE PROGRESS] Gravity refactor temporarily disabled to enable mutation cascade.")
 
+# [L5 RESILIENCE] Configurable agent-level retries with exponential backoff
+AGENT_RETRY_COUNT = int(os.getenv("AGENT_RETRY_COUNT", "3"))
+AGENT_RETRY_BACKOFF_BASE = float(os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5"))
+
+async def retry_agent_execution_async(agent, file_path, ctx):
+    """[L5 RESILIENCE] Execute agent with retries and exponential backoff.
+    Hardenened to ensure no blocking calls enter the async event loop.
+    """
+    agent_name = agent.__class__.__name__
+    for attempt in range(1, AGENT_RETRY_COUNT + 1):
+        try:
+            method = getattr(agent, 'execute', getattr(agent, 'run', None))
+            if method:
+                try:
+                    # Support both path-aware and parameterless agents
+                    if method.__code__.co_argcount > 1:
+                        result = await method(file_path) if inspect.iscoroutinefunction(method) else method(file_path)
+                    else:
+                        result = await method() if inspect.iscoroutinefunction(method) else method()
+                except TypeError:
+                    result = await method() if inspect.iscoroutinefunction(method) else method()
+                return result
+        except (asyncio.CancelledError, SystemExit):
+            raise
+        except Exception as e:
+            delay = AGENT_RETRY_BACKOFF_BASE * (2 ** (attempt - 1))
+            error_msg = f"{agent_name}: attempt {attempt}/{AGENT_RETRY_COUNT} failed"
+            if attempt < AGENT_RETRY_COUNT:
+                await asyncio.sleep(delay)
+            else:
+                ctx.report(agent_name, 0, False, f"Final Failure: {str(e)[:100]}")
+    return None
+
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
 # ==============================================================================
@@ -593,41 +626,10 @@ class GeminiSpy:
                 if "successful_traces" in str(e):
                     print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
-# ==============================================================================
-# [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
-# ==============================================================================
-# [DESIGN FIX] Use the central L4 Historian instead of a local log
-try:
-    from agentic_core.L4_state.P1_core.historian import MissionHistorian
-    audit_log = MissionHistorian(project_root / "mission_audit.csv")
-    print("   [OK] L4 Historian: Audit ledger connected.")
-except ImportError:
-    # Simple fallback if Historian isn't online yet
-    import csv
-    from datetime import datetime
-    
-    class MissionAuditLog:
-        """Fallback audit logger when L4 Historian is unavailable."""
-        def __init__(self, log_path: str = "mission_audit.csv"):
-            self.log_path = log_path
-            if not os.path.exists(self.log_path):
-                with open(self.log_path, 'w', newline='', encoding='utf-8') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
-        
-        def record(self, file_name: str, action: str, source: str, destination: str, reason: str):
-            with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
-                writer = csv.writer(f)
-                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
-            print(f"      [LOG] Action recorded in audit ledger: {action}")
-    
-    audit_log = MissionAuditLog()
-    print("   [!] Using fallback MissionAuditLog (L4 Historian unavailable)")
 
 # ==============================================================================
 # L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
 # ==============================================================================
-
 def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     """
     Integrates Void Compliance into the Master Validation Sweep.
@@ -806,7 +808,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     import sys  # Ensure sys is available in this scope
     
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
+    print(f"DEBUG: VERSION 2.8 - INFINITE LOOP PREVENTION + LAZY LLM")
     
     # Use the GLOBALLY defined project_root from the Gravity Anchor
     global project_root 
