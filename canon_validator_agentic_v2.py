@@ -30,6 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_ROOT_FOLDERS,
     ACTIVE_CANON_KEYS,
     CANON_AGENT_REGISTRY, # [GAP 2]
+    CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
     ROOT_PROTECTED_FILES
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
@@ -2459,7 +2460,9 @@ CURRENT CODE:
                             # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
                             if target_root in FORBIDDEN_ROOT_FOLDERS:
                                 print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
-                                # Do NOT proceed with any mutation
+                                # Do NOT proceed with mutation, but clean stale path
+                                if hasattr(ctx, 'python_files'):
+                                    ctx.python_files = [f for f in ctx.python_files if f != file_path]
                             else:
                                 # 1. Apply import fixes if provided by the agent
                                 if result.get('healed_code'):
@@ -2475,10 +2478,10 @@ CURRENT CODE:
                                 shutil.move(str(file_path), str(target_path))
                                 print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
                                 
-                                # [KEY 48] Log relocation to the audit ledger (safe access)
-                                if 'audit_log' in globals() or hasattr(ctx, 'audit_log'):
-                                    log = globals().get('audit_log') or getattr(ctx, 'audit_log')
-                                    log.record(
+                                # [KEY 48] Log relocation to audit ledger (ctx-bound)
+                                audit_log = getattr(ctx, 'audit_log', None)
+                                if audit_log:
+                                    audit_log.record(
                                         file_name=Path(file_path).name,
                                         action="RELOCATED",
                                         source=str(Path(file_path).parent),
@@ -2487,7 +2490,7 @@ CURRENT CODE:
                                     )
                             
                             # Update python_files list to reflect the new location
-                            if hasattr(ctx, 'python_files'):
+                            if hasattr(ctx, 'python_files') and 'target_path' in locals():
                                 ctx.python_files = [f if f != file_path else str(target_path) for f in ctx.python_files]
                             
                             changes_this_round += 1
@@ -2607,8 +2610,12 @@ CURRENT CODE:
         print(f"[!] FISSION PENDING: {fission_pending} files require manual blueprint")
 
     # Violation Summary
-    if ctx.report:
-        print(f"[STATS] TOTAL VIOLATIONS: {len(ctx.report)}")
+    # Accurate violation count from report entries (Hybrid Safe)
+    report_obj = getattr(ctx, 'report', [])
+    # Uses .entries if present (User Req), falls back to list (Class Def)
+    entry_count = len(getattr(report_obj, 'entries', report_obj))
+    if entry_count > 0:
+        print(f"[STATS] TOTAL VIOLATIONS: {entry_count}")
     
     # [ETERNAL SOVEREIGNTY SEAL] Final Report Banner
     print("\n" + "="*80)
@@ -2686,7 +2693,10 @@ groups:
         print(f"   [!] Failed to write alerting rules: {e}")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
-    report_entries = getattr(ctx, 'report', [])
+    # [SOVEREIGN HARDENING] Use ctx.report directly (list subclass) and guard against undefined report_list
+    # Safe access to report entries – CallableReport stores in .entries OR is a list
+    report_obj = getattr(ctx, 'report', [])
+    report_entries = getattr(report_obj, 'entries', report_obj)
     total_violations = len([r for r in report_entries if not r.get("success", True)])
     
     if total_violations == 0:
