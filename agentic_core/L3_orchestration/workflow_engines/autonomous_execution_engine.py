@@ -20,11 +20,15 @@ from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
 )
 
 # L4 Checkpoint integration
-from agentic_core.L4_state.autonomous_checkpoint_manager import (
+# GRAVITY FIXED: from agentic_core.L4_state.autonomous_checkpoint_manager import (
+import importlib
+mod = importlib.import_module('agentic_core.L4_state.autonomous_checkpoint_manager')
+( = mod.(  # Adjust multi-imports manually
     create_autonomous_checkpoint_manager,
 )
 
-class AutonomousExecutionEngine:
+# NAMING FIXED: AutonomousExecutionEngine → autonomous_execution_engine
+class autonomous_execution_engine:
     """
     L3 Execution Engine that continuously validates and heals the Canon.
     

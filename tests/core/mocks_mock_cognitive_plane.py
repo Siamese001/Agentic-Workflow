@@ -1,7 +1,8 @@
 """Mock Cognitive Plane for testing.
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined plans.
 """
@@ -15,7 +16,8 @@ from typing import Any, Dict, List
     CognitiveCapability,
 )
 
-class MockCognitivePlane(ICognitivePlane):
+# NAMING FIXED: MockCognitivePlane → mock_cognitive_plane
+class mock_cognitive_plane(ICognitivePlane):
     """Mock cognitive plane for testing.
 
     Returns predefined plans and reasoning results.

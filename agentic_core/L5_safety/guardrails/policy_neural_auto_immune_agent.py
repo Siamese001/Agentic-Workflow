@@ -11,12 +11,17 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 
 
-class NeuralAutoImmuneAgent:
+# NAMING FIXED: NeuralAutoImmuneAgent → neural_auto_immune_agent
+class neural_auto_immune_agent:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, project_root: Path):
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5
 
     def detect_breaches(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Scans L5 Redis for repeated non-compliance in 30-min windows
         # Issues lockdown key: l5_lockdown:territory
         return {"lockdowns_issued": {}}

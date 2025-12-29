@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
@@ -10,7 +12,8 @@ try:
 except IndexError:
     project_root = Path.cwd()
 
-class ASTRelocator(ast.NodeVisitor):
+# NAMING FIXED: ASTRelocator → ast_relocator
+class ast_relocator(ast.NodeVisitor):
     """
     [L6 SURGERY] AST-based code relocation engine.
     Surgically extracts classes/functions and calculates their sovereign coordinates.
@@ -108,6 +111,8 @@ class ASTRelocator(ast.NodeVisitor):
         return best_match
 
     def get_movable_entities(self) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.visit(self.tree)
         return self.entities
 

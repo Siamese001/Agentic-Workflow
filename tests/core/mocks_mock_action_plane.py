@@ -1,7 +1,8 @@
 """Mock Action Plane for testing.
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined results.
 """
@@ -15,7 +16,8 @@ from typing import Any, Dict, List
     ActionCapability,
 )
 
-class MockActionPlane(IActionPlane):
+# NAMING FIXED: MockActionPlane → mock_action_plane
+class mock_action_plane(IActionPlane):
     """Mock action plane for testing.
 
     Returns predefined action results without actually executing tools.

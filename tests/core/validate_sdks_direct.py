@@ -10,7 +10,8 @@ def check_sdk_import(sdk_name, module_path):
     """Docstring."""
 import logging
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
     """Check if SDK can be imported."""
     try:

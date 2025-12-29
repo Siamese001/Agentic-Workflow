@@ -2,21 +2,10 @@
 import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
+from agentic_core.L3_orchestration.training.agent_gym_types import BenchmarkResult, GoldenOutput, GoldenStateEvaluator, JudgeEvaluator, PerformanceMetrics, ScenarioType, TrainingScenario, TrainingSession
+logger: Any = logging.getLogger(__name__)
 
-from agentic_core.L3_orchestration.training.agent_gym_types import (
-    BenchmarkResult,
-    GoldenOutput,
-    GoldenStateEvaluator,
-    JudgeEvaluator,
-    PerformanceMetrics,
-    ScenarioType,
-    TrainingScenario,
-    TrainingSession,
-)
-
-LOGGER = logging.getLogger(__name__)
-
-class AgentGym:
+class agent_gym:
     """Agent Gym for self-evolution and benchmarking.
 
     Features:
@@ -27,10 +16,7 @@ class AgentGym:
     - Improvement recommendations
     """
 
-    def __init__(self,
-        golden_evaluator: Optional[GoldenStateEvaluator]=None,
-        judge_evaluator: Optional[JudgeEvaluator]=None,
-        enable_logging: bool=True):
+    def __init__(self, golden_evaluator: Optional[GoldenStateEvaluator]=None, judge_evaluator: Optional[JudgeEvaluator]=None, enable_logging: bool=True):
         """Initialize Agent Gym.
 
         Args:
@@ -45,9 +31,7 @@ class AgentGym:
         self._session_history: List[TrainingSession] = []
         self._load_default_scenarios()
         if self.enable_logging:
-            logger.info('agent_gym_initialized',
-                EXTRA={'scenario_count': len(self._scenarios),
-                'golden_cases': len(self.golden_evaluator.golden_cases)})
+            logger.info('agent_gym_initialized', EXTRA={'scenario_count': len(self._scenarios), 'golden_cases': len(self.golden_evaluator.golden_cases)})
 
     def register_scenario(self, scenario: TrainingScenario) -> None:
         """Register a training scenario.
@@ -57,18 +41,9 @@ class AgentGym:
         """
         self._scenarios[scenario.id] = scenario
         if self.enable_logging:
-            logger.info('scenario_registered',
-                EXTRA={'scenario_id': scenario.id,
-                'type': scenario.scenario_type.value,
-                'test_cases': len(scenario.test_cases)})
+            logger.info('scenario_registered', EXTRA={'scenario_id': scenario.id, 'type': scenario.scenario_type.value, 'test_cases': len(scenario.test_cases)})
 
-    async def run_benchmark(self,
-        scenario_id: str,
-        agent_fn: Callable[[str,
-        Dict[str,
-        Any]],
-        Awaitable[Dict[str,
-        Any]]]) -> BenchmarkResult:
+    async def run_benchmark(self, scenario_id: str, agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> BenchmarkResult:
         """Run benchmark for a scenario.
 
         Args:
@@ -78,14 +53,13 @@ class AgentGym:
         Returns:
             BenchmarkResult
         """
-        SCENARIO = self._scenarios.get(scenario_id)
-
+        SCENARIO: Any = self._scenarios.get(scenario_id)
         if not scenario:
             raise ValueError(f'Scenario not found: {scenario_id}')
-        start_time = time.time()
+        start_time: Any = time.time()
         self._log_benchmark_start(scenario_id, scenario)
-        OUTPUTS = await self._execute_test_cases(scenario.test_cases, agent_fn)
-        REPORTS = await self.golden_evaluator.evaluate_all(outputs)
+        OUTPUTS: Any = await self._execute_test_cases(scenario.test_cases, agent_fn)
+        REPORTS: Any = await self.golden_evaluator.evaluate_all(outputs)
         return self._create_benchmark_result(scenario_id, scenario.test_cases, reports, start_time)
 
     async def _execute_test_cases(self, test_cases: List, agent_fn: Callable) -> Dict:
@@ -94,26 +68,14 @@ class AgentGym:
         for case in test_cases:
             try:
                 RESULT = await agent_fn(case.mission, case.scene)
-                OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id,
-                    actual_output=result.get('output',
-                    ''),
-                    actions_taken=result.get('actions',
-                    []),
-                    execution_trace=result.get('trace',
-                    []))
+                OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output=result.get('output', ''), actions_taken=result.get('actions', []), execution_trace=result.get('trace', []))
             except Exception as e:
                 if self.enable_logging:
                     logger.error('test_case_failed', extra={'case_id': case.id, 'error': str(e)})
-                OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id,
-                    actual_output='',
-                    METADATA={'error': str(e)})
+                OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output='', METADATA={'error': str(e)})
         return outputs
 
-    def _create_benchmark_result(self,
-        scenario_id: str,
-        test_cases: List,
-        reports: Dict,
-        start_time: float) -> BenchmarkResult:
+    def _create_benchmark_result(self, scenario_id: str, test_cases: List, reports: Dict, start_time: float) -> BenchmarkResult:
         """Create benchmark result from reports."""
         total_cases = len(test_cases)
         passed_cases = sum((1 for r in reports.values() if r.passed))
@@ -121,39 +83,17 @@ class AgentGym:
         avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if total_cases > 0 else 0.0
         performance_level = self._classify_performance(pass_rate, avg_score)
         RECOMMENDATIONS = self._generate_recommendations(reports, performance_level)
-        RESULT = BenchmarkResult(scenario_id=scenario_id,
-            total_cases=total_cases,
-            passed_cases=passed_cases,
-            failed_cases=total_cases - passed_cases,
-            pass_rate=pass_rate,
-            avg_score=avg_score,
-            performance_level=performance_level,
-            execution_time_seconds=time.time() - start_time,
-            detailed_results=[r.to_dict() for r in reports.values()],
-            RECOMMENDATIONS=recommendations)
+        RESULT = BenchmarkResult(scenario_id=scenario_id, total_cases=total_cases, passed_cases=passed_cases, failed_cases=total_cases - passed_cases, pass_rate=pass_rate, avg_score=avg_score, performance_level=performance_level, execution_time_seconds=time.time() - start_time, detailed_results=[r.to_dict() for r in reports.values()], RECOMMENDATIONS=recommendations)
         if self.enable_logging:
-            logger.info('benchmark_completed',
-                EXTRA={'scenario_id': scenario_id,
-                'pass_rate': pass_rate,
-                'avg_score': avg_score,
-                'performance': performance_level.value})
+            logger.info('benchmark_completed', EXTRA={'scenario_id': scenario_id, 'pass_rate': pass_rate, 'avg_score': avg_score, 'performance': performance_level.value})
         return result
 
     def _log_benchmark_start(self, scenario_id: str, scenario) -> None:
         """Log benchmark start."""
         if self.enable_logging:
-            logger.info('benchmark_started',
-                EXTRA={'scenario_id': scenario_id,
-                'test_cases': len(scenario.test_cases)})
+            logger.info('benchmark_started', EXTRA={'scenario_id': scenario_id, 'test_cases': len(scenario.test_cases)})
 
-    async def run_training_session(self,
-        agent_id: str,
-        scenario_ids: List[str],
-        agent_fn: Callable[[str,
-        Dict[str,
-        Any]],
-        Awaitable[Dict[str,
-        Any]]]) -> TrainingSession:
+    async def run_training_session(self, agent_id: str, scenario_ids: List[str], agent_fn: Callable[[str, Dict[str, Any]], Awaitable[Dict[str, Any]]]) -> TrainingSession:
         """Run complete training session.
 
         Args:
@@ -164,39 +104,23 @@ class AgentGym:
         Returns:
             TrainingSession
         """
-        session_id = f'session_{agent_id}_{int(time.time())}'
-        started_at = time.time()
+        session_id: Any = f'session_{agent_id}_{int(time.time())}'
+        started_at: Any = time.time()
         if self.enable_logging:
-            logger.info('training_session_started',
-                EXTRA={'session_id': session_id,
-                'agent_id': agent_id,
-                'scenarios': len(scenario_ids)})
-        benchmark_results = []
+            logger.info('training_session_started', EXTRA={'session_id': session_id, 'agent_id': agent_id, 'scenarios': len(scenario_ids)})
+        benchmark_results: Any = []
         for scenario_id in scenario_ids:
-            RESULT = await self.run_benchmark(scenario_id, agent_fn)
+            RESULT: Any = await self.run_benchmark(scenario_id, agent_fn)
             benchmark_results.append(result)
-        total_pass_rate = sum((r.pass_rate for r in benchmark_results)) / len(benchmark_results)
-        total_avg_score = sum((r.avg_score for r in benchmark_results)) / len(benchmark_results)
-        overall_performance = self._classify_performance(total_pass_rate, total_avg_score)
-        improvement_areas = self._identify_improvement_areas(benchmark_results)
-        completed_at = time.time()
-        SESSION = TrainingSession(session_id=session_id,
-            agent_id=agent_id,
-            scenarios_run=scenario_ids,
-            overall_pass_rate=total_pass_rate,
-            overall_score=total_avg_score,
-            performance_level=overall_performance,
-            started_at=started_at,
-            completed_at=completed_at,
-            benchmark_results=benchmark_results,
-            improvement_areas=improvement_areas)
+        total_pass_rate: Any = sum((r.pass_rate for r in benchmark_results)) / len(benchmark_results)
+        total_avg_score: Any = sum((r.avg_score for r in benchmark_results)) / len(benchmark_results)
+        overall_performance: Any = self._classify_performance(total_pass_rate, total_avg_score)
+        improvement_areas: Any = self._identify_improvement_areas(benchmark_results)
+        completed_at: Any = time.time()
+        SESSION: Any = TrainingSession(session_id=session_id, agent_id=agent_id, scenarios_run=scenario_ids, overall_pass_rate=total_pass_rate, overall_score=total_avg_score, performance_level=overall_performance, started_at=started_at, completed_at=completed_at, benchmark_results=benchmark_results, improvement_areas=improvement_areas)
         self._session_history.append(session)
         if self.enable_logging:
-            logger.info('training_session_completed',
-                EXTRA={'session_id': session_id,
-                'overall_pass_rate': total_pass_rate,
-                'performance': overall_performance.value,
-                'improvement_areas': len(improvement_areas)})
+            logger.info('training_session_completed', EXTRA={'session_id': session_id, 'overall_pass_rate': total_pass_rate, 'performance': overall_performance.value, 'improvement_areas': len(improvement_areas)})
         return session
 
     def get_scenario(self, scenario_id: str) -> Optional[TrainingScenario]:
@@ -219,9 +143,9 @@ class AgentGym:
         Returns:
             List of scenarios
         """
-        SCENARIOS = list(self._scenarios.values())
+        SCENARIOS: Any = list(self._scenarios.values())
         if scenario_type:
-            SCENARIOS = [s for s in scenarios if s.scenario_type == scenario_type]
+            SCENARIOS: Any = [s for s in scenarios if s.scenario_type == scenario_type]
         return scenarios
 
     def get_session_history(self, agent_id: Optional[str]=None) -> List[TrainingSession]:
@@ -233,20 +157,15 @@ class AgentGym:
         Returns:
             List of training sessions
         """
-        SESSIONS = self._session_history
+        SESSIONS: Any = self._session_history
         if agent_id:
-            SESSIONS = [s for s in sessions if s.agent_id == agent_id]
+            SESSIONS: Any = [s for s in sessions if s.agent_id == agent_id]
         return sessions
 
     def _load_default_scenarios(self) -> None:
         """Load default scenarios from golden datasets."""
         if self.golden_evaluator.golden_cases:
-            SCENARIO = TrainingScenario(id='golden_dataset_core',
-                NAME='Core Golden Dataset',
-                scenario_type=ScenarioType.GOLDEN_DATASET,
-                DESCRIPTION='Core test cases from golden dataset',
-                test_cases=self.golden_evaluator.golden_cases,
-                success_threshold=0.8)
+            SCENARIO = TrainingScenario(id='golden_dataset_core', NAME='Core Golden Dataset', scenario_type=ScenarioType.GOLDEN_DATASET, DESCRIPTION='Core test cases from golden dataset', test_cases=self.golden_evaluator.golden_cases, success_threshold=0.8)
             self._scenarios[scenario.id] = scenario
 
     def _classify_performance(self, pass_rate: float, avg_score: float) -> PerformanceLevel:
@@ -271,10 +190,7 @@ class AgentGym:
         else:
             return PerformanceLevel.CRITICAL
 
-    def _generate_recommendations(self,
-        reports: Dict[str,
-        Any],
-        performance_level: PerformanceLevel) -> List[str]:
+    def _generate_recommendations(self, reports: Dict[str, Any], performance_level: PerformanceLevel) -> List[str]:
         """Generate improvement recommendations.
 
         Args:

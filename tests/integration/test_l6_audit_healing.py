@@ -10,257 +10,193 @@ from datetime import datetime, timedelta
 from agentic_core.L0_maintenance.P1_core.l6_audit_healing_strategy import L6AuditHealingStrategy, create_l6_audit_healing_strategy
 from agentic_core.config.P1_core.sovereign_config import config
 
-
-class TestL6AuditHealingStrategy:
+class test_l6_audit_healing_strategy:
     """Test suite for L6 Audit Healing Strategy."""
-    
+
     @pytest.mark.asyncio
-    async def test_strategy_initialization(self):
+    async def test_strategy_initialization(self) -> Any:
         """Test L6 audit healing strategy initializes correctly."""
-        strategy = L6AuditHealingStrategy()
+        strategy: Any = L6AuditHealingStrategy()
         assert strategy is not None
-        assert strategy.name == "L6AuditHealing"
+        assert strategy.name == 'L6AuditHealing'
         assert strategy.priority == 1
         assert strategy.processed_today == 0
         assert hasattr(strategy, 'fs_client')
         assert hasattr(strategy, 'audit_log_path')
-    
+
     @pytest.mark.asyncio
-    async def test_factory_function(self):
+    async def test_factory_function(self) -> Any:
         """Test factory function creates strategy."""
-        strategy = await create_l6_audit_healing_strategy()
+        strategy: Any = await create_l6_audit_healing_strategy()
         assert isinstance(strategy, L6AuditHealingStrategy)
-    
+
     @pytest.mark.asyncio
-    async def test_diagnose_disabled_in_config(self):
+    async def test_diagnose_disabled_in_config(self) -> Any:
         """Test strategy respects config disable flag."""
-        original_value = config.L6_AUDIT_HEALING_ENABLED
+        original_value: Any = config.L6_AUDIT_HEALING_ENABLED
         object.__setattr__(config, 'L6_AUDIT_HEALING_ENABLED', False)
-        
         try:
-            strategy = L6AuditHealingStrategy()
-            fixes = await strategy.diagnose([])
-            
+            strategy: Any = L6AuditHealingStrategy()
+            fixes: Any = await strategy.diagnose([])
             assert len(fixes) == 0
         finally:
             object.__setattr__(config, 'L6_AUDIT_HEALING_ENABLED', original_value)
-    
+
     @pytest.mark.asyncio
-    async def test_daily_limit_enforcement(self):
+    async def test_daily_limit_enforcement(self) -> Any:
         """Test daily healing limit is enforced."""
-        strategy = L6AuditHealingStrategy()
+        strategy: Any = L6AuditHealingStrategy()
         strategy.processed_today = config.L6_AUDIT_HEALING_MAX_DAILY
-        
-        fix = {"event_data": {"event_type": "TEST"}, "action": "emit_corrective_event"}
-        result = await strategy.apply(fix)
-        
+        fix: Any = {'event_data': {'event_type': 'TEST'}, 'action': 'emit_corrective_event'}
+        result: Any = await strategy.apply(fix)
         assert result is False
-    
+
     @pytest.mark.asyncio
-    async def test_reset_daily_counter(self):
+    async def test_reset_daily_counter(self) -> Any:
         """Test daily counter can be reset."""
-        strategy = L6AuditHealingStrategy()
+        strategy: Any = L6AuditHealingStrategy()
         strategy.processed_today = 250
-        
         strategy.reset_daily_counter()
-        
         assert strategy.processed_today == 0
 
-
-class TestL6AuditHealingConfig:
+class test_l6_audit_healing_config:
     """Test L6 audit healing configuration."""
-    
-    def test_config_settings_exist(self):
+
+    def test_config_settings_exist(self) -> Any:
         """Test all L6 audit healing config settings exist."""
         assert hasattr(config, 'L6_AUDIT_HEALING_ENABLED')
         assert hasattr(config, 'L6_AUDIT_HEALING_MAX_DAILY')
         assert hasattr(config, 'L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS')
-    
-    def test_config_default_values(self):
+
+    def test_config_default_values(self) -> Any:
         """Test config has sensible default values."""
         assert isinstance(config.L6_AUDIT_HEALING_ENABLED, bool)
         assert isinstance(config.L6_AUDIT_HEALING_MAX_DAILY, int)
         assert isinstance(config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS, int)
-        
         assert config.L6_AUDIT_HEALING_MAX_DAILY > 0
         assert config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS > 0
 
-
-class TestL6AuditHealingMCPIntegration:
+class test_l6_audit_healing_mcp_integration:
     """Test L6 audit healing MCP client integration."""
-    
+
     @pytest.mark.asyncio
-    async def test_uses_filesystem_mcp_client(self):
+    async def test_uses_filesystem_mcp_client(self) -> Any:
         """Test strategy uses Filesystem MCP client."""
-        strategy = L6AuditHealingStrategy()
-        
+        strategy: Any = L6AuditHealingStrategy()
         assert strategy.fs_client is not None
         assert hasattr(strategy.fs_client, 'read_text')
 
-
-class TestL6AuditHealingStrategyRegistry:
+class test_l6_audit_healing_strategy_registry:
     """Test L6 audit healing strategy is registered."""
-    
-    def test_strategy_in_registry(self):
+
+    def test_strategy_in_registry(self) -> Any:
         """Test L6AuditHealingStrategy is in global registry."""
         from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
-        
-        strategy_names = [s.name for s in HEALING_STRATEGIES]
-        assert "L6AuditHealing" in strategy_names
-    
-    def test_strategy_priority(self):
+        strategy_names: Any = [s.name for s in HEALING_STRATEGIES]
+        assert 'L6AuditHealing' in strategy_names
+
+    def test_strategy_priority(self) -> Any:
         """Test L6AuditHealingStrategy has correct priority."""
         from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
-        
-        l6_strategy = next((s for s in HEALING_STRATEGIES if s.name == "L6AuditHealing"), None)
+        l6_strategy: Any = next((s for s in HEALING_STRATEGIES if s.name == 'L6AuditHealing'), None)
         assert l6_strategy is not None
         assert l6_strategy.priority == 1
 
-
-class TestL6AuditHealingGapDetection:
+class test_l6_audit_healing_gap_detection:
     """Test L6 audit healing gap detection logic."""
-    
+
     @pytest.mark.asyncio
-    async def test_detects_missing_event_ids(self):
+    async def test_detects_missing_event_ids(self) -> Any:
         """Test detection of actions without event IDs."""
-        # Simulate log entry without event_id
-        log_entry = {
-            "action": "apply",
-            "fix_id": "test_fix_123",
-            "timestamp": datetime.utcnow().isoformat()
-        }
-        
-        # This should be detected as a gap
-        assert "event_id" not in log_entry
-        assert log_entry["action"] == "apply"
-    
+        log_entry: Any = {'action': 'apply', 'fix_id': 'test_fix_123', 'timestamp': datetime.utcnow().isoformat()}
+        assert 'event_id' not in log_entry
+        assert log_entry['action'] == 'apply'
+
     @pytest.mark.asyncio
-    async def test_respects_time_window(self):
+    async def test_respects_time_window(self) -> Any:
         """Test time window filtering for gap detection."""
-        cutoff = datetime.utcnow() - timedelta(hours=config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS)
-        
-        # Old entry (outside window)
-        old_entry = {
-            "action": "apply",
-            "timestamp": (cutoff - timedelta(hours=1)).isoformat()
-        }
-        
-        # Recent entry (inside window)
-        recent_entry = {
-            "action": "apply",
-            "timestamp": (cutoff + timedelta(hours=1)).isoformat()
-        }
-        
-        # Parse timestamps
-        old_time = datetime.fromisoformat(old_entry["timestamp"])
-        recent_time = datetime.fromisoformat(recent_entry["timestamp"])
-        
+        cutoff: Any = datetime.utcnow() - timedelta(hours=config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS)
+        old_entry: Any = {'action': 'apply', 'timestamp': (cutoff - timedelta(hours=1)).isoformat()}
+        recent_entry: Any = {'action': 'apply', 'timestamp': (cutoff + timedelta(hours=1)).isoformat()}
+        old_time: Any = datetime.fromisoformat(old_entry['timestamp'])
+        recent_time: Any = datetime.fromisoformat(recent_entry['timestamp'])
         assert old_time < cutoff
         assert recent_time > cutoff
 
-
-class TestL6AuditHealingEventReconstruction:
+class test_l6_audit_healing_event_reconstruction:
     """Test L6 audit healing event reconstruction."""
-    
-    def test_event_data_structure(self):
+
+    def test_event_data_structure(self) -> Any:
         """Test reconstructed event has required fields."""
-        event_data = {
-            "event_type": "HEALING_ACTION_APPLIED",
-            "severity": "CRITICAL",
-            "metadata": {
-                "reconstructed": True,
-                "original_action": "test_fix_123",
-                "healing_cycle": "phase_17f"
-            },
-            "payload": {"action": "apply", "fix_id": "test_fix_123"}
-        }
-        
-        assert "event_type" in event_data
-        assert "severity" in event_data
-        assert "metadata" in event_data
-        assert "payload" in event_data
-        assert event_data["metadata"]["reconstructed"] is True
-        assert event_data["metadata"]["healing_cycle"] == "phase_17f"
+        event_data: Any = {'event_type': 'HEALING_ACTION_APPLIED', 'severity': 'CRITICAL', 'metadata': {'reconstructed': True, 'original_action': 'test_fix_123', 'healing_cycle': 'phase_17f'}, 'payload': {'action': 'apply', 'fix_id': 'test_fix_123'}}
+        assert 'event_type' in event_data
+        assert 'severity' in event_data
+        assert 'metadata' in event_data
+        assert 'payload' in event_data
+        assert event_data['metadata']['reconstructed'] is True
+        assert event_data['metadata']['healing_cycle'] == 'phase_17f'
 
-
-class TestL6AuditHealingLogParsing:
+class test_l6_audit_healing_log_parsing:
     """Test L6 audit healing log parsing."""
-    
-    def test_json_line_parsing(self):
+
+    def test_json_line_parsing(self) -> Any:
         """Test JSONL format parsing."""
-        log_line = '{"action": "apply", "fix_id": "test_123", "timestamp": "2025-12-27T10:00:00"}'
-        
-        entry = json.loads(log_line)
-        
-        assert entry["action"] == "apply"
-        assert entry["fix_id"] == "test_123"
-        assert "timestamp" in entry
-    
-    def test_handles_invalid_json(self):
+        log_line: Any = '{"action": "apply", "fix_id": "test_123", "timestamp": "2025-12-27T10:00:00"}'
+        entry: Any = json.loads(log_line)
+        assert entry['action'] == 'apply'
+        assert entry['fix_id'] == 'test_123'
+        assert 'timestamp' in entry
+
+    def test_handles_invalid_json(self) -> Any:
         """Test graceful handling of invalid JSON."""
-        invalid_line = "not valid json"
-        
+        invalid_line: Any = 'not valid json'
         try:
             json.loads(invalid_line)
-            assert False, "Should have raised JSONDecodeError"
+            assert False, 'Should have raised JSONDecodeError'
         except json.JSONDecodeError:
-            # Expected behavior
             pass
 
-
-class TestL6AuditHealingReconstructionWindow:
+class test_l6_audit_healing_reconstruction_window:
     """Test L6 audit healing reconstruction window."""
-    
-    def test_window_configuration(self):
+
+    def test_window_configuration(self) -> Any:
         """Test reconstruction window is configured."""
         assert config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS > 0
-        assert config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS <= 168  # Max 1 week
-    
-    def test_window_calculation(self):
+        assert config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS <= 168
+
+    def test_window_calculation(self) -> Any:
         """Test time window calculation."""
-        cutoff = datetime.utcnow() - timedelta(hours=config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS)
-        now = datetime.utcnow()
-        
-        time_diff = (now - cutoff).total_seconds() / 3600
-        
+        cutoff: Any = datetime.utcnow() - timedelta(hours=config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS)
+        now: Any = datetime.utcnow()
+        time_diff: Any = (now - cutoff).total_seconds() / 3600
         assert abs(time_diff - config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS) < 0.1
 
-
-class TestL6AuditHealingAuditLogPath:
+class test_l6_audit_healing_audit_log_path:
     """Test L6 audit healing audit log path configuration."""
-    
-    def test_audit_log_path_configured(self):
+
+    def test_audit_log_path_configured(self) -> Any:
         """Test audit log path is configured."""
-        strategy = L6AuditHealingStrategy()
-        
+        strategy: Any = L6AuditHealingStrategy()
         assert strategy.audit_log_path is not None
         assert isinstance(strategy.audit_log_path, Path)
-        assert "L6_observability" in str(strategy.audit_log_path)
+        assert 'L6_observability' in str(strategy.audit_log_path)
 
-
-class TestL6AuditHealingDailyLimit:
+class test_l6_audit_healing_daily_limit:
     """Test L6 audit healing daily limit configuration."""
-    
-    def test_daily_limit_configured(self):
+
+    def test_daily_limit_configured(self) -> Any:
         """Test daily limit is configured."""
         assert config.L6_AUDIT_HEALING_MAX_DAILY > 0
-        assert config.L6_AUDIT_HEALING_MAX_DAILY <= 1000  # Reasonable upper limit
-    
-    def test_daily_limit_enforcement_logic(self):
+        assert config.L6_AUDIT_HEALING_MAX_DAILY <= 1000
+
+    def test_daily_limit_enforcement_logic(self) -> Any:
         """Test daily limit enforcement logic."""
-        strategy = L6AuditHealingStrategy()
-        
-        # Set to limit
+        strategy: Any = L6AuditHealingStrategy()
         strategy.processed_today = config.L6_AUDIT_HEALING_MAX_DAILY
-        
-        # Should be at limit
         assert strategy.processed_today >= config.L6_AUDIT_HEALING_MAX_DAILY
 
-
-def run_tests():
+def run_tests() -> Any:
     """Run all L6 audit healing tests."""
-    pytest.main([__file__, "-v", "--asyncio-mode=auto"])
-
-
-if __name__ == "__main__":
+    pytest.main([__file__, '-v', '--asyncio-mode=auto'])
+if __name__ == '__main__':
     run_tests()

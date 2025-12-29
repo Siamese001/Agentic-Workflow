@@ -39,11 +39,15 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
         tree = ast.parse(content)
         
         class DarkReasoningVisitor(ast.NodeVisitor):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             def __init__(self):
                 self.issues = []
                 self.reasoning_methods = {"think", "plan", "decide", "reason", "validate", "execute_plan"}
                 
             def visit_Call(self, node):
+                                                    '''Brief description of functionality and purpose.'''
+                                                    
                 # Check for calls to reasoning methods
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}")

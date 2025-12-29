@@ -1,23 +1,25 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
-
-"""Types and models for get_info_embedding_compare."""
+'Types and models for get_info_embedding_compare.'
 import logging
 import time
 import traceback
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class ExecutionStatus(Enum):
+class execution_status(Enum):
     """Enumeration for execution status states."""
-    PENDING = 'pending'
-    RUNNING = 'running'
-    SUCCESS = 'success'
-    FAILED = 'failed'
-    CANCELLED = 'cancelled'
+    PENDING: Any = 'pending'
+    RUNNING: Any = 'running'
+    SUCCESS: Any = 'success'
+    FAILED: Any = 'failed'
+    CANCELLED: Any = 'cancelled'
 
 @dataclass
-class ExecutionContext:
+class execution_context:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
@@ -38,15 +40,13 @@ class ExecutionContext:
         self.end_time = time.time()
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
-            self.error_details = {'type': type(error).__name__,
-                'message': str(error),
-                'traceback': traceback.format_exc()}
+            self.error_details = {'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
             logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
-class ProcessingResult:
+class processing_result:
     """Standardized result container for all operations."""
     success: bool
     data: Optional[Any] = None

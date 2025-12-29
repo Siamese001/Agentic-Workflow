@@ -5,6 +5,8 @@ import re
 
 
 def fix_all_indentation():
+    '''Brief description of functionality and purpose.'''
+    
     # Read the file with UTF-8 encoding
     with open('canon_validator_engine.py', 'r', encoding='utf-8') as f:
         content = f.read()
@@ -14,6 +16,8 @@ def fix_all_indentation():
     pattern = r'(\s+except Exception as e:\n)\s+pass\npass\n(.*?)(?=\n    |\n\ndef |\n\n|\Z)'
 
     def fix_except_block(match):
+                    '''Brief description of functionality and purpose.'''
+                    
         except_line = match.group(1)
         actual_code = match.group(2).strip()
 
@@ -39,6 +43,8 @@ def fix_all_indentation():
     pattern2 = r'(\s+except Exception:\n)\s+pass\npass\n(.*?)(?=\n    |\n\ndef |\n\n|\Z)'
 
     def fix_bare_except(match):
+                    '''Brief description of functionality and purpose.'''
+                    
         except_line = match.group(1)
         actual_code = match.group(2).strip()
 

@@ -2,6 +2,8 @@
 
 
 def test_load_golden_inputs_minimum_cases() -> None:
+'''Brief description of functionality and purpose.'''
+
     """TODO: Add docstring."""
 
     cases = load_golden_inputs()

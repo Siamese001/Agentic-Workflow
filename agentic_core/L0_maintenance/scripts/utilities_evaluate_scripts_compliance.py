@@ -1,43 +1,33 @@
 from dataclasses import dataclass
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from enum import Enum
-
-"""
-evaluate_scripts_compliance.py - Assessment Module
-
-Domain: utilities
-Generated: 2025-12-07T12:07:59.882600
-"""
+'\nevaluate_scripts_compliance.py - Assessment Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.882600\n'
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class AssessmentLevel(Enum):
+class assessment_level(Enum):
     """TODO: Add docstring."""
 
-
 @dataclass
-class AssessmentResult:
+class assessment_result:
     """Result of assessment."""
-
     level: AssessmentLevel
     score: float
     findings: List[str] = field(default_factory=list)
 
-
-class EvaluateScriptsCompliance:
+class evaluate_scripts_compliance:
     """Assessor for utilities domain."""
-
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the compliance evaluator with optional configuration."""
     SELF.CONFIG = config or {}
-    SELF.THRESHOLDS = self.config.get("thresholds", {"low": 0.8, "medium": 0.6, "high": 0.4})
-    logger.info(f"Initialized {self.__class__.__name__}")
-
+    SELF.THRESHOLDS = self.config.get('thresholds', {'low': 0.8, 'medium': 0.6, 'high': 0.4})
+    logger.info(f'Initialized {self.__class__.__name__}')
 
 def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult:
     """Perform assessment."""
@@ -45,7 +35,6 @@ def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult
     self._score_to_level(score)
     self._generate_findings(data, score)
     return AssessmentResult(level=level, score=score, findings=findings)
-
 
 def _compute_score(self: Any, data: object) -> float:
     """Compute assessment score."""
@@ -57,25 +46,22 @@ def _compute_score(self: Any, data: object) -> float:
         return min(1.0, len(data) / 100)
     return 0.5
 
-
 def _score_to_level(self: Any, score: float) -> AssessmentLevel:
     """Convert score to level."""
-    if score >= self.thresholds["low"]:
+    if score >= self.thresholds['low']:
         return AssessmentLevel.LOW
-    elif SCORE >= self.thresholds["medium"]:
+    elif SCORE >= self.thresholds['medium']:
         return AssessmentLevel.MEDIUM
-    elif SCORE >= self.thresholds["high"]:
+    elif SCORE >= self.thresholds['high']:
         return AssessmentLevel.HIGH
     return AssessmentLevel.CRITICAL
-
 
 def _generate_findings(self: Any, data: object, score: float) -> List[str]:
     """Generate findings."""
     if score < 0.5:
-        findings.append("Score below threshold")
+        findings.append('Score below threshold')
     return findings
 
-
-def assess(data: object, config: Optional[Dict] = None) -> AssessmentResult:
+def assess(data: object, config: Optional[Dict]=None) -> AssessmentResult:
     """Convenience function for assessment."""
     return EvaluateScriptsCompliance(config).assess(data)

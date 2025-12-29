@@ -1,19 +1,16 @@
-# Sovereign BM25 Keyword Store
-# Territory: agentic_core/semantic_memory/store
-# Canon Key 9 - Sparse keyword retrieval (BM25)
-# Requires: pip install rank_bm25
-
 from rank_bm25 import BM25Okapi
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from typing import List, Dict, Optional
 import json
 from pathlib import Path
 
-
-class BM25Store:
+class bm25_store:
     """In-memory BM25 index for fast keyword retrieval."""
 
     def __init__(self):
-        self.documents: List[Dict] = []  # {"id": str, "text": str, "metadata": dict}
+        self.documents: List[Dict] = []
         self.bm25: Optional[BM25Okapi] = None
         self._build_index()
 
@@ -26,42 +23,25 @@ class BM25Store:
         if not self.documents:
             self.bm25 = None
             return
-        tokenized = [doc["text"].lower().split() for doc in self.documents]
+        tokenized = [doc['text'].lower().split() for doc in self.documents]
         self.bm25 = BM25Okapi(tokenized)
 
-    def query(self, query: str, top_k: int = 5) -> List[Dict]:
+    def query(self, query: str, top_k: int=5) -> List[Dict]:
         """BM25 keyword search."""
         if not self.bm25 or not self.documents:
             return []
-
-        tokenized_query = query.lower().split()
-        scores = self.bm25.get_scores(tokenized_query)
-
-        # Get top_k with scores
-        ranked = sorted(
-            enumerate(scores),
-            key=lambda x: x[1],
-            reverse=True
-        )[:top_k]
-
-        results = []
+        tokenized_query: Any = query.lower().split()
+        scores: Any = self.bm25.get_scores(tokenized_query)
+        ranked: Any = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)[:top_k]
+        results: Any = []
         for idx, score in ranked:
             if score == 0:
                 continue
-            doc = self.documents[idx]
-            results.append({
-                "source": "bm25",
-                "content": doc["text"],
-                "score": float(score),
-                "id": doc["id"],
-                "metadata": doc.get("metadata", {})
-            })
-
+            doc: Any = self.documents[idx]
+            results.append({'source': 'bm25', 'content': doc['text'], 'score': float(score), 'id': doc['id'], 'metadata': doc.get('metadata', {})})
         return results
-
-
-# Global singleton
-bm25_store = BM25Store()
+bm25_store: Any = BM25Store()
 
 def get_bm25_store() -> BM25Store:
+    """Brief description of functionality and purpose."""
     return bm25_store

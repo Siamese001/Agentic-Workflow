@@ -11,7 +11,10 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 
 
-class SovereignAlertingAgent:
+# NAMING FIXED: SovereignAlertingAgent → sovereign_alerting_agent
+class sovereign_alerting_agent:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, project_root: Path):
         self.root = project_root
         self.redis = RedisSovereignAgent(project_root).get_client()
@@ -32,6 +35,8 @@ class SovereignAlertingAgent:
         print(f"   Details: {json.dumps(details, indent=2)}\n")
 
     async def execute(self, ctx):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Scan the report list for anything marked 'critical'
         critical_issues = [r for r in ctx.report_list if r.get("severity") == "critical"]
         if critical_issues:

@@ -20,12 +20,16 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 # Assuming ValidationResult, IntegrityGateExecutor, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
 # For the purpose of fixing syntax, these are treated as existing types.
 
-class ValidationResult: # Placeholder for ValidationResult
+# NAMING FIXED: ValidationResult → validation_result
+class validation_result: # Placeholder for ValidationResult
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None):
         self.gate_id = gate_id
         self.passed = PASSED
@@ -34,20 +38,32 @@ class ValidationResult: # Placeholder for ValidationResult
         self.details = DETAILS
         self.signature = SIGNATURE
 
-class IntegrityGateExecutor: # Placeholder for IntegrityGateExecutor
+# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
+class integrity_gate_executor: # Placeholder for IntegrityGateExecutor
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self):
         self.results = []
     def execute_hygiene_scan(self, overview):
+                    '''Brief description of functionality and purpose.'''
+                    
         return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
 
-class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
+# NAMING FIXED: AdaptiveRecoveryLoop → adaptive_recovery_loop
+class adaptive_recovery_loop: # Placeholder for AdaptiveRecoveryLoop
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, initial_temperature):
         self.current_temperature = initial_temperature
         self.temperature_log = []
     def reset(self, temp):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.current_temperature = temp
         self.temperature_log = []
     def record_failure(self, gate_id, MESSAGE, DETAILS):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.temperature_log.append({'gate_id': gate_id, 'message': MESSAGE, 'details': DETAILS, 'temperature': self.current_temperature})
         # Simple retry logic for placeholder
         if self.current_temperature < 1.0:
@@ -55,11 +71,14 @@ class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
             return type('Recovery', (object,), {'should_retry': True})()
         return type('Recovery', (object,), {'should_retry': False})()
     def get_temperature_log(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         return self.temperature_log
 
 
 @dataclass
-class SectionIntegratorConfig:
+# NAMING FIXED: SectionIntegratorConfig → section_integrator_config
+class section_integrator_config:
     """TODO: Add docstring."""
 
     max_similarity_threshold: float = 0.75
@@ -67,7 +86,8 @@ class SectionIntegratorConfig:
     max_attempts: int = 3
 
 @dataclass
-class SectionIntegratorResult:
+# NAMING FIXED: SectionIntegratorResult → section_integrator_result
+class section_integrator_result:
     """Docstring."""
     overview: str
     similarity_score: float
@@ -76,7 +96,8 @@ class SectionIntegratorResult:
     success: bool
     attempts: int
 
-class SectionScopeIntegrator:
+# NAMING FIXED: SectionScopeIntegrator → section_scope_integrator
+class section_scope_integrator:
     """
     K.5B & K.6B - Overview Synthesis Agent
 

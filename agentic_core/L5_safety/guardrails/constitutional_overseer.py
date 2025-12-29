@@ -1,8 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict
 
 
-class ConstitutionalOverseer:
+# NAMING FIXED: ConstitutionalOverseer → constitutional_overseer
+class constitutional_overseer:
     """
     L5 Safety: The Ethical Guardrail.
     Verifies that the final output aligns with the system's constitution.

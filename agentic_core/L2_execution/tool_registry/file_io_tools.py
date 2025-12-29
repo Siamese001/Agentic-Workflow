@@ -6,16 +6,13 @@ Tool ID Prefix: ACT-002
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
-
 try:
     import PyPDF2
 except ImportError:
-    PyPDF2 = None
+    PyPDF2: Any = None
+logger: Any = logging.getLogger('ActionRegistry.FileIO')
 
-logger = logging.getLogger("ActionRegistry.FileIO")
-
-
-class FileIO:
+class file_io:
     """
     Handles file reading and saving operations.
     Tool ID Prefix: ACT-002
@@ -35,7 +32,7 @@ class FileIO:
             str: The extracted text content from the PDF.
         """
         if not PyPDF2:
-            return "Error: PyPDF2 module not installed. Cannot read PDF files."
+            return 'Error: PyPDF2 module not installed. Cannot read PDF files.'
         try:
             with open(file_path, 'rb') as f:
                 reader = PyPDF2.PdfReader(f)
@@ -45,7 +42,7 @@ class FileIO:
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
         except Exception as e:
-            return f"Read Error (PDF Unexpected): {e}"
+            return f'Read Error (PDF Unexpected): {e}'
 
     def _extract_pdf_pages_text(self, reader, file_path: str) -> str:
         """
@@ -60,10 +57,8 @@ class FileIO:
         """
         if not reader.pages:
             return f"Warning: PDF file '{file_path}' has no pages or content."
-        extracted_texts = [
-            page.extract_text() for page in reader.pages if page.extract_text()
-        ]
-        return "\n".join(extracted_texts)
+        extracted_texts = [page.extract_text() for page in reader.pages if page.extract_text()]
+        return '\n'.join(extracted_texts)
 
     def _read_text_file(self, file_path: str) -> str:
         """
@@ -83,7 +78,7 @@ class FileIO:
         except UnicodeDecodeError:
             return f"Read Error: Could not decode file '{file_path}' with utf-8. Try a different encoding."
         except Exception as e:
-            return f"Read Error (Text Unexpected): {e}"
+            return f'Read Error (Text Unexpected): {e}'
 
     def read_file(self, file_path: str) -> str:
         """
@@ -99,7 +94,6 @@ class FileIO:
         logger.info(f"📖 Reading file: '{file_path}'")
         if not os.path.exists(file_path):
             return f"Read Error: File not found at '{file_path}'."
-
         if file_path.endswith('.pdf'):
             return self._read_pdf_file(file_path)
         else:
@@ -122,11 +116,9 @@ class FileIO:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            return f"[OK] File saved successfully: {file_path}"
+            return f'[OK] File saved successfully: {file_path}'
         except IOError as e:
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
         except Exception as e:
-            return f"Save Error (Unexpected): {e}"
-
-
+            return f'Save Error (Unexpected): {e}'
 __all__ = ['FileIO']

@@ -9,40 +9,38 @@ import logging
 from typing import Dict, Any, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+logger: Any = logging.getLogger('L2.Playwright')
 
-logger = logging.getLogger("L2.Playwright")
-
-
-class SovereignPlaywrightMCPClient:
+class sovereign_playwright_mcp_client:
     """
     Playwright MCP Client for visual and behavioral validation.
     
     This client doesn't just "browse"; it validates.
     Used by L6 Observability to ensure external outputs meet Sovereign Canon.
     """
-    
+
     def __init__(self):
         """Initialize Playwright client with sovereign routing."""
-        self.router = SovereignMCPRouter(role="browser_validation")
+        self.router = SovereignMCPRouter(role='browser_validation')
         self.initialized = False
-        logger.info("[L2 PLAYWRIGHT] Client initialized")
-    
-    async def initialize(self):
+        logger.info('[L2 PLAYWRIGHT] Client initialized')
+
+    async def initialize(self) -> Any:
         """Async initialization of MCP router."""
         try:
             await self.router.initialize()
             self.initialized = True
-            logger.info("[L2 PLAYWRIGHT] Router initialized successfully")
+            logger.info('[L2 PLAYWRIGHT] Router initialized successfully')
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Initialization failed: {e}")
+            logger.error(f'[L2 PLAYWRIGHT] Initialization failed: {e}')
             raise
-    
+
     async def _ensure_initialized(self):
         """Ensure MCP client is initialized."""
         if not self.initialized:
             await self.initialize()
-    
-    async def navigate_and_capture(self, url: str, wait_until: str = "networkidle") -> Dict[str, Any]:
+
+    async def navigate_and_capture(self, url: str, wait_until: str='networkidle') -> Dict[str, Any]:
         """
         Navigates to a URL, waits for load, and returns a structural/visual snapshot.
         
@@ -54,77 +52,28 @@ class SovereignPlaywrightMCPClient:
             Dict with status, screenshot data, and content
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"🌐 [L2 PLAYWRIGHT] Validating URL: {url}")
-        
+        logger.info(f'🌐 [L2 PLAYWRIGHT] Validating URL: {url}')
         try:
-            # 1. Open Page & Navigate
-            page_result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_navigate",
-                args={"url": url}
-            )
-            
-            # 2. Wait for page to stabilize
-            if wait_until == "networkidle":
-                await self.router.manager.call_tool(
-                    tool_name="mcp6_browser_wait_for",
-                    args={"time": 2}  # Wait 2 seconds for network idle
-                )
-            
-            # 3. Capture Screenshot for L6 Audit
-            screenshot = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_take_screenshot",
-                args={
-                    "fullPage": config.PLAYWRIGHT_SCREENSHOT_ON_FAILURE,
-                    "type": "png"
-                }
-            )
-            
-            # 4. Get page snapshot for structural analysis
-            snapshot = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_snapshot",
-                args={}
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Successfully captured: {url}")
-            
-            return {
-                "status": "success",
-                "url": url,
-                "screenshot_data": screenshot.get("data") if isinstance(screenshot, dict) else None,
-                "content": snapshot.get("content") if isinstance(snapshot, dict) else str(snapshot),
-                "page_result": page_result
-            }
-            
+            page_result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_navigate', args={'url': url})
+            if wait_until == 'networkidle':
+                await self.router.manager.call_tool(tool_name='mcp6_browser_wait_for', args={'time': 2})
+            screenshot: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_take_screenshot', args={'fullPage': config.PLAYWRIGHT_SCREENSHOT_ON_FAILURE, 'type': 'png'})
+            snapshot: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_snapshot', args={})
+            logger.info(f'✅ [L2 PLAYWRIGHT] Successfully captured: {url}')
+            return {'status': 'success', 'url': url, 'screenshot_data': screenshot.get('data') if isinstance(screenshot, dict) else None, 'content': snapshot.get('content') if isinstance(snapshot, dict) else str(snapshot), 'page_result': page_result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Navigation failed for {url}: {e}")
-            
-            # Capture failure screenshot if enabled
+            logger.error(f'[L2 PLAYWRIGHT] Navigation failed for {url}: {e}')
             if config.PLAYWRIGHT_SCREENSHOT_ON_FAILURE:
                 try:
-                    failure_screenshot = await self.router.manager.call_tool(
-                        tool_name="mcp6_browser_take_screenshot",
-                        args={"type": "png"}
-                    )
-                    return {
-                        "status": "error",
-                        "url": url,
-                        "error": str(e),
-                        "failure_screenshot": failure_screenshot.get("data")
-                    }
+                    failure_screenshot: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_take_screenshot', args={'type': 'png'})
+                    return {'status': 'error', 'url': url, 'error': str(e), 'failure_screenshot': failure_screenshot.get('data')}
                 except:
                     pass
-            
-            return {
-                "status": "error",
-                "url": url,
-                "error": str(e)
-            }
-    
-    async def click_element(self, selector: str, element_description: Optional[str] = None) -> Dict[str, Any]:
+            return {'status': 'error', 'url': url, 'error': str(e)}
+
+    async def click_element(self, selector: str, element_description: Optional[str]=None) -> Dict[str, Any]:
         """
         Execute a remote click via MCP.
         
@@ -136,29 +85,18 @@ class SovereignPlaywrightMCPClient:
             Click result
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"🖱️ [L2 PLAYWRIGHT] Clicking element: {selector}")
-        
+        logger.info(f'🖱️ [L2 PLAYWRIGHT] Clicking element: {selector}')
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_click",
-                args={
-                    "ref": selector,
-                    "element": element_description or f"Element: {selector}"
-                }
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Click successful: {selector}")
-            return {"status": "success", "selector": selector, "result": result}
-            
+            result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_click', args={'ref': selector, 'element': element_description or f'Element: {selector}'})
+            logger.info(f'✅ [L2 PLAYWRIGHT] Click successful: {selector}')
+            return {'status': 'success', 'selector': selector, 'result': result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Click failed for {selector}: {e}")
-            return {"status": "error", "selector": selector, "error": str(e)}
-    
-    async def type_text(self, selector: str, text: str, submit: bool = False) -> Dict[str, Any]:
+            logger.error(f'[L2 PLAYWRIGHT] Click failed for {selector}: {e}')
+            return {'status': 'error', 'selector': selector, 'error': str(e)}
+
+    async def type_text(self, selector: str, text: str, submit: bool=False) -> Dict[str, Any]:
         """
         Type text into an element.
         
@@ -171,31 +109,18 @@ class SovereignPlaywrightMCPClient:
             Type result
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"⌨️ [L2 PLAYWRIGHT] Typing into: {selector}")
-        
+        logger.info(f'⌨️ [L2 PLAYWRIGHT] Typing into: {selector}')
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_type",
-                args={
-                    "ref": selector,
-                    "text": text,
-                    "submit": submit,
-                    "element": f"Input field: {selector}"
-                }
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Type successful: {selector}")
-            return {"status": "success", "selector": selector, "result": result}
-            
+            result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_type', args={'ref': selector, 'text': text, 'submit': submit, 'element': f'Input field: {selector}'})
+            logger.info(f'✅ [L2 PLAYWRIGHT] Type successful: {selector}')
+            return {'status': 'success', 'selector': selector, 'result': result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Type failed for {selector}: {e}")
-            return {"status": "error", "selector": selector, "error": str(e)}
-    
-    async def take_screenshot(self, filename: Optional[str] = None, full_page: bool = False) -> Dict[str, Any]:
+            logger.error(f'[L2 PLAYWRIGHT] Type failed for {selector}: {e}')
+            return {'status': 'error', 'selector': selector, 'error': str(e)}
+
+    async def take_screenshot(self, filename: Optional[str]=None, full_page: bool=False) -> Dict[str, Any]:
         """
         Take a screenshot of the current page.
         
@@ -207,32 +132,20 @@ class SovereignPlaywrightMCPClient:
             Screenshot data
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"📸 [L2 PLAYWRIGHT] Taking screenshot")
-        
+        logger.info(f'📸 [L2 PLAYWRIGHT] Taking screenshot')
         try:
-            args = {
-                "type": "png",
-                "fullPage": full_page
-            }
+            args: Any = {'type': 'png', 'fullPage': full_page}
             if filename:
-                args["filename"] = filename
-            
-            result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_take_screenshot",
-                args=args
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Screenshot captured")
-            return {"status": "success", "data": result}
-            
+                args['filename'] = filename
+            result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_take_screenshot', args=args)
+            logger.info(f'✅ [L2 PLAYWRIGHT] Screenshot captured')
+            return {'status': 'success', 'data': result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Screenshot failed: {e}")
-            return {"status": "error", "error": str(e)}
-    
+            logger.error(f'[L2 PLAYWRIGHT] Screenshot failed: {e}')
+            return {'status': 'error', 'error': str(e)}
+
     async def get_page_snapshot(self) -> Dict[str, Any]:
         """
         Get accessibility snapshot of current page.
@@ -242,25 +155,17 @@ class SovereignPlaywrightMCPClient:
             Page snapshot with accessibility tree
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"📋 [L2 PLAYWRIGHT] Getting page snapshot")
-        
+        logger.info(f'📋 [L2 PLAYWRIGHT] Getting page snapshot')
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_snapshot",
-                args={}
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Snapshot captured")
-            return {"status": "success", "snapshot": result}
-            
+            result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_snapshot', args={})
+            logger.info(f'✅ [L2 PLAYWRIGHT] Snapshot captured')
+            return {'status': 'success', 'snapshot': result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Snapshot failed: {e}")
-            return {"status": "error", "error": str(e)}
-    
+            logger.error(f'[L2 PLAYWRIGHT] Snapshot failed: {e}')
+            return {'status': 'error', 'error': str(e)}
+
     async def close_browser(self) -> Dict[str, Any]:
         """
         Close the browser session.
@@ -269,24 +174,17 @@ class SovereignPlaywrightMCPClient:
             Close result
         """
         if not config.PLAYWRIGHT_MCP_ENABLED:
-            return {"status": "error", "message": "Playwright MCP disabled"}
-        
+            return {'status': 'error', 'message': 'Playwright MCP disabled'}
         await self._ensure_initialized()
-        
-        logger.info(f"🔒 [L2 PLAYWRIGHT] Closing browser")
-        
+        logger.info(f'🔒 [L2 PLAYWRIGHT] Closing browser')
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="mcp6_browser_close",
-                args={}
-            )
-            
-            logger.info(f"✅ [L2 PLAYWRIGHT] Browser closed")
-            return {"status": "success", "result": result}
-            
+            result: Any = await self.router.manager.call_tool(tool_name='mcp6_browser_close', args={})
+            logger.info(f'✅ [L2 PLAYWRIGHT] Browser closed')
+            return {'status': 'success', 'result': result}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Close failed: {e}")
-            return {"status": "error", "error": str(e)}
+            logger.error(f'[L2 PLAYWRIGHT] Close failed: {e}')
+            return {'status': 'error', 'error': str(e)}
+
     async def health_check(self) -> Dict[str, Any]:
         """
         Perform health check on Playwright connection.
@@ -295,33 +193,15 @@ class SovereignPlaywrightMCPClient:
             Health status
         """
         try:
-            # Try a simple navigation to test connectivity
-            result = await self.navigate_and_capture("about:blank")
-            
-            if result.get("status") == "success":
-                return {
-                    "status": "healthy",
-                    "browser_type": config.PLAYWRIGHT_BROWSER_TYPE,
-                    "headless": config.PLAYWRIGHT_HEADLESS,
-                    "initialized": self.initialized
-                }
+            result: Any = await self.navigate_and_capture('about:blank')
+            if result.get('status') == 'success':
+                return {'status': 'healthy', 'browser_type': config.PLAYWRIGHT_BROWSER_TYPE, 'headless': config.PLAYWRIGHT_HEADLESS, 'initialized': self.initialized}
             else:
-                return {
-                    "status": "unhealthy",
-                    "error": result.get("error", "Unknown error")
-                }
-                
+                return {'status': 'unhealthy', 'error': result.get('error', 'Unknown error')}
         except Exception as e:
-            logger.error(f"[L2 PLAYWRIGHT] Health check failed: {e}")
-            return {
-                "status": "unhealthy",
-                "error": str(e)
-            }
-
-
-# Singleton instance
+            logger.error(f'[L2 PLAYWRIGHT] Health check failed: {e}')
+            return {'status': 'unhealthy', 'error': str(e)}
 _playwright_client: Optional[SovereignPlaywrightMCPClient] = None
-
 
 def get_playwright_client() -> SovereignPlaywrightMCPClient:
     """Get or create the global Playwright client."""

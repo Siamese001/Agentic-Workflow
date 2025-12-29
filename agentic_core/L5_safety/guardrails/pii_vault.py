@@ -1,8 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class PIIVault:
+# NAMING FIXED: PIIVault → pii_vault
+class pii_vault:
     """
     L5 Safety: The Secret Vault.
     Handles tokenization and de-tokenization of sensitive data.

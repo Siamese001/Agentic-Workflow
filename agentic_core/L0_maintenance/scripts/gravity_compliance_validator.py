@@ -10,7 +10,8 @@ from pathlib import Path
 
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
 # Matches structure_blueprint.py subfolders order for agentic_core
-GRAVITY_LAYERS = [
+# NAMING FIXED: GRAVITY_LAYERS → gravity_layers
+gravity_layers = [
     "L0_maintenance",     # Bedrock
     "config",             # Blueprints
     "utils",              # Core helpers
@@ -25,7 +26,10 @@ GRAVITY_LAYERS = [
     "knowledge"           # RAG assets
 ]
 
-class GravityComplianceValidator:
+# NAMING FIXED: GravityComplianceValidator → gravity_compliance_validator
+class gravity_compliance_validator:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, project_root: Path):
         self.root = project_root.resolve()
         self.violations = []
@@ -38,6 +42,8 @@ class GravityComplianceValidator:
         return -1  # Unknown = no restriction
 
     def scan_file(self, file_path: Path):
+                    '''Brief description of functionality and purpose.'''
+                    
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -64,6 +70,8 @@ class GravityComplianceValidator:
                 })
 
     def run(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
             if "agentic_core" in py_file.parts:

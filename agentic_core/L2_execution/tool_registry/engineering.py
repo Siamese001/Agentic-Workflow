@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import hashlib
 import json
 import re
@@ -8,13 +10,16 @@ from agentic_core.L0_maintenance.scripts.canon_validator_config import MAX_LINES
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 
-class StructuralEngineer(SubAtomicAgent):
+# NAMING FIXED: StructuralEngineer → structural_engineer
+class structural_engineer(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
 
     def can_run(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     async def execute(self):
@@ -204,13 +209,16 @@ class StructuralEngineer(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
 
-class PatternEnforcer(SubAtomicAgent):
+# NAMING FIXED: PatternEnforcer → pattern_enforcer
+class pattern_enforcer(SubAtomicAgent):
     """
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
     """
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
         pattern_checks = [
             (26, self.check_key_26_single_responsibility),

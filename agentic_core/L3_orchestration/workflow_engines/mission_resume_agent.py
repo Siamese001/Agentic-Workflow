@@ -9,12 +9,17 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 
 
-class MissionResumeAgent:
+# NAMING FIXED: MissionResumeAgent → mission_resume_agent
+class mission_resume_agent:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, project_root: Path, mission_id: str):
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.id = mission_id
 
     def get_resume_point(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Reads l3_mission:id:steps and completed_steps
         return None
 

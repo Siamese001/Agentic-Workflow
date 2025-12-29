@@ -25,7 +25,8 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 
-class ModelTier(str, Enum):
+# NAMING FIXED: ModelTier → model_tier
+class model_tier(str, Enum):
     """Model tiers based on capability and cost."""
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
@@ -33,7 +34,8 @@ class ModelTier(str, Enum):
 
 
 @dataclass
-class RoutingDecision:
+# NAMING FIXED: RoutingDecision → routing_decision
+class routing_decision:
     """Model routing decision with rationale."""
     model_tier: ModelTier
     thinking_budget: int
@@ -44,7 +46,8 @@ class RoutingDecision:
 
 
 @dataclass
-class ComplexityProfile:
+# NAMING FIXED: ComplexityProfile → complexity_profile
+class complexity_profile:
     """Comprehensive complexity profile for routing."""
     file_path: str
     total_lines: int
@@ -57,7 +60,8 @@ class ComplexityProfile:
     complexity_score: float  # 0-100
 
 
-class DynamicModelRouter(SubAtomicAgent):
+# NAMING FIXED: DynamicModelRouter → dynamic_model_router
+class dynamic_model_router(SubAtomicAgent):
     """
     The Throttler - Dynamic Model Router
     
@@ -211,6 +215,8 @@ class DynamicModelRouter(SubAtomicAgent):
         max_depth = 0
         
         def visit(node, depth=0):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal max_depth
             max_depth = max(max_depth, depth)
             

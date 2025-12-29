@@ -17,7 +17,8 @@ import pytest
 # (Mirrors canon_validator_agentic.py without heavy dependencies)
 # ==============================================================================
 
-class MockValidationContext:
+# NAMING FIXED: MockValidationContext → mock_validation_context
+class mock_validation_context:
     """Lightweight mock of ValidationContext for PBT testing."""
 
     def __init__(self):
@@ -49,7 +50,8 @@ class MockValidationContext:
         self.results[key] = {"passed": passed, "details": details}
 
 
-class TestPilot:
+# NAMING FIXED: TestPilot → test_pilot
+class test_pilot:
     """
     ROLE: Integration & Property Guardian.
     (Standalone implementation for testing)
@@ -61,6 +63,8 @@ class TestPilot:
         self.scheduler = None
 
     def set_scheduler(self, scheduler):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.scheduler = scheduler
         self.ctx._scheduler_ref = scheduler
 
@@ -177,7 +181,8 @@ def cleanup_test_files():
 # L5 PBT TESTS - Generation Trigger
 # ==============================================================================
 
-class TestPBTGenerationTrigger:
+# NAMING FIXED: TestPBTGenerationTrigger → test_pbt_generation_trigger
+class test_pbt_generation_trigger:
     """Verifies TestPilot triggers property generation for modified files."""
 
     @pytest.mark.skip(reason="PBT generation trigger - file size check prevents resilient_mutation call")
@@ -247,7 +252,8 @@ class TestPBTGenerationTrigger:
 # L5 PBT TESTS - Failure Reporting
 # ==============================================================================
 
-class TestPBTFailureReporting:
+# NAMING FIXED: TestPBTFailureReporting → test_pbt_failure_reporting
+class test_pbt_failure_reporting:
     """Verifies that a hypothesis failure updates the blackboard."""
 
     @pytest.mark.asyncio
@@ -310,7 +316,8 @@ class TestPBTFailureReporting:
 # L5 PBT TESTS - ValidationContext Integration
 # ==============================================================================
 
-class TestValidationContextPBT:
+# NAMING FIXED: TestValidationContextPBT → test_validation_context_pbt
+class test_validation_context_pbt:
     """Tests ValidationContext property failure reporting."""
 
     def test_report_property_failure_adds_signal(self):
@@ -346,7 +353,8 @@ class TestValidationContextPBT:
 # L5 PBT TESTS - Edge Cases
 # ==============================================================================
 
-class TestPBTEdgeCases:
+# NAMING FIXED: TestPBTEdgeCases → test_pbt_edge_cases
+class test_pbt_edge_cases:
     """Tests edge cases in property-based testing."""
 
     @pytest.mark.asyncio

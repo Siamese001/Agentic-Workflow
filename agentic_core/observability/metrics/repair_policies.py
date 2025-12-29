@@ -1,7 +1,8 @@
 """AIS repair / mitigation policies.
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """
@@ -11,7 +12,8 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-class RepairAction:
+# NAMING FIXED: RepairAction → repair_action
+class repair_action:
     """Single AIS repair action recommendation."""
 
     _kind: str  # e.g. "retry", "downgrade", "replan", "escalate"

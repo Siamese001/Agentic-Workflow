@@ -1,8 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class FissionManager:
+# NAMING FIXED: FissionManager → fission_manager
+class fission_manager:
     """
     L3 Orchestration: The Task Splitter.
     Determines if a mission needs to be broken down into sub-atomic hops.

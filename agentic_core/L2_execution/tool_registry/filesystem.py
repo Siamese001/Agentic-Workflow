@@ -21,14 +21,19 @@ from agentic_core.L2_execution.tool_registry.definitions import (
 
 
 # Define a Protocol for the Blackboard interface required by this module
-class BlackboardLeaseVerifier(Protocol):
+# NAMING FIXED: BlackboardLeaseVerifier → blackboard_lease_verifier
+class blackboard_lease_verifier(Protocol):
     """
     Protocol defining the methods expected from a blackboard-like object
     for HealingLease verification and security event logging.
     """
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         ...
     def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: Dict[str, Any]) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         ...
 
 
@@ -50,11 +55,13 @@ EXCLUDED_DIRS: Set[str] = {
 }
 
 
-class SandboxViolationError(Exception):
+# NAMING FIXED: SandboxViolationError → sandbox_violation_error
+class sandbox_violation_error(Exception):
     """Raised when a file operation violates sandbox constraints."""
 
 
-class HealingLeaseError(Exception):
+# NAMING FIXED: HealingLeaseError → healing_lease_error
+class healing_lease_error(Exception):
     """Raised when an agent attempts to write without holding the HealingLease."""
 
 
@@ -103,7 +110,8 @@ def validate_sandbox(path: str) -> Path:
     return resolved
 
 
-class PreservationViolationError(Exception):
+# NAMING FIXED: PreservationViolationError → preservation_violation_error
+class preservation_violation_error(Exception):
     """Raised when a write operation would delete too much content."""
 
 
@@ -114,6 +122,8 @@ def require_healing_lease(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
+                    '''Brief description of functionality and purpose.'''
+                    
         blackboard = kwargs.get('blackboard')
         agent_id = kwargs.get('agent_id')
         file_path = kwargs.get('path') or (args[0].path if args else None)

@@ -13,7 +13,8 @@ from redis.connection import ConnectionPool
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 
-class RedisSovereignAgent:
+# NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
+class redis_sovereign_agent:
     """
     Sovereign Redis controller — hardened, monitored, eternal.
     """
@@ -63,6 +64,8 @@ class RedisSovereignAgent:
             raise ConnectionError(f"[L6 CRITICAL] Redis gateway failed: {e}")
 
     def get_client(self) -> redis.Redis:
+                    '''Brief description of functionality and purpose.'''
+                    
         return self.client
 
     def invalidate_file_cache(self, file_path: Path):
@@ -97,6 +100,8 @@ class RedisSovereignAgent:
             print(f"   [!] Cache invalidation failed for {file_path}: {e}") 
 
     async def execute(self, ctx=None):
+                    '''Brief description of functionality and purpose.'''
+                    
         info = self.client.info()
         mem = info.get("used_memory_human", "0B")
         print(f"   [OK] RedisSovereignAgent: Healthy. Memory: {mem}")

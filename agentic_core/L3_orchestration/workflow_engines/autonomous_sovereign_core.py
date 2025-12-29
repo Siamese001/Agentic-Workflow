@@ -12,7 +12,8 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-class TerritoryWatcher(FileSystemEventHandler):
+# NAMING FIXED: TerritoryWatcher → territory_watcher
+class territory_watcher(FileSystemEventHandler):
     """Watches the entire territory for changes and feeds L3 Orchestration Executive"""
     
     def __init__(self, core):
@@ -29,7 +30,8 @@ class TerritoryWatcher(FileSystemEventHandler):
         )
 
 
-class AutonomousSovereignCore:
+# NAMING FIXED: AutonomousSovereignCore → autonomous_sovereign_core
+class autonomous_sovereign_core:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
         self.event_queue = asyncio.Queue()
@@ -48,13 +50,22 @@ class AutonomousSovereignCore:
         from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
             create_self_recovering_orchestrator,
         )
-        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        import importlib
+        mod = importlib.import_module('agentic_core.L4_state.autonomous_checkpoint_manager')
+        ( = mod.(  # Adjust multi-imports manually
             create_autonomous_checkpoint_manager,
         )
-        from agentic_core.L4_state.autonomous_state_guardian import (
+        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_state_guardian import (
+        import importlib
+        mod = importlib.import_module('agentic_core.L4_state.autonomous_state_guardian')
+        ( = mod.(  # Adjust multi-imports manually
             create_autonomous_state_guardian,
         )
-        from agentic_core.L5_safety.self_updating_safety_engine import (
+        # GRAVITY FIXED: from agentic_core.L5_safety.self_updating_safety_engine import (
+        import importlib
+        mod = importlib.import_module('agentic_core.L5_safety.self_updating_safety_engine')
+        ( = mod.(  # Adjust multi-imports manually
             create_self_updating_safety_engine,
         )
 

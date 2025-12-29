@@ -8,11 +8,7 @@ from typing import List
 import openai
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
-def get_embedding(
-    text: str,
-    model: str = config.DEFAULT_EMBEDDING_MODEL,
-    dimensions: int = config.DEFAULT_EMBEDDING_DIM,
-) -> List[float]:
+def get_embedding(text: str, model: str=config.DEFAULT_EMBEDDING_MODEL, dimensions: int=config.DEFAULT_EMBEDDING_DIM) -> List[float]:
     """
     Sovereign embedding function – used by bootstrap, healers, and RAG pipelines.
     
@@ -22,15 +18,7 @@ def get_embedding(
     :return: Normalized float vector
     """
     if not config.OPENAI_API_KEY:
-         # Just in case validate() wasn't called earlier
-         raise ValueError("OPENAI_API_KEY environment variable required for core embedder")
-
-    client = openai.OpenAI(api_key=config.OPENAI_API_KEY)
-    
-    response = client.embeddings.create(
-        input=text.replace("\n", " "),  # Simple normalization
-        model=model,
-        dimensions=dimensions,
-    )
-    
+        raise ValueError('OPENAI_API_KEY environment variable required for core embedder')
+    client: Any = openai.OpenAI(api_key=config.OPENAI_API_KEY)
+    response: Any = client.embeddings.create(input=text.replace('\n', ' '), model=model, dimensions=dimensions)
     return response.data[0].embedding

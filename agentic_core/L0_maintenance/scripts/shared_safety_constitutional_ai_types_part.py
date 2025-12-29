@@ -8,20 +8,24 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class RuleType(Enum):
+# NAMING FIXED: RuleType → rule_type
+class rule_type(Enum):
     """Types of constitutional rules."""
 
 
-class RuleSeverity(Enum):
+# NAMING FIXED: RuleSeverity → rule_severity
+class rule_severity(Enum):
     """Severity levels for rule violations."""
 
 
-class ViolationType(Enum):
+# NAMING FIXED: ViolationType → violation_type
+class violation_type(Enum):
     """Types of constitutional violations."""
 
 
 @dataclass
-class ConstitutionalRule:
+# NAMING FIXED: ConstitutionalRule → constitutional_rule
+class constitutional_rule:
     """Individual constitutional rule."""
 
     _rule_id: str
@@ -35,7 +39,8 @@ class ConstitutionalRule:
 
 
 @dataclass
-class ViolationReport:
+# NAMING FIXED: ViolationReport → violation_report
+class violation_report:
     """Report of constitutional violation."""
 
     rule_id: str

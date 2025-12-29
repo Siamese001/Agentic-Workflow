@@ -1,12 +1,13 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class TruthKeeper:
+class truth_keeper:
     """
     Agent that ensures semantic consistency between docstrings and code.
 
@@ -24,7 +25,8 @@ class TruthKeeper:
             llm_client: LLM client for consistency checking
         """
         self.llm_client = llm_client
-        self.api_key = os.getenv("GOOGLE_API_KEY")
+        self.api_key = os.getenv('GOOGLE_API_KEY')
+
     async def check_file_consistency(self, file_path: str) -> Dict[str, Any]:
         """
         Check docstring consistency for all public functions in a file.
@@ -35,49 +37,26 @@ class TruthKeeper:
         Returns:
             Dictionary with consistency violations and fixes
         """
-        violations = []
-        fixes = []
-
-        # Skip test files
-        if "test" in file_path.lower() or file_path.endswith("_test.py"):
-            return {"violations": [], "fixes": [], "skipped": True}
-
+        violations: Any = []
+        fixes: Any = []
+        if 'test' in file_path.lower() or file_path.endswith('_test.py'):
+            return {'violations': [], 'fixes': [], 'skipped': True}
         try:
-            # Note: For high-performance async agents, consider aiofiles for non-blocking I/O
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-
-            tree = ast.parse(content)
-
-            # Check each function
+                content: Any = f.read()
+            tree: Any = ast.parse(content)
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
-                    result = await self._check_function_consistency(file_path, node, content)
-
-                    if result.get("violation"):
-                        violations.append(result["violation"])
-
-                    if result.get("fixed_docstring"):
-                        fixes.append({
-                            "function": node.name,
-                            "line": node.lineno,
-                            "old_docstring": result.get("old_docstring"),
-                            "new_docstring": result["fixed_docstring"]
-                        })
-
+                if isinstance(node, ast.FunctionDef) and (not node.name.startswith('_')):
+                    result: Any = await self._check_function_consistency(file_path, node, content)
+                    if result.get('violation'):
+                        violations.append(result['violation'])
+                    if result.get('fixed_docstring'):
+                        fixes.append({'function': node.name, 'line': node.lineno, 'old_docstring': result.get('old_docstring'), 'new_docstring': result['fixed_docstring']})
         except SyntaxError as e:
-            violations.append({
-                "type": "syntax",
-                "file": file_path,
-                "message": f"Syntax error: {e}"
-            })
+            violations.append({'type': 'syntax', 'file': file_path, 'message': f'Syntax error: {e}'})
         except Exception as e:
-            LOGGER.error(f"Error checking {file_path}: {e}")
-        return {
-            "violations": violations,
-            "fixes": fixes,
-            "file": file_path
-        }
+            LOGGER.error(f'Error checking {file_path}: {e}')
+        return {'violations': violations, 'fixes': fixes, 'file': file_path}
 
     async def _check_function_consistency(self, file_path: str, node: ast.FunctionDef, content: str) -> Dict[str, Any]:
         """
@@ -91,32 +70,10 @@ class TruthKeeper:
         Returns:
             Dictionary with violation info and potential fix
         """
-        # Extract function signature
         [arg.arg for arg in node.args.args]
-        docstring = ast.get_docstring(node) or ""
-
-        # Get function source
-        func_lines = content.split('\n')[node.lineno-1:node.end_lineno]
+        docstring = ast.get_docstring(node) or ''
+        func_lines = content.split('\n')[node.lineno - 1:node.end_lineno]
         func_code = '\n'.join(func_lines)
-
-        # Check if docstring exists
         if not docstring:
-            return {
-                "violation": {
-                    "type": "missing_docstring",
-                    "function": node.name,
-                    "line": node.lineno,
-                    "message": f"Function '{node.name}' missing docstring"
-                },
-                "fixed_docstring": None,
-                "old_docstring": None
-            }
-
-        # Async consistency check logic (placeholder for LLM integration via httpx)
-        # result = await self.llm_client.analyze(func_code, docstring)
-
-        return {
-            "violation": None,
-            "fixed_docstring": None,
-            "old_docstring": docstring
-        }
+            return {'violation': {'type': 'missing_docstring', 'function': node.name, 'line': node.lineno, 'message': f"Function '{node.name}' missing docstring"}, 'fixed_docstring': None, 'old_docstring': None}
+        return {'violation': None, 'fixed_docstring': None, 'old_docstring': docstring}

@@ -1,23 +1,23 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
 
-
-class DockerSandbox:
+class docker_sandbox:
     """
     L2 Execution: The Secure Sandbox.
     Executes generated code in an isolated, temporary environment.
     """
+
     def __init__(self, config: Dict[str, Any]):
         self.config = config
 
     def run_code(self, code: str) -> Dict[str, Any]:
         """Executes code and returns the result/stdout."""
-        logging.info("Sandbox: Spinning up isolated container for execution...")
-        
-        # Real implementation would use the 'docker' python library.
+        logging.info('Sandbox: Spinning up isolated container for execution...')
         try:
-            # SAFETY: Never actually run 'eval' on raw agent strings in production!
-            result = "Execution successful. Output: [SIMULATED_DATA]"
-            return {"status": "success", "output": result}
+            result: Any = 'Execution successful. Output: [SIMULATED_DATA]'
+            return {'status': 'success', 'output': result}
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {'status': 'error', 'message': str(e)}

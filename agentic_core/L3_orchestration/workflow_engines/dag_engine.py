@@ -7,28 +7,27 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, Set
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class TaskStatus(Enum):
+class task_status(Enum):
     """Status of a task in the DAG."""
-    PENDING = "pending"
-    READY = "ready"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    SKIPPED = "skipped"
+    PENDING: Any = 'pending'
+    READY: Any = 'ready'
+    RUNNING: Any = 'running'
+    COMPLETED: Any = 'completed'
+    FAILED: Any = 'failed'
+    SKIPPED: Any = 'skipped'
 
-class TaskType(Enum):
+class task_type(Enum):
     """Type of task in the DAG."""
-    ACTION = "action"
-    DECISION = "decision"
-    PARALLEL = "parallel"
-    SEQUENTIAL = "sequential"
-    CONDITIONAL = "conditional"
+    ACTION: Any = 'action'
+    DECISION: Any = 'decision'
+    PARALLEL: Any = 'parallel'
+    SEQUENTIAL: Any = 'sequential'
+    CONDITIONAL: Any = 'conditional'
 
 @dataclass
-class Task:
+class task:
     """Individual task in the DAG."""
     id: str
     name: str
@@ -50,25 +49,14 @@ class Task:
         Returns:
             True if all dependencies are met
         """
-        return all(dep in completed_tasks for dep in self.dependencies)
+        return all((dep in completed_tasks for dep in self.dependencies))
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "task_type": self.task_type.value,
-            "dependencies": self.dependencies,
-            "parameters": self.parameters,
-            "condition": self.condition,
-            "status": self.status.value,
-            "result": self.result,
-            "error": self.error,
-            "metadata": self.metadata,
-        }
+        return {'id': self.id, 'name': self.name, 'task_type': self.task_type.value, 'dependencies': self.dependencies, 'parameters': self.parameters, 'condition': self.condition, 'status': self.status.value, 'result': self.result, 'error': self.error, 'metadata': self.metadata}
 
 @dataclass
-class DAGExecutionResult:
+class dag_execution_result:
     """Result from DAG execution."""
     success: bool
     completed_tasks: List[str]
@@ -80,17 +68,9 @@ class DAGExecutionResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "success": self.success,
-            "completed_tasks": self.completed_tasks,
-            "failed_tasks": self.failed_tasks,
-            "skipped_tasks": self.skipped_tasks,
-            "task_results": self.task_results,
-            "execution_order": self.execution_order,
-            "metadata": self.metadata,
-        }
+        return {'success': self.success, 'completed_tasks': self.completed_tasks, 'failed_tasks': self.failed_tasks, 'skipped_tasks': self.skipped_tasks, 'task_results': self.task_results, 'execution_order': self.execution_order, 'metadata': self.metadata}
 
-class DAGEngine:
+class dag_engine:
     """Lightweight DAG engine for workflow execution.
 
     Features:
@@ -101,7 +81,7 @@ class DAGEngine:
     - Cycle detection
     """
 
-    def __init__(self, enable_logging: bool = True):
+    def __init__(self, enable_logging: bool=True):
         """Initialize DAG engine.
 
         Args:
@@ -118,19 +98,10 @@ class DAGEngine:
             task: Task to add
         """
         if task.id in self.tasks:
-            raise ValueError(f"Task {task.id} already exists")
-
+            raise ValueError(f'Task {task.id} already exists')
         self.tasks[task.id] = task
-
         if self.enable_logging:
-            LOGGER.debug(
-                "task_added",
-                extra={
-                    "task_id": task.id,
-                    "task_type": task.task_type.value,
-                    "dependencies": task.dependencies,
-                }
-            )
+            LOGGER.debug('task_added', extra={'task_id': task.id, 'task_type': task.task_type.value, 'dependencies': task.dependencies})
 
     def remove_task(self, task_id: str) -> None:
         """Remove a task from the DAG.
@@ -139,12 +110,11 @@ class DAGEngine:
             task_id: ID of task to remove
         """
         if task_id not in self.tasks:
-            raise ValueError(f"Task {task_id} not found")
-
+            raise ValueError(f'Task {task_id} not found')
         del self.tasks[task_id]
-
         if self.enable_logging:
-            LOGGER.debug("task_removed", extra={"task_id": task_id})
+            LOGGER.debug('task_removed', extra={'task_id': task_id})
+
     def validate_dag(self) -> List[str]:
         """Validate the DAG for cycles and missing dependencies.
 
@@ -152,14 +122,10 @@ class DAGEngine:
             List of validation errors (empty if valid)
         """
         errors: List[str] = []
-
-        # Check for missing dependencies
         for task_id, task in self.tasks.items():
             for dep in task.dependencies:
                 if dep not in self.tasks:
-                    errors.append(f"Task {task_id} depends on missing task {dep}")
-
-        # Check for cycles using DFS
+                    errors.append(f'Task {task_id} depends on missing task {dep}')
         visited: Set[str] = set()
         rec_stack: Set[str] = set()
 
@@ -167,8 +133,7 @@ class DAGEngine:
             """DFS to detect cycles."""
             visited.add(task_id)
             rec_stack.add(task_id)
-
-            task = self.tasks.get(task_id)
+            task: Any = self.tasks.get(task_id)
             if task:
                 for dep in task.dependencies:
                     if dep not in visited:
@@ -176,15 +141,12 @@ class DAGEngine:
                             return True
                     elif dep in rec_stack:
                         return True
-
             rec_stack.remove(task_id)
             return False
-
         for task_id in self.tasks:
             if task_id not in visited:
                 if has_cycle(task_id):
-                    errors.append(f"Cycle detected involving task {task_id}")
-
+                    errors.append(f'Cycle detected involving task {task_id}')
         return errors
 
     def topological_sort(self) -> List[str]:
@@ -196,45 +158,28 @@ class DAGEngine:
         Raises:
             ValueError: If DAG has cycles
         """
-        errors = self.validate_dag()
+        errors: Any = self.validate_dag()
         if errors:
             raise ValueError(f"Invalid DAG: {', '.join(errors)}")
-
         in_degree: Dict[str, int] = {task_id: 0 for task_id in self.tasks}
-
-        # Calculate in-degrees
         for task in self.tasks.values():
             for dep in task.dependencies:
                 in_degree[dep] = in_degree.get(dep, 0) + 1
-
-        # Find tasks with no dependencies
-        queue: List[str] = [
-            task_id for task_id, degree in in_degree.items()
-            if degree == 0
-        ]
-
+        queue: List[str] = [task_id for task_id, degree in in_degree.items() if degree == 0]
         sorted_order: List[str] = []
-
         while queue:
-            task_id = queue.pop(0)
+            task_id: Any = queue.pop(0)
             sorted_order.append(task_id)
-
-            # Reduce in-degree for dependent tasks
             for other_id, other_task in self.tasks.items():
                 if task_id in other_task.dependencies:
                     in_degree[other_id] -= 1
                     if in_degree[other_id] == 0:
                         queue.append(other_id)
-
         if len(sorted_order) != len(self.tasks):
-            raise ValueError("Topological sort failed - cycle detected")
+            raise ValueError('Topological sort failed - cycle detected')
         return sorted_order
 
-    async def execute(
-        self,
-        executor: Callable[[Task], Awaitable[Any]],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> DAGExecutionResult:
+    async def execute(self, executor: Callable[[Task], Awaitable[Any]], context: Optional[Dict[str, Any]]=None) -> DAGExecutionResult:
         """Execute the DAG.
 
         Args:
@@ -244,135 +189,74 @@ class DAGEngine:
         Returns:
             DAGExecutionResult with execution summary
         """
-        context = context or {}
-        execution_order = self.topological_sort()
-
+        context: Any = context or {}
+        execution_order: Any = self.topological_sort()
         completed_tasks: Set[str] = set()
         failed_tasks: List[str] = []
         skipped_tasks: List[str] = []
         task_results: Dict[str, Any] = {}
-
         self._log_dag_start(execution_order)
-
         for task_id in execution_order:
-            task = self.tasks[task_id]
-
-            if not self._should_execute_task(task,
-                task_id,
-                completed_tasks,
-                context,
-                task_results,
-                skipped_tasks):
+            task: Any = self.tasks[task_id]
+            if not self._should_execute_task(task, task_id, completed_tasks, context, task_results, skipped_tasks):
                 continue
-
-            success = await self._execute_single_task(task,
-                task_id,
-                executor,
-                completed_tasks,
-                failed_tasks,
-                task_results)
+            success: Any = await self._execute_single_task(task, task_id, executor, completed_tasks, failed_tasks, task_results)
             if not success:
                 break
-
-        return self._create_dag_result(completed_tasks,
-            failed_tasks,
-            skipped_tasks,
-            task_results,
-            execution_order)
+        return self._create_dag_result(completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order)
 
     def _log_dag_start(self, execution_order: List[str]) -> None:
         """Log DAG execution start."""
         if self.enable_logging:
-            LOGGER.info("dag_execution_started",
-                extra={"total_tasks": len(self.tasks),
-                "execution_order": execution_order})
+            LOGGER.info('dag_execution_started', extra={'total_tasks': len(self.tasks), 'execution_order': execution_order})
 
-    def _should_execute_task(
-        self, task: Task, task_id: str, completed_tasks: Set[str],
-        context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]
-    ) -> bool:
+    def _should_execute_task(self, task: Task, task_id: str, completed_tasks: Set[str], context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]) -> bool:
         """Check if task should be executed."""
         if not task.is_ready(completed_tasks):
             task.status = TaskStatus.SKIPPED
             skipped_tasks.append(task_id)
             return False
-
         if task.condition:
             condition_met = self._evaluate_condition(task.condition, context, task_results)
             if not condition_met:
                 task.status = TaskStatus.SKIPPED
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
-                    LOGGER.debug("task_skipped_condition",
-                        extra={"task_id": task_id,
-                        "condition": task.condition})
+                    LOGGER.debug('task_skipped_condition', extra={'task_id': task_id, 'condition': task.condition})
                 return False
-
         return True
 
-    async def _execute_single_task(
-        self, task: Task, task_id: str, executor: Callable,
-        completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]
-    ) -> bool:
+    async def _execute_single_task(self, task: Task, task_id: str, executor: Callable, completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]) -> bool:
         """Execute a single task and return success status."""
         task.status = TaskStatus.RUNNING
-
         try:
             if self.enable_logging:
-                LOGGER.info("task_started", extra={"task_id": task_id})
-
+                LOGGER.info('task_started', extra={'task_id': task_id})
             result = await executor(task)
             task.status = TaskStatus.COMPLETED
             task.result = result
             task_results[task_id] = result
             completed_tasks.add(task_id)
-
             if self.enable_logging:
-                LOGGER.info("task_completed", extra={"task_id": task_id})
+                LOGGER.info('task_completed', extra={'task_id': task_id})
             return True
         except Exception as e:
             task.status = TaskStatus.FAILED
             task.error = str(e)
             failed_tasks.append(task_id)
             if self.enable_logging:
-                LOGGER.error("task_failed",
-                    extra={"task_id": task_id,
-                    "error": str(e)},
-                    exc_info=True)
+                LOGGER.error('task_failed', extra={'task_id': task_id, 'error': str(e)}, exc_info=True)
             return False
 
-    def _create_dag_result(
-        self, completed_tasks: Set[str], failed_tasks: List[str],
-        skipped_tasks: List[str], task_results: Dict[str, Any], execution_order: List[str]
-    ) -> DAGExecutionResult:
+    def _create_dag_result(self, completed_tasks: Set[str], failed_tasks: List[str], skipped_tasks: List[str], task_results: Dict[str, Any], execution_order: List[str]) -> DAGExecutionResult:
         """Create DAG execution result."""
         success = len(failed_tasks) == 0
-        result = DAGExecutionResult(
-            success=success,
-            completed_tasks=list(completed_tasks),
-            failed_tasks=failed_tasks,
-            skipped_tasks=skipped_tasks,
-            task_results=task_results,
-            execution_order=execution_order,
-            metadata={"total_tasks": len(self.tasks),
-                "completion_rate": len(completed_tasks) / len(self.tasks) if self.tasks else 0}
-        )
-
+        result = DAGExecutionResult(success=success, completed_tasks=list(completed_tasks), failed_tasks=failed_tasks, skipped_tasks=skipped_tasks, task_results=task_results, execution_order=execution_order, metadata={'total_tasks': len(self.tasks), 'completion_rate': len(completed_tasks) / len(self.tasks) if self.tasks else 0})
         if self.enable_logging:
-            LOGGER.info("dag_execution_completed",
-                extra={"success": success,
-                "completed": len(completed_tasks),
-                "failed": len(failed_tasks),
-                "skipped": len(skipped_tasks)})
-
+            LOGGER.info('dag_execution_completed', extra={'success': success, 'completed': len(completed_tasks), 'failed': len(failed_tasks), 'skipped': len(skipped_tasks)})
         return result
 
-    def _evaluate_condition(
-        self,
-        condition: str,
-        context: Dict[str, Any],
-        task_results: Dict[str, Any],
-    ) -> bool:
+    def _evaluate_condition(self, condition: str, context: Dict[str, Any], task_results: Dict[str, Any]) -> bool:
         """Evaluate a task condition.
 
         Args:
@@ -383,49 +267,34 @@ class DAGEngine:
         Returns:
             True if condition is met
         """
-        # Simple condition evaluation
-        # Format: "task_id.success" or "task_id.result.field == value"
-
         try:
-            # Check for simple success condition
-            if condition.endswith(".success"):
-                task_id = condition.replace(".success", "")
+            if condition.endswith('.success'):
+                task_id = condition.replace('.success', '')
                 return task_id in task_results
-
-            # Check for result field condition
-            if "==" in condition:
+            if '==' in condition:
                 return self._evaluate_equality_condition(condition, task_results)
-
-            # Default: check if condition is in context
             return context.get(condition, False)
-
         except Exception as e:
             if self.enable_logging:
-                LOGGER.warning("condition_evaluation_failed",
-                    extra={"condition": condition,
-                    "error": str(e)})
+                LOGGER.warning('condition_evaluation_failed', extra={'condition': condition, 'error': str(e)})
             return False
 
     def _evaluate_equality_condition(self, condition: str, task_results: Dict[str, Any]) -> bool:
         """Evaluate equality condition with reduced nesting."""
-        left, right = condition.split("==")
+        left, right = condition.split('==')
         left = left.strip()
-        right = right.strip().strip("'\"")
-
-        parts = left.split(".")
+        right = right.strip().strip('\'"')
+        parts = left.split('.')
         if len(parts) < 2:
             return False
-
         task_id = parts[0]
         if task_id not in task_results:
             return False
-
         value = task_results[task_id]
-        for part in parts[1:]: # Changed from parts[2:] to parts[1:] to correctly access result fields
+        for part in parts[1:]:
             if not isinstance(value, dict):
                 return False
             value = value.get(part)
-
         return str(value) == right
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
@@ -437,7 +306,7 @@ class DAGEngine:
         Returns:
             Task status or None if not found
         """
-        task = self.tasks.get(task_id)
+        task: Any = self.tasks.get(task_id)
         return task.status if task else None
 
     def reset(self) -> None:
@@ -446,8 +315,6 @@ class DAGEngine:
             task.status = TaskStatus.PENDING
             task.result = None
             task.error = None
-
         self.execution_order.clear()
-
         if self.enable_logging:
-            LOGGER.info("dag_reset")
+            LOGGER.info('dag_reset')

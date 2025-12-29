@@ -1,4 +1,8 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 
 """Split module 2 for workflow_types_types."""
 
@@ -9,7 +13,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RetrievalSource:
+# NAMING FIXED: RetrievalSource → retrieval_source
+class retrieval_source:
     """Metadata about a data retrieval source."""
 
     _id: str

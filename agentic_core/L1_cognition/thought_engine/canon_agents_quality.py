@@ -1,22 +1,14 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-
-# DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+from agentic_core.L1_cognition.thought_engine.canon_validators_ast import validate_print_statements, validate_debugger, validate_empty_except, validate_bare_except, validate_eval_exec
 
-# [L6 HARDENING] AST-based validators to eliminate false positives
-from agentic_core.L1_cognition.thought_engine.canon_validators_ast import (
-    validate_print_statements,
-    validate_debugger,
-    validate_empty_except,
-    validate_bare_except,
-    validate_eval_exec,
-)
-
-
-class SafetyInspector:
+class safety_inspector:
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance. Emits SECURE signal.
@@ -26,11 +18,11 @@ class SafetyInspector:
     - Implementation injected via dependency injection
     - No direct dependency on L2_Execution layer
     """
-    
+
     def __init__(self, agent_impl: CanonBaseAgentInterface):
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
-    
+
     def __getattr__(self, name):
         """Delegate all agent methods to injected implementation - backward compatible."""
         return getattr(self.agent, name)
@@ -40,22 +32,11 @@ class SafetyInspector:
         Executes the security audit by running all defined checks.
         Reports findings to the context and signals security status.
         """
-        print(f"\n[>>>] {self.agent.name} ACTIVATED: Security Audit...")
-
-        keys = [
-            (0, self.check_key_00_no_hardcoded_secrets),
-            (1, self.check_key_01_no_todo_fixme),
-            (2, self.check_key_02_no_print_statements),
-            (3, self.check_key_03_no_debugger_statements),
-            (4, self.check_key_04_no_empty_except_blocks),
-            (5, self.check_key_05_no_bare_except),
-            (6, self.check_key_06_no_eval_exec),
-        ]
-
+        print(f'\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
+        keys: Any = [(0, self.check_key_00_no_hardcoded_secrets), (1, self.check_key_01_no_todo_fixme), (2, self.check_key_02_no_print_statements), (3, self.check_key_03_no_debugger_statements), (4, self.check_key_04_no_empty_except_blocks), (5, self.check_key_05_no_bare_except), (6, self.check_key_06_no_eval_exec)]
         for key, check_func in keys:
             passed, details = check_func()
             self.agent.ctx.report(self.agent.name, key, passed, details)
-
         self.agent.ctx.signal_secure()
 
     def _check_content_for_secret_patterns(self, content: str, patterns: List[str]) -> bool:
@@ -68,18 +49,16 @@ class SafetyInspector:
     def _read_file_content(self, fp: str) -> Tuple[str, bool]:
         """Helper to read file content, returns content and success status."""
         try:
-            with open(fp, "r", encoding="utf-8") as f:
-                return f.read(), True
+            with open(fp, 'r', encoding='utf-8') as f:
+                return (f.read(), True)
         except Exception:
-            # print(f"Error reading file {fp}: {e}")
-            return "", False
-    
+            return ('', False)
+
     def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
         """Helper to find hardcoded secrets in a single file."""
         content, success = self._read_file_content(fp)
         if not success:
             return []
-
         if self._check_content_for_secret_patterns(content, patterns):
             return [fp]
         return []
@@ -88,33 +67,26 @@ class SafetyInspector:
         """
         Checks for hardcoded secrets (passwords, API keys, tokens) in files.
         """
-        violations = []
-        patterns = [
-            r'password\s*=\s*["\'][^"\']+["\']',
-            r'api[_-]?key\s*=\s*["\'][^"\']+["\']',
-            r'secret\s*=\s*["\'][^"\']+["\']',
-            r'token\s*=\s*["\'][^"\']+["\']',
-        ]
-
+        violations: Any = []
+        patterns: Any = ['password\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'api[_-]?key\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'secret\\s*=\\s*["\\\'][^"\\\']+["\\\']', 'token\\s*=\\s*["\\\'][^"\\\']+["\\\']']
         for fp in self.agent.ctx.python_files:
             violations.extend(self._find_secret_violations_in_file(fp, patterns))
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def _process_file_lines_for_todo_fixme(self, f_obj, fp: str) -> List[str]:
         """Helper to process lines of an open file for TODO/FIXME violations."""
         violations = []
         for i, line in enumerate(f_obj, 1):
-            if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
-                violations.append(f"{fp}:{i}")
+            if re.search('\\b(TODO|FIXME)\\b', line, re.IGNORECASE):
+                violations.append(f'{fp}:{i}')
         return violations
 
     def _find_todo_fixme_violations_in_file(self, fp: str) -> List[str]:
         """Helper to find TODO/FIXME comments in a single file."""
         try:
-            with open(fp, "r", encoding="utf-8") as f:
+            with open(fp, 'r', encoding='utf-8') as f:
                 return self._process_file_lines_for_todo_fixme(f, fp)
         except Exception:
-            # print(f"Error reading file {fp}: {e}")
             pass
         return []
 
@@ -122,95 +94,94 @@ class SafetyInspector:
         """
         Checks for 'TODO' or 'FIXME' comments in files.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             violations.extend(self._find_todo_fixme_violations_in_file(fp))
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
         """
         [REFACTORED] Checks for 'print()' statements using AST-based validator.
         Automatically handles TYPE_CHECKING blocks and exception ledger.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                results = validate_print_statements(Path(fp), content)
+                with open(fp, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                results: Any = validate_print_statements(Path(fp), content)
                 for result in results:
                     violations.append(f"{fp}:{result['line']}")
             except Exception:
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
         """
         [REFACTORED] Checks for debugger statements using AST-based validator.
         Detects breakpoint() and pdb.set_trace() with TYPE_CHECKING awareness.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                results = validate_debugger(Path(fp), content)
+                with open(fp, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                results: Any = validate_debugger(Path(fp), content)
                 for result in results:
                     violations.append(f"{fp}:{result['line']}")
             except Exception:
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
         """
         [REFACTORED] Checks for empty 'except' blocks using AST-based validator.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                results = validate_empty_except(Path(fp), content)
+                with open(fp, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                results: Any = validate_empty_except(Path(fp), content)
                 for result in results:
                     violations.append(f"{fp}:{result['line']}")
             except Exception:
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
         """
         [REFACTORED] Checks for bare 'except:' statements using AST-based validator.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                results = validate_bare_except(Path(fp), content)
+                with open(fp, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                results: Any = validate_bare_except(Path(fp), content)
                 for result in results:
                     violations.append(f"{fp}:{result['line']}")
             except Exception:
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
     def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
         """
         [REFACTORED] Checks for 'eval()' or 'exec()' calls using AST-based validator.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                results = validate_eval_exec(Path(fp), content)
+                with open(fp, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                results: Any = validate_eval_exec(Path(fp), content)
                 for result in results:
                     violations.append(f"{fp}:{result['line']}")
             except Exception:
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
-
-class DocumentationAgent(SubAtomicAgent):
+class documentation_agent(SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
     ROLE: Pure focus on Docstrings.
@@ -220,7 +191,7 @@ class DocumentationAgent(SubAtomicAgent):
         """
         Executes the documentation check, specifically for missing docstrings.
         """
-        print(f"\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...")
+        print(f'\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...')
         passed, details = self.check_key_21_no_missing_docstrings()
         self.agent.ctx.report(self.agent.name, 21, passed, details)
 
@@ -233,26 +204,24 @@ class DocumentationAgent(SubAtomicAgent):
         file_violations = []
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and self._has_missing_docstring(node):
-                file_violations.append(f"{fp}:{node.lineno} {node.name}")
+                file_violations.append(f'{fp}:{node.lineno} {node.name}')
         return file_violations
 
     def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """
         Checks for missing docstrings in classes and functions using AST parsing.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
+                with open(fp, 'r', encoding='utf-8') as f:
+                    tree: Any = ast.parse(f.read())
                 violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)
 
-
-class NamingAgent(SubAtomicAgent):
+class naming_agent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
     ROLE: Enforces Snake_Case/PascalCase.
@@ -262,26 +231,26 @@ class NamingAgent(SubAtomicAgent):
         """
         Executes the naming convention check.
         """
-        print(f"\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...")
+        print(f'\n[>>>] {self.agent.name} ACTIVATED: Naming Convention Check...')
         passed, details = self.check_key_47_naming_conventions()
         self.agent.ctx.report(self.agent.name, 47, passed, details)
 
     def _is_invalid_function_name(self, name: str) -> bool:
         """Helper to check if a function name violates PEP 8 snake_case."""
-        return not re.match(r'^[a-z_][a-z0-9_]*$', name)
+        return not re.match('^[a-z_][a-z0-9_]*$', name)
 
     def _is_invalid_class_name(self, name: str) -> bool:
         """Helper to check if a class name violates PEP 8 PascalCase."""
-        return not re.match(r'^[A-Z][a-zA-Z0-9]*$', name)
+        return not re.match('^[A-Z][a-zA-Z0-9]*$', name)
 
     def _find_naming_convention_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
         """Helper to find naming convention violations in an AST tree."""
         file_violations = []
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and self._is_invalid_function_name(node.name):
-                file_violations.append(f"{fp}:{node.lineno} function {node.name}")
+                file_violations.append(f'{fp}:{node.lineno} function {node.name}')
             elif isinstance(node, ast.ClassDef) and self._is_invalid_class_name(node.name):
-                file_violations.append(f"{fp}:{node.lineno} class {node.name}")
+                file_violations.append(f'{fp}:{node.lineno} class {node.name}')
         return file_violations
 
     def check_key_47_naming_conventions(self) -> Tuple[bool, List[str]]:
@@ -289,13 +258,12 @@ class NamingAgent(SubAtomicAgent):
         Checks for PEP 8 naming conventions for functions (snake_case)
         and classes (PascalCase) using AST parsing.
         """
-        violations = []
+        violations: Any = []
         for fp in self.agent.ctx.python_files:
             try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
+                with open(fp, 'r', encoding='utf-8') as f:
+                    tree: Any = ast.parse(f.read())
                 violations.extend(self._find_naming_convention_violations_in_tree(tree, fp))
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
-        return len(violations) == 0, violations
+        return (len(violations) == 0, violations)

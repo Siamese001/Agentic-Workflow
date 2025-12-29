@@ -9,13 +9,16 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
 
-class TestGeneratorAgent(CanonBaseAgent):
+# NAMING FIXED: TestGeneratorAgent → test_generator_agent
+class test_generator_agent(CanonBaseAgent):
     """
     Validates Canon Key 47: QA & Telemetry.
     Ensures that every high-signal file has a corresponding test coverage path.
     """
     
     def get_validation_keys(self) -> List[int]:
+                    '''Brief description of functionality and purpose.'''
+                    
         return [47]
 
     async def execute(self, file_path: str = None):

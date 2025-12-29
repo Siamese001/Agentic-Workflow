@@ -13,7 +13,8 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 
-class CodeJanitor:
+# NAMING FIXED: CodeJanitor → code_janitor
+class code_janitor:
     """
     KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
     ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
@@ -231,6 +232,8 @@ class CodeJanitor:
         violations = []
 
         class NestingVisitor(ast.NodeVisitor):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             def __init__(self, filepath: str, max_depth: int):
                 self.filepath = filepath
                 self.max_depth = max_depth
@@ -238,6 +241,8 @@ class CodeJanitor:
                 self.violations = []
 
             def visit(self, node):
+                                                    '''Brief description of functionality and purpose.'''
+                                                    
                 # Nodes that increase nesting depth
                 is_nesting_node = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With,
                                                     ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
@@ -287,7 +292,8 @@ class CodeJanitor:
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
-class DependencySentinel:
+# NAMING FIXED: DependencySentinel → dependency_sentinel
+class dependency_sentinel:
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.

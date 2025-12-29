@@ -7,7 +7,8 @@ Import from SSOT instead.
 """
 from agentic_core.schemas.models.core_contracts import AgentPlan
 
-class StructuredEngine:
+# NAMING FIXED: StructuredEngine → structured_engine
+class structured_engine:
     """
     L1 Cognition: The Thinking Node.
     Converts fuzzy intent into structured AgentPlans.

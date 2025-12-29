@@ -1,10 +1,15 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import sys
 import time
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 
-class ProcessingResult:
+# NAMING FIXED: ProcessingResult → processing_result
+class processing_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         self.success = success
         self.data = data
@@ -12,7 +17,10 @@ class ProcessingResult:
         self.execution_context = execution_context
         self.additional_info = additional_info
 
-class ExecutionContext:
+# NAMING FIXED: ExecutionContext → execution_context
+class execution_context:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
         self.operation_id = operation_id
         self.metadata = metadata or {}
@@ -23,16 +31,21 @@ class ExecutionContext:
         self.error = None
 
     def start(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.start_time = time.time()
 
     def complete(self, success: bool, error: Optional[Exception] = None):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
         self.success = success
         self.error = error
 
 
-class CheckResumeRules:
+# NAMING FIXED: CheckResumeRules → check_resume_rules
+class check_resume_rules:
     """
     Main executor class for check resume rules operations.
 

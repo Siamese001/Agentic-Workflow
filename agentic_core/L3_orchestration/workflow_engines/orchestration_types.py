@@ -8,43 +8,32 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-
-class ExecutionPhaseSignal(Enum):
+class execution_phase_signal(Enum):
     """Signal enum for phase logic checks."""
-    PLANNING = auto()
-    EXECUTION = auto()
-    VALIDATION = auto()
-    HEALING = auto()
+    PLANNING: Any = auto()
+    EXECUTION: Any = auto()
+    VALIDATION: Any = auto()
+    HEALING: Any = auto()
 
 @dataclass
-class ExecutionPhase:
+class execution_phase:
     """Definition of an execution phase - sovereign template for apps to extend."""
-    
     name: str
     agents: List[str]
-    execution_mode: str = "sequential"  # sequential, parallel
+    execution_mode: str = 'sequential'
     is_hard_gate: bool = False
     condition: Optional[Callable] = None
-    
-    # Signal mapping for logic checks
     signal: ExecutionPhaseSignal = None
-    
+
     def __post_init__(self):
         """Map name to signal enum for logic checks."""
         if self.signal is None:
-            signal_map = {
-                "planning": ExecutionPhaseSignal.PLANNING,
-                "execution": ExecutionPhaseSignal.EXECUTION,
-                "validation": ExecutionPhaseSignal.VALIDATION,
-                "healing": ExecutionPhaseSignal.HEALING,
-            }
+            signal_map = {'planning': ExecutionPhaseSignal.PLANNING, 'execution': ExecutionPhaseSignal.EXECUTION, 'validation': ExecutionPhaseSignal.VALIDATION, 'healing': ExecutionPhaseSignal.HEALING}
             self.signal = signal_map.get(self.name.lower(), ExecutionPhaseSignal.PLANNING)
 
-
 @dataclass
-class WorkflowSnapshot:
+class workflow_snapshot:
     """Snapshot of workflow state for rollback - sovereign core type."""
-    
     cycle: int
     context: Dict[str, Any]
     outputs: Dict[str, Any]

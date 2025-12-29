@@ -9,22 +9,11 @@ import asyncio
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-
-from agentic_core.core.orchestrator_main import (
-    OrchestratorConfig,
-    create_orchestrator,
-)
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+logger: Any = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
-
-async def run_hardened_orchestrator(
-    workflow_id: str,
-    workflow_type: str = "resume_generation",
-    storage_path: Optional[str] = None,
-    run_base_dir: str = "./pipeline_runs"
-):
+async def run_hardened_orchestrator(workflow_id: str, workflow_type: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:
     """
     Run hardened workflow orchestrator with atomic state management.
     
@@ -39,49 +28,20 @@ async def run_hardened_orchestrator(
     Returns:
         Workflow execution results
     """
-    logger.info(f"🚀 Hardened Orchestrator (Wrapper)")
-    logger.info(f"   Workflow: {workflow_id}")
-    logger.info(f"   Type: {workflow_type}")
-    
-    config = OrchestratorConfig(
-        max_cycles=5,
-        enable_checkpointing=True,
-        checkpoint_dir=storage_path or "./checkpoints"
-    )
-    
-    context = ValidationContext()
-    orchestrator = create_orchestrator(config=config, context=context)
-    
-    resume_agent = create_resume_agent(
-        context=context,
-        workflow_id=workflow_id,
-        workflow_type=workflow_type,
-        enable_titanium_rag=True,
-        enable_state_persistence=True,
-        storage_path=storage_path,
-        run_base_dir=run_base_dir
-    )
-    
-    results = await orchestrator.execute_workflow(
-        workflow_id=workflow_id,
-        agents=[resume_agent]
-    )
-    
+    logger.info(f'🚀 Hardened Orchestrator (Wrapper)')
+    logger.info(f'   Workflow: {workflow_id}')
+    logger.info(f'   Type: {workflow_type}')
+    config: Any = OrchestratorConfig(max_cycles=5, enable_checkpointing=True, checkpoint_dir=storage_path or './checkpoints')
+    context: Any = ValidationContext()
+    orchestrator: Any = create_orchestrator(config=config, context=context)
+    resume_agent: Any = create_resume_agent(context=context, workflow_id=workflow_id, workflow_type=workflow_type, enable_titanium_rag=True, enable_state_persistence=True, storage_path=storage_path, run_base_dir=run_base_dir)
+    results: Any = await orchestrator.execute_workflow(workflow_id=workflow_id, agents=[resume_agent])
     return results
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     import argparse
-    
-    parser = argparse.ArgumentParser(description="Hardened Orchestrator")
-    parser.add_argument("--workflow-id", required=True, help="Workflow ID")
-    parser.add_argument("--workflow-type", default="resume_generation", help="Workflow type")
-    parser.add_argument("--storage-path", help="Storage path for state")
-    
-    args = parser.parse_args()
-    
-    asyncio.run(run_hardened_orchestrator(
-        workflow_id=args.workflow_id,
-        workflow_type=args.workflow_type,
-        storage_path=args.storage_path
-    ))
+    parser: Any = argparse.ArgumentParser(description='Hardened Orchestrator')
+    parser.add_argument('--workflow-id', required=True, help='Workflow ID')
+    parser.add_argument('--workflow-type', default='resume_generation', help='Workflow type')
+    parser.add_argument('--storage-path', help='Storage path for state')
+    args: Any = parser.parse_args()
+    asyncio.run(run_hardened_orchestrator(workflow_id=args.workflow_id, workflow_type=args.workflow_type, storage_path=args.storage_path))

@@ -5,11 +5,7 @@ Consolidated from core_utils.py, network_utils.py, and security_utils.py
 import json
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-
-logger = logging.getLogger(__name__)
-
-
-# Redis Mock Functions (for testing/development)
+logger: Any = logging.getLogger(__name__)
 
 def string_get(key: str) -> Optional[str]:
     """
@@ -23,7 +19,6 @@ def string_get(key: str) -> Optional[str]:
     """
     return None
 
-
 def string_set(key: str, value: str) -> None:
     """
     Mock for Redis MCP: Set string value.
@@ -32,7 +27,6 @@ def string_set(key: str, value: str) -> None:
         key: Redis key
         value: Value to set
     """
-
 
 def incr(key: str) -> int:
     """
@@ -44,16 +38,14 @@ def incr(key: str) -> int:
     Returns:
         New value after increment
     """
-    current = string_get(key)
-    current_val = int(current) if current else 0
-    new_val = current_val + 1
+    current: Any = string_get(key)
+    current_val: Any = int(current) if current else 0
+    new_val: Any = current_val + 1
     string_set(key, str(new_val))
     return new_val
 
-
 def start_transaction() -> None:
     """Mock for Redis MCP: Start a transaction."""
-
 
 def watch_key(key: str) -> None:
     """
@@ -62,7 +54,6 @@ def watch_key(key: str) -> None:
     Args:
         key: Redis key to watch
     """
-
 
 def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
     """
@@ -74,10 +65,8 @@ def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
         ttl: Time to live in seconds
     """
 
-
 def commit_transaction() -> None:
     """Mock for Redis MCP: Commit transaction."""
-
 
 def get_and_set(key: str, new_value: str) -> str:
     """
@@ -90,14 +79,11 @@ def get_and_set(key: str, new_value: str) -> str:
     Returns:
         Previous value or "0"
     """
-    current = string_get(key)
+    current: Any = string_get(key)
     string_set(key, new_value)
-    return current or "0"
+    return current or '0'
 
-
-# Brave Search Integration
-
-def brave_search(query: str, count: int = 5) -> str:
+def brave_search(query: str, count: int=5) -> str:
     """
     Mock for Brave Search MCP: Search the web.
     
@@ -108,30 +94,10 @@ def brave_search(query: str, count: int = 5) -> str:
     Returns:
         JSON string of search results
     """
-    results = [
-        {
-            "title": f"Result 1 for {query}",
-            "url": "https://example.com/1",
-            "snippet": f"Mock snippet about {query}"
-        },
-        {
-            "title": f"Result 2 for {query}",
-            "url": "https://example.com/2",
-            "snippet": f"Another result about {query}"
-        },
-        {
-            "title": f"Result 3 for {query}",
-            "url": "https://example.com/3",
-            "snippet": f"Third result about {query}"
-        }
-    ]
+    results: Any = [{'title': f'Result 1 for {query}', 'url': 'https://example.com/1', 'snippet': f'Mock snippet about {query}'}, {'title': f'Result 2 for {query}', 'url': 'https://example.com/2', 'snippet': f'Another result about {query}'}, {'title': f'Result 3 for {query}', 'url': 'https://example.com/3', 'snippet': f'Third result about {query}'}]
     return json.dumps(results[:count])
 
-
-def execute_cost_controlled_search(
-    query: str,
-    logger_instance: Optional[Any] = None
-) -> Optional[str]:
+def execute_cost_controlled_search(query: str, logger_instance: Optional[Any]=None) -> Optional[str]:
     """
     Mock for Brave Search wrapper with rate limiting.
     Returns search results 70% of the time to simulate rate limiting.
@@ -144,21 +110,17 @@ def execute_cost_controlled_search(
         JSON string of results or None if rate limited
     """
     import random
-    
     if random.random() < 0.7:
-        results = brave_search(query, count=3)
+        results: Any = brave_search(query, count=3)
         if logger_instance:
-            logger_instance.info("Brave Search (Rate-Limited) returned results")
+            logger_instance.info('Brave Search (Rate-Limited) returned results')
         return results
     else:
         if logger_instance:
-            logger_instance.info("Brave Search rate limit reached - returning None")
+            logger_instance.info('Brave Search rate limit reached - returning None')
         return None
 
-
-# Pinecone Integration
-
-def search_records(query: str, index: str, top_k: int = 5) -> str:
+def search_records(query: str, index: str, top_k: int=5) -> str:
     """
     Mock for Pinecone MCP: Search vector database.
     
@@ -170,20 +132,10 @@ def search_records(query: str, index: str, top_k: int = 5) -> str:
     Returns:
         JSON string of search results
     """
-    if "keywords" in query.lower():
-        mock_keywords = [
-            {"keyword": "React", "score": 0.95},
-            {"keyword": "TypeScript", "score": 0.90},
-            {"keyword": "AWS", "score": 0.85},
-            {"keyword": "Docker", "score": 0.80},
-            {"keyword": "GraphQL", "score": 0.75}
-        ]
+    if 'keywords' in query.lower():
+        mock_keywords: Any = [{'keyword': 'React', 'score': 0.95}, {'keyword': 'TypeScript', 'score': 0.9}, {'keyword': 'AWS', 'score': 0.85}, {'keyword': 'Docker', 'score': 0.8}, {'keyword': 'GraphQL', 'score': 0.75}]
         return json.dumps(mock_keywords[:top_k])
-    
-    return json.dumps([{"text": "Default search result"}])
-
-
-# Memory Integration
+    return json.dumps([{'text': 'Default search result'}])
 
 def search_nodes(query: str) -> str:
     """
@@ -195,15 +147,7 @@ def search_nodes(query: str) -> str:
     Returns:
         JSON string of user data
     """
-    return json.dumps({
-        "entityName": "user",
-        "skills": ["Python", "JavaScript", "Machine Learning"],
-        "projects": ["E-commerce Platform", "ML Pipeline"],
-        "experience": "5 years"
-    })
-
-
-# LangCache Integration
+    return json.dumps({'entityName': 'user', 'skills': ['Python', 'JavaScript', 'Machine Learning'], 'projects': ['E-commerce Platform', 'ML Pipeline'], 'experience': '5 years'})
 
 def get_from_langcache(key: str) -> Optional[str]:
     """
@@ -217,8 +161,7 @@ def get_from_langcache(key: str) -> Optional[str]:
     """
     return None
 
-
-def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
+def set_to_langcache(key: str, value: str, ttl: int=86400) -> None:
     """
     Mock: Writes result to LangCache with TTL.
     
@@ -228,10 +171,7 @@ def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
         ttl: Time to live in seconds
     """
 
-
-# Time Utilities
-
-def get_current_time(timezone: Optional[str] = None) -> str:
+def get_current_time(timezone: Optional[str]=None) -> str:
     """
     Mock for Time MCP: Returns current time or converts timezone.
     
@@ -241,10 +181,9 @@ def get_current_time(timezone: Optional[str] = None) -> str:
     Returns:
         JSON string with datetime
     """
-    if timezone == "Europe/London":
+    if timezone == 'Europe/London':
         return '{"datetime": "2025-12-15T10:45:00+00:00"}'
     return '{"datetime": "2025-12-15T05:45:00-05:00"}'
-
 
 def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
     """
@@ -260,9 +199,6 @@ def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
     """
     return '{"target": {"datetime": "2025-12-15T12:00:00+09:00"}}'
 
-
-# GitKraken Integration
-
 def issues_get_detail(issue_id: str) -> str:
     """
     Mock for GitKraken MCP: Retrieves details for an issue.
@@ -275,9 +211,6 @@ def issues_get_detail(issue_id: str) -> str:
     """
     return f'{{"file_path": "src/config.js", "description": "High-priority bug {issue_id}"}}'
 
-
-# Browser Automation (Playwright)
-
 def browser_navigate(url: str) -> None:
     """
     Mock for Playwright MCP: Navigate to URL.
@@ -285,7 +218,6 @@ def browser_navigate(url: str) -> None:
     Args:
         url: URL to navigate to
     """
-
 
 def browser_type(element: str, ref: str, text: str) -> None:
     """
@@ -296,7 +228,6 @@ def browser_type(element: str, ref: str, text: str) -> None:
         ref: Element reference
         text: Text to type
     """
-
 
 def browser_click(element: str, ref: str) -> None:
     """

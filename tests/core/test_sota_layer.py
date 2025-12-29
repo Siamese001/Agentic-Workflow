@@ -4,43 +4,40 @@ Auto-generated stub for test_sota_layer.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
-
 import pytest
 
-
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_late_interaction_reranker():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_late_interaction_reranker() -> Any:
     """
     Test the Late Interaction Reranker with various queries.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_contrastive_semantic_cache():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_contrastive_semantic_cache() -> Any:
     """
     Test the Contrastive Semantic Cache with semantic similarity.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_cache_features():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_cache_features() -> Any:
     """
     Test additional cache features.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_integration_scenario():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_integration_scenario() -> Any:
     """
     Test both components working together in a realistic scenario.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_fallback_modes():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_fallback_modes() -> Any:
     """
     Test fallback behavior when dependencies are missing.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_convenience_functions():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_convenience_functions() -> Any:
     """
     Test convenience functions for direct usage.
     """
-

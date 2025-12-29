@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 L5 Consolidated Knowledge Retrieval for Resume Engine
 Consolidates L3 (Pinecone) and L5 (MEMemory) into unified knowledge access
@@ -11,19 +10,16 @@ This module provides unified access to:
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-
-logger = logging.getLogger(__name__)
-
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class KnowledgeResult:
+class knowledge_result:
     """Result from knowledge retrieval."""
     user_profile: Optional[Dict[str, Any]]
     template: Optional[Dict[str, Any]]
     metadata: Dict[str, Any]
 
-
-class L5ConsolidatedKnowledge:
+class l5_consolidated_knowledge:
     """Consolidated knowledge access layer."""
 
     def __init__(self, memory_client=None, pinecone_client=None):
@@ -41,66 +37,13 @@ class L5ConsolidatedKnowledge:
 
     def _load_fallback_profiles(self) -> Dict[str, Any]:
         """Load fallback user profiles if MEMemory unavailable."""
-        return {
-            "default": {
-                "name": "John Doe",
-                "title": "Senior Software Engineer",
-                "experience": "5 years",
-                "skills": ["Python", "JavaScript", "React", "Docker"],
-                "education": "B.S. Computer Science",
-                "achievements": [
-                    "Led team of 5 developers",
-                    "Reduced deployment time by 50%",
-                    "Implemented CI/CD pipeline"
-                ],
-                "contact": {
-                    "email": "john.doe@email.com",
-                    "phone": "(555) 123-4567",
-                    "linkedin": "linkedin.com/in/johndoe"
-                }
-            }
-        }
+        return {'default': {'name': 'John Doe', 'title': 'Senior Software Engineer', 'experience': '5 years', 'skills': ['Python', 'JavaScript', 'React', 'Docker'], 'education': 'B.S. Computer Science', 'achievements': ['Led team of 5 developers', 'Reduced deployment time by 50%', 'Implemented CI/CD pipeline'], 'contact': {'email': 'john.doe@email.com', 'phone': '(555) 123-4567', 'linkedin': 'linkedin.com/in/johndoe'}}}
 
     def _load_fallback_templates(self) -> Dict[str, Any]:
         """Load fallback templates if Pinecone unavailable."""
-        return {
-            "professional": {
-                "name": "Professional Cover Letter",
-                "structure": {
-                    "header": "{name}\n{contact}\n{date}",
-                    "greeting": "Dear {hiring_manager},",
-                    "introduction": "I am writing to express my interest in the {position} position at {company}.",
-                    "body": [
-                        "With {experience} of experience in {field}, I have developed strong skills in {skills}.",
-                        "At my previous role at {previous_company}, I {achievement}.",
-                        "I am particularly drawn to {company} because of {company_value}."
-                    ],
-                    "closing": "I look forward to discussing how my skills can benefit your team.",
-                    "signature": "Sincerely,\n{name}"
-                },
-                "tone": "formal",
-                "length": "medium"
-            },
-            "modern": {
-                "name": "Modern Cover Letter",
-                "structure": {
-                    "header": "{name} | {title} | {contact}",
-                    "greeting": "Hello {hiring_manager},",
-                    "introduction": "Excited about the {position} opportunity at {company}!",
-                    "body": [
-                        "My {experience} in {field} has prepared me to tackle {challenge}.",
-                        "Key achievements: {achievements}",
-                        "Why I'm excited: {company_culture}"
-                    ],
-                    "closing": "Let's connect and discuss how I can contribute!",
-                    "signature": "Best regards,\n{name}"
-                },
-                "tone": "casual",
-                "length": "short"
-            }
-        }
+        return {'professional': {'name': 'Professional Cover Letter', 'structure': {'header': '{name}\n{contact}\n{date}', 'greeting': 'Dear {hiring_manager},', 'introduction': 'I am writing to express my interest in the {position} position at {company}.', 'body': ['With {experience} of experience in {field}, I have developed strong skills in {skills}.', 'At my previous role at {previous_company}, I {achievement}.', 'I am particularly drawn to {company} because of {company_value}.'], 'closing': 'I look forward to discussing how my skills can benefit your team.', 'signature': 'Sincerely,\n{name}'}, 'tone': 'formal', 'length': 'medium'}, 'modern': {'name': 'Modern Cover Letter', 'structure': {'header': '{name} | {title} | {contact}', 'greeting': 'Hello {hiring_manager},', 'introduction': 'Excited about the {position} opportunity at {company}!', 'body': ['My {experience} in {field} has prepared me to tackle {challenge}.', 'Key achievements: {achievements}', "Why I'm excited: {company_culture}"], 'closing': "Let's connect and discuss how I can contribute!", 'signature': 'Best regards,\n{name}'}, 'tone': 'casual', 'length': 'short'}}
 
-    def search_knowledge(self, query: str, types: List[str] = None) -> KnowledgeResult:
+    def search_knowledge(self, query: str, types: List[str]=None) -> KnowledgeResult:
         """
         Search consolidated knowledge base.
 
@@ -112,75 +55,54 @@ class L5ConsolidatedKnowledge:
             KnowledgeResult with retrieved data
         """
         if types is None:
-            types = ["profile", "template"]
-
-        result = KnowledgeResult(
-            user_profile=None,
-            template=None,
-            metadata={"query": query, "types": types}
-        )
-
-        # Search for user profile
-        if "profile" in types:
+            types: Any = ['profile', 'template']
+        result: Any = KnowledgeResult(user_profile=None, template=None, metadata={'query': query, 'types': types})
+        if 'profile' in types:
             result.user_profile = self._get_user_profile(query)
-            result.metadata["profile_source"] = self._get_profile_source()
-
-        # Search for template
-        if "template" in types:
+            result.metadata['profile_source'] = self._get_profile_source()
+        if 'template' in types:
             result.template = self._get_template(query)
-            result.metadata["template_source"] = self._get_template_source()
-
+            result.metadata['template_source'] = self._get_template_source()
         return result
 
     def _get_user_profile(self, query: str) -> Optional[Dict[str, Any]]:
         """Get user profile from MEMemory or fallback."""
         if self.memory_client:
             try:
-                # Query MEMemory for user profile
                 profile = self.memory_client.get_profile(query)
                 if profile:
-                    logger.info("Retrieved profile from MEMemory")
+                    logger.info('Retrieved profile from MEMemory')
                     return profile
             except Exception as e:
-                logger.warning(f"Failed to retrieve from MEMemory: {e}")
-
-        # Fallback to local profiles
-        logger.info("Using fallback user profile")
-        return self._fallback_profiles.get("default")
+                logger.warning(f'Failed to retrieve from MEMemory: {e}')
+        logger.info('Using fallback user profile')
+        return self._fallback_profiles.get('default')
 
     def _get_template(self, query: str) -> Optional[Dict[str, Any]]:
         """Get template from Pinecone or fallback."""
         if self.pinecone_client:
             try:
-                # Query Pinecone for templates
-                templates = self.pinecone_client.query(
-                    vector=self._embed_query(query),
-                    top_k=1,
-                    include_metadata=True
-                )
+                templates = self.pinecone_client.query(vector=self._embed_query(query), top_k=1, include_metadata=True)
                 if templates:
-                    logger.info("Retrieved template from Pinecone")
+                    logger.info('Retrieved template from Pinecone')
                     return templates[0].metadata
             except Exception as e:
-                logger.warning(f"Failed to retrieve from Pinecone: {e}")
-
-        # Fallback to local templates
-        template_type = "professional" if "professional" in query.lower() else "modern"
-        logger.info(f"Using fallback template: {template_type}")
+                logger.warning(f'Failed to retrieve from Pinecone: {e}')
+        template_type = 'professional' if 'professional' in query.lower() else 'modern'
+        logger.info(f'Using fallback template: {template_type}')
         return self._fallback_templates.get(template_type)
 
     def _embed_query(self, query: str) -> List[float]:
         """Create embedding for query (placeholder)."""
-        # In real implementation, use embedding model
-        return [0.1] * 384  # Placeholder embedding
+        return [0.1] * 384
 
     def _get_profile_source(self) -> str:
         """Get source of profile retrieval."""
-        return "memory" if self.memory_client else "fallback"
+        return 'memory' if self.memory_client else 'fallback'
 
     def _get_template_source(self) -> str:
         """Get source of template retrieval."""
-        return "pinecone" if self.pinecone_client else "fallback"
+        return 'pinecone' if self.pinecone_client else 'fallback'
 
     def save_profile(self, profile: Dict[str, Any]) -> bool:
         """
@@ -195,15 +117,13 @@ class L5ConsolidatedKnowledge:
         if self.memory_client:
             try:
                 self.memory_client.save_profile(profile)
-                logger.info("Profile saved to MEMemory")
+                logger.info('Profile saved to MEMemory')
                 return True
             except Exception as e:
-                logger.error(f"Failed to save profile: {e}")
+                logger.error(f'Failed to save profile: {e}')
                 return False
-
-        # Save to local fallback
-        self._fallback_profiles["default"] = profile
-        logger.info("Profile saved to fallback storage")
+        self._fallback_profiles['default'] = profile
+        logger.info('Profile saved to fallback storage')
         return True
 
     def add_template(self, template: Dict[str, Any]) -> bool:
@@ -218,24 +138,16 @@ class L5ConsolidatedKnowledge:
         """
         if self.pinecone_client:
             try:
-                embedding = self._embed_query(template.get("name", ""))
-                self.pinecone_client.upsert(
-                    vectors=[{
-                        "id": template.get("id", "custom"),
-                        "values": embedding,
-                        "metadata": template
-                    }]
-                )
-                logger.info("Template added to Pinecone")
+                embedding: Any = self._embed_query(template.get('name', ''))
+                self.pinecone_client.upsert(vectors=[{'id': template.get('id', 'custom'), 'values': embedding, 'metadata': template}])
+                logger.info('Template added to Pinecone')
                 return True
             except Exception as e:
-                logger.error(f"Failed to add template: {e}")
+                logger.error(f'Failed to add template: {e}')
                 return False
-
-        # Add to local fallback
-        template_name = template.get("name", "custom").lower()
+        template_name: Any = template.get('name', 'custom').lower()
         self._fallback_templates[template_name] = template
-        logger.info("Template added to fallback storage")
+        logger.info('Template added to fallback storage')
         return True
 
     def query_consensus(self, pitch: str, guidelines: dict) -> dict:
@@ -249,111 +161,58 @@ class L5ConsolidatedKnowledge:
         Returns:
             Consensus result with status and reasoning
         """
-        # Mock implementation - in production would query multiple LLMs
-        logger.info("P6_CONSENSUS_START: Evaluating pitch compliance")
-
-        # Simulate multiple model evaluations
-        evaluations = []
-
-        # Model 1: Brand compliance check
-        brand_score = self._check_brand_compliance(pitch, guidelines)
-        evaluations.append({
-            "model": "brand_checker",
-            "status": "PASS" if brand_score >= 0.7 else "FAIL",
-            "score": brand_score,
-            "reason": "Brand tone and style analysis"
-        })
-
-        # Model 2: Spam detection
-        spam_score = self._check_spam_indicators(pitch)
-        evaluations.append({
-            "model": "spam_detector",
-            "status": "PASS" if spam_score <= 0.3 else "FAIL",
-            "score": spam_score,
-            "reason": "Spam and promotional content analysis"
-        })
-
-        # Model 3: Professionalism check
-        professionalism_score = self._check_professionalism(pitch)
-        evaluations.append({
-            "model": "professionalism_checker",
-            "status": "PASS" if professionalism_score >= 0.6 else "FAIL",
-            "score": professionalism_score,
-            "reason": "Professional tone and language analysis"
-        })
-
-        # Calculate consensus
-        pass_count = sum(1 for e in evaluations if e["status"] == "PASS")
-        total_count = len(evaluations)
-
-        # Require all models to pass for consensus
-        consensus_status = "PASS" if pass_count == total_count else "FAIL"
-
-        # Compile reasons for failures
-        failure_reasons = [e["reason"] for e in evaluations if e["status"] == "FAIL"]
-
-        result = {
-            "status": consensus_status,
-            "evaluations": evaluations,
-            "consensus_score": pass_count / total_count,
-            "reason": "; ".join(failure_reasons) if failure_reasons else "All checks passed"
-        }
-
+        logger.info('P6_CONSENSUS_START: Evaluating pitch compliance')
+        evaluations: Any = []
+        brand_score: Any = self._check_brand_compliance(pitch, guidelines)
+        evaluations.append({'model': 'brand_checker', 'status': 'PASS' if brand_score >= 0.7 else 'FAIL', 'score': brand_score, 'reason': 'Brand tone and style analysis'})
+        spam_score: Any = self._check_spam_indicators(pitch)
+        evaluations.append({'model': 'spam_detector', 'status': 'PASS' if spam_score <= 0.3 else 'FAIL', 'score': spam_score, 'reason': 'Spam and promotional content analysis'})
+        professionalism_score: Any = self._check_professionalism(pitch)
+        evaluations.append({'model': 'professionalism_checker', 'status': 'PASS' if professionalism_score >= 0.6 else 'FAIL', 'score': professionalism_score, 'reason': 'Professional tone and language analysis'})
+        pass_count: Any = sum((1 for e in evaluations if e['status'] == 'PASS'))
+        total_count: Any = len(evaluations)
+        consensus_status: Any = 'PASS' if pass_count == total_count else 'FAIL'
+        failure_reasons: Any = [e['reason'] for e in evaluations if e['status'] == 'FAIL']
+        result: Any = {'status': consensus_status, 'evaluations': evaluations, 'consensus_score': pass_count / total_count, 'reason': '; '.join(failure_reasons) if failure_reasons else 'All checks passed'}
         logger.info(f"P6_CONSENSUS_COMPLETE: Status={consensus_status}, Score={result['consensus_score']}")
         return result
 
     def _check_brand_compliance(self, pitch: str, guidelines: dict) -> float:
         """Check pitch against brand guidelines."""
-        score = 0.8  # Base score
-
-        # Check for prohibited words
-        prohibited = guidelines.get("prohibited_words", [])
+        score = 0.8
+        prohibited = guidelines.get('prohibited_words', [])
         for word in prohibited:
             if word.lower() in pitch.lower():
                 score -= 0.2
-
-        # Check for required tone
-        required_tone = guidelines.get("tone", "professional")
-        if required_tone == "professional":
-            if any(word in pitch.lower() for word in ["amazing", "incredible", "revolutionary"]):
+        required_tone = guidelines.get('tone', 'professional')
+        if required_tone == 'professional':
+            if any((word in pitch.lower() for word in ['amazing', 'incredible', 'revolutionary'])):
                 score -= 0.1
-
         return max(0, min(1, score))
 
     def _check_spam_indicators(self, pitch: str) -> float:
         """Check for spam indicators (lower is better)."""
         spam_score = 0.0
-
-        spam_triggers = ["!!", "FREE", "ACT NOW", "LIMITED TIME", "GUARANTEE"]
+        spam_triggers = ['!!', 'FREE', 'ACT NOW', 'LIMITED TIME', 'GUARANTEE']
         for trigger in spam_triggers:
             if trigger in pitch.upper():
                 spam_score += 0.2
-
-        # Check for excessive capitalization
         words = pitch.split()
-        caps_ratio = sum(1 for w in words if w.isupper()) / len(words)
+        caps_ratio = sum((1 for w in words if w.isupper())) / len(words)
         if caps_ratio > 0.1:
             spam_score += 0.2
-
         return min(1, spam_score)
 
     def _check_professionalism(self, pitch: str) -> float:
         """Check professionalism of the pitch."""
-        score = 0.7  # Base score
-
-        # Check for proper greeting
-        if pitch.strip().startswith(("Dear", "Hello", "Hi")):
+        score = 0.7
+        if pitch.strip().startswith(('Dear', 'Hello', 'Hi')):
             score += 0.1
-
-        # Check for proper closing
-        if any(closing in pitch for closing in ["Best regards", "Sincerely", "Regards"]):
+        if any((closing in pitch for closing in ['Best regards', 'Sincerely', 'Regards'])):
             score += 0.1
-
-        # Check length
         word_count = len(pitch.split())
         if 100 <= word_count <= 200:
             score += 0.1
-
         return min(1, score)
 
     def add_observations(self, data: dict) -> bool:
@@ -363,23 +222,17 @@ class L5ConsolidatedKnowledge:
                 self.memory_client.add_observations(data)
             return True
         except Exception as e:
-            logger.error(f"Failed to add observations: {e}")
+            logger.error(f'Failed to add observations: {e}')
             return False
-
-
-# Singleton instance
 _consolidated_knowledge = None
 
-
-def get_consolidated_knowledge(memory_client=None, pinecone_client=None) -> L5ConsolidatedKnowledge:
+def get_consolidated_knowledge(memory_client: Any=None, pinecone_client: Any=None) -> L5ConsolidatedKnowledge:
     """Get singleton instance of consolidated knowledge."""
     global _consolidated_knowledge
     if _consolidated_knowledge is None:
         _consolidated_knowledge = L5ConsolidatedKnowledge(memory_client, pinecone_client)
     return _consolidated_knowledge
 
-
-# Convenience functions
 def search_profile_and_template(query: str) -> KnowledgeResult:
     """Convenience function to search for profile and template."""
     return get_consolidated_knowledge().search_knowledge(query)

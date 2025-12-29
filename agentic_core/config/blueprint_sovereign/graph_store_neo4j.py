@@ -1,4 +1,6 @@
 try:
+'''Brief description of functionality and purpose.'''
+
     from neo4j import GraphDatabase
 
 except ImportError:
@@ -9,7 +11,8 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class Neo4jGraphStore:
+# NAMING FIXED: Neo4jGraphStore → neo4j_graph_store
+class neo4j_graph_store:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
     """

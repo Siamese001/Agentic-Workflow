@@ -1,6 +1,7 @@
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """E2E Validation Script for Subatomic Pipeline"""
 
@@ -8,7 +9,8 @@ import json
 import logging
 from pathlib import Path
 
-PROJECT_ROOT = Path(r"C:/Git/Agentic-Workflow")
+# NAMING FIXED: PROJECT_ROOT → project_root
+project_root = Path(r"C:/Git/Agentic-Workflow")
 
 def run_e2e_tests():
     """TODO: Add docstring."""

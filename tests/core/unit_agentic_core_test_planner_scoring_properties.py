@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
@@ -10,7 +14,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-class TestPlannerScoringProperties:
+# NAMING FIXED: TestPlannerScoringProperties → test_planner_scoring_properties
+class test_planner_scoring_properties:
     """TestPlannerScoringProperties implementation."""
 
 

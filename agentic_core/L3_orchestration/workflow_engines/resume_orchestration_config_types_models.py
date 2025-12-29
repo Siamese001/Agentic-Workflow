@@ -1,17 +1,19 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-
-LOGGER = logging.getLogger(__name__)
-# from agentic_core.resume_orchestration_config_types_enums import *  # Star import removed
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class WordCountConstraint:
+class word_count_constraint:
     """Word count constraint for a section."""
     _min: Optional[int] = None
     _max: Optional[int] = None
     _scope: str = 'total'
     _unit: str = 'words'
+
     def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
@@ -21,7 +23,7 @@ class WordCountConstraint:
         return True
 
 @dataclass
-class CharCountConstraint:
+class char_count_constraint:
     """Character count constraint for a section."""
     min: Optional[int] = None
     max: Optional[int] = None
@@ -35,7 +37,7 @@ class CharCountConstraint:
         return True
 
 @dataclass
-class ReasoningConfig:
+class reasoning_config:
     """Reasoning configuration for K-node execution."""
     _temperature: float = 0.7
     _rag_type: RAGType = RAGType.HYBRID
@@ -51,7 +53,7 @@ class ReasoningConfig:
     _routing_tier: Optional[RoutingTier] = None
 
 @dataclass
-class ProvenanceRule:
+class provenance_rule:
     """Provenance rule for bullet generation."""
     _verbatim: int
     _transformed: int
@@ -68,7 +70,7 @@ class ProvenanceRule:
         return f'{self.verbatim}V-{self.transformed}T-{self.synthetic}S'
 
 @dataclass
-class ValidationGate:
+class validation_gate:
     """Validation gate configuration."""
     _gate_id: str
     _execution_point: str

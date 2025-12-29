@@ -139,6 +139,8 @@ def test_design_drift_detection():
 
         # Mock Figma version check
         def mock_get_file_versions(component_id):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal figma_called
             figma_called = True
             return json.dumps({
@@ -151,12 +153,16 @@ def test_design_drift_detection():
 
         # Mock Time MCP
         def mock_get_current_time(timezone="UTC"):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal time_called
             time_called = True
             return "2025-12-15T11:00:00Z"
 
         # Mock variable defs
         def mock_get_variable_defs(node_id, version=None):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             return json.dumps({
                 "variables": {
                     "primary_color": "#007AFF",
@@ -166,6 +172,8 @@ def test_design_drift_detection():
 
         # Mock add_observations
         def mock_add_observations(observations):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             pass
 
         # Execute with mocks - patch the imports directly

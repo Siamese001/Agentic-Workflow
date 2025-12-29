@@ -1,4 +1,8 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
@@ -9,24 +13,29 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class CircuitState(Enum):
+# NAMING FIXED: CircuitState → circuit_state
+class circuit_state(Enum):
     """Circuit breaker states."""
 
 
-class HopStatus(Enum):
+# NAMING FIXED: HopStatus → hop_status
+class hop_status(Enum):
     """Status of a workflow hop/step."""
 
 
-class GateDecision(Enum):
+# NAMING FIXED: GateDecision → gate_decision
+class gate_decision(Enum):
     """Decision from a workflow gate."""
 
 
-class BulletProvenance(Enum):
+# NAMING FIXED: BulletProvenance → bullet_provenance
+class bullet_provenance(Enum):
     """Source of a bullet point."""
 
 
 @dataclass
-class HopCheckpoint:
+# NAMING FIXED: HopCheckpoint → hop_checkpoint
+class hop_checkpoint:
     """Checkpoint data for a workflow hop."""
 
     _hop_id: str

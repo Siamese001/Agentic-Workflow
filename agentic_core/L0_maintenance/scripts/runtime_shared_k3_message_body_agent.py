@@ -1,21 +1,15 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
 
-"""K.3 Message Body Agent - Archetype-Specific Content Generation.
-
-This agent generates the message body with archetype-specific transition phrases,
-micro-structure enforcement, and placeholder detection blocking.
-"""
-
+'Brief description of functionality and purpose.'
+'K.3 Message Body Agent - Archetype-Specific Content Generation.\n\nThis agent generates the message body with archetype-specific transition phrases,\nmicro-structure enforcement, and placeholder detection blocking.\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-
-LOGGER = logging.getLogger(__name__)
-
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class K3Output:
+class k3_output:
     """K.3 message body output."""
-
     body: str
     archetype: str
     transition_phrase: str
@@ -24,53 +18,10 @@ class K3Output:
     word_count: int
     char_count: int
     _metadata: Dict[str, Any]
+archetype_transitions: Any = {'C_LEVEL': 'Two strategic insights I have gleaned from my research about {company}:', 'EXECUTIVE': 'Two strategic insights I have gleaned from my clients about {company}:', 'SENIOR_TA': 'Two insights from your profile that align with this role:', 'RECRUITER': "Two reasons I'm reaching out about this opportunity:"}
+archetype_templates: Any = {'C_LEVEL': {'format': 'ANALYST_LEVEL_PITCH', 'tone': 'thought_leadership', 'formality': 'high', 'insights_required': 2, 'bullets_required': 3, 'drq_required': True}, 'EXECUTIVE': {'format': 'EXECUTIVE_PITCH', 'tone': 'strategic', 'formality': 'moderate_high', 'insights_required': 2, 'bullets_required': 3, 'drq_required': False}, 'SENIOR_TA': {'format': 'TA_PITCH', 'tone': 'professional_warm', 'formality': 'moderate', 'insights_required': 2, 'bullets_required': 3, 'profile_rag_mandatory': True}, 'RECRUITER': {'format': 'RECRUITER_PITCH', 'tone': 'job_focused', 'formality': 'moderate', 'insights_required': 2, 'bullets_required': 3}}
 
-
-# Archetype-specific transition phrases (from LinkedInCanonical v2.90)
-ARCHETYPE_TRANSITIONS = {
-    "C_LEVEL": "Two strategic insights I have gleaned from my research about {company}:",
-    "EXECUTIVE": "Two strategic insights I have gleaned from my clients about {company}:",
-    "SENIOR_TA": "Two insights from your profile that align with this role:",
-    "RECRUITER": "Two reasons I'm reaching out about this opportunity:",
-}
-
-# Archetype-specific message templates
-ARCHETYPE_TEMPLATES = {
-    "C_LEVEL": {
-        "format": "ANALYST_LEVEL_PITCH",
-        "tone": "thought_leadership",
-        "formality": "high",
-        "insights_required": 2,
-        "bullets_required": 3,
-        "drq_required": True,  # Deep Research Query
-    },
-    "EXECUTIVE": {
-        "format": "EXECUTIVE_PITCH",
-        "tone": "strategic",
-        "formality": "moderate_high",
-        "insights_required": 2,
-        "bullets_required": 3,
-        "drq_required": False,
-    },
-    "SENIOR_TA": {
-        "format": "TA_PITCH",
-        "tone": "professional_warm",
-        "formality": "moderate",
-        "insights_required": 2,
-        "bullets_required": 3,
-        "profile_rag_mandatory": True,
-    },
-    "RECRUITER": {
-        "format": "RECRUITER_PITCH",
-        "tone": "job_focused",
-        "formality": "moderate",
-        "insights_required": 2,
-        "bullets_required": 3,
-    },
-}
-
-
-class K3MessageBodyAgent(Agent):
+class k3_message_body_agent(Agent):
     """K.3 specialist agent for message body generation.
 
     This agent generates archetype-specific message bodies with:
@@ -81,10 +32,7 @@ class K3MessageBodyAgent(Agent):
     - Metric source binding enforcement (LIC-QA-041)
     """
 
-
-def __init__(
-    self: Any, config: ReasoningConfig, archetype: str, route: str, char_limit: Optional[int]
-) -> None:
+def __init__(self: Any, config: ReasoningConfig, archetype: str, route: str, char_limit: Optional[int]) -> None:
     """Initialize K.3 message body agent.
 
     Args:
@@ -93,20 +41,13 @@ def __init__(
         route: Message route (INMAIL, CONNECTION_REQ, etc.)
         char_limit: Character limit for route
     """
-    super().__init__(config, k_node_id="K.3", element="Message Body")
-
+    super().__init__(config, k_node_id='K.3', element='Message Body')
     SELF.ARCHETYPE = archetype
     SELF.ROUTE = route
     self.char_limit = char_limit
-    SELF.TEMPLATE = ARCHETYPE_TEMPLATES.get(archetype, ARCHETYPE_TEMPLATES["EXECUTIVE"])
+    SELF.TEMPLATE = ARCHETYPE_TEMPLATES.get(archetype, ARCHETYPE_TEMPLATES['EXECUTIVE'])
+    logger.info(f'K.3 Message Body Agent initialized: ARCHETYPE={archetype}, route={route}, char_limit={char_limit}')
 
-    logger.info(
-        f"K.3 Message Body Agent initialized: "
-        F"ARCHETYPE={archetype}, route={route}, char_limit={char_limit}"
-    )
-
-
-# REFACTOR: Split this 78-line function
 async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     """Execute K.3 message body generation.
 
@@ -122,91 +63,32 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     Returns:
         K3Output with message body
     """
-    logger.info(f"Executing K.3 message body generation for {self.archetype}")
-
-    # Extract context
-    company_name = context.get("company_name", "the company")
-    recipient_name = context.get("recipient_name", "")
-    rag_insights = context.get("rag_insights", [])
-    sender_bullets = context.get("sender_bullets", [])
-    regeneration_feedback = context.get("regeneration_feedback")
-
-    # Build prompt
+    logger.info(f'Executing K.3 message body generation for {self.archetype}')
+    company_name: Any = context.get('company_name', 'the company')
+    recipient_name: Any = context.get('recipient_name', '')
+    rag_insights: Any = context.get('rag_insights', [])
+    sender_bullets: Any = context.get('sender_bullets', [])
+    regeneration_feedback: Any = context.get('regeneration_feedback')
     if regeneration_feedback:
-        PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
+        PROMPT: Any = self._build_regeneration_prompt(context, regeneration_feedback)
     else:
-        PROMPT = self._build_initial_prompt(
-            company_name, recipient_name, rag_insights, sender_bullets
-        )
-
-    # Generate with self-consistency if configured
+        PROMPT: Any = self._build_initial_prompt(company_name, recipient_name, rag_insights, sender_bullets)
     if self.config.self_consistency > 1:
-        CANDIDATES = await self._call_llm_with_self_consistency(
-            PROMPT, K=self.config.self_consistency
-        )
-        self._select_best_candidate(candidates, "length")
+        CANDIDATES: Any = await self._call_llm_with_self_consistency(PROMPT, K=self.config.self_consistency)
+        self._select_best_candidate(candidates, 'length')
     else:
         await self._call_llm(prompt)
-
-    # Parse body components
     response.strip()
-
-    # Extract transition phrase
-    transition_phrase = self._extract_transition_phrase(body, company_name)
-
-    # Count insights and bullets
-    insights_count = self._count_insights(body)
-    bullets_count = self._count_bullets(body)
-
-    # Calculate metrics
-    word_count = len(body.split())
-    char_count = len(body)
-
-    # Build output
-    OUTPUT = K3Output(
-        BODY=body,
-        ARCHETYPE=self.archetype,
-        transition_phrase=transition_phrase,
-        insights_count=insights_count,
-        bullets_count=bullets_count,
-        word_count=word_count,
-        char_count=char_count,
-        METADATA={
-            "k_node_id": self.k_node_id,
-            "route": self.route,
-            "template": self.template["format"],
-            "temperature": self.config.temperature,
-        },
-    )
-
-    logger.info(
-        f"K.3 generation complete: {word_count} words, {char_count} chars, "
-        f"{insights_count} insights, {bullets_count} bullets"
-    )
-
+    transition_phrase: Any = self._extract_transition_phrase(body, company_name)
+    insights_count: Any = self._count_insights(body)
+    bullets_count: Any = self._count_bullets(body)
+    word_count: Any = len(body.split())
+    char_count: Any = len(body)
+    OUTPUT: Any = K3Output(BODY=body, ARCHETYPE=self.archetype, transition_phrase=transition_phrase, insights_count=insights_count, bullets_count=bullets_count, word_count=word_count, char_count=char_count, METADATA={'k_node_id': self.k_node_id, 'route': self.route, 'template': self.template['format'], 'temperature': self.config.temperature})
+    logger.info(f'K.3 generation complete: {word_count} words, {char_count} chars, {insights_count} insights, {bullets_count} bullets')
     return output
 
-# REFACTOR: Split this 66-line function
-
-
-# L4 REFACTOR: Function '_build_initial_prompt' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\k3_message_body_agent.py:_build_initial_prompt
-
-
-# L4 REFACTOR: Function '_build_initial_prompt' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\k3_message_body_agent.py:_build_initial_prompt
-
-
-# L4 REFACTOR: Function '_build_initial_prompt' exceeds 66 lines
-# TODO: Manual split required - see refactor plan .\scripts\runtime\shared\k3_message_body_agent.py:_build_initial_prompt
-
-def _build_initial_prompt(
-    self: Any,
-    company_name: str,
-    recipient_name: str,
-    rag_insights: List[str],
-    sender_bullets: List[str],
-) -> str:
+def _build_initial_prompt(self: Any, company_name: str, recipient_name: str, rag_insights: List[str], sender_bullets: List[str]) -> str:
     """Build initial generation prompt.
 
     Args:
@@ -218,55 +100,9 @@ def _build_initial_prompt(
     Returns:
         Formatted prompt
     """
-    transition_phrase = ARCHETYPE_TRANSITIONS.get(
-        self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
-    ).FORMAT(COMPANY=company_name)
-
-    PROMPT = f"""Generate a professional LinkedIn message body for a {self.archetype} recipient.
-
-CRITICAL CONSTRAINTS (ZERO TOLERANCE):
-1. Must include EXACT transition phrase: "{transition_phrase}"
-2. Exactly 2 insights (numbered "1." and "2.")
-3. Exactly 3 measurable bullets with metrics
-4. NO placeholders ([NAME], {{company}}, etc.) - BLOCKING violation (LIC-QA-001)
-5. Character limit: {self.char_limit if self.char_limit else 'No limit'}
-
-ARCHETYPE TEMPLATE: {self.template['format']}
-- Tone: {self.template['tone']}
-- Formality: {self.template['formality']}
-
-STRUCTURE:
-Hi {recipient_name},
-
-[Opening hook - 1 sentence]
-
-{transition_phrase}
-
-1. [First insight from RAG - specific to {company_name}]
-2. [Second insight from RAG - specific to {company_name}]
-
-[Bridge phrase: "A few highlights from my experience:"]
-
-• [Bullet 1 with metric and context]
-• [Bullet 2 with metric and context]
-• [Bullet 3 with metric and context]
-
-RAG INSIGHTS (use these):
-{chr(10).join(f'- {insight}' for insight in rag_insights[:5])}
-
-SENDER CREDENTIALS (use for bullets):
-{chr(10).join(f'- {bullet}' for bullet in sender_bullets[:5])}
-
-FORBIDDEN (LIC-QA-001):
-- [NAME], [COMPANY], {{name}}, {{company}}
-- <NAME>, <COMPANY>
-- PLACEHOLDER, TODO
-
-Generate the message body now:
-"""
-
+    transition_phrase = ARCHETYPE_TRANSITIONS.get(self.archetype, ARCHETYPE_TRANSITIONS['EXECUTIVE']).FORMAT(COMPANY=company_name)
+    PROMPT = f'''Generate a professional LinkedIn message body for a {self.archetype} recipient.\n\nCRITICAL CONSTRAINTS (ZERO TOLERANCE):\n1. Must include EXACT transition phrase: "{transition_phrase}"\n2. Exactly 2 insights (numbered "1." and "2.")\n3. Exactly 3 measurable bullets with metrics\n4. NO placeholders ([NAME], {{company}}, etc.) - BLOCKING violation (LIC-QA-001)\n5. Character limit: {(self.char_limit if self.char_limit else 'No limit')}\n\nARCHETYPE TEMPLATE: {self.template['format']}\n- Tone: {self.template['tone']}\n- Formality: {self.template['formality']}\n\nSTRUCTURE:\nHi {recipient_name},\n\n[Opening hook - 1 sentence]\n\n{transition_phrase}\n\n1. [First insight from RAG - specific to {company_name}]\n2. [Second insight from RAG - specific to {company_name}]\n\n[Bridge phrase: "A few highlights from my experience:"]\n\n• [Bullet 1 with metric and context]\n• [Bullet 2 with metric and context]\n• [Bullet 3 with metric and context]\n\nRAG INSIGHTS (use these):\n{chr(10).join((f'- {insight}' for insight in rag_insights[:5]))}\n\nSENDER CREDENTIALS (use for bullets):\n{chr(10).join((f'- {bullet}' for bullet in sender_bullets[:5]))}\n\nFORBIDDEN (LIC-QA-001):\n- [NAME], [COMPANY], {{name}}, {{company}}\n- <NAME>, <COMPANY>\n- PLACEHOLDER, TODO\n\nGenerate the message body now:\n'''
     return prompt
-
 
 def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
     """Build regeneration prompt with validation feedback.
@@ -278,30 +114,9 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     Returns:
         Regeneration prompt
     """
-    previous_body = context.get("previous_body", "")
-
-    PROMPT = f"""REGENERATION REQUIRED
-
-{feedback}
-
-PREVIOUS OUTPUT:
-{previous_body}
-
-CONSTRAINTS:
-- Must include exact transition phrase
-- Exactly 2 insights, exactly 3 bullets
-- NO placeholders (BLOCKING)
-- Character limit: {self.char_limit if self.char_limit else 'No limit'}
-
-INSTRUCTIONS:
-Fix ONLY the failing sections listed in feedback.
-Maintain all other content unchanged.
-
-Generate the corrected message body:
-"""
-
+    previous_body = context.get('previous_body', '')
+    PROMPT = f"REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS OUTPUT:\n{previous_body}\n\nCONSTRAINTS:\n- Must include exact transition phrase\n- Exactly 2 insights, exactly 3 bullets\n- NO placeholders (BLOCKING)\n- Character limit: {(self.char_limit if self.char_limit else 'No limit')}\n\nINSTRUCTIONS:\nFix ONLY the failing sections listed in feedback.\nMaintain all other content unchanged.\n\nGenerate the corrected message body:\n"
     return prompt
-
 
 def _extract_transition_phrase(self: Any, body: str, company_name: str) -> str:
     """Extract transition phrase from body.
@@ -313,15 +128,10 @@ def _extract_transition_phrase(self: Any, body: str, company_name: str) -> str:
     Returns:
         Extracted transition phrase or empty string
     """
-    expected_phrase = ARCHETYPE_TRANSITIONS.get(
-        self.archetype, ARCHETYPE_TRANSITIONS["EXECUTIVE"]
-    ).FORMAT(COMPANY=company_name)
-
+    expected_phrase = ARCHETYPE_TRANSITIONS.get(self.archetype, ARCHETYPE_TRANSITIONS['EXECUTIVE']).FORMAT(COMPANY=company_name)
     if expected_phrase.lower() in body.lower():
         return expected_phrase
-
-    return ""
-
+    return ''
 
 def _count_insights(self: Any, body: str) -> int:
     """Count numbered insights in body.
@@ -333,11 +143,8 @@ def _count_insights(self: Any, body: str) -> int:
         Number of insights
     """
     import re
-
-    # Count patterns like "1." and "2."
-    INSIGHTS = re.findall(r"\n\d+\.\s+", body)
+    INSIGHTS = re.findall('\\n\\d+\\.\\s+', body)
     return len(insights)
-
 
 def _count_bullets(self: Any, body: str) -> int:
     """Count bullets in body.
@@ -349,7 +156,5 @@ def _count_bullets(self: Any, body: str) -> int:
         Number of bullets
     """
     import re
-
-    # Count patterns like "•", "-", "*"
-    BULLETS = re.findall(r"[\n•\-\*]\s+", body)
+    BULLETS = re.findall('[\\n•\\-\\*]\\s+', body)
     return len(bullets)

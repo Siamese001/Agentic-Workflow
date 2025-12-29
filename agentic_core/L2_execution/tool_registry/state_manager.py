@@ -1,15 +1,13 @@
-# File: state_manager_RES.py
-# Version: 16.30
-# State serialization and deserialization layer for workflow hops
-
 import json
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 import os
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-
-class StateSerializer:
+class state_serializer:
     """
     Manages serialization and deserialization of workflow hop outputs.
 
@@ -30,44 +28,7 @@ class StateSerializer:
         """
         self.run_path = run_path
         self.run_id = run_id
-
-        # This map defines the file system state configuration
-        # Each hop has a filename and expected type
-        self.HOP_CONFIG = {
-            0: {
-                "filename": f"{self.run_id}_HOP-0_ThematicAnalysis.json",
-                "type": ThematicAnalysis
-            },
-            1: {
-                "filename": f"{self.run_id}_HOP-1_ExtractedData.json",
-                "type": dict
-            },
-            2: {
-                "filename": f"{self.run_id}_HOP-2_EnrichedScaffold.json",
-                "type": dict
-            },
-            3: {
-                "filename": f"{self.run_id}_HOP-3_ArtistOutput.json",
-                "type": dict
-            },
-            4: {
-                "filename": f"{self.run_id}_HOP-4_StagingBuffer.json",
-                "type": dict
-            },
-            5: {
-                "filename": f"{self.run_id}_HOP-5_ValidationResults.json",
-                "type": "list[ValidationResult]"  # Special handling needed
-            },
-            7: {
-                "filename": f"{self.run_id}_HOP-7_FilePaths.json",
-                "type": dict
-            },
-            8: {
-                "filename": f"{self.run_id}_HOP-8_QAReport.json",
-                "type": dict
-            },
-            # HOP-6 is a decision gate, not a file state
-        }
+        self.HOP_CONFIG = {0: {'filename': f'{self.run_id}_HOP-0_ThematicAnalysis.json', 'type': ThematicAnalysis}, 1: {'filename': f'{self.run_id}_HOP-1_ExtractedData.json', 'type': dict}, 2: {'filename': f'{self.run_id}_HOP-2_EnrichedScaffold.json', 'type': dict}, 3: {'filename': f'{self.run_id}_HOP-3_ArtistOutput.json', 'type': dict}, 4: {'filename': f'{self.run_id}_HOP-4_StagingBuffer.json', 'type': dict}, 5: {'filename': f'{self.run_id}_HOP-5_ValidationResults.json', 'type': 'list[ValidationResult]'}, 7: {'filename': f'{self.run_id}_HOP-7_FilePaths.json', 'type': dict}, 8: {'filename': f'{self.run_id}_HOP-8_QAReport.json', 'type': dict}}
 
     def get_path_for_hop(self, hop_num: int) -> str:
         """
@@ -83,7 +44,7 @@ class StateSerializer:
             ValueError: If no config exists for the hop number
         """
         if hop_num not in self.HOP_CONFIG:
-            raise ValueError(f"No file path config found for hop {hop_num}")
+            raise ValueError(f'No file path config found for hop {hop_num}')
         return os.path.join(self.run_path, self.HOP_CONFIG[hop_num]['filename'])
 
     def save(self, hop_num: int, data: object) -> None:
@@ -97,13 +58,11 @@ class StateSerializer:
         Raises:
             ValueError: If no config exists for the hop number
         """
-        CONFIG = self.HOP_CONFIG.get(hop_num)
+        CONFIG: Any = self.HOP_CONFIG.get(hop_num)
         if not CONFIG:
-            raise ValueError(f"Cannot save: No config for hop {hop_num}")
-
-        output_path = self.get_path_for_hop(hop_num)
-        data_to_save = self._serialize(data, CONFIG['type'])
-
+            raise ValueError(f'Cannot save: No config for hop {hop_num}')
+        output_path: Any = self.get_path_for_hop(hop_num)
+        data_to_save: Any = self._serialize(data, CONFIG['type'])
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data_to_save, f, indent=2, ensure_ascii=False)
 
@@ -121,19 +80,14 @@ class StateSerializer:
             ValueError: If no config exists for the hop number
             FileNotFoundError: If the hop output file doesn't exist
         """
-        CONFIG = self.HOP_CONFIG.get(hop_num)
+        CONFIG: Any = self.HOP_CONFIG.get(hop_num)
         if not CONFIG:
-            raise ValueError(f"Cannot load: No config for hop {hop_num}")
-
-        input_path = self.get_path_for_hop(hop_num)
+            raise ValueError(f'Cannot load: No config for hop {hop_num}')
+        input_path: Any = self.get_path_for_hop(hop_num)
         if not os.path.exists(input_path):
-            raise FileNotFoundError(
-                f"Cannot load state for hop {hop_num}: File not found at {input_path}"
-            )
-
+            raise FileNotFoundError(f'Cannot load state for hop {hop_num}: File not found at {input_path}')
         with open(input_path, 'r', encoding='utf-8') as f:
-            data_dict = json.load(f)
-
+            data_dict: Any = json.load(f)
         return self._deserialize(data_dict, CONFIG['type'])
 
     def exists(self, hop_num: int) -> bool:
@@ -147,7 +101,7 @@ class StateSerializer:
             True if the file exists, False otherwise
         """
         try:
-            PATH = self.get_path_for_hop(hop_num)
+            PATH: Any = self.get_path_for_hop(hop_num)
             return os.path.exists(PATH)
         except ValueError:
             return False
@@ -164,24 +118,16 @@ class StateSerializer:
             JSON-serializable data
         """
         if expected_type == ThematicAnalysis:
-            # Convert dataclass to dict
             return asdict(data)
-
-        if expected_type == "list[ValidationResult]":
-            # Save ValidationResult list with Enum conversion
+        if expected_type == 'list[ValidationResult]':
             serialized_list = []
             for vr in data:
                 vr_dict = asdict(vr)
-                # Convert Enum to string name for JSON storage
-                vr_dict["severity"] = vr.severity.name
+                vr_dict['severity'] = vr.severity.name
                 serialized_list.append(vr_dict)
             return serialized_list
-
         if expected_type == dict:
-            # Already JSON-safe
             return data
-
-        # Default: assume already serializable
         return data
 
     def _deserialize(self, data_dict: Dict[str, object], expected_type: type) -> object:
@@ -196,25 +142,16 @@ class StateSerializer:
             Reconstructed Python object
         """
         if expected_type == ThematicAnalysis:
-            # Use the static method from rag_RES.py
-            # Import here to avoid circular dependencies
             return EnhancedJobDescriptionAnalyzer._dict_to_thematic_analysis(data_dict)
-
-        if expected_type == "list[ValidationResult]":
-            # Re-hydrate ValidationResult list with Enum reconstruction
+        if expected_type == 'list[ValidationResult]':
             deserialized_list = []
             for vr_dict in data_dict:
-                # Convert string name back to Enum
-                severity_name = vr_dict.get("severity", "INFO")
-                vr_dict["severity"] = ValidationSeverity[severity_name]
+                severity_name = vr_dict.get('severity', 'INFO')
+                vr_dict['severity'] = ValidationSeverity[severity_name]
                 deserialized_list.append(ValidationResult(**vr_dict))
             return deserialized_list
-
         if expected_type == dict:
-            # Already correct type
             return data_dict
-
-        # Default: return as-is
         return data_dict
 
     def delete_hop_file(self, hop_num: int) -> bool:
@@ -228,7 +165,7 @@ class StateSerializer:
             True if file was deleted, False if it didn't exist
         """
         try:
-            file_path = self.get_path_for_hop(hop_num)
+            file_path: Any = self.get_path_for_hop(hop_num)
             if os.path.exists(file_path):
                 os.remove(file_path)
                 return True
@@ -243,14 +180,14 @@ class StateSerializer:
         Returns:
             Dictionary mapping hop_num -> file_path for existing files
         """
-        existing_files = {}
+        existing_files: Any = {}
         for hop_num in self.HOP_CONFIG.keys():
-            file_path = self.get_path_for_hop(hop_num)
+            file_path: Any = self.get_path_for_hop(hop_num)
             if os.path.exists(file_path):
                 existing_files[hop_num] = file_path
         return existing_files
 
-class ManifestManager:
+class manifest_manager:
     """
     Manages the run_manifest.json file for a workflow run.
 
@@ -268,10 +205,9 @@ class ManifestManager:
             run_path: Absolute path to the run directory
         """
         self.run_path = run_path
-        self.manifest_path = os.path.join(run_path, "run_manifest.json")
+        self.manifest_path = os.path.join(run_path, 'run_manifest.json')
 
-    def create_manifest(self, run_id: str, engine_version: str,
-                        job_input: dict, master_resume_hash: str) -> Dict[str, object]:
+    def create_manifest(self, run_id: str, engine_version: str, job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.
 
@@ -285,16 +221,7 @@ class ManifestManager:
             The created manifest dictionary
         """
         from datetime import datetime
-
-        MANIFEST = {
-            "run_id": run_id,
-            "engine_version": engine_version,
-            "start_time_utc": datetime.utcnow().isoformat() + "Z",
-            "job_input": job_input,
-            "master_resume_hash": master_resume_hash,
-            "hop_checkpoints": []
-        }
-
+        MANIFEST: Any = {'run_id': run_id, 'engine_version': engine_version, 'start_time_utc': datetime.utcnow().isoformat() + 'Z', 'job_input': job_input, 'master_resume_hash': master_resume_hash, 'hop_checkpoints': []}
         self._save_manifest(MANIFEST)
         return MANIFEST
 
@@ -309,29 +236,25 @@ class ManifestManager:
             FileNotFoundError: If manifest doesn't exist
         """
         if not os.path.exists(self.manifest_path):
-            raise FileNotFoundError(f"Manifest not found at {self.manifest_path}")
+            raise FileNotFoundError(f'Manifest not found at {self.manifest_path}')
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
             return json.load(f)
+
     def add_checkpoint(self, checkpoint: HopCheckpoint) -> None:
         """
         Appends a checkpoint to the manifest.
         Args:
             checkpoint: The HopCheckpoint to add
         """
-        MANIFEST = self.load_manifest()
-
-        # Convert checkpoint to dict with enum serialization
-        checkpoint_dict = asdict(checkpoint)
-
-        # Convert HopStatus enum to string name
+        MANIFEST: Any = self.load_manifest()
+        checkpoint_dict: Any = asdict(checkpoint)
         checkpoint_dict['status'] = checkpoint.status.name
-
-        # Convert ValidationSeverity enums in validation_results
         for vr in checkpoint_dict.get('validation_results', []):
             if 'severity' in vr and hasattr(vr['severity'], 'name'):
                 vr['severity'] = vr['severity'].name
         MANIFEST['hop_checkpoints'].append(checkpoint_dict)
         self._save_manifest(MANIFEST)
+
     def update_checkpoint(self, hop_id: str, updates: dict) -> None:
         """
         Updates an existing checkpoint in the manifest.
@@ -340,7 +263,7 @@ class ManifestManager:
             hop_id: The hop_id to update (e.g., "HOP-3")
             updates: Dictionary of fields to update
         """
-        MANIFEST = self.load_manifest()
+        MANIFEST: Any = self.load_manifest()
         for checkpoint in MANIFEST['hop_checkpoints']:
             if checkpoint['hop_id'] == hop_id:
                 checkpoint.update(updates)
@@ -354,23 +277,18 @@ class ManifestManager:
         Returns:
             List of HopCheckpoint objects
         """
-        MANIFEST = self.load_manifest()
-        CHECKPOINTS = []
+        MANIFEST: Any = self.load_manifest()
+        CHECKPOINTS: Any = []
         for cp_dict in MANIFEST.get('hop_checkpoints', []):
-            # Reconstruct ValidationResult objects
-            validation_results = []
+            validation_results: Any = []
             for vr_dict in cp_dict.get('validation_results', []):
-                severity_name = vr_dict.get('severity', 'INFO')
+                severity_name: Any = vr_dict.get('severity', 'INFO')
                 vr_dict['severity'] = ValidationSeverity[severity_name]
                 validation_results.append(ValidationResult(**vr_dict))
-
-            # Reconstruct HopStatus enum
-            status_name = cp_dict.get('status', 'pass')
+            status_name: Any = cp_dict.get('status', 'pass')
             cp_dict['status'] = HopStatus[status_name]
             cp_dict['validation_results'] = validation_results
-
             CHECKPOINTS.append(HopCheckpoint(**cp_dict))
-
         return CHECKPOINTS
 
     def _save_manifest(self, manifest_data: Dict[str, object]) -> None:
@@ -380,6 +298,5 @@ class ManifestManager:
         Args:
             manifest_data: The manifest dictionary to save
         """
-
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)

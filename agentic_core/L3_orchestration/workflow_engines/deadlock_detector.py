@@ -13,15 +13,20 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 # Configuration
-MAX_PHASE_TIME = 300  # 5 minutes in seconds
-HEARTBEAT_INTERVAL = 30  # Check every 30 seconds
-DEADLOCK_THRESHOLD = 2  # Alert after 2 consecutive timeouts
+# NAMING FIXED: MAX_PHASE_TIME → max_phase_time
+max_phase_time = 300  # 5 minutes in seconds
+# NAMING FIXED: HEARTBEAT_INTERVAL → heartbeat_interval
+heartbeat_interval = 30  # Check every 30 seconds
+# NAMING FIXED: DEADLOCK_THRESHOLD → deadlock_threshold
+deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 
-class TaskMonitor:
+# NAMING FIXED: TaskMonitor → task_monitor
+class task_monitor:
     """Monitors a single asyncio task."""
 
     def __init__(self, task: asyncio.Task, name: str = None):
@@ -61,7 +66,8 @@ class TaskMonitor:
         return "Task completed"
 
 
-class DeadlockDetector:
+# NAMING FIXED: DeadlockDetector → deadlock_detector
+class deadlock_detector:
     """
     Detects potential deadlocks in asyncio tasks.
 
@@ -292,7 +298,11 @@ def send_heartbeat(task_id: str):
 def monitor_task(name: str = None):
     """Decorator to automatically monitor a coroutine."""
     def decorator(coro):
+                    '''Brief description of functionality and purpose.'''
+                    
         async def wrapper(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             task = asyncio.create_task(coro(*args, **kwargs))
             task_id = register_task(task, name or coro.__name__)
 

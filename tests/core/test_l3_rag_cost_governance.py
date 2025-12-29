@@ -35,6 +35,8 @@ def test_canon_rag_low_cost_priority():
 
     # --- SETUP: Mock Brave Search to return SUCCESS ---
     def mock_brave_success(query, logger):
+                    '''Brief description of functionality and purpose.'''
+                    
         nonlocal brave_called
         brave_called = True
         logger.info(f"MOCK: Brave Search called with query: {query}")
@@ -47,6 +49,8 @@ def test_canon_rag_low_cost_priority():
 
     # --- SETUP: Mock Pinecone Fallback to track if called ---
     def mock_pinecone_failure(description, version, logger):
+                    '''Brief description of functionality and purpose.'''
+                    
         nonlocal pinecone_called
         pinecone_called = True
         logger.error(
@@ -57,6 +61,8 @@ def test_canon_rag_low_cost_priority():
     audit_logs = []
 
     def mock_add_observations(observations):
+                    '''Brief description of functionality and purpose.'''
+                    
         audit_logs.extend(observations)
 
     # --- EXECUTION with mocks ---
@@ -148,6 +154,8 @@ def test_pinecone_fallback_when_brave_fails():
 
     # --- SETUP: Mock Brave Search to return empty (no fix found) ---
     def mock_brave_empty(query, logger):
+                    '''Brief description of functionality and purpose.'''
+                    
         nonlocal brave_called
         brave_called = True
         logger.info("MOCK: Brave Search returned no results")
@@ -155,6 +163,8 @@ def test_pinecone_fallback_when_brave_fails():
 
     # --- SETUP: Mock Pinecone to return success ---
     def mock_pinecone_success(description, version, logger):
+                    '''Brief description of functionality and purpose.'''
+                    
         nonlocal pinecone_called
         pinecone_called = True
         logger.info("MOCK: Pinecone fallback called and succeeded")

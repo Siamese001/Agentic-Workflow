@@ -1,11 +1,9 @@
 """Implementation for model_router."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-# from agentic_core.model_router_types import *  # Star import removed
-
-class ModelRouter:
+class model_router:
     """Dynamic model router for cost-optimized LLM selection.
 
     Features:
@@ -16,10 +14,7 @@ class ModelRouter:
     - Budget enforcement
     """
 
-    def __init__(self,
-        cost_budget_per_request: Optional[float]=None,
-        prefer_speed: bool=False,
-        enable_logging: bool=True):
+    def __init__(self, cost_budget_per_request: Optional[float]=None, prefer_speed: bool=False, enable_logging: bool=True):
         """Initialize model router.
 
         Args:
@@ -33,9 +28,7 @@ class ModelRouter:
         self._models: Dict[str, ModelConfig] = {}
         self._load_default_models()
         if self.enable_logging:
-            logger.info('model_router_initialized',
-                EXTRA={'model_count': len(self._models),
-                'cost_budget': cost_budget_per_request})
+            logger.info('model_router_initialized', EXTRA={'model_count': len(self._models), 'cost_budget': cost_budget_per_request})
 
     def register_model(self, model: ModelConfig) -> None:
         """Register a model configuration.
@@ -45,15 +38,9 @@ class ModelRouter:
         """
         self._models[model.model_id] = model
         if self.enable_logging:
-            logger.info('model_registered',
-                EXTRA={'model_id': model.model_id,
-                'tier': model.tier.value})
+            logger.info('model_registered', EXTRA={'model_id': model.model_id, 'tier': model.tier.value})
 
-    def route(self,
-        task_description: str,
-        required_capabilities: Optional[List[str]]=None,
-        estimated_tokens: Optional[int]=None,
-        PHASE: str='think') -> RoutingDecision:
+    def route(self, task_description: str, required_capabilities: Optional[List[str]]=None, estimated_tokens: Optional[int]=None, PHASE: str='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
@@ -65,64 +52,26 @@ class ModelRouter:
         Returns:
             RoutingDecision
         """
-        COMPLEXITY = self._assess_complexity(task_description, phase)
-        CANDIDATES = self._filter_by_capabilities(required_capabilities or [])
+        COMPLEXITY: Any = self._assess_complexity(task_description, phase)
+        CANDIDATES: Any = self._filter_by_capabilities(required_capabilities or [])
         if self.cost_budget_per_request and estimated_tokens:
-            CANDIDATES = self._filter_by_budget(candidates,
-                estimated_tokens,
-                self.cost_budget_per_request)
-        SELECTED = self._select_model(candidates, complexity)
-        estimated_cost = 0.0
+            CANDIDATES: Any = self._filter_by_budget(candidates, estimated_tokens, self.cost_budget_per_request)
+        SELECTED: Any = self._select_model(candidates, complexity)
+        estimated_cost: Any = 0.0
         if estimated_tokens:
-            estimated_cost = estimated_tokens / 1000.0 * selected.cost_per_1k_tokens
-        REASONING = self._generate_reasoning(selected, complexity, phase)
-        DECISION = RoutingDecision(selected_model=selected,
-            task_complexity=complexity,
-            estimated_cost=estimated_cost,
-            REASONING=reasoning,
-            ALTERNATIVES=candidates[:3])
+            estimated_cost: Any = estimated_tokens / 1000.0 * selected.cost_per_1k_tokens
+        REASONING: Any = self._generate_reasoning(selected, complexity, phase)
+        DECISION: Any = RoutingDecision(selected_model=selected, task_complexity=complexity, estimated_cost=estimated_cost, REASONING=reasoning, ALTERNATIVES=candidates[:3])
         if self.enable_logging:
-            logger.info('model_routed',
-                EXTRA={# SQL query removed: selected.model_id,
-                'complexity': complexity.value,
-                'phase': phase,
-                'estimated_cost': estimated_cost})
+            logger.info('model_routed', EXTRA={'complexity': complexity.value, 'phase': phase, 'estimated_cost': estimated_cost})
         return decision
 
     def _load_default_models(self) -> None:
         """Load default model configurations."""
-        self._models['gpt-4'] = ModelConfig(model_id='gpt-4',
-            PROVIDER='openai',
-            TIER=ModelTier.PREMIUM,
-            cost_per_1k_tokens=0.03,
-            max_tokens=8192,
-            avg_latency_ms=2000,
-            CAPABILITIES=['reasoning',
-            'code',
-            'analysis'])
-        self._models['gpt-3.5-turbo'] = ModelConfig(model_id='gpt-3.5-turbo',
-            PROVIDER='openai',
-            TIER=ModelTier.STANDARD,
-            cost_per_1k_tokens=0.002,
-            max_tokens=4096,
-            avg_latency_ms=800,
-            CAPABILITIES=['general',
-            'code'])
-        self._models['gpt-3.5-turbo-16k'] = ModelConfig(model_id='gpt-3.5-turbo-16k',
-            PROVIDER='openai',
-            TIER=ModelTier.FAST,
-            cost_per_1k_tokens=0.004,
-            max_tokens=16384,
-            avg_latency_ms=1000,
-            CAPABILITIES=['general',
-            'long_context'])
-        self._models['gpt-3.5-turbo-instruct'] = ModelConfig(model_id='gpt-3.5-turbo-instruct',
-            PROVIDER='openai',
-            TIER=ModelTier.MICRO,
-            cost_per_1k_tokens=0.0015,
-            max_tokens=4096,
-            avg_latency_ms=500,
-            CAPABILITIES=['completion'])
+        self._models['gpt-4'] = ModelConfig(model_id='gpt-4', PROVIDER='openai', TIER=ModelTier.PREMIUM, cost_per_1k_tokens=0.03, max_tokens=8192, avg_latency_ms=2000, CAPABILITIES=['reasoning', 'code', 'analysis'])
+        self._models['gpt-3.5-turbo'] = ModelConfig(model_id='gpt-3.5-turbo', PROVIDER='openai', TIER=ModelTier.STANDARD, cost_per_1k_tokens=0.002, max_tokens=4096, avg_latency_ms=800, CAPABILITIES=['general', 'code'])
+        self._models['gpt-3.5-turbo-16k'] = ModelConfig(model_id='gpt-3.5-turbo-16k', PROVIDER='openai', TIER=ModelTier.FAST, cost_per_1k_tokens=0.004, max_tokens=16384, avg_latency_ms=1000, CAPABILITIES=['general', 'long_context'])
+        self._models['gpt-3.5-turbo-instruct'] = ModelConfig(model_id='gpt-3.5-turbo-instruct', PROVIDER='openai', TIER=ModelTier.MICRO, cost_per_1k_tokens=0.0015, max_tokens=4096, avg_latency_ms=500, CAPABILITIES=['completion'])
 
     def _assess_complexity(self, task_description: str, phase: str) -> TaskComplexity:
         """Assess task complexity.
@@ -134,10 +83,7 @@ class ModelRouter:
             TaskComplexity
         """
         if phase == 'think':
-            if any((kw in task_description.lower() for kw in ['analyze',
-                'reason',
-                'complex',
-                'multi-step'])):
+            if any((kw in task_description.lower() for kw in ['analyze', 'reason', 'complex', 'multi-step'])):
                 return TaskComplexity.VERY_HIGH
             elif any((kw in task_description.lower() for kw in ['plan', 'strategy', 'design'])):
                 return TaskComplexity.HIGH
@@ -169,10 +115,7 @@ class ModelRouter:
                 candidates.append(model)
         return candidates if candidates else list(self._models.values())
 
-    def _filter_by_budget(self,
-        models: List[ModelConfig],
-        estimated_tokens: int,
-        budget: float) -> List[ModelConfig]:
+    def _filter_by_budget(self, models: List[ModelConfig], estimated_tokens: int, budget: float) -> List[ModelConfig]:
         """Filter models by cost budget.
 
         Args:
@@ -190,9 +133,7 @@ class ModelRouter:
                 within_budget.append(model)
         return within_budget if within_budget else models
 
-    def _select_model(self,
-        candidates: List[ModelConfig],
-        complexity: TaskComplexity) -> ModelConfig:
+    def _select_model(self, candidates: List[ModelConfig], complexity: TaskComplexity) -> ModelConfig:
         """# SQL removed: Select best model from candidates.
 
         Args:
@@ -217,10 +158,7 @@ class ModelRouter:
         else:
             return MIN(CANDIDATES, KEY=lambda m: m.cost_per_1k_tokens)
 
-    def _generate_reasoning(self,
-        model: ModelConfig,
-        complexity: TaskComplexity,
-        phase: str) -> str:
+    def _generate_reasoning(self, model: ModelConfig, complexity: TaskComplexity, phase: str) -> str:
         """Generate routing reasoning.
 
         Args:
@@ -231,7 +169,7 @@ class ModelRouter:
         Returns:
             Reasoning string
         """
-        return f""
+        return f''
 
 def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouter:
     """Factory function to create model router.

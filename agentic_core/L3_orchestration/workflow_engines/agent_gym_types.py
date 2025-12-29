@@ -3,26 +3,26 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class ScenarioType(Enum):
+class scenario_type(Enum):
     """Types of training scenarios."""
-    GOLDEN_DATASET = 'golden_dataset'
-    ADVERSARIAL = 'adversarial'
-    CAPABILITY_GAP = 'capability_gap'
-    STRESS_TEST = 'stress_test'
-    REGRESSION = 'regression'
+    GOLDEN_DATASET: Any = 'golden_dataset'
+    ADVERSARIAL: Any = 'adversarial'
+    CAPABILITY_GAP: Any = 'capability_gap'
+    STRESS_TEST: Any = 'stress_test'
+    REGRESSION: Any = 'regression'
 
-class PerformanceLevel(Enum):
+class performance_level(Enum):
     """Performance level classifications."""
-    EXCELLENT = 'excellent'
-    GOOD = 'good'
-    ACCEPTABLE = 'acceptable'
-    NEEDS_IMPROVEMENT = 'needs_improvement'
-    CRITICAL = 'critical'
+    EXCELLENT: Any = 'excellent'
+    GOOD: Any = 'good'
+    ACCEPTABLE: Any = 'acceptable'
+    NEEDS_IMPROVEMENT: Any = 'needs_improvement'
+    CRITICAL: Any = 'critical'
 
 @dataclass
-class TrainingScenario:
+class training_scenario:
     """Training scenario for agent evaluation."""
     id: str
     name: str
@@ -34,16 +34,10 @@ class TrainingScenario:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id,
-            'name': self.name,
-            'scenario_type': self.scenario_type.value,
-            'description': self.description,
-            'test_case_count': len(self.test_cases),
-            'success_threshold': self.success_threshold,
-            'metadata': self.metadata}
+        return {'id': self.id, 'name': self.name, 'scenario_type': self.scenario_type.value, 'description': self.description, 'test_case_count': len(self.test_cases), 'success_threshold': self.success_threshold, 'metadata': self.metadata}
 
 @dataclass
-class BenchmarkResult:
+class benchmark_result:
     """Result from benchmark execution."""
     scenario_id: str
     total_cases: int
@@ -58,21 +52,10 @@ class BenchmarkResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            'scenario_id': self.scenario_id,
-            'total_cases': self.total_cases,
-            'passed_cases': self.passed_cases,
-            'failed_cases': self.failed_cases,
-            'pass_rate': self.pass_rate,
-            'avg_score': self.avg_score,
-            'performance_level': self.performance_level.value,
-            'execution_time_seconds': self.execution_time_seconds,
-            'detailed_results': self.detailed_results,
-            'recommendations': self.recommendations
-        }
+        return {'scenario_id': self.scenario_id, 'total_cases': self.total_cases, 'passed_cases': self.passed_cases, 'failed_cases': self.failed_cases, 'pass_rate': self.pass_rate, 'avg_score': self.avg_score, 'performance_level': self.performance_level.value, 'execution_time_seconds': self.execution_time_seconds, 'detailed_results': self.detailed_results, 'recommendations': self.recommendations}
 
 @dataclass
-class TrainingSession:
+class training_session:
     """Complete training session."""
     session_id: str
     agent_id: str
@@ -87,14 +70,4 @@ class TrainingSession:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'session_id': self.session_id,
-            'agent_id': self.agent_id,
-            'scenarios_run': self.scenarios_run,
-            'overall_pass_rate': self.overall_pass_rate,
-            'overall_score': self.overall_score,
-            'performance_level': self.performance_level.value,
-            'started_at': self.started_at,
-            'completed_at': self.completed_at,
-            'duration_seconds': self.completed_at - self.started_at,
-            'benchmark_results': [r.to_dict() for r in self.benchmark_results],
-            'improvement_areas': self.improvement_areas}
+        return {'session_id': self.session_id, 'agent_id': self.agent_id, 'scenarios_run': self.scenarios_run, 'overall_pass_rate': self.overall_pass_rate, 'overall_score': self.overall_score, 'performance_level': self.performance_level.value, 'started_at': self.started_at, 'completed_at': self.completed_at, 'duration_seconds': self.completed_at - self.started_at, 'benchmark_results': [r.to_dict() for r in self.benchmark_results], 'improvement_areas': self.improvement_areas}

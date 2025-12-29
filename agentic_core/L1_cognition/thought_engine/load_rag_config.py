@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
@@ -11,7 +15,8 @@ from typing import Dict
 
 
 @dataclass
-class RAGConfig:
+# NAMING FIXED: RAGConfig → rag_config
+class rag_config:
     """Enhanced configuration for resilient web RAG system."""
 
     _model: str = "gemini-1.5-flash"

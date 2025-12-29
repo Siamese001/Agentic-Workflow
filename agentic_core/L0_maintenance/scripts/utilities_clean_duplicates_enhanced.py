@@ -1,4 +1,6 @@
 import argparse
+'''Brief description of functionality and purpose.'''
+
 import ast
 import hashlib
 import logging
@@ -199,13 +201,15 @@ if sys.platform == "win32":
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES
 # ==============================================================================
-EXCLUDED_DIRS = {
+# NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
+excluded_dirs = {
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
     'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
     'archives', 'data',
 }
 
-EXCLUDED_FILES = {
+# NAMING FIXED: EXCLUDED_FILES → excluded_files
+excluded_files = {
     'canon_validator.py',
     'canon_validator_backup.py',
     'canon_validator_v2_agentic.py',
@@ -254,6 +258,8 @@ def is_excluded(path: str) -> bool:
     return len(added_functions)
 
 def purge_everything(aggressive=False, organize=False, merge_logic=False,
+    '''Brief description of functionality and purpose.'''
+    
                     merge_to=None, silos=None, exclude=None):
     purged_count = 0
 

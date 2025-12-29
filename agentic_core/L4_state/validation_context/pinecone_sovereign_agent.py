@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-#############################################################################
-# DEPRECATED - Phase 13C
-# This logic has been superseded by 'pinecone_mcp_client.py'
-# Do not modify. Plan for removal in Phase 15.
-#############################################################################
 """
 PineconeSovereignAgent - Eternal Sovereign Gateway to Pinecone
 
@@ -11,40 +5,31 @@ This agent serves as the sole gateway for all Pinecone operations in the system.
 It handles index creation, health checks, embedding generation, and territory bootstrapping.
 Zero drift, eternal readiness.
 """
-
 import hashlib
 import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
-
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
-    RedisSovereignAgent,
-)
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
-
-class PineconeSovereignAgent:
+class pinecone_sovereign_agent:
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
     Centralizes all vector operations to prevent configuration drift.
     """
-    
-    def __init__(self, project_root: Optional[Path] = None, ctx=None):
-        # Sovereign anchor: Ensure we know where we are in the territory
+
+    def __init__(self, project_root: Optional[Path]=None, ctx=None):
         self.project_root = project_root or Path(__file__).resolve().parents[4]
-        self.status = "INITIALIZING"
-        
-        api_key = os.getenv("PINECONE_API_KEY")
+        self.status = 'INITIALIZING'
+        api_key = os.getenv('PINECONE_API_KEY')
         if not api_key:
-            self.status = "DEGRADED (Missing API Key)"
-            print(f"   [!] PineconeSovereignAgent: API key missing.")
+            self.status = 'DEGRADED (Missing API Key)'
+            print(f'   [!] PineconeSovereignAgent: API key missing.')
             return
-        
         try:
             env = get_env(self.project_root)
             self.pc = Pinecone(api_key=api_key)
@@ -52,47 +37,28 @@ class PineconeSovereignAgent:
             self.dimension = env.EMBEDDING_DIMENSION
             self.cloud = env.PINECONE_CLOUD
             self.region = env.PINECONE_REGION
-            # [L6 HARDENING] Remove direct SubAtomicEngine instantiation
-            # Rationale: Creates circular dependency with SubAtomicEngine.__init__
-            # SubAtomicEngine will instantiate PineconeSovereignAgent lazily → safe.
-            self.gemini = None  # Will be set by SubAtomicEngine when needed or remain None
-            self.status = "ONLINE"
+            self.gemini = None
+            self.status = 'ONLINE'
         except Exception as e:
-            self.status = f"DEGRADED ({str(e)})"
-            print(f"   [!] PineconeSovereignAgent initialization failed: {e}")
+            self.status = f'DEGRADED ({str(e)})'
+            print(f'   [!] PineconeSovereignAgent initialization failed: {e}')
             self.gemini = None
             return
-        
-        # Store ValidationContext for precise sync operations
         self.ctx = ctx
-        
-        # [HYBRID CONFIG] 0.7 = 70% Semantic / 30% Keyword
-        self.hybrid_alpha = float(os.getenv("HYBRID_ALPHA", "0.7"))
-
-        # [REDIS LINK] Link the sovereign cache
+        self.hybrid_alpha = float(os.getenv('HYBRID_ALPHA', '0.7'))
         try:
             self.redis_gateway = RedisSovereignAgent(project_root)
             self.redis = self.redis_gateway.get_client()
         except Exception as e:
-            print(f"   [!] Redis Link Failed: {e}")
+            print(f'   [!] Redis Link Failed: {e}')
             self.redis = None
-
-        # Connect or create — the 'Eternal' part
         existing_indexes = [idx.name for idx in self.pc.list_indexes()]
         if self.index_name not in existing_indexes:
-            self.pc.create_index(
-                name=self.index_name,
-                dimension=self.dimension,
-                metric="dotproduct",  # Required for hybrid sparse/dense
-                spec={"serverless": {"cloud": self.cloud, "region": self.region}}
-            )
+            self.pc.create_index(name=self.index_name, dimension=self.dimension, metric='dotproduct', spec={'serverless': {'cloud': self.cloud, 'region': self.region}})
             print(f"   [OK] PineconeSovereignAgent: Created new index '{self.index_name}'")
-        
         self.index = self.pc.Index(self.index_name)
 
-        # Note: bootstrap_territory_vectors is now async and will be called from execute()
-
-    async def get_embedding(self, text: str, is_sanity_check: bool = False) -> List[float]:
+    async def get_embedding(self, text: str, is_sanity_check: bool=False) -> List[float]:
         """
         Sovereign embedding — cached, deterministic, QUALITY-VALIDATED.
         
@@ -103,100 +69,67 @@ class PineconeSovereignAgent:
         Returns:
             List of floats representing the embedding vector
         """
-        cache_key = f"pc_embed:{hashlib.sha256(text.encode()).hexdigest()}"
-        
+        cache_key: Any = f'pc_embed:{hashlib.sha256(text.encode()).hexdigest()}'
         if self.redis:
-            cached = self.redis.get(cache_key)
+            cached: Any = self.redis.get(cache_key)
             if cached:
                 return json.loads(cached)
-        
-        # Sovereign neutral prompt for embedding generation
-        system_prompt = "You are a code territory classifier. Return only JSON: {\"embedding\": [float vector of code semantics]}"
-        user_prompt = f"Classify this code snippet for canon territory mapping:\n\n{text[:12000]}"
-        
-        # [L6 FALLBACK] If gemini not available (circular init), skip embedding cache
+        system_prompt: Any = 'You are a code territory classifier. Return only JSON: {"embedding": [float vector of code semantics]}'
+        user_prompt: Any = f'Classify this code snippet for canon territory mapping:\n\n{text[:12000]}'
         if self.gemini is None:
-            # Return zero vector as sentinel — will be rejected downstream
             return [0.0] * self.dimension
-        
         try:
-            response = await self.gemini.resilient_mutation(
-                code=user_prompt,
-                task=system_prompt,  # Swap: task=system, code=user for resilient_mutation signature
-                file_path="embedding_request",
-                fission_active=False
-            )
-            # Parse embedding from response (expected format: JSON with "embedding" key)
+            response: Any = await self.gemini.resilient_mutation(code=user_prompt, task=system_prompt, file_path='embedding_request', fission_active=False)
             import json, re
-            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            json_match: Any = re.search('\\{.*\\}', response, re.DOTALL)
             if json_match:
-                data = json.loads(json_match.group())
-                embedding = data.get("embedding", [])
+                data: Any = json.loads(json_match.group())
+                embedding: Any = data.get('embedding', [])
                 if len(embedding) == self.dimension:
                     return embedding
         except Exception as e:
-            print(f"   [!] Embedding generation failed: {e}")
-        
-        # Final fallback: zero vector
+            print(f'   [!] Embedding generation failed: {e}')
         return [0.0] * self.dimension
-        
-        # [ETERNAL QUALITY VALIDATION]
-        # Skip recursive sanity check if we are currently IN a sanity check
-        validated_embedding = self._validate_and_repair_embedding(embedding, text, skip_sanity=is_sanity_check)
-        
+        validated_embedding: Any = self._validate_and_repair_embedding(embedding, text, skip_sanity=is_sanity_check)
         if self.redis:
             self.redis.set(cache_key, json.dumps(validated_embedding), ex=604800)
-            
         return validated_embedding
-    
-    def _validate_and_repair_embedding(self, embedding: List[float], source_text: str, skip_sanity: bool = False) -> List[float]:
+
+    def _validate_and_repair_embedding(self, embedding: List[float], source_text: str, skip_sanity: bool=False) -> List[float]:
         """
         Sovereign embedding quality gate: Correct length, Non-zero variance, Reasonable norm.
         """
-        # 1. Length validation
         if len(embedding) != self.dimension:
             if len(embedding) < self.dimension:
                 embedding += [0.0] * (self.dimension - len(embedding))
             else:
                 embedding = embedding[:self.dimension]
-        
         arr = np.array(embedding, dtype=np.float32)
-        
-        # 2. Zero/near-zero vector check
         norm = np.linalg.norm(arr)
-        if norm < 1e-6:
-            print(f"   [!] Zero vector detected — fallback")
+        if norm < 1e-06:
+            print(f'   [!] Zero vector detected — fallback')
             return [0.0] * self.dimension
-        
-        # 3. Low variance check
-        if np.std(arr) < 1e-4:
-            print(f"   [!] Low variance embedding — degraded quality")
+        if np.std(arr) < 0.0001:
+            print(f'   [!] Low variance embedding — degraded quality')
             return [0.0] * self.dimension
-        
-        # 4. Self-similarity sanity (avoiding infinite loops)
         if not skip_sanity and len(source_text) > 100:
             try:
                 short_text = source_text[:500]
-                # Call get_embedding with sanity flag to prevent recursion
                 re_embed_raw = self.get_embedding(short_text, is_sanity_check=True)
                 re_embed = np.array(re_embed_raw, dtype=np.float32)
-                
-                denom = (norm * np.linalg.norm(re_embed) + 1e-8)
+                denom = norm * np.linalg.norm(re_embed) + 1e-08
                 cosine_sim = np.dot(arr, re_embed) / denom
-                
                 if cosine_sim < 0.7:
-                    print(f"   [!] Self-similarity low ({cosine_sim:.2f}) — invalidating")
+                    print(f'   [!] Self-similarity low ({cosine_sim:.2f}) — invalidating')
                     return [0.0] * self.dimension
             except Exception as e:
-                print(f"   [!] Sanity check failed: {e}")
-        
+                print(f'   [!] Sanity check failed: {e}')
         return arr.tolist()
 
     def _get_sparse_vector(self, text: str) -> Dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
         from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         text_low = text.lower()
-        # Simple TF-based sparse vector
         indices = []
         values = []
         for i, word in enumerate(sorted(list(CANON_SIGNALS))):
@@ -204,107 +137,68 @@ class PineconeSovereignAgent:
             if count > 0:
                 indices.append(i)
                 values.append(float(count))
-        return {"indices": indices, "values": values}
+        return {'indices': indices, 'values': values}
 
-    async def hybrid_search(self, query: str, top_k: int = 5) -> List[Dict]:
+    async def hybrid_search(self, query: str, top_k: int=5) -> List[Dict]:
         """Eternal precision: Combined Vector + Keyword search"""
-        dense_vec = await self.get_embedding(query)
-        sparse_vec = self._get_sparse_vector(query)
-        
-        return self.index.query(
-            vector=dense_vec,
-            sparse_vector=sparse_vec,
-            top_k=top_k,
-            include_metadata=True
-        ).to_dict()
+        dense_vec: Any = await self.get_embedding(query)
+        sparse_vec: Any = self._get_sparse_vector(query)
+        return self.index.query(vector=dense_vec, sparse_vector=sparse_vec, top_k=top_k, include_metadata=True).to_dict()
 
-    def purge_ghost_vector(self, file_path: Path):
+    def purge_ghost_vector(self, file_path: Path) -> Any:
         """Surgical strike to remove stale vector data"""
-        file_id = f"file_{str(file_path.relative_to(Path('.').resolve())).replace('/', '_')}"
+        file_id: Any = f"file_{str(file_path.relative_to(Path('.').resolve())).replace('/', '_')}"
         try:
             self.index.delete(ids=[file_id])
         except Exception:
             pass
 
-    async def bootstrap_territory_vectors(self):
+    async def bootstrap_territory_vectors(self) -> Any:
         """
         Syncs the index with territory examples.
         Safe to run multiple times (uses upsert).
         """
-        # Territory examples defined locally (removed from SSOT)
-        territory_examples = {
-            "agentic_core/L1_cognition": "strategy planning reasoning mission decomposition",
-            "agentic_core/L3_orchestration": "fission orchestration routing workflow manager",
-            "agentic_core/L4_state": "memory cache pinecone redis historian audit",
-            "agentic_core/L5_safety": "guardrail safety policy enforcer filter",
-            "apps_rg/agents": "resume ranking narrative scoring jd match",
-            "apps_lic/agents": "license compliance workflow validation",
-            "apps_shared/utils": "shared helper validation adapter",
-            "scripts": "operational tool cli integrity backup deploy",
-        }
-        
-        vectors = []
-        skipped = 0
+        territory_examples: Any = {'agentic_core/L1_cognition': 'strategy planning reasoning mission decomposition', 'agentic_core/L3_orchestration': 'fission orchestration routing workflow manager', 'agentic_core/L4_state': 'memory cache pinecone redis historian audit', 'agentic_core/L5_safety': 'guardrail safety policy enforcer filter', 'apps_rg/agents': 'resume ranking narrative scoring jd match', 'apps_lic/agents': 'license compliance workflow validation', 'apps_shared/utils': 'shared helper validation adapter', 'scripts': 'operational tool cli integrity backup deploy'}
+        vectors: Any = []
+        skipped: Any = 0
         for territory, example in territory_examples.items():
-            emb = await self.get_embedding(example)
-            # [HARDENING] Skip zero vectors to prevent Pinecone rejection
-            if all(abs(x) < 1e-8 for x in emb):
+            emb: Any = await self.get_embedding(example)
+            if all((abs(x) < 1e-08 for x in emb)):
                 skipped += 1
                 continue
-            vec_id = f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}"
-            vectors.append({
-                "id": vec_id, 
-                "values": emb, 
-                "metadata": {"territory": territory, "type": "bootstrap"}
-            })
-        
+            vec_id: Any = f'territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}'
+            vectors.append({'id': vec_id, 'values': emb, 'metadata': {'territory': territory, 'type': 'bootstrap'}})
         if vectors:
             self.index.upsert(vectors=vectors)
-            print(f"   [OK] PineconeSovereignAgent: Bootstrapped {len(vectors)} territories")
+            print(f'   [OK] PineconeSovereignAgent: Bootstrapped {len(vectors)} territories')
         if skipped > 0:
-            print(f"   [INFO] PineconeSovereignAgent: Skipped {skipped} territories (zero embeddings)")
+            print(f'   [INFO] PineconeSovereignAgent: Skipped {skipped} territories (zero embeddings)')
 
-    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str = "canon"):
+    async def upsert_sovereign_chunks(self, chunks: List[Dict], namespace: str='canon') -> Any:
         """
         L4: Secure, idempotent upsert into the vector memory
         """
-        vectors = []
+        vectors: Any = []
         for chunk in chunks:
-            # Generate a content-based ID for idempotency
-            content_hash = hashlib.sha256(chunk["text"].encode('utf-8')).hexdigest()
-            
-            vectors.append({
-                "id": content_hash,
-                "values": chunk["values"],
-                "metadata": {
-                    "text": chunk["text"],
-                    "source": chunk["metadata"].get("source", "unknown"),
-                    "ingested_at": chunk["metadata"].get("ingested_at")
-                }
-            })
-        
-        # Batch upsert in sizes of 100
+            content_hash: Any = hashlib.sha256(chunk['text'].encode('utf-8')).hexdigest()
+            vectors.append({'id': content_hash, 'values': chunk['values'], 'metadata': {'text': chunk['text'], 'source': chunk['metadata'].get('source', 'unknown'), 'ingested_at': chunk['metadata'].get('ingested_at')}})
         for i in range(0, len(vectors), 100):
-            self.index.upsert(vectors=vectors[i:i+100], namespace=namespace)
-    
-    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str] = None):
+            self.index.upsert(vectors=vectors[i:i + 100], namespace=namespace)
+
+    async def upsert_file_vector(self, file_path: Path, territory_hint: Optional[str]=None) -> Any:
         """Upsert single file — used during healing"""
-        content = file_path.read_text(encoding="utf-8", errors="ignore")
-        emb = await self.get_embedding(content)
-        
-        # Final quality gate
-        if all(abs(x) < 1e-8 for x in emb):
-            print(f"   [!] Skipping upsert for {file_path} — invalid embedding")
+        content: Any = file_path.read_text(encoding='utf-8', errors='ignore')
+        emb: Any = await self.get_embedding(content)
+        if all((abs(x) < 1e-08 for x in emb)):
+            print(f'   [!] Skipping upsert for {file_path} — invalid embedding')
             return
-        
-        file_id = f"file_{file_path.relative_to(Path('.').resolve())}".replace("/", "_")
-        metadata = {"file_path": str(file_path), "type": "file"}
+        file_id: Any = f"file_{file_path.relative_to(Path('.').resolve())}".replace('/', '_')
+        metadata: Any = {'file_path': str(file_path), 'type': 'file'}
         if territory_hint:
-            metadata["territory"] = territory_hint
-        
-        self.index.upsert(vectors=[{"id": file_id, "values": emb, "metadata": metadata}])
-    
-    async def semantic_search(self, query: str, top_k: int = 5) -> List[Dict]:
+            metadata['territory'] = territory_hint
+        self.index.upsert(vectors=[{'id': file_id, 'values': emb, 'metadata': metadata}])
+
+    async def semantic_search(self, query: str, top_k: int=5) -> List[Dict]:
         """
         Runtime retrieval for agents needing to 'find' logic.
         
@@ -315,45 +209,31 @@ class PineconeSovereignAgent:
         Returns:
             List of search results with metadata
         """
-        q_emb = await self.get_embedding(query)
-        results = self.index.query(vector=q_emb, top_k=top_k, include_metadata=True)
+        q_emb: Any = await self.get_embedding(query)
+        results: Any = self.index.query(vector=q_emb, top_k=top_k, include_metadata=True)
         return results.to_dict() if hasattr(results, 'to_dict') else results
-    
+
     def health_check(self) -> Dict:
         """Enhanced health check with sample quality assessment"""
-        stats = self.index.describe_index_stats()
-        
-        # Sample vector sanity
-        sample_query = self.index.query(vector=[0.1]*self.dimension, top_k=1, include_values=True)
-        sample_quality = "good"
+        stats: Any = self.index.describe_index_stats()
+        sample_query: Any = self.index.query(vector=[0.1] * self.dimension, top_k=1, include_values=True)
+        sample_quality: Any = 'good'
         if sample_query['matches'] and np.linalg.norm(sample_query['matches'][0]['values']) < 0.1:
-            sample_quality = "degraded"
-        
-        return {
-            "vectors": stats.total_vector_count,
-            "dimension": stats.dimension,
-            "index_fullness": stats.index_fullness,
-            "sample_quality": sample_quality
-        }
+            sample_quality: Any = 'degraded'
+        return {'vectors': stats.total_vector_count, 'dimension': stats.dimension, 'index_fullness': stats.index_fullness, 'sample_quality': sample_quality}
 
-    async def execute(self, ctx=None):
+    async def execute(self, ctx: Any=None) -> Any:
         """
         Health check for the validator loop.
         Reports index status and vector count with quality metrics.
         """
         try:
-            # Bootstrap territories on first execution
             await self.bootstrap_territory_vectors()
-            
-            health = self.health_check()
+            health: Any = self.health_check()
             print(f"   [OK] PineconeSovereignAgent: {health['vectors']} vectors online (quality: {health['sample_quality']})")
-            
             if ctx:
-                ctx.report("VectorHealth", 1, True, 
-                          f"Pinecone Index {self.index_name}: {health['vectors']} vectors, quality={health['sample_quality']}")
+                ctx.report('VectorHealth', 1, True, f"Pinecone Index {self.index_name}: {health['vectors']} vectors, quality={health['sample_quality']}")
         except Exception as e:
-            print(f"   [!] PineconeSovereignAgent health check failed: {e}")
-            # [HARDENING] External service failures should not block validation pass
-            # Report as warning (True) to avoid counting as structural violation
+            print(f'   [!] PineconeSovereignAgent health check failed: {e}')
             if ctx:
-                ctx.report("VectorHealth", 1, True, f"Pinecone health check warning: {str(e)}")
+                ctx.report('VectorHealth', 1, True, f'Pinecone health check warning: {str(e)}')

@@ -2,18 +2,11 @@
 import logging
 import time
 from typing import Any, Callable, Dict, List, Optional, Protocol
+from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
+logger: Any = logging.getLogger(__name__)
+logger: Any = logging.getLogger(__name__)
 
-from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import (
-    AlertSeverity,
-    HealthAlert,
-    HealthMetrics,
-    HealthStatus,
-)
-
-LOGGER = logging.getLogger(__name__)
-logger = logging.getLogger(__name__)
-
-class AutonomicMonitor:
+class autonomic_monitor:
     """Autonomic immune system for agent health monitoring.
 
     Features:
@@ -24,11 +17,7 @@ class AutonomicMonitor:
     - Self-healing recommendations
     """
 
-    def __init__(self,
-        success_rate_threshold: float=0.8,
-        error_rate_threshold: float=0.2,
-        response_time_threshold_ms: float=5000.0,
-        enable_logging: bool=True):
+    def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True):
         """Initialize autonomic monitor.
 
         Args:
@@ -45,10 +34,7 @@ class AutonomicMonitor:
         self._alerts: List[HealthAlert] = []
         self._alert_callbacks: List[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
-            logger.info('autonomic_monitor_initialized',
-                EXTRA={'success_threshold': success_rate_threshold,
-                'error_threshold': error_rate_threshold,
-                'response_time_threshold': response_time_threshold_ms})
+            logger.info('autonomic_monitor_initialized', EXTRA={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
 
     def record_metrics(self, metrics: HealthMetrics) -> None:
         """Record health metrics for an agent.
@@ -56,13 +42,13 @@ class AutonomicMonitor:
         Args:
             metrics: Health metrics
         """
-        agent_id = metrics.agent_id
+        agent_id: Any = metrics.agent_id
         if agent_id not in self._metrics_history:
             self._metrics_history[agent_id] = []
         self._metrics_history[agent_id].append(metrics)
         if len(self._metrics_history[agent_id]) > 100:
             self._metrics_history[agent_id] = self._metrics_history[agent_id][-100:]
-        STATUS = self.check_health(agent_id)
+        STATUS: Any = self.check_health(agent_id)
         if status != HealthStatus.HEALTHY:
             self._trigger_alert(metrics, status)
 
@@ -75,13 +61,13 @@ class AutonomicMonitor:
         Returns:
             HealthStatus
         """
-        HISTORY = self._metrics_history.get(agent_id, [])
+        HISTORY: Any = self._metrics_history.get(agent_id, [])
         if not history:
             return HealthStatus.OFFLINE
-        RECENT = history[-10:]
-        avg_success_rate = sum((m.success_rate for m in recent)) / len(recent)
-        avg_error_rate = sum((m.error_rate for m in recent)) / len(recent)
-        avg_response_time = sum((m.avg_response_time_ms for m in recent)) / len(recent)
+        RECENT: Any = history[-10:]
+        avg_success_rate: Any = sum((m.success_rate for m in recent)) / len(recent)
+        avg_error_rate: Any = sum((m.error_rate for m in recent)) / len(recent)
+        avg_response_time: Any = sum((m.avg_response_time_ms for m in recent)) / len(recent)
         if avg_success_rate < 0.5 or avg_error_rate > 0.5 or avg_response_time > self.response_time_threshold_ms * 2:
             return HealthStatus.CRITICAL
         elif avg_success_rate < self.success_rate_threshold or avg_error_rate > self.error_rate_threshold or avg_response_time > self.response_time_threshold_ms:
@@ -98,12 +84,10 @@ class AutonomicMonitor:
         Returns:
             List of HealthMetrics
         """
-        HISTORY = self._metrics_history.get(agent_id, [])
+        HISTORY: Any = self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
 
-    def get_alerts(self,
-        agent_id: Optional[str]=None,
-        severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
+    def get_alerts(self, agent_id: Optional[str]=None, severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
         """Get health alerts.
 
         Args:
@@ -113,11 +97,11 @@ class AutonomicMonitor:
         Returns:
             List of HealthAlert
         """
-        ALERTS = self._alerts
+        ALERTS: Any = self._alerts
         if agent_id:
-            ALERTS = [a for a in alerts if a.agent_id == agent_id]
+            ALERTS: Any = [a for a in alerts if a.agent_id == agent_id]
         if severity:
-            ALERTS = [a for a in alerts if a.severity == severity]
+            ALERTS: Any = [a for a in alerts if a.severity == severity]
         return alerts
 
     def register_alert_callback(self, callback: Callable[[HealthAlert], None]) -> None:
@@ -143,12 +127,7 @@ class AutonomicMonitor:
             SEVERITY = AlertSeverity.INFO
         MESSAGE = f'Agent {metrics.agent_id} health is {status.value}'
         RECOMMENDATIONS = self._generate_recommendations(metrics, status)
-        ALERT = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}',
-            agent_id=metrics.agent_id,
-            SEVERITY=severity,
-            MESSAGE=message,
-            METRICS=metrics,
-            recommended_actions=recommendations)
+        ALERT = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
         self._alerts.append(alert)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
@@ -159,11 +138,7 @@ class AutonomicMonitor:
                 if self.enable_logging:
                     logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
         if self.enable_logging:
-            logger.warning('health_alert_triggered',
-                EXTRA={'alert_id': alert.alert_id,
-                'agent_id': metrics.agent_id,
-                'severity': severity.value,
-                'status': status.value})
+            logger.warning('health_alert_triggered', EXTRA={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'severity': severity.value, 'status': status.value})
 
     def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> List[str]:
         """Generate improvement recommendations.
@@ -188,8 +163,7 @@ class AutonomicMonitor:
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
-def create_autonomic_monitor(success_rate_threshold: float=0.8,
-    error_rate_threshold: float=0.2) -> AutonomicMonitor:
+def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitor:
     """Factory function to create autonomic monitor.
 
     Args:
@@ -199,5 +173,4 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8,
     Returns:
         AutonomicMonitor instance
     """
-    return AutonomicMonitor(success_rate_threshold=success_rate_threshold,
-        error_rate_threshold=error_rate_threshold)
+    return AutonomicMonitor(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)

@@ -109,28 +109,40 @@ def mock_time():
 def mock_redis_transaction():
     """Mock Redis transaction for atomic operations"""
     class MockRedisTransaction:
+                    '''Brief description of functionality and purpose.'''
+                    
         def __init__(self):
             self.operations = []
             self.executed = False
 
         def multi(self):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             return self
 
         def set(self, key, value):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self.operations.append(("SET", key, value))
             return self
 
         def get(self, key):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             for op in self.operations:
                 if op[0] == "SET" and op[1] == key:
                     return op[2]
             return None
 
         def exec(self):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self.executed = True
             return "OK"
 
         def discard(self):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self.operations.clear()
             return self
 

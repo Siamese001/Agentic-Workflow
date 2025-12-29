@@ -1,5 +1,6 @@
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilience infrastructure.
 
@@ -41,7 +42,8 @@ logging.basicConfig(
     get_telemetry,
 )
 
-class MockAPI:
+# NAMING FIXED: MockAPI → mock_api
+class mock_api:
     """Mock API that simulates failures and rate limits."""
 
     def __init__(self, fail_count=3, rate_limit_after=None):
@@ -65,15 +67,18 @@ class MockAPI:
         # Simulate successful response
         return {"response": f"Success after {self.call_count} attempts"}
 
-class RateLimitError(Exception):
+# NAMING FIXED: RateLimitError → rate_limit_error
+class rate_limit_error(Exception):
     """Simulated rate limit error."""
     pass
 
-class APIError(Exception):
+# NAMING FIXED: APIError → api_error
+class api_error(Exception):
     """Simulated API error."""
     pass
 
-class TestExecutor(HardeningMixin):
+# NAMING FIXED: TestExecutor → test_executor
+class test_executor(HardeningMixin):
     """Test executor using HardeningMixin."""
 
     def __init__(self, mock_api: MockAPI):

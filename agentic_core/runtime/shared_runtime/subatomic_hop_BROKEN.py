@@ -1,4 +1,6 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import re
 import time
 import uuid
@@ -11,21 +13,27 @@ from services.configuration import ConfigurationService
 if TYPE_CHECKING:
     pass
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
-class SovereignDependencyError(Exception):
+# NAMING FIXED: SovereignDependencyError → sovereign_dependency_error
+class sovereign_dependency_error(Exception):
     """Raised when a required dependency is not injected into a Sovereign component."""
     pass
 
 
-class AgentPlan(BaseModel):
+# NAMING FIXED: AgentPlan → agent_plan
+class agent_plan(BaseModel):
+    '''Brief description of functionality and purpose.'''
+    
     reasoning: str
     tool_calls: list[dict]
 
 
-class SubatomicHop:
+# NAMING FIXED: SubatomicHop → subatomic_hop
+class subatomic_hop:
     """Sovereign SubatomicHop with Dependency Injection.
     
     All dependencies are injected via constructor to maintain Gravity Compliance.
@@ -343,6 +351,8 @@ class SubatomicHop:
         await self.overseer.verify(sanitized_output)
         # BudgetExceededError is orphaned - assuming it's defined elsewhere or needs to be imported
         class BudgetExceededError(Exception):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             def __init__(self, message, current_spend, limit):
                 super().__init__(message)
                 self.current_spend = current_spend

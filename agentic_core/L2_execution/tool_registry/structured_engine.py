@@ -6,26 +6,18 @@ No more "I hope this parses" - the LLM physically cannot output invalid structur
 """
 import logging
 from typing import Any, Dict, List, Literal, Optional, Protocol
-
-from agentic_core.schemas.models.core_contracts import (
-    AgentThoughtProcess,
-    CodeGenerationResult,
-    ResearchResult,
-)
+from agentic_core.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
 from pydantic import BaseModel, Field, field_validator
-
-LOGGER = logging.getLogger(__name__)
-
+logger: Any = logging.getLogger(__name__)
 try:
     import instructor
     from openai import AsyncOpenAI
-    INSTRUCTOR_AVAILABLE = True
+    INSTRUCTOR_AVAILABLE: Any = True
 except ImportError:
-    INSTRUCTOR_AVAILABLE = False
-    LOGGER.warning("Instructor library not available. Install with: pip install instructor openai")
+    INSTRUCTOR_AVAILABLE: Any = False
+    LOGGER.warning('Instructor library not available. Install with: pip install instructor openai')
 
-
-class StructuredEngine:
+class structured_engine:
     """
     The Hardened Engine that enforces schema compliance at the network layer.
 
@@ -41,15 +33,10 @@ class StructuredEngine:
             client: AsyncOpenAI instance
         """
         self.client = instructor.patch(client)
-        self.model = "gpt-4"
+        self.model = 'gpt-4'
+        LOGGER.info(f'Structured engine initialized with AsyncOpenAI client')
 
-        LOGGER.info(f"Structured engine initialized with AsyncOpenAI client")
-    async def think_structured(
-        self,
-        system_prompt: str,
-        user_prompt: str,
-        max_retries: int = 3
-    ) -> AgentThoughtProcess:
+    async def think_structured(self, system_prompt: str, user_prompt: str, max_retries: int=3) -> AgentThoughtProcess:
         """
         Executes an inference call that is GUARANTEED to match AgentThoughtProcess.
 
@@ -63,59 +50,33 @@ class StructuredEngine:
         Returns:
             Validated AgentThoughtProcess instance
         """
-        LOGGER.debug(f"Executing structured inference (max_retries={max_retries})")
-
+        LOGGER.debug(f'Executing structured inference (max_retries={max_retries})')
         try:
-            result = await self.client.chat.completions.create(
-                model=self.model,
-                response_model=AgentThoughtProcess,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_retries=max_retries
-            )
-
-            LOGGER.info(f"Structured inference successful. Tool choice: {result.tool_choice}, "
-                       f"Confidence: {result._confidence_score:.2f}")
-
+            result: Any = await self.client.chat.completions.create(model=self.model, response_model=AgentThoughtProcess, messages=[{'role': 'system', 'content': system_prompt}, {'role': 'user', 'content': user_prompt}], max_retries=max_retries)
+            LOGGER.info(f'Structured inference successful. Tool choice: {result.tool_choice}, Confidence: {result._confidence_score:.2f}')
             return result
-
         except Exception as e:
-            LOGGER.error(f"Structured inference failed after {max_retries} retries: {e}")
+            LOGGER.error(f'Structured inference failed after {max_retries} retries: {e}')
             raise
 
-
-# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
-
-
-class StructuredEngineFactory:
+class structured_engine_factory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod
-    def create_code_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_code_engine(client: AsyncOpenAI, model: str='gpt-4o') -> 'StructuredEngine':
         """Create an engine optimized for code generation."""
-        engine = StructuredEngine(client)
-        engine.model = model # Set the model for the engine
-        # Note: Instructor's patch applies to the client, not the engine directly.
-        # The response_model is passed at the call site (think_structured), not set on the engine itself.
-        # This factory method would need to return a callable or a configured function if it were to pre-set response_model.
-        # For now, we'll assume the caller of the engine will specify response_model.
+        engine: Any = StructuredEngine(client)
+        engine.model = model
         return engine
 
     @staticmethod
-    def create_research_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_research_engine(client: AsyncOpenAI, model: str='gpt-4o') -> 'StructuredEngine':
         """Create an engine optimized for research tasks."""
-        engine = StructuredEngine(client)
-        engine.model = model # Set the model for the engine
+        engine: Any = StructuredEngine(client)
+        engine.model = model
         return engine
 
-
-async def create_structured_engine(
-    client: AsyncOpenAI,
-    model: str = "gpt-4o",
-    engine_type: str = "default"
-) -> StructuredEngine:
+async def create_structured_engine(client: AsyncOpenAI, model: str='gpt-4o', engine_type: str='default') -> StructuredEngine:
     """
     Factory function to create a structured engine.
 
@@ -127,9 +88,9 @@ async def create_structured_engine(
     Returns:
         StructuredEngine instance
     """
-    if engine_type == "code":
+    if engine_type == 'code':
         return StructuredEngineFactory.create_code_engine(client, model)
-    elif engine_type == "research":
+    elif engine_type == 'research':
         return StructuredEngineFactory.create_research_engine(client, model)
     else:
-        return StructuredEngine(client) # Default engine, model will be set in __init__ or overridden by call site
+        return StructuredEngine(client)

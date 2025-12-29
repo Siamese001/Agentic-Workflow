@@ -242,7 +242,8 @@ def mock_engines_with_tools(mock_mcp_tools, temp_workspace):
 
 
 
-class TestEngineE2E:
+# NAMING FIXED: TestEngineE2E → test_engine_e2_e
+class test_engine_e2_e:
 
     """End-to-end tests for all three engines"""
 
@@ -528,7 +529,8 @@ class TestEngineE2E:
 
 
 
-class TestSecurityProtocols:
+# NAMING FIXED: TestSecurityProtocols → test_security_protocols
+class test_security_protocols:
 
     """Red Team tests for all security protocols (P1-P8)"""
 

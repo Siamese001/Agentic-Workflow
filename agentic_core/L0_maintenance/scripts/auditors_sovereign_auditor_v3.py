@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import List, Dict
 
 # Add repo root to path for imports
-REPO_ROOT = Path(__file__).parent.parent.parent.parent
+# NAMING FIXED: REPO_ROOT → repo_root
+repo_root = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(REPO_ROOT))
 
 # Import available Guardians
@@ -42,7 +43,10 @@ except ImportError:
     HealingTransaction = None
     log_healing_action = None
 
-class SovereignReport:
+# NAMING FIXED: SovereignReport → sovereign_report
+class sovereign_report:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self):
         self.scores = {}
         self.issues = {}
@@ -142,6 +146,8 @@ class SovereignReport:
         return all_issues
 
     def run_check(self, name, check_func, files):
+                    '''Brief description of functionality and purpose.'''
+                    
         failures = 0
         self.issues[name] = []
         for f in files:
@@ -155,6 +161,8 @@ class SovereignReport:
         else: self.scores[name] = 100.0 * (1 - (failures / len(files)))
 
     def print_summary(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print("\n" + "="*60)
         print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
         print("="*60)
@@ -175,6 +183,8 @@ class SovereignReport:
         return overall
 
 async def main():
+    '''Brief description of functionality and purpose.'''
+    
     target = Path("agentic_core")
     
     report = SovereignReport()

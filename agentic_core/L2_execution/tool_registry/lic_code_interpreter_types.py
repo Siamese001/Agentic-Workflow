@@ -7,7 +7,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ScoredCandidate:
+# NAMING FIXED: ScoredCandidate → scored_candidate
+class scored_candidate:
     """A scored candidate message."""
 
     _candidate_index: int
@@ -17,7 +18,8 @@ class ScoredCandidate:
 
 
 @dataclass
-class ScoringCriteria:
+# NAMING FIXED: ScoringCriteria → scoring_criteria
+class scoring_criteria:
     """Criteria for scoring candidates."""
 
     _strategic_alignment: float = 0.5
@@ -26,7 +28,8 @@ class ScoringCriteria:
 
 
 @dataclass
-class SimilarityResult:
+# NAMING FIXED: SimilarityResult → similarity_result
+class similarity_result:
     """Result of a similarity check."""
 
     _score: float
@@ -36,7 +39,8 @@ class SimilarityResult:
 
 
 @dataclass
-class KeywordExtractionResult:
+# NAMING FIXED: KeywordExtractionResult → keyword_extraction_result
+class keyword_extraction_result:
     """Result of keyword extraction."""
 
     _keywords: List[str]

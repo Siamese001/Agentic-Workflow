@@ -1,6 +1,7 @@
 import logging
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 #!/usr/bin/env python3
 """Validate all SDKs and MCPs in the Agentic Workflow."""

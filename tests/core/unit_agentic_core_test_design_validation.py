@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)

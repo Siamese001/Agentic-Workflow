@@ -131,7 +131,8 @@ def mock_engines_with_tools(mock_mcp_tools, temp_workspace):
 # PHASE 2: ENGINE FUNCTIONALITY AND E2E TESTS
 # ============================================================================
 
-class TestEngineE2E:
+# NAMING FIXED: TestEngineE2E → test_engine_e2_e
+class test_engine_e2_e:
     """End-to-end tests for all three engines"""
 
     @patch('canon_validator_engine.register_process')
@@ -274,7 +275,8 @@ class TestEngineE2E:
 # PHASE 3: SECURITY PROTOCOL AND HARDENING TESTS
 # ============================================================================
 
-class TestSecurityProtocols:
+# NAMING FIXED: TestSecurityProtocols → test_security_protocols
+class test_security_protocols:
     """Red Team tests for all security protocols (P1-P8)"""
 
     @patch('canon_validator_engine.register_process')

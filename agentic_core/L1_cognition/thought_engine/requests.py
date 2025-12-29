@@ -8,7 +8,8 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-class ActionRequest:
+# NAMING FIXED: ActionRequest → action_request
+class action_request:
     """Request for the action plane to execute a tool or action.
     Attributes:
         action_type: Type of action (e.g., "tool_call", "api_request")
@@ -38,7 +39,8 @@ class ActionRequest:
 
 
 @dataclass
-class ActionResult:
+# NAMING FIXED: ActionResult → action_result
+class action_result:
     """Result from action plane execution.
 
     Attributes:
@@ -66,7 +68,8 @@ class ActionResult:
 
 
 @dataclass
-class PlanningRequest:
+# NAMING FIXED: PlanningRequest → planning_request
+class planning_request:
     """Request for the cognitive plane to generate a plan.
 
     Attributes:
@@ -91,7 +94,8 @@ class PlanningRequest:
 
 
 @dataclass
-class PlanningResult:
+# NAMING FIXED: PlanningResult → planning_result
+class planning_result:
     """Result from cognitive plane planning.
 
     Attributes:

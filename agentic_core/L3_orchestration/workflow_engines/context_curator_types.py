@@ -3,27 +3,27 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class ContextPriority(Enum):
+class context_priority(Enum):
     """Priority levels for context chunks."""
-    CRITICAL = 'critical'
-    HIGH = 'high'
-    MEDIUM = 'medium'
-    LOW = 'low'
+    CRITICAL: Any = 'critical'
+    HIGH: Any = 'high'
+    MEDIUM: Any = 'medium'
+    LOW: Any = 'low'
 
-class ContextType(Enum):
+class context_type(Enum):
     """Types of context chunks."""
-    SYSTEM_INSTRUCTION = 'system_instruction'
-    SAFETY_POLICY = 'safety_policy'
-    TASK_DESCRIPTION = 'task_description'
-    CONVERSATION_HISTORY = 'conversation_history'
-    RETRIEVED_KNOWLEDGE = 'retrieved_knowledge'
-    TOOL_DOCUMENTATION = 'tool_documentation'
-    EXAMPLE = 'example'
+    SYSTEM_INSTRUCTION: Any = 'system_instruction'
+    SAFETY_POLICY: Any = 'safety_policy'
+    TASK_DESCRIPTION: Any = 'task_description'
+    CONVERSATION_HISTORY: Any = 'conversation_history'
+    RETRIEVED_KNOWLEDGE: Any = 'retrieved_knowledge'
+    TOOL_DOCUMENTATION: Any = 'tool_documentation'
+    EXAMPLE: Any = 'example'
 
 @dataclass
-class ContextChunk:
+class context_chunk:
     """Individual context chunk."""
     id: str
     content: str
@@ -36,19 +36,10 @@ class ContextChunk:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            'id': self.id,
-            'content': self.content,
-            'chunk_type': self.chunk_type.value,
-            'priority': self.priority.value,
-            'token_count': self.token_count,
-            'relevance_score': self.relevance_score,
-            'pinned': self.pinned,
-            'metadata': self.metadata
-        }
+        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priority': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_score, 'pinned': self.pinned, 'metadata': self.metadata}
 
 @dataclass
-class ContextWindow:
+class context_window:
     """Managed context window."""
     chunks: List[ContextChunk]
     total_tokens: int
@@ -57,8 +48,4 @@ class ContextWindow:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'chunks': [c.to_dict() for c in self.chunks],
-            'total_tokens': self.total_tokens,
-            'max_tokens': self.max_tokens,
-            'pinned_tokens': self.pinned_tokens,
-            'available_tokens': self.max_tokens - self.total_tokens}
+        return {'chunks': [c.to_dict() for c in self.chunks], 'total_tokens': self.total_tokens, 'max_tokens': self.max_tokens, 'pinned_tokens': self.pinned_tokens, 'available_tokens': self.max_tokens - self.total_tokens}

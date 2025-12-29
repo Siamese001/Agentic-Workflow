@@ -7,7 +7,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class StateCheckpoint:
+# NAMING FIXED: StateCheckpoint → state_checkpoint
+class state_checkpoint:
     """Checkpoint for a HOP state."""
 
     _hop_id: str
@@ -18,7 +19,8 @@ class StateCheckpoint:
 
 
 @dataclass
-class StateValidationResult:
+# NAMING FIXED: StateValidationResult → state_validation_result
+class state_validation_result:
     """Result of state validation."""
 
     _is_valid: bool

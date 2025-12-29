@@ -10,18 +10,15 @@ Features:
 - Architecture governance laws enforcement
 - Blast radius visualization
 """
-# Standard library imports
 import ast
 import glob
 import logging
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class DependencyGraph:
+class dependency_graph:
     """
     Builds a directed graph of imports and class hierarchies.
 
@@ -33,11 +30,11 @@ class DependencyGraph:
         """Initialize the dependency graph."""
         self.graph: Dict[str, Dict[str, List[str]]] = {}
         self.reverse_graph: Dict[str, List[str]] = {}
-        self.class_map: Dict[str, str] = {}  # class name -> file path
-        self.module_map: Dict[str, str]  = {}  # module name -> file path
+        self.class_map: Dict[str, str] = {}
+        self.module_map: Dict[str, str] = {}
         self._built: bool = False
 
-    def build(self, files: List[str], root_dir: str = None):
+    def build(self, files: List[str], root_dir: str=None) -> Any:
         """
         Build the dependency graph from a list of Python files.
 
@@ -45,86 +42,54 @@ class DependencyGraph:
             files: List of Python file paths
             root_dir: Root directory for relative path calculation
         """
-        LOGGER.info(f"🕸️ Building Holistic Code Graph from {len(files)} files...")
-
+        LOGGER.info(f'🕸️ Building Holistic Code Graph from {len(files)} files...')
         if root_dir:
-            root_path = Path(root_dir).resolve()
+            root_path: Any = Path(root_dir).resolve()
         else:
-            root_path = Path.cwd()
-
-        # Clear existing graph
+            root_path: Any = Path.cwd()
         self.graph.clear()
         self.reverse_graph.clear()
         self.class_map.clear()
         self.module_map.clear()
-
         for file_path in files:
-            # Convert to relative path if absolute
-            file_path = str(Path(file_path).relative_to(root_path))
-
-            self.graph[file_path] = {
-                "imports": [],
-                "from_imports": [],
-                "classes": [],
-                "functions": [],
-                "dependencies": []
-            }
-
+            file_path: Any = str(Path(file_path).relative_to(root_path))
+            self.graph[file_path] = {'imports': [], 'from_imports': [], 'classes': [], 'functions': [], 'dependencies': []}
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    tree = ast.parse(content)
-
-                # Extract AST nodes
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content: Any = f.read()
+                    tree: Any = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for n in node.names:
-                            self.graph[file_path]["imports"].append(n.name)
-
+                            self.graph[file_path]['imports'].append(n.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
-                            self.graph[file_path]["from_imports"].append({
-                                "module": node.module,
-                                "names": [n.name for n in node.names]
-                            })
-
+                            self.graph[file_path]['from_imports'].append({'module': node.module, 'names': [n.name for n in node.names]})
                     elif isinstance(node, ast.ClassDef):
-                        self.graph[file_path]["classes"].append(node.name)
+                        self.graph[file_path]['classes'].append(node.name)
                         self.class_map[node.name] = file_path
-
                     elif isinstance(node, ast.FunctionDef):
-                        self.graph[file_path]["functions"].append(node.name)
-
-                # Calculate module name for this file
-                module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
+                        self.graph[file_path]['functions'].append(node.name)
+                module_name: Any = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
                 self.module_map[module_name] = file_path
-
             except SyntaxError as e:
-                LOGGER.warning(f"Syntax error in {file_path}: {e}")
+                LOGGER.warning(f'Syntax error in {file_path}: {e}')
             except Exception as e:
-                LOGGER.error(f"Error parsing {file_path}: {e}")
-
-        # Build reverse index for rapid lookup
+                LOGGER.error(f'Error parsing {file_path}: {e}')
         self._build_reverse_index()
-
-        # Calculate transitive dependencies
         self._calculate_dependencies()
-
         self._built = True
-        LOGGER.info(f"[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes")
+        LOGGER.info(f'[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes')
 
     def _build_reverse_index(self):
         """Build reverse lookup indices."""
         for file_path, data in self.graph.items():
-            # Track imports
-            for imp in data["imports"]:
+            for imp in data['imports']:
                 if imp not in self.reverse_graph:
                     self.reverse_graph[imp] = []
                 self.reverse_graph[imp].append(file_path)
-
-            # Track from imports
-            for from_imp in data["from_imports"]:
-                module = from_imp["module"]
+            for from_imp in data['from_imports']:
+                module = from_imp['module']
                 if module not in self.reverse_graph:
                     self.reverse_graph[module] = []
                 self.reverse_graph[module].append(file_path)
@@ -133,21 +98,16 @@ class DependencyGraph:
         """Calculate transitive dependencies for each file."""
         for file_path in self.graph:
             deps = set()
-
-            # Direct imports
-            for imp in self.graph[file_path]["imports"]:
+            for imp in self.graph[file_path]['imports']:
                 if imp in self.module_map:
                     deps.add(self.module_map[imp])
-
-            # From imports
-            for from_imp in self.graph[file_path]["from_imports"]:
-                module = from_imp["module"]
+            for from_imp in self.graph[file_path]['from_imports']:
+                module = from_imp['module']
                 if module in self.module_map:
                     deps.add(self.module_map[module])
+            self.graph[file_path]['dependencies'] = list(deps)
 
-            self.graph[file_path]["dependencies"] = list(deps)
-
-    def get_impact_radius(self, file_path: str, include_transitive: bool = True) -> List[str]:
+    def get_impact_radius(self, file_path: str, include_transitive: bool=True) -> List[str]:
         """
         Get files impacted by modifications to the given file.
 
@@ -159,47 +119,33 @@ class DependencyGraph:
             List of file paths that may be impacted
         """
         if not self._built:
-            LOGGER.warning("Dependency graph not built yet")
+            LOGGER.warning('Dependency graph not built yet')
             return []
-
-        impacted = set()
-
-        # Direct dependents
-        module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
-
-        # Files that import this module
+        impacted: Any = set()
+        module_name: Any = file_path.replace('/', '.').replace('\\', '.').replace('.py', '')
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])
-
-        # Files that import from this module
         for key, dependents in self.reverse_graph.items():
-            if key.startswith(module_name + "."):
+            if key.startswith(module_name + '.'):
                 impacted.update(dependents)
-
-        # Files that use classes from this file
-        classes = self.graph.get(file_path, {}).get("classes", [])
+        classes: Any = self.graph.get(file_path, {}).get('classes', [])
         for class_name in classes:
             if class_name in self.reverse_graph:
                 impacted.update(self.reverse_graph[class_name])
-
         if include_transitive:
-            # Calculate transitive impact
-            to_check = list(impacted)
-            checked = set()
-
+            to_check: Any = list(impacted)
+            checked: Any = set()
             while to_check:
-                current = to_check.pop()
+                current: Any = to_check.pop()
                 if current in checked:
                     continue
                 checked.add(current)
-                # Find files that depend on current
-                current_module = current.replace("/", ".").replace("\\", ".").replace(".py", "")
+                current_module: Any = current.replace('/', '.').replace('\\', '.').replace('.py', '')
                 if current_module in self.reverse_graph:
                     for dependent in self.reverse_graph[current_module]:
                         if dependent not in impacted:
                             impacted.add(dependent)
                             to_check.append(dependent)
-
         return sorted(list(impacted))
 
     def get_dependency_tree(self, file_path: str) -> Dict[str, List[str]]:
@@ -210,33 +156,24 @@ class DependencyGraph:
             Dictionary with 'direct' and 'transitive' dependencies
         """
         if not self._built:
-            return {"direct": [], "transitive": []}
-
-        direct = self.graph.get(file_path, {}).get("dependencies", [])
-
-        # Calculate transitive dependencies
-        transitive = set()
-        to_check = list(direct)
-        checked = set()
-
+            return {'direct': [], 'transitive': []}
+        direct: Any = self.graph.get(file_path, {}).get('dependencies', [])
+        transitive: Any = set()
+        to_check: Any = list(direct)
+        checked: Any = set()
         while to_check:
-            current = to_check.pop()
+            current: Any = to_check.pop()
             if current in checked or current == file_path:
                 continue
             checked.add(current)
             transitive.add(current)
-
-            current_deps = self.graph.get(current, {}).get("dependencies", [])
+            current_deps: Any = self.graph.get(current, {}).get('dependencies', [])
             for dep in current_deps:
                 if dep not in checked and dep != file_path:
                     to_check.append(dep)
+        return {'direct': direct, 'transitive': sorted(list(transitive))}
 
-        return {
-            "direct": direct,
-            "transitive": sorted(list(transitive))
-        }
-
-    def visualize_graph(self, output_file: str = None) -> str:
+    def visualize_graph(self, output_file: str=None) -> str:
         """
         Generate a DOT format visualization of the graph.
 
@@ -246,35 +183,26 @@ class DependencyGraph:
         Returns:
             DOT format string
         """
-        dot = ["digraph DependencyGraph {"]
+        dot: Any = ['digraph DependencyGraph {']
         dot.append('  rankdir=LR;')
         dot.append('  node [shape=box];')
-
-        # Add nodes
         for file_path in self.graph:
-            safe_name = file_path.replace("/", "_").replace("\\", "_").replace(".py", "")
+            safe_name: Any = file_path.replace('/', '_').replace('\\', '_').replace('.py', '')
             dot.append(f'  "{safe_name}" [label="{file_path}"];')
-
-        # Add edges
         for file_path, data in self.graph.items():
-            from_name = file_path.replace("/", "_").replace("\\", "_").replace(".py", "")
-            for dep in data["dependencies"]:
-                to_name = dep.replace("/", "_").replace("\\", "_").replace(".py", "")
+            from_name: Any = file_path.replace('/', '_').replace('\\', '_').replace('.py', '')
+            for dep in data['dependencies']:
+                to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
                 dot.append(f'  "{from_name}" -> "{to_name}";')
-
-        dot.append("}")
-
-        dot_str = "\n".join(dot)
-
+        dot.append('}')
+        dot_str: Any = '\n'.join(dot)
         if output_file:
-            with open(output_file, "w") as f:
+            with open(output_file, 'w') as f:
                 f.write(dot_str)
-            LOGGER.info(f"Graph visualization saved to {output_file}")
-
+            LOGGER.info(f'Graph visualization saved to {output_file}')
         return dot_str
 
-
-class ArchitectureGovernor:
+class architecture_governor:
     """
     Enforces architectural governance laws and constraints.
 
@@ -284,72 +212,38 @@ class ArchitectureGovernor:
     3. Law of Impact (Blast radius awareness)
     """
 
-    def __init__(self, root_dir: str = None):
+    def __init__(self, root_dir: str=None):
         """
         Initialize the ArchitectureGovernor.
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.logger = logging.getLogger(__name__)
-
-        # Initialize dependency graph
         self.dependency_graph = DependencyGraph()
-
-        # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-            ROOT_PROTECTED_FILES,
-            SOVEREIGN_REGISTRY,
-        )
-        
-        # [SSOT] L6 Root Hygiene Configuration from structure_blueprint.py
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
-        
-        # [SSOT] Depth map derived from SOVEREIGN_REGISTRY — no hardcoded values
-        self.DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
-
-        # Complexity thresholds
+        self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
         self.MAX_COMPLEXITY = 10
         self.MAX_FUNC_LINES = 50
         self.MAX_NESTING_SPACES = 40
+        self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
+        self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
+        self.MAX_FILE_LINES = 200
 
-        # Initialize statistics
-        self.stats = {
-            "files_checked": 0,
-            "violations_found": 0,
-            "files_sanitized": 0
-        }
-
-        # Sovereign directories (exempt from depth limit)
-        # This set defines directories that are considered part of the core or standard project infrastructure
-        # and are exempt from depth law enforcement. This list does not include downstream application directories.
-        self.sovereign_dirs = {
-            "agentic_core", "schemas", "scripts", "docs", "tests", "config", "data", "cache", "observability",
-            '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv',
-            'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage',
-            ".github", "htmlcov", ".mypy_cache", ".coverage", "eggs", ".eggs", "*.egg-info"
-        }
-
-        # Governance thresholds
-        self.MAX_FILE_LINES = 200  # Law of Atomicity
-        # [SSOT] Depth bounds removed — use self.DEPTH_MAP[root] for per-root depth enforcement
-
-    def build_graph(self, file_patterns: List[str] = ["**/*.py"]):
+    def build_graph(self, file_patterns: List[str]=['**/*.py']) -> Any:
         """
         Build the dependency graph for the project.
 
         Args:
             file_patterns: Glob patterns for Python files
         """
-        all_files = []
+        all_files: Any = []
         for pattern in file_patterns:
             all_files.extend(glob.glob(pattern, recursive=True))
-
-        # Filter to unique files
-        all_files = list(set(all_files))
-
+        all_files: Any = list(set(all_files))
         self.dependency_graph.build(all_files, str(self.root_dir))
 
-    def check_root_hygiene(self, auto_sanitize: bool = True) -> List[str]:
+    def check_root_hygiene(self, auto_sanitize: bool=True) -> List[str]:
         """
         Check Law of The Void - root directory hygiene.
 
@@ -359,28 +253,22 @@ class ArchitectureGovernor:
         Returns:
             List of violations
         """
-        violations = []
-        sanitized = []
-
+        violations: Any = []
+        sanitized: Any = []
         for item in self.root_dir.iterdir():
             if item.is_file():
                 if item.name not in self.ALLOWED_ROOT_FILES:
-                    violations.append(f"Unauthorized file at root: {item.name}")
-
-                    # Auto-sanitize if enabled
+                    violations.append(f'Unauthorized file at root: {item.name}')
                     if auto_sanitize:
-                        action = self._sanitize_root_file(item)
-                        sanitized.append(f"{item.name} -> {action}")
-
+                        action: Any = self._sanitize_root_file(item)
+                        sanitized.append(f'{item.name} -> {action}')
             if item.is_dir():
-                if not item.name.startswith(".") and item.name not in self.ALLOWED_ROOT_FOLDERS:
-                    violations.append(f"Unauthorized directory at root: {item.name}")
-
+                if not item.name.startswith('.') and item.name not in self.ALLOWED_ROOT_FOLDERS:
+                    violations.append(f'Unauthorized directory at root: {item.name}')
         if sanitized:
-            LOGGER.info(f"Root sanitation completed: {len(sanitized)} items processed")
+            LOGGER.info(f'Root sanitation completed: {len(sanitized)} items processed')
             for action in sanitized:
-                LOGGER.info(f"  {action}")
-
+                LOGGER.info(f'  {action}')
         return violations
 
     def _sanitize_root_file(self, file_path: Path) -> str:
@@ -393,39 +281,31 @@ class ArchitectureGovernor:
         Returns:
             Action taken
         """
-        scripts_dir = self.root_dir / "scripts"
+        scripts_dir = self.root_dir / 'scripts'
         scripts_dir.mkdir(exist_ok=True)
-
-        # Check if it's temporary/noise
-        noise_patterns = ["temp", "tmp", "debug", "test", ".log", ".tmp", ".bak"]
-        is_noise = any(pattern in file_path.name.lower() for pattern in noise_patterns)
-
+        noise_patterns = ['temp', 'tmp', 'debug', 'test', '.log', '.tmp', '.bak']
+        is_noise = any((pattern in file_path.name.lower() for pattern in noise_patterns))
         if is_noise:
-            # Delete noise files
             try:
                 file_path.unlink()
-                return "DELETED (noise)"
+                return 'DELETED (noise)'
             except Exception as e:
-                LOGGER.error(f"Failed to delete {file_path}: {e}")
-                return "FAILED to delete"
+                LOGGER.error(f'Failed to delete {file_path}: {e}')
+                return 'FAILED to delete'
         else:
-            # Move to scripts directory
             try:
                 target = scripts_dir / file_path.name
-
-                # Handle name conflicts
                 counter = 1
                 while target.exists():
                     stem = file_path.stem
                     suffix = file_path.suffix
-                    target = scripts_dir / f"{stem}_{counter}{suffix}"
+                    target = scripts_dir / f'{stem}_{counter}{suffix}'
                     counter += 1
-
                 shutil.move(str(file_path), str(target))
-                return f"MOVED to scripts/{target.name}"
+                return f'MOVED to scripts/{target.name}'
             except Exception as e:
-                LOGGER.error(f"Failed to move {file_path}: {e}")
-                return "FAILED to move"
+                LOGGER.error(f'Failed to move {file_path}: {e}')
+                return 'FAILED to move'
 
     def check_depth_law(self, file_path: str) -> Optional[str]:
         """
@@ -437,29 +317,20 @@ class ArchitectureGovernor:
         Returns:
             Violation message or None
         """
-        path = Path(file_path)
-
-        # Check if in sovereign directory
+        path: Any = Path(file_path)
         for part in path.parts:
             if part in self.sovereign_dirs:
-                return None  # Exempt from depth limit
-
-        # [SSOT] Get root folder and required depth from DEPTH_MAP
+                return None
         if len(path.parts) < 1:
             return None
-        root_folder = path.parts[0]
-        required_depth = self.DEPTH_MAP.get(root_folder)
-        
+        root_folder: Any = path.parts[0]
+        required_depth: Any = self.DEPTH_MAP.get(root_folder)
         if required_depth is None:
-            return None  # Not a tracked root folder
-        
-        # Calculate depth from root (parts count minus filename)
-        depth = len(path.parts) - 1
-
-        # [SSOT] Check against per-root required depth
+            return None
+        depth: Any = len(path.parts) - 1
         if depth != required_depth:
-            reason = "SHALLOW" if depth < required_depth else "DEEP"
-            return f"{reason} Violation: {file_path} at depth {depth} (required: {required_depth})"
+            reason: Any = 'SHALLOW' if depth < required_depth else 'DEEP'
+            return f'{reason} Violation: {file_path} at depth {depth} (required: {required_depth})'
         return None
 
     def check_atomicity_law(self, file_path: str) -> Optional[str]:
@@ -474,18 +345,14 @@ class ArchitectureGovernor:
         """
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-
-            line_count = len(lines)
-
+                lines: Any = f.readlines()
+            line_count: Any = len(lines)
             if line_count > self.MAX_FILE_LINES:
-                return f"Violation: {file_path} has {line_count} lines (max allowed: {self.MAX_FILE_LINES}) - SPLIT required"
-
+                return f'Violation: {file_path} has {line_count} lines (max allowed: {self.MAX_FILE_LINES}) - SPLIT required'
             return None
-
         except Exception as e:
-            LOGGER.error(f"Error checking file density for {file_path}: {e}")
-            return f"Error: Could not check {file_path}"
+            LOGGER.error(f'Error checking file density for {file_path}: {e}')
+            return f'Error: Could not check {file_path}'
 
     def enforce_depth_law(self, file_path: str) -> Optional[str]:
         """
@@ -497,45 +364,33 @@ class ArchitectureGovernor:
         Returns:
             New path if moved, None if already compliant
         """
-        path = Path(file_path)
-
-        # Check if already compliant
-        violation = self.check_depth_law(str(path))
+        path: Any = Path(file_path)
+        violation: Any = self.check_depth_law(str(path))
         if not violation:
             return None
-
-        # Check if in sovereign directory (don't move)
         for part in path.parts:
             if part in self.sovereign_dirs:
                 return None
-
-        # Determine correct depth
-        if "too shallow" in violation.lower():
-            # Move deeper (create subdirectories)
-            target_dir = self.root_dir / "agentic_core" / "L1_cognition"
+        if 'too shallow' in violation.lower():
+            target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
             target_dir.mkdir(parents=True, exist_ok=True)
-            target = target_dir / path.name
+            target: Any = target_dir / path.name
         else:
-            # Move shallower
-            target_dir = self.root_dir / "scripts"
+            target_dir: Any = self.root_dir / 'scripts'
             target_dir.mkdir(exist_ok=True)
-            target = target_dir / path.name
-
+            target: Any = target_dir / path.name
         try:
-            # Handle name conflicts
-            counter = 1
+            counter: Any = 1
             while target.exists():
-                stem = path.stem
-                suffix = path.suffix
-                target = target_dir / f"{stem}_{counter}{suffix}"
+                stem: Any = path.stem
+                suffix: Any = path.suffix
+                target: Any = target_dir / f'{stem}_{counter}{suffix}'
                 counter += 1
-
             shutil.move(str(path), str(target))
-            LOGGER.info(f"Moved {file_path} to {target} (depth enforcement)")
+            LOGGER.info(f'Moved {file_path} to {target} (depth enforcement)')
             return str(target)
-
         except Exception as e:
-            LOGGER.error(f"Failed to move {file_path}: {e}")
+            LOGGER.error(f'Failed to move {file_path}: {e}')
             return None
 
     def _calculate_mccabe(self, node: ast.AST) -> int:
@@ -548,15 +403,12 @@ class ArchitectureGovernor:
         Returns:
             Cyclomatic complexity score
         """
-        complexity = 1  # Base complexity
-
+        complexity = 1
         for child in ast.walk(node):
             if isinstance(child, (ast.If, ast.For, ast.While, ast.ExceptHandler)):
                 complexity += 1
             elif isinstance(child, ast.BoolOp):
-                # and/or operators add complexity
                 complexity += len(child.values) - 1
-
         return complexity
 
     def _check_nesting_depth(self, file_path: str) -> List[Dict[str, Any]]:
@@ -570,26 +422,16 @@ class ArchitectureGovernor:
             List of nesting violations
         """
         violations = []
-
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-
             for line_num, line in enumerate(lines, 1):
-                # Count leading spaces (not tabs)
                 if line.startswith(' '):
                     spaces = len(line) - len(line.lstrip(' '))
                     if spaces > self.MAX_NESTING_SPACES:
-                        violations.append({
-                            "line": line_num,
-                            "spaces": spaces,
-                            "content": line.strip()[:100],
-                            "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})"
-                        })
-
+                        violations.append({'line': line_num, 'spaces': spaces, 'content': line.strip()[:100], 'message': f'Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})'})
         except Exception as e:
-            LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
-
+            LOGGER.error(f'Error checking nesting depth in {file_path}: {e}')
         return violations
 
     def check_complexity(self, file_path: str) -> List[Dict[str, Any]]:
@@ -602,59 +444,27 @@ class ArchitectureGovernor:
         Returns:
             List of complexity violations
         """
-        violations = []
-
+        violations: Any = []
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-
-            tree = ast.parse(content)
-
-            # Check each function
+                content: Any = f.read()
+            tree: Any = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
-                    # Calculate complexity
-                    complexity = self._calculate_mccabe(node)
-
-                    # Calculate function length
-                    func_lines = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
-
-                    # Check complexity threshold
+                    complexity: Any = self._calculate_mccabe(node)
+                    func_lines: Any = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
                     if complexity > self.MAX_COMPLEXITY:
-                        violations.append({
-                            "type": "complexity",
-                            "function": node.name,
-                            "line": node.lineno,
-                            "complexity": complexity,
-                            "threshold": self.MAX_COMPLEXITY,
-                            "message": f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}"
-                        })
-
-                    # Check function length threshold
+                        violations.append({'type': 'complexity', 'function': node.name, 'line': node.lineno, 'complexity': complexity, 'threshold': self.MAX_COMPLEXITY, 'message': f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}"})
                     if func_lines > self.MAX_FUNC_LINES:
-                        violations.append({
-                            "type": "length",
-                            "function": node.name,
-                            "line": node.lineno,
-                            "lines": func_lines,
-                            "threshold": self.MAX_FUNC_LINES,
-                            "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}"
-                        })
-
+                        violations.append({'type': 'length', 'function': node.name, 'line': node.lineno, 'lines': func_lines, 'threshold': self.MAX_FUNC_LINES, 'message': f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}"})
         except SyntaxError as e:
-            violations.append({
-                "type": "syntax",
-                "message": f"Syntax error in {file_path}: {e}"
-            })
+            violations.append({'type': 'syntax', 'message': f'Syntax error in {file_path}: {e}'})
         except Exception as e:
-            LOGGER.error(f"Error checking complexity in {file_path}: {e}")
-
-        # Check nesting depth
-        nesting_violations = self._check_nesting_depth(file_path)
+            LOGGER.error(f'Error checking complexity in {file_path}: {e}')
+        nesting_violations: Any = self._check_nesting_depth(file_path)
         for violation in nesting_violations:
-            violation["type"] = "nesting"
+            violation['type'] = 'nesting'
             violations.append(violation)
-
         return violations
 
     def get_blast_radius(self, modified_files: List[str]) -> Dict[str, Any]:
@@ -669,26 +479,15 @@ class ArchitectureGovernor:
         """
         if not self.dependency_graph._built:
             self.build_graph()
-
-        total_impacted = set()
-        file_impacts = {}
-
+        total_impacted: Any = set()
+        file_impacts: Any = {}
         for file_path in modified_files:
-            impacted = self.dependency_graph.get_impact_radius(file_path)
+            impacted: Any = self.dependency_graph.get_impact_radius(file_path)
             total_impacted.update(impacted)
-            file_impacts[file_path] = {
-                "direct_count": len(impacted),
-                "impacted_files": impacted
-            }
+            file_impacts[file_path] = {'direct_count': len(impacted), 'impacted_files': impacted}
+        return {'modified_count': len(modified_files), 'total_impacted': len(total_impacted), 'blast_radius': sorted(list(total_impacted)), 'file_details': file_impacts}
 
-        return {
-            "modified_count": len(modified_files),
-            "total_impacted": len(total_impacted),
-            "blast_radius": sorted(list(total_impacted)),
-            "file_details": file_impacts
-        }
-
-    def validate_architecture(self, file_paths: List[str] = None, enforce: bool = False) -> Dict[str, Any]:
+    def validate_architecture(self, file_paths: List[str]=None, enforce: bool=False) -> Dict[str, Any]:
         """
         Perform full architecture validation.
 
@@ -699,56 +498,29 @@ class ArchitectureGovernor:
         Returns:
             Validation report
         """
-        report = {
-            "root_violations": [],
-            "depth_violations": [],
-            "atomicity_violations": [],
-            "complexity_violations": [],
-            "enforced_actions": [],
-            "blast_radius": None,
-            "overall_status": "PASS"
-        }
-
-        # Check root hygiene with auto-sanitization
-        report["root_violations"] = self.check_root_hygiene(auto_sanitize=enforce)
-
-        # Check depth, atomicity, and complexity violations
+        report: Any = {'root_violations': [], 'depth_violations': [], 'atomicity_violations': [], 'complexity_violations': [], 'enforced_actions': [], 'blast_radius': None, 'overall_status': 'PASS'}
+        report['root_violations'] = self.check_root_hygiene(auto_sanitize=enforce)
         if file_paths:
             for file_path in file_paths:
-                # Check depth
-                violation = self.check_depth_law(file_path)
+                violation: Any = self.check_depth_law(file_path)
                 if violation:
-                    report["depth_violations"].append(violation)
-
-                    # Enforce if requested
+                    report['depth_violations'].append(violation)
                     if enforce:
-                        new_path = self.enforce_depth_law(file_path)
+                        new_path: Any = self.enforce_depth_law(file_path)
                         if new_path:
-                            report["enforced_actions"].append(f"Moved {file_path} to {new_path}")
-
-                # Check atomicity
-                violation = self.check_atomicity_law(file_path)
+                            report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
+                violation: Any = self.check_atomicity_law(file_path)
                 if violation:
-                    report["atomicity_violations"].append(violation)
-
-                # Check complexity
-                    complexity_violations = self.check_complexity(file_path)
+                    report['atomicity_violations'].append(violation)
+                    complexity_violations: Any = self.check_complexity(file_path)
                     if complexity_violations:
-                        report["complexity_violations"].extend(complexity_violations)
-
-        # Calculate blast radius if files provided
+                        report['complexity_violations'].extend(complexity_violations)
         if file_paths:
-            report["blast_radius"] = self.get_blast_radius(file_paths)
-
-        # Determine overall status
-        if (report["root_violations"] or report["depth_violations"] or
-            report["atomicity_violations"] or report["complexity_violations"]):
-            report["overall_status"] = "FAIL"
-
+            report['blast_radius'] = self.get_blast_radius(file_paths)
+        if report['root_violations'] or report['depth_violations'] or report['atomicity_violations'] or report['complexity_violations']:
+            report['overall_status'] = 'FAIL'
         return report
 
-
-# Factory function
-def create_architecture_governor(root_dir: str = None) -> ArchitectureGovernor:
+def create_architecture_governor(root_dir: str=None) -> ArchitectureGovernor:
     """Create an architecture governor instance."""
     return ArchitectureGovernor(root_dir)

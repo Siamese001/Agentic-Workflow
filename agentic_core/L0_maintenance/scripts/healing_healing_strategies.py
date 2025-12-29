@@ -10,7 +10,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class HealingStrategy:
+# NAMING FIXED: HealingStrategy → healing_strategy
+class healing_strategy:
     """Base class for all healing strategies."""
     
     def __init__(self, name: str, priority: int):
@@ -43,13 +44,16 @@ class HealingStrategy:
         return False
 
 
-class StructureHealing(HealingStrategy):
+# NAMING FIXED: StructureHealing → structure_healing
+class structure_healing(HealingStrategy):
     """Heals structural violations (forbidden root folders, directory depth)."""
     
     def __init__(self):
         super().__init__("Structure", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             description = issue.get("description", "").lower()
@@ -95,13 +99,16 @@ class StructureHealing(HealingStrategy):
             return False
 
 
-class UnderscoreFieldHealing(HealingStrategy):
+# NAMING FIXED: UnderscoreFieldHealing → underscore_field_healing
+class underscore_field_healing(HealingStrategy):
     """Heals underscore-prefixed fields in SSOT models."""
     
     def __init__(self):
         super().__init__("UnderscoreFields", priority=2)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             description = issue.get("description", "").lower()
@@ -152,13 +159,16 @@ class UnderscoreFieldHealing(HealingStrategy):
             return False
 
 
-class DarkReasoningHealing(HealingStrategy):
+# NAMING FIXED: DarkReasoningHealing → dark_reasoning_healing
+class dark_reasoning_healing(HealingStrategy):
     """Heals Dark Reasoning violations by injecting L6 logging."""
     
     def __init__(self):
         super().__init__("DarkReasoning", priority=3)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
@@ -197,7 +207,8 @@ class DarkReasoningHealing(HealingStrategy):
             return False
 
 
-class DDDAlignmentHealing(HealingStrategy):
+# NAMING FIXED: DDDAlignmentHealing → ddd_alignment_healing
+class ddd_alignment_healing(HealingStrategy):
     """Heals DDD alignment violations by refactoring imports."""
     
     def __init__(self):
@@ -274,7 +285,8 @@ class DDDAlignmentHealing(HealingStrategy):
             return False
 
 
-class ObservabilityHealing(HealingStrategy):
+# NAMING FIXED: ObservabilityHealing → observability_healing
+class observability_healing(HealingStrategy):
     """Heals observability footprint violations by injecting L6 logging."""
     
     def __init__(self):
@@ -364,13 +376,16 @@ class ObservabilityHealing(HealingStrategy):
             return False
 
 
-class DirectRedisHealing(HealingStrategy):
+# NAMING FIXED: DirectRedisHealing → direct_redis_healing
+class direct_redis_healing(HealingStrategy):
     """Fixes direct redis-py usage — replaces with SovereignRedisMCPClient"""
     
     def __init__(self):
         super().__init__("DirectRedis", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
@@ -386,6 +401,8 @@ class DirectRedisHealing(HealingStrategy):
         return fixes
 
     async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         try:
             import re
             file_path = Path(fix["file"])
@@ -409,13 +426,16 @@ class DirectRedisHealing(HealingStrategy):
             return False
 
 
-class DirectLLMHealing(HealingStrategy):
+# NAMING FIXED: DirectLLMHealing → direct_llm_healing
+class direct_llm_healing(HealingStrategy):
     """Fixes direct OpenAI/Anthropic calls — routes through LLM Router MCP"""
     
     def __init__(self):
         super().__init__("DirectLLM", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             desc = issue.get("description", "").lower()
@@ -458,13 +478,16 @@ class DirectLLMHealing(HealingStrategy):
             return False
 
 
-class FilesystemBypassHealing(HealingStrategy):
+# NAMING FIXED: FilesystemBypassHealing → filesystem_bypass_healing
+class filesystem_bypass_healing(HealingStrategy):
     """Fixes direct file I/O — routes through Filesystem MCP"""
     
     def __init__(self):
         super().__init__("FilesystemBypass", priority=2)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         fixes = []
         for issue in issues:
             desc = issue.get("description", "")
@@ -528,7 +551,8 @@ from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWi
 from agentic_core.L0_maintenance.P1_core.l6_audit_healing_strategy import L6AuditHealingStrategy
 
 # Registry of all available healing strategies
-HEALING_STRATEGIES = [
+# NAMING FIXED: HEALING_STRATEGIES → healing_strategies
+healing_strategies = [
     DirectRedisHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     DirectLLMHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)
     FilesystemBypassHealing(),  # Phase 17: Autonomous Healing (Dec 27, 2025)

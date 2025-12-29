@@ -3,58 +3,41 @@ SOVEREIGN STRUCTURE FINALIZER
 Creates all missing directories to enforce the 3-level depth law.
 """
 import os
+from agentic_core.config.blueprint_sovereign.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    APPS_LIC_SUBFOLDER_MAP,
-    APPS_RG_SUBFOLDER_MAP,
-    APPS_SHARED_SUBFOLDER_MAP,
-    CORE_SUBFOLDER_MAP,
-    TESTS_L2_SUBFOLDER_MAP,
-)
-
-def finalize_structure(root_path):
-    print(f"--- FINALIZING SOVEREIGN STRUCTURE ---")
-    
-    # 1. Force Core Depth (agentic_core L1 > L2 > L3)
+def finalize_structure(root_path: Any) -> Any:
+    """Brief description of functionality and purpose."""
+    print(f'--- FINALIZING SOVEREIGN STRUCTURE ---')
     for l1, l2_list in CORE_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            path = os.path.join(root_path, "agentic_core", l1, l2)
+            path: Any = os.path.join(root_path, 'agentic_core', l1, l2)
             ensure_dir(path)
-
-    # 2. Force App Depth - apps_rg
     for l1, l2_list in APPS_RG_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            path = os.path.join(root_path, "apps_rg", l1, l2)
+            path: Any = os.path.join(root_path, 'apps_rg', l1, l2)
             ensure_dir(path)
-    
-    # 3. Force App Depth - apps_lic
     for l1, l2_list in APPS_LIC_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            path = os.path.join(root_path, "apps_lic", l1, l2)
+            path: Any = os.path.join(root_path, 'apps_lic', l1, l2)
             ensure_dir(path)
-    
-    # 4. Force App Depth - apps_shared
     for l1, l2_list in APPS_SHARED_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            path = os.path.join(root_path, "apps_shared", l1, l2)
+            path: Any = os.path.join(root_path, 'apps_shared', l1, l2)
             ensure_dir(path)
-
-    # 5. Force Test Depth (tests L1 > L2)
     for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         for l2 in l2_list:
-            path = os.path.join(root_path, "tests", l1, l2)
+            path: Any = os.path.join(root_path, 'tests', l1, l2)
             ensure_dir(path)
 
-def ensure_dir(path):
+def ensure_dir(path: Any) -> Any:
+    """Brief description of functionality and purpose."""
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
-        # Create .gitkeep so Git tracks these empty deep folders
-        with open(os.path.join(path, ".gitkeep"), 'w') as f:
+        with open(os.path.join(path, '.gitkeep'), 'w') as f:
             f.write('')
-        print(f"✅ CREATED: {path}")
+        print(f'✅ CREATED: {path}')
     else:
-        print(f"✓ EXISTS: {path}")
-
-if __name__ == "__main__":
-    finalize_structure("C:/Git/Agentic-Workflow")
-    print("\n--- FINISHED. RUN VALIDATOR AGAIN TO VERIFY ---")
+        print(f'✓ EXISTS: {path}')
+if __name__ == '__main__':
+    finalize_structure('C:/Git/Agentic-Workflow')
+    print('\n--- FINISHED. RUN VALIDATOR AGAIN TO VERIFY ---')
