@@ -2806,43 +2806,74 @@ groups:
     from collections import defaultdict
     key_counts = defaultdict(int)
     for f in ctx.python_files:
-         rel = Path(f).relative_to(project_root)
-         keys = [k for k, ps in CANON_KEY_TO_FOLDER_MAP.items() if any(str(rel).startswith(p) for p in ps)]
-         for k in keys: key_counts[k] += 1
+     rel = Path(f).relative_to(project_root)
+     keys = [k for k, ps in CANON_KEY_TO_FOLDER_MAP.items() if any(str(rel).startswith(p) for p in ps)]
+     for k in keys: key_counts[k] += 1
 
-    # === SYNTHETIC BEHAVIORAL COUNTS (Keys 13-19) ===
-    # Key 13: Span-of-Two compliance
-    try:
-        from agentic_core.runtime.shared_runtime.void_compliance import check_span_of_two_violations
-        span_v = check_span_of_two_violations(project_root)
-        key_counts[13] = 1 if not span_v else 0
-    except ImportError:
-        key_counts[13] = 0
+# === SYNTHETIC BEHAVIORAL COUNTS (Keys 13-19) [HARDENED v2] ===
+# Key 13: Span-of-Two compliance — now requires ZERO violations explicitly
+try:
+    from agentic_core.runtime.shared_runtime.void_compliance import check_span_of_two_violations
+    span_v = check_span_of_two_violations(project_root)
+    key_counts[13] = 1 if len(span_v) == 0 else 0  # Explicit zero check for stronger signal
+except ImportError:
+    key_counts[13] = 0  # Fail safe if compliance checker unavailable
 
-    # Key 14: Active agent count
-    key_counts[14] = len(ctx.cleaning_crew) if hasattr(ctx, 'cleaning_crew') else 0
+# Key 14: Active agent count — require minimum active validators for sovereignty
+# NOTE: Threshold '8' assumes full production crew. Adjust if running subset profiles.
+active_agents = len(getattr(ctx, 'cleaning_crew', []))
+key_counts[14] = 1 if active_agents >= 8 else 0
 
-    # Key 15: Healing actions executed (Fission + Moves)
-    key_counts[15] = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') in ['FISSION_COMPLETE', 'RELOCATED'])
+# Key 15: Healing actions executed (Fission + Moves)
+# Count-based retention is appropriate here to show activity volume
+key_counts[15] = sum(1 for v in getattr(ctx, 'results', {}).values() 
+                     if isinstance(v, dict) and v.get('action') in ['FISSION_COMPLETE', 'RELOCATED'])
 
-    # Key 16: Safety systems online
-    key_counts[16] = 1 if (ctx.engine and ctx.safety) else 0
+# Key 16: Safety systems online — require both engine AND guardrail fully armed
+key_counts[16] = 1 if (getattr(ctx, 'engine', None) and getattr(ctx, 'safety', None)) else 0
 
-    # Key 17: State Synchronization (Pinecone/Redis)
-    key_counts[17] = sum(1 for m in monitors if m.__class__.__name__ in ['PineconeSovereignAgent', 'RedisSovereignAgent'])
+# Key 17: State Synchronization — require BOTH Redis and Pinecone monitors present
+monitor_names = [m.__class__.__name__ for m in monitors]
+has_redis = 'RedisSovereignAgent' in monitor_names
+has_pinecone = 'PineconeSovereignAgent' in monitor_names
+key_counts[17] = 1 if (has_redis and has_pinecone) else 0
 
-    # Key 18: Core Laws (Naming + Gravity)
-    law_fails = [r for r in ctx.report if r.get('status') == 'FAIL' and any(x in r.get('agent', '').lower() for x in ['naming', 'gravity', 'waterfall'])]
-    key_counts[18] = 1 if not law_fails else 0
+# Key 18: Core Laws (Naming + Gravity) — stricter agent name matching
+law_fails = [r for r in getattr(ctx, 'report', []) 
+             if r.get('status') == 'FAIL' 
+             and any(keyword in str(r.get('agent', '')).lower() for keyword in ['naming', 'gravity', 'waterfall', 'hierarchy', 'span'])]
+key_counts[18] = 1 if len(law_fails) == 0 else 0
 
-    # Key 19: Full Convergence
-    key_counts[19] = 1 if (total_violations == 0 and key_counts[14] > 0) else 0
+# Key 19: Full Convergence — now requires ZERO violations + active agents + all prior behavioral keys clean
+# STRICT MODE: Keys 13,14,16,17,18 must all be 1 (Key 15 is informational count)
+behavioral_pass = (key_counts[13] == 1 and key_counts[14] == 1 and key_counts[16] == 1 and key_counts[17] == 1 and key_counts[18] == 1)
+key_counts[19] = 1 if (total_violations == 0 and active_agents > 0 and behavioral_pass) else 0
 
-    for k in sorted(key_counts):
-        unit = "files" if k <= 12 else "status (1 = active/clean)"
-        print(f"   Key {k}: {key_counts[k]} {unit}")
+# Calculate perfection status for the banner
+target_files = len(ctx.python_files)
+structural_perfect = all(key_counts.get(k, 0) == target_files for k in range(13))
+behavioral_perfect = (key_counts.get(19, 0) == 1)
+    
+is_eternal_sovereign = structural_perfect and behavioral_perfect
 
-    print("="*70)
+for k in sorted(key_counts):
+    unit = "files" if k <= 12 else "status (1 = active/clean)"
+    print(f"   Key {k}: {key_counts[k]} {unit}")
+
+print("="*70)
+    
+# [ETERNAL SIGNAL HARDENING] Amplified convergence banner
+if is_eternal_sovereign:
+    print("\n" + "🚨" * 20)
+    print("[ETERNAL SOVEREIGNTY SEAL] ALL 20 CANON KEYS ACHIEVED — PERFECTION ABSOLUTE")
+    print("   • Structural keys (0-12): Full territory coverage")
+    print("   • Behavioral keys (13-19): All systems armed and violation-free")
+    print("   • Zero violations | Active agents | Full synchronization")
+    print("🚨" * 20 + "\n")
+elif key_counts.get(19, 0) == 1:
+    print("\n[STRONG SIGNAL] Key 19 Convergence achieved — near-perfect sovereignty")
+else:
+    print("\n[STATUS] System Operational - Violations Detected")
 
 
 async def _execute_move_instruction(move: dict, project_root: Path, ctx):
