@@ -425,7 +425,12 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
     Replaces the buggy total_children == 1 check to allow single-file leaves.
     """
     violations = []
-    IGNORE_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache"}
+    IGNORE_DIRS = {
+        ".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache",
+        # [SPAN NOISE SUPPRESSION] Ignore non-code/data territories to fix 16 false positives
+        "golden_state", "logs", "processed", "shared", "Lib", "site-packages", 
+        "google", "gapic", "logging", "refs", "remotes", "v"
+    }
 
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = project_root / root_folder
