@@ -996,7 +996,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     if target_path.is_dir():
         for root, dirs, files in os.walk(target_path):
             # Prune protected dirs to avoid scanning archives, .git, etc.
-            dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
+            dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS and d != ".git"]
             for file in files:
                 if not file.endswith('.py'):
                     continue
@@ -1409,7 +1409,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     discovered_files = []
     for root, dirs, files in os.walk(target_path):
         # Prune protected dirs in-place to prevent os.walk from entering them
-        dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
+        dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS and d != ".git"]
         for file in files:
             if file.endswith('.py'):
                 discovered_files.append(Path(root) / file)
