@@ -24,10 +24,11 @@ class DriftDetectorAgent:
             project_root: Absolute path to project root
         """
         self.root = project_root
-        # Build set of all mapped paths from SSOT
+        # Build set of all mapped paths from SSOT (exclude behavioral wildcards)
         self.mapped_paths: Set[str] = set()
         for paths in CANON_KEY_TO_FOLDER_MAP.values():
-            self.mapped_paths.update(paths)
+            # [NORMALIZED] Skip wildcard behavioral keys (13-19)
+            self.mapped_paths.update(p for p in paths if p != "*")
     
     async def execute(self) -> List[str]:
         """

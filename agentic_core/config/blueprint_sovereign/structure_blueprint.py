@@ -14,9 +14,10 @@ from typing import Any, Dict, List, Optional, Protocol, Set
 # ==============================================================================
 
 # [KEY EXCEPTION LEDGER] Central SSOT for False Positive Suppression
+# Note: These are CODE QUALITY keys (20+), separate from TERRITORIAL keys (0-19)
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {
     23: {"files": {"agentic_core/L2_execution/mcp/fetch_client_sovereign.py"}, "patterns": [r"if TYPE_CHECKING:", r"\"\"\".*requests.*\"\"\""]},
-    20: {"files": {"canon_validator_agentic_v2.py", "pyproject.toml"}, "patterns": []}
+    20: {"files": {"canon_validator_agentic_v2.py", "pyproject.toml"}, "patterns": []}  # Code quality: large class exception
 }
 
 # [CANON KEY CONSTITUTION] Active keys and their folder mappings
