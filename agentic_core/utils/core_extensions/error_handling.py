@@ -8,11 +8,13 @@ import time
 from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
 
 
-class MCPError(Exception):
+# NAMING FIXED: MCPError → mcp_error
+class mcp_error(Exception):
     """Base exception for MCP-related errors."""
 
 
-class CircuitBreakerOpenError(MCPError):
+# NAMING FIXED: CircuitBreakerOpenError → circuit_breaker_open_error
+class circuit_breaker_open_error(MCPError):
     """Raised when circuit breaker is open."""
 
 
@@ -65,6 +67,8 @@ def retry_with_backoff(func: Callable, max_retries: int = 3, base_delay: float =
         Wrapped function with retry logic
     """
     def wrapper(*args, **kwargs):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Delegate the actual retry logic to the helper function
         success, result, exception = _execute_with_retries_internal(
             func, max_retries, base_delay, *args, **kwargs

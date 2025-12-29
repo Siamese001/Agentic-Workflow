@@ -7,7 +7,8 @@ import time
 
 
 @pytest.mark.integration
-class TestConcurrentHealingCoordination:
+# NAMING FIXED: TestConcurrentHealingCoordination → test_concurrent_healing_coordination
+class test_concurrent_healing_coordination:
     """Verify concurrent healers coordinate via locks to prevent conflicts."""
     
     def test_two_healers_serialize_via_lock(
@@ -24,6 +25,8 @@ class TestConcurrentHealingCoordination:
         results = []
         
         def healer_1():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
                 try:
@@ -35,6 +38,8 @@ class TestConcurrentHealingCoordination:
                     concurrent_lock_manager.release(resource_id)
         
         def healer_2():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.05)  # Start slightly after healer_1
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -107,6 +112,8 @@ class TestConcurrentHealingCoordination:
         results = []
         
         def heal_file(file_path, healer_id):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             resource_id = str(file_path)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
                 try:
@@ -136,7 +143,8 @@ class TestConcurrentHealingCoordination:
 
 
 @pytest.mark.integration
-class TestConcurrentMergeConflicts:
+# NAMING FIXED: TestConcurrentMergeConflicts → test_concurrent_merge_conflicts
+class test_concurrent_merge_conflicts:
     """Test resolution of concurrent modification conflicts."""
     
     def test_last_writer_wins_without_coordination(
@@ -152,10 +160,14 @@ class TestConcurrentMergeConflicts:
         target_file.write_text("# Original\n")
         
         def writer_1():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.05)
             target_file.write_text("# Writer 1\n")
         
         def writer_2():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.1)
             target_file.write_text("# Writer 2\n")
         
@@ -192,6 +204,8 @@ class TestConcurrentMergeConflicts:
         results = {"fix_a_applied": False, "fix_b_applied": False}
         
         def apply_fix_a():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
                 try:
@@ -202,6 +216,8 @@ class TestConcurrentMergeConflicts:
                     concurrent_lock_manager.release(resource_id)
         
         def apply_fix_b():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.01)  # Start slightly after A
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -255,6 +271,8 @@ class TestConcurrentMergeConflicts:
         target_file.write_text("class Original:\n    pass\n")
         
         def add_method_a():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
                 try:
@@ -268,6 +286,8 @@ class TestConcurrentMergeConflicts:
                     concurrent_lock_manager.release(resource_id)
         
         def add_method_b():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.05)
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -297,7 +317,8 @@ class TestConcurrentMergeConflicts:
 
 
 @pytest.mark.integration
-class TestHealingQueueOrdering:
+# NAMING FIXED: TestHealingQueueOrdering → test_healing_queue_ordering
+class test_healing_queue_ordering:
     """Test healing operations respect priority and ordering."""
     
     def test_high_priority_healer_preempts_low_priority(
@@ -312,10 +333,14 @@ class TestHealingQueueOrdering:
         execution_order = []
         
         def low_priority_healer():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(0.1)
             execution_order.append("low")
         
         def high_priority_healer():
+                                    '''Brief description of functionality and purpose.'''
+                                    
             execution_order.append("high")
         
         # Act
@@ -347,6 +372,8 @@ class TestHealingQueueOrdering:
         execution_order = []
         
         def healer(healer_id, delay):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             time.sleep(delay)
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=5.0):

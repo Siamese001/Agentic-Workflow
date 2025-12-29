@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
@@ -9,7 +13,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-class TrackOutreachGenerationCost:
+# NAMING FIXED: TrackOutreachGenerationCost → track_outreach_generation_cost
+class track_outreach_generation_cost:
     """TrackOutreachGenerationCost implementation."""
 
 

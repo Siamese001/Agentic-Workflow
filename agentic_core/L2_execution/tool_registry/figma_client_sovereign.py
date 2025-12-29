@@ -20,10 +20,13 @@ from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 logger = logging.getLogger(__name__)
 
 # Sovereign Figma limits
-FIGMA_MCP_URL = "https://mcp.figma.com/mcp"
-MAX_SELECTION_NODES = 50
+# NAMING FIXED: FIGMA_MCP_URL → figma_mcp_url
+figma_mcp_url = "https://mcp.figma.com/mcp"
+# NAMING FIXED: MAX_SELECTION_NODES → max_selection_nodes
+max_selection_nodes = 50
 
-class SovereignFigmaClient:
+# NAMING FIXED: SovereignFigmaClient → sovereign_figma_client
+class sovereign_figma_client:
     """Ultra-hardened Figma client — eliminating design-to-code hallucinations."""
     
     def __init__(self, oauth_token: Optional[str] = None, cache: Optional[SovereignSemanticCache] = None):
@@ -94,4 +97,6 @@ class SovereignFigmaClient:
             return {"error": str(e)}
 
     async def close(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         await self.client.aclose()

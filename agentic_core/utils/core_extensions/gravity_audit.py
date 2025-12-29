@@ -1,46 +1,38 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import os
 from pathlib import Path
+root: Any = Path('C:/Git/Agentic-Workflow')
+core: Any = ROOT / 'agentic_core'
 
-ROOT = Path("C:/Git/Agentic-Workflow")
-CORE = ROOT / "agentic_core"
-
-def audit_gravity():
-    print("[*] STARTING FINAL GRAVITY AUDIT...")
-    leaks = []
-
-    # Scan all Python files in the Sovereign Core
-    for py_file in CORE.rglob("*.py"):
-        if py_file.name == "__init__.py" or "legacy" in str(py_file):
+def audit_gravity() -> Any:
+    """Brief description of functionality and purpose."""
+    print('[*] STARTING FINAL GRAVITY AUDIT...')
+    leaks: Any = []
+    for py_file in CORE.rglob('*.py'):
+        if py_file.name == '__init__.py' or 'legacy' in str(py_file):
             continue
-
         try:
-            with open(py_file, "r", encoding="utf-8") as f:
-                tree = ast.parse(f.read())
-
+            with open(py_file, 'r', encoding='utf-8') as f:
+                tree: Any = ast.parse(f.read())
             for node in ast.walk(tree):
-                # Check for 'import apps_rg...'
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        if any(x in alias.name for x in ["apps_rg", "apps_lic", "apps_shared"]):
-                            leaks.append((py_file.relative_to(ROOT), f"Direct: {alias.name}"))
-                
-                # Check for 'from apps_rg.P1_core import ...'
+                        if any((x in alias.name for x in ['apps_rg', 'apps_lic', 'apps_shared'])):
+                            leaks.append((py_file.relative_to(ROOT), f'Direct: {alias.name}'))
                 elif isinstance(node, ast.ImportFrom):
-                    if node.module and any(x in node.module for x in ["apps_rg", "apps_lic", "apps_shared"]):
-                        leaks.append((py_file.relative_to(ROOT), f"From: {node.module}"))
-        
+                    if node.module and any((x in node.module for x in ['apps_rg', 'apps_lic', 'apps_shared'])):
+                        leaks.append((py_file.relative_to(ROOT), f'From: {node.module}'))
         except Exception as e:
-            print(f"  [!] Audit Failed for {py_file.name}: {e}")
-
+            print(f'  [!] Audit Failed for {py_file.name}: {e}')
     if not leaks:
-        print("\n[SUCCESS] Gravity is 100% Pure. No downstream leaks detected.")
+        print('\n[SUCCESS] Gravity is 100% Pure. No downstream leaks detected.')
     else:
-        print(f"\n[!] ALERT: Found {len(leaks)} Gravity Violations:")
+        print(f'\n[!] ALERT: Found {len(leaks)} Gravity Violations:')
         for file, reason in leaks:
-            print(f"  [X] {file} -> {reason}")
-    
+            print(f'  [X] {file} -> {reason}')
     return leaks
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     audit_gravity()

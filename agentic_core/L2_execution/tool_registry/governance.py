@@ -18,7 +18,8 @@ from agentic_core.L0_maintenance.scripts.canon_validator_config import (
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 
-class ArchitectureGovernor(SubAtomicAgent):
+# NAMING FIXED: ArchitectureGovernor → architecture_governor
+class architecture_governor(SubAtomicAgent):
     """
     Unified Architecture Governor.
     Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Keys 17, 19), System (Keys 40, 41).
@@ -246,7 +247,8 @@ Generate the blueprint now:"""
             return f.read()
 
 
-class DependencySentinel(SubAtomicAgent):
+# NAMING FIXED: DependencySentinel → dependency_sentinel
+class dependency_sentinel(SubAtomicAgent):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
           14 (Duplicate Imports), 44 (Circular Imports)
@@ -254,6 +256,8 @@ class DependencySentinel(SubAtomicAgent):
     """
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
         await asyncio.sleep(0)
 

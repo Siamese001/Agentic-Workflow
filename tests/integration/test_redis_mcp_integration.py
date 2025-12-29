@@ -7,168 +7,118 @@ import pytest
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client, SovereignRedisMCPClient
 from agentic_core.config.P1_core.sovereign_config import config
 
-
-class TestRedisMCPIntegration:
+class test_redis_mcp_integration:
     """Test suite for Redis MCP client integration."""
-    
+
     @pytest.mark.asyncio
-    async def test_redis_mcp_enabled(self):
+    async def test_redis_mcp_enabled(self) -> Any:
         """Verify Redis MCP is enabled in sovereign config."""
-        assert config.REDIS_MCP_ENABLED is True, "Redis MCP must be enabled"
-        assert config.REDIS_DEFAULT_TTL_SECONDS == 3600, "Default TTL should be 3600s"
-        assert config.REDIS_MAX_KEY_LENGTH == 512, "Max key length should be 512"
-        assert config.REDIS_CACHE_PREFIX == "sovereign:", "Cache prefix should be 'sovereign:'"
-    
+        assert config.REDIS_MCP_ENABLED is True, 'Redis MCP must be enabled'
+        assert config.REDIS_DEFAULT_TTL_SECONDS == 3600, 'Default TTL should be 3600s'
+        assert config.REDIS_MAX_KEY_LENGTH == 512, 'Max key length should be 512'
+        assert config.REDIS_CACHE_PREFIX == 'sovereign:', "Cache prefix should be 'sovereign:'"
+
     @pytest.mark.asyncio
-    async def test_redis_client_singleton(self):
+    async def test_redis_client_singleton(self) -> Any:
         """Verify singleton pattern for Redis client."""
-        client1 = get_redis_client()
-        client2 = get_redis_client()
-        assert client1 is client2, "Should return same singleton instance"
-    
+        client1: Any = get_redis_client()
+        client2: Any = get_redis_client()
+        assert client1 is client2, 'Should return same singleton instance'
+
     @pytest.mark.asyncio
-    async def test_redis_set_get(self):
+    async def test_redis_set_get(self) -> Any:
         """Test basic set and get operations via MCP."""
-        client = get_redis_client()
-        
-        test_key = "test_phase16a_key"
-        test_value = "test_value_sovereign"
-        
-        # Set value
-        success = await client.set(test_key, test_value, ttl=60)
-        assert success is True, "Set operation should succeed"
-        
-        # Get value
-        retrieved = await client.get(test_key)
-        assert retrieved == test_value, f"Retrieved value should match: {retrieved}"
-        
-        # Cleanup
+        client: Any = get_redis_client()
+        test_key: Any = 'test_phase16a_key'
+        test_value: Any = 'test_value_sovereign'
+        success: Any = await client.set(test_key, test_value, ttl=60)
+        assert success is True, 'Set operation should succeed'
+        retrieved: Any = await client.get(test_key)
+        assert retrieved == test_value, f'Retrieved value should match: {retrieved}'
         await client.delete(test_key)
-    
+
     @pytest.mark.asyncio
-    async def test_redis_delete(self):
+    async def test_redis_delete(self) -> Any:
         """Test delete operation via MCP."""
-        client = get_redis_client()
-        
-        test_key = "test_delete_key"
-        test_value = "delete_me"
-        
-        # Set then delete
+        client: Any = get_redis_client()
+        test_key: Any = 'test_delete_key'
+        test_value: Any = 'delete_me'
         await client.set(test_key, test_value, ttl=60)
-        deleted = await client.delete(test_key)
-        assert deleted is True, "Delete should succeed"
-        
-        # Verify deletion
-        retrieved = await client.get(test_key)
-        assert retrieved is None, "Key should be deleted"
-    
+        deleted: Any = await client.delete(test_key)
+        assert deleted is True, 'Delete should succeed'
+        retrieved: Any = await client.get(test_key)
+        assert retrieved is None, 'Key should be deleted'
+
     @pytest.mark.asyncio
-    async def test_redis_key_prefix(self):
+    async def test_redis_key_prefix(self) -> Any:
         """Verify sovereign prefix is applied to keys."""
-        client = get_redis_client()
-        
-        test_key = "prefix_test"
-        test_value = "prefixed_value"
-        
+        client: Any = get_redis_client()
+        test_key: Any = 'prefix_test'
+        test_value: Any = 'prefixed_value'
         await client.set(test_key, test_value, ttl=60)
-        
-        # The actual key in Redis should have the prefix
-        # This is verified by the client implementation
-        retrieved = await client.get(test_key)
+        retrieved: Any = await client.get(test_key)
         assert retrieved == test_value
-        
         await client.delete(test_key)
-    
+
     @pytest.mark.asyncio
-    async def test_redis_key_length_validation(self):
+    async def test_redis_key_length_validation(self) -> Any:
         """Test key length validation against sovereign limits."""
-        client = get_redis_client()
-        
-        # Create key exceeding max length
-        long_key = "x" * (config.REDIS_MAX_KEY_LENGTH + 1)
-        
-        with pytest.raises(ValueError, match="exceeds sovereign limit"):
-            await client.set(long_key, "value")
-    
+        client: Any = get_redis_client()
+        long_key: Any = 'x' * (config.REDIS_MAX_KEY_LENGTH + 1)
+        with pytest.raises(ValueError, match='exceeds sovereign limit'):
+            await client.set(long_key, 'value')
+
     @pytest.mark.asyncio
-    async def test_redis_ttl_default(self):
+    async def test_redis_ttl_default(self) -> Any:
         """Verify default TTL is applied when not specified."""
-        client = get_redis_client()
-        
-        test_key = "ttl_default_test"
-        test_value = "ttl_value"
-        
-        # Set without explicit TTL
+        client: Any = get_redis_client()
+        test_key: Any = 'ttl_default_test'
+        test_value: Any = 'ttl_value'
         await client.set(test_key, test_value)
-        
-        # Value should be retrievable
-        retrieved = await client.get(test_key)
+        retrieved: Any = await client.get(test_key)
         assert retrieved == test_value
-        
         await client.delete(test_key)
-    
+
     @pytest.mark.asyncio
-    async def test_redis_list_keys(self):
+    async def test_redis_list_keys(self) -> Any:
         """Test listing keys with pattern matching."""
-        client = get_redis_client()
-        
-        # Set multiple test keys
-        test_keys = ["list_test_1", "list_test_2", "list_test_3"]
+        client: Any = get_redis_client()
+        test_keys: Any = ['list_test_1', 'list_test_2', 'list_test_3']
         for key in test_keys:
-            await client.set(key, f"value_{key}", ttl=60)
-        
-        # List keys with pattern
-        keys = await client.keys("list_test_*")
-        
-        # Should find our test keys (with prefix)
-        assert isinstance(keys, list), "Should return list of keys"
-        
-        # Cleanup
+            await client.set(key, f'value_{key}', ttl=60)
+        keys: Any = await client.keys('list_test_*')
+        assert isinstance(keys, list), 'Should return list of keys'
         for key in test_keys:
             await client.delete(key)
-    
+
     @pytest.mark.asyncio
-    async def test_redis_mcp_routing(self):
+    async def test_redis_mcp_routing(self) -> Any:
         """Verify operations route through L3 MCP router."""
-        client = get_redis_client()
-        
-        # Verify router is initialized
-        assert hasattr(client, 'router'), "Client should have router"
-        assert client.router is not None, "Router should be initialized"
-        
-        # Verify router role
-        assert client.router.role == "state_cache", "Router role should be state_cache"
-    
+        client: Any = get_redis_client()
+        assert hasattr(client, 'router'), 'Client should have router'
+        assert client.router is not None, 'Router should be initialized'
+        assert client.router.role == 'state_cache', 'Router role should be state_cache'
+
     @pytest.mark.asyncio
-    async def test_redis_error_handling(self):
+    async def test_redis_error_handling(self) -> Any:
         """Test graceful error handling for failed operations."""
-        client = get_redis_client()
-        
-        # Attempt to get non-existent key
-        result = await client.get("nonexistent_key_12345")
-        assert result is None, "Should return None for non-existent key"
+        client: Any = get_redis_client()
+        result: Any = await client.get('nonexistent_key_12345')
+        assert result is None, 'Should return None for non-existent key'
 
-
-class TestSemanticCacheMigration:
+class test_semantic_cache_migration:
     """Test semantic cache migration to Redis MCP."""
-    
+
     @pytest.mark.asyncio
-    async def test_semantic_cache_uses_mcp(self):
+    async def test_semantic_cache_uses_mcp(self) -> Any:
         """Verify semantic cache uses Redis MCP client."""
         from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SovereignSemanticCache
-        
-        # Create cache instance
-        cache = SovereignSemanticCache(mission_id="test_mission")
-        
-        # Verify it uses MCP client
-        assert cache.redis is not None, "Should have Redis MCP client"
-        assert isinstance(cache.redis, SovereignRedisMCPClient), "Should be MCP client instance"
+        cache: Any = SovereignSemanticCache(mission_id='test_mission')
+        assert cache.redis is not None, 'Should have Redis MCP client'
+        assert isinstance(cache.redis, SovereignRedisMCPClient), 'Should be MCP client instance'
 
-
-def run_tests():
+def run_tests() -> Any:
     """Run all Redis MCP integration tests."""
-    pytest.main([__file__, "-v", "--asyncio-mode=auto"])
-
-
-if __name__ == "__main__":
+    pytest.main([__file__, '-v', '--asyncio-mode=auto'])
+if __name__ == '__main__':
     run_tests()

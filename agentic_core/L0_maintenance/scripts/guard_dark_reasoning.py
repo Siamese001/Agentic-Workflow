@@ -9,79 +9,63 @@ import ast
 import sys
 from pathlib import Path
 from typing import List, Dict
+reasoning_signals: Any = {'think', 'plan', 'reason', 'decide', 'analyze', 'generate', 'synthesize'}
+observability_signals: Any = {'logger.', 'logging.', 'self.logger.', 'trace(', 'metric('}
 
-# Refined signals: only trigger on high-level cognitive intentions
-REASONING_SIGNALS = {"think", "plan", "reason", "decide", "analyze", "generate", "synthesize"}
-OBSERVABILITY_SIGNALS = {"logger.", "logging.", "self.logger.", "trace(", "metric("}
-
-class DarkReasoningVisitor(ast.NodeVisitor):
+class dark_reasoning_visitor(ast.NodeVisitor):
     """AST visitor to detect reasoning functions without observability."""
-    
+
     def __init__(self, filepath: Path):
         self.filepath = filepath
         self.issues = []
         self.in_reasoning_function = False
         self.has_observability = False
-        self.current_function = "<anonymous>"
+        self.current_function = '<anonymous>'
 
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node: Any) -> Any:
         """Visit function definitions and check for dark reasoning."""
-        func_name = node.name.lower()
-        was_reasoning = self.in_reasoning_function
-        
-        # Check if function name contains reasoning signals
-        if any(sig in func_name for sig in REASONING_SIGNALS):
+        func_name: Any = node.name.lower()
+        was_reasoning: Any = self.in_reasoning_function
+        if any((sig in func_name for sig in REASONING_SIGNALS)):
             self.in_reasoning_function = True
             self.current_function = node.name
             self.has_observability = False
-        
-        # Visit children to detect observability calls
         self.generic_visit(node)
-        
-        # Check for darkness upon exiting the function scope
-        if self.in_reasoning_function and not was_reasoning:
+        if self.in_reasoning_function and (not was_reasoning):
             if not self.has_observability:
-                self.issues.append({
-                    "line": node.lineno,
-                    "function": self.current_function,
-                    "reason": "Reasoning function lacks L6 observability footprint",
-                    "suggestion": f"Add logger.info('[REASONING START] {self.current_function}')"
-                })
+                self.issues.append({'line': node.lineno, 'function': self.current_function, 'reason': 'Reasoning function lacks L6 observability footprint', 'suggestion': f"Add logger.info('[REASONING START] {self.current_function}')"})
             self.in_reasoning_function = False
             self.has_observability = False
 
-    def visit_AsyncFunctionDef(self, node):
+    def visit_AsyncFunctionDef(self, node: Any) -> Any:
         """Visit async function definitions (same logic as sync)."""
         self.visit_FunctionDef(node)
-    
+
     def _check_observability(self, node_str: str):
         """Centralized observability signal detection"""
-        if any(obs in node_str for obs in OBSERVABILITY_SIGNALS):
+        if any((obs in node_str for obs in OBSERVABILITY_SIGNALS)):
             self.has_observability = True
-    
-    def visit_Call(self, node):
+
+    def visit_Call(self, node: Any) -> Any:
         """Visit function calls to detect observability signals."""
-        call_str = ""
+        call_str: Any = ''
         try:
-            # Use unparse for high-fidelity string representation
-            call_str = ast.unparse(node)
+            call_str: Any = ast.unparse(node)
         except Exception:
-            # Fallback to dump for safety
-            call_str = ast.dump(node)
+            call_str: Any = ast.dump(node)
         self._check_observability(call_str.lower())
         self.generic_visit(node)
-    
-    def visit_Expr(self, node):
+
+    def visit_Expr(self, node: Any) -> Any:
         """Visit expression statements to catch standalone logging calls."""
         if self.in_reasoning_function:
-            expr_str = ""
+            expr_str: Any = ''
             try:
-                expr_str = ast.unparse(node)
+                expr_str: Any = ast.unparse(node)
             except Exception:
-                expr_str = ast.dump(node)
+                expr_str: Any = ast.dump(node)
             self._check_observability(expr_str.lower())
         self.generic_visit(node)
-
 
 def check_dark_reasoning(filepath: Path) -> List[Dict]:
     """
@@ -94,40 +78,28 @@ def check_dark_reasoning(filepath: Path) -> List[Dict]:
         List of issue dictionaries with line, function, and reason
     """
     try:
-        # Skip L6 observability layer and tests
-        if "L6_observability" in str(filepath) or "tests/" in str(filepath):
+        if 'L6_observability' in str(filepath) or 'tests/' in str(filepath):
             return []
-        
-        tree = ast.parse(filepath.read_text(encoding="utf-8"))
-        visitor = DarkReasoningVisitor(filepath)
+        tree: Any = ast.parse(filepath.read_text(encoding='utf-8'))
+        visitor: Any = DarkReasoningVisitor(filepath)
         visitor.visit(tree)
         return visitor.issues
     except Exception:
-        # Silently skip files that can't be parsed
         return []
 
-
-def main():
+def main() -> Any:
     """Main entry point for pre-commit hook."""
-    all_issues = []
-    
+    all_issues: Any = []
     for arg in sys.argv[1:]:
         try:
-            path = Path(arg)
-            issues = check_dark_reasoning(path)
-            
+            path: Any = Path(arg)
+            issues: Any = check_dark_reasoning(path)
             for issue in issues:
                 all_issues.append(f"{path}:{issue['line']} | {issue['reason']} in {issue['function']}")
         except Exception:
             pass
-    
-    # Print all issues
     for issue in all_issues:
-        print(f"[✗] Dark Reasoning: {issue}")
-    
-    # Exit with error code if issues found
+        print(f'[✗] Dark Reasoning: {issue}')
     sys.exit(1 if all_issues else 0)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

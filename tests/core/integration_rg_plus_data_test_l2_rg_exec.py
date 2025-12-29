@@ -8,7 +8,8 @@ from typing import Any
 _logger = logging.getLogger(__name__)
 
 
-class TestL2ExecutionIntegration:
+# NAMING FIXED: TestL2ExecutionIntegration → test_l2_execution_integration
+class test_l2_execution_integration:
     """Integration tests for L2 execution layer."""
 
 

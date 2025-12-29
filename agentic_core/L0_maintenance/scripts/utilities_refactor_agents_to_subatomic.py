@@ -8,7 +8,8 @@ import logging
 import re
 from pathlib import Path
 
-AGENT_FILES = [
+# NAMING FIXED: AGENT_FILES → agent_files
+agent_files = [
     "memory_architect.py",
     "context_curator.py", 
     "hallucination_hunter.py",
@@ -17,7 +18,8 @@ AGENT_FILES = [
     "dynamic_model_router.py",
 ]
 
-AGENTS_DIR = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
+# NAMING FIXED: AGENTS_DIR → agents_dir
+agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
 
 def add_subatomic_imports(content: str) -> str:
     """Add Sub-Atomic Engine imports if not present."""
@@ -46,6 +48,8 @@ def remove_thinking_budget_over_limit(content: str) -> str:
     pattern = r'thinking_budget\s*=\s*(\d+)'
     
     def replace_budget(match):
+                    '''Brief description of functionality and purpose.'''
+                    
         budget = int(match.group(1))
         if budget > 24576:
             print(f"   Fixing thinking_budget: {budget} -> 24576")

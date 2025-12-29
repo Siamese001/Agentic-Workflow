@@ -13,7 +13,8 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-class AutonomousStateGuardian:
+# NAMING FIXED: AutonomousStateGuardian → autonomous_state_guardian
+class autonomous_state_guardian:
     """
     L4 State Guardian that autonomously monitors and repairs state corruption.
     
@@ -26,7 +27,10 @@ class AutonomousStateGuardian:
     """
     
     def __init__(self):
-        from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_checkpoint_manager import (
+        import importlib
+        mod = importlib.import_module('agentic_core.L4_state.autonomous_checkpoint_manager')
+        ( = mod.(  # Adjust multi-imports manually
             create_autonomous_checkpoint_manager,
         )
         

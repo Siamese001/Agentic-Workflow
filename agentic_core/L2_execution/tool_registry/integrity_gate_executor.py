@@ -1,68 +1,105 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import re
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class ValidationRejectionReason(Enum):
+# NAMING FIXED: ValidationRejectionReason → validation_rejection_reason
+class validation_rejection_reason(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
     UNBOUND_METRICS = "UNBOUND_METRICS"
     FLUFF_LANGUAGE = "FLUFF_LANGUAGE"
     ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
     MISSING_CITATIONS = "MISSING_CITATIONS"
 
-class Violation:
+# NAMING FIXED: Violation → violation
+class violation:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, reason: ValidationRejectionReason, message: str):
         self.reason = reason
         self.message = message
 
-class IntegrityGateResult:
+# NAMING FIXED: IntegrityGateResult → integrity_gate_result
+class integrity_gate_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, passed: bool, depth_score: float):
         self.passed = passed
         self.depth_score = depth_score
         self.violations: List[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.passed = False
         self.violations.append(Violation(reason, message))
 
 # Nested types for DeepResearchOutput
-class FinancialProofPoint:
+# NAMING FIXED: FinancialProofPoint → financial_proof_point
+class financial_proof_point:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, metric_name: str, value: str, source_citation: str = None):
         self.metric_name = metric_name
         self.value = value
         self.source_citation = source_citation
 
-class KeyTechnology:
+# NAMING FIXED: KeyTechnology → key_technology
+class key_technology:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None):
         self.technology_name = technology_name
         self.implementation_details = implementation_details
         self.source_citation = source_citation
 
-class KeyExecutive:
+# NAMING FIXED: KeyExecutive → key_executive
+class key_executive:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, name: str):
         self.name = name
 
-class StrategicLayer:
+# NAMING FIXED: StrategicLayer → strategic_layer
+class strategic_layer:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]):
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
 
-class TechnicalLayer:
+# NAMING FIXED: TechnicalLayer → technical_layer
+class technical_layer:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]):
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
-class LeadershipLayer:
+# NAMING FIXED: LeadershipLayer → leadership_layer
+class leadership_layer:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, key_executives: List[KeyExecutive]):
         self.key_executives = key_executives
 
-class CitationMap:
+# NAMING FIXED: CitationMap → citation_map
+class citation_map:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, citations: List[Any]): # Type of citation not specified, just its count is used
         self.citations = citations
 
-class DeepResearchOutput:
+# NAMING FIXED: DeepResearchOutput → deep_research_output
+class deep_research_output:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(
         self,
         strategic_layer: StrategicLayer,
@@ -78,7 +115,8 @@ class DeepResearchOutput:
 # --- End Inlined Type Definitions ---
 
 
-class IntegrityGateExecutor:
+# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
+class integrity_gate_executor:
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including

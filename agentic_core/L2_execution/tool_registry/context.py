@@ -1,9 +1,12 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 
-class OmniContext(SubAtomicAgent):
+# NAMING FIXED: OmniContext → omni_context
+class omni_context(SubAtomicAgent):
     """
     ROLE: Global Architectural Context. Concatenates all non-excluded .py files
     into a single context buffer for agents to consult.
@@ -15,6 +18,8 @@ class OmniContext(SubAtomicAgent):
         self.index = {}
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
         await asyncio.sleep(0)
 

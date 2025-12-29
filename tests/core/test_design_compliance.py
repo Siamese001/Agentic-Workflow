@@ -11,8 +11,13 @@ from canon_validator import CanonValidator
 
 
 # Mock MCP Tools for testing
-class MockMCPTools:
+# NAMING FIXED: MockMCPTools → mock_mcp_tools
+class mock_mcp_tools:
+    '''Brief description of functionality and purpose.'''
+    
     def read_text_file(self, path):
+                    '''Brief description of functionality and purpose.'''
+                    
         if path == "src/Button.tsx":
             return "import React from 'react';\nconst Button = () => <button style={{color: '#FF0000', backgroundColor: '#00FF00'}}>Click</button>;\nexport default Button;"
         elif path == "src/CleanButton.tsx":
@@ -20,6 +25,8 @@ class MockMCPTools:
         raise FileNotFoundError(f"File {path} not found")
 
     def get_variable_defs(self, node_id):
+                    '''Brief description of functionality and purpose.'''
+                    
         return json.dumps([
             {"name": "color-primary", "value": "#007AFF",
                 "replacement": "theme.colors.primary"},
@@ -30,6 +37,8 @@ class MockMCPTools:
         ])
 
     def search_records(self, query, index, top_k, namespace):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Simulating Pinecone finding the canonical replacement pattern
         return json.dumps([
             {"id": "fix-hex-to-token",
@@ -37,17 +46,24 @@ class MockMCPTools:
         ])
 
     def edit_file(self, path, edits):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Simulating the Filesystem MCP writing the change
         return f"File {path} edited successfully. Applied {len(edits)} edit(s): {edits}"
 
     def string_set(self, key, value):
+                    '''Brief description of functionality and purpose.'''
+                    
         # print(f"[REDIS MOCK] Cached key: {key} -> {value}")  # [Security Fix]
         return "OK"
 
 # Mock Logger
 
 
-class MockLogger:
+# NAMING FIXED: MockLogger → mock_logger
+class mock_logger:
+    '''Brief description of functionality and purpose.'''
+    
     pass
     # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
     # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]

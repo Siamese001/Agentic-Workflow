@@ -1,4 +1,6 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 import json
 import logging
 import re
@@ -29,9 +31,11 @@ if TYPE_CHECKING:
         process_telepathy_instructions,
     )
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
-class NervousSystemCheckpointing:
+# NAMING FIXED: NervousSystemCheckpointing → nervous_system_checkpointing
+class nervous_system_checkpointing:
     """Handles checkpointing operations for the NervousSystem."""
 
     def __init__(
@@ -155,7 +159,8 @@ class NervousSystemCheckpointing:
             self.logger.error(f"Error restoring from checkpoint: {e}")
             return {}, {}, set(), set(), 0, ""
 
-class NervousSystemResultReporting:
+# NAMING FIXED: NervousSystemResultReporting → nervous_system_result_reporting
+class nervous_system_result_reporting:
     """Handles mission result generation and reporting."""
 
     def __init__(self, config: OrchestratorConfig, logger: logging.Logger):
@@ -264,7 +269,8 @@ class NervousSystemResultReporting:
             metadata={"execution_time_seconds": time.time() - start_time}
         )
 
-class NervousSystemStateManagement:
+# NAMING FIXED: NervousSystemStateManagement → nervous_system_state_management
+class nervous_system_state_management:
     """Handles state persistence and retrieval for the NervousSystem."""
 
     def __init__(self, logger: logging.Logger):
@@ -313,7 +319,8 @@ class NervousSystemStateManagement:
         self.logger.info("state_loaded", extra={"path": path, "iteration": loaded_state.get("iteration", 0)})
         return loaded_state
 
-class NervousSystemPhaseExecution:
+# NAMING FIXED: NervousSystemPhaseExecution → nervous_system_phase_execution
+class nervous_system_phase_execution:
     """Manages the execution of phases (sequential and parallel) and agent interactions."""
 
     def __init__(
@@ -360,11 +367,15 @@ class NervousSystemPhaseExecution:
 
             # Create a simple mock agent that has execute method
             class MockAgent:
+                                                    '''Brief description of functionality and purpose.'''
+                                                    
                 def __init__(self, name, phase):
                     self.name = name
                     self.phase = phase
 
                 async def execute(self):
+                                                                    '''Brief description of functionality and purpose.'''
+                                                                    
                     # Simulate agent execution
                     return {
                         "passed": True,
@@ -606,6 +617,8 @@ class NervousSystemPhaseExecution:
             if hasattr(agent, 'execute'):
                 # Create wrapper for each agent to handle context and prerequisites
                 async def execute_agent_with_context(agent):
+                                                                    '''Brief description of functionality and purpose.'''
+                                                                    
                     # Check prerequisite conditions if agent supports it
                     if hasattr(agent, 'check_prerequisites'):
                         prereq_result = await agent.check_prerequisites(context)
@@ -725,7 +738,8 @@ class NervousSystemPhaseExecution:
         context.forced_agents.clear()
         self.logger.info("Forced agents execution complete")
 
-class NervousSystemArchitectureGovernance:
+# NAMING FIXED: NervousSystemArchitectureGovernance → nervous_system_architecture_governance
+class nervous_system_architecture_governance:
     """Handles architecture validation and impact analysis."""
 
     def __init__(self, architecture_governor: ArchitectureGovernor, logger: logging.Logger):
@@ -782,7 +796,8 @@ class NervousSystemArchitectureGovernance:
         """
         return self.architecture_governor.validate_architecture(file_paths)
 
-class NervousSystemInterventionManager:
+# NAMING FIXED: NervousSystemInterventionManager → nervous_system_intervention_manager
+class nervous_system_intervention_manager:
     """Manages human intervention requests and approvals."""
 
     def __init__(self, intervention_server: InterventionServer, logger: logging.Logger):
@@ -830,7 +845,8 @@ class NervousSystemInterventionManager:
                 return True
         return None # No intervention required
 
-class NervousSystemPhaseOrchestrator:
+# NAMING FIXED: NervousSystemPhaseOrchestrator → nervous_system_phase_orchestrator
+class nervous_system_phase_orchestrator:
     """Orchestrates the execution of all phases within a mission cycle."""
 
     def __init__(
@@ -875,6 +891,8 @@ class NervousSystemPhaseOrchestrator:
     ) -> bool:
         """Helper to run a single phase with common logic."""
         def should_skip_phase_local(phase_name: str) -> bool:
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if not resume_phase:
                 return False
             phase_order = [
@@ -1002,7 +1020,8 @@ class NervousSystemPhaseOrchestrator:
         
         return converged, errors
 
-class NervousSystem:
+# NAMING FIXED: NervousSystem → nervous_system
+class nervous_system:
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:

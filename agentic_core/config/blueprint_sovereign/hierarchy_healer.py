@@ -1,11 +1,14 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import shutil
 from pathlib import Path
 
 from structure_blueprint import CORE_SUBFOLDER_MAP
 
 
-class HierarchyHealer:
+# NAMING FIXED: HierarchyHealer → hierarchy_healer
+class hierarchy_healer:
     """
     [L3 AGENT] The Structural Surgeon.
     Directive: Physically relocate files to satisfy Depth-4 Canon.
@@ -15,6 +18,8 @@ class HierarchyHealer:
         self.blueprint = CORE_SUBFOLDER_MAP #
 
     async def execute(self, file_path: str):
+                    '''Brief description of functionality and purpose.'''
+                    
         path_obj = Path(file_path)
         # Identify L1 (e.g., L5_safety) from path
         parts = path_obj.parts

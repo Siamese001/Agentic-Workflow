@@ -9,22 +9,18 @@ import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-
 from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger: Any = logging.getLogger('ActionNode')
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("ActionNode")
-
-
-class ActionNode:
+class action_node:
     """
     The 'Hands' of the Agent.
     Responsibility: Execute the Cognitive Node's plan safely.
     Security: STRICT WHITELIST of allowed tools.
     """
 
-    def __init__(self, work_dir: str = "./workspace"):
+    def __init__(self, work_dir: str='./workspace'):
         """
         Initializes the ActionNode with a specified working directory.
 
@@ -32,27 +28,15 @@ class ActionNode:
             work_dir (str): The path to the workspace directory.
         """
         self.work_dir: Path = Path(work_dir).resolve()
-        
-        # Initialize secure tools implementation
         self.tools_impl = SecureToolsImpl(self.work_dir)
-        
-        # Build allowed tools map
-        self.allowed_tools: Dict[str, Any] = {
-            "write_file": self.tools_impl.tool_write_file,
-            "read_file": self.tools_impl.tool_read_file,
-            "list_files": self.tools_impl.tool_list_files,
-            "run_command": self.tools_impl.tool_run_command
-        }
-        
-        # Initialize core executor
+        self.allowed_tools: Dict[str, Any] = {'write_file': self.tools_impl.tool_write_file, 'read_file': self.tools_impl.tool_read_file, 'list_files': self.tools_impl.tool_list_files, 'run_command': self.tools_impl.tool_run_command}
         self.core = ActionNodeCore(str(self.work_dir), self.allowed_tools)
-
-        # Ensure workspace exists
         if not self.work_dir.exists():
-            logger.info(f"Creating workspace directory: {self.work_dir}")
+            logger.info(f'Creating workspace directory: {self.work_dir}')
             self.work_dir.mkdir(parents=True)
         else:
-            logger.info(f"Using existing workspace directory: {self.work_dir}")
+            logger.info(f'Using existing workspace directory: {self.work_dir}')
+
     def execute_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """
         Executes a full plan sequence from the Cognitive Node.
@@ -66,6 +50,4 @@ class ActionNode:
                             of each executed step.
         """
         return self.core.execute_plan(plan)
-
-
 __all__ = ['ActionNode']

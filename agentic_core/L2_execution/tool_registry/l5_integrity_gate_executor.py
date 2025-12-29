@@ -23,24 +23,29 @@ logger = logging.getLogger(__name__)
 # Define a local Protocol for the signal bus interface.
 # This allows dependency injection of a signal bus without direct import
 # from downstream layers like 'apps_shared'.
-class SignalBusInterface(Protocol):
+# NAMING FIXED: SignalBusInterface → signal_bus_interface
+class signal_bus_interface(Protocol):
     """
     Protocol for a signal bus emitter.
     An object conforming to this protocol can be injected into the executor
     to enable signal emission.
     """
     def emit(self, signal_type: Any, message: str, source: str, severity: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         ...
 
 # Define local Enum for the specific signal types used by this executor.
 # This replaces the need to import SignalType from 'apps_shared'.
-class L5SignalType(str, Enum):
+# NAMING FIXED: L5SignalType → l5_signal_type
+class l5_signal_type(str, Enum):
     """Specific signal types emitted by the L5IntegrityGateExecutor."""
     VALIDATION_FAILURE = "validation_failure"
     QUALITY_BELOW_THRESHOLD = "quality_below_threshold"
 
 
-class ValidationSeverity(str, Enum):
+# NAMING FIXED: ValidationSeverity → validation_severity
+class validation_severity(str, Enum):
     """Severity levels for validation issues."""
 
     CRITICAL = "critical"  # Blocks output
@@ -50,7 +55,8 @@ class ValidationSeverity(str, Enum):
     INFO = "info"          # Informational only
 
 
-class ValidationCategory(str, Enum):
+# NAMING FIXED: ValidationCategory → validation_category
+class validation_category(str, Enum):
     """Categories of validation checks."""
 
     STRUCTURE = "structure"
@@ -62,7 +68,8 @@ class ValidationCategory(str, Enum):
 
 
 @dataclass
-class ValidationIssue:
+# NAMING FIXED: ValidationIssue → validation_issue
+class validation_issue:
     """A single validation issue."""
 
     category: ValidationCategory
@@ -74,7 +81,8 @@ class ValidationIssue:
 
 
 @dataclass
-class ValidationResult:
+# NAMING FIXED: ValidationResult → validation_result
+class validation_result:
     """Result of validation with all issues."""
 
     passed: bool = True
@@ -145,7 +153,8 @@ class ValidationResult:
         }
 
 
-class L5IntegrityGateExecutor:
+# NAMING FIXED: L5IntegrityGateExecutor → l5_integrity_gate_executor
+class l5_integrity_gate_executor:
     """
     L5+ Integrity Gate Executor with Two-Pass Validation.
 
@@ -339,6 +348,8 @@ class L5IntegrityGateExecutor:
         text_parts = []
 
         def extract_recursive(obj: Any, depth: int = 0) -> None:
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if depth > 10:  # Prevent infinite recursion
                 return
 

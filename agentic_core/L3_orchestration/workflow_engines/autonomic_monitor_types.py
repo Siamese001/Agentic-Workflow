@@ -4,24 +4,24 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class HealthStatus(Enum):
+class health_status(Enum):
     """Agent health status."""
-    HEALTHY = 'healthy'
-    DEGRADED = 'degraded'
-    CRITICAL = 'critical'
-    OFFLINE = 'offline'
+    HEALTHY: Any = 'healthy'
+    DEGRADED: Any = 'degraded'
+    CRITICAL: Any = 'critical'
+    OFFLINE: Any = 'offline'
 
-class AlertSeverity(Enum):
+class alert_severity(Enum):
     """Alert severity levels."""
-    INFO = 'info'
-    WARNING = 'warning'
-    ERROR = 'error'
-    CRITICAL = 'critical'
+    INFO: Any = 'info'
+    WARNING: Any = 'warning'
+    ERROR: Any = 'error'
+    CRITICAL: Any = 'critical'
 
 @dataclass
-class HealthMetrics:
+class health_metrics:
     """Health metrics for an agent."""
     agent_id: str
     success_rate: float
@@ -33,18 +33,10 @@ class HealthMetrics:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            'agent_id': self.agent_id,
-            'success_rate': self.success_rate,
-            'avg_response_time_ms': self.avg_response_time_ms,
-            'error_rate': self.error_rate,
-            'circuit_breaker_trips': self.circuit_breaker_trips,
-            'total_requests': self.total_requests,
-            'timestamp': self.timestamp
-        }
+        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms': self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circuit_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
 
 @dataclass
-class HealthAlert:
+class health_alert:
     """Health alert for degradation detection."""
     alert_id: str
     agent_id: str
@@ -56,10 +48,4 @@ class HealthAlert:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'alert_id': self.alert_id,
-            'agent_id': self.agent_id,
-            'severity': self.severity.value,
-            'message': self.message,
-            'metrics': self.metrics.to_dict(),
-            'recommended_actions': self.recommended_actions,
-            'timestamp': self.timestamp}
+        return {'alert_id': self.alert_id, 'agent_id': self.agent_id, 'severity': self.severity.value, 'message': self.message, 'metrics': self.metrics.to_dict(), 'recommended_actions': self.recommended_actions, 'timestamp': self.timestamp}

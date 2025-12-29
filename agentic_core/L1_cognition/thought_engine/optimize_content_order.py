@@ -4,41 +4,31 @@ optimize_content_order.py - Refinement Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.237153
 """
-
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class OptimizeContentOrder:
+class optimize_content_order:
     """Refiner for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
-        SELF.WEIGHTS = self.config.get("weights", {})
-        logger.info(f"Initialized {self.__class__.__name__}")
+        SELF.WEIGHTS = self.config.get('weights', {})
+        logger.info(f'Initialized {self.__class__.__name__}')
 
-    def refine(self,
-        data: Union[str,
-        Dict],
-        adjustments: Optional[Dict] = None) -> RefinementResult:
+    def refine(self, data: Union[str, Dict], adjustments: Optional[Dict]=None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
-        CHANGES = []
-        REFINED = data
-
+        CHANGES: Any = []
+        REFINED: Any = data
         if adjustments and isinstance(data, dict):
-            REFINED = {**data}
+            REFINED: Any = {**data}
             for key, adj in adjustments.items():
                 if key in refined and isinstance(refined[key], (int, float)):
-                    PREVIOUS = refined[key]
+                    PREVIOUS: Any = refined[key]
                     REFINED[KEY] = previous * adj
-                    changes.append(f"{key}: {previous} -> {refined[key]}")
-
+                    changes.append(f'{key}: {previous} -> {refined[key]}')
         return RefinementResult(original=data, refined=refined, changes=changes)
 
-def refine(data: Union[str,
-    Dict],
-    adjustments: Optional[Dict] = None,
-    config: Optional[Dict] = None) -> RefinementResult:
+def refine(data: Union[str, Dict], adjustments: Optional[Dict]=None, config: Optional[Dict]=None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return OptimizeContentOrder(config).refine(data, adjustments)

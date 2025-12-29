@@ -5,7 +5,8 @@ from unittest.mock import Mock, patch
 
 
 @pytest.mark.integration
-class TestSovereignConflictResolution:
+# NAMING FIXED: TestSovereignConflictResolution → test_sovereign_conflict_resolution
+class test_sovereign_conflict_resolution:
     """Verify SSOT rank-based conflict resolution."""
     
     def test_gravity_law_outranks_naming_law(
@@ -69,6 +70,8 @@ class TestSovereignConflictResolution:
         
         # Modify mock to handle timestamp
         def resolve_with_timestamp(proposals_list):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if not proposals_list:
                 return None
             # Sort by rank first, then timestamp
@@ -170,7 +173,8 @@ class TestSovereignConflictResolution:
 
 
 @pytest.mark.integration
-class TestMultiAgentCoordination:
+# NAMING FIXED: TestMultiAgentCoordination → test_multi_agent_coordination
+class test_multi_agent_coordination:
     """Test coordinated healing across multiple agents."""
     
     def test_cascade_healing_sequence(
@@ -237,6 +241,8 @@ class TestMultiAgentCoordination:
         results = []
         
         def heal_imports(file_path):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             resource_id = str(file_path)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
                 try:

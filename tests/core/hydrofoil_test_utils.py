@@ -119,7 +119,8 @@ def print_layer_result(test_name, layer, status, details=None):
 
 
 # Layer-specific constants
-LAYER_COMPONENTS = {
+# NAMING FIXED: LAYER_COMPONENTS → layer_components
+layer_components = {
     "L1": {"Filesystem", "GitKraken", "Tool Access"},
     "L2": {"Figma", "Design Tokens"},
     "L3": {"Brave Search", "Pinecone", "Cost Governance"},
@@ -128,7 +129,8 @@ LAYER_COMPONENTS = {
 }
 
 # Test code patterns that bypass whitelist
-NON_WHITELISTED_PATTERNS = [
+# NAMING FIXED: NON_WHITELISTED_PATTERNS → non_whitelisted_patterns
+non_whitelisted_patterns = [
     "def custom_function():",
     "def validate_data():",
     "def process_request():",

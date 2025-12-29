@@ -7,7 +7,8 @@ from typing import List, Optional, Dict, Any
 from pinecone import Pinecone, ServerlessSpec, PineconeApiException
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
-class SovereignPineconeStore:
+# NAMING FIXED: SovereignPineconeStore → sovereign_pinecone_store
+class sovereign_pinecone_store:
     """Sovereign wrapper for Pinecone serverless index."""
     
     DEFAULT_INDEX_NAME = "sovereign-territory-index"
@@ -60,6 +61,8 @@ class SovereignPineconeStore:
             self.index.upsert(vectors=batch, namespace=namespace)
 
     def query(
+                    '''Brief description of functionality and purpose.'''
+                    
         self,
         vector: List[float],
         top_k: int = 10,
@@ -76,4 +79,6 @@ class SovereignPineconeStore:
         )
 
     def delete_namespace(self, namespace: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.index.delete(delete_all=True, namespace=namespace)

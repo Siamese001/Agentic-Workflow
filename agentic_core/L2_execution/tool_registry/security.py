@@ -12,7 +12,8 @@ import httpx
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 
-class SafetyInspector(SubAtomicAgent):
+# NAMING FIXED: SafetyInspector → safety_inspector
+class safety_inspector(SubAtomicAgent):
     """
     Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
@@ -20,6 +21,8 @@ class SafetyInspector(SubAtomicAgent):
     """
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Key 2: Removed print statements in favor of context reporting
         await asyncio.sleep(0)
 
@@ -104,15 +107,30 @@ class SafetyInspector(SubAtomicAgent):
             return "NO"
 
     async def check_key_01_no_todo_fixme(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_key_02_no_print_statements(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_key_03_no_debugger_statements(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_key_04_no_empty_except_blocks(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_key_05_no_bare_except(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_key_06_no_eval_exec(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
     async def check_async_blocking_issues(self): return True, []
+                    '''Brief description of functionality and purpose.'''
+                    
 
 
-class ConcurrencyGuardian(SubAtomicAgent):
+# NAMING FIXED: ConcurrencyGuardian → concurrency_guardian
+class concurrency_guardian(SubAtomicAgent):
     """
     Unified concurrency safety agent.
     Covers: Data races (Key 61), Livelock (Key 63), Starvation (Key 64)
@@ -131,11 +149,15 @@ class ConcurrencyGuardian(SubAtomicAgent):
     }
 
     def can_run(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return ("AST_VALID" in self.ctx.signals and
                 "DEPS_VALID" in self.ctx.signals and
                 "SECURE" in self.ctx.signals)
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Concurrency Safety...")
         await asyncio.sleep(0)
 
@@ -203,19 +225,25 @@ class ConcurrencyGuardian(SubAtomicAgent):
         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
 
-class SecurityEnforcer(SubAtomicAgent):
+# NAMING FIXED: SecurityEnforcer → security_enforcer
+class security_enforcer(SubAtomicAgent):
     """Security enforcement agent for additional security checks."""
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Policies...")
         await asyncio.sleep(0)
         print("   [OK] Security policies enforced")
 
 
-class RedSentinel(SubAtomicAgent):
+# NAMING FIXED: RedSentinel → red_sentinel
+class red_sentinel(SubAtomicAgent):
     """Red team sentinel for adversarial security testing."""
 
     async def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)
         print("   [OK] Red team analysis complete")

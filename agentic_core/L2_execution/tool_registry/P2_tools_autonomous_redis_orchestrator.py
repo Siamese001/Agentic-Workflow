@@ -14,7 +14,10 @@ from typing import Any, Optional
 import redis
 
 
-class SovereignRedisOrchestrator:
+# NAMING FIXED: SovereignRedisOrchestrator → sovereign_redis_orchestrator
+class sovereign_redis_orchestrator:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self):
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: Optional[redis.Redis] = None
@@ -41,6 +44,8 @@ class SovereignRedisOrchestrator:
         return redis.Redis(**params)
 
     def get(self, key: str) -> Any:
+                    '''Brief description of functionality and purpose.'''
+                    
         if not self.use_fallback:
             try:
                 if not self.connection: self.connection = self._create_connection()
@@ -52,6 +57,8 @@ class SovereignRedisOrchestrator:
         return self.fallback_cache.get(key)
 
     def set(self, key: str, value: Any):
+                    '''Brief description of functionality and purpose.'''
+                    
         if not self.use_fallback:
             try:
                 if not self.connection: self.connection = self._create_connection()

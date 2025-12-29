@@ -4,45 +4,33 @@ generate_subject_line.py - Execution Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.088686
 """
-
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class GenerateSubjectLine:
+class generate_subject_line:
     """Executor for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, object]]=None):
         self.config = config or {}
-        self.timeout = self.config.get("timeout", 30.0)
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        self.timeout = self.config.get('timeout', 30.0)
+        LOGGER.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        start = time.time()
+        start: Any = time.time()
         try:
-            output = self._perform_action(action, params)
-            return ExecutionResult(
-                success=True,
-                output=output,
-                duration_ms=(time.time() - start) * 1000
-            )
+            output: Any = self._perform_action(action, params)
+            return ExecutionResult(success=True, output=output, duration_ms=(time.time() - start) * 1000)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
-                success=False,
-                error=str(e),
-                duration_ms=(time.time() - start) * 1000
-            )
+            return ExecutionResult(success=False, error=str(e), duration_ms=(time.time() - start) * 1000)
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        LOGGER.info(f"Executing {action} with {params}")
-        return {"action": action, "params": params, "status": "completed"}
+        LOGGER.info(f'Executing {action} with {params}')
+        return {'action': action, 'params': params, 'status': 'completed'}
 
-def execute(action: str,
-            params: Dict[str, object],
-            config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:
     """Execute action."""
     return GenerateSubjectLine(config).execute(action, params)

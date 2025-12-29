@@ -15,7 +15,8 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 
 
-class SovereignForensicsAgent:
+# NAMING FIXED: SovereignForensicsAgent → sovereign_forensics_agent
+class sovereign_forensics_agent:
     """
     Sovereign forensics — detects uncontrolled structural drift.
     """
@@ -24,6 +25,8 @@ class SovereignForensicsAgent:
         self.threshold = 10  # Actions per hour
 
     def analyze_drift_patterns(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         cutoff = datetime.now() - timedelta(hours=1)
         keys = self.redis.keys("l4_audit:*trail")
         events = []

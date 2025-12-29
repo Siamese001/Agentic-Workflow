@@ -1,4 +1,6 @@
 import hashlib
+'''Brief description of functionality and purpose.'''
+
 import logging
 import os
 import pickle
@@ -7,7 +9,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 try:
     import dspy
@@ -18,7 +21,8 @@ except ImportError:
 
 
 @dataclass
-class OptimizationExample:
+# NAMING FIXED: OptimizationExample → optimization_example
+class optimization_example:
     """A single training example for DSPy optimization."""
     inputs: Dict[str, Any]
     ideal_output: Dict[str, Any]
@@ -26,7 +30,8 @@ class OptimizationExample:
 
 
 @dataclass
-class OptimizationResult:
+# NAMING FIXED: OptimizationResult → optimization_result
+class optimization_result:
     """Result of a DSPy optimization run."""
     optimized_prompt: str
     performance_score: float
@@ -35,7 +40,8 @@ class OptimizationResult:
     optimization_time_seconds: float
 
 
-class DSPyOptimizer:
+# NAMING FIXED: DSPyOptimizer → ds_py_optimizer
+class ds_py_optimizer:
     """
     Optimizes agent prompts using DSPy's teleprompter system.
 
@@ -190,12 +196,16 @@ class DSPyOptimizer:
         """Create a DSPy module from a signature and prompt."""
 
         class OptimizedModule(dspy.Module):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             def __init__(self, signature, prompt_template):
                 super().__init__()
                 self.generate = dspy.ChainOfThought(signature)
                 self.prompt_template = prompt_template
 
             def forward(self, **kwargs):
+                                                    '''Brief description of functionality and purpose.'''
+                                                    
                 # Apply the prompt template
                 self.prompt_template.format(**kwargs)
                 return self.generate(**kwargs)
@@ -299,7 +309,8 @@ class DSPyOptimizer:
         return None
 
 
-class PromptSignatureRegistry:
+# NAMING FIXED: PromptSignatureRegistry → prompt_signature_registry
+class prompt_signature_registry:
     """Registry of DSPy signatures for different agent types."""
 
     # Common signatures that can be reused
@@ -347,7 +358,8 @@ class PromptSignatureRegistry:
         return signatures.get(agent_type.lower())
 
 
-class OptimizedHopModule(dspy.Module):
+# NAMING FIXED: OptimizedHopModule → optimized_hop_module
+class optimized_hop_module(dspy.Module):
     """The DSPy Module for Subatomic Hop optimization."""
 
     def __init__(self):

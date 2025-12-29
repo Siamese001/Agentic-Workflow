@@ -13,7 +13,8 @@ from typing import Dict, Any, List
 
 
 # Mock imports for testing
-class MockMCPManager:
+# NAMING FIXED: MockMCPManager → mock_mcp_manager
+class mock_mcp_manager:
     """Mock MCP Manager for testing."""
     
     def __init__(self, config: Dict[str, Any]):
@@ -43,7 +44,8 @@ class MockMCPManager:
         self.connected = False
 
 
-class MockSovereignMCPRouter:
+# NAMING FIXED: MockSovereignMCPRouter → mock_sovereign_mcp_router
+class mock_sovereign_mcp_router:
     """Mock Sovereign MCP Router for testing."""
     
     def __init__(self, role: str = "web_research"):
@@ -190,6 +192,8 @@ async def test_mcp_router_error_handling(router):
     original_call = router.manager.call_tool
     
     async def failing_call(tool_name: str, args: Dict[str, Any]):
+                    '''Brief description of functionality and purpose.'''
+                    
         raise Exception("Simulated network error")
     
     router.manager.call_tool = failing_call

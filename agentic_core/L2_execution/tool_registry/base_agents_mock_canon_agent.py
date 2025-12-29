@@ -10,8 +10,7 @@ DDD Compliance:
 from typing import Any, Dict, List
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
-
-class MockCanonBaseAgent(CanonBaseAgentInterface):
+class mock_canon_base_agent(CanonBaseAgentInterface):
     """
     Zero-cost mock implementation for architectural testing.
     
@@ -20,7 +19,7 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
     - Provides deterministic responses for test scenarios
     - Maintains interface compatibility with real implementation
     """
-    
+
     def __init__(self, ctx=None):
         """
         Initialize mock agent with optional context.
@@ -29,9 +28,10 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
             ctx: Optional context object (typically None for pure unit tests)
         """
         self.ctx = ctx
-        self.name = "MockAgent"
-        self._capabilities = ["mock_action", "mock_validation", "mock_execution"]
+        self.name = 'MockAgent'
+        self._capabilities = ['mock_action', 'mock_validation', 'mock_execution']
         self._state_valid = True
+
     async def execute(self, goal: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Mock execution - returns success without actual processing.
@@ -42,14 +42,8 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
         Returns:
             Dict with mock success response
         """
-        return {
-            "status": "success",
-            "goal": goal,
-            "mode": "mock",
-            "agent": self.name,
-            "message": "Mock execution completed successfully"
-        }
-    
+        return {'status': 'success', 'goal': goal, 'mode': 'mock', 'agent': self.name, 'message': 'Mock execution completed successfully'}
+
     def get_capabilities(self) -> List[str]:
         """
         Return mock capabilities list.
@@ -58,7 +52,7 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
             List of mock capability strings
         """
         return self._capabilities
-    
+
     def validate_state(self) -> bool:
         """
         Mock state validation - always returns True unless explicitly set.
@@ -67,8 +61,8 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
             Boolean indicating mock state validity
         """
         return self._state_valid
-    
-    def set_state_valid(self, valid: bool):
+
+    def set_state_valid(self, valid: bool) -> Any:
         """
         Setter for testing state validation failures.
         
@@ -76,8 +70,8 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
             valid: Whether the mock should report valid state
         """
         self._state_valid = valid
-    
-    def add_capability(self, capability: str):
+
+    def add_capability(self, capability: str) -> Any:
         """
         Add a mock capability for testing.
         
@@ -86,7 +80,7 @@ class MockCanonBaseAgent(CanonBaseAgentInterface):
         """
         if capability not in self._capabilities:
             self._capabilities.append(capability)
-    
+
     def __repr__(self) -> str:
         """String representation for debugging."""
-        return f"MockCanonBaseAgent(name={self.name}, capabilities={len(self._capabilities)})"
+        return f'MockCanonBaseAgent(name={self.name}, capabilities={len(self._capabilities)})'

@@ -25,9 +25,13 @@ def test_news_rag_pipeline():
         mock_redis = {}
 
         def mock_get(key):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             return mock_redis.get(key)
 
         def mock_set(key, value):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             mock_redis[key] = value
 
         # Test 1: Company with news
@@ -81,6 +85,8 @@ def test_news_rag_caching():
         cache_hits = 0
 
         def mock_get(key):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal cache_hits
             if key in mock_redis:
                 cache_hits += 1
@@ -88,6 +94,8 @@ def test_news_rag_caching():
             return mock_redis.get(key)
 
         def mock_set(key, value):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             mock_redis[key] = value
             logger.info(f"💾 Cached data for key: {key[:20]}...")
 

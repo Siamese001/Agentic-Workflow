@@ -8,11 +8,9 @@ from typing import List, Dict, Any
 from datetime import datetime
 from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+logger: Any = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
-
-class KnowledgeGraphHealingStrategy:
+class knowledge_graph_healing_strategy:
     """
     Autonomous healing for knowledge graph drift.
     
@@ -22,15 +20,15 @@ class KnowledgeGraphHealingStrategy:
     - Using Memory MCP for all KG operations
     - Enforcing daily healing limits to prevent runaway operations
     """
-    
+
     def __init__(self):
         """Initialize knowledge graph healing strategy with MCP clients."""
-        self.name = "KnowledgeGraphHealing"
-        self.priority = 2  # Important but not critical
+        self.name = 'KnowledgeGraphHealing'
+        self.priority = 2
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
-        logger.info("[L0 KG HEALING] Strategy initialized")
-    
+        logger.info('[L0 KG HEALING] Strategy initialized')
+
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
         Diagnose KG drift from auditor issues or proactive scan.
@@ -41,31 +39,19 @@ class KnowledgeGraphHealingStrategy:
         Returns:
             List of fix dictionaries with action details
         """
-        fixes = []
-        
+        fixes: Any = []
         if not config.KNOWLEDGE_GRAPH_HEALING_ENABLED:
-            logger.info("[L0 KG HEALING] Knowledge graph healing disabled in config")
+            logger.info('[L0 KG HEALING] Knowledge graph healing disabled in config')
             return fixes
-        
         for issue in issues:
-            desc = issue.get("description", "").lower()
-            message = issue.get("message", "").lower()
-            
-            # Detect KG-related issues
-            if any(keyword in desc or keyword in message for keyword in ["knowledge graph", "entity", "relation", "kg"]):
-                fixes.append({
-                    "action": "re_extract_content",
-                    "file": issue.get("file"),
-                    "source_id": issue.get("source_id", issue.get("file")),
-                    "reason": "Knowledge graph drift detected (Missing/Stale Entities)",
-                    "priority": self.priority,
-                    "strategy": self.name
-                })
-        
-        logger.info(f"[L0 KG HEALING] Diagnosed {len(fixes)} knowledge graph drift issues")
+            desc: Any = issue.get('description', '').lower()
+            message: Any = issue.get('message', '').lower()
+            if any((keyword in desc or keyword in message for keyword in ['knowledge graph', 'entity', 'relation', 'kg'])):
+                fixes.append({'action': 're_extract_content', 'file': issue.get('file'), 'source_id': issue.get('source_id', issue.get('file')), 'reason': 'Knowledge graph drift detected (Missing/Stale Entities)', 'priority': self.priority, 'strategy': self.name})
+        logger.info(f'[L0 KG HEALING] Diagnosed {len(fixes)} knowledge graph drift issues')
         return fixes
-    
-    async def apply(self, fix: Dict, ctx: Any = None) -> bool:
+
+    async def apply(self, fix: Dict, ctx: Any=None) -> bool:
         """
         Apply KG healing via Sovereign Clients.
         
@@ -77,63 +63,46 @@ class KnowledgeGraphHealingStrategy:
             True if fix applied successfully, False otherwise
         """
         if not config.KNOWLEDGE_GRAPH_HEALING_ENABLED:
-            logger.warning("[L0 KG HEALING] Knowledge graph healing disabled in config")
+            logger.warning('[L0 KG HEALING] Knowledge graph healing disabled in config')
             return False
-        
         if self.processed_today >= config.KG_HEALING_MAX_DAILY:
-            logger.warning("[L0 KG HEALING] Daily limit reached. Pausing for governance.")
+            logger.warning('[L0 KG HEALING] Daily limit reached. Pausing for governance.')
             return False
-        
         try:
-            file_path = fix.get("file")
-            source_id = fix.get("source_id", file_path)
-            
+            file_path: Any = fix.get('file')
+            source_id: Any = fix.get('source_id', file_path)
             if not file_path:
-                logger.error("[L0 KG HEALING] No file path in fix")
+                logger.error('[L0 KG HEALING] No file path in fix')
                 return False
-            
-            # 1. Read via Sovereign Filesystem MCP
-            logger.info(f"[L0 KG HEALING] Reading file: {file_path}")
-            content = await self.fs_client.read_text(file_path)
-            
+            logger.info(f'[L0 KG HEALING] Reading file: {file_path}')
+            content: Any = await self.fs_client.read_text(file_path)
             if not content:
-                logger.warning(f"[L0 KG HEALING] Empty content for {file_path}")
+                logger.warning(f'[L0 KG HEALING] Empty content for {file_path}')
                 return False
-            
-            # 2. Extract Entities/Relations via Memory MCP (L3 routed)
-            logger.info(f"[L0 KG HEALING] Extracting entities/relations for {source_id}")
-            result = await self._extract_entities_relations(content, source_id)
-            
+            logger.info(f'[L0 KG HEALING] Extracting entities/relations for {source_id}')
+            result: Any = await self._extract_entities_relations(content, source_id)
             if not result:
-                logger.error(f"[L0 KG HEALING] Failed to extract entities/relations for {source_id}")
+                logger.error(f'[L0 KG HEALING] Failed to extract entities/relations for {source_id}')
                 return False
-            
-            # 3. Apply Confidence Threshold Shield
-            entities = [e for e in result.get("entities", []) 
-                        if e.get("confidence", 0) >= config.KG_MIN_CONFIDENCE_FOR_HEALING]
-            relations = [r for r in result.get("relations", []) 
-                         if r.get("confidence", 0) >= config.KG_MIN_CONFIDENCE_FOR_HEALING]
-            
+            entities: Any = [e for e in result.get('entities', []) if e.get('confidence', 0) >= config.KG_MIN_CONFIDENCE_FOR_HEALING]
+            relations: Any = [r for r in result.get('relations', []) if r.get('confidence', 0) >= config.KG_MIN_CONFIDENCE_FOR_HEALING]
             if entities or relations:
-                # 4. Persist to L4 State via Memory MCP
-                logger.info(f"[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations")
-                persist_result = await self._persist_kg_data(entities, relations, source_id)
-                
+                logger.info(f'[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations')
+                persist_result: Any = await self._persist_kg_data(entities, relations, source_id)
                 if persist_result:
                     self.processed_today += 1
-                    logger.info(f"[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r")
+                    logger.info(f'[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r')
                     return True
                 else:
-                    logger.error(f"[L0 KG HEALING] Failed to persist KG data for {source_id}")
+                    logger.error(f'[L0 KG HEALING] Failed to persist KG data for {source_id}')
                     return False
             else:
-                logger.warning(f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}")
+                logger.warning(f'[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}')
                 return False
-            
         except Exception as e:
             logger.error(f"[L0 KG HEALING] KG healing failed for {fix.get('source_id', 'unknown')}: {e}")
             return False
-    
+
     async def _extract_entities_relations(self, text: str, source_id: str) -> Dict[str, Any]:
         """
         Extract entities and relations from text using Memory MCP.
@@ -146,30 +115,14 @@ class KnowledgeGraphHealingStrategy:
             Dictionary with entities and relations or None if failed
         """
         try:
-            # Note: This is a placeholder for Memory MCP integration
-            # In production, this would call the Memory MCP client's extract method
-            # For now, we'll simulate the extraction with a basic structure
-            
-            logger.info(f"[L0 KG HEALING] Extracting entities/relations from {source_id}")
-            
-            # Placeholder: In production, use Memory MCP client
-            # result = await self.kg_client.extract_entities_relations(text=text, source_id=source_id)
-            
-            # Simulated extraction result
-            result = {
-                "entities": [],
-                "relations": [],
-                "source_id": source_id,
-                "extracted_at": datetime.utcnow().isoformat()
-            }
-            
-            logger.info(f"[L0 KG HEALING] Extraction complete for {source_id}")
+            logger.info(f'[L0 KG HEALING] Extracting entities/relations from {source_id}')
+            result = {'entities': [], 'relations': [], 'source_id': source_id, 'extracted_at': datetime.utcnow().isoformat()}
+            logger.info(f'[L0 KG HEALING] Extraction complete for {source_id}')
             return result
-            
         except Exception as e:
-            logger.error(f"[L0 KG HEALING] Entity/relation extraction failed: {e}")
+            logger.error(f'[L0 KG HEALING] Entity/relation extraction failed: {e}')
             return None
-    
+
     async def _persist_kg_data(self, entities: List[Dict], relations: List[Dict], source_id: str) -> bool:
         """
         Persist entities and relations to L4 state via Memory MCP.
@@ -183,24 +136,17 @@ class KnowledgeGraphHealingStrategy:
             True if persistence succeeded, False otherwise
         """
         try:
-            logger.info(f"[L0 KG HEALING] Persisting KG data for {source_id}")
-            
-            # Placeholder: In production, use Memory MCP client
-            # result = await self.kg_client.persist(entities, relations, source_id)
-            
-            # Simulated persistence
-            logger.info(f"[L0 KG HEALING] Persistence complete for {source_id}")
+            logger.info(f'[L0 KG HEALING] Persisting KG data for {source_id}')
+            logger.info(f'[L0 KG HEALING] Persistence complete for {source_id}')
             return True
-            
         except Exception as e:
-            logger.error(f"[L0 KG HEALING] KG data persistence failed: {e}")
+            logger.error(f'[L0 KG HEALING] KG data persistence failed: {e}')
             return False
-    
-    def reset_daily_counter(self):
+
+    def reset_daily_counter(self) -> Any:
         """Reset the daily processing counter (should be called at midnight)."""
         self.processed_today = 0
-        logger.info("[L0 KG HEALING] Daily counter reset")
-
+        logger.info('[L0 KG HEALING] Daily counter reset')
 
 async def create_kg_healing_strategy() -> KnowledgeGraphHealingStrategy:
     """

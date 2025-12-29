@@ -1,31 +1,30 @@
 import json
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-
 import numpy as np
-
-LOGGER = logging.getLogger(__name__)
-
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class Episode:
+class episode:
     """A single episode in an agent's experience."""
     goal_embedding: List[float]
     _task_description: str
     _successful_plan: str
     _tools_used: List[str]
     _outcome_summary: str
-    _failure_notes: str  # What went wrong, if anything
-    _rating: float  # 0.0 to 1.0 (How well did it work?)
+    _failure_notes: str
+    _rating: float
     _timestamp: float
     episode_id: str
     agent_role: str
-    _execution_context: Dict[str, Any]  # Additional context
-
+    _execution_context: Dict[str, Any]
 
 @dataclass
-class EpisodeData:
+class episode_data:
     """Data for creating a new episode."""
     _task: str
     _plan: str
@@ -36,8 +35,7 @@ class EpisodeData:
     execution_context: Optional[Dict[str, Any]] = None
     failure_notes: Optional[str] = None
 
-
-class EpisodicMemory:
+class episodic_memory:
     """
     Long-term memory for agent experiences.
     Allows agents to clone successful plans from the past and avoid known pitfalls.
@@ -61,15 +59,12 @@ class EpisodicMemory:
         self.threshold = similarity_threshold
         self._episodes: List[Episode] = []
         self._embedding_matrix: Optional[np.ndarray] = None
-
-        LOGGER.info(f"Episodic memory initialized (threshold={similarity_threshold})")
+        LOGGER.info(f'Episodic memory initialized (threshold={similarity_threshold})')
 
     async def _load_episodes(self) -> None:
         """Load existing episodes from storage."""
         try:
-            # List all episode files in storage
-            episode_files = await self.storage.list_blobs(prefix="episodes/")
-
+            episode_files = await self.storage.list_blobs(prefix='episodes/')
             for file_key in episode_files:
                 if file_key.endswith('.json'):
                     blob_data = await self.storage.read_blob(file_key)
@@ -77,26 +72,20 @@ class EpisodicMemory:
                         data = json.loads(blob_data)
                         episode = Episode(**data)
                         self._episodes.append(episode)
-
             if self._episodes:
                 self._rebuild_embedding_matrix()
-                LOGGER.info(f"Loaded {len(self._episodes)} episodes from storage")
-
+                LOGGER.info(f'Loaded {len(self._episodes)} episodes from storage')
         except Exception as e:
-            LOGGER.error(f"Failed to load episodes: {e}")
+            LOGGER.error(f'Failed to load episodes: {e}')
 
     def _rebuild_embedding_matrix(self) -> None:
         """Rebuild the embedding matrix for efficient similarity search."""
         if self._episodes:
-            self._embedding_matrix = np.array([
-                ep.goal_embedding for ep in self._episodes
-            ])
+            self._embedding_matrix = np.array([ep.goal_embedding for ep in self._episodes])
         else:
             self._embedding_matrix = None
 
-    def _filter_episode_candidates(self,
-                                   agent_role: Optional[str],
-                                   min_rating: float) -> List[tuple]:
+    def _filter_episode_candidates(self, agent_role: Optional[str], min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
         for i, episode in enumerate(self._episodes):
@@ -113,10 +102,8 @@ class EpisodicMemory:
             return 0.0
         return float(np.dot(query_vec, episode_vec) / (norm_q * norm_e))
 
-    async def _find_best_matches(self, query_vec: np.ndarray, limit: int = 5) -> List[Episode]:
+    async def _find_best_matches(self, query_vec: np.ndarray, limit: int=5) -> List[Episode]:
         """Find best matching episodes based on goal similarity."""
         if self._embedding_matrix is None:
             return []
-
-        # Implementation of search logic
         return []

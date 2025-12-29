@@ -6,31 +6,17 @@ Orchestrates all validation agents in dependency order.
 import asyncio
 import re
 from typing import Any, Dict, List, Optional, Protocol
-
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.canon_agents_pattern import (
-    PatternEnforcer,
-    SemanticMapper,
-    UIValidationAgent,
-)
-from agentic_core.canon_agents_quality import (
-    DocumentationAgent,
-    NamingAgent,
-    SafetyInspector,
-)
-from agentic_core.canon_agents_structural import (
-    BudgetAgent,
-    StructuralEngineer,
-    TypeMechanic,
-)
+from agentic_core.canon_agents_pattern import PatternEnforcer, SemanticMapper, UIValidationAgent
+from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
+from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 
-
-class IntelligentOrchestrator:
+class intelligent_orchestrator:
     """Orchestrates all validation agents in dependency order."""
 
-    def __init__(self, target: Optional[str] = None):
+    def __init__(self, target: Optional[str]=None):
         """
         Initializes the IntelligentOrchestrator with a validation context and a swarm of agents.
 
@@ -38,23 +24,8 @@ class IntelligentOrchestrator:
             target (Optional[str]): The target scope for validation, e.g., a file path or directory.
                                     Defaults to the current directory ".".
         """
-        self.ctx: ValidationContext = ValidationContext(target_scope=target or ".")
-        self.swarm = [
-            HealerAgent(self.ctx),              # 0. Syntax/RCA (Blocker)
-            SystemArchitect(self.ctx),          # 1. Structure (Blocker)
-            GenerativeGuard(self.ctx),          # 2. Generative Policy
-            CodeJanitor(self.ctx),              # 3. Syntax (Signal: AST_VALID)
-            DependencySentinel(self.ctx),       # 4. Imports (Signal: DEPS_VALID)
-            SafetyInspector(self.ctx),          # 5. Security (Signal: SECURE)
-            PatternEnforcer(self.ctx),          # 6. Patterns
-            DocumentationAgent(self.ctx),       # 7. Docs
-            NamingAgent(self.ctx),              # 8. Naming
-            BudgetAgent(self.ctx),              # 9. Complexity
-            TypeMechanic(self.ctx),             # 10. Types
-            UIValidationAgent(self.ctx),        # 11. UI Patterns (MCP)
-            SemanticMapper(self.ctx),           # 12. Clustering
-            StructuralEngineer(self.ctx),       # 13. Refactoring
-        ]
+        self.ctx: ValidationContext = ValidationContext(target_scope=target or '.')
+        self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinel(self.ctx), SafetyInspector(self.ctx), PatternEnforcer(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanic(self.ctx), UIValidationAgent(self.ctx), SemanticMapper(self.ctx), StructuralEngineer(self.ctx)]
 
     async def run_mission(self) -> None:
         """
@@ -63,51 +34,37 @@ class IntelligentOrchestrator:
         Agents are run in their defined dependency order. If an agent's dependencies
         are not met, it will stand down. Critical failures can abort the mission.
         """
-        print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
-        print(f"\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...")
-        
-        # Track agent execution
-        agents_executed = 0
-        agents_passed = 0
-        agents_failed = 0
-
-        # Initialize MCP async services for filesystem operations
+        print('🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...')
+        print(f'\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
+        agents_executed: Any = 0
+        agents_passed: Any = 0
+        agents_failed: Any = 0
         await self.ctx.services.init_mcp_async()
-
         for i, agent in enumerate(self.swarm, 1):
-            print(f"\n[MISSION] Agent {i}/{len(self.swarm)}: {agent.name}")
-            
+            print(f'\n[MISSION] Agent {i}/{len(self.swarm)}: {agent.name}')
             if not agent.can_run():
-                print(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
+                print(f'   ⛔ {agent.name} STANDING DOWN (Dependencies not met).')
                 continue
-
             agents_executed += 1
-            
             try:
-                print(f"   ⚡ Executing {agent.name}...")
-                result = agent.execute()
+                print(f'   ⚡ Executing {agent.name}...')
+                result: Any = agent.execute()
                 if asyncio.iscoroutine(result):
                     await result
                 agents_passed += 1
-                print(f"   ✅ {agent.name} completed successfully")
+                print(f'   ✅ {agent.name} completed successfully')
             except Exception as e:
-                # Catching broad Exception is acceptable here as it's an orchestrator
-                # reporting agent failures, not necessarily recovering from them.
-                print(f"   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}")
+                print(f'   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}')
                 agents_failed += 1
-
-            if "CRITICAL_FAIL" in self.ctx.signals:
-                print("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
-                print("   Action: Fix Key 40/41/50 immediately.")
+            if 'CRITICAL_FAIL' in self.ctx.signals:
+                print('\n🛑 MISSION ABORTED: Critical Architecture Failure.')
+                print('   Action: Fix Key 40/41/50 immediately.')
                 break
-
-        # Print execution summary
-        print(f"\n[MISSION] Agent Execution Summary:")
-        print(f"   • Total Agents: {len(self.swarm)}")
-        print(f"   • Executed: {agents_executed}")
-        print(f"   • Passed: {agents_passed} ✅")
-        print(f"   • Failed: {agents_failed} ❌")
-        
+        print(f'\n[MISSION] Agent Execution Summary:')
+        print(f'   • Total Agents: {len(self.swarm)}')
+        print(f'   • Executed: {agents_executed}')
+        print(f'   • Passed: {agents_passed} ✅')
+        print(f'   • Failed: {agents_failed} ❌')
         self.print_mission_report()
 
     def print_mission_report(self) -> None:
@@ -117,37 +74,29 @@ class IntelligentOrchestrator:
         Summarizes the total checks, passed/failed counts, open violations,
         and autonomous repairs performed.
         """
-        print("\n" + "=" * 60)
-        print("🏁 MISSION REPORT")
-        print("=" * 60)
-
-        total_checks = len(self.ctx.results)
-        passed_checks = sum(1 for r in self.ctx.results.values() if r["passed"])
-        failed_checks = total_checks - passed_checks
-
-        print(f"Total Checks: {total_checks}")
-        print(f"Passed:       {passed_checks}")
-        print(f"Failed:       {failed_checks}")
-
+        print('\n' + '=' * 60)
+        print('🏁 MISSION REPORT')
+        print('=' * 60)
+        total_checks: Any = len(self.ctx.results)
+        passed_checks: Any = sum((1 for r in self.ctx.results.values() if r['passed']))
+        failed_checks: Any = total_checks - passed_checks
+        print(f'Total Checks: {total_checks}')
+        print(f'Passed:       {passed_checks}')
+        print(f'Failed:       {failed_checks}')
         if failed_checks > 0:
-            print("\n[X] OPEN VIOLATIONS:")
-            # Sort violations by key for consistent reporting
+            print('\n[X] OPEN VIOLATIONS:')
             for key, result in sorted(self.ctx.results.items()):
-                if not result["passed"]:
-                    print(f"   Key {key}")
-
-        # L5 Final Autonomy Report
+                if not result['passed']:
+                    print(f'   Key {key}')
         if self.ctx.modified_files:
-            print(f"\n✨ AUTONOMOUS REPAIRS COMPLETED ({len(self.ctx.modified_files)} files):")
+            print(f'\n✨ AUTONOMOUS REPAIRS COMPLETED ({len(self.ctx.modified_files)} files):')
             for fp in sorted(self.ctx.modified_files):
-                history = self.ctx.healing_history.get(fp, [])
-                history_str = f" ({', '.join(history)})" if history else ""
-                print(f"   • {fp}{history_str}")
-
-        print(f"\nHealing budget: {self.ctx.healing_budget_used}/{self.ctx.global_healing_budget} used")
-
+                history: Any = self.ctx.healing_history.get(fp, [])
+                history_str: Any = f" ({', '.join(history)})" if history else ''
+                print(f'   • {fp}{history_str}')
+        print(f'\nHealing budget: {self.ctx.healing_budget_used}/{self.ctx.global_healing_budget} used')
         if failed_checks == 0:
-            print("\n🎯 LEVEL 5 SUBATOMIC CANON ACHIEVED – FULL AUTONOMOUS INTEGRITY")
+            print('\n🎯 LEVEL 5 SUBATOMIC CANON ACHIEVED – FULL AUTONOMOUS INTEGRITY')
         else:
-            print(f"\n[!]  Canon incomplete – {failed_checks} keys remain violated.")
-            print("   Run again with healing enabled for further convergence.")
+            print(f'\n[!]  Canon incomplete – {failed_checks} keys remain violated.')
+            print('   Run again with healing enabled for further convergence.')

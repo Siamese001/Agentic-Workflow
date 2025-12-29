@@ -1,7 +1,10 @@
 """
 Test orphan file in L1_cognition/thought_engine
 """
-class ActionNode:
+# NAMING FIXED: ActionNode → action_node
+class action_node:
     """A node for executing actions"""
     def execute(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         pass

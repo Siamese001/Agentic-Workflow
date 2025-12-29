@@ -3,7 +3,8 @@ Debug script to check VS Code/Windsurf test discovery configuration.
 Run this in the terminal to verify all settings are correct.
 import logging
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 """
 

@@ -7,7 +7,8 @@ import json
 
 @pytest.mark.e2e
 @pytest.mark.slow
-class TestMCPEscalationChain:
+# NAMING FIXED: TestMCPEscalationChain → test_mcp_escalation_chain
+class test_mcp_escalation_chain:
     """Test complete MCP escalation chain through all status paths."""
     
     @patch('agentic_core.L3_orchestration.mcp_router.SovereignMCPRouter')
@@ -202,7 +203,8 @@ class TestMCPEscalationChain:
 
 
 @pytest.mark.e2e
-class TestMCPEscalationFailureHandling:
+# NAMING FIXED: TestMCPEscalationFailureHandling → test_mcp_escalation_failure_handling
+class test_mcp_escalation_failure_handling:
     """Test MCP escalation failure scenarios."""
     
     @patch('agentic_core.L3_orchestration.mcp_router.SovereignMCPRouter')
@@ -282,6 +284,8 @@ class TestMCPEscalationFailureHandling:
         escalation_history = []
         
         def track_escalation(violation):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             escalation_history.append(violation["type"])
             if len(escalation_history) > 3:
                 return {

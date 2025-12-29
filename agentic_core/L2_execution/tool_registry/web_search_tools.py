@@ -8,11 +8,9 @@ import json
 from typing import Any, Dict, List, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+logger: Any = logging.getLogger('ActionRegistry.WebSearch')
 
-logger = logging.getLogger("ActionRegistry.WebSearch")
-
-
-class WebSearchTools:
+class web_search_tools:
     """
     Standardized toolset for external intelligence.
     Routes all traffic through L3 Sovereign Router.
@@ -21,8 +19,8 @@ class WebSearchTools:
 
     def __init__(self):
         """Initialize with sovereign MCP router — L5 shielded"""
-        self.router = SovereignMCPRouter(role="web_research")
-        logger.info("[L2 WEB SEARCH] Initialized with Sovereign MCP Router")
+        self.router = SovereignMCPRouter(role='web_research')
+        logger.info('[L2 WEB SEARCH] Initialized with Sovereign MCP Router')
 
     async def search_web(self, query: str) -> str:
         """
@@ -36,29 +34,16 @@ class WebSearchTools:
             str: A formatted string of search results or an error message.
         """
         if not config.BRAVE_SEARCH_MCP_ENABLED:
-            return "Error: Brave Search MCP disabled in sovereign config"
-        
+            return 'Error: Brave Search MCP disabled in sovereign config'
         logger.info(f"🌐 Sovereign Web Search: '{query}'")
-        
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="brave_web_search",
-                args={
-                    "query": query,
-                    "count": config.BRAVE_SEARCH_COUNT,
-                    "summarize": config.BRAVE_SEARCH_SUMMARIZE,
-                    "safe_search": config.BRAVE_SEARCH_SAFE_SEARCH,
-                    "country": config.BRAVE_SEARCH_COUNTRY
-                }
-            )
-            
-            return self._parse_mcp_response(result, "web")
-        
+            result: Any = await self.router.manager.call_tool(tool_name='brave_web_search', args={'query': query, 'count': config.BRAVE_SEARCH_COUNT, 'summarize': config.BRAVE_SEARCH_SUMMARIZE, 'safe_search': config.BRAVE_SEARCH_SAFE_SEARCH, 'country': config.BRAVE_SEARCH_COUNTRY})
+            return self._parse_mcp_response(result, 'web')
         except Exception as e:
-            logger.error(f"[L2 WEB SEARCH] MCP call failed: {e}")
-            return f"Search Error: {str(e)}"
+            logger.error(f'[L2 WEB SEARCH] MCP call failed: {e}')
+            return f'Search Error: {str(e)}'
 
-    async def search_local(self, query: str, location: Optional[str] = None) -> str:
+    async def search_local(self, query: str, location: Optional[str]=None) -> str:
         """
         Geographic/Business search via Brave MCP.
 
@@ -70,22 +55,14 @@ class WebSearchTools:
             str: A formatted string of local search results or an error message.
         """
         if not config.BRAVE_SEARCH_MCP_ENABLED:
-            return "Error: Brave Search MCP disabled"
-        
+            return 'Error: Brave Search MCP disabled'
         logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
-        
         try:
-            result = await self.router.manager.call_tool(
-                tool_name="brave_local_search",
-                args={
-                    "query": query,
-                    "count": config.BRAVE_SEARCH_COUNT
-                }
-            )
-            return self._parse_mcp_response(result, "local")
+            result: Any = await self.router.manager.call_tool(tool_name='brave_local_search', args={'query': query, 'count': config.BRAVE_SEARCH_COUNT})
+            return self._parse_mcp_response(result, 'local')
         except Exception as e:
-            logger.error(f"[L2 LOCAL SEARCH] MCP call failed: {e}")
-            return f"Local search error: {str(e)}"
+            logger.error(f'[L2 LOCAL SEARCH] MCP call failed: {e}')
+            return f'Local search error: {str(e)}'
 
     def _parse_mcp_response(self, result: Any, mode: str) -> str:
         """
@@ -98,19 +75,16 @@ class WebSearchTools:
         Returns:
             str: Formatted search results
         """
-        # 1. Check for standard 'content' list in CallToolResult
-        content = ""
-        if hasattr(result, "content") and isinstance(result.content, list):
-            content = "".join([c.text for c in result.content if hasattr(c, "text")])
-        elif isinstance(result, dict) and "content" in result:
-            content = "".join([c.get("text", "") for c in result["content"] if isinstance(c, dict)])
+        content = ''
+        if hasattr(result, 'content') and isinstance(result.content, list):
+            content = ''.join([c.text for c in result.content if hasattr(c, 'text')])
+        elif isinstance(result, dict) and 'content' in result:
+            content = ''.join([c.get('text', '') for c in result['content'] if isinstance(c, dict)])
         else:
             content = str(result)
-
-        # 2. Try to parse JSON for structured formatting
         try:
             data = json.loads(content)
-            if mode == "web":
+            if mode == 'web':
                 return self._format_web_json(data)
             return self._format_local_json(data)
         except (json.JSONDecodeError, TypeError):
@@ -126,17 +100,16 @@ class WebSearchTools:
         Returns:
             str: Formatted web search results
         """
-        items = data.get("web", {}).get("results", []) or data.get("results", [])
+        items = data.get('web', {}).get('results', []) or data.get('results', [])
         if not items:
-            return "No web results found."
-        
+            return 'No web results found.'
         formatted = []
         for i in items:
-            title = i.get("title", "No title")
-            summary = i.get("summary") or i.get("description", "No summary")
-            url = i.get("url", "#")
-            formatted.append(f"Title: {title}\nSummary: {summary}\nLink: {url}\n---")
-        return "\n".join(formatted)
+            title = i.get('title', 'No title')
+            summary = i.get('summary') or i.get('description', 'No summary')
+            url = i.get('url', '#')
+            formatted.append(f'Title: {title}\nSummary: {summary}\nLink: {url}\n---')
+        return '\n'.join(formatted)
 
     def _format_local_json(self, data: Dict) -> str:
         """
@@ -148,16 +121,13 @@ class WebSearchTools:
         Returns:
             str: Formatted local search results
         """
-        items = data.get("locations", {}).get("results", []) or data.get("results", [])
+        items = data.get('locations', {}).get('results', []) or data.get('results', [])
         if not items:
-            return "No local results found."
-        
+            return 'No local results found.'
         formatted = []
         for i in items:
-            name = i.get("title") or i.get("name", "Unknown Business")
-            address = i.get("address", {}).get("formattedAddress") or i.get("address", "No address")
-            formatted.append(f"Name: {name}\nAddress: {address}\n---")
-        return "\n".join(formatted)
-
-
+            name = i.get('title') or i.get('name', 'Unknown Business')
+            address = i.get('address', {}).get('formattedAddress') or i.get('address', 'No address')
+            formatted.append(f'Name: {name}\nAddress: {address}\n---')
+        return '\n'.join(formatted)
 __all__ = ['WebSearchTools']

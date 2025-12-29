@@ -1,17 +1,23 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 """
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 Hallucination checking module for apps_rg.
 
 Provides basic hallucination detection for resume generation.
 """
 
 
-class HallucinationDetector:
+# NAMING FIXED: HallucinationDetector → hallucination_detector
+class hallucination_detector:
     """Stub implementation of hallucination detector."""
 
 

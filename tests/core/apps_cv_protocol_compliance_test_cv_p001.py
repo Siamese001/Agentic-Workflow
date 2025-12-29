@@ -13,7 +13,8 @@ import pytest
 from l1_protocol_handler import GitConflictError, L1ProtocolHandler, ToolResult
 
 
-class TestCVProtocolCompliance:
+# NAMING FIXED: TestCVProtocolCompliance → test_cv_protocol_compliance
+class test_cv_protocol_compliance:
     """Test suite for MCP Protocol Compliance"""
 
     @pytest.fixture
@@ -122,10 +123,14 @@ class TestCVProtocolCompliance:
         add_observations_called = False
 
         def mock_redis_set(key, value):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal redis_set_called
             redis_set_called = True
 
         def mock_add_observations(observations):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             nonlocal add_observations_called
             add_observations_called = True
 

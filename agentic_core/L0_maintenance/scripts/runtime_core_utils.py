@@ -1,4 +1,5 @@
 import logging
+'''Brief description of functionality and purpose.'''
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
+'Brief description of functionality and purpose.'
+logger: Any = logging.getLogger(__name__)

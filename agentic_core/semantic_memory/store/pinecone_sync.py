@@ -14,31 +14,25 @@ import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
-
 try:
     from pinecone import Pinecone
-    PINECONE_AVAILABLE = True
+    PINECONE_AVAILABLE: Any = True
 except ImportError:
-    PINECONE_AVAILABLE = False
-    Pinecone = None
-
+    PINECONE_AVAILABLE: Any = False
+    Pinecone: Any = None
 try:
     from google import genai
     from google.genai import types
-    GENAI_AVAILABLE = True
+    GENAI_AVAILABLE: Any = True
 except ImportError:
-    GENAI_AVAILABLE = False
-    genai = None
-    types = None
-
+    GENAI_AVAILABLE: Any = False
+    genai: Any = None
+    types: Any = None
 from dotenv import load_dotenv
-
 load_dotenv()
+logger: Any = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
-
-class MemoryArchitectSync:
+class memory_architect_sync:
     """
     L4 State Sync: Updates Pinecone to reflect new modular architecture.
     
@@ -53,42 +47,37 @@ class MemoryArchitectSync:
     - Hallucinated code snippets during RAG queries
     - L4 State / L1 Cognition desynchronization
     """
-    
+
     def __init__(self):
         """Initialize Memory Architect Sync."""
         self.pinecone_available = PINECONE_AVAILABLE
         self.genai_available = GENAI_AVAILABLE
-        
-        # Initialize Pinecone
         if PINECONE_AVAILABLE:
-            api_key = os.getenv("PINECONE_API_KEY")
-            index_name = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
-            
+            api_key = os.getenv('PINECONE_API_KEY')
+            index_name = os.getenv('PINECONE_INDEX_NAME', 'canon-memory-l2')
             if api_key:
                 try:
                     self.pc = Pinecone(api_key=api_key)
                     self.index = self.pc.Index(index_name)
-                    logger.info(f"[OK] Memory Architect connected to Pinecone: {index_name}")
+                    logger.info(f'[OK] Memory Architect connected to Pinecone: {index_name}')
                 except Exception as e:
-                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
+                    logger.warning(f'[!]  Could not connect to Pinecone: {e}')
                     self.pinecone_available = False
             else:
-                logger.warning("[!]  PINECONE_API_KEY not found")
+                logger.warning('[!]  PINECONE_API_KEY not found')
                 self.pinecone_available = False
-        
-        # Initialize Gemini for embeddings
         if GENAI_AVAILABLE:
-            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
             if api_key:
                 try:
                     self.genai_client = genai.Client(api_key=api_key)
-                    logger.info("[OK] Memory Architect connected to Gemini for embeddings")
+                    logger.info('[OK] Memory Architect connected to Gemini for embeddings')
                 except Exception as e:
-                    logger.warning(f"[!]  Could not connect to Gemini: {e}")
+                    logger.warning(f'[!]  Could not connect to Gemini: {e}')
                     self.genai_available = False
             else:
                 self.genai_available = False
-    
+
     def sync_fission_state(self, monolith_path: str, new_files: List[str]) -> bool:
         """
         L4 State Sync: Updates Pinecone to reflect the new modular architecture.
@@ -101,26 +90,20 @@ class MemoryArchitectSync:
             True if successful, False otherwise
         """
         if not self.pinecone_available:
-            logger.warning("[!]  Pinecone not available, skipping L4 State sync")
+            logger.warning('[!]  Pinecone not available, skipping L4 State sync')
             return False
-        
         try:
-            # 1. Purge the old Monolith from Memory
-            logger.info(f"  [Memory] Purging stale embeddings for {monolith_path}...")
+            logger.info(f'  [Memory] Purging stale embeddings for {monolith_path}...')
             self._purge_monolith(monolith_path)
-            
-            # 2. Embed and Upsert the new Sub-modules
             for file_path in new_files:
-                logger.info(f"  [Memory] Indexing new L4 State: {file_path}")
+                logger.info(f'  [Memory] Indexing new L4 State: {file_path}')
                 self._index_file(file_path, parent_monolith=monolith_path)
-            
-            logger.info(f"  [OK] L4 State sync complete: {len(new_files)} files indexed")
+            logger.info(f'  [OK] L4 State sync complete: {len(new_files)} files indexed')
             return True
-        
         except Exception as e:
-            logger.error(f"  [X] L4 State sync failed: {e}")
+            logger.error(f'  [X] L4 State sync failed: {e}')
             return False
-    
+
     def _purge_monolith(self, monolith_path: str):
         """
         Purge old monolith embeddings from Pinecone.
@@ -129,13 +112,12 @@ class MemoryArchitectSync:
             monolith_path: Path to monolithic file
         """
         try:
-            # Delete vectors with matching file_path metadata
-            self.index.delete(filter={"file_path": {"$eq": monolith_path}})
-            logger.info(f"    [OK] Purged embeddings for {monolith_path}")
+            self.index.delete(filter={'file_path': {'$eq': monolith_path}})
+            logger.info(f'    [OK] Purged embeddings for {monolith_path}')
         except Exception as e:
-            logger.warning(f"    [!]  Could not purge embeddings: {e}")
-    
-    def _index_file(self, file_path: str, parent_monolith: Optional[str] = None):
+            logger.warning(f'    [!]  Could not purge embeddings: {e}')
+
+    def _index_file(self, file_path: str, parent_monolith: Optional[str]=None):
         """
         Index a file in Pinecone with embeddings.
         
@@ -144,39 +126,22 @@ class MemoryArchitectSync:
             parent_monolith: Optional parent monolith path for cross-linking
         """
         try:
-            # Read file content
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
-            # Generate embedding
             vector = self._generate_embedding(content)
-            
             if vector is None:
-                logger.warning(f"    [!]  Could not generate embedding for {file_path}")
+                logger.warning(f'    [!]  Could not generate embedding for {file_path}')
                 return
-            
-            # Prepare metadata
-            metadata = {
-                "file_path": file_path,
-                "layer": "L4_STATE",
-                "line_count": len(content.splitlines()),
-                "char_count": len(content)
-            }
-            
+            metadata = {'file_path': file_path, 'layer': 'L4_STATE', 'line_count': len(content.splitlines()), 'char_count': len(content)}
             if parent_monolith:
-                metadata["parent_monolith"] = parent_monolith
-            
-            # Upsert to Pinecone
-            # Create vector ID by replacing path separators
+                metadata['parent_monolith'] = parent_monolith
             clean_path = file_path.replace('/', '_').replace('\\', '_')
-            vector_id = f"vec_{clean_path}"
+            vector_id = f'vec_{clean_path}'
             self.index.upsert(vectors=[(vector_id, vector, metadata)])
-            
-            logger.info(f"    [OK] Indexed {file_path} ({len(content.splitlines())} lines)")
-        
+            logger.info(f'    [OK] Indexed {file_path} ({len(content.splitlines())} lines)')
         except Exception as e:
-            logger.error(f"    [X] Failed to index {file_path}: {e}")
-    
+            logger.error(f'    [X] Failed to index {file_path}: {e}')
+
     def _generate_embedding(self, text: str) -> Optional[List[float]]:
         """
         Generate embedding vector for text.
@@ -188,26 +153,18 @@ class MemoryArchitectSync:
             Embedding vector or None if failed
         """
         if not self.genai_available:
-            logger.warning("    [!]  Gemini not available for embeddings")
+            logger.warning('    [!]  Gemini not available for embeddings')
             return None
-        
         try:
-            # Use Gemini embedding model
-            result = self.genai_client.models.embed_content(
-                model='models/text-embedding-004',
-                content=text
-            )
-            
+            result = self.genai_client.models.embed_content(model='models/text-embedding-004', content=text)
             if result and hasattr(result, 'embedding'):
                 return result.embedding
-            
-            logger.warning("    [!]  No embedding returned from Gemini")
+            logger.warning('    [!]  No embedding returned from Gemini')
             return None
-        
         except Exception as e:
-            logger.error(f"    [X] Embedding generation failed: {e}")
+            logger.error(f'    [X] Embedding generation failed: {e}')
             return None
-    
+
     def verify_sync(self, file_paths: List[str]) -> Dict[str, bool]:
         """
         Verify files are properly indexed in Pinecone.
@@ -220,30 +177,23 @@ class MemoryArchitectSync:
         """
         if not self.pinecone_available:
             return {path: False for path in file_paths}
-        
-        results = {}
-        
+        results: Any = {}
         for file_path in file_paths:
             try:
-                # Query for file
-                clean_path = file_path.replace('/', '_').replace('\\', '_')
-                vector_id = f"vec_{clean_path}"
-                fetch_result = self.index.fetch(ids=[vector_id])
-                
+                clean_path: Any = file_path.replace('/', '_').replace('\\', '_')
+                vector_id: Any = f'vec_{clean_path}'
+                fetch_result: Any = self.index.fetch(ids=[vector_id])
                 results[file_path] = vector_id in fetch_result.vectors
-                
                 if results[file_path]:
-                    logger.info(f"  [OK] Verified: {file_path}")
+                    logger.info(f'  [OK] Verified: {file_path}')
                 else:
-                    logger.warning(f"  [!]  Not found: {file_path}")
-            
+                    logger.warning(f'  [!]  Not found: {file_path}')
             except Exception as e:
-                logger.error(f"  [X] Verification failed for {file_path}: {e}")
+                logger.error(f'  [X] Verification failed for {file_path}: {e}')
                 results[file_path] = False
-        
         return results
-    
-    def query_related_files(self, file_path: str, top_k: int = 5) -> List[Dict]:
+
+    def query_related_files(self, file_path: str, top_k: int=5) -> List[Dict]:
         """
         Query Pinecone for files related to given file.
         
@@ -256,38 +206,20 @@ class MemoryArchitectSync:
         """
         if not self.pinecone_available or not self.genai_available:
             return []
-        
         try:
-            # Read file and generate embedding
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            vector = self._generate_embedding(content)
-            
+                content: Any = f.read()
+            vector: Any = self._generate_embedding(content)
             if vector is None:
                 return []
-            
-            # Query Pinecone
-            results = self.index.query(
-                vector=vector,
-                top_k=top_k,
-                include_metadata=True
-            )
-            
-            related_files = []
+            results: Any = self.index.query(vector=vector, top_k=top_k, include_metadata=True)
+            related_files: Any = []
             for match in results.matches:
-                related_files.append({
-                    "file_path": match.metadata.get("file_path"),
-                    "score": match.score,
-                    "parent_monolith": match.metadata.get("parent_monolith")
-                })
-            
+                related_files.append({'file_path': match.metadata.get('file_path'), 'score': match.score, 'parent_monolith': match.metadata.get('parent_monolith')})
             return related_files
-        
         except Exception as e:
-            logger.error(f"  [X] Query failed: {e}")
+            logger.error(f'  [X] Query failed: {e}')
             return []
-
 
 def get_memory_architect_sync() -> MemoryArchitectSync:
     """
@@ -297,31 +229,4 @@ def get_memory_architect_sync() -> MemoryArchitectSync:
         MemoryArchitectSync instance
     """
     return MemoryArchitectSync()
-
-
-# Integration Example for orchestrator_main.py:
-"""
-from agentic_core.pinecone_sync import MemoryArchitectSync
-
-# Initialize sync manager
-memory_sync = MemoryArchitectSync()
-
-# After successful fission:
-if fission_result.success:
-    # Write decomposed files
-    fission_manager.write_decomposed_files(fission_result)
-    
-    # Sync L4 State (Pinecone)
-    new_file_paths = list(fission_result.new_files.keys())
-    memory_sync.sync_fission_state(
-        monolith_path=fission_result.original_file,
-        new_files=new_file_paths
-    )
-    
-    # Verify sync
-    verification = memory_sync.verify_sync(new_file_paths)
-    if all(verification.values()):
-        logger.info("[OK] L4 State fully synchronized")
-    else:
-        logger.warning("[!]  Some files not indexed in Pinecone")
-"""
+'\nfrom agentic_core.pinecone_sync import MemoryArchitectSync\n\n# Initialize sync manager\nmemory_sync = MemoryArchitectSync()\n\n# After successful fission:\nif fission_result.success:\n    # Write decomposed files\n    fission_manager.write_decomposed_files(fission_result)\n    \n    # Sync L4 State (Pinecone)\n    new_file_paths = list(fission_result.new_files.keys())\n    memory_sync.sync_fission_state(\n        monolith_path=fission_result.original_file,\n        new_files=new_file_paths\n    )\n    \n    # Verify sync\n    verification = memory_sync.verify_sync(new_file_paths)\n    if all(verification.values()):\n        logger.info("[OK] L4 State fully synchronized")\n    else:\n        logger.warning("[!]  Some files not indexed in Pinecone")\n'

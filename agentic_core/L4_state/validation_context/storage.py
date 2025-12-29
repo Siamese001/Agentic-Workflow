@@ -9,11 +9,9 @@ import logging
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class BlobStorageProvider(Protocol):
+class blob_storage_provider(Protocol):
     """
     Protocol defining atomic storage operations.
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
@@ -31,8 +29,7 @@ class BlobStorageProvider(Protocol):
         """Checks if key exists."""
         ...
 
-
-class LocalDiskAdapter:
+class local_disk_adapter:
     """
     Mimics cloud storage on local disk.
     Uses atomic 'write-to-temp-then-move' logic to prevent corruption.
@@ -50,7 +47,7 @@ class LocalDiskAdapter:
         """
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
-        LOGGER.info(f"Local disk adapter initialized at: {self.base_path}")
+        LOGGER.info(f'Local disk adapter initialized at: {self.base_path}')
 
     def _get_path(self: Any, key: str) -> Path:
         """
@@ -62,15 +59,12 @@ class LocalDiskAdapter:
         Returns:
             Safe path within base directory
         """
-        # Normalize path to prevent directory traversal
         key = key.replace('\\', '/')
         parts = [p for p in key.split('/') if p and p != '..']
         safe_key = Path(*parts)
         full_path = self.base_path / safe_key
-
         if not str(full_path).startswith(str(self.base_path)):
-            raise ValueError(f"Invalid key: {key} (directory traversal attempt)")
-
+            raise ValueError(f'Invalid key: {key} (directory traversal attempt)')
         return full_path
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
@@ -85,25 +79,18 @@ class LocalDiskAdapter:
         Returns:
             MD5 checksum of the data
         """
-        target_path = self._get_path(key)
-        temp_path = target_path.with_suffix(".tmp")
-
+        target_path: Any = self._get_path(key)
+        temp_path: Any = target_path.with_suffix('.tmp')
         target_path.parent.mkdir(parents=True, exist_ok=True)
-
-        with open(temp_path, "wb") as f:
+        with open(temp_path, 'wb') as f:
             f.write(data)
-
         if metadata:
-            meta_path = target_path.with_suffix(".meta.json")
-            with open(meta_path, "w") as f:
+            meta_path: Any = target_path.with_suffix('.meta.json')
+            with open(meta_path, 'w') as f:
                 json.dump(metadata, f)
-
         shutil.move(str(temp_path), str(target_path))
-
-        checksum = hashlib.md5(data).hexdigest()
-
-        LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")
-
+        checksum: Any = hashlib.md5(data).hexdigest()
+        LOGGER.debug(f'Wrote blob: {key} (checksum={checksum})')
         return checksum
 
     async def read_blob(self: Any, key: str) -> bytes:
@@ -119,16 +106,12 @@ class LocalDiskAdapter:
         Raises:
             FileNotFoundError: If key doesn't exist
         """
-        target_path = self._get_path(key)
-
+        target_path: Any = self._get_path(key)
         if not target_path.exists():
-            raise FileNotFoundError(f"Key {key} not found in storage.")
-
-        with open(target_path, "rb") as f:
-            data = f.read()
-
-        LOGGER.debug(f"Read blob: {key} ({len(data)} bytes)")
-
+            raise FileNotFoundError(f'Key {key} not found in storage.')
+        with open(target_path, 'rb') as f:
+            data: Any = f.read()
+        LOGGER.debug(f'Read blob: {key} ({len(data)} bytes)')
         return data
 
     async def exists(self: Any, key: str) -> bool:
@@ -153,18 +136,14 @@ class LocalDiskAdapter:
         Returns:
             True if deleted, False if didn't exist
         """
-        target_path = self._get_path(key)
-
+        target_path: Any = self._get_path(key)
         if target_path.exists():
             target_path.unlink()
-
-            meta_path = target_path.with_suffix(".meta.json")
+            meta_path: Any = target_path.with_suffix('.meta.json')
             if meta_path.exists():
                 meta_path.unlink()
-
-            LOGGER.debug(f"Deleted blob: {key}")
+            LOGGER.debug(f'Deleted blob: {key}')
             return True
-
         return False
 
     async def list_blobs(self: Any, prefix: str) -> list:
@@ -177,19 +156,16 @@ class LocalDiskAdapter:
         Returns:
             List of blob keys
         """
-        blobs = []
-        for path in self.base_path.rglob("*"):
-            if path.is_file() and not path.suffix in [".tmp", ".meta.json"]:
-                relative = path.relative_to(self.base_path)
-                key = str(relative)
-
+        blobs: Any = []
+        for path in self.base_path.rglob('*'):
+            if path.is_file() and (not path.suffix in ['.tmp', '.meta.json']):
+                relative: Any = path.relative_to(self.base_path)
+                key: Any = str(relative)
                 if not prefix or key.startswith(prefix):
                     blobs.append(key)
-
         return blobs
 
-
-class S3Adapter:
+class s3_adapter:
     """
     Production adapter for AWS S3.
 
@@ -206,12 +182,11 @@ class S3Adapter:
         """
         try:
             import boto3
-
-            self.s3 = boto3.client("s3", region_name=region)
+            self.s3 = boto3.client('s3', region_name=region)
             self.bucket = bucket_name
-            LOGGER.info(f"S3 adapter initialized (bucket={bucket_name}, region={region})")
+            LOGGER.info(f'S3 adapter initialized (bucket={bucket_name}, region={region})')
         except ImportError:
-            raise ImportError("boto3 not installed. Run: pip install boto3")
+            raise ImportError('boto3 not installed. Run: pip install boto3')
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
         """
@@ -225,11 +200,9 @@ class S3Adapter:
         Returns:
             ETag from S3
         """
-        response = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
-
-        etag = response["ETag"].replace('"', "")
-        LOGGER.debug(f"Wrote S3 blob: {key} (etag={etag})")
-
+        response: Any = self.s3.put_object(Bucket=self.bucket, Key=key, Body=data, Metadata=metadata or {})
+        etag: Any = response['ETag'].replace('"', '')
+        LOGGER.debug(f'Wrote S3 blob: {key} (etag={etag})')
         return etag
 
     async def read_blob(self: Any, key: str) -> bytes:
@@ -242,11 +215,9 @@ class S3Adapter:
         Returns:
             Binary data
         """
-        response = self.s3.get_object(Bucket=self.bucket, Key=key)
-        data = response["Body"].read()
-
-        LOGGER.debug(f"Read S3 blob: {key} ({len(data)} bytes)")
-
+        response: Any = self.s3.get_object(Bucket=self.bucket, Key=key)
+        data: Any = response['Body'].read()
+        LOGGER.debug(f'Read S3 blob: {key} ({len(data)} bytes)')
         return data
 
     async def exists(self: Any, key: str) -> bool:
@@ -277,10 +248,10 @@ class S3Adapter:
         """
         try:
             self.s3.delete_object(Bucket=self.bucket, Key=key)
-            LOGGER.debug(f"Deleted S3 blob: {key}")
+            LOGGER.debug(f'Deleted S3 blob: {key}')
             return True
         except Exception as e:
-            LOGGER.error(f"Failed to delete S3 blob {key}: {e}")
+            LOGGER.error(f'Failed to delete S3 blob {key}: {e}')
             return False
 
     async def list_blobs(self: Any, prefix: str) -> list:
@@ -293,17 +264,14 @@ class S3Adapter:
         Returns:
             List of blob keys
         """
-        blobs = []
-        paginator = self.s3.get_paginator("list_objects_v2")
-
+        blobs: Any = []
+        paginator: Any = self.s3.get_paginator('list_objects_v2')
         for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
-            if "Contents" in page:
-                blobs.extend([obj["Key"] for obj in page["Contents"]])
-
+            if 'Contents' in page:
+                blobs.extend([obj['Key'] for obj in page['Contents']])
         return blobs
 
-
-def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorageProvider:
+def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStorageProvider:
     """
     Factory function to create storage adapters.
 
@@ -314,28 +282,24 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> BlobStorage
     Returns:
         Storage adapter instance
     """
-    if adapter_type == "local":
-        base_path = kwargs.get("base_path", "./agent_data_store")
+    if adapter_type == 'local':
+        base_path: Any = kwargs.get('base_path', './agent_data_store')
         return LocalDiskAdapter(base_path=base_path)
-
-    elif adapter_type == "s3":
-        bucket_name = kwargs.get("bucket_name")
+    elif adapter_type == 's3':
+        bucket_name: Any = kwargs.get('bucket_name')
         if not bucket_name:
-            raise ValueError("bucket_name required for S3 adapter")
-
-        region = kwargs.get("region", "us-east-1")
+            raise ValueError('bucket_name required for S3 adapter')
+        region: Any = kwargs.get('region', 'us-east-1')
         return S3Adapter(bucket_name=bucket_name, region=region)
-
     else:
-        raise ValueError(f"Unknown adapter type: {adapter_type}")
+        raise ValueError(f'Unknown adapter type: {adapter_type}')
 
-
-class RedisDistributedLock:
+class redis_distributed_lock:
     """
     Redis-based distributed lock for coordination across multiple processes.
     """
 
-    def __init__(self, redis_client=None, lock_timeout: int = 30):
+    def __init__(self, redis_client=None, lock_timeout: int=30):
         """
         Initialize the distributed lock.
 
@@ -345,9 +309,9 @@ class RedisDistributedLock:
         """
         self.redis = redis_client
         self.lock_timeout = lock_timeout
-        self._local_cache = {}  # Fallback when Redis unavailable
+        self._local_cache = {}
 
-    async def acquire_lock(self, key: str, timeout: Optional[int] = None) -> bool:
+    async def acquire_lock(self, key: str, timeout: Optional[int]=None) -> bool:
         """
         Acquire a distributed lock.
 
@@ -359,29 +323,22 @@ class RedisDistributedLock:
             True if lock acquired, False otherwise
         """
         if not self.redis:
-            # Local fallback
             if key in self._local_cache:
                 return False
             self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
             return True
-
         try:
-            lock_key = f"lock:{key}"
-            expires_in = timeout or self.lock_timeout
-
-            # Use SET with NX and EX for atomic lock acquisition
-            result = await self.redis.set(lock_key, "locked", ex=expires_in, nx=True)
-
+            lock_key: Any = f'lock:{key}'
+            expires_in: Any = timeout or self.lock_timeout
+            result: Any = await self.redis.set(lock_key, 'locked', ex=expires_in, nx=True)
             if result:
-                LOGGER.debug(f"Acquired lock: {key}")
+                LOGGER.debug(f'Acquired lock: {key}')
                 return True
             else:
-                LOGGER.debug(f"Failed to acquire lock: {key} (already held)")
+                LOGGER.debug(f'Failed to acquire lock: {key} (already held)')
                 return False
-
         except Exception as e:
-            LOGGER.error(f"Error acquiring lock {key}: {e}")
-            # Fallback to local cache
+            LOGGER.error(f'Error acquiring lock {key}: {e}')
             if key not in self._local_cache:
                 self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
                 return True
@@ -398,26 +355,21 @@ class RedisDistributedLock:
             True if lock released, False otherwise
         """
         if not self.redis:
-            # Local fallback
             if key in self._local_cache:
                 del self._local_cache[key]
                 return True
             return False
-
         try:
-            lock_key = f"lock:{key}"
-            result = await self.redis.delete(lock_key)
-
+            lock_key: Any = f'lock:{key}'
+            result: Any = await self.redis.delete(lock_key)
             if result:
-                LOGGER.debug(f"Released lock: {key}")
+                LOGGER.debug(f'Released lock: {key}')
                 return True
             else:
-                LOGGER.warning(f"Lock not found for release: {key}")
+                LOGGER.warning(f'Lock not found for release: {key}')
                 return False
-
         except Exception as e:
-            LOGGER.error(f"Error releasing lock {key}: {e}")
-            # Clean up local fallback
+            LOGGER.error(f'Error releasing lock {key}: {e}')
             if key in self._local_cache:
                 del self._local_cache[key]
             return False
@@ -434,20 +386,18 @@ class RedisDistributedLock:
         """
         if not self.redis:
             return key in self._local_cache
-
         try:
-            lock_key = f"lock:{key}"
+            lock_key: Any = f'lock:{key}'
             return await self.redis.exists(lock_key)
         except Exception:
             return key in self._local_cache
 
-
-class RedisHotCache:
+class redis_hot_cache:
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """
 
-    def __init__(self, redis_client=None, default_ttl: int = 3600):
+    def __init__(self, redis_client=None, default_ttl: int=3600):
         """
         Initialize the hot cache.
 
@@ -457,10 +407,10 @@ class RedisHotCache:
         """
         self.redis = redis_client
         self.default_ttl = default_ttl
-        self._local_cache = {}  # Fallback cache
+        self._local_cache = {}
         self._local_cache_times = {}
 
-    async def set_cache(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set_cache(self, key: str, value: Any, ttl: Optional[int]=None) -> bool:
         """
         Set a value in cache.
 
@@ -473,31 +423,24 @@ class RedisHotCache:
             True if set successfully, False otherwise
         """
         try:
-            serialized = json.dumps(value)
+            serialized: Any = json.dumps(value)
         except (TypeError, ValueError) as e:
-            LOGGER.error(f"Cannot serialize cache value for {key}: {e}")
+            LOGGER.error(f'Cannot serialize cache value for {key}: {e}')
             return False
-
         if not self.redis:
-            # Local fallback
             self._local_cache[key] = value
             self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
             return True
-
         try:
-            cache_key = f"cache:{key}"
-            expire_time = ttl or self.default_ttl
-
-            result = await self.redis.setex(cache_key, expire_time, serialized)
-
+            cache_key: Any = f'cache:{key}'
+            expire_time: Any = ttl or self.default_ttl
+            result: Any = await self.redis.setex(cache_key, expire_time, serialized)
             if result:
-                LOGGER.debug(f"Cached value: {key} (TTL: {expire_time}s)")
+                LOGGER.debug(f'Cached value: {key} (TTL: {expire_time}s)')
                 return True
             return False
-
         except Exception as e:
-            LOGGER.error(f"Error caching {key}: {e}")
-            # Fallback to local cache
+            LOGGER.error(f'Error caching {key}: {e}')
             self._local_cache[key] = value
             self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
             return True
@@ -513,33 +456,26 @@ class RedisHotCache:
             Cached value or None if not found
         """
         if not self.redis:
-            # Local fallback
             if key in self._local_cache:
-                # Check TTL
                 if time.time() < self._local_cache_times.get(key, 0):
                     return self._local_cache[key]
                 else:
-                    # Expired
                     del self._local_cache[key]
                     if key in self._local_cache_times:
                         del self._local_cache_times[key]
             return None
-
         try:
-            cache_key = f"cache:{key}"
-            serialized = await self.redis.get(cache_key)
-
+            cache_key: Any = f'cache:{key}'
+            serialized: Any = await self.redis.get(cache_key)
             if serialized:
-                value = json.loads(serialized)
-                LOGGER.debug(f"Cache hit: {key}")
+                value: Any = json.loads(serialized)
+                LOGGER.debug(f'Cache hit: {key}')
                 return value
             else:
-                LOGGER.debug(f"Cache miss: {key}")
+                LOGGER.debug(f'Cache miss: {key}')
                 return None
-
         except Exception as e:
-            LOGGER.error(f"Error getting cache {key}: {e}")
-            # Try local fallback
+            LOGGER.error(f'Error getting cache {key}: {e}')
             if key in self._local_cache:
                 if time.time() < self._local_cache_times.get(key, 0):
                     return self._local_cache[key]
@@ -556,56 +492,44 @@ class RedisHotCache:
             True if deleted, False otherwise
         """
         if not self.redis:
-            # Local fallback
             if key in self._local_cache:
                 del self._local_cache[key]
             if key in self._local_cache_times:
                 del self._local_cache_times[key]
             return True
-
         try:
-            cache_key = f"cache:{key}"
-            result = await self.redis.delete(cache_key)
-
+            cache_key: Any = f'cache:{key}'
+            result: Any = await self.redis.delete(cache_key)
             if result:
-                LOGGER.debug(f"Deleted cache: {key}")
+                LOGGER.debug(f'Deleted cache: {key}')
                 return True
             return False
-
         except Exception as e:
-            LOGGER.error(f"Error deleting cache {key}: {e}")
-            # Clean up local fallback
+            LOGGER.error(f'Error deleting cache {key}: {e}')
             if key in self._local_cache:
                 del self._local_cache[key]
             if key in self._local_cache_times:
                 del self._local_cache_times[key]
             return False
 
-    async def clear_expired_local(self):
+    async def clear_expired_local(self) -> Any:
         """Clear expired entries from local fallback cache."""
-        now = time.time()
-        expired_keys = []
-
+        now: Any = time.time()
+        expired_keys: Any = []
         for key, expire_time in self._local_cache_times.items():
             if now >= expire_time:
                 expired_keys.append(key)
-
         for key in expired_keys:
             if key in self._local_cache:
                 del self._local_cache[key]
             del self._local_cache_times[key]
-
         if expired_keys:
-            LOGGER.debug(f"Cleared {len(expired_keys)} expired local cache entries")
-
-
-# Global Redis instances
+            LOGGER.debug(f'Cleared {len(expired_keys)} expired local cache entries')
 _redis_client = None
 _distributed_lock: Optional[RedisDistributedLock] = None
 _hot_cache: Optional[RedisHotCache] = None
 
-
-async def initialize_redis(redis_url: str = "redis://localhost:6379"):
+async def initialize_redis(redis_url: str='redis://localhost:6379') -> Any:
     """
     Initialize Redis client and distributed systems.
 
@@ -613,30 +537,21 @@ async def initialize_redis(redis_url: str = "redis://localhost:6379"):
         redis_url: Redis connection URL
     """
     global _redis_client, _distributed_lock, _hot_cache
-
     try:
         import redis.asyncio as redis
-
         _redis_client = redis.from_url(redis_url, decode_responses=True)
-
-        # Test connection
         await _redis_client.ping()
-
         _distributed_lock = RedisDistributedLock(_redis_client)
         _hot_cache = RedisHotCache(_redis_client)
-
-        LOGGER.info(f"Redis initialized at {redis_url}")
-
+        LOGGER.info(f'Redis initialized at {redis_url}')
     except ImportError:
-        LOGGER.warning("redis not installed - using local fallback only")
+        LOGGER.warning('redis not installed - using local fallback only')
         _distributed_lock = RedisDistributedLock()
         _hot_cache = RedisHotCache()
-
     except Exception as e:
-        LOGGER.error(f"Failed to connect to Redis: {e} - using local fallback")
+        LOGGER.error(f'Failed to connect to Redis: {e} - using local fallback')
         _distributed_lock = RedisDistributedLock()
         _hot_cache = RedisHotCache()
-
 
 def get_distributed_lock() -> RedisDistributedLock:
     """Get the distributed lock instance."""
@@ -645,7 +560,6 @@ def get_distributed_lock() -> RedisDistributedLock:
         _distributed_lock = RedisDistributedLock()
     return _distributed_lock
 
-
 def get_hot_cache() -> RedisHotCache:
     """Get the hot cache instance."""
     global _hot_cache
@@ -653,33 +567,27 @@ def get_hot_cache() -> RedisHotCache:
         _hot_cache = RedisHotCache()
     return _hot_cache
 
-
-# Convenience functions
-async def acquire_lock(key: str, timeout: Optional[int] = None) -> bool:
+async def acquire_lock(key: str, timeout: Optional[int]=None) -> bool:
     """Acquire a distributed lock."""
-    lock = get_distributed_lock()
+    lock: Any = get_distributed_lock()
     return await lock.acquire_lock(key, timeout)
-
 
 async def release_lock(key: str) -> bool:
     """Release a distributed lock."""
-    lock = get_distributed_lock()
+    lock: Any = get_distributed_lock()
     return await lock.release_lock(key)
 
-
-async def set_cache(key: str, value: Any, ttl: Optional[int] = None) -> bool:
+async def set_cache(key: str, value: Any, ttl: Optional[int]=None) -> bool:
     """Set a value in cache."""
-    cache = get_hot_cache()
+    cache: Any = get_hot_cache()
     return await cache.set_cache(key, value, ttl)
-
 
 async def get_cache(key: str) -> Optional[Any]:
     """Get a value from cache."""
-    cache = get_hot_cache()
+    cache: Any = get_hot_cache()
     return await cache.get_cache(key)
 
-
-class SignalLedger:
+class signal_ledger:
     """
     Simple ledger that logs ExecutionResults to a permanent log file.
     """
@@ -694,7 +602,7 @@ class SignalLedger:
         """
         self.storage = storage_adapter
         self.session_id = session_id
-        self.ledger_key = f"signal_ledger_{session_id}.jsonl"
+        self.ledger_key = f'signal_ledger_{session_id}.jsonl'
 
     async def append_result(self, result: Any) -> None:
         """
@@ -704,38 +612,21 @@ class SignalLedger:
             result: ExecutionResult to log
         """
         from datetime import datetime
-
-        # Convert result to dictionary
         if hasattr(result, '__dict__'):
-            result_dict = result.__dict__
+            result_dict: Any = result.__dict__
         else:
-            result_dict = result
-
-        # Add timestamp
+            result_dict: Any = result
         result_dict['timestamp'] = datetime.utcnow().isoformat()
         result_dict['session_id'] = self.session_id
-
-        # Convert to JSON line
-        json_line = json.dumps(result_dict) + '\n'
-
-        # Read existing ledger
+        json_line: Any = json.dumps(result_dict) + '\n'
         try:
-            existing_data = await self.storage.read_blob(self.ledger_key)
-            existing_lines = existing_data.decode('utf-8')
+            existing_data: Any = await self.storage.read_blob(self.ledger_key)
+            existing_lines: Any = existing_data.decode('utf-8')
         except FileNotFoundError:
-            existing_lines = ''
-
-        # Append new entry
-        updated_data = existing_lines + json_line
-
-        # Write back to storage
-        await self.storage.write_blob(
-            self.ledger_key,
-            updated_data.encode('utf-8'),
-            metadata={'type': 'signal_ledger', 'session_id': self.session_id}
-        )
-
-        LOGGER.debug(f"Appended result to signal ledger: {self.ledger_key}")
+            existing_lines: Any = ''
+        updated_data: Any = existing_lines + json_line
+        await self.storage.write_blob(self.ledger_key, updated_data.encode('utf-8'), metadata={'type': 'signal_ledger', 'session_id': self.session_id})
+        LOGGER.debug(f'Appended result to signal ledger: {self.ledger_key}')
 
     async def get_results(self) -> list:
         """
@@ -745,18 +636,17 @@ class SignalLedger:
             List of result dictionaries
         """
         try:
-            data = await self.storage.read_blob(self.ledger_key)
-            lines = data.decode('utf-8').strip().split('\n')
-            results = []
+            data: Any = await self.storage.read_blob(self.ledger_key)
+            lines: Any = data.decode('utf-8').strip().split('\n')
+            results: Any = []
             for line in lines:
                 if line.strip():
                     results.append(json.loads(line))
-
             return results
         except FileNotFoundError:
             return []
 
-    async def get_phase_summary(self, phase_name: Optional[str] = None) -> Dict[str, Any]:
+    async def get_phase_summary(self, phase_name: Optional[str]=None) -> Dict[str, Any]:
         """
         Get a summary of signals from a specific phase or the most recent phase.
 
@@ -766,69 +656,37 @@ class SignalLedger:
         Returns:
             Dictionary with phase summary including signals, results, and recommendations
         """
-        results = await self.get_results()
-
+        results: Any = await self.get_results()
         if not results:
             return {}
-
-        # Filter results by phase if specified
         if phase_name:
-            phase_results = [r for r in results if r.get('phase') == phase_name]
+            phase_results: Any = [r for r in results if r.get('phase') == phase_name]
         else:
-            # Get most recent phase
-            phase_results = []
+            phase_results: Any = []
             if results:
-                # Sort by timestamp and get the latest phase
-                latest_result = max(results, key=lambda x: x.get('timestamp', ''))
-                latest_phase = latest_result.get('phase')
+                latest_result: Any = max(results, key=lambda x: x.get('timestamp', ''))
+                latest_phase: Any = latest_result.get('phase')
                 if latest_phase:
-                    phase_results = [r for r in results if r.get('phase') == latest_phase]
-
+                    phase_results: Any = [r for r in results if r.get('phase') == latest_phase]
         if not phase_results:
             return {}
-
-        # Extract signals and key information
-        summary = {
-            'phase': phase_results[0].get('phase', 'unknown'),
-            'timestamp': phase_results[0].get('timestamp'),
-            'total_results': len(phase_results),
-            'passed_count': sum(1 for r in phase_results if r.get('passed', False)),
-            'failed_count': sum(1 for r in phase_results if not r.get('passed', False)),
-            'signals': [],
-            'failed_agents': [],
-            'recommendations': []
-        }
-
-        # Extract detailed information
+        summary: Any = {'phase': phase_results[0].get('phase', 'unknown'), 'timestamp': phase_results[0].get('timestamp'), 'total_results': len(phase_results), 'passed_count': sum((1 for r in phase_results if r.get('passed', False))), 'failed_count': sum((1 for r in phase_results if not r.get('passed', False))), 'signals': [], 'failed_agents': [], 'recommendations': []}
         for result in phase_results:
-            # Extract signals from the result
             if 'result' in result and isinstance(result['result'], dict):
-                signals = result['result'].get('signals', [])
+                signals: Any = result['result'].get('signals', [])
                 if signals:
                     summary['signals'].extend(signals)
-
-            # Track failed agents
             if not result.get('passed', False):
-                agent_name = result.get('agent', 'unknown')
-                summary['failed_agents'].append({
-                    'agent': agent_name,
-                    'error': result.get('error', 'Unknown error'),
-                    'details': result.get('details', '')
-                })
-
-        # Generate recommendations based on failures
+                agent_name: Any = result.get('agent', 'unknown')
+                summary['failed_agents'].append({'agent': agent_name, 'error': result.get('error', 'Unknown error'), 'details': result.get('details', '')})
         if summary['failed_count'] > 0:
             summary['recommendations'].append(f"Phase {summary['phase']} had {summary['failed_count']} failures")
-            summary['recommendations'].append("Consider re-running failed agents before proceeding")
-
-        # Add specific recommendations for critical phases
+            summary['recommendations'].append('Consider re-running failed agents before proceeding')
         if summary['phase'] == 'integrity_seq' and summary['failed_count'] > 0:
-            summary['recommendations'].append("CRITICAL: Integrity failures must be resolved before continuing")
-
+            summary['recommendations'].append('CRITICAL: Integrity failures must be resolved before continuing')
         return summary
 
-
-class HotBrainCache:
+class hot_brain_cache:
     """
     Redis-based hot brain cache for distributed coordination.
 
@@ -837,7 +695,7 @@ class HotBrainCache:
     when Redis is unavailable.
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: Optional[str]=None):
         """
         Initialize hot brain cache.
 
@@ -846,21 +704,19 @@ class HotBrainCache:
         """
         self.redis_url = redis_url
         self.redis_client = None
-        self._local_cache = {}  # Fallback local cache
-        self._local_locks = {}  # Fallback local locks
-
-        # Try to connect to Redis
+        self._local_cache = {}
+        self._local_locks = {}
         if redis_url:
             try:
                 import redis.asyncio as redis
                 self.redis_client = redis.from_url(redis_url)
-                LOGGER.info("Hot brain connected to Redis")
+                LOGGER.info('Hot brain connected to Redis')
             except ImportError:
-                LOGGER.warning("redis not installed - using local cache only")
+                LOGGER.warning('redis not installed - using local cache only')
             except Exception as e:
-                LOGGER.warning(f"Redis connection failed: {e} - using local cache only")
+                LOGGER.warning(f'Redis connection failed: {e} - using local cache only')
 
-    async def acquire_lock(self, key: str, timeout: float = 30.0) -> bool:
+    async def acquire_lock(self, key: str, timeout: float=30.0) -> bool:
         """
         Acquire a distributed lock.
 
@@ -873,22 +729,13 @@ class HotBrainCache:
         """
         if self.redis_client:
             try:
-                # Redis SET with NX and EX options for atomic lock
-                lock_key = f"lock:{key}"
-                result = await self.redis_client.set(
-                    lock_key,
-                    "locked",
-                    ex=timeout,
-                    nx=True
-                )
+                lock_key: Any = f'lock:{key}'
+                result: Any = await self.redis_client.set(lock_key, 'locked', ex=timeout, nx=True)
                 return result is not None
             except Exception as e:
-                LOGGER.error(f"Redis lock acquisition failed: {e}")
-
-        # Fallback to local lock
+                LOGGER.error(f'Redis lock acquisition failed: {e}')
         if key in self._local_locks:
             return False
-
         self._local_locks[key] = time.time() + timeout
         return True
 
@@ -904,36 +751,30 @@ class HotBrainCache:
         """
         if self.redis_client:
             try:
-                lock_key = f"lock:{key}"
-                result = await self.redis_client.delete(lock_key)
+                lock_key: Any = f'lock:{key}'
+                result: Any = await self.redis_client.delete(lock_key)
                 return result > 0
             except Exception as e:
-                LOGGER.error(f"Redis lock release failed: {e}")
-
-        # Fallback to local lock
+                LOGGER.error(f'Redis lock release failed: {e}')
         if key in self._local_locks:
             del self._local_locks[key]
             return True
-
         return False
 
     async def get(self, key: str) -> Optional[Any]:
         """Get value from cache."""
         if self.redis_client:
             try:
-                value = await self.redis_client.get(key)
+                value: Any = await self.redis_client.get(key)
                 if value:
                     return json.loads(value)
             except Exception as e:
-                LOGGER.error(f"Redis get failed: {e}")
-
-        # Fallback to local cache
+                LOGGER.error(f'Redis get failed: {e}')
         return self._local_cache.get(key)
 
-    async def set(self, key: str, value: Any, ttl: Optional[float] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: Optional[float]=None) -> bool:
         """Set value in cache."""
-        serialized = json.dumps(value)
-
+        serialized: Any = json.dumps(value)
         if self.redis_client:
             try:
                 if ttl:
@@ -942,9 +783,7 @@ class HotBrainCache:
                     await self.redis_client.set(key, serialized)
                 return True
             except Exception as e:
-                LOGGER.error(f"Redis set failed: {e}")
-
-        # Fallback to local cache
+                LOGGER.error(f'Redis set failed: {e}')
         self._local_cache[key] = value
         return True
 
@@ -954,20 +793,14 @@ class HotBrainCache:
             try:
                 await self.redis_client.delete(key)
             except Exception as e:
-                LOGGER.error(f"Redis delete failed: {e}")
-
-        # Fallback to local cache
+                LOGGER.error(f'Redis delete failed: {e}')
         if key in self._local_cache:
             del self._local_cache[key]
             return True
         return False
-
-
-# Global hot brain instance
 _hot_brain: Optional[HotBrainCache] = None
 
-
-def get_hot_brain(redis_url: Optional[str] = None) -> HotBrainCache:
+def get_hot_brain(redis_url: Optional[str]=None) -> HotBrainCache:
     """Get or create the global hot brain cache instance."""
     global _hot_brain
     if _hot_brain is None:

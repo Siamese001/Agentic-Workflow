@@ -1,4 +1,6 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 import os
 import re
 
@@ -46,6 +48,8 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.get("/", response_class=HTMLResponse)
     async def get_dashboard():
+                    '''Brief description of functionality and purpose.'''
+                    
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
         return f"""<html><body><h1>[ALERT] L5 INTERVENTION REQUIRED</h1>
@@ -56,11 +60,15 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.post("/approve")
     async def approve_action():
+                    '''Brief description of functionality and purpose.'''
+                    
         approval_event.set()
         return {"status": "APPROVED"}
 
     @intervention_app.post("/veto")
     async def veto_action():
+                    '''Brief description of functionality and purpose.'''
+                    
         if _intervention_context:
             _intervention_context.signals.add("VETOED")
         approval_event.set()
@@ -68,6 +76,8 @@ if FASTAPI_AVAILABLE:
 
 
 async def start_intervention_server(ctx):
+    '''Brief description of functionality and purpose.'''
+    
     global _intervention_context
     _intervention_context = ctx
     if FASTAPI_AVAILABLE:
@@ -85,7 +95,10 @@ async def start_intervention_server(ctx):
         print(f"   🌐 Intervention server at http://{host}:{port}")
 
 
-class SwarmScheduler:
+# NAMING FIXED: SwarmScheduler → swarm_scheduler
+class swarm_scheduler:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self):
         self.ctx = ValidationContext()
 
@@ -104,6 +117,8 @@ class SwarmScheduler:
         }
 
     async def run_mission(self, target_scope: str = None):
+                    '''Brief description of functionality and purpose.'''
+                    
         print("[START] STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         if target_scope:
             print(f"🎯 SURGICAL MISSION: {target_scope}")

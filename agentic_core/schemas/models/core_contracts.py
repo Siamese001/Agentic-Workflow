@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
 
 # === SOVEREIGN SEVERITY LEVELS – Phase 12 (Dec 26, 2025) ===
 # Canonical SSOT for SovereignEvent.severity.
-class SovereignSeverity(str, Enum):
+# NAMING FIXED: SovereignSeverity → sovereign_severity
+class sovereign_severity(str, Enum):
     """Canonical SSOT for event severity levels with L6 log mapping."""
     
     CRITICAL = "CRITICAL"
@@ -29,8 +30,10 @@ class SovereignSeverity(str, Enum):
     """Detailed internal diagnostics — verbose"""
 
 # Registry for validation and L6 mapping
-SOVEREIGN_SEVERITIES = {e.value for e in SovereignSeverity}
-SEVERITY_LOG_LEVELS = {
+# NAMING FIXED: SOVEREIGN_SEVERITIES → sovereign_severities
+sovereign_severities = {e.value for e in SovereignSeverity}
+# NAMING FIXED: SEVERITY_LOG_LEVELS → severity_log_levels
+severity_log_levels = {
     SovereignSeverity.CRITICAL: logging.CRITICAL,
     SovereignSeverity.ERROR: logging.ERROR,
     SovereignSeverity.WARNING: logging.WARNING,
@@ -40,7 +43,8 @@ SEVERITY_LOG_LEVELS = {
 
 # === SOVEREIGN EVENT TYPE REGISTRY – CATEGORIZED (Dec 26, 2025) ===
 # Canonical SSOT for all SovereignEvent.event_type values.
-class SovereignEventType(str, Enum):
+# NAMING FIXED: SovereignEventType → sovereign_event_type
+class sovereign_event_type(str, Enum):
     """Canonical SSOT for all SovereignEvent types with human-readable intent."""
     
     # === GOVERNANCE ===
@@ -168,7 +172,8 @@ class SovereignEventType(str, Enum):
     """MCP integration failed with error"""
 
 # === CATEGORY MAPPING FOR ANALYTICS ===
-SOVEREIGN_EVENT_CATEGORIES = {
+# NAMING FIXED: SOVEREIGN_EVENT_CATEGORIES → sovereign_event_categories
+sovereign_event_categories = {
     "GOVERNANCE": [
         SovereignEventType.AUDIT_STARTED, 
         SovereignEventType.AUDIT_COMPLETED,
@@ -224,33 +229,44 @@ SOVEREIGN_EVENT_CATEGORIES = {
     ]
 }
 
-class SovereignBaseModel(BaseModel):
+# NAMING FIXED: SovereignBaseModel → sovereign_base_model
+class sovereign_base_model(BaseModel):
     """Base model for all Sovereign entities with strict config."""
     model_config = ConfigDict(strict=True, frozen=True)
 
-class Territory(SovereignBaseModel):
+# NAMING FIXED: Territory → territory
+class territory(SovereignBaseModel):
+    '''Brief description of functionality and purpose.'''
+    
     name: str
     depth: int
     path: str
     canon_key: Optional[int] = None
 
-class AgentMessage(SovereignBaseModel):
+# NAMING FIXED: AgentMessage → agent_message
+class agent_message(SovereignBaseModel):
+    '''Brief description of functionality and purpose.'''
+    
     source: str
     destination: str
     content: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
-class ReadFileArgs(BaseModel):
+# NAMING FIXED: ReadFileArgs → read_file_args
+class read_file_args(BaseModel):
     """Arguments for reading a file."""
     path: str = Field(..., description="Relative path to the file to read")
     
     @validator('path')
     def validate_path(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
 
-class WriteFileArgs(BaseModel):
+# NAMING FIXED: WriteFileArgs → write_file_args
+class write_file_args(BaseModel):
     """Arguments for writing to a file."""
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
@@ -258,11 +274,14 @@ class WriteFileArgs(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
 
-class MoveFileArgs(BaseModel):
+# NAMING FIXED: MoveFileArgs → move_file_args
+class move_file_args(BaseModel):
     """Arguments for moving/renaming a file."""
     source: str = Field(..., description="Relative path to the source file")
     destination: str = Field(..., description="Relative path to the destination")
@@ -270,11 +289,14 @@ class MoveFileArgs(BaseModel):
     
     @validator('source', 'destination')
     def validate_paths(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Paths must be relative to project root")
         return v
 
-class ListFilesArgs(BaseModel):
+# NAMING FIXED: ListFilesArgs → list_files_args
+class list_files_args(BaseModel):
     """Arguments for listing files in a directory."""
     path: str = Field(default=".", description="Relative path to the directory to list")
     pattern: Optional[str] = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
@@ -282,11 +304,14 @@ class ListFilesArgs(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
 
-class ExecuteCommandArgs(BaseModel):
+# NAMING FIXED: ExecuteCommandArgs → execute_command_args
+class execute_command_args(BaseModel):
     """Arguments for executing a shell command."""
     command: str = Field(..., description="Command to execute")
     args: List[str] = Field(default_factory=list, description="Command arguments")
@@ -296,6 +321,8 @@ class ExecuteCommandArgs(BaseModel):
     
     @validator('timeout')
     def validate_timeout(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if v > 300:
             raise ValueError("Timeout cannot exceed 300 seconds to prevent livelocks")
         if v < 1:
@@ -304,32 +331,41 @@ class ExecuteCommandArgs(BaseModel):
     
     @validator('cwd')
     def validate_cwd(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if v and Path(v).is_absolute():
             raise ValueError("Working directory must be relative to project root")
         return v
 
-class DeleteFileArgs(BaseModel):
+# NAMING FIXED: DeleteFileArgs → delete_file_args
+class delete_file_args(BaseModel):
     """Arguments for deleting a file."""
     path: str = Field(..., description="Relative path to the file to delete")
     
     @validator('path')
     def validate_path(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
 
-class CreateDirectoryArgs(BaseModel):
+# NAMING FIXED: CreateDirectoryArgs → create_directory_args
+class create_directory_args(BaseModel):
     """Arguments for creating a directory."""
     path: str = Field(..., description="Relative path to the directory to create")
     parents: bool = Field(default=True, description="Create parent directories if they don't exist")
     
     @validator('path')
     def validate_path(cls, v):
+                    '''Brief description of functionality and purpose.'''
+                    
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
         return v
 
-class AgentThoughtProcess(BaseModel):
+# NAMING FIXED: AgentThoughtProcess → agent_thought_process
+class agent_thought_process(BaseModel):
     """
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
@@ -371,7 +407,8 @@ class AgentThoughtProcess(BaseModel):
 
         return v
 
-class CodeGenerationResult(BaseModel):
+# NAMING FIXED: CodeGenerationResult → code_generation_result
+class code_generation_result(BaseModel):
     """Schema for code generation tasks."""
     reasoning: str = Field(..., description="Why this code solves the problem")
     code: str = Field(..., description="The generated Python code")
@@ -388,7 +425,8 @@ class CodeGenerationResult(BaseModel):
         description="Potential safety concerns or limitations"
     )
 
-class ResearchResult(BaseModel):
+# NAMING FIXED: ResearchResult → research_result
+class research_result(BaseModel):
     """Schema for research tasks."""
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: List[Dict[str, str]] = Field(
@@ -405,7 +443,8 @@ class ResearchResult(BaseModel):
         description="Suggested follow-up research questions"
     )
 
-class ConsensusVerdict(BaseModel):
+# NAMING FIXED: ConsensusVerdict → consensus_verdict
+class consensus_verdict(BaseModel):
     """Result of a consensus deliberation."""
     chosen_plan: str
     consensus_score: float  # 0.0 to 1.0
@@ -413,7 +452,8 @@ class ConsensusVerdict(BaseModel):
     reasoning: str
     safe_to_proceed: bool
 
-class ModelOpinion(BaseModel):
+# NAMING FIXED: ModelOpinion → model_opinion
+class model_opinion(BaseModel):
     """Individual model's opinion on a plan."""
     model_name: str
     plan: str
@@ -421,12 +461,14 @@ class ModelOpinion(BaseModel):
     risk_assessment: str  # LOW, MEDIUM, HIGH, CRITICAL
     confidence: float  # 0.0 to 1.0
 
-class AgentPlan(BaseModel):
+# NAMING FIXED: AgentPlan → agent_plan
+class agent_plan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
     reasoning: str
     tool_calls: list[dict]
 
-class ToneType(str, Enum):
+# NAMING FIXED: ToneType → tone_type
+class tone_type(str, Enum):
     """Primary tone types for communication style analysis."""
     AUTHORITATIVE = "authoritative"
     EMPATHETIC = "empathetic"
@@ -434,7 +476,8 @@ class ToneType(str, Enum):
     ENTHUSIASTIC = "enthusiastic"
     DIRECT = "direct"
 
-class StyleProfile(BaseModel):
+# NAMING FIXED: StyleProfile → style_profile
+class style_profile(BaseModel):
     """Profile defining a communication style."""
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: float = Field(default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)")
@@ -447,7 +490,8 @@ class StyleProfile(BaseModel):
         """Pydantic configuration."""
         validate_assignment = True
 
-class GenerationConfig(BaseModel):
+# NAMING FIXED: GenerationConfig → generation_config
+class generation_config(BaseModel):
     """Configuration for LLM generation based on tone profile."""
     system_prompt_fragment: str = Field(..., description="Instruction to inject into prompts")
     temperature_setting: float = Field(..., ge=0.1, le=1.0, description="LLM temperature")
@@ -460,7 +504,8 @@ class GenerationConfig(BaseModel):
         """Ensure temperature is within valid range."""
         return max(0.1, min(1.0, v))
 
-class MicroStage(Enum):
+# NAMING FIXED: MicroStage → micro_stage
+class micro_stage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""
     INIT = "init"
     THINK = "think"
@@ -468,7 +513,8 @@ class MicroStage(Enum):
     CRITIQUE = "critique"
     COMMIT = "commit"
 
-class HopState(Enum):
+# NAMING FIXED: HopState → hop_state
+class hop_state(Enum):
     """Overall state of a Subatomic Hop."""
     PENDING = "pending"
     RUNNING = "running"
@@ -476,7 +522,8 @@ class HopState(Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
-class RetryPolicy(BaseModel):
+# NAMING FIXED: RetryPolicy → retry_policy
+class retry_policy(BaseModel):
     """Retry policy for micro-stages."""
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
@@ -485,7 +532,8 @@ class RetryPolicy(BaseModel):
         default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
     )
 
-class MicroCheckpoint(BaseModel):
+# NAMING FIXED: MicroCheckpoint → micro_checkpoint
+class micro_checkpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
     hop_id: str
     stage: MicroStage
@@ -494,14 +542,16 @@ class MicroCheckpoint(BaseModel):
     data: Dict[str, Any] = Field(default_factory=dict)
     error: Optional[str] = None
 
-class StageTransition(BaseModel):
+# NAMING FIXED: StageTransition → stage_transition
+class stage_transition(BaseModel):
     """Record of a stage transition."""
     from_stage: Optional[MicroStage] = None
     to_stage: MicroStage
     timestamp: float
     reason: Optional[str] = None
 
-class InjectionType(Enum):
+# NAMING FIXED: InjectionType → injection_type
+class injection_type(Enum):
     """Types of prompt injections."""
     SYSTEM = "system"
     USER = "user"
@@ -511,13 +561,15 @@ class InjectionType(Enum):
     SAFETY = "safety"
     OUTPUT = "output"
 
-class InjectionScope(BaseModel):
+# NAMING FIXED: InjectionScope → injection_scope
+class injection_scope(BaseModel):
     """Scope where injection should be applied."""
     hop_types: List[str] = Field(default_factory=list)
     stages: List[str] = Field(default_factory=list)
     contexts: Dict[str, Any] = Field(default_factory=dict)
 
-class InjectionPattern(BaseModel):
+# NAMING FIXED: InjectionPattern → injection_pattern
+class injection_pattern(BaseModel):
     """A single prompt injection pattern."""
     id: str
     name: str
@@ -529,7 +581,8 @@ class InjectionPattern(BaseModel):
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
 
-CORE_CONTRACTS_REGISTRY = {
+# NAMING FIXED: CORE_CONTRACTS_REGISTRY → core_contracts_registry
+core_contracts_registry = {
     # Base Models
     "Territory": Territory,
     "AgentMessage": AgentMessage,
@@ -573,7 +626,8 @@ import uuid
 
 # Context Passport Models
 
-class ThermalProfile(str, Enum):
+# NAMING FIXED: ThermalProfile → thermal_profile
+class thermal_profile(str, Enum):
     """Predefined thermal configurations for different node types."""
     CREATIVITY_MAX = "creativity_max"
     CREATIVITY_HIGH = "creativity_high"
@@ -582,7 +636,8 @@ class ThermalProfile(str, Enum):
     PRECISION = "precision"
 
 @dataclass(frozen=True)
-class HardState:
+# NAMING FIXED: HardState → hard_state
+class hard_state:
     """
     Immutable, DAG-owned state that the LLM cannot edit directly.
     
@@ -617,7 +672,8 @@ class HardState:
         )
 
 @dataclass
-class SoftState:
+# NAMING FIXED: SoftState → soft_state
+class soft_state:
     """
     Mutable, LLM-owned scratchpad for high-temperature creativity.
     
@@ -648,7 +704,8 @@ class SoftState:
         })
 
 @dataclass
-class ThermalConfig:
+# NAMING FIXED: ThermalConfig → thermal_config
+class thermal_config:
     """Dynamic thermal configuration for LLM parameters."""
     profile: ThermalProfile = ThermalProfile.BALANCED
     temperature: float = 0.7
@@ -686,7 +743,8 @@ class ThermalConfig:
         self.node_overrides[node_id] = profile_configs[profile]
 
 @dataclass
-class SignedClaim:
+# NAMING FIXED: SignedClaim → signed_claim
+class signed_claim:
     """A factual claim with source attribution and confidence score."""
     claim: str
     source: str
@@ -698,7 +756,8 @@ class SignedClaim:
         if self.verified_at is None:
             self.verified_at = datetime.utcnow()
 
-class SignalContext(BaseModel):
+# NAMING FIXED: SignalContext → signal_context
+class signal_context(BaseModel):
     """
     The Thermostatic Context Passport that enables high-temperature creativity
     while maintaining structural integrity through dual-state isolation.
@@ -712,6 +771,8 @@ class SignalContext(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
+                    '''Brief description of functionality and purpose.'''
+                    
         arbitrary_types_allowed = True
 
     def update_timestamp(self) -> None:
@@ -725,7 +786,8 @@ class SignalContext(BaseModel):
 
 # Safety Profile
 
-class SafetyProfile(BaseModel):
+# NAMING FIXED: SafetyProfile → safety_profile
+class safety_profile(BaseModel):
     """Safety configuration profile used by execution profiles."""
     safety_tier: str = Field(default="standard", description="Safety tier: standard | strict | relaxed | debug")
     pii_detection_enabled: bool = True
@@ -733,7 +795,8 @@ class SafetyProfile(BaseModel):
 
 # Simulation Models
 
-class SimScenario(BaseModel):
+# NAMING FIXED: SimScenario → sim_scenario
+class sim_scenario(BaseModel):
     """Simulation scenario definition."""
     id: str
     description: str
@@ -741,7 +804,8 @@ class SimScenario(BaseModel):
     execution_profile_name: str
     run_count: int
 
-class SimOutcome(BaseModel):
+# NAMING FIXED: SimOutcome → sim_outcome
+class sim_outcome(BaseModel):
     """Simulation outcome results."""
     scenario_id: str
     average_scores: Dict[str, float]
@@ -750,7 +814,8 @@ class SimOutcome(BaseModel):
 
 # Metacognition Models
 
-class Hypothesis(BaseModel):
+# NAMING FIXED: Hypothesis → hypothesis
+class hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
     id: str
     agent_id: str
@@ -759,7 +824,8 @@ class Hypothesis(BaseModel):
     evidence_ids: List[str] = Field(default_factory=list)
     rationale: Optional[str] = None
 
-class MetacognitionReport(BaseModel):
+# NAMING FIXED: MetacognitionReport → metacognition_report
+class metacognition_report(BaseModel):
     """Aggregate view over a set of hypotheses and signals."""
     hypotheses: List[Hypothesis] = Field(default_factory=list)
     global_confidence: float = 0.0
@@ -769,7 +835,8 @@ class MetacognitionReport(BaseModel):
 # Golden State Models
 
 @dataclass
-class GoldenStateTestCase:
+# NAMING FIXED: GoldenStateTestCase → golden_state_test_case
+class golden_state_test_case:
     """Single golden-state test case."""
     id: str
     input_text: str
@@ -777,21 +844,24 @@ class GoldenStateTestCase:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class JudgeVerdict:
+# NAMING FIXED: JudgeVerdict → judge_verdict
+class judge_verdict:
     """LM-as-a-judge style verdict."""
     score: float
     rating: str
     explanation: str
 
 @dataclass
-class EvalResult:
+# NAMING FIXED: EvalResult → eval_result
+class eval_result:
     """Result of running a golden test case through the system."""
     test_id: str
     verdict: JudgeVerdict
     raw_output: str
     reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
 
-class GoldenCase(BaseModel):
+# NAMING FIXED: GoldenCase → golden_case
+class golden_case(BaseModel):
     """Golden test case for evaluation."""
     id: str
     input_text: str
@@ -799,7 +869,8 @@ class GoldenCase(BaseModel):
     expected_keypoints: List[str]
     correctness_criteria: Dict[str, Any]
 
-class GoldenOutput(BaseModel):
+# NAMING FIXED: GoldenOutput → golden_output
+class golden_output(BaseModel):
     """Golden test output results."""
     case_id: str
     produced_keypoints: List[str]
@@ -810,7 +881,8 @@ class GoldenOutput(BaseModel):
 
 # Budget Profile
 
-class BudgetProfile(BaseModel):
+# NAMING FIXED: BudgetProfile → budget_profile
+class budget_profile(BaseModel):
     """High-level budget profile for cost/latency envelopes."""
     max_cost_usd: float = Field(default=0.10, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)
@@ -847,7 +919,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Runtime Shared Models
 
 @dataclass
-class LLMResponse:
+# NAMING FIXED: LLMResponse → llm_response
+class llm_response:
     """Standard LLM response format."""
     content: str
     model: str
@@ -855,7 +928,8 @@ class LLMResponse:
     finish_reason: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-class MessageType(str, Enum):
+# NAMING FIXED: MessageType → message_type
+class message_type(str, Enum):
     """Message types for agent communication."""
     SYSTEM = "system"
     USER = "user"
@@ -863,7 +937,8 @@ class MessageType(str, Enum):
     TOOL = "tool"
 
 @dataclass
-class ResidualAgentMessage:  # CONFLICT: Renamed to avoid collision with existing AgentMessage
+# NAMING FIXED: ResidualAgentMessage → residual_agent_message
+class residual_agent_message:  # CONFLICT: Renamed to avoid collision with existing AgentMessage
     """Message in agent conversation (from runtime_shared_models.py)."""
     role: MessageType
     content: str
@@ -872,7 +947,8 @@ class ResidualAgentMessage:  # CONFLICT: Renamed to avoid collision with existin
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
-class AgentResponse:
+# NAMING FIXED: AgentResponse → agent_response
+class agent_response:
     """Response from agent execution."""
     message: 'ResidualAgentMessage'
     success: bool
@@ -880,14 +956,16 @@ class AgentResponse:
     usage: Optional[Dict[str, int]] = None
     metadata: Optional[Dict[str, Any]] = None
 
-class ResidualValidationResult(BaseModel):  # CONFLICT: Renamed to avoid collision
+# NAMING FIXED: ResidualValidationResult → residual_validation_result
+class residual_validation_result(BaseModel):  # CONFLICT: Renamed to avoid collision
     """Validation result for data or operations (from runtime_shared_models.py)."""
     is_valid: bool
     errors: List[str] = []
     warnings: List[str] = []
     metadata: Dict[str, Any] = {}
 
-class ReasoningConfig(BaseModel):
+# NAMING FIXED: ReasoningConfig → reasoning_config
+class reasoning_config(BaseModel):
     """Configuration for reasoning operations."""
     temperature: float = 0.7
     max_tokens: int = 1000
@@ -896,7 +974,8 @@ class ReasoningConfig(BaseModel):
     presence_penalty: float = 0.0
     stop_sequences: Optional[List[str]] = None
 
-class HopStatus(str, Enum):
+# NAMING FIXED: HopStatus → hop_status
+class hop_status(str, Enum):
     """Status of hop execution."""
     PENDING = "pending"
     RUNNING = "running"
@@ -904,14 +983,16 @@ class HopStatus(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
-class GateDecision(str, Enum):
+# NAMING FIXED: GateDecision → gate_decision
+class gate_decision(str, Enum):
     """Decision from validation gate."""
     PASS = "pass"
     FAIL = "fail"
     WARN = "warn"
     SKIP = "skip"
 
-class ValidationSeverity(str, Enum):
+# NAMING FIXED: ValidationSeverity → validation_severity
+class validation_severity(str, Enum):
     """Severity of validation issue."""
     INFO = "info"
     WARNING = "warning"
@@ -919,7 +1000,8 @@ class ValidationSeverity(str, Enum):
     CRITICAL = "critical"
 
 @dataclass
-class WorkflowCheckpoint:
+# NAMING FIXED: WorkflowCheckpoint → workflow_checkpoint
+class workflow_checkpoint:
     """Checkpoint in workflow execution."""
     hop_id: str
     status: HopStatus
@@ -928,7 +1010,8 @@ class WorkflowCheckpoint:
     metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
-class ThematicAnalysis:
+# NAMING FIXED: ThematicAnalysis → thematic_analysis
+class thematic_analysis:
     """Analysis of thematic content."""
     theme: str
     confidence: float
@@ -936,7 +1019,8 @@ class ThematicAnalysis:
     sentiment: Optional[str] = None
 
 @dataclass
-class RAGState:
+# NAMING FIXED: RAGState → rag_state
+class rag_state:
     """State of RAG operations."""
     query: str
     retrieved_docs: List[Dict[str, Any]]
@@ -944,7 +1028,8 @@ class RAGState:
     response: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-class CircuitState(str, Enum):
+# NAMING FIXED: CircuitState → circuit_state
+class circuit_state(str, Enum):
     """Circuit breaker state."""
     CLOSED = "closed"
     OPEN = "open"
@@ -974,7 +1059,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Configuration Models (from config/P1_core/config_models.py)
 
 @dataclass
-class FilePathsConfig:
+# NAMING FIXED: FilePathsConfig → file_paths_config
+class file_paths_config:
     """File paths for data files used by the workflow."""
     master_resume: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent / 'config' / 'P1_core' / 'data' / 'master_resume.json')
     hyphenation_rules: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent / 'config' / 'P1_core' / 'data' / 'hyphenation_rules.json')
@@ -985,14 +1071,16 @@ class FilePathsConfig:
     prompts: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent / 'config' / 'P1_core' / 'data' / 'prompts.json')
 
 @dataclass
-class ArtistConfig:
+# NAMING FIXED: ArtistConfig → artist_config
+class artist_config:
     """Configuration for the Artist Generator (resume content generation)."""
     provenance_split_targets: Dict = field(default_factory=dict)
     bullet_word_count_ranges: Dict = field(default_factory=dict)
     narrative_config: Dict = field(default_factory=dict)
 
 @dataclass
-class ValidatorConfig:
+# NAMING FIXED: ValidatorConfig → validator_config
+class validator_config:
     """Configuration for validation rules and constraints."""
     forbidden_verbs: List[str] = field(default_factory=list)
     required_sections: Set[str] = field(default_factory=set)
@@ -1001,7 +1089,8 @@ class ValidatorConfig:
     pipeline_status_enum: List[str] = field(default_factory=list)
 
 @dataclass
-class PromptsConfig:
+# NAMING FIXED: PromptsConfig → prompts_config
+class prompts_config:
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
     
@@ -1018,7 +1107,8 @@ class PromptsConfig:
             raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
 
 @dataclass
-class WebRagConfig:
+# NAMING FIXED: WebRagConfig → web_rag_config
+class web_rag_config:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
     peers_by_industry: Dict = field(default_factory=lambda: {
         'Financial Technology': ['JPMorgan', 'Goldman Sachs', 'Morgan Stanley', 'Stripe', 'Square'],
@@ -1029,7 +1119,8 @@ class WebRagConfig:
     })
 
 @dataclass
-class EnricherConfig:
+# NAMING FIXED: EnricherConfig → enricher_config
+class enricher_config:
     """Configuration for data enrichment."""
     canonical_verbs: Dict = field(default_factory=lambda: {
         'led': ['led', 'lead', 'leading'],
@@ -1045,7 +1136,8 @@ class EnricherConfig:
     })
 
 @dataclass
-class EnforcementRAGConfig:
+# NAMING FIXED: EnforcementRAGConfig → enforcement_rag_config
+class enforcement_rag_config:
     """Configuration for RAG system (renamed to avoid conflict with existing RAGState)."""
     MODEL: str = 'gemini-2.5-pro'
     max_tokens: int = 8192
@@ -1074,7 +1166,8 @@ class EnforcementRAGConfig:
     })
 
 @dataclass
-class EnforcementReasoningConfig:
+# NAMING FIXED: EnforcementReasoningConfig → enforcement_reasoning_config
+class enforcement_reasoning_config:
     """Configuration for reasoning strategies (renamed to avoid conflict with existing ReasoningConfig)."""
     cot_min_paths: int = 2
     tot_branches: int = 3
@@ -1084,7 +1177,8 @@ class EnforcementReasoningConfig:
     max_reflexion_loops: int = 3
 
 @dataclass
-class ContentConstraintsConfig:
+# NAMING FIXED: ContentConstraintsConfig → content_constraints_config
+class content_constraints_config:
     """Content-level constraints for word counts, sentence counts, etc."""
     TOTAL_WORD_COUNT_MIN: int = 870
     TOTAL_WORD_COUNT_MAX: int = 1030
@@ -1121,20 +1215,23 @@ class ContentConstraintsConfig:
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
 @dataclass
-class SignalControlConfig:
+# NAMING FIXED: SignalControlConfig → signal_control_config
+class signal_control_config:
     """Signal control thresholds for quality and relevance."""
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
 
 @dataclass
-class PromptAddendumConfig:
+# NAMING FIXED: PromptAddendumConfig → prompt_addendum_config
+class prompt_addendum_config:
     """Configuration for reasoning prompt addendums."""
     HEADER: str = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n'
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
 
 @dataclass
-class AppConfig:
+# NAMING FIXED: AppConfig → app_config
+class app_config:
     """Master application configuration containing all sub-configs."""
     paths: FilePathsConfig = field(default_factory=FilePathsConfig)
     content_constraints: ContentConstraintsConfig = field(default_factory=ContentConstraintsConfig)
@@ -1162,7 +1259,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Data Models (from L2_execution/tool_registry/data_models_models.py)
 
 @dataclass
-class OutreachMission:
+# NAMING FIXED: OutreachMission → outreach_mission
+class outreach_mission:
     """Complete mission specification (Input)"""
     mission_id: str
     sender_profile: Dict[str, Any]
@@ -1173,7 +1271,8 @@ class OutreachMission:
     context: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class ProfileAnalysis:
+# NAMING FIXED: ProfileAnalysis → profile_analysis
+class profile_analysis:
     """DEPRECATED v13.0: Profile analysis output (kept for backward compatibility)"""
     archetype: str
     confidence: float
@@ -1182,7 +1281,8 @@ class ProfileAnalysis:
     needs_manual_override: bool = False
 
 @dataclass
-class MessageClaim:
+# NAMING FIXED: MessageClaim → message_claim
+class message_claim:
     """Individual claim with confidence"""
     text: str
     confidence: float
@@ -1190,7 +1290,8 @@ class MessageClaim:
     source_weights: List[float]
 
 @dataclass
-class RAGCritique:
+# NAMING FIXED: RAGCritique → rag_critique
+class rag_critique:
     """RAG quality critique"""
     confidence_score: float
     gaps_identified: List[str]
@@ -1199,7 +1300,8 @@ class RAGCritique:
     is_sufficient: bool = False
 
 @dataclass
-class EnforcementRAGResult:
+# NAMING FIXED: EnforcementRAGResult → enforcement_rag_result
+class enforcement_rag_result:
     """Single RAG retrieval result with metadata (renamed to avoid conflict)"""
     source: str
     source_type: str
@@ -1211,7 +1313,8 @@ class EnforcementRAGResult:
     CONFIDENCE: float = 1.0
 
 @dataclass
-class SenderGroundingWhitelists:
+# NAMING FIXED: SenderGroundingWhitelists → sender_grounding_whitelists
+class sender_grounding_whitelists:
     """Output of SenderGroundingAgent for claim validation"""
     team_members: List[str] = field(default_factory=list)
     products: List[str] = field(default_factory=list)
@@ -1220,7 +1323,8 @@ class SenderGroundingWhitelists:
     raw_evidence: Dict[str, List[str]] = field(default_factory=dict)
 
 @dataclass
-class ResearchContext:
+# NAMING FIXED: ResearchContext → research_context
+class research_context:
     """DEPRECATED v13.0: Research context output (kept for backward compatibility)"""
     recipient_insights: List[str]
     company_context: List[str]
@@ -1230,7 +1334,8 @@ class ResearchContext:
     adversarial_findings: List[str] = field(default_factory=list)
 
 @dataclass
-class MessageScaffold:
+# NAMING FIXED: MessageScaffold → message_scaffold
+class message_scaffold:
     """DEPRECATED v13.0: Message scaffold output (kept for backward compatibility)"""
     route: str
     archetype: str
@@ -1239,7 +1344,8 @@ class MessageScaffold:
     locked_sections: Set[str] = field(default_factory=set)
 
 @dataclass
-class GeneratedMessage:
+# NAMING FIXED: GeneratedMessage → generated_message
+class generated_message:
     """DEPRECATED v13.0: Generated message output (kept for backward compatibility)"""
     content: str
     word_count: int
@@ -1251,7 +1357,8 @@ class GeneratedMessage:
     checksum: str
 
 @dataclass
-class EnforcementValidationResult:
+# NAMING FIXED: EnforcementValidationResult → enforcement_validation_result
+class enforcement_validation_result:
     """Result from validation check (renamed to avoid conflict with existing ValidationResult)"""
     passed: bool
     severity: str
@@ -1260,7 +1367,8 @@ class EnforcementValidationResult:
     details: Optional[Dict[str, Any]] = None
 
 @dataclass
-class QAReport:
+# NAMING FIXED: QAReport → qa_report
+class qa_report:
     """DEPRECATED v13.0: QA report output (kept for backward compatibility)"""
     mission_id: str
     validation_results: List['EnforcementValidationResult']
@@ -1286,7 +1394,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # K25 Research Models (from L1_cognition/thought_engine/k25_models.py)
 
 @dataclass
-class ExecutiveProfile:
+# NAMING FIXED: ExecutiveProfile → executive_profile
+class executive_profile:
     """Executive profile for leadership layer research."""
     name: str
     title: str
@@ -1295,7 +1404,8 @@ class ExecutiveProfile:
     linkedin_url: Optional[str] = None
 
 @dataclass
-class FinancialMetric:
+# NAMING FIXED: FinancialMetric → financial_metric
+class financial_metric:
     """Financial metric with validation."""
     metric_name: str
     value: str
@@ -1304,10 +1414,13 @@ class FinancialMetric:
     yoy_change: Optional[str] = None
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return bool(self.metric_name and self.value and self.source_citation)
 
 @dataclass
-class TechnicalImplementation:
+# NAMING FIXED: TechnicalImplementation → technical_implementation
+class technical_implementation:
     """Technical implementation details with validation."""
     technology_name: str
     implementation_details: str
@@ -1315,16 +1428,21 @@ class TechnicalImplementation:
     performance_gain: Optional[str] = None
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return bool(self.technology_name and self.implementation_details and self.source_citation)
 
 @dataclass
-class StrategicLayer:
+# NAMING FIXED: StrategicLayer → strategic_layer
+class strategic_layer:
     """Strategic research layer."""
     core_thesis: str
     financial_proof_points: List[FinancialMetric] = field(default_factory=list)
     strategic_initiatives: List[str] = field(default_factory=list)
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         if not self.core_thesis or len(self.core_thesis) < 20:
             return False
         if len(self.financial_proof_points) < 2:
@@ -1332,44 +1450,58 @@ class StrategicLayer:
         return all((metric.validate() for metric in self.financial_proof_points))
 
 @dataclass
-class TechnicalLayer:
+# NAMING FIXED: TechnicalLayer → technical_layer
+class technical_layer:
     """Technical research layer."""
     key_technologies: List[TechnicalImplementation] = field(default_factory=list)
     infrastructure_stack: List[str] = field(default_factory=list)
     implementation_summary: Optional[str] = None
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         if len(self.key_technologies) < 2:
             return False
         return all((tech.validate() for tech in self.key_technologies))
 
 @dataclass
-class LeadershipLayer:
+# NAMING FIXED: LeadershipLayer → leadership_layer
+class leadership_layer:
     """Leadership research layer."""
     key_executives: List[ExecutiveProfile] = field(default_factory=list)
     organizational_structure: Optional[str] = None
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         if len(self.key_executives) < 2:
             return False
         return all((exec.name and exec.title and exec.ownership for exec in self.key_executives))
 
 @dataclass
-class CitationMap:
+# NAMING FIXED: CitationMap → citation_map
+class citation_map:
     """Citation tracking for research sources."""
     citations: Dict[str, str] = field(default_factory=dict)
     
     def add_citation(self, source_id: str, url: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.citations[source_id] = url
     
     def get_citation(self, source_id: str) -> Optional[str]:
+                    '''Brief description of functionality and purpose.'''
+                    
         return self.citations.get(source_id)
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return len(self.citations) >= 3
 
 @dataclass
-class DeepResearchOutput:
+# NAMING FIXED: DeepResearchOutput → deep_research_output
+class deep_research_output:
     """Output data structure for K.2.5 deep research results."""
     company_name: str
     strategic_layer: StrategicLayer
@@ -1379,12 +1511,16 @@ class DeepResearchOutput:
     research_timestamp: Optional[str] = None
     
     def validate(self) -> bool:
+                    '''Brief description of functionality and purpose.'''
+                    
         return (self.strategic_layer.validate() and 
                 self.technical_layer.validate() and 
                 self.leadership_layer.validate() and 
                 self.citation_map.validate())
     
     def to_dict(self) -> Dict[str, Any]:
+                    '''Brief description of functionality and purpose.'''
+                    
         return {
             'company_name': self.company_name,
             'strategic_layer': {
@@ -1429,7 +1565,8 @@ class DeepResearchOutput:
         }
 
 @dataclass
-class ResearchHopResult:
+# NAMING FIXED: ResearchHopResult → research_hop_result
+class research_hop_result:
     """Result from a research hop phase."""
     phase: str
     query: str
@@ -1439,7 +1576,8 @@ class ResearchHopResult:
     error_message: Optional[str] = None
 
 @dataclass
-class IntegrityGateResult:
+# NAMING FIXED: IntegrityGateResult → integrity_gate_result
+class integrity_gate_result:
     """Result from integrity gate validation."""
     passed: bool
     rejection_reasons: List[str] = field(default_factory=list)
@@ -1447,6 +1585,8 @@ class IntegrityGateResult:
     depth_score: float = 0.0
     
     def add_violation(self, reason: str, detail: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
         self.passed = False
@@ -1469,35 +1609,40 @@ CORE_CONTRACTS_REGISTRY.update({
 # LIC Archetype Models (from L1_cognition/thought_engine/lic_archetypes_models.py)
 
 @dataclass
-class SubjectLineBrief:
+# NAMING FIXED: SubjectLineBrief → subject_line_brief
+class subject_line_brief:
     """Brief for subject line generation."""
     word_count: tuple[int, int]
     tone: str
     forbidden_phrases: List[str] = field(default_factory=list)
 
 @dataclass
-class MessageBodyBrief:
+# NAMING FIXED: MessageBodyBrief → message_body_brief
+class message_body_brief:
     """Brief for message body generation."""
     word_count: tuple[int, int]
     jargon_level: str
     focus: str
 
 @dataclass
-class CTABrief:
+# NAMING FIXED: CTABrief → cta_brief
+class cta_brief:
     """Brief for call-to-action generation."""
     word_count: tuple[int, int]
     tone: str
     strategy: Optional[str] = None
 
 @dataclass
-class CreativeBrief:
+# NAMING FIXED: CreativeBrief → creative_brief
+class creative_brief:
     """Complete creative brief for message generation."""
     subject_line: SubjectLineBrief
     message_body: MessageBodyBrief
     cta: CTABrief
 
 @dataclass
-class ArchetypeTemplate:
+# NAMING FIXED: ArchetypeTemplate → archetype_template
+class archetype_template:
     """Complete template for an archetype."""
     archetype: str
     system_instructions: str
@@ -1507,14 +1652,16 @@ class ArchetypeTemplate:
     creative_brief: CreativeBrief
 
 @dataclass
-class SignatureTemplate:
+# NAMING FIXED: SignatureTemplate → signature_template
+class signature_template:
     """Template for message signature."""
     template: str
     use_for: List[str]
     line_count: int
 
 @dataclass
-class GreetingTemplate:
+# NAMING FIXED: GreetingTemplate → greeting_template
+class greeting_template:
     """Template for message greeting."""
     template: str
     note: str
@@ -1535,7 +1682,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Note: ValidationResult, ThematicAnalysis, RAGState already exist in Phase 2C - skipping duplicates
 
 @dataclass
-class APICallMetrics:
+# NAMING FIXED: APICallMetrics → api_call_metrics
+class api_call_metrics:
     """Metrics for API call tracking"""
     call_count: int = 0
     success_count: int = 0
@@ -1546,7 +1694,8 @@ class APICallMetrics:
     rate_limits: int = 0
 
 @dataclass
-class ImmutableStagingBuffer:
+# NAMING FIXED: ImmutableStagingBuffer → immutable_staging_buffer
+class immutable_staging_buffer:
     """Immutable buffer for staging data transformations."""
     data: Dict[str, Any] = field(default_factory=dict)
     version: int = 1
@@ -1582,13 +1731,15 @@ CORE_CONTRACTS_REGISTRY.update({
 # Enums migrated to unblock circular dependencies
 
 # From rg_creative_brief_enums.py
-class VoiceType(str, Enum):
+# NAMING FIXED: VoiceType → voice_type
+class voice_type(str, Enum):
     """Voice type for content generation."""
     FIRST_PERSON = "first_person"
     THIRD_PERSON = "third_person"
     THIRD_PERSON_IMPLIED = "third_person_implied"
 
-class ProvenanceStrategy(str, Enum):
+# NAMING FIXED: ProvenanceStrategy → provenance_strategy
+class provenance_strategy(str, Enum):
     """Strategy for bullet provenance."""
     JD_FIT_BASED = "jd_fit_based"
     INTERNAL_FIRST = "internal_first"
@@ -1596,28 +1747,32 @@ class ProvenanceStrategy(str, Enum):
     BALANCED = "balanced"
 
 # From lic_routing_rules_enums.py
-class MessageRoute(str, Enum):
+# NAMING FIXED: MessageRoute → message_route
+class message_route(str, Enum):
     """Message route types for LinkedIn outreach."""
     CONNECTION_REQUEST = "connection_request"
     INMAIL = "inmail"
     FOLLOW_UP = "follow_up"
     DIRECT_MESSAGE = "direct_message"
 
-class RecipientArchetype(str, Enum):
+# NAMING FIXED: RecipientArchetype → recipient_archetype
+class recipient_archetype(str, Enum):
     """Recipient archetype classifications."""
     EXECUTIVE = "executive"
     TECHNICAL = "technical"
     RECRUITER = "recruiter"
     PEER = "peer"
 
-class SignatureFormat(str, Enum):
+# NAMING FIXED: SignatureFormat → signature_format
+class signature_format(str, Enum):
     """Signature format types."""
     STANDARD = "standard"
     MINIMAL = "minimal"
     PROFESSIONAL = "professional"
     CASUAL = "casual"
 
-class CTAFormat(str, Enum):
+# NAMING FIXED: CTAFormat → cta_format
+class cta_format(str, Enum):
     """Call-to-action format types."""
     STANDARD = "standard"
     QUESTION = "question"
@@ -1639,7 +1794,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Migrating dependency-free models only
 
 @dataclass
-class WordCountConstraint:
+# NAMING FIXED: WordCountConstraint → word_count_constraint
+class word_count_constraint:
     """Word count constraint for a section."""
     min_words: int
     max_words: int
@@ -1654,7 +1810,8 @@ class WordCountConstraint:
         return (True, '')
 
 @dataclass
-class CharCountConstraint:
+# NAMING FIXED: CharCountConstraint → char_count_constraint
+class char_count_constraint:
     """Character count constraint for a section."""
     max_chars: int
     
@@ -1666,14 +1823,16 @@ class CharCountConstraint:
         return (True, '')
 
 @dataclass
-class StructureConstraint:
+# NAMING FIXED: StructureConstraint → structure_constraint
+class structure_constraint:
     """Structure constraint for a section."""
     structure: str
     segment_word_limit: Optional[int] = None
     exclusions: List[str] = field(default_factory=list)
 
 @dataclass
-class HeadlineBrief:
+# NAMING FIXED: HeadlineBrief → headline_brief
+class headline_brief:
     """Creative brief for headline section."""
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(8, 12))
     char_count_max: int = 90
@@ -1685,20 +1844,23 @@ class HeadlineBrief:
 # Orchestration Workflow Models (from L3_orchestration/workflow_engines/orchestrate_workflow_types_models.py)
 
 @dataclass
-class HopInput:
+# NAMING FIXED: HopInput → hop_input
+class hop_input:
     """Input specification for a hop."""
     source_artifact: str
     required: bool = True
     description: str = ""
 
 @dataclass
-class HopOutput:
+# NAMING FIXED: HopOutput → hop_output
+class hop_output:
     """Output specification for a hop."""
     artifact_id: str
     DESCRIPTION: str = ""
 
 @dataclass
-class HopSpec:
+# NAMING FIXED: HopSpec → hop_spec
+class hop_spec:
     """Specification for a workflow hop."""
     id: str
     script: str
@@ -1709,7 +1871,8 @@ class HopSpec:
     extra_args: List[str] = field(default_factory=list)
 
 @dataclass
-class WorkflowSpec:
+# NAMING FIXED: WorkflowSpec → workflow_spec
+class workflow_spec:
     """Specification for a complete workflow."""
     name: str
     version: str
@@ -1734,7 +1897,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Now unblocked after enum migration
 
 @dataclass
-class ExperienceBulletsBrief:
+# NAMING FIXED: ExperienceBulletsBrief → experience_bullets_brief
+class experience_bullets_brief:
     """Creative brief for experience bullets section."""
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
     provenance_map: Dict[str, str] = field(default_factory=lambda: {'Unify Consulting': '4V-3T-0S', 'IBM': '4V-2T-0S'})
@@ -1746,7 +1910,8 @@ class ExperienceBulletsBrief:
     GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
 
 @dataclass
-class LeadershipCompetenciesBrief:
+# NAMING FIXED: LeadershipCompetenciesBrief → leadership_competencies_brief
+class leadership_competencies_brief:
     """Creative brief for leadership competencies section."""
     TITLE: str = 'Strategic & Technical Competencies'
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
@@ -1754,7 +1919,8 @@ class LeadershipCompetenciesBrief:
     word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
 
 @dataclass
-class CoverLetterBrief:
+# NAMING FIXED: CoverLetterBrief → cover_letter_brief
+class cover_letter_brief:
     """Creative brief for cover letter section."""
     STRUCTURE: str = '1-intro-2-body'
     word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85, 100))
@@ -1763,13 +1929,15 @@ class CoverLetterBrief:
     signature_generation_policy: str = 'DYNAMIC_FROM_OWNER_CONTACT'
 
 @dataclass
-class OptimizedSkillsBrief:
+# NAMING FIXED: OptimizedSkillsBrief → optimized_skills_brief
+class optimized_skills_brief:
     """Creative brief for optimized skills list section."""
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
     LOGIC: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
 
 @dataclass
-class RGCreativeBrief:
+# NAMING FIXED: RGCreativeBrief → rg_creative_brief
+class rg_creative_brief:
     """Complete creative brief for resume generation."""
     headline: HeadlineBrief = field(default_factory=HeadlineBrief)
     executive_summary: 'ExecutiveSummaryBrief' = None
@@ -1780,7 +1948,8 @@ class RGCreativeBrief:
 
 # ExecutiveSummaryBrief (from rg_creative_brief_models.py - previously blocked)
 @dataclass
-class ExecutiveSummaryBrief:
+# NAMING FIXED: ExecutiveSummaryBrief → executive_summary_brief
+class executive_summary_brief:
     """Creative brief for executive summary section."""
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
@@ -1802,7 +1971,8 @@ CORE_CONTRACTS_REGISTRY.update({
 # Now unblocked after enum migration
 
 @dataclass
-class RouteConditions:
+# NAMING FIXED: RouteConditions → route_conditions
+class route_conditions:
     """Conditions for route selection."""
     connection_status: Optional[str] = None
     prior_message_count: Optional[int] = None
@@ -1810,7 +1980,8 @@ class RouteConditions:
     prior_message_count_gte: Optional[int] = None
 
 @dataclass
-class RouteConstraints:
+# NAMING FIXED: RouteConstraints → route_constraints
+class route_constraints:
     """Constraints for a message route."""
     char_limit: Optional[int] = None
     word_range: Optional[tuple[int, int]] = None
@@ -1822,14 +1993,16 @@ class RouteConstraints:
     greeting_format: str = "Hi {first_name},"
 
 @dataclass
-class RouteConfig:
+# NAMING FIXED: RouteConfig → route_config
+class route_config:
     """Complete configuration for a message route."""
     route: MessageRoute
     conditions: RouteConditions
     constraints: RouteConstraints
 
 @dataclass
-class ArchetoneConfig:
+# NAMING FIXED: ArchetoneConfig → archetone_config
+class archetone_config:
     """Tone configuration for an archetype."""
     message_tone: str
     verb_preference: List[str]
@@ -1838,7 +2011,8 @@ class ArchetoneConfig:
     focus: str
 
 @dataclass
-class TemperatureConfig:
+# NAMING FIXED: TemperatureConfig → temperature_config
+class temperature_config:
     """Temperature configuration for LLM generation."""
     base_temperature: float
     escalation_step: float = 0.15
@@ -1861,14 +2035,16 @@ CORE_CONTRACTS_REGISTRY.update({
 import logging
 logger = logging.getLogger(__name__)
 
-class MissionPriority(str, Enum):
+# NAMING FIXED: MissionPriority → mission_priority
+class mission_priority(str, Enum):
     """Mission priority levels."""
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
 
-class MissionStatus(str, Enum):
+# NAMING FIXED: MissionStatus → mission_status
+class mission_status(str, Enum):
     """Mission status values."""
     PLANNED = "PLANNED"
     ACTIVE = "ACTIVE"
@@ -1877,7 +2053,8 @@ class MissionStatus(str, Enum):
     CANCELLED = "CANCELLED"
 
 @dataclass(frozen=True)
-class MissionPhase(SovereignBaseModel):
+# NAMING FIXED: MissionPhase → mission_phase
+class mission_phase(SovereignBaseModel):
     """A single phase of a mission."""
     name: str
     agents: List[str]
@@ -1886,7 +2063,8 @@ class MissionPhase(SovereignBaseModel):
     result: Optional[Dict[str, Any]] = None
 
 @dataclass(frozen=True)
-class MissionPlan(SovereignBaseModel):
+# NAMING FIXED: MissionPlan → mission_plan
+class mission_plan(SovereignBaseModel):
     """
     Complete mission plan with Builder pattern support.
     
@@ -1923,22 +2101,32 @@ class MissionPlan(SovereignBaseModel):
             self._phase_names: set = set()  # Integrity check
         
         def with_mission_id(self, mission_id: str) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._mission_id = mission_id
             return self
         
         def with_cycle(self, cycle_id: int) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._cycle_id = cycle_id
             return self
         
         def with_priority(self, priority: MissionPriority) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._priority = priority
             return self
         
         def with_objective(self, objective: str) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._objective = objective
             return self
         
         def add_phase(self, phase: MissionPhase) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if phase.name in self._phase_names:
                 raise ValueError(f"Sovereignty Violation: Duplicate phase name detected: {phase.name}")
             self._phase_names.add(phase.name)
@@ -1946,6 +2134,8 @@ class MissionPlan(SovereignBaseModel):
             return self
         
         def with_risk_assessment(self, assessment: Dict) -> 'MissionPlan.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._risk_assessment = assessment
             return self
         
@@ -1991,6 +2181,8 @@ class MissionPlan(SovereignBaseModel):
             rec_stack = set()
             
             def has_cycle(node: str) -> bool:
+                                                    '''Brief description of functionality and purpose.'''
+                                                    
                 visited.add(node)
                 rec_stack.add(node)
                 
@@ -2014,7 +2206,8 @@ class MissionPlan(SovereignBaseModel):
                         )
 
 @dataclass(frozen=True)
-class ThinkingStep(SovereignBaseModel):
+# NAMING FIXED: ThinkingStep → thinking_step
+class thinking_step(SovereignBaseModel):
     """A single step in a thought chain."""
     step_id: int
     thought: str
@@ -2022,7 +2215,8 @@ class ThinkingStep(SovereignBaseModel):
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 @dataclass(frozen=True)
-class RevisionStep(SovereignBaseModel):
+# NAMING FIXED: RevisionStep → revision_step
+class revision_step(SovereignBaseModel):
     """A revision made to the thought chain."""
     revision_number: int
     original_step: int
@@ -2031,7 +2225,8 @@ class RevisionStep(SovereignBaseModel):
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 @dataclass(frozen=True)
-class ThoughtChain(SovereignBaseModel):
+# NAMING FIXED: ThoughtChain → thought_chain
+class thought_chain(SovereignBaseModel):
     """
     Thought chain for reasoning trace with Builder pattern support.
     
@@ -2065,10 +2260,14 @@ class ThoughtChain(SovereignBaseModel):
             self._duration_seconds: float = 0.0
 
         def with_chain_id(self, chain_id: str) -> 'ThoughtChain.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._chain_id = chain_id
             return self
 
         def with_goal(self, goal: str) -> 'ThoughtChain.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._goal = goal
             return self
 
@@ -2080,6 +2279,8 @@ class ThoughtChain(SovereignBaseModel):
             return self
 
         def add_hypothesis(self, hypothesis: Hypothesis) -> 'ThoughtChain.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._hypotheses.append(hypothesis)
             return self
 
@@ -2090,6 +2291,8 @@ class ThoughtChain(SovereignBaseModel):
             return self
 
         def mark_failed(self) -> 'ThoughtChain.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._success = False
             return self
 
@@ -2123,7 +2326,8 @@ class ThoughtChain(SovereignBaseModel):
 import uuid
 
 @dataclass(frozen=True)
-class ConstitutionalViolation(SovereignBaseModel):
+# NAMING FIXED: ConstitutionalViolation → constitutional_violation
+class constitutional_violation(SovereignBaseModel):
     """
     Constitutional violation record with Builder pattern support.
     
@@ -2165,33 +2369,47 @@ class ConstitutionalViolation(SovereignBaseModel):
             self._suggested_fix: Optional[str] = None
 
         def with_guardian(self, guardian: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._guardian = guardian
             return self
 
         def in_dimension(self, dimension: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._dimension = dimension
             return self
 
         def with_severity(self, severity: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if severity not in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
                 raise ValueError(f"Sovereignty Violation: Invalid severity: {severity}")
             self._severity = severity
             return self
 
         def at_location(self, file_path: str, line_number: Optional[int] = None) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._file_path = file_path
             self._line_number = line_number
             return self
 
         def with_description(self, description: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._description = description
             return self
 
         def with_evidence(self, evidence: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._evidence = evidence
             return self
 
         def with_suggested_fix(self, fix: str) -> 'ConstitutionalViolation.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._suggested_fix = fix
             return self
 
@@ -2229,7 +2447,8 @@ class ConstitutionalViolation(SovereignBaseModel):
             )
 
 @dataclass(frozen=True)
-class HealingAction(SovereignBaseModel):
+# NAMING FIXED: HealingAction → healing_action
+class healing_action(SovereignBaseModel):
     """
     Healing action record with Builder pattern support.
     
@@ -2273,37 +2492,53 @@ class HealingAction(SovereignBaseModel):
             self._transaction_id: Optional[str] = None
 
         def with_strategy(self, strategy: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._strategy = strategy
             return self
 
         def with_action_type(self, action_type: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._action_type = action_type
             return self
 
         def targeting(self, file: str, line: Optional[int] = None) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._target_file = file
             self._target_line = line
             return self
 
         def for_reason(self, reason: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._reason = reason
             return self
 
         def succeeded(self) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._success = True
             self._error_message = None
             return self
 
         def failed(self, error: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._success = False
             self._error_message = error
             return self
 
         def with_backup(self, backup_path: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._backup_path = backup_path
             return self
 
         def in_transaction(self, transaction_id: str) -> 'HealingAction.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._transaction_id = transaction_id
             return self
 
@@ -2345,7 +2580,8 @@ class HealingAction(SovereignBaseModel):
             )
 
 @dataclass(frozen=True)
-class HealingCycle(SovereignBaseModel):
+# NAMING FIXED: HealingCycle → healing_cycle
+class healing_cycle(SovereignBaseModel):
     """
     Healing cycle record with Builder pattern support.
     
@@ -2383,10 +2619,14 @@ class HealingCycle(SovereignBaseModel):
             self._duration_seconds: float = 0.0
 
         def with_cycle_id(self, cycle_id: str) -> 'HealingCycle.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._cycle_id = cycle_id
             return self
 
         def triggered_by_score(self, score: float) -> 'HealingCycle.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._trigger_score = score
             return self
 
@@ -2399,10 +2639,14 @@ class HealingCycle(SovereignBaseModel):
             return self
 
         def add_action(self, action: HealingAction) -> 'HealingCycle.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._actions.append(action)
             return self
 
         def with_duration(self, seconds: float) -> 'HealingCycle.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._duration_seconds = seconds
             return self
 
@@ -2436,7 +2680,8 @@ class HealingCycle(SovereignBaseModel):
             )
 
 @dataclass(frozen=True)
-class HealingReport(SovereignBaseModel):
+# NAMING FIXED: HealingReport → healing_report
+class healing_report(SovereignBaseModel):
     """
     Healing report for DDD compliance audits with Builder pattern support.
     
@@ -2480,6 +2725,8 @@ class HealingReport(SovereignBaseModel):
             self._strategies_used: List[str] = []
 
         def with_report_id(self, report_id: str) -> 'HealingReport.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._report_id = report_id
             return self
 
@@ -2530,7 +2777,8 @@ class HealingReport(SovereignBaseModel):
             )
 
 @dataclass(frozen=True)
-class SovereignEvent(SovereignBaseModel):
+# NAMING FIXED: SovereignEvent → sovereign_event
+class sovereign_event(SovereignBaseModel):
     """
     Sovereign event telemetry with Builder pattern support.
     
@@ -2605,18 +2853,26 @@ class SovereignEvent(SovereignBaseModel):
             return self
 
         def from_source(self, source: str) -> 'SovereignEvent.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._source = source
             return self
 
         def in_dimension(self, dimension: Optional[str]) -> 'SovereignEvent.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._dimension = dimension
             return self
 
         def with_payload(self, **kwargs) -> 'SovereignEvent.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._payload.update(kwargs)
             return self
 
         def correlated_with(self, correlation_id: str) -> 'SovereignEvent.Builder':
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self._correlation_id = correlation_id
             return self
 

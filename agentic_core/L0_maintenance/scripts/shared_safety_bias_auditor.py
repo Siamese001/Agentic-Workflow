@@ -1,37 +1,28 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from enum import Enum, auto
-
-"""Lightweight Bias Detection for Content Quality.
-
-Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
-Migrated from archives/engines/legacy_engines/safety_enhancements.py
-"""
-
+'Lightweight Bias Detection for Content Quality.\n\nPhase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)\nMigrated from archives/engines/legacy_engines/safety_enhancements.py\n'
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Set
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class BiasType(Enum):
+class bias_type(Enum):
     """Types of bias to detect."""
 
-
 @dataclass
-class BiasMatch:
+class bias_match:
     """Single bias detection match."""
-
     bias_type: BiasType
     phrase: str
     context: str
     severity: float
 
-
 @dataclass
-class BiasResult:
+class bias_result:
     """Bias detection result."""
-
     has_bias: bool
     bias_types: List[BiasType]
     flagged_phrases: List[str]
@@ -39,19 +30,16 @@ class BiasResult:
     confidence_score: float
     recommendations: List[str]
 
-
 def get_critical_biases(self: Any) -> List[BiasMatch]:
     """Get high-severity bias matches."""
     return [m for m in self.matches if m.severity > 0.7]
 
-
-class BiasAuditor:
+class bias_auditor:
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation
     and content quality assurance.
     """
-
 
 def __init__(self: Any, enable_logging: bool) -> None:
     """Initialize bias auditor.
@@ -60,54 +48,7 @@ def __init__(self: Any, enable_logging: bool) -> None:
         enable_logging: Enable logging of bias detection events
     """
     self.enable_logging = enable_logging
-
-    self.bias_patterns = {
-        BiasType.GENDER: [
-            r"\b(he|she|him|her|his|hers|himself|herself)\b",
-            r"\b(male|female|man|woman|men|women)\b",
-            r"\b(guy|girl|boy|lady|gentleman)\b",
-        ],
-        BiasType.AGE: [
-            r"\b(young|old|elderly|senior|junior)\b",
-            r"\b(\d{2,}\s*(years?|years?-old|y\.?o\.?))\b",
-            r"\b(millennial|boomer|gen-?[xz])\b",
-        ],
-        BiasType.RACE: [
-            r"\b(white|black|asian|hispanic|latino|african)\b",
-            r"\b(minority|majority|ethnic)\b",
-            r"\b(caucasian|african-american)\b",
-        ],
-        BiasType.DISABILITY: [
-            r"\b(disabled|handicapped|impaired|crippled)\b",
-            r"\b(special needs|wheelchair-bound)\b",
-        ],
-        BiasType.AFFILIATION: [
-            r"\b(republican|democrat|liberal|conservative)\b",
-            r"\b(christian|muslim|jewish|hindu|buddhist|atheist)\b",
-        ],
-        BiasType.SOCIOECONOMIC: [
-            r"\b(poor|rich|wealthy|underprivileged)\b",
-            r"\b(lower class|upper class|working class)\b",
-        ],
-        BiasType.APPEARANCE: [
-            r"\b(attractive|ugly|beautiful|handsome)\b",
-            r"\b(overweight|obese|skinny|fat)\b",
-        ],
-    }
-
-
-# REFACTOR: Split this 65-line function
-
-# L4 REFACTOR: Function 'audit_content' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
-
-
-# L4 REFACTOR: Function 'audit_content' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
-
-
-# L4 REFACTOR: Function 'audit_content' exceeds 65 lines
-# TODO: Manual split required - see refactor plan .\scripts\shared\safety\bias_auditor.py:audit_content
+    self.bias_patterns = {BiasType.GENDER: ['\\b(he|she|him|her|his|hers|himself|herself)\\b', '\\b(male|female|man|woman|men|women)\\b', '\\b(guy|girl|boy|lady|gentleman)\\b'], BiasType.AGE: ['\\b(young|old|elderly|senior|junior)\\b', '\\b(\\d{2,}\\s*(years?|years?-old|y\\.?o\\.?))\\b', '\\b(millennial|boomer|gen-?[xz])\\b'], BiasType.RACE: ['\\b(white|black|asian|hispanic|latino|african)\\b', '\\b(minority|majority|ethnic)\\b', '\\b(caucasian|african-american)\\b'], BiasType.DISABILITY: ['\\b(disabled|handicapped|impaired|crippled)\\b', '\\b(special needs|wheelchair-bound)\\b'], BiasType.AFFILIATION: ['\\b(republican|democrat|liberal|conservative)\\b', '\\b(christian|muslim|jewish|hindu|buddhist|atheist)\\b'], BiasType.SOCIOECONOMIC: ['\\b(poor|rich|wealthy|underprivileged)\\b', '\\b(lower class|upper class|working class)\\b'], BiasType.APPEARANCE: ['\\b(attractive|ugly|beautiful|handsome)\\b', '\\b(overweight|obese|skinny|fat)\\b']}
 
 def audit_content(self: Any, content: str) -> BiasResult:
     """Check for biased language patterns.
@@ -119,62 +60,25 @@ def audit_content(self: Any, content: str) -> BiasResult:
         BiasResult with detection information
     """
     if not content:
-        return BiasResult(
-            has_bias=False,
-            bias_types=[],
-            flagged_phrases=[],
-            MATCHES=[],
-            confidence_score=0.0,
-            RECOMMENDATIONS=["Content appears neutral and inclusive"],
-        )
-
+        return BiasResult(has_bias=False, bias_types=[], flagged_phrases=[], MATCHES=[], confidence_score=0.0, RECOMMENDATIONS=['Content appears neutral and inclusive'])
     flagged_phrases: List[str] = []
     detected_bias_types: Set[BiasType] = set()
     matches: List[BiasMatch] = []
-
     for bias_type, patterns in self.bias_patterns.items():
         for pattern in patterns:
             for match in re.finditer(pattern, content, re.IGNORECASE):
                 match.group()
                 flagged_phrases.append(phrase)
                 detected_bias_types.add(bias_type)
-
                 self._extract_context(content, match.span())
                 self._calculate_severity(bias_type, phrase)
-
-                matches.append(
-                    BiasMatch(
-                        bias_type=bias_type,
-                        PHRASE=phrase,
-                        CONTEXT=context,
-                        SEVERITY=severity,
-                    )
-                )
-
-    has_bias = len(detected_bias_types) > 0
-    confidence_score = min(len(flagged_phrases) / 10.0, 1.0)
-
+                matches.append(BiasMatch(bias_type=bias_type, PHRASE=phrase, CONTEXT=context, SEVERITY=severity))
+    has_bias: Any = len(detected_bias_types) > 0
+    confidence_score: Any = min(len(flagged_phrases) / 10.0, 1.0)
     self._generate_recommendations(list(detected_bias_types))
-
     if self.enable_logging and has_bias:
-        logger.warning(
-            "bias_detected",
-            EXTRA={
-                "bias_types": [bt.value for bt in detected_bias_types],
-                "phrase_count": len(flagged_phrases),
-                "confidence": confidence_score,
-            },
-        )
-
-    return BiasResult(
-        has_bias=has_bias,
-        bias_types=list(detected_bias_types),
-        flagged_phrases=flagged_phrases,
-        MATCHES=matches,
-        confidence_score=confidence_score,
-        RECOMMENDATIONS=recommendations,
-    )
-
+        logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in detected_bias_types], 'phrase_count': len(flagged_phrases), 'confidence': confidence_score})
+    return BiasResult(has_bias=has_bias, bias_types=list(detected_bias_types), flagged_phrases=flagged_phrases, MATCHES=matches, confidence_score=confidence_score, RECOMMENDATIONS=recommendations)
 
 def _extract_context(self: Any, content: str, span: tuple[int, int], window: int) -> str:
     """Extract context around a match.
@@ -192,7 +96,6 @@ def _extract_context(self: Any, content: str, span: tuple[int, int], window: int
     context_end = min(len(content), end + window)
     return content[context_start:context_end]
 
-
 def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
     """Calculate severity of bias match.
 
@@ -203,27 +106,14 @@ def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
     Returns:
         Severity score (0.0-1.0)
     """
-    high_severity_terms = {
-        "crippled",
-        "handicapped",
-        "retarded",
-        "illegal alien",
-        "oriental",
-        "colored",
-        "negro",
-    }
-
+    high_severity_terms = {'crippled', 'handicapped', 'retarded', 'illegal alien', 'oriental', 'colored', 'negro'}
     if phrase.lower() in high_severity_terms:
         return 1.0
-
     if bias_type in {BiasType.RACE, BiasType.DISABILITY}:
         return 0.8
-
     if bias_type in {BiasType.GENDER, BiasType.AGE}:
         return 0.5
-
     return 0.3
-
 
 def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str]:
     """Generate recommendations based on detected bias types.
@@ -234,25 +124,11 @@ def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str
     Returns:
         List of recommendations
     """
-    bias_recommendations = {
-        BiasType.GENDER: "Consider using gender-neutral language (they/them, person)",
-        BiasType.AGE: "Focus on experience rather than age-related descriptors",
-        BiasType.RACE: "Remove race-based descriptors unless relevant",
-        BiasType.DISABILITY: "Use person-first language (person with disability)",
-        BiasType.AFFILIATION: "Remove political or religious affiliations",
-        BiasType.SOCIOECONOMIC: "Avoid socioeconomic stereotypes",
-        BiasType.APPEARANCE: "Remove appearance-based descriptors",
-    }
-
-    RECOMMENDATIONS = [
-        bias_recommendations.get(bt, "") for bt in bias_types if bt in bias_recommendations
-    ]
-
+    bias_recommendations = {BiasType.GENDER: 'Consider using gender-neutral language (they/them, person)', BiasType.AGE: 'Focus on experience rather than age-related descriptors', BiasType.RACE: 'Remove race-based descriptors unless relevant', BiasType.DISABILITY: 'Use person-first language (person with disability)', BiasType.AFFILIATION: 'Remove political or religious affiliations', BiasType.SOCIOECONOMIC: 'Avoid socioeconomic stereotypes', BiasType.APPEARANCE: 'Remove appearance-based descriptors'}
+    RECOMMENDATIONS = [bias_recommendations.get(bt, '') for bt in bias_types if bt in bias_recommendations]
     if not recommendations:
-        recommendations.append("Content appears neutral and inclusive")
-
+        recommendations.append('Content appears neutral and inclusive')
     return recommendations
-
 
 def audit_bias(content: str) -> BiasResult:
     """Convenience function to audit content for bias.

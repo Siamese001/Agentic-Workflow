@@ -1,58 +1,48 @@
 import shutil
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from pathlib import Path
+root: Any = Path('C:/Git/Agentic-Workflow')
+core: Any = ROOT / 'agentic_core'
+obs_runtime: Any = CORE / 'observability/P1_core/runtime'
 
-ROOT = Path("C:/Git/Agentic-Workflow")
-CORE = ROOT / "agentic_core"
-OBS_RUNTIME = CORE / "observability/P1_core/runtime"
-
-def flatten_observability_runtime():
-    print("[*] FLATTENING observability/P1_core/runtime TO DEPTH-4...")
-    moved = 0
-    
+def flatten_observability_runtime() -> Any:
+    """Brief description of functionality and purpose."""
+    print('[*] FLATTENING observability/P1_core/runtime TO DEPTH-4...')
+    moved: Any = 0
     if not OBS_RUNTIME.exists():
-        print("[!] Runtime directory not found")
+        print('[!] Runtime directory not found')
         return
-    
-    # Find all Python files in subdirectories
-    for py_file in OBS_RUNTIME.rglob("*.py"):
+    for py_file in OBS_RUNTIME.rglob('*.py'):
         if py_file.parent == OBS_RUNTIME:
-            continue  # Already at correct depth
-        
-        # Create flattened name
-        rel_path = py_file.relative_to(OBS_RUNTIME)
-        parts = rel_path.parts[:-1]  # Exclude filename
-        prefix = "_".join(parts)
-        new_name = f"{prefix}_{py_file.name}"
-        
-        target = OBS_RUNTIME / new_name
-        
-        # Avoid collisions
-        counter = 1
+            continue
+        rel_path: Any = py_file.relative_to(OBS_RUNTIME)
+        parts: Any = rel_path.parts[:-1]
+        prefix: Any = '_'.join(parts)
+        new_name: Any = f'{prefix}_{py_file.name}'
+        target: Any = OBS_RUNTIME / new_name
+        counter: Any = 1
         while target.exists():
-            target = OBS_RUNTIME / f"{prefix}_{counter}_{py_file.name}"
+            target: Any = OBS_RUNTIME / f'{prefix}_{counter}_{py_file.name}'
             counter += 1
-        
         try:
             shutil.move(str(py_file), str(target))
-            print(f"  [✓] {rel_path} -> {target.name}")
+            print(f'  [✓] {rel_path} -> {target.name}')
             moved += 1
         except Exception as e:
-            print(f"  [X] Failed: {py_file.name} - {e}")
-    
-    # Clean up empty directories
-    print("\n[*] Cleaning empty directories...")
+            print(f'  [X] Failed: {py_file.name} - {e}')
+    print('\n[*] Cleaning empty directories...')
     for root, dirs, files in os.walk(OBS_RUNTIME, topdown=False):
         for dir_name in dirs:
-            dir_path = Path(root) / dir_name
+            dir_path: Any = Path(root) / dir_name
             try:
                 if not any(dir_path.iterdir()):
                     dir_path.rmdir()
-                    print(f"  [✓] Removed: {dir_path.relative_to(CORE)}")
+                    print(f'  [✓] Removed: {dir_path.relative_to(CORE)}')
             except:
                 pass
-    
-    print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-4.")
-
-if __name__ == "__main__":
+    print(f'\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-4.')
+if __name__ == '__main__':
     import os
     flatten_observability_runtime()

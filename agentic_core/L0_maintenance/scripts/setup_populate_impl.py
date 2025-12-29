@@ -6,9 +6,5 @@ The original populate_impl.py contained 24 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 import logging
-
-LOGGER = logging.getLogger(__name__)
-# Re-export all components for backward compatibility
-# from agentic_core.populate_impl_impl_impl_impl_impl import *  # Star import removed
-
-__all__ = ["*"]  # Re-export all imported names
+logger: Any = logging.getLogger(__name__)
+__all__ = ['*']

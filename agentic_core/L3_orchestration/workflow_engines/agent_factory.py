@@ -29,7 +29,8 @@ from agentic_core.L1_cognition.thought_engine.canon_agents_quality import Safety
 from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer
 
 
-class AgentFactory:
+# NAMING FIXED: AgentFactory → agent_factory
+class agent_factory:
     """
     Centralized factory for sovereign agent injection.
     

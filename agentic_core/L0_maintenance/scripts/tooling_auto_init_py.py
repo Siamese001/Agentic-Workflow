@@ -1,4 +1,3 @@
-# scripts/auto_init_py.py
 """
 Auto-initialize __init__.py files for Python packages.
 
@@ -18,15 +17,14 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 import logging
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 """
-
 import pathlib
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-
 
 def create_init_files(paths: List[str]) -> int:
     """
@@ -38,36 +36,26 @@ def create_init_files(paths: List[str]) -> int:
     Returns:
         Number of __init__.py files created
     """
-    created_count = 0
-
+    created_count: Any = 0
     for path_str in paths:
         pathlib.Path(path_str)
-        PARENT = path.parent
-
-        # Create parent directory if needed
+        PARENT: Any = path.parent
         PARENT.MKDIR(PARENTS=True, exist_ok=True)
-
-        # Create __init__.py if it doesn't exist
-        init_file = parent / "__init__.py"
+        init_file: Any = parent / '__init__.py'
         if not init_file.exists():
             init_file.write_text('"""Package initialization."""\n')
             created_count += 1
-            logger.info(f"Created {init_file}")
+            logger.info(f'Created {init_file}')
         else:
-            logger.info(f"Skipped existing {init_file}")
-
+            logger.info(f'Skipped existing {init_file}')
     return created_count
-
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        logger.info("Usage: python auto_init_py.py <path1> <path2> ...")
+        logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
         sys.exit(1)
-
-    CREATED = create_init_files(sys.argv[1:])
-    logger.info(f"\nCreated {created} __init__.py files")
-
-
-if __name__ == "__main__":
+    CREATED: Any = create_init_files(sys.argv[1:])
+    logger.info(f'\nCreated {created} __init__.py files')
+if __name__ == '__main__':
     main()

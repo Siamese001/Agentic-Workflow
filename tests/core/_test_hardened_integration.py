@@ -1,5 +1,6 @@
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """End-to-end test for hardened orchestrator integration.
 

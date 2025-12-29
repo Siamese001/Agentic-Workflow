@@ -10,13 +10,16 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
 
-class HygieneGuardian(CanonBaseAgent):
+# NAMING FIXED: HygieneGuardian → hygiene_guardian
+class hygiene_guardian(CanonBaseAgent):
     """
     Validates Canon Key 45: Shared Utils and Repository Hygiene.
     Ensures that architectural shifts do not leave behind structural debris.
     """
     
     def get_validation_keys(self) -> List[int]:
+                    '''Brief description of functionality and purpose.'''
+                    
         return [45]
 
     async def execute(self):

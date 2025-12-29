@@ -15,11 +15,9 @@ import logging
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
-
-class GitSafetyHandler:
+class git_safety_handler:
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.
@@ -31,7 +29,7 @@ class GitSafetyHandler:
     4. Commit only if verification passes
     5. Update Redis state registry
     """
-    
+
     def __init__(self, mcp_router):
         """
         Initialize Git Safety Handler.
@@ -40,8 +38,8 @@ class GitSafetyHandler:
             mcp_router: MCPRouter instance for MCP calls
         """
         self.router = mcp_router
-        logger.info("[OK] Git Safety Handler initialized")
-    
+        logger.info('[OK] Git Safety Handler initialized')
+
     async def create_rollback_point(self, file_path: str) -> str:
         """
         Creates a temporary branch before L4 mutation.
@@ -52,24 +50,17 @@ class GitSafetyHandler:
         Returns:
             Branch name created
         """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        branch_name = f"fission_backup_{timestamp}"
-        
-        logger.info(f"🛡️  Creating rollback point: {branch_name}")
-        
+        timestamp: Any = datetime.now().strftime('%Y%m%d_%H%M%S')
+        branch_name: Any = f'fission_backup_{timestamp}'
+        logger.info(f'🛡️  Creating rollback point: {branch_name}')
         try:
-            await self.router.call_mcp("gitkraken", {
-                "action": "create_branch",
-                "name": branch_name
-            })
-            
-            logger.info(f"   [OK] Backup branch created: {branch_name}")
+            await self.router.call_mcp('gitkraken', {'action': 'create_branch', 'name': branch_name})
+            logger.info(f'   [OK] Backup branch created: {branch_name}')
             return branch_name
-        
         except Exception as e:
-            logger.error(f"   [X] Failed to create backup branch: {e}")
+            logger.error(f'   [X] Failed to create backup branch: {e}')
             raise
-    
+
     async def verify_clean_state(self, file_path: str) -> bool:
         """
         Verify that the current branch is clean before fission.
@@ -80,27 +71,19 @@ class GitSafetyHandler:
         Returns:
             True if clean, False otherwise
         """
-        logger.info(f"[SCAN] Verifying clean state for {file_path}")
-        
+        logger.info(f'[SCAN] Verifying clean state for {file_path}')
         try:
-            result = await self.router.call_mcp("gitkraken", {
-                "action": "status",
-                "file": file_path
-            })
-            
-            is_clean = result.get("status") == "clean"
-            
+            result: Any = await self.router.call_mcp('gitkraken', {'action': 'status', 'file': file_path})
+            is_clean: Any = result.get('status') == 'clean'
             if is_clean:
-                logger.info(f"   [OK] Clean state verified")
+                logger.info(f'   [OK] Clean state verified')
             else:
-                logger.warning(f"   [!]  Uncommitted changes detected")
-            
+                logger.warning(f'   [!]  Uncommitted changes detected')
             return is_clean
-        
         except Exception as e:
-            logger.error(f"   [X] Failed to verify state: {e}")
+            logger.error(f'   [X] Failed to verify state: {e}')
             return False
-    
+
     async def stage_files(self, file_paths: List[str]) -> bool:
         """
         Stage files for commit.
@@ -111,22 +94,16 @@ class GitSafetyHandler:
         Returns:
             True if successful, False otherwise
         """
-        logger.info(f"📦 Staging {len(file_paths)} files")
-        
+        logger.info(f'📦 Staging {len(file_paths)} files')
         try:
             for file_path in file_paths:
-                await self.router.call_mcp("gitkraken", {
-                    "action": "stage",
-                    "file": file_path
-                })
-                logger.info(f"   [OK] Staged: {file_path}")
-            
+                await self.router.call_mcp('gitkraken', {'action': 'stage', 'file': file_path})
+                logger.info(f'   [OK] Staged: {file_path}')
             return True
-        
         except Exception as e:
-            logger.error(f"   [X] Failed to stage files: {e}")
+            logger.error(f'   [X] Failed to stage files: {e}')
             return False
-    
+
     async def finalize_fission(self, original_file: str, new_files: List[str]) -> bool:
         """
         Commits changes only after L5 Verification passes.
@@ -138,41 +115,22 @@ class GitSafetyHandler:
         Returns:
             True if successful, False otherwise
         """
-        logger.info(f"🏁 Finalizing fission for {original_file}")
-        
+        logger.info(f'🏁 Finalizing fission for {original_file}')
         try:
-            # Create commit message
-            summary = f"Hardened Fission: Decomposed {original_file} into {len(new_files)} modules"
-            
-            # Stage all involved files
-            all_files = [original_file] + new_files
+            summary: Any = f'Hardened Fission: Decomposed {original_file} into {len(new_files)} modules'
+            all_files: Any = [original_file] + new_files
             if not await self.stage_files(all_files):
-                logger.error("   [X] Failed to stage files")
+                logger.error('   [X] Failed to stage files')
                 return False
-            
-            # Execute the hardened commit
-            await self.router.call_mcp("gitkraken", {
-                "action": "commit",
-                "message": summary
-            })
-            
-            logger.info(f"   [OK] Hardened commit successful")
-            
-            # Update Redis 'Source of Truth'
-            await self.router.call_mcp("redis", {
-                "action": "set",
-                "key": f"status:{original_file}",
-                "value": "FISSION_COMPLETE"
-            })
-            
-            logger.info(f"   [OK] Redis state updated")
-            
+            await self.router.call_mcp('gitkraken', {'action': 'commit', 'message': summary})
+            logger.info(f'   [OK] Hardened commit successful')
+            await self.router.call_mcp('redis', {'action': 'set', 'key': f'status:{original_file}', 'value': 'FISSION_COMPLETE'})
+            logger.info(f'   [OK] Redis state updated')
             return True
-        
         except Exception as e:
-            logger.error(f"   [X] Fission finalization failed: {e}")
+            logger.error(f'   [X] Fission finalization failed: {e}')
             return False
-    
+
     async def rollback_to_branch(self, branch_name: str) -> bool:
         """
         Rollback to a specific backup branch.
@@ -183,22 +141,16 @@ class GitSafetyHandler:
         Returns:
             True if successful, False otherwise
         """
-        logger.info(f"🔙 Rolling back to branch: {branch_name}")
-        
+        logger.info(f'🔙 Rolling back to branch: {branch_name}')
         try:
-            await self.router.call_mcp("gitkraken", {
-                "action": "checkout",
-                "branch": branch_name
-            })
-            
-            logger.info(f"   [OK] Rollback successful")
+            await self.router.call_mcp('gitkraken', {'action': 'checkout', 'branch': branch_name})
+            logger.info(f'   [OK] Rollback successful')
             return True
-        
         except Exception as e:
-            logger.error(f"   [X] Rollback failed: {e}")
+            logger.error(f'   [X] Rollback failed: {e}')
             return False
-    
-    async def get_commit_history(self, file_path: str, limit: int = 10) -> List[Dict]:
+
+    async def get_commit_history(self, file_path: str, limit: int=10) -> List[Dict]:
         """
         Get commit history for a file.
         
@@ -209,26 +161,17 @@ class GitSafetyHandler:
         Returns:
             List of commit information
         """
-        logger.info(f"📜 Getting commit history for {file_path}")
-        
+        logger.info(f'📜 Getting commit history for {file_path}')
         try:
-            result = await self.router.call_mcp("gitkraken", {
-                "action": "log",
-                "file": file_path,
-                "limit": limit
-            })
-            
-            commits = result.get("commits", [])
-            logger.info(f"   [OK] Retrieved {len(commits)} commits")
-            
+            result: Any = await self.router.call_mcp('gitkraken', {'action': 'log', 'file': file_path, 'limit': limit})
+            commits: Any = result.get('commits', [])
+            logger.info(f'   [OK] Retrieved {len(commits)} commits')
             return commits
-        
         except Exception as e:
-            logger.error(f"   [X] Failed to get commit history: {e}")
+            logger.error(f'   [X] Failed to get commit history: {e}')
             return []
 
-
-def get_git_safety_handler(mcp_router) -> GitSafetyHandler:
+def get_git_safety_handler(mcp_router: Any) -> GitSafetyHandler:
     """
     Factory function to create GitSafetyHandler instance.
     

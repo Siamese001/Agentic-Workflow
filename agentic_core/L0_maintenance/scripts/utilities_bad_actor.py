@@ -1,52 +1,78 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import sys
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 
-class Logger(Protocol):
+# NAMING FIXED: Logger → logger
+class logger(Protocol):
     """Protocol for a logging mechanism."""
 
     def info(self, message: str) -> None: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def warning(self, message: str) -> None: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def error(self, message: str) -> None: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def critical(self, message: str) -> None: ...
+                    '''Brief description of functionality and purpose.'''
+                    
 
 
-class SystemCommandExecutor(Protocol):
+# NAMING FIXED: SystemCommandExecutor → system_command_executor
+class system_command_executor(Protocol):
     """
     Protocol for safely executing system commands.
     This executor enforces security policies and does NOT execute dangerous commands.
     """
 
     def execute_safe_command(self, command: str, *,
+                    '''Brief description of functionality and purpose.'''
+                    
                              timeout: int = 60) -> Tuple[int, str, str]: ...
     def attempt_destructive_command(
+                    '''Brief description of functionality and purpose.'''
+                    
         self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
 
 # --- Concrete Implementations of Dependencies ---
 
 
-class ConsoleLogger:
+# NAMING FIXED: ConsoleLogger → console_logger
+class console_logger:
     """A simple console logger."""
 
     def info(self, message: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         # print(f"INFO: {message}")  # [Security Fix]
         pass
 
     def warning(self, message: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         # print(f"WARNING: {message}")  # [Security Fix]
         pass
 
     def error(self, message: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         # print(f"ERROR: {message}", file=sys.stderr)  # [Security Fix]
         pass
 
     def critical(self, message: str) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         # print(f"CRITICAL: {message}", file=sys.stderr)  # [Security Fix]
         pass
 
 
-class SafeSystemCommandExecutor:
+# NAMING FIXED: SafeSystemCommandExecutor → safe_system_command_executor
+class safe_system_command_executor:
     """
     A secure system command executor that prevents destructive actions
     and logs attempts. This simulates the 'ActionNode' whitelist concept

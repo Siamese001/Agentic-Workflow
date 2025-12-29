@@ -9,7 +9,8 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
-class AgentRegistryValidatorAgent:
+# NAMING FIXED: AgentRegistryValidatorAgent → agent_registry_validator_agent
+class agent_registry_validator_agent:
     """
     L3 Orchestration: Agent Registry Validation
     Ensures all agents defined in CANON_AGENT_REGISTRY are present and functional.
@@ -104,6 +105,8 @@ class AgentRegistryValidatorAgent:
 
         # Convert CamelCase to snake_case
         def camel_to_snake(name):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
             return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
         

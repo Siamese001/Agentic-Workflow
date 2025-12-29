@@ -146,10 +146,14 @@ def run_daemon_mode():
 
     # Wrap handler to work with watchdog's FileSystemEventHandler
     class WatchdogAdapter(FileSystemEventHandler):
+                    '''Brief description of functionality and purpose.'''
+                    
         def __init__(self, watchman_handler):
             self.watchman = watchman_handler
 
         def on_modified(self, event):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             self.watchman.on_modified(event)
 
     adapter = WatchdogAdapter(handler)
@@ -274,6 +278,8 @@ def run_standard_mode():
     ctx.instructions.append("[SYSTEM] MUTATION MODE: Agents should fix violations, not just report them.")
 
     async def run_mission():
+                    '''Brief description of functionality and purpose.'''
+                    
         MAX_CYCLES = 5
         cycle = 0
 
@@ -340,6 +346,8 @@ def _start_websocket_server(ctx):
     import threading
 
     async def ws_handler(websocket):
+                    '''Brief description of functionality and purpose.'''
+                    
         ctx.websocket_clients.add(websocket)
         try:
             await websocket.wait_closed()
@@ -347,11 +355,15 @@ def _start_websocket_server(ctx):
             ctx.websocket_clients.discard(websocket)
 
     async def start_ws_server():
+                    '''Brief description of functionality and purpose.'''
+                    
         async with websockets.serve(ws_handler, "127.0.0.1", 8765):
             print("   📡 L5: Live reasoning stream at ws://127.0.0.1:8765")
             await asyncio.Future()
 
     def run_ws_server():
+                    '''Brief description of functionality and purpose.'''
+                    
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(start_ws_server())

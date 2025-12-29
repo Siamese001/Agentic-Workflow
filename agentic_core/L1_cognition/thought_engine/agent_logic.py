@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import json
 import logging
 import re
@@ -13,7 +15,8 @@ from db_manager import HybridDatabaseManager
 
 
 @dataclass
-class CanonEntry:
+# NAMING FIXED: CanonEntry → canon_entry
+class canon_entry:
     """Local Canon Entry type - moved from schemas to fix gravity violation."""
     id: str
     code_snippet: str
@@ -25,16 +28,22 @@ class CanonEntry:
     last_used: Optional[str] = None
 
     def get_success_rate(self) -> float:
+                    '''Brief description of functionality and purpose.'''
+                    
         total_count = self.success_count + self.failure_count
         if total_count == 0:
             return 0.0
         return self.success_count / total_count
 
     def update_failure(self) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.failure_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
     def update_success(self) -> None:
+                    '''Brief description of functionality and purpose.'''
+                    
         self.success_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
@@ -42,7 +51,8 @@ class CanonEntry:
 logger = logging.getLogger(__name__)
 
 
-class CanonValidator:
+# NAMING FIXED: CanonValidator → canon_validator
+class canon_validator:
     """
     The L5 Meta-Learner that validates code against the Canon.
 

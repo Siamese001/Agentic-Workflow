@@ -13,7 +13,8 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-class TerritoryChangeHandler(FileSystemEventHandler):
+# NAMING FIXED: TerritoryChangeHandler → territory_change_handler
+class territory_change_handler(FileSystemEventHandler):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
     def __init__(self, daemon):
         self.daemon = daemon
@@ -22,6 +23,8 @@ class TerritoryChangeHandler(FileSystemEventHandler):
         super().__init__()
 
     def on_modified(self, event):
+                    '''Brief description of functionality and purpose.'''
+                    
         if event.is_directory:
             return
         if event.src_path.endswith((".py", ".json", ".yaml", ".md", ".txt")):
@@ -33,7 +36,8 @@ class TerritoryChangeHandler(FileSystemEventHandler):
                     lambda: asyncio.create_task(self.daemon.trigger_reindex())
                 )
 
-class AutonomousRAGDaemon:
+# NAMING FIXED: AutonomousRAGDaemon → autonomous_rag_daemon
+class autonomous_rag_daemon:
     """L3: Self-monitoring RAG system with autonomous health checks"""
     
     def __init__(self, orchestrator, retriever, historian):

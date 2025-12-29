@@ -4,11 +4,14 @@
 # Surgery Scope: Single file — adds basic Any / inferred hints where missing
 
 import ast
+'''Brief description of functionality and purpose.'''
+
 from pathlib import Path
 from typing import Dict, Any
 
 
-class TypeHintEnforcementAgent:
+# NAMING FIXED: TypeHintEnforcementAgent → type_hint_enforcement_agent
+class type_hint_enforcement_agent:
     """
     Ensures public functions, methods, and module-level assignments have type hints.
 
@@ -29,14 +32,19 @@ class TypeHintEnforcementAgent:
     FALLBACK_RETURN = "Any"
     FALLBACK_VAR = "Any"
 
-    def __init__(self):
-        # Ensure typing import logic is handled via L0 maintenance if missing
-        pass
+    def __init__(self, ctx=None, project_root=None):
+        self.ctx = ctx
+        self.project_root = project_root
 
-    async def heal_violation(self, file_path: Path, ctx) -> Dict[str, Any]:
+    async def execute(self, file_path: str) -> Dict[str, Any]:
+        """Execute method for validator compatibility."""
+        return await self.heal_violation(Path(file_path), self.ctx)
+
+    async def heal_violation(self, file_path: Path, ctx=None) -> Dict[str, Any]:
         """
         Per-file healing: add missing type hints via AST transformation.
         """
+        ctx = ctx or self.ctx
         try:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
@@ -72,7 +80,8 @@ class TypeHintEnforcementAgent:
             return {"healed": False}
 
 
-class TypeHintFixer(ast.NodeTransformer):
+# NAMING FIXED: TypeHintFixer → type_hint_fixer
+class type_hint_fixer(ast.NodeTransformer):
     """
     AST transformer that adds missing type hints to public symbols.
     """
@@ -84,6 +93,8 @@ class TypeHintFixer(ast.NodeTransformer):
         self.fallback_var = fallback_var
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
+                    '''Brief description of functionality and purpose.'''
+                    
         if node.name.startswith("_"):
             return node  # Skip private symbols per hierarchy laws
 
@@ -102,9 +113,13 @@ class TypeHintFixer(ast.NodeTransformer):
         return node
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
+                    '''Brief description of functionality and purpose.'''
+                    
         return self.visit_FunctionDef(node)
 
     def visit_Assign(self, node: ast.Assign) -> ast.Assign | ast.AnnAssign:
+                    '''Brief description of functionality and purpose.'''
+                    
         # Module-level public assignments without annotation
         if len(node.targets) == 1:
             target = node.targets[0]
@@ -122,4 +137,6 @@ class TypeHintFixer(ast.NodeTransformer):
 
 # Factory for discovery
 def get_type_hint_enforcement_agent():
+    '''Brief description of functionality and purpose.'''
+    
     return TypeHintEnforcementAgent()

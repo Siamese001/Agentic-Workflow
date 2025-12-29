@@ -1,8 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class AirlockProtocol:
+# NAMING FIXED: AirlockProtocol → airlock_protocol
+class airlock_protocol:
     """
     L5 Safety Guardrail: The Execution Airlock.
     Validates tool calls against a mission-specific permission matrix.

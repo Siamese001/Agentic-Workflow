@@ -13,7 +13,8 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 )
 
 
-class CachedOrchestrator:
+# NAMING FIXED: CachedOrchestrator → cached_orchestrator
+class cached_orchestrator:
     """
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
     """
@@ -50,6 +51,8 @@ class CachedOrchestrator:
         except Exception: pass
 
     def cache_fission_decision(self, file_path: Path, decision: Dict):
+                    '''Brief description of functionality and purpose.'''
+                    
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
         try:
@@ -57,6 +60,8 @@ class CachedOrchestrator:
         except: pass
 
     def get_cached_fission(self, file_path: Path) -> Optional[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
         try:
@@ -65,12 +70,16 @@ class CachedOrchestrator:
         except: return None
 
     def cache_routing_decision(self, task: str, delegation: Dict):
+                    '''Brief description of functionality and purpose.'''
+                    
         key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
         try:
             self.redis.set(key, json.dumps(delegation), ex=3600) # 1 hour
         except: pass
 
     def get_cached_routing(self, task: str) -> Optional[Dict]:
+                    '''Brief description of functionality and purpose.'''
+                    
         key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
         try:
             data = self.redis.get(key)

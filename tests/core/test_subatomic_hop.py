@@ -6,122 +6,118 @@ All tests are skipped until the original implementation is fixed.
 """
 import logging
 import re
-
-
 import pytest
 
-
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_initialization():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_initialization() -> Any:
     """
     Test SubatomicHop initialization.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_successful_execution():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_successful_execution() -> Any:
     """
     Test successful execution through all stages.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_async_function_execution():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_async_function_execution() -> Any:
     """
     Test execution with async hop function.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_input_validation_failure():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_input_validation_failure() -> Any:
     """
     Test pre-check validation failure.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_stage_retry_mechanism():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_stage_retry_mechanism() -> Any:
     """
     Test retry mechanism for failing stages.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_checkpoint_save_and_resume():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_checkpoint_save_and_resume() -> Any:
     """
     Test checkpoint saving and resuming.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_critique_quality_gate():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_critique_quality_gate() -> Any:
     """
     Test critique stage quality gate.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_atomic_commit():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_atomic_commit() -> Any:
     """
     Test atomic commit pattern.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_observability_logging():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_observability_logging() -> Any:
     """
     Test observability and logging.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_get_status():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_get_status() -> Any:
     """
     Test status reporting.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_cleanup():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_cleanup() -> Any:
     """
     Test checkpoint cleanup.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_factory_function():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_factory_function() -> Any:
     """
     Test the create_subatomic_hop factory function.
     """
 
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_decorator_pattern():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_decorator_pattern() -> Any:
     """
     Test the subatomic_hop decorator.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_timeout_protection():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_timeout_protection() -> Any:
     """
     Test execution timeout protection.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_exponential_backoff():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_exponential_backoff() -> Any:
     """
     Test exponential backoff in retries.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_data_processing_pipeline():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_data_processing_pipeline() -> Any:
     """
     Test SubatomicHop in a data processing scenario.
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_error_recovery_with_checkpoints():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_error_recovery_with_checkpoints() -> Any:
     """
     Test error recovery using checkpoints.
     """
-

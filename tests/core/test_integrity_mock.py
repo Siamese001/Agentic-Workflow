@@ -1,4 +1,6 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import uuid
 
 import numpy as np
@@ -17,73 +19,100 @@ logger = logging.getLogger(__name__)
 
 
 def print_step(step_name):
+    '''Brief description of functionality and purpose.'''
+    
     pass
     # print(f"\n🔹 TESTING: {step_name}")  # [Security Fix]
     # print("-" * 50)  # [Security Fix]
 
 
 def print_success(message):
+    '''Brief description of functionality and purpose.'''
+    
     pass
     # print(f"   ✅ PASS: {message}")  # [Security Fix]
 
 
 def print_fail(message):
+    '''Brief description of functionality and purpose.'''
+    
     pass
     # print(f"   ❌ FAIL: {message}")  # [Security Fix]
 
 
-class MockRedisClient:
+# NAMING FIXED: MockRedisClient → mock_redis_client
+class mock_redis_client:
     """Mock Redis client for testing data transformations."""
 
     def __init__(self):
         self.data = {}
 
     def hset(self, key, mapping):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.data[key] = mapping
 
     def hgetall(self, key):
+                    '''Brief description of functionality and purpose.'''
+                    
         return self.data.get(key, {})
 
     def delete(self, key):
+                    '''Brief description of functionality and purpose.'''
+                    
         if key in self.data:
             del self.data[key]
 
     @property
     def client(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         return self
 
 
-class MockPineconeIndex:
+# NAMING FIXED: MockPineconeIndex → mock_pinecone_index
+class mock_pinecone_index:
     """Mock Pinecone index for testing data transformations."""
 
     def __init__(self):
         self.vectors = {}
 
     def upsert(self, vectors):
+                    '''Brief description of functionality and purpose.'''
+                    
         for vec in vectors:
             self.vectors[vec['id']] = vec
 
     def fetch(self, ids):
+                    '''Brief description of functionality and purpose.'''
+                    
         return {'vectors': {id_: self.vectors[id_] for id_ in ids if id_ in self.vectors}}
 
     def delete(self, ids):
+                    '''Brief description of functionality and purpose.'''
+                    
         for id_ in ids:
             if id_ in self.vectors:
                 del self.vectors[id_]
 
 
-class MockSearchIndex:
+# NAMING FIXED: MockSearchIndex → mock_search_index
+class mock_search_index:
     """Mock RedisVL SearchIndex for testing."""
 
     def __init__(self):
         pass
 
     def query(self, query):
+                    '''Brief description of functionality and purpose.'''
+                    
         # Return mock results for testing
         return [type('Result', (), {'id': 'test-id'})()]
 
 
 def run_integrity_test():
+    '''Brief description of functionality and purpose.'''
+    
     # print("\n🧪 STARTING DATA INTEGRITY SUITE (MOCK)")  # [Security Fix]
     # print("============================================================")  # [Security Fix]
 

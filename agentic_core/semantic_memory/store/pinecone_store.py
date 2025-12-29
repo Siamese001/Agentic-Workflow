@@ -1,35 +1,24 @@
-# Sovereign Pinecone Vector Store
-# Territory: agentic_core/semantic_memory/store
-# Canon Key 9 - Persistent vector database
-# Requires: pip install pinecone-client
-
 from pinecone import Pinecone, ServerlessSpec
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from typing import List, Optional
 import os
 
-
-class PineconeVectorStore:
+class pinecone_vector_store:
     """
     Sovereign wrapper for Pinecone vector database.
     """
 
-    def __init__(self, index_name: str = "sovereign-rag"):
-        api_key = os.getenv("PINECONE_API_KEY")
+    def __init__(self, index_name: str='sovereign-rag'):
+        api_key = os.getenv('PINECONE_API_KEY')
         if not api_key:
-            raise ValueError("PINECONE_API_KEY not set")
-
+            raise ValueError('PINECONE_API_KEY not set')
         self.pc = Pinecone(api_key=api_key)
         self.index_name = index_name
-        self.dimension = int(os.getenv("EMBEDDING_DIMENSION", "768"))
-
+        self.dimension = int(os.getenv('EMBEDDING_DIMENSION', '768'))
         if index_name not in self.pc.list_indexes().names():
-            self.pc.create_index(
-                name=index_name,
-                dimension=self.dimension,
-                metric="cosine",
-                spec=ServerlessSpec(cloud="aws", region="us-east-1")
-            )
-
+            self.pc.create_index(name=index_name, dimension=self.dimension, metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
         self.index = self.pc.Index(index_name)
 
     def upsert(self, vectors: List[tuple[str, List[float], dict]]) -> None:
@@ -38,27 +27,15 @@ class PineconeVectorStore:
         """
         self.index.upsert(vectors=vectors)
 
-    def query(self, query_embedding: List[float], top_k: int = 5) -> List[dict]:
+    def query(self, query_embedding: List[float], top_k: int=5) -> List[dict]:
         """Query similar vectors."""
-        results = self.index.query(
-            vector=query_embedding,
-            top_k=top_k,
-            include_metadata=True
-        )
-        return [
-            {
-                "id": match["id"],
-                "score": match["score"],
-                "metadata": match["metadata"],
-            }
-            for match in results["matches"]
-        ]
+        results: Any = self.index.query(vector=query_embedding, top_k=top_k, include_metadata=True)
+        return [{'id': match['id'], 'score': match['score'], 'metadata': match['metadata']} for match in results['matches']]
 
     def delete_all(self) -> None:
         """Clear index — use with caution."""
         self.index.delete(delete_all=True)
 
-
-# Factory
 def get_pinecone_store() -> PineconeVectorStore:
+    """Brief description of functionality and purpose."""
     return PineconeVectorStore()

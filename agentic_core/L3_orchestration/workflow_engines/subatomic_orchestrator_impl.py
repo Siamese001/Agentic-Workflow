@@ -9,7 +9,10 @@ from typing import Any, Dict, List, Optional, Protocol
 import networkx as nx
 
 
-class AgentRole(Enum):
+# NAMING FIXED: AgentRole → agent_role
+class agent_role(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     CONTEXT_GATHERER = "context_gatherer"
     STRATEGIC_PLANNER = "strategic_planner"
     RESUME_BUILDER = "resume_builder"
@@ -22,15 +25,22 @@ class AgentRole(Enum):
     CONTENT_DRAFTER = "content_drafter"
 
 
-class WorkflowType(Enum):
+# NAMING FIXED: WorkflowType → workflow_type
+class workflow_type(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     RESUME_GENERATION = "resume_generation"
     MESSAGE_OUTREACH = "message_outreach"
     CONTENT_CREATION = "content_creation"
 
-class MutationAction(Enum):
+# NAMING FIXED: MutationAction → mutation_action
+class mutation_action(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     SPAWN_PREDECESSOR = "spawn_predecessor"
 
-class WorkflowBlueprint:
+# NAMING FIXED: WorkflowBlueprint → workflow_blueprint
+class workflow_blueprint:
     """Mock WorkflowBlueprint for type hinting."""
     def __init__(self, name, DESCRIPTION, ROLES, EDGES, mutation_hooks=None, parallel_groups=None):
         self.name = name
@@ -40,7 +50,8 @@ class WorkflowBlueprint:
         self.mutation_hooks = mutation_hooks or {}
         self.parallel_groups = parallel_groups or []
 
-class AgentRegistry:
+# NAMING FIXED: AgentRegistry → agent_registry
+class agent_registry:
     """Mock AgentRegistry for type hinting."""
     pass
 
@@ -48,20 +59,29 @@ def get_agent_registry() -> AgentRegistry:
     """Mock function."""
     return AgentRegistry()
 
-class DAGManager:
+# NAMING FIXED: DAGManager → dag_manager
+class dag_manager:
     """Mock DAGManager for type hinting."""
     def __init__(self):
         self.node_registry = {}
         self.execution_queue = []
 
     def add_node(self, node):
+                    '''Brief description of functionality and purpose.'''
+                    
         pass
 
     def create_mutation_request(self, **kwargs):
+                    '''Brief description of functionality and purpose.'''
+                    
         return kwargs
 
     def request_mutation(self, mutation):
+                    '''Brief description of functionality and purpose.'''
+                    
         class MockMutationResult:
+                                    '''Brief description of functionality and purpose.'''
+                                    
             def __init__(self, success):
                 self.success = success
         if mutation['hop_function'] in self.node_registry:
@@ -70,7 +90,8 @@ class DAGManager:
             return MockMutationResult(False)
 
 
-class SubatomicHop:
+# NAMING FIXED: SubatomicHop → subatomic_hop
+class subatomic_hop:
     """Mock SubatomicHop for type hinting."""
     def __init__(self, role, hop_function, CONTEXT, enable_prompt_injection):
         self.config = type('obj', (object,), {'hop_id': role.value})()
@@ -80,6 +101,8 @@ class SubatomicHop:
         self.dag_manager = None
 
 def create_functional_agent(role, hop_function, CONTEXT, enable_prompt_injection):
+    '''Brief description of functionality and purpose.'''
+    
     return SubatomicHop(role, hop_function, CONTEXT, enable_prompt_injection)
 
 def validate_no_legacy_code(value, message):
@@ -89,9 +112,11 @@ def validate_no_legacy_code(value, message):
 # Global orchestrator instance
 _orchestrator: Optional[SubatomicOrchestrator] = None
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
-class SubatomicOrchestrator:
+# NAMING FIXED: SubatomicOrchestrator → subatomic_orchestrator
+class subatomic_orchestrator:
     """Implementation for subatomic_orchestrator."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):

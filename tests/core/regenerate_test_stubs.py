@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 
-class TestStubGenerator:
+# NAMING FIXED: TestStubGenerator → test_stub_generator
+class test_stub_generator:
     def __init__(self, tests_dir: str = "tests"):
         self.tests_dir = Path(tests_dir)
         self.regenerated_files = []

@@ -10,11 +10,13 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SubTask:
+# NAMING FIXED: SubTask → sub_task
+class sub_task:
     """A sub-task in the recursive plan."""
     task_id: str
     description: str
@@ -25,7 +27,8 @@ class SubTask:
 
 
 @dataclass
-class RecursivePlan:
+# NAMING FIXED: RecursivePlan → recursive_plan
+class recursive_plan:
     """A plan that can spawn sub-workflows."""
     main_goal: str
     subtasks: List[SubTask]
@@ -34,7 +37,8 @@ class RecursivePlan:
     success_criteria: List[str]
 
 
-class RecursivePlannerAgent:
+# NAMING FIXED: RecursivePlannerAgent → recursive_planner_agent
+class recursive_planner_agent:
     """
     An executive agent that designs and manages complex workflows.
 
@@ -204,6 +208,8 @@ Format as JSON:
         rec_stack = set()
 
         def has_cycle(task_id):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             visited.add(task_id)
             rec_stack.add(task_id)
 
@@ -481,6 +487,8 @@ Format as JSON:
         task_map = {t.task_id: t for t in tasks}
 
         def get_task_level(task_id, visited=None):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             if visited is None:
                 visited = set()
 

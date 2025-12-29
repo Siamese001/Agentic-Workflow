@@ -1,18 +1,18 @@
 import os
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import sys
 from typing import Any, List, Dict, Optional
 
 def get_existing_files() -> Set[str]:
     """Get set of all Python files in sovereign codebase."""
-    existing = set()
-    repo_root = Path(".")
-
+    existing: Any = set()
+    repo_root: Any = Path('.')
     for root in SOVEREIGN_ROOTS:
-        root_path = repo_root / root
+        root_path: Any = repo_root / root
         if root_path.exists():
-            for py_file in root_path.rglob("*.py"):
-                # Store relative path from repo root
-                rel_path = py_file.relative_to(repo_root)
+            for py_file in root_path.rglob('*.py'):
+                rel_path: Any = py_file.relative_to(repo_root)
                 existing.add(str(rel_path))
-
     return existing

@@ -8,17 +8,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
+healing_log: Any = Path('agentic_core/L6_observability/logs/healing_audit.jsonl')
 
-# Healing audit log location
-HEALING_LOG = Path("agentic_core/L6_observability/logs/healing_audit.jsonl")
-
-
-def log_healing_action(
-    action: str,
-    fix: Dict,
-    success: bool,
-    error: Optional[str] = None
-) -> None:
+def log_healing_action(action: str, fix: Dict, success: bool, error: Optional[str]=None) -> None:
     """
     Log a healing action to the L6 audit trail.
     
@@ -28,32 +20,16 @@ def log_healing_action(
         success: Whether the fix was applied successfully
         error: Optional error message if fix failed
     """
-    entry = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "action": action,
-        "fix_details": fix,
-        "success": success,
-        "error": error,
-        "strategy": fix.get("strategy", "unknown"),
-        "priority": fix.get("priority", 10),
-        "file": fix.get("file", "N/A"),
-        "reason": fix.get("reason", "N/A")
-    }
-    
-    # Ensure log directory exists
+    entry: Any = {'timestamp': datetime.utcnow().isoformat(), 'action': action, 'fix_details': fix, 'success': success, 'error': error, 'strategy': fix.get('strategy', 'unknown'), 'priority': fix.get('priority', 10), 'file': fix.get('file', 'N/A'), 'reason': fix.get('reason', 'N/A')}
     HEALING_LOG.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Append to JSONL log with flush to ensure write persistence
     try:
-        with open(HEALING_LOG, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry) + "\n")
+        with open(HEALING_LOG, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(entry) + '\n')
             f.flush()
     except Exception as e:
-        # Fallback print if file IO fails
-        print(f"!!! [L6 FATAL] Could not write to healing log: {e}")
+        print(f'!!! [L6 FATAL] Could not write to healing log: {e}')
 
-
-def get_healing_history(limit: int = 100) -> list:
+def get_healing_history(limit: int=100) -> list:
     """
     Retrieve recent healing actions from the audit log.
     
@@ -65,18 +41,14 @@ def get_healing_history(limit: int = 100) -> list:
     """
     if not HEALING_LOG.exists():
         return []
-    
-    history = []
-    with open(HEALING_LOG, "r", encoding="utf-8") as f:
+    history: Any = []
+    with open(HEALING_LOG, 'r', encoding='utf-8') as f:
         for line in f:
             try:
                 history.append(json.loads(line))
             except json.JSONDecodeError:
                 continue
-    
-    # Return most recent entries
     return history[-limit:]
-
 
 def get_healing_stats() -> Dict:
     """
@@ -85,27 +57,11 @@ def get_healing_stats() -> Dict:
     Returns:
         Dictionary with success rate, total fixes, etc.
     """
-    history = get_healing_history(limit=1000)
-    
+    history: Any = get_healing_history(limit=1000)
     if not history:
-        return {
-            "total_fixes": 0,
-            "successful_fixes": 0,
-            "failed_fixes": 0,
-            "success_rate": 0.0,
-            "strategies_used": []
-        }
-    
-    total = len(history)
-    successful = sum(1 for h in history if h.get("success", False))
-    failed = total - successful
-    
-    strategies = list(set(h.get("strategy", "unknown") for h in history))
-    
-    return {
-        "total_fixes": total,
-        "successful_fixes": successful,
-        "failed_fixes": failed,
-        "success_rate": (successful / total * 100) if total > 0 else 0.0,
-        "strategies_used": strategies
-    }
+        return {'total_fixes': 0, 'successful_fixes': 0, 'failed_fixes': 0, 'success_rate': 0.0, 'strategies_used': []}
+    total: Any = len(history)
+    successful: Any = sum((1 for h in history if h.get('success', False)))
+    failed: Any = total - successful
+    strategies: Any = list(set((h.get('strategy', 'unknown') for h in history)))
+    return {'total_fixes': total, 'successful_fixes': successful, 'failed_fixes': failed, 'success_rate': successful / total * 100 if total > 0 else 0.0, 'strategies_used': strategies}

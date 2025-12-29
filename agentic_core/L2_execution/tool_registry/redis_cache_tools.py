@@ -6,11 +6,9 @@ Tool ID Prefix: ACT-004
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger('ActionRegistry.RedisCache')
 
-logger = logging.getLogger("ActionRegistry.RedisCache")
-
-
-class RedisCache:
+class redis_cache:
     """
     Provides mock Redis-like caching functionalities for L1 caching.
     Tool ID Prefix: ACT-004
@@ -20,7 +18,7 @@ class RedisCache:
         """Initializes the mock Redis storage."""
         self._redis_store: Dict[str, str] = {}
         self._redis_hash: Dict[str, Dict[str, str]] = {}
-        logger.info("📦 Mock RedisCache initialized.")
+        logger.info('📦 Mock RedisCache initialized.')
 
     def string_set(self, key: str, value: str) -> str:
         """
@@ -35,7 +33,7 @@ class RedisCache:
             str: A confirmation message.
         """
         self._redis_store[key] = value
-        display_value = f"{value[:50]}{'...' if len(value) > 50 else ''}"
+        display_value: Any = f"{value[:50]}{('...' if len(value) > 50 else '')}"
         logger.info(f"📦 Redis SET: '{key}' = '{display_value}'")
         return f"OK: Stored '{key}'"
 
@@ -50,11 +48,11 @@ class RedisCache:
         Returns:
             str: The retrieved string value or a "NULL" message if not found.
         """
-        value = self._redis_store.get(key)
+        value: Any = self._redis_store.get(key)
         if value is None:
             logger.info(f"📦 Redis GET: '{key}' not found.")
             return f"NULL: Key '{key}' not found"
-        display_value = f"{value[:50]}{'...' if len(value) > 50 else ''}"
+        display_value: Any = f"{value[:50]}{('...' if len(value) > 50 else '')}"
         logger.info(f"📦 Redis GET: '{key}' = '{display_value}'")
         return value
 
@@ -74,7 +72,7 @@ class RedisCache:
         if key not in self._redis_hash:
             self._redis_hash[key] = {}
         self._redis_hash[key][field] = value
-        display_value = f"{value[:50]}{'...' if len(value) > 50 else ''}"
+        display_value: Any = f"{value[:50]}{('...' if len(value) > 50 else '')}"
         logger.info(f"📦 Redis HSET: '{key}'.'{field}' = '{display_value}'")
         return f"OK: Stored '{key}'.'{field}'"
 
@@ -93,10 +91,8 @@ class RedisCache:
         if key not in self._redis_hash or field not in self._redis_hash[key]:
             logger.info(f"📦 Redis HGET: '{key}'.'{field}' not found.")
             return f"NULL: Hash field '{key}'.'{field}' not found"
-        value = self._redis_hash[key][field]
-        display_value = f"{value[:50]}{'...' if len(value) > 50 else ''}"
+        value: Any = self._redis_hash[key][field]
+        display_value: Any = f"{value[:50]}{('...' if len(value) > 50 else '')}"
         logger.info(f"📦 Redis HGET: '{key}'.'{field}' = '{display_value}'")
         return value
-
-
 __all__ = ['RedisCache']

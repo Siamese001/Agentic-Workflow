@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
@@ -9,7 +13,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-class MatchRecipientPatterns:
+# NAMING FIXED: MatchRecipientPatterns → match_recipient_patterns
+class match_recipient_patterns:
     """MatchRecipientPatterns implementation."""
 
 

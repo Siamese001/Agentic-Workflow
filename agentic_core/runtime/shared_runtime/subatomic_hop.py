@@ -1,24 +1,20 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import time
 import uuid
 from typing import Any, Dict, List, Optional, Protocol
-
 from agentic_core.schemas.models.core_contracts import AgentPlan
 from agentic_core.config.blueprint_sovereign import ConfigurationService
 from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class SovereignDependencyError(Exception):
+class sovereign_dependency_error(Exception):
     """Raised when a required dependency is not injected into a Sovereign component."""
     pass
 
-
-# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
-
-
-class SubatomicHop:
+class subatomic_hop:
     """
     Sovereign SubatomicHop with Dependency Injection.
     
@@ -26,25 +22,7 @@ class SubatomicHop:
     at the import level. All required logic is injected at runtime.
     """
 
-    def __init__(
-        self,
-        role: str,
-        config: Dict,
-        # Injected Dependencies (The Sovereign Lego Pattern)
-        storage: Optional[Any] = None,
-        genealogy: Optional[Any] = None,
-        pii_vault: Optional[Any] = None,
-        cost_governor: Optional[Any] = None,
-        overseer: Optional[Any] = None,
-        membrane: Optional[Any] = None,
-        airlock: Optional[Any] = None,
-        supreme_court: Optional[Any] = None,
-        mcp_manager: Optional[Any] = None,
-        sandbox: Optional[Any] = None,
-        structured_engine: Optional[Any] = None,
-        gatekeeper: Optional[Any] = None,
-        telemetry: Optional[Any] = None,
-    ) -> None:
+    def __init__(self, role: str, config: Dict, storage: Optional[Any]=None, genealogy: Optional[Any]=None, pii_vault: Optional[Any]=None, cost_governor: Optional[Any]=None, overseer: Optional[Any]=None, membrane: Optional[Any]=None, airlock: Optional[Any]=None, supreme_court: Optional[Any]=None, mcp_manager: Optional[Any]=None, sandbox: Optional[Any]=None, structured_engine: Optional[Any]=None, gatekeeper: Optional[Any]=None, telemetry: Optional[Any]=None) -> None:
         """Initialize SubatomicHop with injected dependencies.
         
         Args:
@@ -70,21 +48,19 @@ class SubatomicHop:
         self.role = role
         self.id = str(uuid.uuid4())
         self.config = config
-        
-        # Bedrock Validation: Ensure the 'Boss' handed us the tools we need
-        self.storage = self._ensure_dep(storage, "LocalDiskAdapter")
-        self.genealogy = self._ensure_dep(genealogy, "GenealogyRegistry")
-        self.pii = self._ensure_dep(pii_vault, "PIIVault")
-        self.governor = self._ensure_dep(cost_governor, "CostGovernor")
-        self.overseer = self._ensure_dep(overseer, "ConstitutionalOverseer")
-        self.membrane = self._ensure_dep(membrane, "InputMembrane")
-        self.airlock = self._ensure_dep(airlock, "AirlockProtocol")
-        self.supreme_court = self._ensure_dep(supreme_court, "SupremeCourt")
-        self.mcp = self._ensure_dep(mcp_manager, "MCPConnectionManager")
-        self.sandbox = self._ensure_dep(sandbox, "DockerSandbox")
-        self.structured_engine = self._ensure_dep(structured_engine, "StructuredEngine")
-        self.gatekeeper = self._ensure_dep(gatekeeper, "SemanticGatekeeper")
-        self.telemetry = self._ensure_dep(telemetry, "TelemetryRecorder")
+        self.storage = self._ensure_dep(storage, 'LocalDiskAdapter')
+        self.genealogy = self._ensure_dep(genealogy, 'GenealogyRegistry')
+        self.pii = self._ensure_dep(pii_vault, 'PIIVault')
+        self.governor = self._ensure_dep(cost_governor, 'CostGovernor')
+        self.overseer = self._ensure_dep(overseer, 'ConstitutionalOverseer')
+        self.membrane = self._ensure_dep(membrane, 'InputMembrane')
+        self.airlock = self._ensure_dep(airlock, 'AirlockProtocol')
+        self.supreme_court = self._ensure_dep(supreme_court, 'SupremeCourt')
+        self.mcp = self._ensure_dep(mcp_manager, 'MCPConnectionManager')
+        self.sandbox = self._ensure_dep(sandbox, 'DockerSandbox')
+        self.structured_engine = self._ensure_dep(structured_engine, 'StructuredEngine')
+        self.gatekeeper = self._ensure_dep(gatekeeper, 'SemanticGatekeeper')
+        self.telemetry = self._ensure_dep(telemetry, 'TelemetryRecorder')
 
     def _ensure_dep(self, dep: Any, name: str) -> Any:
         """Validate that a required dependency was injected.
@@ -100,15 +76,12 @@ class SubatomicHop:
             SovereignDependencyError: If dependency is None
         """
         if dep is None:
-            raise SovereignDependencyError(
-                f"SubatomicHop missing critical tool: {name}. "
-                "Orchestration layer must inject this dependency to maintain Gravity Compliance."
-            )
+            raise SovereignDependencyError(f'SubatomicHop missing critical tool: {name}. Orchestration layer must inject this dependency to maintain Gravity Compliance.')
         return dep
 
     async def run(self, context: Dict) -> Any:
         """Execute the hop with zero-trust protections."""
-        trace_id = context.get('trace_id', self.id)
+        trace_id: Any = context.get('trace_id', self.id)
         return await self._run_with_zero_trust(context, trace_id)
 
     async def _run_with_zero_trust(self, context: Dict, trace_id: str) -> Any:
@@ -119,17 +92,7 @@ class SubatomicHop:
             results, act_cost = await self._execute_act_stage(plan, trace_id)
             validated_output = await self._execute_critique_stage(results, trace_id)
             final_output = await self._execute_commit_stage(validated_output, trace_id)
-            
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f'{self.id}_complete',
-                    ROLE=self.role,
-                    event_type='SUCCESS',
-                    PAYLOAD={'total_cost': think_cost + act_cost, 'zero_trust': True},
-                    TIMESTAMP=time.time()
-                )
-            )
+            self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_complete', ROLE=self.role, event_type='SUCCESS', PAYLOAD={'total_cost': think_cost + act_cost, 'zero_trust': True}, TIMESTAMP=time.time()))
             return final_output
         except Exception as e:
             self._handle_error(trace_id, e)
@@ -142,20 +105,9 @@ class SubatomicHop:
         context_hash = str(hash(str(context)))
         self.genealogy.register_attempt(trace_id, str(context.get('task', '')), context_hash)
         await self.mcp.connect(self.role)
-        
         sanitized_context = await self._sanitize_input(context, trace_id)
         context.update(sanitized_context)
-        
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_preflight',
-                ROLE=self.role,
-                event_type='PREFLIGHT_COMPLETE',
-                PAYLOAD={'checks': ['genealogy', 'mcp', 'membrane']},
-                TIMESTAMP=time.time()
-            )
-        )
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_preflight', ROLE=self.role, event_type='PREFLIGHT_COMPLETE', PAYLOAD={'checks': ['genealogy', 'mcp', 'membrane']}, TIMESTAMP=time.time()))
 
     async def _sanitize_input(self, context: Dict, trace_id: str) -> Dict:
         """Sanitize all inputs through the membrane."""
@@ -165,16 +117,7 @@ class SubatomicHop:
                 sanitized_value = await self.membrane.sanitize(value, f'context_{key}')
                 sanitized[key] = sanitized_value
                 if sanitized_value != value:
-                    self.telemetry.record(
-                        TraceEvent(
-                            trace_id=trace_id,
-                            span_id=key,
-                            ROLE=self.role,
-                            event_type='CONTENT_SANITIZED',
-                            PAYLOAD={'original_length': len(value), 'sanitized_length': len(sanitized_value)},
-                            TIMESTAMP=time.time()
-                        )
-                    )
+                    self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=key, ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={'original_length': len(value), 'sanitized_length': len(sanitized_value)}, TIMESTAMP=time.time()))
             else:
                 sanitized[key] = value
         return sanitized
@@ -183,55 +126,23 @@ class SubatomicHop:
         """Execute the thinking stage with multi-model consensus."""
         risk_level = self._assess_task_risk(context.get('task', ''))
         await self._check_past_failures(context.get('task', ''))
-        
         try:
-            verdict = await self.supreme_court.deliberate(
-                CONTEXT=str(context),
-                GOAL=context.get('task', ''),
-                risk_level=risk_level
-            )
-            plan = AgentPlan(
-                reasoning=verdict.reasoning,
-                tool_calls=[{'name': 'execute_plan', 'args': {'plan': verdict.chosen_plan}}]
-            )
+            verdict = await self.supreme_court.deliberate(CONTEXT=str(context), GOAL=context.get('task', ''), risk_level=risk_level)
+            plan = AgentPlan(reasoning=verdict.reasoning, tool_calls=[{'name': 'execute_plan', 'args': {'plan': verdict.chosen_plan}}])
             think_cost = self.governor.track('gpt-4', 300, 150)
-            
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f'{self.id}_consensus',
-                    ROLE=self.role,
-                    event_type='CONSENSUS_REACHED',
-                    PAYLOAD={
-                        'consensus_score': verdict.consensus_score,
-                        'safe_to_proceed': verdict.safe_to_proceed,
-                        'cost': think_cost
-                    },
-                    TIMESTAMP=time.time()
-                )
-            )
+            self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_consensus', ROLE=self.role, event_type='CONSENSUS_REACHED', PAYLOAD={'consensus_score': verdict.consensus_score, 'safe_to_proceed': verdict.safe_to_proceed, 'cost': think_cost}, TIMESTAMP=time.time()))
             return (plan, think_cost)
         except ValueError as e:
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f'{self.id}_consensus_failed',
-                    ROLE=self.role,
-                    event_type='CONSENSUS_FAILED',
-                    PAYLOAD={'error': str(e)},
-                    TIMESTAMP=time.time()
-                )
-            )
+            self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_consensus_failed', ROLE=self.role, event_type='CONSENSUS_FAILED', PAYLOAD={'error': str(e)}, TIMESTAMP=time.time()))
             raise
 
     def _assess_task_risk(self, task: str) -> str:
         """Assess the risk level of a task."""
         task_lower = task.lower()
         high_risk_keywords = ['delete', 'remove', 'drop', 'truncate', 'destroy']
-        
-        if any(keyword in task_lower for keyword in high_risk_keywords):
+        if any((keyword in task_lower for keyword in high_risk_keywords)):
             return 'high'
-        elif any(keyword in task_lower for keyword in ['modify', 'update', 'change']):
+        elif any((keyword in task_lower for keyword in ['modify', 'update', 'change'])):
             return 'medium'
         else:
             return 'low'
@@ -247,14 +158,11 @@ class SubatomicHop:
         """Execute the action stage with airlock protection."""
         results = []
         total_cost = 0.0
-        
         for call in plan.tool_calls:
             tool_name = call.get('name', 'unknown')
             tool_args = call.get('args', {})
-            
             try:
                 await self.airlock.acquire_permission(tool_name, tool_args)
-                
                 if tool_name == 'run_python' or tool_args.get('code'):
                     code = tool_args.get('code', '')
                     result = self.sandbox.run_code(code)
@@ -264,35 +172,11 @@ class SubatomicHop:
                     if isinstance(result, str):
                         result = await self.membrane.sanitize(result, f'tool_output_{tool_name}')
                     results.append({'tool': tool_name, 'result': result})
-                
                 total_cost += self.governor.track('tool_execution', 10, 10)
             except Exception as e:
-                self.telemetry.record(
-                    TraceEvent(
-                        trace_id=trace_id,
-                        span_id=f'{self.id}_airlock_blocked',
-                        ROLE=self.role,
-                        event_type='AIRLOCK_BLOCKED',
-                        PAYLOAD={'tool': tool_name, 'error': str(e)},
-                        TIMESTAMP=time.time()
-                    )
-                )
+                self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_airlock_blocked', ROLE=self.role, event_type='AIRLOCK_BLOCKED', PAYLOAD={'tool': tool_name, 'error': str(e)}, TIMESTAMP=time.time()))
                 raise
-        
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_act',
-                ROLE=self.role,
-                event_type='ACT_COMPLETE',
-                PAYLOAD={
-                    'tool_count': len(plan.tool_calls),
-                    'total_cost': total_cost,
-                    'airlock_checks': len(plan.tool_calls)
-                },
-                TIMESTAMP=time.time()
-            )
-        )
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={'tool_count': len(plan.tool_calls), 'total_cost': total_cost, 'airlock_checks': len(plan.tool_calls)}, TIMESTAMP=time.time()))
         return (results, total_cost)
 
     async def _execute_critique_stage(self, results: list, trace_id: str) -> str:
@@ -300,76 +184,24 @@ class SubatomicHop:
         output_text = f'Plan executed. Results: {results}'
         sanitized_output = await self.membrane.sanitize(output_text, 'agent_output')
         await self.overseer.verify(sanitized_output)
-        
         if self.governor.spend > self.governor.limit:
-            raise Exception(
-                f'Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})'
-            )
-        
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_critique',
-                ROLE=self.role,
-                event_type='CRITIQUE_COMPLETE',
-                PAYLOAD={'budget_used': self.governor.spend, 'sanitized': True},
-                TIMESTAMP=time.time()
-            )
-        )
+            raise Exception(f'Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})')
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_critique', ROLE=self.role, event_type='CRITIQUE_COMPLETE', PAYLOAD={'budget_used': self.governor.spend, 'sanitized': True}, TIMESTAMP=time.time()))
         return sanitized_output
 
     async def _execute_commit_stage(self, output_text: str, trace_id: str) -> str:
         """Commit results to storage."""
         final_output = self.pii.restore(trace_id, output_text)
-        
-        await self.storage.write_blob(
-            f'hops/{self.id}.txt',
-            final_output.encode(),
-            METADATA={
-                'trace_id': trace_id,
-                'role': self.role,
-                'timestamp': time.time(),
-                'zero_trust': True
-            }
-        )
-        
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_commit',
-                ROLE=self.role,
-                event_type='COMMIT_COMPLETE',
-                PAYLOAD={'storage_key': f'hops/{self.id}.txt'},
-                TIMESTAMP=time.time()
-            )
-        )
+        await self.storage.write_blob(f'hops/{self.id}.txt', final_output.encode(), METADATA={'trace_id': trace_id, 'role': self.role, 'timestamp': time.time(), 'zero_trust': True})
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_commit', ROLE=self.role, event_type='COMMIT_COMPLETE', PAYLOAD={'storage_key': f'hops/{self.id}.txt'}, TIMESTAMP=time.time()))
         return final_output
 
     def _handle_error(self, trace_id: str, error: Exception) -> None:
         """Handle execution errors with unified telemetry."""
         error_type = type(error).__name__
-        
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_error',
-                ROLE=self.role,
-                event_type='BUDGET_EXCEEDED' if error_type == 'BudgetExceededError' else 'EXECUTION_ERROR',
-                PAYLOAD={'error': str(error), 'type': error_type},
-                TIMESTAMP=time.time()
-            )
-        )
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_error', ROLE=self.role, event_type='BUDGET_EXCEEDED' if error_type == 'BudgetExceededError' else 'EXECUTION_ERROR', PAYLOAD={'error': str(error), 'type': error_type}, TIMESTAMP=time.time()))
 
     async def _cleanup(self, trace_id: str) -> None:
         """Cleanup resources."""
         await self.mcp.cleanup()
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_cleanup',
-                ROLE=self.role,
-                event_type='CLEANUP_COMPLETE',
-                PAYLOAD={'zero_trust': True},
-                TIMESTAMP=time.time()
-            )
-        )
+        self.telemetry.record(TraceEvent(trace_id=trace_id, span_id=f'{self.id}_cleanup', ROLE=self.role, event_type='CLEANUP_COMPLETE', PAYLOAD={'zero_trust': True}, TIMESTAMP=time.time()))

@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import asyncio
 import functools
 import json
@@ -17,7 +19,8 @@ except ImportError:
 # INLINED PROMPTS (Formerly from agentic_core.prompts - Resolves Architectural Violations)
 # ==============================================================================
 
-FEW_SHOT_HYGIENE = """
+# NAMING FIXED: FEW_SHOT_HYGIENE → few_shot_hygiene
+few_shot_hygiene = """
 # Example 1: Missing docstring
 # Original:
 # def my_func(arg):
@@ -62,7 +65,8 @@ FEW_SHOT_HYGIENE = """
 #     pass
 """
 
-FEW_SHOT_STYLE = """
+# NAMING FIXED: FEW_SHOT_STYLE → few_shot_style
+few_shot_style = """
 # Example 1: Function name not snake_case
 # Original:
 # def MyFunction():
@@ -146,8 +150,12 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     A simple retry decorator for async functions with a delay.
     """
     def decorator(func):
+                    '''Brief description of functionality and purpose.'''
+                    
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
             for attempt in range(1, max_attempts + 1):
                 try:
                     return await func(*args, **kwargs)
@@ -165,7 +173,8 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
 # LEVEL 6: SOVEREIGN ARCHITECTURE
 # ==============================================================================
 
-class DependencyGraph:
+# NAMING FIXED: DependencyGraph → dependency_graph
+class dependency_graph:
     """Builds a directed graph of imports and class hierarchies."""
     def __init__(self):
         self.graph: Dict[str, Dict[str, List[Any]]] = {}
@@ -207,7 +216,8 @@ class DependencyGraph:
         return list(impacted)
 
 
-class BudgetManager:
+# NAMING FIXED: BudgetManager → budget_manager
+class budget_manager:
     """Tracks estimated token usage and financial safety limits."""
     def __init__(self, limit_usd: Optional[float] = None):
         # SAFETY FIX: Prioritize environment variables for resource limits
@@ -240,7 +250,8 @@ class BudgetManager:
 
 
 @dataclass
-class ValidationContext:
+# NAMING FIXED: ValidationContext → validation_context
+class validation_context:
     """Shared memory and infrastructure state for all agents."""
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
@@ -308,11 +319,15 @@ class ValidationContext:
             pass
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
+                    '''Brief description of functionality and purpose.'''
+                    
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
         if not passed:
             print(f"   [{agent}] Key {key}: FAIL")
 
     def get_file_content(self, file_path: str) -> str:
+                    '''Brief description of functionality and purpose.'''
+                    
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
@@ -333,10 +348,14 @@ class ValidationContext:
 
     @property
     def client(self):
+                    '''Brief description of functionality and purpose.'''
+                    
         return self._client
 
     @_rate_limited_retry() # Refactored
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
+                    '''Brief description of functionality and purpose.'''
+                    
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
 

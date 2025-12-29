@@ -1,4 +1,6 @@
 import sys
+'''Brief description of functionality and purpose.'''
+
 import os
 import builtins
 import warnings
@@ -58,6 +60,8 @@ def path_shield(request, monkeypatch):
     original_open = builtins.open
     
     def mock_exists(path):
+                    '''Brief description of functionality and purpose.'''
+                    
         path_str = str(path).lower()
         # Exclude real test files from mocking
         if any(excl in path_str for excl in exclusion_patterns):
@@ -65,6 +69,8 @@ def path_shield(request, monkeypatch):
         return any(kw in path_str for kw in fixture_keywords)
 
     def mock_open_wrapper(file, *args, **kwargs):
+                    '''Brief description of functionality and purpose.'''
+                    
         file_str = str(file).lower()
         # Exclude real test files from path shield
         if any(excl in file_str for excl in exclusion_patterns):

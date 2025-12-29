@@ -6,192 +6,107 @@ import re
 import sys
 from pathlib import Path
 from typing import List, Tuple
-
-# Files exempt from this check
-EXEMPT = ["__init__.py", "__pycache__"]
-
-# Allow os.getenv only in sovereign_config.py and tests
-ALLOWED_PATTERNS = ["sovereign_config.py", "tests/", "test_"]
+exempt: Any = ['__init__.py', '__pycache__']
+allowed_patterns: Any = ['sovereign_config.py', 'tests/', 'test_']
 
 def check_file(filepath: Path) -> bool:
     """
     Check if file has hardcoded configuration.
     Returns True if compliant, False if violations found.
     """
-    # Skip allowed files
-    if filepath.name in EXEMPT or any(p in str(filepath).replace("\\", "/") for p in ALLOWED_PATTERNS):
+    if filepath.name in EXEMPT or any((p in str(filepath).replace('\\', '/') for p in ALLOWED_PATTERNS)):
         return True
-    
     try:
-        content = filepath.read_text(encoding="utf-8", errors="replace")
+        content: Any = filepath.read_text(encoding='utf-8', errors='replace')
     except Exception:
-        return True  # Skip files that can't be read
-    
-    violations = []
-    
-    # Check 1: Explicit os.getenv calls
-    if "os.getenv" in content:
-        for match in re.finditer(r'\bos\.getenv\(', content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, "os.getenv() usage", "Use config.VARIABLE from sovereign_config"))
-    
-    # Check 2: Hardcoded model names (common patterns)
-    hardcoded_models = [
-        r'["\']gpt-4["\']',
-        r'["\']gpt-3\.5-turbo["\']',
-        r'["\']claude-["\']',
-        r'["\']gemini-["\']',
-    ]
+        return True
+    violations: Any = []
+    if 'os.getenv' in content:
+        for match in re.finditer('\\bos\\.getenv\\(', content):
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, 'os.getenv() usage', 'Use config.VARIABLE from sovereign_config'))
+    hardcoded_models: Any = ['["\\\']gpt-4["\\\']', '["\\\']gpt-3\\.5-turbo["\\\']', '["\\\']claude-["\\\']', '["\\\']gemini-["\\\']']
     for pattern in hardcoded_models:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, f"Hardcoded model: {match.group()}", "Use config.PRIMARY_MODEL or config.REASONING_MODEL"))
-    
-    # Check 3: Hardcoded paths (common patterns)
-    hardcoded_paths = [
-        r'["\']c:/Git/["\']',
-        r'["\']C:\\Git\\["\']',
-        r'["\']~/["\']',
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, f'Hardcoded model: {match.group()}', 'Use config.PRIMARY_MODEL or config.REASONING_MODEL'))
+    hardcoded_paths: Any = ['["\\\']c:/Git/["\\\']', '["\\\']C:\\\\Git\\\\["\\\']', '["\\\']~/["\\\']']
     for pattern in hardcoded_paths:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, f"Hardcoded path: {match.group()}", "Use config.BASE_GIT_PATH or config.ROOT_DIR"))
-    
-    # Check 4: Phase 16A - Block direct Redis usage
-    redis_patterns = [
-        (r'\bimport\s+redis\b', "Direct redis import"),
-        (r'\bfrom\s+redis\s+import\b', "Direct redis import"),
-        (r'\bRedis\s*\(', "Direct Redis() instantiation"),
-        (r'redis://', "Direct redis:// connection string"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, f'Hardcoded path: {match.group()}', 'Use config.BASE_GIT_PATH or config.ROOT_DIR'))
+    redis_patterns: Any = [('\\bimport\\s+redis\\b', 'Direct redis import'), ('\\bfrom\\s+redis\\s+import\\b', 'Direct redis import'), ('\\bRedis\\s*\\(', 'Direct Redis() instantiation'), ('redis://', 'Direct redis:// connection string')]
     for pattern, desc in redis_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client"))
-    
-    # Check 5: Phase 16B - Block direct LLM SDK usage
-    llm_sdk_patterns = [
-        (r'\bimport\s+openai\b', "Direct openai import"),
-        (r'\bfrom\s+openai\s+import\b', "Direct openai import"),
-        (r'\bimport\s+anthropic\b', "Direct anthropic import"),
-        (r'\bfrom\s+anthropic\s+import\b', "Direct anthropic import"),
-        (r'\bimport\s+google\.generativeai\b', "Direct google.generativeai import"),
-        (r'\bgenai\.GenerativeModel\b', "Direct genai.GenerativeModel usage"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client'))
+    llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Direct google.generativeai import'), ('\\bgenai\\.GenerativeModel\\b', 'Direct genai.GenerativeModel usage')]
     for pattern, desc in llm_sdk_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_llm_router_client() from agentic_core.L5_safety.guardrails.llm_router_mcp_client"))
-    
-    # Check 6: Phase 16C - Block direct filesystem I/O
-    filesystem_patterns = [
-        (r'\bopen\s*\(', "Direct open() call"),
-        (r'\.read_text\(', "Direct Path.read_text() call"),
-        (r'\.write_text\(', "Direct Path.write_text() call"),
-        (r'\bos\.remove\(', "Direct os.remove() call"),
-        (r'\bos\.rename\(', "Direct os.rename() call"),
-        (r'\bshutil\.move\(', "Direct shutil.move() call"),
-        (r'\bshutil\.rmtree\(', "Direct shutil.rmtree() call"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_llm_router_client() from agentic_core.L5_safety.guardrails.llm_router_mcp_client'))
+    filesystem_patterns: Any = [('\\bopen\\s*\\(', 'Direct open() call'), ('\\.read_text\\(', 'Direct Path.read_text() call'), ('\\.write_text\\(', 'Direct Path.write_text() call'), ('\\bos\\.remove\\(', 'Direct os.remove() call'), ('\\bos\\.rename\\(', 'Direct os.rename() call'), ('\\bshutil\\.move\\(', 'Direct shutil.move() call'), ('\\bshutil\\.rmtree\\(', 'Direct shutil.rmtree() call')]
     for pattern, desc in filesystem_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_filesystem_client() from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client"))
-    
-    # Check 7: Phase 16D - Block direct git operations
-    git_patterns = [
-        (r'subprocess\.run\(\[.*["\']git["\']', "Direct git subprocess call"),
-        (r'os\.system\(["\']git', "Direct git os.system() call"),
-        (r'\bimport\s+git\b', "Direct gitpython import"),
-        (r'\bfrom\s+git\s+import\b', "Direct gitpython import"),
-        (r'\bimport\s+pygit2\b', "Direct pygit2 import"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_filesystem_client() from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client'))
+    git_patterns: Any = [('subprocess\\.run\\(\\[.*["\\\']git["\\\']', 'Direct git subprocess call'), ('os\\.system\\(["\\\']git', 'Direct git os.system() call'), ('\\bimport\\s+git\\b', 'Direct gitpython import'), ('\\bfrom\\s+git\\s+import\\b', 'Direct gitpython import'), ('\\bimport\\s+pygit2\\b', 'Direct pygit2 import')]
     for pattern, desc in git_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_git_client() from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client"))
-    
-    # Check 8: Phase 16F - Block legacy Pinecone SDK
-    pinecone_patterns = [
-        (r'\bfrom\s+pinecone\s+import\b', "Direct pinecone import"),
-        (r'\bPinecone\s*\(', "Direct Pinecone() instantiation"),
-        (r'\.Index\s*\(', "Direct pc.Index() call"),
-        (r'["\']sovereign-territory-index["\']', "Hardcoded index name"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_git_client() from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client'))
+    pinecone_patterns: Any = [('\\bfrom\\s+pinecone\\s+import\\b', 'Direct pinecone import'), ('\\bPinecone\\s*\\(', 'Direct Pinecone() instantiation'), ('\\.Index\\s*\\(', 'Direct pc.Index() call'), ('["\\\']sovereign-territory-index["\\\']', 'Hardcoded index name')]
     for pattern, desc in pinecone_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client"))
-    
-    # Check 9: Phase 16G - Block direct HTTP clients
-    http_patterns = [
-        (r'\bimport\s+requests\b', "Direct requests import"),
-        (r'\bimport\s+httpx\b', "Direct httpx import"),
-        (r'\bimport\s+urllib\b', "Direct urllib import"),
-        (r'\brequests\.(get|post|put|delete|patch)\s*\(', "Direct requests HTTP call"),
-        (r'\bhttpx\.(get|post|put|delete|patch|AsyncClient)\s*\(', "Direct httpx HTTP call"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client'))
+    http_patterns: Any = [('\\bimport\\s+requests\\b', 'Direct requests import'), ('\\bimport\\s+httpx\\b', 'Direct httpx import'), ('\\bimport\\s+urllib\\b', 'Direct urllib import'), ('\\brequests\\.(get|post|put|delete|patch)\\s*\\(', 'Direct requests HTTP call'), ('\\bhttpx\\.(get|post|put|delete|patch|AsyncClient)\\s*\\(', 'Direct httpx HTTP call')]
     for pattern, desc in http_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, "Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client"))
-    
-    # Check 10: Phase 16H - Full subprocess and structural lockdown
-    lockdown_patterns = [
-        (r'\bsubprocess\.call\s*\(', "Direct subprocess.call() usage"),
-        (r'\bos\.popen\s*\(', "Direct os.popen() usage"),
-        (r'agentic_core/tools/', "Legacy 'tools/' path usage"),
-    ]
+            line_no: Any = content[:match.start()].count('\n') + 1
+            violations.append((line_no, desc, 'Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client'))
+    lockdown_patterns: Any = [('\\bsubprocess\\.call\\s*\\(', 'Direct subprocess.call() usage'), ('\\bos\\.popen\\s*\\(', 'Direct os.popen() usage'), ('agentic_core/tools/', "Legacy 'tools/' path usage")]
     for pattern, desc in lockdown_patterns:
         for match in re.finditer(pattern, content):
-            line_no = content[:match.start()].count('\n') + 1
+            line_no: Any = content[:match.start()].count('\n') + 1
             if "Legacy 'tools/' path" in desc:
                 violations.append((line_no, desc, "Use 'agentic_core/utils/' or appropriate layer path"))
             else:
-                violations.append((line_no, desc, "Use appropriate MCP client or approved subprocess wrapper"))
-    
+                violations.append((line_no, desc, 'Use appropriate MCP client or approved subprocess wrapper'))
     if violations:
-        print(f"\n❌ {filepath.name}:")
-        for line_no, issue, fix in violations[:5]:  # Limit to first 5
-            print(f"  Line {line_no}: {issue}")
-            print(f"    → {fix}")
+        print(f'\n❌ {filepath.name}:')
+        for line_no, issue, fix in violations[:5]:
+            print(f'  Line {line_no}: {issue}')
+            print(f'    → {fix}')
         if len(violations) > 5:
-            print(f"  ... and {len(violations) - 5} more violations")
+            print(f'  ... and {len(violations) - 5} more violations')
         return False
-    
     return True
 
-def main():
+def main() -> Any:
     """Scan target directory for hardcoded configuration."""
     if len(sys.argv) < 2:
-        print("Usage: python guard_no_hardcoded_config.py <target_dir>")
+        print('Usage: python guard_no_hardcoded_config.py <target_dir>')
         sys.exit(1)
-    
-    target = Path(sys.argv[1])
+    target: Any = Path(sys.argv[1])
     if not target.exists():
-        print(f"Error: {target} does not exist")
+        print(f'Error: {target} does not exist')
         sys.exit(1)
-    
-    files = [f for f in target.rglob("*.py") if f.is_file()]
-    total = len(files)
-    violations = 0
-    
-    print(f"\n🔍 Scanning {total} Python files in {target}...")
-    print("=" * 60)
-    
+    files: Any = [f for f in target.rglob('*.py') if f.is_file()]
+    total: Any = len(files)
+    violations: Any = 0
+    print(f'\n🔍 Scanning {total} Python files in {target}...')
+    print('=' * 60)
     for filepath in files:
         if not check_file(filepath):
             violations += 1
-    
-    print("\n" + "=" * 60)
+    print('\n' + '=' * 60)
     if violations == 0:
-        print(f"✅ COMPLIANT: All {total} files use centralized config")
+        print(f'✅ COMPLIANT: All {total} files use centralized config')
         sys.exit(0)
     else:
-        print(f"❌ VIOLATIONS: {violations}/{total} files have hardcoded config")
-        print("\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config")
+        print(f'❌ VIOLATIONS: {violations}/{total} files have hardcoded config')
+        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config')
         sys.exit(1)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

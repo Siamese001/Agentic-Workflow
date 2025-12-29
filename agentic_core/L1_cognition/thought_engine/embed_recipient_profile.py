@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
@@ -9,7 +13,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-class EmbedRecipientProfile:
+# NAMING FIXED: EmbedRecipientProfile → embed_recipient_profile
+class embed_recipient_profile:
     """EmbedRecipientProfile implementation."""
 
 

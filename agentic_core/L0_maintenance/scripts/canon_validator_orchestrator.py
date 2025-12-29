@@ -6,21 +6,13 @@ All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
-
 import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 
-logger = logging.getLogger(__name__)
-
-# Phase 5: Import from consolidated orchestrator
-from agentic_core.core.orchestrator_main import (
-    OrchestratorConfig,
-    create_orchestrator,
-)
-
-
-class SwarmScheduler:
+class swarm_scheduler:
     """
     Thin wrapper for Canon Validator SwarmScheduler.
     Delegates to ConsolidatedOrchestrator.
@@ -29,41 +21,20 @@ class SwarmScheduler:
     def __init__(self):
         """Initialize SwarmScheduler wrapper."""
         self.ctx = ValidationContext()
-        
-        # Create config for consolidated orchestrator
-        config = OrchestratorConfig(
-            max_cycles=10,
-            enable_healing=True,
-            enable_intervention=True,
-        )
-        
-        # Delegate to consolidated orchestrator
+        config = OrchestratorConfig(max_cycles=10, enable_healing=True, enable_intervention=True)
         self.orchestrator = create_orchestrator(config=config, context=self.ctx)
-        
-        logger.info("🔗 SwarmScheduler wrapper initialized (delegates to orchestrator_main)")
+        logger.info('🔗 SwarmScheduler wrapper initialized (delegates to orchestrator_main)')
 
-    async def run_mission(self, target_scope: Optional[str] = None):
+    async def run_mission(self, target_scope: Optional[str]=None) -> Any:
         """Run the validation mission (delegates to orchestrator_main)."""
-        logger.info(f"🚀 Running Canon Validator mission")
-        
-        results = await self.orchestrator.run_mission(
-            target_path=target_scope,
-            workflow_id="canon_validator"
-        )
-        
+        logger.info(f'🚀 Running Canon Validator mission')
+        results: Any = await self.orchestrator.run_mission(target_path=target_scope, workflow_id='canon_validator')
         return results
+IntelligentOrchestrator: Any = SwarmScheduler
 
-
-
-# Legacy alias for backward compatibility
-IntelligentOrchestrator = SwarmScheduler
-
-
-async def main():
+async def main() -> Any:
     """Main entry point for the Canon Validator."""
-    scheduler = SwarmScheduler()
+    scheduler: Any = SwarmScheduler()
     await scheduler.run_mission()
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())

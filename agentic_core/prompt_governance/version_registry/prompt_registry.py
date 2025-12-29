@@ -4,6 +4,8 @@
 # SSOT Integration: Used by SovereignPromptRenderer and mission logging
 
 import json
+'''Brief description of functionality and purpose.'''
+
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
@@ -13,9 +15,12 @@ try:
 except ImportError:
     # Fallback for bootstrap phase if void_compliance is not yet indexed
     def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
+                    '''Brief description of functionality and purpose.'''
+                    
         return True, "Bootstrap"
 
-class PromptRegistry:
+# NAMING FIXED: PromptRegistry → prompt_registry
+class prompt_registry:
     """
     Sovereign registry for all prompt templates and meta-prompts.
 

@@ -1,4 +1,6 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 
 import os
 from unittest.mock import MagicMock, mock_open, patch
@@ -43,7 +45,8 @@ def mock_logger():
 
 
 
-class TestZLMTC101:
+# NAMING FIXED: TestZLMTC101 → test_zlmtc101
+class test_zlmtc101:
 
     """TC-ZLM-101: Standard Successful Merge"""
 
@@ -62,6 +65,8 @@ class TestZLMTC101:
         # Mock the underlying function to return success
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "reason": "PASSED"}
 
@@ -103,7 +108,8 @@ class TestZLMTC101:
 
 
 
-class TestZLMTC201:
+# NAMING FIXED: TestZLMTC201 → test_zlmtc201
+class test_zlmtc201:
 
     """TC-ZLM-201: P2 Failure, P6 Single-Pass Fix"""
 
@@ -126,6 +132,8 @@ class TestZLMTC201:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -140,6 +148,8 @@ class TestZLMTC201:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
 
@@ -183,7 +193,8 @@ class TestZLMTC201:
 
 
 
-class TestZLMTC202:
+# NAMING FIXED: TestZLMTC202 → test_zlmtc202
+class test_zlmtc202:
 
     """TC-ZLM-202: P2 Failure, P6 Multi-Pass Fix"""
 
@@ -208,6 +219,8 @@ class TestZLMTC202:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -222,6 +235,8 @@ class TestZLMTC202:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal fix_count
 
@@ -275,7 +290,8 @@ class TestZLMTC202:
 
 
 
-class TestZLMTC203:
+# NAMING FIXED: TestZLMTC203 → test_zlmtc203
+class test_zlmtc203:
 
     """TC-ZLM-203: ZLM Hard Stop Condition"""
 
@@ -294,12 +310,16 @@ class TestZLMTC203:
         """Test ZLM fails after max P6 attempts"""
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "FAILED", "reason": "SANDBOX_VERIFICATION_FAILURE", "details": "Test failed"}
 
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "FAILED"}  # P6 cannot fix
 
@@ -341,7 +361,8 @@ class TestZLMTC203:
 
 
 
-class TestZLMTC301:
+# NAMING FIXED: TestZLMTC301 → test_zlmtc301
+class test_zlmtc301:
 
     """TC-ZLM-301: P5 Logging Integrity"""
 
@@ -364,6 +385,8 @@ class TestZLMTC301:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -378,6 +401,8 @@ class TestZLMTC301:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
 
@@ -425,7 +450,8 @@ class TestZLMTC301:
 
 
 
-class TestZLMTC302:
+# NAMING FIXED: TestZLMTC302 → test_zlmtc302
+class test_zlmtc302:
 
     """TC-ZLM-302: P7 File Integrity Check"""
 
@@ -448,6 +474,8 @@ class TestZLMTC302:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -462,6 +490,8 @@ class TestZLMTC302:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
 
@@ -509,7 +539,8 @@ class TestZLMTC302:
 
 
 
-class TestZLMTC303:
+# NAMING FIXED: TestZLMTC303 → test_zlmtc303
+class test_zlmtc303:
 
     """TC-ZLM-303: L5 Audit Trail"""
 
@@ -532,6 +563,8 @@ class TestZLMTC303:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -546,6 +579,8 @@ class TestZLMTC303:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
 
@@ -651,7 +686,8 @@ class TestZLMTC303:
 
 
 
-class TestZLMNonRecoverable:
+# NAMING FIXED: TestZLMNonRecoverable → test_zlm_non_recoverable
+class test_zlm_non_recoverable:
 
     """Test non-recoverable failures"""
 
@@ -666,6 +702,8 @@ class TestZLMNonRecoverable:
         """Test ZLM fails immediately for non-recoverable errors (P1, GPG)"""
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "FAILED", "reason": "AST_VALIDATION_FAILURE", "details": "Syntax error"}
 
@@ -699,7 +737,8 @@ class TestZLMNonRecoverable:
 
 
 
-class TestZLMTC204:
+# NAMING FIXED: TestZLMTC204 → test_zlmtc204
+class test_zlmtc204:
 
     """TC-ZLM-204: Regression Failure Trigger"""
 
@@ -720,6 +759,8 @@ class TestZLMTC204:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -732,6 +773,8 @@ class TestZLMTC204:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed regression issue"}
 
@@ -779,7 +822,8 @@ class TestZLMTC204:
 
 
 
-class TestZLMTC205:
+# NAMING FIXED: TestZLMTC205 → test_zlmtc205
+class test_zlmtc205:
 
     """TC-ZLM-205: P6 Fix introduces Regression"""
 
@@ -802,6 +846,8 @@ class TestZLMTC205:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -824,6 +870,8 @@ class TestZLMTC205:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code with regression"}
 
@@ -871,7 +919,8 @@ class TestZLMTC205:
 
 
 
-class TestZLMTC206:
+# NAMING FIXED: TestZLMTC206 → test_zlmtc206
+class test_zlmtc206:
 
     """TC-ZLM-206: P6 Max Attempts Failure"""
 
@@ -894,6 +943,8 @@ class TestZLMTC206:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -910,6 +961,8 @@ class TestZLMTC206:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code that breaks regression"}
 
@@ -951,7 +1004,8 @@ class TestZLMTC206:
 
 
 
-class TestZLMTC304:
+# NAMING FIXED: TestZLMTC304 → test_zlmtc304
+class test_zlmtc304:
 
     """TC-ZLM-304: P5 Logging of Regression Failure"""
 
@@ -972,6 +1026,8 @@ class TestZLMTC304:
 
 
         def mock_refactor(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             nonlocal call_count
 
@@ -986,6 +1042,8 @@ class TestZLMTC304:
 
 
         def mock_propose_fix(*args, **kwargs):
+                                    '''Brief description of functionality and purpose.'''
+                                    
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed regression"}
 
@@ -1043,7 +1101,8 @@ class TestZLMTC304:
 
 
 
-class TestZLMConfiguration:
+# NAMING FIXED: TestZLMConfiguration → test_zlm_configuration
+class test_zlm_configuration:
 
     """Test ZLM configuration"""
 

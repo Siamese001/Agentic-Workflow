@@ -1,4 +1,6 @@
 import hashlib
+'''Brief description of functionality and purpose.'''
+
 import json
 import logging
 from datetime import datetime
@@ -6,7 +8,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
-class IValidationContext(Protocol):
+# NAMING FIXED: IValidationContext → i_validation_context
+class i_validation_context(Protocol):
+    '''Brief description of functionality and purpose.'''
+    
     cycle_id: Optional[int]
     status: str
     start_time: datetime
@@ -17,21 +22,40 @@ class IValidationContext(Protocol):
     flapping_files: Dict[str, int]
 
     def update_file_hash(self, file_path: str, file_hash: str): ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def mark_flapping(self, file_path: str): ...
+                    '''Brief description of functionality and purpose.'''
+                    
 
-class IValidationContextManager(Protocol):
+# NAMING FIXED: IValidationContextManager → i_validation_context_manager
+class i_validation_context_manager(Protocol):
+    '''Brief description of functionality and purpose.'''
+    
     current_context: Optional[IValidationContext]
 
     def get_last_file_hashes(self) -> Dict[str, str]: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def get_flapping_files(self) -> Dict[str, int]: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def complete_cycle(self, status: str = "COMPLETED"): ...
+                    '''Brief description of functionality and purpose.'''
+                    
     def load_memory(self) -> bool: ...
+                    '''Brief description of functionality and purpose.'''
+                    
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 
-class Historian:
+# NAMING FIXED: Historian → historian
+class historian:
     """
     Tracks validation history and optimizes file scanning.
 

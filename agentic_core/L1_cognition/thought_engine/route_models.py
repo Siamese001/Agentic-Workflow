@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ToolCallBudget:
+# NAMING FIXED: ToolCallBudget → tool_call_budget
+class tool_call_budget:
     """Tool call budget configuration."""
 
     _minimum: int = 0

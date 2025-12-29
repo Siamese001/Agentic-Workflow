@@ -7,7 +7,10 @@ from pathlib import Path
 # Using resolve().parent for robustness in determining the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from agentic_core.L5_safety.P1_red_team import (
+# GRAVITY FIXED: from agentic_core.L5_safety.P1_red_team import (
+import importlib
+mod = importlib.import_module('agentic_core.L5_safety.P1_red_team')
+( = mod.(  # Adjust multi-imports manually
     HallucinationHunter,
     get_hallucination_hunter,
 )

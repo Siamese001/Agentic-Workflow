@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class CTAPattern:
+# NAMING FIXED: CTAPattern → cta_pattern
+class cta_pattern:
     """Pattern for call-to-action generation."""
 
     _style: CTAStyle
@@ -20,7 +21,8 @@ class CTAPattern:
 
 
 @dataclass
-class CTATemplate:
+# NAMING FIXED: CTATemplate → cta_template
+class cta_template:
     """Template for CTA generation by route."""
 
     _template: str
@@ -30,7 +32,8 @@ class CTATemplate:
 
 
 @dataclass
-class DateWindowConfig:
+# NAMING FIXED: DateWindowConfig → date_window_config
+class date_window_config:
     """Configuration for date window generation."""
 
     _window_size_days: int = 2
@@ -40,7 +43,8 @@ class DateWindowConfig:
 
 
 @dataclass
-class DayBufferConfig:
+# NAMING FIXED: DayBufferConfig → day_buffer_config
+class day_buffer_config:
     """Buffer configuration for a specific day."""
 
     _min_buffer_days: int
