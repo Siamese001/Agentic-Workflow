@@ -2,12 +2,18 @@
 """
 ArchitectureGovernor - L3 Orchestration Framework Agent
 Validates and enforces architectural patterns across the codebase.
+[SSOT] Layer directories derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
 logger = logging.getLogger(__name__)
+
+# [SSOT] Derive layer directories from SOVEREIGN_REGISTRY
+LAYER_DIRS = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
 
 
 class ArchitectureGovernor:
@@ -40,12 +46,9 @@ class ArchitectureGovernor:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
             
-            # Check if file is in a layer directory
-            layer_dirs = {'L0_maintenance', 'L1_cognition', 'L2_execution', 
-                         'L3_orchestration', 'L4_state', 'L5_safety'}
-            
+            # [SSOT] Check if file is in a layer directory from SOVEREIGN_REGISTRY
             if len(parts) > 1 and parts[0] == 'agentic_core':
-                if len(parts) > 2 and parts[1] in layer_dirs:
+                if len(parts) > 2 and parts[1] in LAYER_DIRS:
                     return True, f"Valid layer structure: {parts[1]}"
                     
             return False, "File outside layer structure"

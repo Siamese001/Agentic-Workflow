@@ -1,13 +1,18 @@
 """
 Sovereign Audit Engine – Phase 16H (Dec 27, 2025)
 Scans for compliance with Phases 16A-16G.
-Enforces exactly four levels of depth and uses approved utils/ path.
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 Enhanced in Phase 17 with autonomous healing integration.
 """
 import os
 import re
 import logging
 from typing import List, Dict, Any
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
+# [SSOT] Get required depth for agentic_core from SOVEREIGN_REGISTRY
+REQUIRED_DEPTH = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +51,7 @@ class SovereigntyAuditor:
     
     Scans codebase for:
     - Direct SDK usage (Redis, LLM, Vector, HTTP, Filesystem, Git)
-    - Path depth violations (max 4 levels)
+    - Path depth violations (SSOT-derived from SOVEREIGN_REGISTRY)
     - Legacy path usage (tools/ instead of utils/)
     - MCP client usage compliance
     """
@@ -78,9 +83,9 @@ class SovereigntyAuditor:
         logger.info(f"--- STARTING SOVEREIGNTY AUDIT: {self.root_dir} ---")
         
         for root, _, files in os.walk(self.root_dir):
-            # Enforce 4-level depth check
+            # [SSOT] Enforce depth check from SOVEREIGN_REGISTRY
             depth = self._calculate_depth(root)
-            if depth > 4:
+            if depth > REQUIRED_DEPTH:
                 self._add_violation(
                     "DEPTH_BREACH",
                     f"Path too deep (depth={depth}): {root}",

@@ -16,15 +16,12 @@ from typing import Any, Dict, List, Optional, Protocol, Set
 
 from dotenv import load_dotenv
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
-ALLOWED_ROOT_FILES = {
-    "README.md", "LICENSE", "pyproject.toml", "setup.py", "setup.cfg",
-    "requirements.txt", "Makefile", ".gitignore", ".pre-commit-config.yaml",
-    "CHANGELOG.md", "CONTRIBUTING.md", "conftest.py", "pytest.ini", "tox.ini",
-    ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml",
-    "canon_memory.json"
-}
+# [SSOT] Use ROOT_PROTECTED_FILES from structure_blueprint.py
+ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
 
 from agentic_core.prompts import (
     FEW_SHOT_CONCURRENCY,

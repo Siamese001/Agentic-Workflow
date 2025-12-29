@@ -294,21 +294,14 @@ class ArchitectureGovernor:
         # Initialize dependency graph
         self.dependency_graph = DependencyGraph()
 
-        # L6 Root Hygiene Configuration
-        # Consolidated ALLOWED_ROOT_FILES from original and _MONOLITH versions
-        self.ALLOWED_ROOT_FILES = {
-            'README.md', 'README.txt', 'LICENSE', 'LICENSE.txt', 'LICENSE.md',
-            'setup.py', 'setup.cfg', 'pyproject.toml', 'requirements.txt',
-            'requirements-dev.txt', '.gitignore', '.gitattributes', 'MANIFEST.in',
-            'CHANGELOG.md', 'CHANGELOG.txt', 'CONTRIBUTING.md', 'CONTRIBUTING.txt',
-            'INSTALL.md', 'INSTALL.txt', 'AUTHORS.md', 'AUTHORS.txt', 'HISTORY.md',
-            'TODO.md', 'TODO.txt', '.editorconfig', 'Makefile',
-            "requirements.in", ".pre-commit-config.yaml", "conftest.py", "pytest.ini", "tox.ini",
-            ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml"
-        }
-
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+            ROOT_PROTECTED_FILES,
+            SOVEREIGN_REGISTRY,
+        )
+        
+        # [SSOT] L6 Root Hygiene Configuration from structure_blueprint.py
+        self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
         
         # [SSOT] Depth map derived from SOVEREIGN_REGISTRY — no hardcoded values
