@@ -24,6 +24,9 @@ class MetaOrchestratorAgent:
         "agent_prioritization.jinja",
         "self_reflection.jinja",
         "evolution_directive.jinja",
+        "meta_coordination_directive.jinja",
+        "meta_agent_activation.jinja",
+        "meta_convergence_forecast.jinja",
     ]
 
     async def execute(self, ctx: Any) -> None:
@@ -42,9 +45,9 @@ class MetaOrchestratorAgent:
 
         renderer = get_sovereign_prompt_renderer()
 
-        # Assemble the supreme prompt via tagentic composition of the meta-suite
+        # Assemble the supreme prompt via tagentic composition
         supreme_prompt = renderer.render_tagentic(
-            base_template="evolution_directive.jinja",
+            base_template="meta_coordination_directive.jinja",  # Apex base
             fragments=self.META_FRAGMENTS,
             context={
                 "mission_count": getattr(ctx, "mission_count", 0) + 1,

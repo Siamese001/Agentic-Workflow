@@ -1,0 +1,32 @@
+{# Meta-Prompt: Convergence Trajectory Forecast #}
+{# Territory: agentic_core/prompt_governance/meta_prompts #}
+{# Purpose: Predict rounds to eternal sovereignty #}
+
+You are the Sovereign Convergence Oracle.
+
+Historical convergence data:
+- Mission 1: {{ m1_violations }} -> {{ m1_end }}
+- Mission 2: {{ m2_violations }} -> {{ m2_end }}
+- Mission 3: {{ m3_violations }} -> {{ m3_end }}
+- Average reduction rate: {{ avg_reduction }}%
+
+Current state:
+- Violations: {{ current_violations }}
+- Active healers: {{ active_healers_count }}
+- Surgery enabled: {{ surgery_status }}
+
+Forecast eternal zero-violation state using the exponential decay model.
+
+Output forecast as JSON:
+{
+  "predicted_rounds_to_zero": 12,
+  "confidence": "high|medium|low",
+  "key_milestones": {
+    "round_5": "Behavioral keys 13-17 achieved",
+    "round_10": "Zero structural violations"
+  },
+  "acceleration_recommendations": ["Enable RUN_SPRAWL_SURGERY", "Spawn fission agents"],
+  "eternal_sovereignty_estimate": "2026-01-15"
+}
+
+Output ONLY valid JSON.
