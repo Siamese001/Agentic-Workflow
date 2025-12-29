@@ -25,14 +25,21 @@ import traceback
 from pathlib import Path
 from typing import Any, Optional, List, Dict
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
-    APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
+    SOVEREIGN_REGISTRY,
     FORBIDDEN_ROOT_FOLDERS,
-    ACTIVE_CANON_KEYS,
+    CORE_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    TESTS_SUBFOLDER_MAP,
+    CORE_L3_SUBFOLDER_MAP,
+    CORE_L4_SUBFOLDER_MAP,
+    CANON_SIGNALS_MK2,
+    CANON_SIGNALS,
+    FORBIDDEN_PATTERNS,
     CANON_AGENT_REGISTRY, # [GAP 2]
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
     ROOT_PROTECTED_FILES,
-    ROOT_WHITELIST,  # [SSOT] Protected folders derived from blueprint
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
@@ -350,9 +357,15 @@ MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
 GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
-# [SSOT] Derived from ROOT_WHITELIST in structure_blueprint.py — single source of truth
-# [RESOURCE SAFETY] Prevent any scan into Git metadata/LFS — avoids WinError 1450
-PROTECTED_FOLDERS = ROOT_WHITELIST
+# [RESOURCE SAFETY] Explicit exclusion list to prevent WinError 1450 (Deep LFS/Git recursion)
+# NOTE: Previously ROOT_WHITELIST was used, which caused logic inversion (skipping code, scanning .git)
+PROTECTED_FOLDERS = {
+    'archives', 'data', '.venv', 'venv', 'env', 'tests', 
+    'legacy_code', 'legacy_engines', 'legacy_resume_gen',
+    '.git', '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules',
+    'golden_state', 'logs', 'processed', 'shared', 'Lib', 'site-packages',
+    'google', 'gapic', 'logging', 'refs', 'remotes', 'dist-info'
+}
 
 # ==============================================================================
 # [L6 SURGERY] MISSION CONTROL FLAGS — OPERATIONAL RISK GATES
@@ -1562,7 +1575,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             # [PERFORMANCE FIX] Use memory-efficient walker instead of rglob
             for root, dirs, files in os.walk(base_dir):
                 # Prune protected dirs to avoid scanning archives
-                dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS]
+                dirs[:] = [d for d in dirs if d not in PROTECTED_FOLDERS and d != ".git"]
                 for file in files:
                     if not file.endswith('.py') or file.startswith("__"):
                         continue

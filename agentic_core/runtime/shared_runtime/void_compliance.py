@@ -383,25 +383,25 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     """
     Returns count of .py files per top-level folder for territory verification.
     """
+    # [DEFENSIVE HARDENING] Early guard against malformed root
+    if not project_root.is_dir():
+        logger.warning(f"[SCOPE] Project root {project_root} is not a directory — returning empty summary")
+        return {}
+
     summary = {}
-    # [RESOURCE FIX] Skip .git entirely — LFS objects cause WinError 1450 on deep scandir
-    git_path = project_root / ".git"
-    if git_path.exists():
-        # We don't print here to avoid console spam, effectively silent skip
-        pass
 
     # Define protected folders locally to avoid NameError (derived from validator context)
     PROTECTED_FOLDERS = {
         'archives', 'data', '.venv', 'venv', 'env', 'tests', 
         'legacy_code', 'legacy_engines', 'legacy_resume_gen',
-        '.git', '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules'
+        '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules'
     }
     
     for folder_path in project_root.iterdir():
         if not folder_path.is_dir():
             continue
         
-        if folder_path.name in PROTECTED_FOLDERS or folder_path.name == ".git":
+        if folder_path.name in PROTECTED_FOLDERS:
             # [PROTECTED] Skipping folder logic handled by caller or implicit here
             continue
             
@@ -439,7 +439,7 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
     """
     violations = []
     IGNORE_DIRS = {
-        ".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache",
+        ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache",
         # [SPAN NOISE SUPPRESSION] Ignore non-code/data territories to fix 16 false positives
         "golden_state", "logs", "processed", "shared", "Lib", "site-packages", 
         "google", "gapic", "logging", "refs", "remotes", "v",
@@ -452,9 +452,12 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
         if not root_path.exists():
             continue
 
-        for dirpath, _, _ in os.walk(root_path):
+        for dirpath, dirs, _ in os.walk(root_path):
+            # [PERFORMANCE FIX] Prune ignored directories in-place to prevent os.walk from entering them
+            dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith(".")]
+            
             current_dir = Path(dirpath)
-            if current_dir.name in IGNORE_DIRS or current_dir.name.startswith("."):
+            if current_dir.name in IGNORE_DIRS or current_dir.name.startswith(".") or ".git" in current_dir.parts:
                 continue
 
             valid, msg = check_span_of_two_violation(current_dir)
