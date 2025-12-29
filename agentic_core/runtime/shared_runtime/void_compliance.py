@@ -160,6 +160,15 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         parts: Any = rel_path.parts
         depth: Any = len(parts) - 1
         root_folder: Any = parts[0]
+        
+        # [EXACT DEPTH ENFORCEMENT] Must be exactly depth 4: root/L1/L2/file.py
+        # This specifically targets agentic_core sprawl.
+        if parts[0] == "agentic_core":
+            EXPECTED_DEPTH = 4
+            # We use len(parts) directly as the depth metric (root+L1+L2+file = 4 items)
+            if len(parts) != EXPECTED_DEPTH:
+                return (False, f"Invalid depth {len(parts)} (expected {EXPECTED_DEPTH}): {rel_path}")
+        
         if file_path.name == '__init__.py' or depth == 1:
             return (True, 'Sovereign Structural Component')
         if root_folder == 'agentic_core':
@@ -321,8 +330,44 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
     Flags:
     - Unapproved L1 or L2 folders (drift prevention)
     - Files placed too shallow (under Root or L1) — enforces min depth 3 (Key 41)
+    - Files at incorrect depth (Canon Key 3/12: Exact depth 4 for agentic_core)
     """
     violations: Any = []
+    
+    # [CANON KEY 3/12 HARDENING] Enforce EXACT depth 4 for all Python files
+    # RATIONALE: Canon policy = files at depth 4 only (no deeper nesting allowed)
+    # This prevents sprawl, hidden territories, and gravity drift.
+    # Depth 4 Definition: root_folder / L1_layer / L2_domain / file.py (len=4)
+    MAX_FILE_DEPTH = 4
+    python_files = list(project_root.rglob("*.py"))
+    
+    for file_path in python_files:
+        try:
+            rel_path = file_path.relative_to(project_root)
+            parts = rel_path.parts
+        except ValueError:
+            continue
+
+        # Skip hidden folders, venv, and root-level files
+        if any(p.startswith(".") or p in ["venv", "__pycache__"] for p in parts):
+            continue
+        if len(parts) <= 1: 
+            continue
+
+        # Only enforce Strict Depth 4 on agentic_core (The Sovereign Core)
+        # apps_* might have different structures, but core must be flat.
+        if parts[0] == "agentic_core":
+            # Check for Depth Sprawl (>4)
+            if len(parts) > MAX_FILE_DEPTH:
+                violations.append((file_path,
+                    f"File depth violation: {rel_path} "
+                    f"at depth {len(parts)} (max allowed: {MAX_FILE_DEPTH})"))
+            # Check for Shallow Nesting (<4) e.g. agentic_core/L1/file.py
+            elif len(parts) < MAX_FILE_DEPTH:
+                violations.append((file_path,
+                    f"File too shallow: {rel_path} "
+                    f"at depth {len(parts)} (expected: {MAX_FILE_DEPTH})"))
+    
     for root_key, layers in CANONICAL_HIERARCHY.items():
         root_path: Any = project_root / root_key
         if not root_path.exists():
