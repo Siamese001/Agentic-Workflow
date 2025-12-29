@@ -1,22 +1,25 @@
 """
 Configuration constants and file discovery utilities.
 The Three Laws of Subatomic Governance are defined here.
+[SSOT] All structural constants derived from structure_blueprint.py
 """
 
 import os
-import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import List
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    ROOT_WHITELIST,
+    ROOT_PROTECTED_FILES,
+    SOVEREIGN_REGISTRY,
+)
 
 # ==============================================================================
 # THE THREE LAWS OF SUBATOMIC GOVERNANCE
 # ==============================================================================
-# Law 1: The Law of Depth - All functional files must exist at Depth 3-5
-MIN_DEPTH = 3
-MAX_DEPTH = 5
+# Law 1: The Law of Depth - [SSOT] Derived from SOVEREIGN_REGISTRY
+# Each root folder has its own depth defined in SOVEREIGN_REGISTRY[root]["depth"]
+DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
 # Law 2: The Law of Atomicity - Files must be subatomic, not noise or monoliths
 MAX_LINES = 200
@@ -25,10 +28,7 @@ MIN_LINES = 10
 # Law 3: The Law of The Void - Root directory is sacred
 # [SSOT] Import from structure_blueprint.py instead of hardcoding
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
-ALLOWED_ROOT_FILES = {
-    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
-    '.env', 'canon_validator_agentic.py', 'pytest.ini'
-}
+ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
 
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES (Strict Subatomic)

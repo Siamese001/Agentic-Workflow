@@ -1,26 +1,35 @@
+"""
+Flatten scripts directory to SSOT-compliant depth.
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
+"""
 import os
 import shutil
 from pathlib import Path
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 ROOT = Path("C:/Git/Agentic-Workflow")
 CORE = ROOT / "agentic_core"
 SCRIPTS_DIR = CORE / "L0_maintenance/scripts"
 
+# [SSOT] Get required depth for agentic_core from SOVEREIGN_REGISTRY
+REQUIRED_DEPTH = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
+
 def flatten_scripts():
-    print("[*] FLATTENING L0_maintenance/scripts TO DEPTH-4...")
+    print(f"[*] FLATTENING L0_maintenance/scripts TO DEPTH-{REQUIRED_DEPTH}...")
     moved = 0
     
     if not SCRIPTS_DIR.exists():
         print("[!] Scripts directory not found")
         return
     
-    # Find all Python files at depth > 4
+    # [SSOT] Find all Python files exceeding required depth
     for py_file in SCRIPTS_DIR.rglob("*.py"):
         rel_path = py_file.relative_to(CORE)
         parts = rel_path.parts
         
-        # If depth > 3 (Layer/Stage/File), move to Stage level
-        if len(parts) > 3:
+        # [SSOT] If depth > required depth, move to correct level
+        if len(parts) > REQUIRED_DEPTH - 1:  # -1 because rel_path is from CORE, not ROOT
             # Create a flattened name from the path
             # e.g., 03_runtime/shared/openai_client.py -> 03_runtime_shared_openai_client.py
             path_prefix = "_".join(parts[2:-1])  # Skip Layer/Stage and filename
@@ -53,7 +62,7 @@ def flatten_scripts():
             except:
                 pass
     
-    print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-4.")
+    print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-{REQUIRED_DEPTH}.")
 
 if __name__ == "__main__":
     flatten_scripts()

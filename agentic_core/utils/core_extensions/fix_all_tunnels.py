@@ -1,13 +1,22 @@
+"""
+Fix tunnel violations by flattening to SSOT-compliant depth.
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
+"""
 import os
 import shutil
 from pathlib import Path
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
 ROOT = Path("C:/Git/Agentic-Workflow")
 CORE = ROOT / "agentic_core"
 
+# [SSOT] Get required depth for agentic_core from SOVEREIGN_REGISTRY
+REQUIRED_DEPTH = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
+
 def fix_tunnel_violations():
-    """Moves files from deep tunnels up to proper depth-4 structure."""
-    print("[*] FIXING ALL TUNNEL VIOLATIONS...")
+    """Moves files from deep tunnels up to proper SSOT-compliant depth structure."""
+    print(f"[*] FIXING ALL TUNNEL VIOLATIONS (target depth: {REQUIRED_DEPTH})...")
     fixed = 0
     
     for py_file in CORE.rglob("*.py"):
@@ -16,8 +25,8 @@ def fix_tunnel_violations():
         
         parts = py_file.relative_to(CORE).parts
         
-        # If depth > 3 (which means total depth > 4), we have a tunnel
-        if len(parts) > 3:
+        # [SSOT] If depth > required (parts from CORE + 1 for root), we have a tunnel
+        if len(parts) > REQUIRED_DEPTH - 1:
             # Target structure: Layer/Stage/file.py
             layer = parts[0]  # e.g., L1_cognition
             stage = parts[1]  # e.g., P1_core

@@ -310,9 +310,9 @@ class ArchitectureGovernor:
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
-
-        # Law of Depth: MAX 5 levels from root
-        self.MAX_DEPTH = 5
+        
+        # [SSOT] Depth map derived from SOVEREIGN_REGISTRY — no hardcoded values
+        self.DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
         # Complexity thresholds
         self.MAX_COMPLEXITY = 10
@@ -338,8 +338,8 @@ class ArchitectureGovernor:
 
         # Governance thresholds
         self.MAX_FILE_LINES = 200  # Law of Atomicity
-        self.MIN_DEPTH = 3  # Law of Depth minimum
-        self.MAX_DEPTH = 5  # Law of Depth maximum
+        # [SSOT] Depth bounds removed — use self.DEPTH_MAP[root] for per-root depth enforcement
+
     def build_graph(self, file_patterns: List[str] = ["**/*.py"]):
         """
         Build the dependency graph for the project.
@@ -437,6 +437,7 @@ class ArchitectureGovernor:
     def check_depth_law(self, file_path: str) -> Optional[str]:
         """
         Check Law of Depth - ensure proper nesting depth.
+        [SSOT] Uses DEPTH_MAP derived from SOVEREIGN_REGISTRY for per-root depth enforcement.
 
         Args:
             file_path: Path to check
@@ -450,14 +451,22 @@ class ArchitectureGovernor:
             if part in self.sovereign_dirs:
                 return None  # Exempt from depth limit
 
-        # Calculate depth from root
-        depth = len(path.parts) - 1  # Subtract 1 for filename
+        # [SSOT] Get root folder and required depth from DEPTH_MAP
+        if len(path.parts) < 1:
+            return None
+        root_folder = path.parts[0]
+        required_depth = self.DEPTH_MAP.get(root_folder)
+        
+        if required_depth is None:
+            return None  # Not a tracked root folder
+        
+        # Calculate depth from root (parts count minus filename)
+        depth = len(path.parts) - 1
 
-        # Check depth bounds (3-5 levels)
-        if depth < self.MIN_DEPTH:
-            return f"Violation: {file_path} at depth {depth} (min required: {self.MIN_DEPTH})"
-        elif depth > self.MAX_DEPTH:
-            return f"Violation: {file_path} at depth {depth} (max allowed: {self.MAX_DEPTH})"
+        # [SSOT] Check against per-root required depth
+        if depth != required_depth:
+            reason = "SHALLOW" if depth < required_depth else "DEEP"
+            return f"{reason} Violation: {file_path} at depth {depth} (required: {required_depth})"
         return None
 
     def check_atomicity_law(self, file_path: str) -> Optional[str]:
