@@ -1622,6 +1622,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L5_safety.validators.prompt_validation_agent', ['PromptValidationAgent']),
             ('agentic_core.L0_maintenance.scripts.autonomous_prompt_evolution_agent', ['AutonomousPromptEvolutionAgent']),
             ('agentic_core.L0_maintenance.scripts.agentic_code_evolution_agent', ['AgenticCodeEvolutionAgent']),
+            ('agentic_core.L0_maintenance.scripts.organic_territory_seeder_agent', ['OrganicTerritorySeederAgent']),
             ('agentic_core.L2_execution.tool_registry.naming_normalizer', ['NamingNormalizationAgent']),
             ('agentic_core.L2_execution.tool_registry.docstring_compliance', ['DocstringComplianceAgent']),
             ('agentic_core.L2_execution.tool_registry.type_hint_enforcement', ['TypeHintEnforcementAgent']),
