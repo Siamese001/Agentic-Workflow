@@ -4,7 +4,7 @@
 
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
 
 from agentic_core.runtime.shared_runtime.void_compliance import validate_file_location
@@ -43,7 +43,7 @@ class SovereignPromptRenderer:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
-        Render a sovereign instructional prompt with metadata traceability.
+        Render a standard sovereign instructional prompt.
         """
         context = context or {}
         metadata = metadata or {}
@@ -65,6 +65,37 @@ class SovereignPromptRenderer:
             return rendered.strip() + "\n"
         except Exception as e:
             raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
+
+    def render_tagentic(
+        self,
+        base_template: str,
+        fragments: List[str],
+        context: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        """
+        Tag-based agentic composition: combine meta-prompt + instructional fragments.
+        Provides clear architectural cues for high-precision CoT.
+        """
+        context = context or {}
+        
+        # Load base governance meta-prompt from meta_prompts/
+        # (The env loader should be configured to check both templates and meta_prompts)
+        try:
+            base = self.env.get_template(f"../meta_prompts/{base_template}").render(**context)
+        except Exception as e:
+            raise RuntimeError(f"[META-PROMPT FAILURE] {base_template}: {e}")
+        
+        # Append tagged instructional fragments
+        assembled = [base]
+        for frag in fragments:
+            try:
+                fragment_text = self.env.get_template(frag).render(**context)
+                # Wrapped in XML-style tags for clear LLM segment identification
+                assembled.append(f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>")
+            except Exception:
+                continue  # Silent skip missing optional fragments to prevent mission crash
+        
+        return "\n".join(assembled)
 
     @staticmethod
     def list_available_templates() -> list[str]:
