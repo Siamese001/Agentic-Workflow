@@ -1582,6 +1582,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['FissionManager']),
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
             ('agentic_core.L2_execution.tool_registry.code_deduplication_agent', ['CodeDeduplicationAgent']),
+            ('agentic_core.L5_safety.gravity.gravity_leak_repair', ['GravityLeakRepairAgent']),
         ]
         
         for module_path, class_names in agent_modules:
