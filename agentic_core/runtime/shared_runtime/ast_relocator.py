@@ -61,7 +61,7 @@ class ASTRelocator(ast.NodeVisitor):
         [SEMANTIC SCORING] Calculates placement confidence using the Rich Semantic Registry.
         Returns (L1, L2, Confidence_Score).
         """
-        best_match = ("utils", "helpers", 0.0)
+        best_match = ("utils", "general_helpers", 0.0)
         name_lower = name.lower()
         docstring = ast.get_docstring(node) or ""
         doc_lower = docstring.lower()
