@@ -324,7 +324,10 @@ ROOT_WHITELIST: set[str] = {
     # System & environment
     "data", "archives", ".git", "venv", "venv_stable", "__pycache__",
     "env", ".venv", "legacy_code", "legacy_engines", "legacy_resume_gen",
-    ".pytest_cache", ".ruff_cache", "node_modules", "docs"
+    ".pytest_cache", ".ruff_cache", "node_modules", "docs",
+    # [SPAN-OF-TWO + DEPTH NOISE SUPPRESSION] Common substructures that trigger false positives
+    "Lib", "site-packages", "google", "gapic", "logging", "golden_state",
+    "logs", "processed", "shared", "refs", "remotes", "v"
 }
 
 # Legacy mapping for backward compatibility (internal remap)
