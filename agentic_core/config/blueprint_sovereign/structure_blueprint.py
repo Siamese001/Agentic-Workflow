@@ -306,6 +306,24 @@ ROOT_PROTECTED_FILES = {
     "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
 }
 
+# [L6 SOVEREIGN EXCLUSIONS SSOT] All folders that must be ignored/skipped globally
+# Rationale: Prevents span-of-two noise, depth false positives, and resource exhaustion (WinError 1450)
+SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({
+    # System / Tooling
+    ".git", ".venv", "venv", "venv_stable", "__pycache__", 
+    ".pytest_cache", ".ruff_cache", "node_modules", ".mypy_cache", ".tox",
+    # Legacy / Archive
+    "archives", "legacy_code", "legacy_engines", "legacy_resume_gen",
+    # Data / Non-Code
+    "data", "docs", "env", "build", "dist", "_build",
+    # Venv / Pip Noise (Span-of-Two False Positives)
+    "Lib", "site-packages", "google", "gapic", "logging", "licenses", 
+    "src", "pip", "dist-info", "raw", "golden_state", "logs", "processed", 
+    "shared", "refs", "remotes", "v",
+    # System
+    ".DS_Store", "Thumbs.db"
+})
+
 # [L6 HARDENING] FORBIDDEN_ROOT_FOLDERS → frozen set + expanded legacy coverage
 # Rationale: frozenset is immutable and hashable; prevents accidental mutation.
 # Expanded to catch all known legacy numbered patterns.
@@ -319,28 +337,35 @@ FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({
     "legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"
 })
 
-# [SOVEREIGNTY HARDENING] SOVEREIGN_IGNORED_FOLDERS (SSOT)
-# The immutable blacklist of folders that must NEVER be entered, scanned, or validated.
-# Prevents resource exhaustion (WinError 1450), recursion loops, and noise.
-SOVEREIGN_IGNORED_FOLDERS: frozenset[str] = frozenset({
-    # Version Control & Metadata
-    ".git", ".svn", ".hg", "refs", "remotes",
-    # Python Environments & Caches
-    ".venv", "venv", "venv_stable", "env", "__pycache__",
-    ".pytest_cache", ".ruff_cache", ".mypy_cache", ".tox",
-    # Dependencies (Noise)
-    "node_modules", "site-packages", "Lib", "dist-info",
-    "google", "gapic", "logging", # Common large/deep dependency folders
-    # Data & Artifacts
-    "archives", "data", "logs", "processed", "golden_state", "shared",
-    "build", "dist",
-    # Legacy & Dead Code
-    "legacy_code", "legacy_engines", "legacy_resume_gen",
-    # Documentation (if not part of knowledge base)
-    "docs", "_build",
-    # System
-    ".DS_Store", "Thumbs.db"
+# Backward compatibility exports - migrate all references to use the SSOT above
+PROTECTED_FOLDERS = SOVEREIGN_EXCLUDED_FOLDERS  # Legacy name
+IGNORE_DIRS = SOVEREIGN_EXCLUDED_FOLDERS          # For void_compliance span check
+SOVEREIGN_IGNORED_FOLDERS = SOVEREIGN_EXCLUDED_FOLDERS  # Temporary alias for migration
+
+# [L6 TESTS WHITELIST SSOT] Files allowed at depth 1 in tests/ (pytest requirement)
+TESTS_ROOT_FILE_WHITELIST: frozenset[str] = frozenset({
+    "conftest.py",
+    "sovereign_smoke_test.py",
+    "test_autonomous_improvements.py",
+    # Add future root-level pytest config files here
 })
+
+# [L6 AUTONOMOUS WHITELIST SSOT] Self-healing agents allowed outside strict L2 mapping
+AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset({
+    "autonomous_checkpoint_manager.py",
+    "autonomous_state_guardian.py",
+    "self_updating_safety_engine.py",
+    "neural_auto_immune_agent.py"
+})
+
+# [L6 MISSION CONTROLS SSOT] Global behavioral toggles
+MISSION_CONFIG = {
+    "gravity_surgery_enabled": True,            # Upstream → downstream import ban
+    "hierarchy_healing_enabled": True,          # Auto-move files to correct depth/L2
+    "span_surgery_enabled": True,               # Flatten redundant tunnels
+    "fission_enabled": True,                    # Split large files
+    "run_full_mission": True,                   # False = validation-only mode
+}
 
 # --- SYSTEM EXEMPTIONS ---
 # [L6 HARDENING] ROOT_WHITELIST → derived set for immutability and speed
@@ -350,10 +375,36 @@ ROOT_WHITELIST: set[str] = {
     # Sovereign active roots
     "agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests",
     # System & environment
-    # NOTE: System exclusion is now handled by SOVEREIGN_IGNORED_FOLDERS.
+    # NOTE: System exclusion is now handled by SOVEREIGN_EXCLUDED_FOLDERS.
     # ROOT_WHITELIST now strictly contains ALLOWED roots + necessary root-level exceptions.
     "scripts", "config", "schemas", "prompt_governance"
 }
+
+# [L6 GRAVITY SSOT] Single Source of Truth for Gravity Surgery (Waterfall Enforcement)
+# Rationale: Upstream sovereign roots (core brain) MUST NOT import from downstream domains (apps, tests).
+# This prevents core contamination while allowing downstream to depend on core.
+GRAVITY_CONFIG = {
+    "enabled": True,  # Master toggle — set False to disable all gravity enforcement
+    "upstream_sovereign_roots": [
+        "agentic_core",            # The eternal brain — highest authority
+        # Add future sovereign cores here (e.g., "prompt_governance", "schemas")
+    ],
+    "downstream_domains": [
+        "apps_rg",
+        "apps_lic",
+        "apps_shared",
+        "tests",
+        # Add future downstream roots here
+    ],
+    "exemptions": [                # Allowed bidirectional flows (rare, justified)
+        # Example: "agentic_core/utils" → "apps_shared" if truly shared runtime
+    ]
+}
+
+# Backward compatibility — temporary bridge until full migration
+GRAVITY_SURGERY_ENABLED = GRAVITY_CONFIG["enabled"]
+UPSTREAM_SOVEREIGN_ROOTS = frozenset(GRAVITY_CONFIG["upstream_sovereign_roots"])
+DOWNSTREAM_ROOTS = frozenset(GRAVITY_CONFIG["downstream_domains"])
 
 # Legacy mapping for backward compatibility (internal remap)
 _LEGACY_KEY_REMAP = {

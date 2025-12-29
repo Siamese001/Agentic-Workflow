@@ -17,9 +17,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,
     ROOT_PROTECTED_FILES,
-    SOVEREIGN_IGNORED_FOLDERS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    TESTS_ROOT_FILE_WHITELIST,
+    AUTONOMOUS_AGENT_WHITELIST,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
+    UPSTREAM_SOVEREIGN_ROOTS,
+    DOWNSTREAM_ROOTS,
+    GRAVITY_SURGERY_ENABLED,
 )
 
 logger = logging.getLogger(__name__)
@@ -393,7 +398,7 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
 
     # [SSOT REFACTOR] Use global exclusion set
     # 'tests' is intentionally NOT in global ignore (it's a root), but we skip it for summary counts
-    SCOPE_SKIP_FOLDERS = SOVEREIGN_IGNORED_FOLDERS | {'tests'}
+    SCOPE_SKIP_FOLDERS = SOVEREIGN_EXCLUDED_FOLDERS | {'tests'}
     
     for folder_path in project_root.iterdir():
         if not folder_path.is_dir():
@@ -444,10 +449,10 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
 
         for dirpath, dirs, _ in os.walk(root_path):
             # [PERFORMANCE FIX] Prune ignored directories in-place to prevent os.walk from entering them
-            dirs[:] = [d for d in dirs if d not in SOVEREIGN_IGNORED_FOLDERS and not d.startswith(".")]
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS and not d.startswith(".")]
             
             current_dir = Path(dirpath)
-            if current_dir.name in SOVEREIGN_IGNORED_FOLDERS or current_dir.name.startswith(".") or ".git" in current_dir.parts:
+            if current_dir.name in SOVEREIGN_EXCLUDED_FOLDERS or current_dir.name.startswith(".") or ".git" in current_dir.parts:
                 continue
 
             valid, msg = check_span_of_two_violation(current_dir)
@@ -473,12 +478,12 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
         # 1. Root Level Check: No files directly in Sovereign Root (depth 1)
         # Whitelist __init__.py as it's required for Python package recognition
         # Whitelist conftest.py and test files in tests/ root (pytest requirement)
-        TESTS_ROOT_WHITELIST = {"conftest.py", "sovereign_smoke_test.py", "test_autonomous_improvements.py"}
+        # [SSOT] Whitelist derived from structure_blueprint
         root_files = [
             p.name for p in root_path.iterdir() 
             if p.is_file() and p.suffix == ".py" 
             and p.name != "__init__.py"
-            and not (root_key == "tests" and p.name in TESTS_ROOT_WHITELIST)
+            and not (root_key == "tests" and p.name in TESTS_ROOT_FILE_WHITELIST)
         ]
         if root_files:
             violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
@@ -486,7 +491,7 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
         # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
-        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
+        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_EXCLUDED_FOLDERS}
 
         unexpected_l1 = actual_l1 - expected_l1
         for bad in unexpected_l1:
@@ -502,17 +507,11 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                 
                 # Get expected L2 folders from CORE_SUBFOLDER_MAP
                 expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_EXCLUDED_FOLDERS}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
                 
-                # Whitelist autonomous agents to prevent drift violations
-                AUTONOMOUS_WHITELIST = {
-                    "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
-                    "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
-                }
-                
-                # Filter out whitelisted autonomous agents from violations
-                actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_WHITELIST]
+                # [SSOT] Filter out whitelisted autonomous agents from violations
+                actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_AGENT_WHITELIST]
                 
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
@@ -526,17 +525,11 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                     continue
                 
                 expected_l2 = set(l2_list)
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_EXCLUDED_FOLDERS}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
                 
-                # Whitelist autonomous agents to prevent drift violations
-                AUTONOMOUS_WHITELIST = {
-                    "autonomous_checkpoint_manager.py", "autonomous_state_guardian.py",
-                    "self_updating_safety_engine.py", "neural_auto_immune_agent.py"
-                }
-                
-                # Filter out whitelisted autonomous agents from violations
-                actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_WHITELIST]
+                # [SSOT] Filter out whitelisted autonomous agents from violations
+                actual_l2_files = [f for f in actual_l2_files if f not in AUTONOMOUS_AGENT_WHITELIST]
                 
                 # Unexpected L2 folders
                 unexpected_l2 = actual_l2_dirs - expected_l2
@@ -548,37 +541,25 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
 
 def check_import_waterfall_violations(file_path: Path, project_root: Path) -> List[str]:
     """
-    Unified Integrity Pass: Enforces Gravity (Waterfall) + Style (Conventions).
+    Enforces Gravity (Waterfall): Upstream sovereign → no imports from downstream.
+    [SSOT] All rules derived from structure_blueprint.GRAVITY_CONFIG
     """
+    if not GRAVITY_SURGERY_ENABLED:
+        return []  # Sovereign override — gravity disabled
+
     violations = []
-    # [SSOT] Use SOVEREIGN_IGNORED_FOLDERS instead of hardcoding
+    # [SSOT] Use SOVEREIGN_EXCLUDED_FOLDERS instead of hardcoding
 
     try:
         rel_path = file_path.relative_to(project_root)
-        if not rel_path.parts or rel_path.parts[0] in SOVEREIGN_IGNORED_FOLDERS:
+        if not rel_path.parts or rel_path.parts[0] in SOVEREIGN_EXCLUDED_FOLDERS:
             return []
     except ValueError:
         return []
 
-    # [PHASE 1] Gravity (Waterfall) Enforcement – FULLY DERIVED FROM structure_blueprint.py SSOT
-    # Rationale (windsurfrules.md §2): Upstream sovereign roots MUST NOT import from downstream domains.
-    # - Dynamically derive from SOVEREIGN_REGISTRY.keys() → zero drift on blueprint changes
-    # - Upstream sovereign: non-apps_* roots and not 'tests' (currently only 'agentic_core')
-    # - Downstream: all apps_* + 'tests'
-    # - Regex catches root-level imports including submodules (e.g., 'from apps_shared.utils import X')
-    # - No false positives within same root
-
-    # [SSOT DERIVATION] Pull all root folders directly from the master blueprint
-    all_registry_roots = set(SOVEREIGN_REGISTRY.keys())
-
-    # Upstream sovereign: brain core + any future non-domain sovereign supports (e.g., prompt_governance, schemas)
-    upstream_sovereign_roots = {
-        root for root in all_registry_roots
-        if not root.startswith("apps_") and root != "tests"
-    }
-
-    # Downstream: everything else (domains + tests)
-    downstream_roots = all_registry_roots - upstream_sovereign_roots
+    # [SSOT] Fully derived from blueprint — zero drift
+    upstream_sovereign_roots = UPSTREAM_SOVEREIGN_ROOTS
+    downstream_roots = DOWNSTREAM_ROOTS
 
     try:
         current_root = rel_path.parts[0]
@@ -607,7 +588,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
         if matches:
             unique_matches = sorted(set(matches))
             violations.append(
-                f"GRAVITY VIOLATION (SSOT Enforced): Upstream sovereign root '{current_root}' imports from downstream root(s): {unique_matches}. "
+                f"GRAVITY VIOLATION (SSOT Enforced): Upstream '{current_root}' imports downstream: {unique_matches}. "
                 "Rationale: Prevents core contamination. Move shared logic to apps_shared or sovereign runtime/utils."
             )
 
