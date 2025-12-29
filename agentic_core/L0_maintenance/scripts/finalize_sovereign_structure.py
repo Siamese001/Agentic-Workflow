@@ -3,9 +3,7 @@ SOVEREIGN STRUCTURE FINALIZER
 Creates all missing directories to enforce the 3-level depth law.
 """
 import os
-import sys
 
-# Import from proper location
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
@@ -13,21 +11,6 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     TESTS_SUBFOLDER_MAP,
 )
-BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/blueprint_sovereign"
-if BLUEPRINT_DIR not in sys.path:
-    sys.path.append(BLUEPRINT_DIR)
-
-try:
-    from structure_blueprint import (
-        APPS_LIC_SUBFOLDER_MAP,
-        APPS_RG_SUBFOLDER_MAP,
-        APPS_SHARED_SUBFOLDER_MAP,
-        CORE_SUBFOLDER_MAP,
-        TESTS_SUBFOLDER_MAP,
-    )
-except ImportError:
-    print(f"❌ ERROR: Could not find structure_blueprint.py")
-    sys.exit(1)
 
 def finalize_structure(root_path):
     print(f"--- FINALIZING SOVEREIGN STRUCTURE ---")

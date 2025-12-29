@@ -354,16 +354,17 @@ GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 PROTECTED_FOLDERS = {
     'archives',        # [VOID ZONE] Strictly ignored
     'data',            # [VOID ZONE] Strictly ignored
+    # [NOISE SUPPRESSION] Expanded for clean L6 pre-flight
+    '.venv',           # Virtualenv - massive redundant span violations
+    'venv',            # Alternative venv name
+    'env',             # Already present but reinforce
+    'tests',           # Root-level tests folder - standard Python layout, suppress expected hierarchy signal
     'legacy_code',     # Deprecated
     'legacy_engines',
     'legacy_resume_gen',
     '.git',
     '__pycache__',
     'node_modules',
-    '.venv',
-    'venv',
-    'env',
-    'test',            # New addition
 }
 
 # ==============================================================================
