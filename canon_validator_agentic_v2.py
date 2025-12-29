@@ -2281,26 +2281,81 @@ CURRENT CODE:
     # ===========================================================================
     print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
 
-    # [GLOBAL HEALING PROGRESS BAR] Overall progress across the sovereign territory
+    # [HEALING PHASE PROGRESS + ETA] Dedicated header with time-to-completion estimation
+    import time
     total_files = len(ctx.python_files)
+    total_round_instances = total_files * MAX_HEALING_ROUNDS
+    completed_round_instances = 0
     completed_files = 0
-    # Format: [HEALING PHASE] X/Y files complete (Z%) [BAR]
-    progress_format = "     [HEALING PHASE] {0:3d}/{1} files complete ({2:5.1f}%) [{3}]"
-    bar_length = 20
+    actual_rounds_completed = 0
 
-    def update_global_progress():
-        nonlocal completed_files
-        percent = (completed_files / total_files) * 100 if total_files > 0 else 100
-        filled = int(bar_length * completed_files // total_files) if total_files > 0 else bar_length
+    phase_start_time = time.time()
+    instance_times = []  # Moving average of duration per individual round execution
+    throughput_samples = []  # Store (time, completed_instances) for smoothed rate
+
+    # Format: [HEALING PHASE] XXXX/YYYY (ZZ.Z%) [BAR] ETA: MMm SSs | ~RRR rounds/h (FF files/h)
+    healing_phase_format = "[HEALING PHASE] {0:4d}/{1} ({2:5.1f}%) [{3}] ETA: {4} | {5}"
+    bar_length = 25
+
+    def format_throughput() -> str:
+        now = time.time()
+        elapsed_hours = (now - phase_start_time) / 3600
+        if elapsed_hours < 0.01 or completed_round_instances == 0:
+            return "warming up..."
+        current_total_rate = completed_round_instances / elapsed_hours
+        if len(throughput_samples) >= 2:
+            dt = (now - throughput_samples[-2][0]) / 3600
+            d_instances = completed_round_instances - throughput_samples[-2][1]
+            smoothed_rate = d_instances / dt if dt > 0 else current_total_rate
+        else:
+            smoothed_rate = current_total_rate
+        avg_rate_h = round(smoothed_rate)
+        files_h = round(avg_rate_h / MAX_HEALING_ROUNDS)
+        return f"~{avg_rate_h} rounds/h ({files_h} files/h)"
+
+    def format_eta(seconds_remaining: float) -> str:
+        if seconds_remaining < 0 or not instance_times:
+            return "--m --s"
+        mins, secs = divmod(int(seconds_remaining), 60)
+        return f"{mins:2d}m {secs:02d}s"
+
+    def update_healing_phase_progress():
+        nonlocal completed_round_instances
+        if instance_times:
+            avg_time_per_instance = sum(instance_times) / len(instance_times)
+            remaining_instances = total_round_instances - completed_round_instances
+            eta_seconds = avg_time_per_instance * remaining_instances
+        else:
+            eta_seconds = -1
+        percent = (completed_round_instances / total_round_instances) * 100 if total_round_instances > 0 else 100
+        filled = int(bar_length * completed_round_instances // total_round_instances) if total_round_instances > 0 else bar_length
         bar = '█' * filled + '░' * (bar_length - filled)
-        # Flush true ensures the global signal is persistent in high-concurrency environments
-        print(progress_format.format(completed_files, total_files, percent, bar), end='\r', flush=True)
+        eta_str = format_eta(eta_seconds)
+        throughput_str = format_throughput()
+        print(healing_phase_format.format(
+            completed_round_instances, total_round_instances, 
+            percent, bar, eta_str, throughput_str
+        ), end='\r', flush=True)
 
-    # Initial progress display
-    update_global_progress()
-    print()  # Move to next line to prevent overlap with the first file validation line
+    # Tier 2: File-level format
+    file_progress_format = "     [FILE PROGRESS]    {0:3d}/{1} files processed ({2:5.1f}%) [{3}]"
+
+    def update_file_progress():
+        nonlocal completed_files
+        f_bar_len = 20
+        percent = (completed_files / total_files) * 100 if total_files > 0 else 100
+        filled = int(f_bar_len * completed_files // total_files) if total_files > 0 else f_bar_len
+        bar = '█' * filled + '░' * (f_bar_len - filled)
+        print(file_progress_format.format(completed_files, total_files, percent, bar), end='\r', flush=True)
+
+    # Initial display of the Sovereignty Dashboard
+    update_healing_phase_progress()
+    print() 
+    update_file_progress()
+    print("\n")
     
     for idx, file_path in enumerate(ctx.python_files, 1):
+        file_start_time = time.time()
         file_name = Path(file_path).name
         
         # === L6 RUNTIME: ACTIVE CANON KEYS FROM SSOT ===
@@ -2695,10 +2750,28 @@ CURRENT CODE:
         if file_healed:
             print(f"   [HEALING] Complete: {file_name}")
 
-        # [GLOBAL PROGRESS UPDATE] Increment and refresh after each file is closed
+        # [PROGRESS UPDATES] Advanced ETA calculation
+        file_duration = time.time() - file_start_time
+        rounds_this_file = round_idx if total_violations == 0 else MAX_HEALING_ROUNDS
+        instance_times.extend([file_duration / rounds_this_file] * rounds_this_file)
+        
         completed_files += 1
-        update_global_progress()
-        print()  # Spacer for the next file entry
+        completed_round_instances += rounds_this_file
+        actual_rounds_completed += rounds_this_file
+
+        # [THROUGHPUT SAMPLING] Capture snapshot every ~5% of progress or every 10 instances
+        sample_interval = max(10, total_round_instances // 20)
+        if completed_round_instances % sample_interval == 0:
+            throughput_samples.append((time.time(), completed_round_instances))
+            if len(throughput_samples) > 10:  # Keep recent 10-sample window
+                throughput_samples.pop(0)
+        
+        # Refresh headers using ANSI jump logic
+        print("\033[F" * 4)  # Move cursor up to Global Phase bar
+        update_healing_phase_progress()
+        print()
+        update_file_progress()
+        print("\033[E" * 2)  # Reset cursor for next file validation output
         
         # Execute move instructions if any were generated
         if hasattr(ctx, 'move_instructions') and ctx.move_instructions:
@@ -2708,13 +2781,18 @@ CURRENT CODE:
             # Clear processed moves
             ctx.move_instructions = [m for m in ctx.move_instructions if m['source'] != file_path]
         
-    # ... (rest of the code remains the same)
     # ===========================================================================
     # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
     # ===========================================================================
-    # [GLOBAL PROGRESS CLEANUP] Clear the healing progress bar before entering Batch Sweep
-    print(" " * 110, end='\r')  # Scrub the line
-    print("[PHASE 1] Territory Remediation Complete.")
+    # Phase completion cleanup
+    final_elapsed = time.time() - phase_start_time
+    # Extra wide clearance for the full throughput text
+    print("\033[F" * 4 + " " * 150 + "\r" + " " * 150, end='\r')
+    print(f"[PHASE 1] Healing Complete — {actual_rounds_completed} rounds in {final_elapsed/60:.1f} minutes.")
+    
+    if final_elapsed > 60:
+        final_rate = actual_rounds_completed / (final_elapsed / 3600)
+        print(f"   Average throughput: {round(final_rate)} rounds/h ({round(final_rate / MAX_HEALING_ROUNDS)} files/h)")
 
     # [PHASE 2 PROGRESS BAR] Real-time progress across cross-file batch agents
     print(f"\n[L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
