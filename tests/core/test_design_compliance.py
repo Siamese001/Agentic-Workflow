@@ -16,7 +16,6 @@ class mock_mcp_tools:
     '''Brief description of functionality and purpose.'''
     
     def read_text_file(self, path):
-                    '''Brief description of functionality and purpose.'''
                     
         if path == "src/Button.tsx":
             return "import React from 'react';\nconst Button = () => <button style={{color: '#FF0000', backgroundColor: '#00FF00'}}>Click</button>;\nexport default Button;"
@@ -25,7 +24,6 @@ class mock_mcp_tools:
         raise FileNotFoundError(f"File {path} not found")
 
     def get_variable_defs(self, node_id):
-                    '''Brief description of functionality and purpose.'''
                     
         return json.dumps([
             {"name": "color-primary", "value": "#007AFF",
@@ -37,7 +35,6 @@ class mock_mcp_tools:
         ])
 
     def search_records(self, query, index, top_k, namespace):
-                    '''Brief description of functionality and purpose.'''
                     
         # Simulating Pinecone finding the canonical replacement pattern
         return json.dumps([
@@ -46,13 +43,11 @@ class mock_mcp_tools:
         ])
 
     def edit_file(self, path, edits):
-                    '''Brief description of functionality and purpose.'''
                     
         # Simulating the Filesystem MCP writing the change
         return f"File {path} edited successfully. Applied {len(edits)} edit(s): {edits}"
 
     def string_set(self, key, value):
-                    '''Brief description of functionality and purpose.'''
                     
         # print(f"[REDIS MOCK] Cached key: {key} -> {value}")  # [Security Fix]
         return "OK"

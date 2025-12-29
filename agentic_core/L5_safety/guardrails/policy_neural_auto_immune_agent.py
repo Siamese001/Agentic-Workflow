@@ -20,7 +20,6 @@ class neural_auto_immune_agent:
         self.threshold = 5
 
     def detect_breaches(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # Scans L5 Redis for repeated non-compliance in 30-min windows
         # Issues lockdown key: l5_lockdown:territory

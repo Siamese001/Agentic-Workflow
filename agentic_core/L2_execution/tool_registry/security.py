@@ -21,7 +21,6 @@ class safety_inspector(SubAtomicAgent):
     """
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # Key 2: Removed print statements in favor of context reporting
         await asyncio.sleep(0)
@@ -107,25 +106,18 @@ class safety_inspector(SubAtomicAgent):
             return "NO"
 
     async def check_key_01_no_todo_fixme(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_key_02_no_print_statements(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_key_03_no_debugger_statements(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_key_04_no_empty_except_blocks(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_key_05_no_bare_except(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_key_06_no_eval_exec(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
     async def check_async_blocking_issues(self): return True, []
-                    '''Brief description of functionality and purpose.'''
                     
 
 
@@ -149,14 +141,12 @@ class concurrency_guardian(SubAtomicAgent):
     }
 
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return ("AST_VALID" in self.ctx.signals and
                 "DEPS_VALID" in self.ctx.signals and
                 "SECURE" in self.ctx.signals)
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Concurrency Safety...")
         await asyncio.sleep(0)
@@ -230,7 +220,6 @@ class security_enforcer(SubAtomicAgent):
     """Security enforcement agent for additional security checks."""
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Policies...")
         await asyncio.sleep(0)
@@ -242,7 +231,6 @@ class red_sentinel(SubAtomicAgent):
     """Red team sentinel for adversarial security testing."""
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)

@@ -8,7 +8,7 @@ from agentic_core.L1_cognition.boundaries.semantic_gatekeeper import SemanticGat
 from agentic_core.L1_cognition.thought_engine.structured_engine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
-from agentic_core.L3_orchestration.fission_logic.fission_manager import FissionManager
+from agentic_core.L3_orchestration.fission_logic.fission_manager import fission_manager
 from agentic_core.L3_orchestration.workflow_engines.supreme_court import SupremeCourt
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter

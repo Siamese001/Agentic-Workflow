@@ -25,7 +25,6 @@ class sovereign_forensics_agent:
         self.threshold = 10  # Actions per hour
 
     def analyze_drift_patterns(self):
-                    '''Brief description of functionality and purpose.'''
                     
         cutoff = datetime.now() - timedelta(hours=1)
         keys = self.redis.keys("l4_audit:*trail")

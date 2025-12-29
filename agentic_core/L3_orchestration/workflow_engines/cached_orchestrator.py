@@ -51,7 +51,6 @@ class cached_orchestrator:
         except Exception: pass
 
     def cache_fission_decision(self, file_path: Path, decision: Dict):
-                    '''Brief description of functionality and purpose.'''
                     
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
@@ -60,7 +59,6 @@ class cached_orchestrator:
         except: pass
 
     def get_cached_fission(self, file_path: Path) -> Optional[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         rel = str(file_path.relative_to(self.root))
         key = f"{self.prefix_fission}:{hashlib.sha256(rel.encode()).hexdigest()}"
@@ -70,7 +68,6 @@ class cached_orchestrator:
         except: return None
 
     def cache_routing_decision(self, task: str, delegation: Dict):
-                    '''Brief description of functionality and purpose.'''
                     
         key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
         try:
@@ -78,7 +75,6 @@ class cached_orchestrator:
         except: pass
 
     def get_cached_routing(self, task: str) -> Optional[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
         try:

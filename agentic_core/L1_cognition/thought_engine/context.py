@@ -150,11 +150,9 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     A simple retry decorator for async functions with a delay.
     """
     def decorator(func):
-                    '''Brief description of functionality and purpose.'''
                     
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
             for attempt in range(1, max_attempts + 1):
                 try:
@@ -319,14 +317,12 @@ class validation_context:
             pass
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
-                    '''Brief description of functionality and purpose.'''
                     
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
         if not passed:
             print(f"   [{agent}] Key {key}: FAIL")
 
     def get_file_content(self, file_path: str) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -348,13 +344,11 @@ class validation_context:
 
     @property
     def client(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self._client
 
     @_rate_limited_retry() # Refactored
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code

@@ -48,7 +48,6 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.get("/", response_class=HTMLResponse)
     async def get_dashboard():
-                    '''Brief description of functionality and purpose.'''
                     
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
@@ -60,14 +59,12 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.post("/approve")
     async def approve_action():
-                    '''Brief description of functionality and purpose.'''
                     
         approval_event.set()
         return {"status": "APPROVED"}
 
     @intervention_app.post("/veto")
     async def veto_action():
-                    '''Brief description of functionality and purpose.'''
                     
         if _intervention_context:
             _intervention_context.signals.add("VETOED")
@@ -117,7 +114,6 @@ class swarm_scheduler:
         }
 
     async def run_mission(self, target_scope: str = None):
-                    '''Brief description of functionality and purpose.'''
                     
         print("[START] STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         if target_scope:

@@ -54,26 +54,21 @@ class canon_validator_engine_zlm:
         self.violations = []
     
     def validate(self, data: Dict) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
     
     def get_violations(self) -> list:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.violations
     
     def run(self) -> ExitReason:
-                    '''Brief description of functionality and purpose.'''
                     
         return ExitReason.SUCCESS
     
     def execute_p2_validation(self) -> PhaseResult:
-                    '''Brief description of functionality and purpose.'''
                     
         return PhaseResult(success=True)
     
     def execute_p6_fix(self) -> P6FixResult:
-                    '''Brief description of functionality and purpose.'''
                     
         return P6FixResult(success=True)

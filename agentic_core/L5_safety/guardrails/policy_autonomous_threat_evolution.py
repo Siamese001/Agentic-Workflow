@@ -31,7 +31,6 @@ class autonomous_threat_evolution:
         await self.threat_evolution_loop()
 
     async def threat_evolution_loop(self):
-                    '''Brief description of functionality and purpose.'''
                     
         while self.running:
             try:

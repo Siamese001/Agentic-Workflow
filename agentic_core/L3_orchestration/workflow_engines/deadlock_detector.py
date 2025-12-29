@@ -298,10 +298,8 @@ def send_heartbeat(task_id: str):
 def monitor_task(name: str = None):
     """Decorator to automatically monitor a coroutine."""
     def decorator(coro):
-                    '''Brief description of functionality and purpose.'''
                     
         async def wrapper(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
             task = asyncio.create_task(coro(*args, **kwargs))
             task_id = register_task(task, name or coro.__name__)

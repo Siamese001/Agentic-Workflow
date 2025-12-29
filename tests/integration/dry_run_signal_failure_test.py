@@ -214,19 +214,16 @@ class verification_results:
         self.checks = {}
 
     def record(self, check_name: str, passed: bool, details: str = ""):
-                    '''Brief description of functionality and purpose.'''
                     
         self.checks[check_name] = {"passed": passed, "details": details}
         status = "✅ PASS" if passed else "❌ FAIL"
         logger.info(f"  [{self.engine_name}] {check_name}: {status} {details}")
 
     def all_passed(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return all(c["passed"] for c in self.checks.values())
 
     def summary(self) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         lines = [f"\n{'='*60}", f"Verification Results: {self.engine_name}", "="*60]
         for name, result in self.checks.items():

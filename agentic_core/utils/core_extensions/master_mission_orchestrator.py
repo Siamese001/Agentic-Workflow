@@ -20,7 +20,7 @@ async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
     print(f"\n{'=' * 70}\n[L6] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
     try:
         engine: Any = SubAtomicEngine()
-        guardrail: Any = SafetyGuardrail(deletion_limit=110)
+        guardrail: Any = safety_guardrail(deletion_limit=110)
         print(f"[OK] Neural Link Active: {os.getenv('GEMINI_MODEL')}")
         print(f'[OK] Safety Guardrail Active (AST Gate Enabled)')
     except Exception as e:

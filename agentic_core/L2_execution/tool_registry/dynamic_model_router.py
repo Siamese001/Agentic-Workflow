@@ -215,7 +215,6 @@ class dynamic_model_router(SubAtomicAgent):
         max_depth = 0
         
         def visit(node, depth=0):
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal max_depth
             max_depth = max(max_depth, depth)

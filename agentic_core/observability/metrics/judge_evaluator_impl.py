@@ -51,7 +51,6 @@ class judge_evaluation_result:
         self.summary = SUMMARY
         self.metadata = METADATA
     def get_failing_criteria(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
 

@@ -60,9 +60,9 @@ class sovereign_prompt_renderer:
     @staticmethod
     def list_available_templates() -> list[str]:
         """Utility for introspection and MCP routing."""
-        root: Any = SovereignPromptRenderer.TEMPLATE_ROOT
+        root: Any = sovereign_prompt_renderer.TEMPLATE_ROOT
         return [p.relative_to(root).as_posix() for p in root.rglob('*.jinja') if p.is_file()]
 
-def get_sovereign_prompt_renderer() -> SovereignPromptRenderer:
+def get_sovereign_prompt_renderer() -> sovereign_prompt_renderer:
     """Brief description of functionality and purpose."""
-    return SovereignPromptRenderer()
+    return sovereign_prompt_renderer()

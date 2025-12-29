@@ -29,7 +29,6 @@ class sherlock(SubAtomicAgent):
         self.last_failure = None
 
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.triggered and self.last_failure is not None
 
@@ -43,7 +42,6 @@ class sherlock(SubAtomicAgent):
         }
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
@@ -117,12 +115,10 @@ class test_pilot(SubAtomicAgent):
         self.sherlock_ref: Optional[Sherlock] = None
 
     def set_sherlock(self, sherlock: Sherlock):
-                    '''Brief description of functionality and purpose.'''
                     
         self.sherlock_ref = sherlock
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
         await asyncio.sleep(0)
@@ -156,7 +152,6 @@ class toolsmith_agent(SubAtomicAgent):
     """
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Forging Diagnostic Tools...")
         await asyncio.sleep(0)

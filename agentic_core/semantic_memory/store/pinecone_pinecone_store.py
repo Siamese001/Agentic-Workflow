@@ -61,7 +61,6 @@ class sovereign_pinecone_store:
             self.index.upsert(vectors=batch, namespace=namespace)
 
     def query(
-                    '''Brief description of functionality and purpose.'''
                     
         self,
         vector: List[float],
@@ -79,6 +78,5 @@ class sovereign_pinecone_store:
         )
 
     def delete_namespace(self, namespace: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.index.delete(delete_all=True, namespace=namespace)

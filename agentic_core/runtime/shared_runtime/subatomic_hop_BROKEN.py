@@ -351,7 +351,6 @@ class subatomic_hop:
         await self.overseer.verify(sanitized_output)
         # BudgetExceededError is orphaned - assuming it's defined elsewhere or needs to be imported
         class BudgetExceededError(Exception):
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, message, current_spend, limit):
                 super().__init__(message)

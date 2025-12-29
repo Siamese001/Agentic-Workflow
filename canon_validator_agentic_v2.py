@@ -88,20 +88,20 @@ sovereign_paths = [
     project_root / "apps_shared" / "utils"
 ]
 
-for p in SOVEREIGN_PATHS:
+for p in sovereign_paths:
     p_str = str(p)
     if p.exists() and p_str not in sys.path:
         sys.path.insert(0, p_str)
 
 # [FIX] Guard against re-execution on import - only print once
 # NAMING FIXED: _INIT_COMPLETE → _init_complete
-_init_complete = getattr(sys.modules.get(__name__), '_INIT_COMPLETE', False)
-if not _INIT_COMPLETE and __name__ == "__main__":
+_init_complete = getattr(sys.modules.get(__name__), '_init_complete', False)
+if not _init_complete and __name__ == "__main__":
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
     # [ETERNAL INDEX] Territory bootstrap removed - handled by PineconeSovereignAgent on demand
     
-    _INIT_COMPLETE = True
+    _init_complete = True
 
 # === SINGLE, HARDENED TELEMETRY BLOCK (Remove duplicate lower in file) ===
 # Keep only ONE instance – the later duplicate was causing metric registry conflicts
@@ -112,52 +112,42 @@ class mock_span:
     def __enter__(self): return self
     def __exit__(self, *args): pass
     def set_attribute(self, *args): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def set_status(self, *args): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def record_exception(self, *args): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def add_event(self, *args, **kwargs): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def end(self): pass
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: MockTracer → mock_tracer
 class mock_tracer:
     '''Brief description of functionality and purpose.'''
     
-    def start_as_current_span(self, name): return MockSpan()
-                    '''Brief description of functionality and purpose.'''
+    def start_as_current_span(self, name): return mock_span()
                     
-    def start_span(self, name): return MockSpan()
-                    '''Brief description of functionality and purpose.'''
+    def start_span(self, name): return mock_span()
                     
 
 # NAMING FIXED: MockTrace → mock_trace
 class mock_trace:
     '''Brief description of functionality and purpose.'''
     
-    def get_tracer(self, name): return MockTracer()
-                    '''Brief description of functionality and purpose.'''
+    def get_tracer(self, name): return mock_tracer()
                     
     class Status:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self, code, description=None): pass
     class StatusCode:
-                    '''Brief description of functionality and purpose.'''
                     
         ERROR = 1
         OK = 0
 
 # Default safe mode
-tracer = MockTracer()
-trace = MockTrace()
+tracer = mock_tracer()
+trace = mock_trace()
 
 try:
     from opentelemetry import trace as otel_trace
@@ -322,7 +312,7 @@ gravity_layers = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
 
 def get_layer_rank(path_str: str) -> int:
     """Lower index = higher authority. Order pulled directly from SSOT."""
-    for i, layer in enumerate(GRAVITY_LAYERS):
+    for i, layer in enumerate(gravity_layers):
         if layer in path_str:
             return i
     return -1
@@ -364,21 +354,21 @@ try:
     if not apply_fission_blueprint:
         apply_fission_blueprint = lambda *args, **kwargs: None  # Fallback no-op
     
-    FissionManager = dynamic_import('agentic_core.L3_orchestration.workflow_engines.fission_manager', 'FissionManager')
-    if not FissionManager:
-        FissionManager = dynamic_import('agentic_core.L3_orchestration.fission_logic.fission_manager', 'FissionManager')
+    fission_manager = dynamic_import('agentic_core.L3_orchestration.workflow_engines.fission_manager', 'fission_manager')
+    if not fission_manager:
+        fission_manager = dynamic_import('agentic_core.L3_orchestration.fission_logic.fission_manager', 'fission_manager')
     
-    SafetyGuardrail = dynamic_import('agentic_core.L5_safety.guardrails.safety_guardrail', 'SafetyGuardrail')
-    if not SafetyGuardrail:
-        SafetyGuardrail = dynamic_import('agentic_core.L3_orchestration.workflow_engines.safety_guardrail', 'SafetyGuardrail')
+    safety_guardrail = dynamic_import('agentic_core.L5_safety.guardrails.safety_guardrail', 'safety_guardrail')
+    if not safety_guardrail:
+        safety_guardrail = dynamic_import('agentic_core.L3_orchestration.workflow_engines.safety_guardrail', 'safety_guardrail')
     
     SubAtomicEngine = dynamic_import('agentic_core.L5_safety.guardrails.subatomic_engine', 'SubAtomicEngine')
     
     # [CANON KEY 1] Sovereign Prompt Rendering
-    SovereignPromptRenderer = dynamic_import('agentic_core.prompt_governance.rendering.sovereign_prompt_renderer', 'SovereignPromptRenderer')
-    if not SovereignPromptRenderer:
+    sovereign_prompt_renderer = dynamic_import('agentic_core.prompt_governance.rendering.sovereign_prompt_renderer', 'sovereign_prompt_renderer')
+    if not sovereign_prompt_renderer:
         # Critical warning: instructional prompts are vulnerable without central rendering
-        print("   [!] SovereignPromptRenderer not found — sovereignty drift detected in Key 1")
+        print("   [!] sovereign_prompt_renderer not found — sovereignty drift detected in Key 1")
     
     if __name__ == "__main__":
         print(f"   [OK] Core components loaded dynamically (gravity-compliant)")
@@ -459,7 +449,7 @@ run_sprawl_surgery = MISSION_CONFIG["run_sprawl_surgery"]        # [RISK: MEDIUM
 structural_only_mode = MISSION_CONFIG["structural_only_mode"]    # [RISK: LOW]
 
 # [FORCE PROGRESS] Confirm safe operational mode based on actual flag state
-if not (RUN_HIERARCHY_HEALING or RUN_GRAVITY_REFACTOR or RUN_SPRAWL_SURGERY):
+if not (run_hierarchy_healing or run_gravity_refactor or run_sprawl_surgery):
     print("\n[FORCE PROGRESS] High-intensity surgery flags locked. Operating in Validation Mode.\n")
 else:
     print("\n[!] [L6 SURGERY] HIGH-RISK MUTATION ENABLED — Physical/LLM surgery active. Proceed with extreme caution.\n")
@@ -525,11 +515,9 @@ except ImportError:
         print("   [INFO] prometheus_client not available - running with null metrics")
     # Comprehensive dummy to prevent ANY AttributeError downstream
     class NullMetric:
-                    '''Brief description of functionality and purpose.'''
                     
         def __getattr__(self, name):
             def noop(*args, **kwargs): return self
-                                                    '''Brief description of functionality and purpose.'''
                                                     
             return noop
     c_violations_total = c_healing_attempts = c_agent_failures = g_active_files = NullMetric()
@@ -558,7 +546,6 @@ class gemini_spy:
 
         # Intercept method calls (e.g., generate_content, query, chat)
         def wrapper(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # [GAP 20 HARDENING] Block unauthorized models at the wire
             if args:
@@ -607,8 +594,8 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
     """
     results = {"files_relocated": 0, "folders_removed": 0, "errors": []}
     
-    if not RUN_HIERARCHY_HEALING:
-        print("   [INFO] Hierarchy healing disabled (RUN_HIERARCHY_HEALING=False)")
+    if not run_hierarchy_healing:
+        print("   [INFO] Hierarchy healing disabled (run_hierarchy_healing=False)")
         return results
     
     print("\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
@@ -802,7 +789,7 @@ def _remove_empty_dirs(path: Path):
         # 3. Delete the .gitkeep sentinel itself
         gitkeep = path / ".gitkeep"
         if gitkeep.exists():
-            gitkeep.unlink(missing_ok=True)
+            gitkeep.unlink()
             print(f"      [✓] Removed .gitkeep sentinel: {gitkeep}")
         
         # 4. Now safely remove the empty directory
@@ -823,7 +810,7 @@ def _update_gitignore_for_purge(project_root: Path):
     Idempotently inserts a clear, dated, commented entry in .gitignore.
     Preserves existing content and avoids duplicates.
     """
-    if not RUN_HIERARCHY_HEALING:
+    if not run_hierarchy_healing:
         return
 
     gitignore_path = project_root / ".gitignore"
@@ -871,7 +858,7 @@ def _purge_orphaned_files(project_root: Path):
     [L6 HARDENING] Purge code and assets in forbidden or root-level locations.
     Only files with no legal home are archived — sovereign territory protected.
     """
-    if not RUN_HIERARCHY_HEALING:
+    if not run_hierarchy_healing:
         return {"purged": 0, "errors": []}
 
     # [GIT INTEGRATION] Ensure purge artifacts are ignored
@@ -1205,15 +1192,14 @@ async def run_mission(target_scope: str = "agentic_core"):
         if not hasattr(ctx, 'results'):
             ctx.results = {}
         # [SURGERY ACCESS] Expose healing flag to batch agents
-        ctx.RUN_HIERARCHY_HEALING = RUN_HIERARCHY_HEALING
+        ctx.run_hierarchy_healing = run_hierarchy_healing
         # [CONTENT DEDUPLICATION] Expose sprawl surgery flag
-        ctx.RUN_SPRAWL_SURGERY = RUN_SPRAWL_SURGERY
+        ctx.run_sprawl_surgery = run_sprawl_surgery
         # [SSOT] Attach sovereign project_root to context for batch agents
         ctx.project_root = project_root
         print("   [OK] ValidationContext loaded from agentic_core")
     except (ImportError, AttributeError):
         class FallbackValidationContext:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self):
                 self.target_scope = None
@@ -1240,7 +1226,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     # Helper to convert CamelCase to snake_case
     def camel_to_snake(name):
-                    '''Brief description of functionality and purpose.'''
                     
         # Special cases for known compound words
         special_cases = {
@@ -1255,9 +1240,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     # [SSOT] CANON_AGENT_REGISTRY removed - using inline critical agent list
     _CRITICAL_AGENTS = {
-        12: ["FissionManager", "ArchitectureGovernor"],
+        12: ["fission_manager", "ArchitectureGovernor"],
         13: ["MissionHistorian"],
-        19: ["SafetyGuardrail", "SubAtomicEngine"]
+        19: ["safety_guardrail", "SubAtomicEngine"]
     }
     
     required_keys = [12, 13, 19]
@@ -1313,15 +1298,15 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"   [OK] All framework agents validated\n")
 
     # 1. Initialize Safety Components
-    if SafetyGuardrail is None:
-        print("\n[CRITICAL] SafetyGuardrail class not loaded!")
+    if safety_guardrail is None:
+        print("\n[CRITICAL] safety_guardrail class not loaded!")
         print("   -> Check import paths in canon_validator_agentic_v2.py")
         print("      - agentic_core.L5_safety.guardrails.safety_guardrail")
         print("      - agentic_core.L3_orchestration.workflow_engines.safety_guardrail")
         import sys
         sys.exit(1)
     
-    safety_guard = SafetyGuardrail(deletion_limit=110)
+    safety_guard = safety_guardrail(deletion_limit=110)
 
     # [HARDENING] VERIFY KEY PRESENCE
     if not os.getenv("GOOGLE_API_KEY"):
@@ -1360,8 +1345,8 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # 2. Initialize Fission Logic with HIGH threshold to validate all files
     # Set to 10000 to effectively disable fission and validate everything
-    if FissionManager is None:
-        print("\n[CRITICAL] FissionManager class not loaded!")
+    if fission_manager is None:
+        print("\n[CRITICAL] fission_manager class not loaded!")
         print("   -> Check import paths in canon_validator_agentic_v2.py")
         print("   -> Expected locations:")
         print("      - agentic_core.L3_orchestration.workflow_engines.fission_manager")
@@ -1370,9 +1355,9 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("      - agentic_core.L3_orchestration.S3_vitality.fission_manager")
         sys.exit(1)
     
-    fission_mgr = FissionManager(line_limit=10000, max_rounds=3)
+    fission_mgr = fission_manager(line_limit=10000, max_rounds=3)
     
-    print(f"   [OK] SafetyGuardrail active (Limit: 110 lines)")
+    print(f"   [OK] safety_guardrail active (Limit: 110 lines)")
     
     # ===========================================================================
     # [ENHANCEMENT 1] L4 STATE HARDENING: Smart-Report Hybrid
@@ -1665,7 +1650,6 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     
     # Discover agents from known canon agent modules
     def discover_agents():
-                    '''Brief description of functionality and purpose.'''
                     
         discovered = []
         agent_modules = [
@@ -1679,7 +1663,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                 'SyntaxHealer', 'IndentationFixer'
             ]),
             ('agentic_core.L3_orchestration.workflow_engines.architecture_governor', ['ArchitectureGovernor']),
-            ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['FissionManager']),
+            ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['fission_manager']),
             ('agentic_core.L3_orchestration.workflow_engines.metalearning_agent', ['MetaLearningAgent']),
             ('agentic_core.L3_orchestration.workflow_engines.meta_orchestrator_agent', ['MetaOrchestratorAgent']),
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
@@ -1839,7 +1823,6 @@ IF (task == "GRAVITY_REFACTOR"):
             original_execute = getattr(agent, 'execute', None)
             if original_execute:
                 async def hunter_wrapper(file_path):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     print(f"   [HUNTER] Scanning for hallucinations in {Path(file_path).name}")
                     try:
@@ -1862,7 +1845,6 @@ IF (task == "GRAVITY_REFACTOR"):
             original_execute = getattr(agent, 'execute', None)
             if original_execute:
                 async def import_law_wrapper(file_path):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     print(f"   [IMPORT LAW] Enforcing on {Path(file_path).name}")
                     try:
@@ -1881,7 +1863,6 @@ IF (task == "GRAVITY_REFACTOR"):
             original_execute = getattr(agent, 'execute', None)
             if original_execute:
                 async def purger_wrapper(file_path):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     print(f"   [PURGER] Pruning dead code in {Path(file_path).name}")
                     try:
@@ -1910,7 +1891,6 @@ IF (task == "GRAVITY_REFACTOR"):
             original_execute = getattr(agent, 'execute', None)
             if original_execute:
                 async def fission_wrapper(file_path):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     try:
                         return await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
@@ -1969,7 +1949,6 @@ IF (task == "GRAVITY_REFACTOR"):
             original_execute = getattr(agent, 'execute', None)
             if original_execute:
                 async def governor_wrapper(file_path):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     print(f"   [GOVERNOR] Enforcing structural law on {Path(file_path).name}")
                     try:
@@ -2196,7 +2175,6 @@ IF (task == "GRAVITY_REFACTOR"):
         original_execute = getattr(red_team_agent, 'execute', None)
         if original_execute:
             async def red_team_wrapper(*args, **kwargs):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 print(f"   [RED TEAM] Initiating adversarial sweep...")
                 try:
@@ -2281,7 +2259,7 @@ IF (task == "GRAVITY_REFACTOR"):
     # ===========================================================================
     # [AUTONOMY PATCH] PHASE 0: ARCHITECTURAL GRAVITY REFACTOR
     # ===========================================================================
-    if RUN_GRAVITY_REFACTOR:
+    if run_gravity_refactor:
         print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
         print(f"   [>] Scanning for Sovereign → Downstream violations...")
         
@@ -2396,7 +2374,7 @@ CURRENT CODE:
                             refactored_code = refactored_code.rsplit("```", 1)[0]
                         refactored_code = refactored_code.strip()
                     
-                    # Validate the change with SafetyGuardrail
+                    # Validate the change with safety_guardrail
                     is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
                     if is_safe:
                         # Apply the fix physically
@@ -2407,7 +2385,7 @@ CURRENT CODE:
                         gravity_violations_fixed += len(violations)
                         ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
                     else:
-                        print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
+                        print(f"      [!] safety_guardrail rejected refactor: {safety_msg}")
                         ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
                 except Exception as e:
                     print(f"      [!] Refactor failed: {str(e)[:100]}")
@@ -2448,7 +2426,6 @@ CURRENT CODE:
     bar_length = 25
 
     def format_throughput() -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         now = time.time()
         elapsed_hours = (now - phase_start_time) / 3600
@@ -2466,7 +2443,6 @@ CURRENT CODE:
         return f"~{avg_rate_h} rounds/h ({files_h} files/h)"
 
     def format_eta(seconds_remaining: float) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         if seconds_remaining < 0 or not instance_times:
             return "--m --s"
@@ -2474,7 +2450,6 @@ CURRENT CODE:
         return f"{mins:2d}m {secs:02d}s"
 
     def update_healing_phase_progress():
-                    '''Brief description of functionality and purpose.'''
                     
         nonlocal completed_round_instances
         if instance_times:
@@ -2497,7 +2472,6 @@ CURRENT CODE:
     file_progress_format = "     [FILE PROGRESS]    {0:3d}/{1} files processed ({2:5.1f}%) [{3}]"
 
     def update_file_progress():
-                    '''Brief description of functionality and purpose.'''
                     
         nonlocal completed_files
         f_bar_len = 20
@@ -2568,7 +2542,7 @@ CURRENT CODE:
                         
                         if success:
                             ctx.results[file_name] = {"action": "FISSION_COMPLETE", "loc": loc_count}
-                            ctx.report("FissionManager", 50, True, f"Split {file_name} into sub-modules")
+                            ctx.report("fission_manager", 50, True, f"Split {file_name} into sub-modules")
                             print(f"   [OK] Fission Complete. Skipping standard validation.")
                             continue # Skip to next file
                         else:
@@ -2606,7 +2580,7 @@ CURRENT CODE:
         # attempt to surgically extract its contents to their proper homes.
         is_misplaced = "temp" in file_name or "unsorted" in str(file_path) or "legacy" in str(file_path)
         
-        if is_misplaced and RUN_HIERARCHY_HEALING:
+        if is_misplaced and run_hierarchy_healing:
             try:
                 print(f"   [SURGERY] Scanning {file_name} for relocation targets...")
                 from agentic_core.runtime.shared_runtime.ast_relocator import ASTRelocator
@@ -3271,9 +3245,9 @@ async def _execute_move_instruction(move: dict, project_root: Path, ctx):
 # FACTORY FUNCTIONS
 # ==============================================================================
 
-def get_fission_manager(max_lines: int = 800, min_lines: int = 80, dust_threshold: int = 40, max_rounds: int = 3) -> FissionManager:
+def get_fission_manager(max_lines: int = 800, min_lines: int = 80, dust_threshold: int = 40, max_rounds: int = 3) -> fission_manager:
     """
-    Factory function to create FissionManager instance.
+    Factory function to create fission_manager instance.
     
     Args:
         max_lines: Maximum lines per file (upper bound for fission trigger)
@@ -3282,11 +3256,11 @@ def get_fission_manager(max_lines: int = 800, min_lines: int = 80, dust_threshol
         max_rounds: Maximum healing rounds before exhaustion
         
     Returns:
-        FissionManager instance
+        fission_manager instance
     """
     # [SOVEREIGN HARDENING] Re-introduce size guards to prevent fragmentation.
     # Violation justification: This ensures the 'Span-of-Two' law is applied physically.
-    return FissionManager(
+    return fission_manager(
         max_lines=max_lines,          # Constitutional limit (e.g., 800)
         min_lines=min_lines,          # Prevents creating <80 line modules
         dust_threshold=dust_threshold,# Rejects splits resulting in <40 line scraps
@@ -3294,17 +3268,17 @@ def get_fission_manager(max_lines: int = 800, min_lines: int = 80, dust_threshol
     )
 
 
-def get_safety_guardrail(deletion_limit: int = 110) -> SafetyGuardrail:
+def get_safety_guardrail(deletion_limit: int = 110) -> safety_guardrail:
     """
-    Factory function to create SafetyGuardrail instance.
+    Factory function to create safety_guardrail instance.
     
     Args:
         deletion_limit: Maximum lines that can be deleted
         
     Returns:
-        SafetyGuardrail instance
+        safety_guardrail instance
     """
-    return SafetyGuardrail(deletion_limit=deletion_limit)
+    return safety_guardrail(deletion_limit=deletion_limit)
 
 
 def get_subatomic_engine(gemini_client: Optional[Any] = None) -> SubAtomicEngine:
@@ -3347,14 +3321,13 @@ if __name__ == "__main__":
 
     try:
         async def timed_mission():
-                                    '''Brief description of functionality and purpose.'''
                                     
             async with asyncio.timeout(MISSION_TIMEOUT):
-                global _MISSION_EXECUTED
-                if _MISSION_EXECUTED:
+                global _mission_executed
+                if _mission_executed:
                     print("[INFO] Mission re-entry detected — skipping duplicate boot sequence")
                     return
-                _MISSION_EXECUTED = True
+                _mission_executed = True
                 await run_mission(args.target)
         asyncio.run(timed_mission())
     except KeyboardInterrupt:

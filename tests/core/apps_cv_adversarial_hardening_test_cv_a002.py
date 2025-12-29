@@ -43,7 +43,6 @@ class test_cva002:
         write_attempts = []
 
         def mock_redis_set_with_timestamp(key, value, timestamp=None):
-                                    '''Brief description of functionality and purpose.'''
                                     
             write_attempts.append({
                 "key": key,
@@ -82,7 +81,6 @@ class test_cva002:
         state_history = []
 
         def mock_temporal_state_manager(key, value, timestamp):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Get last known timestamp for this key
             last_timestamp = None
@@ -148,7 +146,6 @@ class test_cva002:
         server_time = datetime.now(timezone.utc)
 
         def mock_clock_skew_check(timestamp):
-                                    '''Brief description of functionality and purpose.'''
                                     
             client_time = datetime.fromisoformat(
                 timestamp.replace("Z", "+00:00"))
@@ -187,7 +184,6 @@ class test_cva002:
         integrity_violations = []
 
         def mock_temporal_write(key, value, timestamp, writer_id):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Validate timestamp
             datetime.now(timezone.utc)
@@ -253,7 +249,6 @@ class test_cva002:
         audit_log = []
 
         def mock_temporal_operation(operation, key, value, timestamp):
-                                    '''Brief description of functionality and purpose.'''
                                     
             entry = {
                 "operation": operation,

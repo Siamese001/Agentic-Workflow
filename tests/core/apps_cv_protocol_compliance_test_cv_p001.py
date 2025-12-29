@@ -123,13 +123,11 @@ class test_cv_protocol_compliance:
         add_observations_called = False
 
         def mock_redis_set(key, value):
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal redis_set_called
             redis_set_called = True
 
         def mock_add_observations(observations):
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal add_observations_called
             add_observations_called = True

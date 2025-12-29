@@ -18,7 +18,6 @@ class hierarchy_healer:
         self.blueprint = CORE_SUBFOLDER_MAP #
 
     async def execute(self, file_path: str):
-                    '''Brief description of functionality and purpose.'''
                     
         path_obj = Path(file_path)
         # Identify L1 (e.g., L5_safety) from path

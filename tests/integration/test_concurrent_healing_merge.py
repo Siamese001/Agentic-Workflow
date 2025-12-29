@@ -25,7 +25,6 @@ class test_concurrent_healing_coordination:
         results = []
         
         def healer_1():
-                                    '''Brief description of functionality and purpose.'''
                                     
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -38,7 +37,6 @@ class test_concurrent_healing_coordination:
                     concurrent_lock_manager.release(resource_id)
         
         def healer_2():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.05)  # Start slightly after healer_1
             resource_id = str(target_file)
@@ -112,7 +110,6 @@ class test_concurrent_healing_coordination:
         results = []
         
         def heal_file(file_path, healer_id):
-                                    '''Brief description of functionality and purpose.'''
                                     
             resource_id = str(file_path)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -160,13 +157,11 @@ class test_concurrent_merge_conflicts:
         target_file.write_text("# Original\n")
         
         def writer_1():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.05)
             target_file.write_text("# Writer 1\n")
         
         def writer_2():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.1)
             target_file.write_text("# Writer 2\n")
@@ -204,7 +199,6 @@ class test_concurrent_merge_conflicts:
         results = {"fix_a_applied": False, "fix_b_applied": False}
         
         def apply_fix_a():
-                                    '''Brief description of functionality and purpose.'''
                                     
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -216,7 +210,6 @@ class test_concurrent_merge_conflicts:
                     concurrent_lock_manager.release(resource_id)
         
         def apply_fix_b():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.01)  # Start slightly after A
             resource_id = str(target_file)
@@ -271,7 +264,6 @@ class test_concurrent_merge_conflicts:
         target_file.write_text("class Original:\n    pass\n")
         
         def add_method_a():
-                                    '''Brief description of functionality and purpose.'''
                                     
             resource_id = str(target_file)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):
@@ -286,7 +278,6 @@ class test_concurrent_merge_conflicts:
                     concurrent_lock_manager.release(resource_id)
         
         def add_method_b():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.05)
             resource_id = str(target_file)
@@ -333,13 +324,11 @@ class test_healing_queue_ordering:
         execution_order = []
         
         def low_priority_healer():
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(0.1)
             execution_order.append("low")
         
         def high_priority_healer():
-                                    '''Brief description of functionality and purpose.'''
                                     
             execution_order.append("high")
         
@@ -372,7 +361,6 @@ class test_healing_queue_ordering:
         execution_order = []
         
         def healer(healer_id, delay):
-                                    '''Brief description of functionality and purpose.'''
                                     
             time.sleep(delay)
             resource_id = str(target_file)

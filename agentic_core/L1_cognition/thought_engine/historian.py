@@ -22,10 +22,8 @@ class i_validation_context(Protocol):
     flapping_files: Dict[str, int]
 
     def update_file_hash(self, file_path: str, file_hash: str): ...
-                    '''Brief description of functionality and purpose.'''
                     
     def mark_flapping(self, file_path: str): ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: IValidationContextManager → i_validation_context_manager
@@ -35,19 +33,14 @@ class i_validation_context_manager(Protocol):
     current_context: Optional[IValidationContext]
 
     def get_last_file_hashes(self) -> Dict[str, str]: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def get_flapping_files(self) -> Dict[str, int]: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def complete_cycle(self, status: str = "COMPLETED"): ...
-                    '''Brief description of functionality and purpose.'''
                     
     def load_memory(self) -> bool: ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: LOGGER → logger

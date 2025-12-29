@@ -29,7 +29,7 @@ class _SubatomicEnginePlaceholder:
     def __init__(self, gemini_client: Any):
         self.client = gemini_client
 
-class _FissionManagerPlaceholder:
+class _fission_managerPlaceholder:
     """
     Placeholder for the Fission Manager.
     """
@@ -37,7 +37,7 @@ class _FissionManagerPlaceholder:
     def __init__(self):
         pass
 
-class _SafetyGuardrailPlaceholder:
+class _safety_guardrailPlaceholder:
     """
     Placeholder for the Safety Guardrail.
     """
@@ -57,14 +57,14 @@ def get_fission_manager() -> Any:
     Placeholder function to get the Fission Manager.
     Replaces the original import from apps_shared.
     """
-    return _FissionManagerPlaceholder()
+    return _fission_managerPlaceholder()
 
 def get_safety_guardrail() -> Any:
     """
     Placeholder function to get the Safety Guardrail.
     Replaces the original import from apps_shared.
     """
-    return _SafetyGuardrailPlaceholder()
+    return _safety_guardrailPlaceholder()
 
 @dataclass
 class canon_base_agent(ABC):

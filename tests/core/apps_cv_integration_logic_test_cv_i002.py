@@ -54,20 +54,17 @@ class test_cvi002:
         cache_updates = []
 
         def mock_cache_check(key):
-                                    '''Brief description of functionality and purpose.'''
                                     
             call_sequence.append("cache_check")
             return initial_cache_data
 
         def mock_cache_store(key, value):
-                                    '''Brief description of functionality and purpose.'''
                                     
             call_sequence.append("cache_store")
             cache_updates.append(value)
             return True
 
         def mock_get_figma_versions():
-                                    '''Brief description of functionality and purpose.'''
                                     
             call_sequence.append("live_figma_check")
             return live_figma_versions
@@ -129,7 +126,6 @@ class test_cvi002:
         audit_runs = []
 
         def mock_audit_run(version):
-                                    '''Brief description of functionality and purpose.'''
                                     
             audit_runs.append(version)
             if version == "v1.0.0":
@@ -159,13 +155,11 @@ class test_cvi002:
         version_check_results = []
 
         def mock_concurrent_version_check():
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Simulate multiple concurrent checks
             import threading
 
             def check_version(thread_id):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 # Simulate different threads getting different versions
                 if thread_id % 2 == 0:
@@ -228,7 +222,6 @@ class test_cvi002:
         cache_state = {}
 
         def mock_cache_with_invalidation(key, value=None):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if value is None:  # Get operation
                 return cache_state.get(key)

@@ -35,7 +35,6 @@ class hy_de_document:
 
     @property
     def is_valid(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return len(self.content.strip()) > 20 and self.word_count > 10
 
@@ -64,11 +63,9 @@ class hy_de_processor:
         self.fallback_enabled = fallback_enabled
 
     def expand_query(self, original_query: str, archetype: str, industry: Optional[str] = None) -> HyDEResult:
-                    '''Brief description of functionality and purpose.'''
                     
         return HyDEResult(original_query=original_query, expanded_query=original_query, hypothetical_doc=None, success=False, fallback_used=True, error_message='Stub mode')
 
     def generate_hypothetical_doc(self, query: str, archetype: str, industry: str) -> Optional[HyDEDocument]:
-                    '''Brief description of functionality and purpose.'''
                     
         return None

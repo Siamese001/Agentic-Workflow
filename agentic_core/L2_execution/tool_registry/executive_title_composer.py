@@ -28,10 +28,8 @@ class integrity_gate_executor:
     '''Brief description of functionality and purpose.'''
     
     def execute_hygiene_scan(self, headline: str): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
-                    '''Brief description of functionality and purpose.'''
                     
     results = []
 # NAMING FIXED: ValidationResult → validation_result
@@ -49,13 +47,10 @@ class adaptive_recovery_loop:
     
     def __init__(self, initial_temperature: float): pass
     def reset(self, temperature: float): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict): pass
-                    '''Brief description of functionality and purpose.'''
                     
     def get_temperature_log(self): return []
-                    '''Brief description of functionality and purpose.'''
                     
     current_temperature = 0.5
     should_retry = True

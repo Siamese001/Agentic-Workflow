@@ -21,15 +21,12 @@ def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def dense_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def hybrid_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
     return _Ranking.bm25_rank(items)
 
@@ -41,15 +38,12 @@ def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def dense_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def hybrid_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
     return _Ranking.dense_rank(items)
 
@@ -61,15 +55,12 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def dense_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
         @staticmethod
         def hybrid_rank(items): return items
-                                    '''Brief description of functionality and purpose.'''
                                     
     return _Ranking.hybrid_rank(items)
 

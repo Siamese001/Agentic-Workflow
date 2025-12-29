@@ -20,11 +20,9 @@ class execution_context:
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
         pass
     def start(self):
-                    '''Brief description of functionality and purpose.'''
                     
         pass
     def complete(self, success: bool, error: Optional[Exception] = None):
-                    '''Brief description of functionality and purpose.'''
                     
         pass
 

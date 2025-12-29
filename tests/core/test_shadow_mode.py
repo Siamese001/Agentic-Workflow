@@ -41,11 +41,9 @@ def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
 
     # Mocking the execution result data for testing logic flow
     class MockEngine:
-                    '''Brief description of functionality and purpose.'''
                     
         SHADOW_MODE_ACTIVE = True # Simulated environment check
         def execute_dependency_refactor(self):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if self.SHADOW_MODE_ACTIVE:
                 return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED"}
@@ -66,7 +64,6 @@ def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch)
 
     # Mock the send_email function call in outreach_engine
     def mock_send_email(recipient, subject, body):
-                    '''Brief description of functionality and purpose.'''
                     
         if os.environ.get(SHADOW_MODE_KEY) == "SHADOW":
             return {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
@@ -88,11 +85,9 @@ def test_production_mode_executes_side_effects(mock_canon_deps, monkeypatch):
 
     # Simulate production execution
     class MockEngine:
-                    '''Brief description of functionality and purpose.'''
                     
         SHADOW_MODE_ACTIVE = False # Simulated environment check
         def execute_dependency_refactor(self):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if self.SHADOW_MODE_ACTIVE:
                 return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED"}

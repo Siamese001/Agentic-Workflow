@@ -34,7 +34,6 @@ class dependency_graph:
         self.reverse_graph = {}
 
     def build(self, files: list):
-                    '''Brief description of functionality and purpose.'''
                     
         for file_path in files:
             self.graph[file_path] = {"imports": [], "classes": []}
@@ -59,7 +58,6 @@ class dependency_graph:
                 self.reverse_graph[imp].append(file)
 
     def get_impact_radius(self, file_path: str) -> list:
-                    '''Brief description of functionality and purpose.'''
                     
         impacted = set()
         module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
@@ -77,7 +75,6 @@ class watchman_handler:
         self._debounce_delay = 1.0
 
     def on_modified(self, event):
-                    '''Brief description of functionality and purpose.'''
                     
         if event.is_directory or not event.src_path.endswith('.py'):
             return None

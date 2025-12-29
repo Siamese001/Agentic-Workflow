@@ -44,7 +44,6 @@ class sovereign_redis_orchestrator:
         return redis.Redis(**params)
 
     def get(self, key: str) -> Any:
-                    '''Brief description of functionality and purpose.'''
                     
         if not self.use_fallback:
             try:
@@ -57,7 +56,6 @@ class sovereign_redis_orchestrator:
         return self.fallback_cache.get(key)
 
     def set(self, key: str, value: Any):
-                    '''Brief description of functionality and purpose.'''
                     
         if not self.use_fallback:
             try:

@@ -31,7 +31,6 @@ def test_mock_llm_tool_invocation():
 
         # Mock the cognitive node to simulate LLM response
         def mock_think(user_goal, toolbox_desc, logger=None):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Simulate LLM generating code that uses multiple tools
             mock_code = '''
@@ -56,14 +55,12 @@ def execute_system_status_check():
 
         # Mock tool functions to track calls
         def mock_write_file(path, content):
-                                    '''Brief description of functionality and purpose.'''
                                     
             tool_calls.append(
                 {"tool": "write_file", "path": path, "content": content})
             return f"Successfully wrote to {path}"
 
         def mock_get_current_time(timezone):
-                                    '''Brief description of functionality and purpose.'''
                                     
             tool_calls.append(
                 {"tool": "get_current_time", "timezone": timezone})
@@ -200,7 +197,6 @@ def test_real_gemini_api_integration():
 
         # Mock tool implementations
         def mock_write_file(path, content):
-                                    '''Brief description of functionality and purpose.'''
                                     
             actual_tool_calls.append(
                 {"tool": "write_file", "path": path, "content": content})
@@ -211,7 +207,6 @@ def test_real_gemini_api_integration():
             return f"Successfully wrote to {path}"
 
         def mock_get_current_time(timezone):
-                                    '''Brief description of functionality and purpose.'''
                                     
             actual_tool_calls.append(
                 {"tool": "get_current_time", "timezone": timezone})

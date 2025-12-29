@@ -30,7 +30,6 @@ class signal_context(Protocol):
     hard_state: HardState
     signed_claims: List[SignedClaim]
     def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: LOGGER → logger

@@ -34,7 +34,6 @@ class integrity_gate_result:
         self.violations: List[Violation] = []
 
     def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.passed = False
         self.violations.append(Violation(reason, message))

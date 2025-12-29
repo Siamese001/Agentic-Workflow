@@ -19,7 +19,6 @@ class underscore_visitor(ast.NodeVisitor):
         self.violations = []
 
     def visit_AnnAssign(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         if isinstance(node.target, ast.Name) and node.target.id.startswith("_"):
             if not node.target.id.startswith("__"):
@@ -27,7 +26,6 @@ class underscore_visitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Assign(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         for target in node.targets:
             if isinstance(target, ast.Name) and target.id.startswith("_"):

@@ -22,28 +22,22 @@ class hard_state_protocol(Protocol):
     execution_id: str
     node_id: str
     def add_trace(self, EVENT: str, DATA: Dict[str, Any]) -> 'HardStateProtocol': ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: SignalContextProtocol → signal_context_protocol
 class signal_context_protocol(Protocol):
     """Protocol for SignalContext to allow dependency injection."""
     def get_thermal_params(self) -> Dict[str, float]: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def get_anchored_context(self) -> Optional[str]: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def update_timestamp(self) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
     @property
     def hard_state(self) -> HardStateProtocol: ...
-                    '''Brief description of functionality and purpose.'''
                     
     @hard_state.setter
     def hard_state(self, value: HardStateProtocol) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 # NAMING FIXED: LOGGER → logger
@@ -75,7 +69,6 @@ class open_ai_client_wrapper:
 
     @property
     def chat(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self._client.chat
 
@@ -87,18 +80,15 @@ class anthropic_client_wrapper:
 
     @property
     def chat(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self
 
     @property
     def completions(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
-                    '''Brief description of functionality and purpose.'''
                     
         anthropic_messages = []
         for msg in messages:
@@ -127,24 +117,20 @@ class anthropic_client_wrapper:
 
         # Convert Anthropic response to an OpenAI-like structure
         class MockChoice:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, input_tokens, output_tokens):
                 self.input_tokens = input_tokens
                 self.output_tokens = output_tokens
             def model_dump(self):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 return {"prompt_tokens": self.input_tokens, "completion_tokens": self.output_tokens, "total_tokens": self.input_tokens + self.output_tokens}
 
         class MockResponse:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
@@ -160,18 +146,15 @@ class google_client_wrapper:
 
     @property
     def chat(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self
 
     @property
     def completions(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
-                    '''Brief description of functionality and purpose.'''
                     
         _model = genai.GenerativeModel(model)
 
@@ -198,19 +181,16 @@ class google_client_wrapper:
 
         # Convert Google response to an OpenAI-like structure
         class MockChoice:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, prompt_tokens, completion_tokens):
                 self.prompt_tokens = prompt_tokens
                 self.completion_tokens = completion_tokens
             def model_dump(self):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 return {"prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens, "total_tokens": self.prompt_tokens + self.completion_tokens}
 
@@ -222,7 +202,6 @@ class google_client_wrapper:
             completion_tokens = response.usage_metadata.candidates_token_count
 
         class MockResponse:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
@@ -238,7 +217,6 @@ class generic_open_ai_compatible_client_wrapper:
 
     @property
     def chat(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self._client.chat # Assume client has a .chat attribute with .completions.create
 

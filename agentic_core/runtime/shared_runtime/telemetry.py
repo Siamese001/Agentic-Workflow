@@ -36,7 +36,6 @@ class telemetry_recorder:
         self.conn.execute(""" """)
 
     def record(self: Any, event: TraceEvent) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.conn.execute(
             "INSERT INTO traces VALUES (?, ?, ?, ?, ?, ?)",

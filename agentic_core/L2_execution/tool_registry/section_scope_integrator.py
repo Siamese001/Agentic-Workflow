@@ -45,7 +45,6 @@ class integrity_gate_executor: # Placeholder for IntegrityGateExecutor
     def __init__(self):
         self.results = []
     def execute_hygiene_scan(self, overview):
-                    '''Brief description of functionality and purpose.'''
                     
         return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
 
@@ -57,12 +56,10 @@ class adaptive_recovery_loop: # Placeholder for AdaptiveRecoveryLoop
         self.current_temperature = initial_temperature
         self.temperature_log = []
     def reset(self, temp):
-                    '''Brief description of functionality and purpose.'''
                     
         self.current_temperature = temp
         self.temperature_log = []
     def record_failure(self, gate_id, MESSAGE, DETAILS):
-                    '''Brief description of functionality and purpose.'''
                     
         self.temperature_log.append({'gate_id': gate_id, 'message': MESSAGE, 'details': DETAILS, 'temperature': self.current_temperature})
         # Simple retry logic for placeholder
@@ -71,7 +68,6 @@ class adaptive_recovery_loop: # Placeholder for AdaptiveRecoveryLoop
             return type('Recovery', (object,), {'should_retry': True})()
         return type('Recovery', (object,), {'should_retry': False})()
     def get_temperature_log(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self.temperature_log
 

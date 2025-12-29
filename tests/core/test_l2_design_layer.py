@@ -139,7 +139,6 @@ def test_design_drift_detection():
 
         # Mock Figma version check
         def mock_get_file_versions(component_id):
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal figma_called
             figma_called = True
@@ -153,7 +152,6 @@ def test_design_drift_detection():
 
         # Mock Time MCP
         def mock_get_current_time(timezone="UTC"):
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal time_called
             time_called = True
@@ -161,7 +159,6 @@ def test_design_drift_detection():
 
         # Mock variable defs
         def mock_get_variable_defs(node_id, version=None):
-                                    '''Brief description of functionality and purpose.'''
                                     
             return json.dumps({
                 "variables": {
@@ -172,7 +169,6 @@ def test_design_drift_detection():
 
         # Mock add_observations
         def mock_add_observations(observations):
-                                    '''Brief description of functionality and purpose.'''
                                     
             pass
 

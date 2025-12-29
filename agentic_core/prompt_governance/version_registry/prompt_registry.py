@@ -1,7 +1,7 @@
 # PromptRegistry - Sovereign Version Registry
 # Territory: agentic_core/prompt_governance/version_registry
 # Canon Alignment: Prompt versioning, active template management, backward compatibility
-# SSOT Integration: Used by SovereignPromptRenderer and mission logging
+# SSOT Integration: Used by sovereign_prompt_renderer and mission logging
 
 import json
 '''Brief description of functionality and purpose.'''
@@ -15,7 +15,6 @@ try:
 except ImportError:
     # Fallback for bootstrap phase if void_compliance is not yet indexed
     def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return True, "Bootstrap"
 

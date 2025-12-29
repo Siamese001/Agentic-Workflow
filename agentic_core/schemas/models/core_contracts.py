@@ -259,7 +259,6 @@ class read_file_args(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
@@ -274,7 +273,6 @@ class write_file_args(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
@@ -289,7 +287,6 @@ class move_file_args(BaseModel):
     
     @validator('source', 'destination')
     def validate_paths(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Paths must be relative to project root")
@@ -304,7 +301,6 @@ class list_files_args(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
@@ -321,7 +317,6 @@ class execute_command_args(BaseModel):
     
     @validator('timeout')
     def validate_timeout(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if v > 300:
             raise ValueError("Timeout cannot exceed 300 seconds to prevent livelocks")
@@ -331,7 +326,6 @@ class execute_command_args(BaseModel):
     
     @validator('cwd')
     def validate_cwd(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if v and Path(v).is_absolute():
             raise ValueError("Working directory must be relative to project root")
@@ -344,7 +338,6 @@ class delete_file_args(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
@@ -358,7 +351,6 @@ class create_directory_args(BaseModel):
     
     @validator('path')
     def validate_path(cls, v):
-                    '''Brief description of functionality and purpose.'''
                     
         if Path(v).is_absolute():
             raise ValueError("Path must be relative to project root")
@@ -771,7 +763,6 @@ class signal_context(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
-                    '''Brief description of functionality and purpose.'''
                     
         arbitrary_types_allowed = True
 
@@ -1414,7 +1405,6 @@ class financial_metric:
     yoy_change: Optional[str] = None
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return bool(self.metric_name and self.value and self.source_citation)
 
@@ -1428,7 +1418,6 @@ class technical_implementation:
     performance_gain: Optional[str] = None
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return bool(self.technology_name and self.implementation_details and self.source_citation)
 
@@ -1441,7 +1430,6 @@ class strategic_layer:
     strategic_initiatives: List[str] = field(default_factory=list)
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         if not self.core_thesis or len(self.core_thesis) < 20:
             return False
@@ -1458,7 +1446,6 @@ class technical_layer:
     implementation_summary: Optional[str] = None
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         if len(self.key_technologies) < 2:
             return False
@@ -1472,7 +1459,6 @@ class leadership_layer:
     organizational_structure: Optional[str] = None
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         if len(self.key_executives) < 2:
             return False
@@ -1485,17 +1471,14 @@ class citation_map:
     citations: Dict[str, str] = field(default_factory=dict)
     
     def add_citation(self, source_id: str, url: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.citations[source_id] = url
     
     def get_citation(self, source_id: str) -> Optional[str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.citations.get(source_id)
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return len(self.citations) >= 3
 
@@ -1511,7 +1494,6 @@ class deep_research_output:
     research_timestamp: Optional[str] = None
     
     def validate(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return (self.strategic_layer.validate() and 
                 self.technical_layer.validate() and 
@@ -1519,7 +1501,6 @@ class deep_research_output:
                 self.citation_map.validate())
     
     def to_dict(self) -> Dict[str, Any]:
-                    '''Brief description of functionality and purpose.'''
                     
         return {
             'company_name': self.company_name,
@@ -1585,7 +1566,6 @@ class integrity_gate_result:
     depth_score: float = 0.0
     
     def add_violation(self, reason: str, detail: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
@@ -2101,31 +2081,26 @@ class mission_plan(SovereignBaseModel):
             self._phase_names: set = set()  # Integrity check
         
         def with_mission_id(self, mission_id: str) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._mission_id = mission_id
             return self
         
         def with_cycle(self, cycle_id: int) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._cycle_id = cycle_id
             return self
         
         def with_priority(self, priority: MissionPriority) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._priority = priority
             return self
         
         def with_objective(self, objective: str) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._objective = objective
             return self
         
         def add_phase(self, phase: MissionPhase) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             if phase.name in self._phase_names:
                 raise ValueError(f"Sovereignty Violation: Duplicate phase name detected: {phase.name}")
@@ -2134,7 +2109,6 @@ class mission_plan(SovereignBaseModel):
             return self
         
         def with_risk_assessment(self, assessment: Dict) -> 'MissionPlan.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._risk_assessment = assessment
             return self
@@ -2181,7 +2155,6 @@ class mission_plan(SovereignBaseModel):
             rec_stack = set()
             
             def has_cycle(node: str) -> bool:
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 visited.add(node)
                 rec_stack.add(node)
@@ -2260,13 +2233,11 @@ class thought_chain(SovereignBaseModel):
             self._duration_seconds: float = 0.0
 
         def with_chain_id(self, chain_id: str) -> 'ThoughtChain.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._chain_id = chain_id
             return self
 
         def with_goal(self, goal: str) -> 'ThoughtChain.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._goal = goal
             return self
@@ -2279,7 +2250,6 @@ class thought_chain(SovereignBaseModel):
             return self
 
         def add_hypothesis(self, hypothesis: Hypothesis) -> 'ThoughtChain.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._hypotheses.append(hypothesis)
             return self
@@ -2291,7 +2261,6 @@ class thought_chain(SovereignBaseModel):
             return self
 
         def mark_failed(self) -> 'ThoughtChain.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._success = False
             return self
@@ -2369,19 +2338,16 @@ class constitutional_violation(SovereignBaseModel):
             self._suggested_fix: Optional[str] = None
 
         def with_guardian(self, guardian: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._guardian = guardian
             return self
 
         def in_dimension(self, dimension: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._dimension = dimension
             return self
 
         def with_severity(self, severity: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             if severity not in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
                 raise ValueError(f"Sovereignty Violation: Invalid severity: {severity}")
@@ -2389,26 +2355,22 @@ class constitutional_violation(SovereignBaseModel):
             return self
 
         def at_location(self, file_path: str, line_number: Optional[int] = None) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._file_path = file_path
             self._line_number = line_number
             return self
 
         def with_description(self, description: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._description = description
             return self
 
         def with_evidence(self, evidence: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._evidence = evidence
             return self
 
         def with_suggested_fix(self, fix: str) -> 'ConstitutionalViolation.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._suggested_fix = fix
             return self
@@ -2492,52 +2454,44 @@ class healing_action(SovereignBaseModel):
             self._transaction_id: Optional[str] = None
 
         def with_strategy(self, strategy: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._strategy = strategy
             return self
 
         def with_action_type(self, action_type: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._action_type = action_type
             return self
 
         def targeting(self, file: str, line: Optional[int] = None) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._target_file = file
             self._target_line = line
             return self
 
         def for_reason(self, reason: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._reason = reason
             return self
 
         def succeeded(self) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._success = True
             self._error_message = None
             return self
 
         def failed(self, error: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._success = False
             self._error_message = error
             return self
 
         def with_backup(self, backup_path: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._backup_path = backup_path
             return self
 
         def in_transaction(self, transaction_id: str) -> 'HealingAction.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._transaction_id = transaction_id
             return self
@@ -2619,13 +2573,11 @@ class healing_cycle(SovereignBaseModel):
             self._duration_seconds: float = 0.0
 
         def with_cycle_id(self, cycle_id: str) -> 'HealingCycle.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._cycle_id = cycle_id
             return self
 
         def triggered_by_score(self, score: float) -> 'HealingCycle.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._trigger_score = score
             return self
@@ -2639,13 +2591,11 @@ class healing_cycle(SovereignBaseModel):
             return self
 
         def add_action(self, action: HealingAction) -> 'HealingCycle.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._actions.append(action)
             return self
 
         def with_duration(self, seconds: float) -> 'HealingCycle.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._duration_seconds = seconds
             return self
@@ -2725,7 +2675,6 @@ class healing_report(SovereignBaseModel):
             self._strategies_used: List[str] = []
 
         def with_report_id(self, report_id: str) -> 'HealingReport.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._report_id = report_id
             return self
@@ -2853,25 +2802,21 @@ class sovereign_event(SovereignBaseModel):
             return self
 
         def from_source(self, source: str) -> 'SovereignEvent.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._source = source
             return self
 
         def in_dimension(self, dimension: Optional[str]) -> 'SovereignEvent.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._dimension = dimension
             return self
 
         def with_payload(self, **kwargs) -> 'SovereignEvent.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._payload.update(kwargs)
             return self
 
         def correlated_with(self, correlation_id: str) -> 'SovereignEvent.Builder':
-                                    '''Brief description of functionality and purpose.'''
                                     
             self._correlation_id = correlation_id
             return self

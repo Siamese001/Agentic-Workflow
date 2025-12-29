@@ -62,7 +62,6 @@ class test_cvu003:
 
         # Simulate the version check logic
         def check_versions_stale(versions, current_time):
-                                    '''Brief description of functionality and purpose.'''
                                     
             for version in versions:
                 version_time = datetime.fromisoformat(
@@ -122,7 +121,6 @@ class test_cvu003:
 
         # Simulate the version check logic
         def check_versions_fresh(versions, current_time):
-                                    '''Brief description of functionality and purpose.'''
                                     
             for version in versions:
                 version_time = datetime.fromisoformat(

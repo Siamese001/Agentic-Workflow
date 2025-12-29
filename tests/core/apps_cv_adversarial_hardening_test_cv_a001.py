@@ -53,7 +53,6 @@ def fixed_function():
         governance_input = []
 
         def mock_l5_governance_filter(code, context):
-                                    '''Brief description of functionality and purpose.'''
                                     
             governance_input.append((code, context))
             # Filter out malicious instructions
@@ -91,7 +90,6 @@ def fixed_function():
         captured_commits = []
 
         def mock_git_commit_with_repo_enforcement(**kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Extract repository from context
             repo = kwargs.get("repository", "default-repo")
@@ -157,7 +155,6 @@ def fixed_function():
         attack_steps = []
 
         def mock_chain_attack_detector(code):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Detect chain attack patterns
             chain_indicators = [
@@ -201,7 +198,6 @@ def fix_step2():
         validation_contexts = []
 
         def mock_isolated_validation(code, validation_id):
-                                    '''Brief description of functionality and purpose.'''
                                     
             # Create isolated context for each validation
             context = {

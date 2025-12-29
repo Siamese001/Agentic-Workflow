@@ -19,21 +19,17 @@ class redis_sovereign_agent:
         return self._client
     
     def get(self, key: str) -> Optional[Any]:
-                    '''Brief description of functionality and purpose.'''
                     
         return None
     
     def set(self, key: str, value: Any, ttl: int = None) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
     
     def delete(self, key: str) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
     
     def exists(self, key: str) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return False

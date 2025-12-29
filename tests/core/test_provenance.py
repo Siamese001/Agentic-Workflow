@@ -17,7 +17,6 @@ def mock_git_gpg(monkeypatch):
     This assumes success for all Git/GPG setup and commit calls.
     """
     def mock_run(*args, **kwargs):
-                    '''Brief description of functionality and purpose.'''
                     
         if "commit" in args[0] and "-S" in args[0]:
             # Simulate success on signed commit
