@@ -34,8 +34,8 @@ class TerritoryHealerAgent:
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS  # Flat set for O(1) lookup
-        # Flatten all mapped paths for fast check
-        self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
+        # Flatten all mapped paths for fast check (exclude behavioral wildcards)
+        self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps if p != "*"}
         
         self.root_protected = ROOT_PROTECTED_FILES
         self.get_placement_guidance = get_placement_guidance

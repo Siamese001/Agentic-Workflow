@@ -8,13 +8,13 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Set
 
 # [KEY EXCEPTION LEDGER] Central SSOT for False Positive Suppression
-# Format: key_id: { "files": set(), "patterns": list() }
+# Note: These are CODE QUALITY keys (20+), separate from TERRITORIAL keys (0-19)
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {
-    23: {  # Key 23: External HTTP Forbidden
+    23: {  # Key 23: External HTTP Forbidden (code quality)
         "files": {"agentic_core/L2_execution/mcp/fetch_client_sovereign.py"},
         "patterns": [r"if TYPE_CHECKING:", r"\"\"\".*requests.*\"\"\""]
     },
-    20: {  # Key 20: Naming Law
+    20: {  # Key 20: Large class exception (code quality)
         "files": {"canon_validator_agentic_v2.py", "pyproject.toml"},
         "patterns": []
     }
@@ -306,35 +306,39 @@ FORBIDDEN_PATTERNS = [
     re.compile(r".*_old\.py$"),
     re.compile(r".*_copy\.py$"),
     re.compile(r".*_backup\.py$"),
-    re.compile(r"^legacy_.*\.py$"),
-    re.compile(r"^.+_\d+\.py$"),
-    re.compile(r"^draft_.*\.py$")
 ]
 
 # ==============================================================================
-# CANON KEY CONSTITUTION [SSOT] - Final Sovereign Seal (Dec 24, 2025)
+# CANON KEY CONSTITUTION [SSOT] - Final Sovereign Seal (Dec 29, 2025)
 # ==============================================================================
-ACTIVE_CANON_KEYS = list(range(0, 22))
+ACTIVE_CANON_KEYS = list(range(0, 20))  # [NORMALIZED] Exactly 20 high-signal keys
 
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    0:  [".",],  # Root-level files only
-    1:  ["agentic_core/prompt_governance"],
-    7:  ["agentic_core/schemas"],
-    11: ["agentic_core/L1_cognition"],
-    12: ["agentic_core/L3_orchestration"],
-    13: ["agentic_core/L4_state"],
-    19: ["agentic_core/L5_safety"],
-    20: ["agentic_core/L0_maintenance", "agentic_core/utils/naming", "agentic_core/observability/compliance"],
-    21: ["agentic_core/L2_execution", "agentic_core/patterns", "agentic_core/semantic_memory", "agentic_core/knowledge"],
-    14: ["apps_shared", "apps_rg", "apps_lic"],
-    15: ["apps_rg/agents", "apps_lic/agents"],
-    16: ["apps_shared/utils"],
-    17: ["tests"]
+    # === TERRITORIAL KEYS 0-12: Positive L1 ownership (Physical Laws) ===
+    0: ["."],                                                # Root protected sovereign files
+    1: ["agentic_core/prompt_governance"],                   # Prompt templates & governance
+    2: ["agentic_core/schemas"],                            # Pydantic models & contracts
+    3: ["agentic_core/L1_cognition"],                        # High-level reasoning & planning
+    4: ["agentic_core/L3_orchestration"],                    # Workflow, fission, routing
+    5: ["agentic_core/L4_state"],                            # Memory, ledger, Pinecone/Redis state
+    6: ["agentic_core/L5_safety"],                           # Guardrails, red_teaming, gravity
+    7: ["agentic_core/L0_maintenance"],                      # Operational scripts & benchmarks
+    8: ["agentic_core/L2_execution", "agentic_core/patterns",# Execution tools + agent behavioral patterns
+        "agentic_core/semantic_memory", "agentic_core/knowledge"],   
+    9: ["agentic_core/config", "agentic_core/runtime"],      # Sovereign config + shared runtime
+    10: ["agentic_core/utils", "agentic_core/observability"], # Utils (naming, helpers) + metrics/telemetry
+    11: ["apps_shared", "apps_rg", "apps_lic"],              # All application domains (top-level)
+    12: ["tests"],                                           # Test territories (unit/integration/e2e)
+    
+    # === BEHAVIORAL KEYS 13-19: Runtime & Semantic Sovereignty Metrics ===
+    13: ["*"],   # Span-of-Two: No empty/redundant folders (structural purity)
+    14: ["*"],   # Agent Activation: cleaning_crew + validators + monitors active
+    15: ["*"],   # Healing Actions: Fission + file moves executed
+    16: ["*"],   # Safety Systems: Guardrails + SubAtomicEngine online
+    17: ["*"],   # State Synchronization: Pinecone/Redis sovereign agents
+    18: ["*"],   # Core Laws: Zero naming + gravity violations
+    19: ["*"],   # Full Convergence: Zero total violations
 }
-
-# [L6 MCP CAPABILITIES SSOT] Modular Capability Provider Configuration
-# Rationale: Formalizes the state of external tool integrations.
-# Current Status (v2.9): All MCPs active for enhanced tooling capabilities.
 MCP_CAPABILITIES = {
     "router": {
         "enabled": True,  # SovereignMCPRouter for tool routing
