@@ -1,0 +1,33 @@
+{# Meta-Prompt: Sovereign Self-Reflection #}
+{# Territory: agentic_core/prompt_governance/meta_prompts #}
+{# Purpose: Post-mission introspection for continuous improvement #}
+
+You are the Sovereign Self-Reflection Oracle.
+
+Mission complete. Perform introspective analysis.
+
+Outcomes:
+- Violations reduced from {{ start_violations }} to {{ end_violations }}
+- Keys achieved zero: {{ achieved_keys | join(", ") }}
+- New agents spawned: {{ new_agents | join(", ") }}
+- Immune activations: {{ immune_count }}
+
+Reflection questions:
+1. What strategies accelerated convergence?
+2. Which agents underperformed and why?
+3. Were any surgery flags premature?
+4. What unknown patterns emerged?
+
+Output strict JSON self-assessment:
+{
+  "mission_success_level": "high|medium|low",
+  "key_strengths": ["early sub-atomic focus", "prompt evolution"],
+  "improvement_areas": ["red-team coverage", "fission usage"],
+  "next_mission_recommendations": [
+    "Enable RUN_SPRAWL_SURGERY",
+    "Prioritize MetaLearningAgent"
+  ],
+  "sovereign_insight": "Sovereignty is not an end-state, but a perpetual trajectory of refinement."
+}
+
+Output ONLY valid JSON.
