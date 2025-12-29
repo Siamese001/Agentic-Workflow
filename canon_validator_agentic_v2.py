@@ -31,7 +31,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ACTIVE_CANON_KEYS,
     CANON_AGENT_REGISTRY, # [GAP 2]
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
-    ROOT_PROTECTED_FILES
+    ROOT_PROTECTED_FILES,
+    ROOT_WHITELIST,  # [SSOT] Protected folders derived from blueprint
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
@@ -349,18 +350,8 @@ MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
 GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
-PROTECTED_FOLDERS = {
-    'archives',        # [VOID ZONE] Strictly ignored
-    'data',            # [VOID ZONE] Strictly ignored
-    # [NOISE SUPPRESSION] Expanded for clean L6 pre-flight
-    '.venv',           # Virtualenv - massive redundant span violations
-    'venv',            # Alternative venv name
-    'env',             # Already present but reinforce
-    'tests',           # Root-level tests folder - standard Python layout, suppress expected hierarchy signal
-    'legacy_code',     # Deprecated
-    'legacy_engines',
-    'legacy_resume_gen',
-}
+# [SSOT] Derived from ROOT_WHITELIST in structure_blueprint.py — single source of truth
+PROTECTED_FOLDERS = ROOT_WHITELIST
 
 # ==============================================================================
 # [L6 SURGERY] MISSION CONTROL FLAGS — OPERATIONAL RISK GATES

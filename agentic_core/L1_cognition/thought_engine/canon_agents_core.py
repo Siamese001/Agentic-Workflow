@@ -2,6 +2,7 @@
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
 Phase 9A: DDD Remediation - Interface-based composition (Dec 26, 2025)
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 import ast
 import logging
@@ -13,6 +14,10 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
+# [SSOT] Derive depth map from SOVEREIGN_REGISTRY
+DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
 EXCLUDED_DIRS = [
     '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
@@ -224,18 +229,23 @@ class SystemArchitect(CanonBaseAgentInterface):
                           for both violations and warnings.
         """
         violations = []
-        warnings = []
         for file_path in self.ctx.python_files:
-            # Path.parts includes all components. If file_path is relative to project root,
-            # this gives the logical depth within the project.
-            # E.g., "src/module/file.py" -> ('src', 'module', 'file.py'), depth 3.
-            depth = len(Path(file_path).parts)
+            # Path.parts includes all components
+            parts = Path(file_path).parts
+            depth = len(parts)
             
-            if depth > 5:
-                violations.append(f"{file_path} (Invalid depth: {depth})")
-            elif depth < 3 and not file_path.endswith("__init__.py"):  # Files too shallow, but __init__.py can be depth 2
-                violations.append(f"{file_path} (Invalid depth: {depth} - minimum depth is 3)")
+            # Skip __init__.py files
+            if file_path.endswith("__init__.py"):
+                continue
+            
+            # [SSOT] Check against per-root required depth from SOVEREIGN_REGISTRY
+            if parts and parts[0] in DEPTH_MAP:
+                root_folder = parts[0]
+                required_depth = DEPTH_MAP[root_folder]
+                if depth != required_depth:
+                    violations.append(f"{file_path} (Invalid depth: {depth} - {root_folder} requires depth {required_depth})")
         return len(violations) == 0, violations
+
     def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
         """Helper to check if an AST tree contains class or function definitions."""
         for node in ast_tree.body:

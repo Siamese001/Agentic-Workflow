@@ -264,17 +264,19 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
                 reason = "SHALLOW" if depth < agentic_core_exact_depth else "DEEP"
                 return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {agentic_core_exact_depth}"
 
-        # [ETERNAL DEPTH 3] All apps_* folders — exact depth 3
+        # [SSOT] All apps_* folders — depth from SOVEREIGN_REGISTRY
         if root_folder.startswith("apps_"):
-            if depth != 3:
-                reason = "SHALLOW" if depth < 3 else "DEEP"
-                return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != 3"
+            apps_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 3)
+            if depth != apps_depth:
+                reason = "SHALLOW" if depth < apps_depth else "DEEP"
+                return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != {apps_depth}"
 
-        # [ETERNAL DEPTH 3] tests/ folder lockdown
+        # [SSOT] tests/ folder lockdown — depth from SOVEREIGN_REGISTRY
         if root_folder == "tests":
-            if depth != 3:
-                reason = "SHALLOW" if depth < 3 else "DEEP"
-                return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != 3"
+            tests_depth = SOVEREIGN_REGISTRY.get("tests", {}).get("depth", 3)
+            if depth != tests_depth:
+                reason = "SHALLOW" if depth < tests_depth else "DEEP"
+                return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != {tests_depth}"
             
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
         if root_folder == "agentic_core":

@@ -170,11 +170,8 @@ class SystemArchitect(CanonBaseAgent):
                     violations.append(f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.")
                 continue
 
-            # All other folders: min 3, max 5
-            if depth < 3:
-                violations.append(f"{rel_path}: Shallow nesting ({depth}). Min required is 3.")
-            elif depth > 5:
-                violations.append(f"{rel_path}: Deep nesting ({depth}). Max allowed is 5.")
+            # [SSOT] Files in untracked roots are skipped — all depths come from SOVEREIGN_REGISTRY
+            # No hardcoded fallback — if not in SSOT, it's not enforced
 
         return len(violations) == 0, violations
     

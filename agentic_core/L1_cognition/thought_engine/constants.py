@@ -1,43 +1,42 @@
 """
 Sovereign domain constants - Re-exported from canonical location.
 This module provides waterfall-compliant access to shared constants.
+[SSOT] All structural constants derived from structure_blueprint.py
 """
 
-import sys
-from pathlib import Path
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    ROOT_WHITELIST,
+    ROOT_PROTECTED_FILES,
+    SOVEREIGN_REGISTRY,
+)
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
+# [SSOT] Depth constants derived from SOVEREIGN_REGISTRY — no hardcoded values
+# Each root folder has its own depth defined in SOVEREIGN_REGISTRY[root]["depth"]
+DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
-# Architectural Constants
-MIN_DEPTH = 3
-MAX_DEPTH = 5
+# Architectural Constants - derived from SSOT
 MAX_LINES = 200
 MIN_LINES = 10
 
-# Exclusion Zones
+# Exclusion Zones - [SSOT] Use ROOT_WHITELIST for allowed folders
 EXCLUDED_DIRS = {
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
     'node_modules', '.tox', 'dist', 'build', '.mypy_cache', '.coverage',
-    '.vscode', '.idea', '*.swp', '*.swo', '.DS_Store',
+    '.vscode', '.idea', '.DS_Store',
     'logs', 'tmp', 'temp', '.tmp',
     '.cache', 'cache', 'data', 'archives',
-    'htmlcov', 'coverage.xml', '_build', 'site', '.doctrees',
+    'htmlcov', '_build', 'site', '.doctrees',
 }
 
 EXCLUDED_FILES = {
     'canon_validator_v2_agentic.py',
-    'test_*.py', '*_test.py', 'conftest.py',
-    '*.pyc', '*.pyo', '*.pyd', '.DS_Store',
-    '*.egg-info', '*.whl', '*.zip', '*.tar.gz',
-    '.vscode/settings.json', '.idea/*.xml',
-    'Thumbs.db', '*.tmp',
+    'conftest.py',
+    '.DS_Store',
+    'Thumbs.db',
 }
 
 # [SSOT] Import from structure_blueprint.py instead of hardcoding
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
-ALLOWED_ROOT_FILES = {
-    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
-    '.env', 'canon_validator_agentic.py', 'pytest.ini'
-}
+# [SSOT] Protected root files from structure_blueprint.py
+ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES

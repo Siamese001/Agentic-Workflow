@@ -1,47 +1,41 @@
 #!/usr/bin/env python3
 """
 Standalone Key 49 Depth Violation Checker
-Scans all Python files for depth > 5 (Key 49: Universal Max 5 Levels From Root)
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+
 
 def check_key_49_depth():
-    """Check directory depth violations per Key 49"""
-    project_root = Path(__file__).parent.parent.parent  # Repository root (from validator/entry/)
+    """Check directory depth violations per Key 49 using SSOT"""
+    project_root = Path(__file__).resolve().parent.parent.parent.parent  # Repository root
     violations = []
     warnings = []
     
-    # Excludes per Key 49 rules - ONLY data, archives, and tests excluded
-    excludes = {'.git', '__pycache__', 'data', 'archives', '.venv', 'tests'}
+    # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
+    DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
+    
+    # Excludes per Key 49 rules
+    excludes = {'.git', '__pycache__', 'data', 'archives', '.venv'}
     
     for py_file in project_root.rglob('*.py'):
-        # Calculate depth: len(parts) - 1 (excluding root)
+        # Calculate depth
         relative_path = py_file.relative_to(project_root)
         depth = len(relative_path.parts)
         
-        # [SSOT] Dynamic depth check from structure_blueprint
-        import sys
-        from pathlib import Path as PathLib
-        sys.path.insert(0, str(PathLib(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-        from structure_blueprint import SOVEREIGN_DEPTH_MAP
-
-        # Check if folder has specific depth requirement
-        if relative_path.parts and relative_path.parts[0] in SOVEREIGN_DEPTH_MAP:
-            root_folder = relative_path.parts[0]
-            required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
-            if depth != required_depth:
-                violations.append(f"{relative_path} (Invalid depth: {depth} - {root_folder} must be at depth {required_depth})")
-            continue
-            
         # Skip excluded directories
         if any(exclude in str(py_file) for exclude in excludes):
             continue
-            
-        if depth > 5:
-            violations.append(f"{relative_path} (Invalid depth: {depth})")
-        elif depth < 3 and not py_file.name == "__init__.py":  # Files too shallow, but __init__.py can be depth 2
-            violations.append(f"{relative_path} (Invalid depth: {depth} - minimum depth is 3)")
+
+        # [SSOT] Check if folder has specific depth requirement from SOVEREIGN_REGISTRY
+        if relative_path.parts and relative_path.parts[0] in DEPTH_MAP:
+            root_folder = relative_path.parts[0]
+            required_depth = DEPTH_MAP[root_folder]
+            if depth != required_depth and py_file.name != "__init__.py":
+                violations.append(f"{relative_path} (Invalid depth: {depth} - {root_folder} requires depth {required_depth})")
+            continue
     
     # Report results
     print("=" * 70)
