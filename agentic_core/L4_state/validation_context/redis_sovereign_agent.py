@@ -104,3 +104,6 @@ class redis_sovereign_agent:
         print(f"   [OK] RedisSovereignAgent: Healthy. Memory: {mem}")
         if ctx:
             ctx.report("RedisCache", 1, True, f"Redis online ({mem})")
+
+# Uppercase alias for backward compatibility
+RedisSovereignAgent = redis_sovereign_agent

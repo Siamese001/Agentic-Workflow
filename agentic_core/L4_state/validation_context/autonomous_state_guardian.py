@@ -27,14 +27,12 @@ class autonomous_state_guardian:
     """
     
     def __init__(self):
-        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_checkpoint_manager import (
-        import importlib
-        mod = importlib.import_module('agentic_core.L4_state.autonomous_checkpoint_manager')
-        ( = mod.(  # Adjust multi-imports manually
-            create_autonomous_checkpoint_manager,
-        )
-        
-        self.checkpoint_manager = create_autonomous_checkpoint_manager()
+        # GRAVITY FIXED: Dynamic import for checkpoint manager
+        try:
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            self.checkpoint_manager = create_autonomous_checkpoint_manager()
+        except ImportError:
+            self.checkpoint_manager = None
         self.state_manifest_path = Path(".canon_memory/state_manifest.json")
         self.state_manifest_backup = Path(".canon_memory/state_manifest.json.bak")
         self.corruption_log = Path(".canon_memory/corruption_events.json")

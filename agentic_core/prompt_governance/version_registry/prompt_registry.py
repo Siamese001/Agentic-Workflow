@@ -113,13 +113,13 @@ class prompt_registry:
         return [name for name, versions in self.registry.items() if any(v.get("active") for v in versions)]
 
 # Singleton Management
-_global_registry: Optional[PromptRegistry] = None
+_global_registry: Optional[prompt_registry] = None
 
-def get_prompt_registry() -> PromptRegistry:
+def get_prompt_registry() -> prompt_registry:
     """Factory for singleton access. Bootstraps known templates on first call."""
     global _global_registry
     if _global_registry is None:
-        _global_registry = PromptRegistry()
+        _global_registry = prompt_registry()
         # Auto-register canonical templates defined in constitution
         _global_registry.register_prompt("reasoning_chain.jinja", purpose="Structured CoT reasoning")
         _global_registry.register_prompt("type_inference.jinja", purpose="Precise type hint inference")

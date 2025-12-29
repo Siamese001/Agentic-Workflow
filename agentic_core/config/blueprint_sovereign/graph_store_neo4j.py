@@ -1,6 +1,5 @@
 try:
-'''Brief description of functionality and purpose.'''
-
+    """Brief description of functionality and purpose."""
     from neo4j import GraphDatabase
 
 except ImportError:
