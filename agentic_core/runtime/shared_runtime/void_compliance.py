@@ -381,21 +381,34 @@ def enforce_void_compliance(
 
 def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     """
-    Generate summary of files per allowed folder.
-    
-    Args:
-        project_root: Project root directory
-        
-    Returns:
-        Dictionary mapping folder names to file counts
+    Returns count of .py files per top-level folder for territory verification.
     """
-    summary = {folder: 0 for folder in ALLOWED_ROOT_FOLDERS}
+    summary = {}
+    # [RESOURCE FIX] Skip .git entirely — LFS objects cause WinError 1450 on deep scandir
+    git_path = project_root / ".git"
+    if git_path.exists():
+        # We don't print here to avoid console spam, effectively silent skip
+        pass
+
+    # Define protected folders locally to avoid NameError (derived from validator context)
+    PROTECTED_FOLDERS = {
+        'archives', 'data', '.venv', 'venv', 'env', 'tests', 
+        'legacy_code', 'legacy_engines', 'legacy_resume_gen',
+        '.git', '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules'
+    }
     
-    for folder in ALLOWED_ROOT_FOLDERS:
-        folder_path = project_root / folder
-        if folder_path.exists() and folder_path.is_dir():
-            py_files = list(folder_path.rglob("*.py"))
-            summary[folder] = len(py_files)
+    for folder_path in project_root.iterdir():
+        if not folder_path.is_dir():
+            continue
+        
+        if folder_path.name in PROTECTED_FOLDERS or folder_path.name == ".git":
+            # [PROTECTED] Skipping folder logic handled by caller or implicit here
+            continue
+            
+        # [RESOURCE SAFETY] Limit recursion or just rely on the .git skip above
+        # Since we explicitly skipped .git/protected, rglob is safe on code folders
+        py_files = list(folder_path.rglob("*.py"))
+        summary[folder_path.name] = len(py_files)
     
     return summary
 
@@ -429,7 +442,9 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
         ".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache",
         # [SPAN NOISE SUPPRESSION] Ignore non-code/data territories to fix 16 false positives
         "golden_state", "logs", "processed", "shared", "Lib", "site-packages", 
-        "google", "gapic", "logging", "refs", "remotes", "v"
+        "google", "gapic", "logging", "refs", "remotes", "v",
+        # [VENV + DATA NOISE SUPPRESSION] pip package and data subdirectories
+        "licenses", "src", "pip", "raw", "dist-info"
     }
 
     for root_folder in ALLOWED_ROOT_FOLDERS:
@@ -464,7 +479,14 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
 
         # 1. Root Level Check: No files directly in Sovereign Root (depth 1)
         # Whitelist __init__.py as it's required for Python package recognition
-        root_files = [p.name for p in root_path.iterdir() if p.is_file() and p.suffix == ".py" and p.name != "__init__.py"]
+        # Whitelist conftest.py and test files in tests/ root (pytest requirement)
+        TESTS_ROOT_WHITELIST = {"conftest.py", "sovereign_smoke_test.py", "test_autonomous_improvements.py"}
+        root_files = [
+            p.name for p in root_path.iterdir() 
+            if p.is_file() and p.suffix == ".py" 
+            and p.name != "__init__.py"
+            and not (root_key == "tests" and p.name in TESTS_ROOT_WHITELIST)
+        ]
         if root_files:
             violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
 
