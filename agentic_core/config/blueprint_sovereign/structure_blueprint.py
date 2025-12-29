@@ -61,7 +61,7 @@ CORE_SUBFOLDER_MAP = {
     "prompt_governance": ["meta_prompts", "version_registry", "rendering", "templates"],
     "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management"],
     "observability": ["metrics", "telemetry", "tracing", "compliance"],
-    "utils": ["core_extensions", "wrappers", "helpers", "naming"],
+    "utils": ["core_extensions", "wrappers", "general_helpers", "naming"],
     "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns"],
     "semantic_memory": ["store", "embeddings", "retrieval", "index"],
     "knowledge": ["document_loaders", "static_index", "research_cache"]
@@ -205,6 +205,7 @@ DOWNSTREAM_ROOTS = frozenset(GRAVITY_CONFIG["downstream_domains"])
 
 # ==============================================================================
 # SECTION 8: SEMANTIC L2 REGISTRY (AST Relocation Intelligence)
+# [AUTHORITATIVE RELOCATION ORACLE] Used by healer agents for autonomous placement.
 # ==============================================================================
 
 # Shared metadata templates for common patterns
@@ -500,8 +501,8 @@ SEMANTIC_L2_REGISTRY = {
             "imports": ["functools"], "bases": [],
             "examples": ["retry_with_backoff", "cached_property_wrapper", "LogExecutionDecorator"]
         },
-        "helpers": {
-            "purpose": "General helper functions and miscellaneous utilities",
+        "general_helpers": {
+            "purpose": "Domain-agnostic helper functions and miscellaneous core utilities",
             "entity_types": ["Function"], "keywords": ["helper", "util", "misc", "common", "format"],
             "imports": [], "bases": [],
             "examples": ["date_helper", "string_formatter", "generic_util"]
