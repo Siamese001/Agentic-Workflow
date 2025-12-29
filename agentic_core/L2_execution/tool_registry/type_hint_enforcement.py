@@ -93,7 +93,6 @@ class type_hint_fixer(ast.NodeTransformer):
         self.fallback_var = fallback_var
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
-                    '''Brief description of functionality and purpose.'''
                     
         if node.name.startswith("_"):
             return node  # Skip private symbols per hierarchy laws
@@ -113,12 +112,10 @@ class type_hint_fixer(ast.NodeTransformer):
         return node
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.visit_FunctionDef(node)
 
     def visit_Assign(self, node: ast.Assign) -> ast.Assign | ast.AnnAssign:
-                    '''Brief description of functionality and purpose.'''
                     
         # Module-level public assignments without annotation
         if len(node.targets) == 1:

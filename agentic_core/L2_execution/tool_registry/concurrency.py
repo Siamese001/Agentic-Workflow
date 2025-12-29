@@ -42,7 +42,6 @@ class memory_leak_detector:
     }
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
         await asyncio.sleep(0)
@@ -467,7 +466,6 @@ class deadlock_analyzer(ast.NodeVisitor):
         rec_stack = set()
 
         def dfs(node, parent_path):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if node in rec_stack:
                 # Found a cycle
@@ -505,7 +503,6 @@ class deadlock_detector:
         self.name = self.__class__.__name__
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
         await asyncio.sleep(0)
@@ -606,7 +603,6 @@ class deadlock_detector:
         rec_stack = set()
 
         def dfs(node, parent_path):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if node in rec_stack:
                 # Found a cycle
@@ -730,7 +726,6 @@ class race_analyzer(ast.NodeVisitor):
         self.shared_state = []
 
     def visit(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Add parent info to nodes for context tracking
         for child in ast.walk(node):
@@ -744,7 +739,6 @@ class race_analyzer(ast.NodeVisitor):
         return super().visit(node)
 
     def visit_Module(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Track module-level assignments (global state)
         for stmt in node.body:
@@ -755,7 +749,6 @@ class race_analyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         old_class = self.current_class
         self.current_class = node.name
@@ -777,7 +770,6 @@ class race_analyzer(ast.NodeVisitor):
         self.current_class = old_class
 
     def visit_FunctionDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         old_function = self.current_function
         self.current_function = node.name
@@ -791,12 +783,10 @@ class race_analyzer(ast.NodeVisitor):
         self.current_function = old_function
 
     def visit_AsyncFunctionDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self.visit_FunctionDef(node)
 
     def visit_With(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Check if this 'with' statement uses a lock
         is_lock_context = False
@@ -813,12 +803,10 @@ class race_analyzer(ast.NodeVisitor):
         self.in_with_context.pop()
 
     def visit_AsyncWith(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self.visit_With(node)
 
     def visit_Assign(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Check for assignments to shared mutable state
         for target in node.targets:
@@ -859,7 +847,6 @@ class race_analyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_AugAssign(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Check for compound operations (+=, -=, *=, /=)
         # These are always non-atomic
@@ -890,7 +877,6 @@ class race_analyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         # Check for method calls on shared objects without locks
         if isinstance(node.func, ast.Attribute):

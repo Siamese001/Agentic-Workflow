@@ -159,7 +159,6 @@ class test_scheduler_pause_logic:
         waited = False
 
         async def simulate_wait():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal waited
             await event.wait()
@@ -195,7 +194,6 @@ class test_scheduler_pause_logic:
         resumed = False
 
         async def simulate_mission():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal resumed
             await event.wait()
@@ -225,7 +223,6 @@ class test_scheduler_pause_logic:
         aborted = False
 
         async def simulate_mission_with_veto():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal aborted
             # Simulate intervention check
@@ -320,7 +317,6 @@ class test_intervention_integration:
         flow_completed = False
 
         async def simulate_full_flow():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal flow_completed
 
@@ -361,7 +357,6 @@ class test_intervention_integration:
         was_vetoed = False
 
         async def simulate_veto_flow():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal was_vetoed
 
@@ -398,7 +393,6 @@ class test_intervention_integration:
         cycles_completed = 0
 
         async def simulate_cycles():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal cycles_completed
 
@@ -474,7 +468,6 @@ class test_intervention_edge_cases:
         started = False
 
         def start_server():
-                                    '''Brief description of functionality and purpose.'''
                                     
             nonlocal started
             if not started:

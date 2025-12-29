@@ -192,7 +192,6 @@ async def test_mcp_router_error_handling(router):
     original_call = router.manager.call_tool
     
     async def failing_call(tool_name: str, args: Dict[str, Any]):
-                    '''Brief description of functionality and purpose.'''
                     
         raise Exception("Simulated network error")
     

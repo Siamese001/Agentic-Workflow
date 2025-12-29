@@ -40,7 +40,7 @@ class qa_result:
 
 
 @dataclass
-# NAMING FIXED: SafetyResult → safety_result
+# NAMING FIXED: safety_result → safety_result
 class safety_result:
     """Pure safety result data - no business logic."""
 
@@ -70,6 +70,6 @@ class result_parser:
         return QAResult(findings=llm_response.strip(), confidence=0.8)
 
     @staticmethod
-    def parse_safety_result(llm_response: str) -> SafetyResult:
+    def parse_safety_result(llm_response: str) -> safety_result:
         """Parse safety result - pure string parsing only."""
-        return SafetyResult(violations=[], approved=True)
+        return safety_result(violations=[], approved=True)

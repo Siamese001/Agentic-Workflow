@@ -10,16 +10,12 @@ class logger(Protocol):
     """Protocol for a logging mechanism."""
 
     def info(self, message: str) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def warning(self, message: str) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def error(self, message: str) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
     def critical(self, message: str) -> None: ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 
@@ -31,11 +27,9 @@ class system_command_executor(Protocol):
     """
 
     def execute_safe_command(self, command: str, *,
-                    '''Brief description of functionality and purpose.'''
                     
                              timeout: int = 60) -> Tuple[int, str, str]: ...
     def attempt_destructive_command(
-                    '''Brief description of functionality and purpose.'''
                     
         self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
 
@@ -47,25 +41,21 @@ class console_logger:
     """A simple console logger."""
 
     def info(self, message: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         # print(f"INFO: {message}")  # [Security Fix]
         pass
 
     def warning(self, message: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         # print(f"WARNING: {message}")  # [Security Fix]
         pass
 
     def error(self, message: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         # print(f"ERROR: {message}", file=sys.stderr)  # [Security Fix]
         pass
 
     def critical(self, message: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         # print(f"CRITICAL: {message}", file=sys.stderr)  # [Security Fix]
         pass

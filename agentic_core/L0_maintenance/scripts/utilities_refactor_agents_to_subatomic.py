@@ -48,7 +48,6 @@ def remove_thinking_budget_over_limit(content: str) -> str:
     pattern = r'thinking_budget\s*=\s*(\d+)'
     
     def replace_budget(match):
-                    '''Brief description of functionality and purpose.'''
                     
         budget = int(match.group(1))
         if budget > 24576:

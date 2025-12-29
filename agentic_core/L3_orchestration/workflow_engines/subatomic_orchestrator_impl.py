@@ -67,20 +67,16 @@ class dag_manager:
         self.execution_queue = []
 
     def add_node(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         pass
 
     def create_mutation_request(self, **kwargs):
-                    '''Brief description of functionality and purpose.'''
                     
         return kwargs
 
     def request_mutation(self, mutation):
-                    '''Brief description of functionality and purpose.'''
                     
         class MockMutationResult:
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, success):
                 self.success = success

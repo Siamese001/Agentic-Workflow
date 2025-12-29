@@ -48,24 +48,20 @@ class mock_redis_client:
         self.data = {}
 
     def hset(self, key, mapping):
-                    '''Brief description of functionality and purpose.'''
                     
         self.data[key] = mapping
 
     def hgetall(self, key):
-                    '''Brief description of functionality and purpose.'''
                     
         return self.data.get(key, {})
 
     def delete(self, key):
-                    '''Brief description of functionality and purpose.'''
                     
         if key in self.data:
             del self.data[key]
 
     @property
     def client(self):
-                    '''Brief description of functionality and purpose.'''
                     
         return self
 
@@ -78,18 +74,15 @@ class mock_pinecone_index:
         self.vectors = {}
 
     def upsert(self, vectors):
-                    '''Brief description of functionality and purpose.'''
                     
         for vec in vectors:
             self.vectors[vec['id']] = vec
 
     def fetch(self, ids):
-                    '''Brief description of functionality and purpose.'''
                     
         return {'vectors': {id_: self.vectors[id_] for id_ in ids if id_ in self.vectors}}
 
     def delete(self, ids):
-                    '''Brief description of functionality and purpose.'''
                     
         for id_ in ids:
             if id_ in self.vectors:
@@ -104,7 +97,6 @@ class mock_search_index:
         pass
 
     def query(self, query):
-                    '''Brief description of functionality and purpose.'''
                     
         # Return mock results for testing
         return [type('Result', (), {'id': 'test-id'})()]

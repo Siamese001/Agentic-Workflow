@@ -63,12 +63,10 @@ class toolsmith_agent:
         self.name = "ToolsmithAgent"
 
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # Only activate if tests are failing and standard fixes aren't working
         if "TEST_FAILURE" not in self.ctx.signals:

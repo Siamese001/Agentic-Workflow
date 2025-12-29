@@ -115,12 +115,10 @@ class system_architect(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.validate_state()
 
@@ -325,12 +323,10 @@ class healer_agent(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.validate_state()
 
@@ -445,12 +441,10 @@ class generative_guard(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.impl.validate_state()
 

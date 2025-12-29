@@ -18,7 +18,6 @@ class structural_engineer(SubAtomicAgent):
     """
 
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
@@ -217,7 +216,6 @@ class pattern_enforcer(SubAtomicAgent):
     """
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
         pattern_checks = [

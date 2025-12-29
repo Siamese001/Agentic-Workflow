@@ -18,9 +18,15 @@ forbidden_file_patterns: Any = FORBIDDEN_PATTERNS
 high_signal_keywords: Any = CANON_SIGNALS
 allowed_core_stages: Any = set()
 for stages in CORE_SUBFOLDER_MAP.values():
-    ALLOWED_CORE_STAGES.update(stages)
-ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
+    allowed_core_stages.update(stages)
+allowed_core_stages.update(CORE_SUBFOLDER_MAP.keys())
 key_to_folder_map: Any = CANON_KEY_TO_FOLDER_MAP
+
+# Uppercase aliases for backward compatibility
+ALLOWED_ROOT_FOLDERS = allowed_root_folders
+ALLOWED_CORE_STAGES = allowed_core_stages
+CANONICAL_HIERARCHY = canonical_hierarchy
+CANONICAL_DEPTH_MAP = canonical_depth_map
 
 def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
@@ -173,7 +179,7 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
                 return (False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != {tests_depth}")
         if root_folder == 'agentic_core':
             stage: Any = parts[2]
-            if stage not in ALLOWED_CORE_STAGES and (not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L'))):
+            if stage not in allowed_core_stages and (not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L'))):
                 return (False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory.")
         return (True, f'{root_folder} depth verified')
         if root_folder in ALLOWED_ROOT_FOLDERS:

@@ -28,7 +28,6 @@ class canon_entry:
     last_used: Optional[str] = None
 
     def get_success_rate(self) -> float:
-                    '''Brief description of functionality and purpose.'''
                     
         total_count = self.success_count + self.failure_count
         if total_count == 0:
@@ -36,13 +35,11 @@ class canon_entry:
         return self.success_count / total_count
 
     def update_failure(self) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.failure_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
     def update_success(self) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         self.success_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()

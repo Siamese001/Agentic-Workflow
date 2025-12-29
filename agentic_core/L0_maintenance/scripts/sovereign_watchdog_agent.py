@@ -14,7 +14,6 @@ class sovereign_watchdog_agent:
         self.last_run = 0  # Debounce timer
 
     async def execute(self, ctx):
-                    '''Brief description of functionality and purpose.'''
                     
         files = list(self.archive.rglob("*.py"))
         if len(files) > 0:

@@ -142,7 +142,6 @@ class sub_atomic_registry:
             raise
 
     async def execute(self, ctx=None):
-                    '''Brief description of functionality and purpose.'''
                     
         count = len(self.extract_methods())
         print(f"   [OK] SubAtomicRegistry: {count} methods online and searchable.")

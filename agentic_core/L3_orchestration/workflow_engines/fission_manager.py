@@ -75,9 +75,9 @@ class fission_manager:
             api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
             if api_key:
                 self._client = genai.Client(api_key=api_key)
-                if not getattr(FissionManager, '_gemini_logged', False):
+                if not getattr(fission_manager, '_gemini_logged', False):
                     logger.info('[OK] Fission Manager connected to Gemini 2.5')
-                    FissionManager._gemini_logged = True
+                    fission_manager._gemini_logged = True
             else:
                 self._client = None
                 logger.warning('[!]  Fission Manager: No Gemini API key found')
@@ -127,7 +127,7 @@ class fission_manager:
         parent_dir: Any = os.path.dirname(file_name) or '.'
         return f'### MISSION: ATOMIC FISSION (Monolith Decomposition)\nThe target file `{file_name}` has exceeded L1 Cognition limits and is structurally unstable.\n\nORIGINAL FILE CONTENT:\n{content}\n```\n\n### OBJECTIVE:\nPartition `{file_name}` into three sub-modules to clear Key 42 violations.\n\n### REQUIRED STRUCTURE:\n1. `{file_name}` (Main Facade/Imports - preserves the original interface)\n2. `{parent_dir}/{base_name}_core.py` (Primary state management and core logic)\n3. `{parent_dir}/{base_name}_signals.py` (L1-L5 communication and helper methods)\n\n### CONSTRAINTS:\n- SIGNATURE PARITY: Do NOT delete or change existing function signatures\n- LINE LIMIT: Each new file MUST be under 350 lines\n- LOGIC PRESERVATION: Total line count across new files must match original (+/- 5%)\n- FACADE PATTERN: Original file becomes import facade for backward compatibility\n- ZERO DATA LOSS: All functionality must be preserved\n\n### OUTPUT FORMAT:\nReturn ONLY a valid JSON object mapping file paths to their content:\n```json\n{{\n    "{file_name}": "# Facade pattern\\nfrom agentic_core.{base_name}_core import *\\nfrom agentic_core.{base_name}_signals import *",\n    "{parent_dir}/{base_name}_core.py": "# Core logic\\n\\nclass CoreClass:\\n    pass",\n    "{parent_dir}/{base_name}_signals.py": "# Signal handling\\n\\ndef handle_signal():\\n    pass"\n}}\n```\n\nCRITICAL:\n- Return ONLY the JSON object, no markdown code blocks\n- Ensure facade maintains all original exports\n- Preserve all imports and dependencies\n- Each file must be syntactically valid Python\n'
 
-    async def execute_fission(self, file_path: str, content: str, reason: str) -> FissionResult:
+    async def execute_fission(self, file_path: str, content: str, reason: str) -> fission_result:
         """
         Execute atomic fission decomposition.
         
@@ -137,10 +137,10 @@ class fission_manager:
             reason: Reason for fission trigger
             
         Returns:
-            FissionResult with decomposed files
+            fission_result with decomposed files
         """
         if not self._client:
-            return FissionResult(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message='Gemini client not available')
+            return fission_result(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message='Gemini client not available')
         logger.info(f'🔬 ATOMIC FISSION TRIGGERED: {file_path}')
         logger.info(f'   Reason: {reason}')
         try:
@@ -152,12 +152,12 @@ class fission_manager:
                 logger.info(f'   [OK] Decomposed into {len(new_files)} sub-modules')
                 for new_file in new_files.keys():
                     logger.info(f'      → {new_file}')
-                return FissionResult(triggered=True, reason=reason, new_files=new_files, original_file=file_path, success=True)
+                return fission_result(triggered=True, reason=reason, new_files=new_files, original_file=file_path, success=True)
             else:
-                return FissionResult(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message='Failed to parse decomposition response')
+                return fission_result(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message='Failed to parse decomposition response')
         except Exception as e:
             logger.error(f'   [X] Fission failed: {e}')
-            return FissionResult(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message=str(e))
+            return fission_result(triggered=True, reason=reason, new_files={}, original_file=file_path, success=False, error_message=str(e))
 
     def _parse_fission_response(self, response: Any, original_file: str) -> Dict[str, str]:
         """
@@ -235,12 +235,12 @@ class fission_manager:
             logger.error('  [Error] No target file specified for healing')
             return False
 
-    def write_decomposed_files(self, result: FissionResult) -> bool:
+    def write_decomposed_files(self, result: fission_result) -> bool:
         """
         Write decomposed files to disk.
         
         Args:
-            result: FissionResult with new files
+            result: fission_result with new files
             
         Returns:
             True if successful, False otherwise
@@ -261,15 +261,15 @@ class fission_manager:
             logger.error(f'   [X] Failed to write decomposed files: {e}')
             return False
 
-def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManager:
+def get_fission_manager(gemini_client: Optional[Any]=None) -> fission_manager:
     """
-    Factory function to create FissionManager instance.
+    Factory function to create fission_manager instance.
     
     Args:
         gemini_client: Optional Gemini client
         
     Returns:
-        FissionManager instance
+        fission_manager instance
     """
-    return FissionManager(gemini_client=gemini_client)
-'\nfrom agentic_core.fission_manager import FissionManager\nfrom agentic_core.tui_dashboard import AgenticTUI\n\n# Initialize managers\nfission_manager = FissionManager()\ntui = AgenticTUI()\n\n# Inside healing loop:\ntrigger, reason = fission_manager.should_trigger_fission(\n    file_path=target_file,\n    current_round=round_count,\n    last_error=error_msg,\n    lines_deleted=deleted_lines\n)\n\nif trigger:\n    # Update TUI to show fission mode\n    tui.update_state(\n        file=target_file,\n        key="FISSION",\n        round_num=round_count,\n        tokens=token_count,\n        log_msg=f"[ALERT] {reason}"\n    )\n    \n    # Execute fission\n    with open(target_file, \'r\') as f:\n        content = f.read()\n    \n    result = await fission_manager.execute_fission(\n        file_path=target_file,\n        content=content,\n        reason=reason\n    )\n    \n    if result.success:\n        # Write decomposed files\n        fission_manager.write_decomposed_files(result)\n        \n        # Update TUI\n        tui.update_state(\n            file=target_file,\n            key="Key 42",\n            round_num=round_count,\n            tokens=token_count,\n            log_msg=f"[OK] Key 42 Resolved: Complexity distributed"\n        )\n'
+    return fission_manager(gemini_client=gemini_client)
+'\nfrom agentic_core.fission_manager import fission_manager\nfrom agentic_core.tui_dashboard import AgenticTUI\n\n# Initialize managers\nfission_manager = fission_manager()\ntui = AgenticTUI()\n\n# Inside healing loop:\ntrigger, reason = fission_manager.should_trigger_fission(\n    file_path=target_file,\n    current_round=round_count,\n    last_error=error_msg,\n    lines_deleted=deleted_lines\n)\n\nif trigger:\n    # Update TUI to show fission mode\n    tui.update_state(\n        file=target_file,\n        key="FISSION",\n        round_num=round_count,\n        tokens=token_count,\n        log_msg=f"[ALERT] {reason}"\n    )\n    \n    # Execute fission\n    with open(target_file, \'r\') as f:\n        content = f.read()\n    \n    result = await fission_manager.execute_fission(\n        file_path=target_file,\n        content=content,\n        reason=reason\n    )\n    \n    if result.success:\n        # Write decomposed files\n        fission_manager.write_decomposed_files(result)\n        \n        # Update TUI\n        tui.update_state(\n            file=target_file,\n            key="Key 42",\n            round_num=round_count,\n            tokens=token_count,\n            log_msg=f"[OK] Key 42 Resolved: Complexity distributed"\n        )\n'

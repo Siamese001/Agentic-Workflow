@@ -116,7 +116,6 @@ async def example_batch_execution():
 
     # Factory function to create fresh HOPs
     def create_resume_hop():
-                    '''Brief description of functionality and purpose.'''
                     
         return MockSubatomicHop("resume_hop", simulate_delay=1.5)
 
@@ -150,7 +149,6 @@ async def example_resume_generation_swarm():
 
     # Simulate resume generation HOPs
     def create_resume_generator():
-                    '''Brief description of functionality and purpose.'''
                     
         return MockSubatomicHop("resume_generator", simulate_delay=2.0)
 
@@ -248,10 +246,8 @@ async def example_with_real_subatomic_hop():
 
         # Create real HOPs (example - adjust based on your actual implementation)
         def create_hop():
-                                    '''Brief description of functionality and purpose.'''
                                     
             def sample_hop_function(**kwargs):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 return {"result": f"Processed {kwargs.get('input', 'no input')}"}
 

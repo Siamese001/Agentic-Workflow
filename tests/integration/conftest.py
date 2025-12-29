@@ -62,7 +62,6 @@ def file_hash_tracker():
 def healing_transaction_mock():
     """Mock healing transaction with backup/commit/rollback."""
     class MockHealingTransaction:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self):
             self.backups = {}
@@ -90,7 +89,6 @@ def healing_transaction_mock():
             self.operations.append(("rollback", None))
         
         def get_operations(self):
-                                    '''Brief description of functionality and purpose.'''
                                     
             return self.operations
     
@@ -137,7 +135,6 @@ def mock_redis_client():
 def audit_log_tracker():
     """Track audit log entries during operations."""
     class AuditLogTracker:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self):
             self.entries = []
@@ -156,7 +153,6 @@ def audit_log_tracker():
             return self.entries
         
         def clear(self):
-                                    '''Brief description of functionality and purpose.'''
                                     
             self.entries.clear()
     
@@ -167,7 +163,6 @@ def audit_log_tracker():
 def sovereign_policy_enforcer_mock():
     """Mock sovereign policy enforcer for conflict resolution."""
     class MockPolicyEnforcer:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self):
             self.ssot_rank = {
@@ -215,7 +210,6 @@ def concurrent_lock_manager():
     import threading
     
     class MockLockManager:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self):
             self.locks = {}

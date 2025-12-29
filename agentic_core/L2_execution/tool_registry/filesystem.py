@@ -28,11 +28,9 @@ class blackboard_lease_verifier(Protocol):
     for HealingLease verification and security event logging.
     """
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         ...
     def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: Dict[str, Any]) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         ...
 
@@ -122,7 +120,6 @@ def require_healing_lease(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-                    '''Brief description of functionality and purpose.'''
                     
         blackboard = kwargs.get('blackboard')
         agent_id = kwargs.get('agent_id')

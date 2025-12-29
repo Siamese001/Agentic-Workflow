@@ -284,7 +284,6 @@ class test_mcp_escalation_failure_handling:
         escalation_history = []
         
         def track_escalation(violation):
-                                    '''Brief description of functionality and purpose.'''
                                     
             escalation_history.append(violation["type"])
             if len(escalation_history) > 3:

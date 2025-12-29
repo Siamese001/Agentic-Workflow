@@ -17,7 +17,6 @@ load_dotenv(dotenv_path=project_root / ".env", override=True)
 try:
     # Mock context for standalone execution
     class MockContext:
-                    '''Brief description of functionality and purpose.'''
                     
         def __init__(self):
             self.redis_client = None

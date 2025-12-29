@@ -73,7 +73,7 @@ class safety_guardrail:
         logger.info(f'[OK] Safety Pass: {delta} lines changed (within {self.deletion_limit} limit)')
         return (True, 'Safety Pass.')
 
-    def verify_change_detailed(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> SafetyResult:
+    def verify_change_detailed(self, original_lines: List[str], new_lines: List[str], mode: str='HEAL') -> safety_result:
         """
         Detailed safety verification with full result object.
         
@@ -83,16 +83,16 @@ class safety_guardrail:
             mode: "HEAL" or "ATOMIC_FISSION"
             
         Returns:
-            SafetyResult with detailed information
+            safety_result with detailed information
         """
         delta: Any = abs(len(original_lines) - len(new_lines))
         if mode == 'ATOMIC_FISSION':
             if len(new_lines) < self.facade_size_threshold:
-                return SafetyResult(is_safe=True, message=f'Fission Whitelist: Monolith converted to Facade ({len(new_lines)} lines)', delta=delta, mode=mode)
-            return SafetyResult(is_safe=True, message='Fission Whitelist: Multi-file distribution active', delta=delta, mode=mode)
+                return safety_result(is_safe=True, message=f'Fission Whitelist: Monolith converted to Facade ({len(new_lines)} lines)', delta=delta, mode=mode)
+            return safety_result(is_safe=True, message='Fission Whitelist: Multi-file distribution active', delta=delta, mode=mode)
         if delta > self.deletion_limit:
-            return SafetyResult(is_safe=False, message=f'Safety Violation: Mass deletion detected ({delta} lines)', delta=delta, mode=mode)
-        return SafetyResult(is_safe=True, message='Safety Pass', delta=delta, mode=mode)
+            return safety_result(is_safe=False, message=f'Safety Violation: Mass deletion detected ({delta} lines)', delta=delta, mode=mode)
+        return safety_result(is_safe=True, message='Safety Pass', delta=delta, mode=mode)
 
     def verify_fission_output(self, original_file: str, new_files: dict) -> Tuple[bool, str]:
         """
@@ -119,11 +119,11 @@ class safety_guardrail:
             logger.error(f'[X] Failed to verify fission output: {e}')
             return (False, f'Verification failed: {e}')
 
-def get_safety_guardrail() -> SafetyGuardrail:
+def get_safety_guardrail() -> safety_guardrail:
     """
-    Factory function to create SafetyGuardrail instance.
+    Factory function to create safety_guardrail instance.
     
     Returns:
-        SafetyGuardrail instance
+        safety_guardrail instance
     """
-    return SafetyGuardrail()
+    return safety_guardrail()

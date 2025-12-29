@@ -50,9 +50,9 @@ class sovereign_env:
         if not value or not value.strip():
             raise ValueError(f'[L6 CRITICAL] Missing mandatory .env key: {key}')
         return value.strip()
-_config: Optional[SovereignEnv] = None
+_config: Optional[sovereign_env] = None
 
-def get_env(project_root: Optional[Path]=None) -> SovereignEnv:
+def get_env(project_root: Optional[Path]=None) -> sovereign_env:
     """
     Get the singleton SovereignEnv instance.
     
@@ -70,5 +70,5 @@ def get_env(project_root: Optional[Path]=None) -> SovereignEnv:
     if _config is None:
         if project_root is None:
             project_root: Any = Path.cwd()
-        _config = SovereignEnv(project_root)
+        _config = sovereign_env(project_root)
     return _config

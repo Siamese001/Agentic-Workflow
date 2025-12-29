@@ -64,8 +64,6 @@ class redis_sovereign_agent:
             raise ConnectionError(f"[L6 CRITICAL] Redis gateway failed: {e}")
 
     def get_client(self) -> redis.Redis:
-                    '''Brief description of functionality and purpose.'''
-                    
         return self.client
 
     def invalidate_file_cache(self, file_path: Path):
@@ -100,7 +98,6 @@ class redis_sovereign_agent:
             print(f"   [!] Cache invalidation failed for {file_path}: {e}") 
 
     async def execute(self, ctx=None):
-                    '''Brief description of functionality and purpose.'''
                     
         info = self.client.info()
         mem = info.get("used_memory_human", "0B")

@@ -367,14 +367,12 @@ class nervous_system_phase_execution:
 
             # Create a simple mock agent that has execute method
             class MockAgent:
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 def __init__(self, name, phase):
                     self.name = name
                     self.phase = phase
 
                 async def execute(self):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     # Simulate agent execution
                     return {
@@ -617,7 +615,6 @@ class nervous_system_phase_execution:
             if hasattr(agent, 'execute'):
                 # Create wrapper for each agent to handle context and prerequisites
                 async def execute_agent_with_context(agent):
-                                                                    '''Brief description of functionality and purpose.'''
                                                                     
                     # Check prerequisite conditions if agent supports it
                     if hasattr(agent, 'check_prerequisites'):
@@ -891,7 +888,6 @@ class nervous_system_phase_orchestrator:
     ) -> bool:
         """Helper to run a single phase with common logic."""
         def should_skip_phase_local(phase_name: str) -> bool:
-                                    '''Brief description of functionality and purpose.'''
                                     
             if not resume_phase:
                 return False

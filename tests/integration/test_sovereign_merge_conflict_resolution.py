@@ -70,7 +70,6 @@ class test_sovereign_conflict_resolution:
         
         # Modify mock to handle timestamp
         def resolve_with_timestamp(proposals_list):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if not proposals_list:
                 return None
@@ -241,7 +240,6 @@ class test_multi_agent_coordination:
         results = []
         
         def heal_imports(file_path):
-                                    '''Brief description of functionality and purpose.'''
                                     
             resource_id = str(file_path)
             if concurrent_lock_manager.acquire(resource_id, timeout=2.0):

@@ -31,7 +31,6 @@ class signal_bus_interface(Protocol):
     to enable signal emission.
     """
     def emit(self, signal_type: Any, message: str, source: str, severity: str) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         ...
 
@@ -348,7 +347,6 @@ class l5_integrity_gate_executor:
         text_parts = []
 
         def extract_recursive(obj: Any, depth: int = 0) -> None:
-                                    '''Brief description of functionality and purpose.'''
                                     
             if depth > 10:  # Prevent infinite recursion
                 return

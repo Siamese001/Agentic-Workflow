@@ -13,11 +13,9 @@ class sub_atomic_agent:
         self.ctx = ctx
         self.name = name
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
     def execute(self) -> None:
-                    '''Brief description of functionality and purpose.'''
                     
         pass
 
@@ -57,57 +55,46 @@ class nesting_depth_visitor(ast.NodeVisitor):
 
     # Override visit methods for nodes that increase nesting
     def visit_FunctionDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFunctionDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_ClassDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_If(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_For(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFor(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_While(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_With(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_AsyncWith(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_Try(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 
     def visit_ExceptHandler(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         self._generic_visit_with_depth(node)
 

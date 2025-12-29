@@ -56,7 +56,6 @@ class git_agent:
         self.name = "GitOps"
 
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         return True
 
@@ -193,7 +192,6 @@ class test_multi_repo_context_loading:
         extra_roots = "/tmp/repo1, /tmp/repo2, /tmp/repo3"
 
         def mock_walk(path):
-                                    '''Brief description of functionality and purpose.'''
                                     
             return [(path, [], [f"file_from_{os.path.basename(path)}.py"])]
 

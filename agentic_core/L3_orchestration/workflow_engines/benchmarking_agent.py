@@ -145,11 +145,9 @@ class benchmarking_agent:
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-                                    '''Brief description of functionality and purpose.'''
                                     
             @wraps(func)
             def wrapper(*args, **kwargs):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 return self.time_function(name, func, metadata, *args, **kwargs)
             return wrapper
@@ -167,11 +165,9 @@ class benchmarking_agent:
             Decorated function
         """
         def decorator(func: Callable) -> Callable:
-                                    '''Brief description of functionality and purpose.'''
                                     
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 return await self.time_function_async(name, func, metadata, *args, **kwargs)
             return wrapper

@@ -121,14 +121,12 @@ class sovereign_reasoning_memory:
             mcp_authority.record_breach(f"Redis Reasoning Failure: {str(e)}")
 
     def update_scratchpad(self, file_path: str, content: str):
-                    '''Brief description of functionality and purpose.'''
                     
         if len(content) > MAX_SCRATCHPAD_SIZE:
             raise ValueError("Scratchpad overflow.")
         self.scratchpad[file_path] = content
 
     def get_scratchpad(self, file_path: str) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.scratchpad.get(file_path, "")
 
@@ -164,7 +162,6 @@ class sovereign_reasoning_memory:
             return [dict(t) for t in self.thought_history]
 
     def export_history(self) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         return json.dumps({
             "mission_id": self.mission_id,

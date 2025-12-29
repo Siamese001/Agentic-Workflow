@@ -111,7 +111,6 @@ class ast_relocator(ast.NodeVisitor):
         return best_match
 
     def get_movable_entities(self) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         self.visit(self.tree)
         return self.entities

@@ -44,7 +44,7 @@ async def test_key_42_fission_execution():
         assert not test_file.exists() or len(test_file.read_text().splitlines()) < 1000, \
             "Original file should be removed or reduced after fission"
 
-        # Check for new sub-modules (FissionManager creates these)
+        # Check for new sub-modules (fission_manager creates these)
         new_modules = list(target_dir.glob("test_fission_subject_*.py"))
         assert len(new_modules) >= 2, "Fission should have created at least 2 sub-modules"
 

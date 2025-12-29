@@ -17,7 +17,6 @@ class safety_policy:
     policy_id: str
     description: str
     def evaluate(self, context) -> 'PolicyDecision': pass
-                    '''Brief description of functionality and purpose.'''
                     
 
 @dataclass
@@ -29,7 +28,6 @@ class policy_decision:
     verdict: 'Verdict'
     findings: List['SafetyFinding'] = field(default_factory=list)
     def to_dict(self) -> Dict[str, object]: pass
-                    '''Brief description of functionality and purpose.'''
                     
 
 @dataclass

@@ -55,6 +55,5 @@ class sovereign_mcp_marketplace:
             logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
     
     def get_safe_tools(self) -> List[str]:
-                    '''Brief description of functionality and purpose.'''
                     
         return self.safe_tools

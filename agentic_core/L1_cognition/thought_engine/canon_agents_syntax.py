@@ -232,7 +232,6 @@ class code_janitor:
         violations = []
 
         class NestingVisitor(ast.NodeVisitor):
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, filepath: str, max_depth: int):
                 self.filepath = filepath
@@ -241,7 +240,6 @@ class code_janitor:
                 self.violations = []
 
             def visit(self, node):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 # Nodes that increase nesting depth
                 is_nesting_node = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With,

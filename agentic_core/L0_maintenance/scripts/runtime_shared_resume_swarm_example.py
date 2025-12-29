@@ -90,7 +90,6 @@ def example_error_handling():
 
     # Custom worker function that simulates failures
     def worker_with_failures(payload: Dict) -> ResumeResult:
-                    '''Brief description of functionality and purpose.'''
                     
         job_id = payload.get('job_id', 'unknown')
         start_time = time.time()
@@ -228,7 +227,6 @@ def example_with_real_resume_engine():
 
         # Custom worker function using real engine
         def real_resume_worker(payload: Dict) -> ResumeResult:
-                                    '''Brief description of functionality and purpose.'''
                                     
             job_id = payload.get('job_id', 'unknown')
             start_time = time.time()

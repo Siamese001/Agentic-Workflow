@@ -18,7 +18,6 @@ class omni_context(SubAtomicAgent):
         self.index = {}
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
         await asyncio.sleep(0)

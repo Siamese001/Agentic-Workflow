@@ -35,7 +35,6 @@ class sovereign_alerting_agent:
         print(f"   Details: {json.dumps(details, indent=2)}\n")
 
     async def execute(self, ctx):
-                    '''Brief description of functionality and purpose.'''
                     
         # Scan the report list for anything marked 'critical'
         critical_issues = [r for r in ctx.report_list if r.get("severity") == "critical"]

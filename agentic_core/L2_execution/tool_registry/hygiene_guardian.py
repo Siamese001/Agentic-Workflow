@@ -18,7 +18,6 @@ class hygiene_guardian(CanonBaseAgent):
     """
     
     def get_validation_keys(self) -> List[int]:
-                    '''Brief description of functionality and purpose.'''
                     
         return [45]
 

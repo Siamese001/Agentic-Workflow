@@ -196,7 +196,6 @@ class ds_py_optimizer:
         """Create a DSPy module from a signature and prompt."""
 
         class OptimizedModule(dspy.Module):
-                                    '''Brief description of functionality and purpose.'''
                                     
             def __init__(self, signature, prompt_template):
                 super().__init__()
@@ -204,7 +203,6 @@ class ds_py_optimizer:
                 self.prompt_template = prompt_template
 
             def forward(self, **kwargs):
-                                                    '''Brief description of functionality and purpose.'''
                                                     
                 # Apply the prompt template
                 self.prompt_template.format(**kwargs)

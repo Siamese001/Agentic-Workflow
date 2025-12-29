@@ -38,7 +38,6 @@ def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:
     method_pattern = r'\bself\._([a-z][a-z0-9_]*)\b'
     
     def replace_self_ref(match):
-                    '''Brief description of functionality and purpose.'''
                     
         field_name = match.group(1)
         changes.append(f"Method reference: self._{field_name} → self.{field_name}")

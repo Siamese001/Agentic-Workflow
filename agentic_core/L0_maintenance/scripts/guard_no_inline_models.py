@@ -25,7 +25,6 @@ class model_visitor(ast.NodeVisitor):
     '''Brief description of functionality and purpose.'''
     
     def visit_ClassDef(self, node):
-                    '''Brief description of functionality and purpose.'''
                     
         is_pydantic = any(isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"} for base in node.bases)
         is_contract = any(node.name.endswith(s) for s in CONTRACT_SIGNALS)

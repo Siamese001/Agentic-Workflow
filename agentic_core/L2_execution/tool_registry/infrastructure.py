@@ -47,14 +47,12 @@ class historian(SubAtomicAgent):
         # Use env var for log path for better environment isolation
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
         pass
 
     def record_event(self, agent: str, status: str, details: str):
-                    '''Brief description of functionality and purpose.'''
                     
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
@@ -86,7 +84,6 @@ class git_agent(SubAtomicAgent):
                 pass
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         if not GITPYTHON_AVAILABLE or not self.repo:
             return
@@ -114,7 +111,6 @@ class benchmarking_agent(SubAtomicAgent):
     ROLE: Measures execution time and ensures tools aren't too slow.
     """
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # Placeholder for Time Budget logic
         pass
@@ -131,7 +127,6 @@ if WATCHDOG_AVAILABLE:
             self.cooldown = 0.0
 
         def on_modified(self, event):
-                                    '''Brief description of functionality and purpose.'''
                                     
             if event.is_directory: return
             if any(x in event.src_path for x in EXCLUDED_DIRS): return
@@ -154,6 +149,5 @@ else:
             self.loop = loop
 
         def on_modified(self, event):
-                                    '''Brief description of functionality and purpose.'''
                                     
             pass

@@ -81,7 +81,6 @@ class cached_state_ledger:
         })
 
     def get_cached_validation_context(self, key: str) -> Optional[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         full_key = f"{self.prefix_context}:{key}"
         try:

@@ -24,7 +24,6 @@ class strategic_planner(SubAtomicAgent):
         self.name = "StrategicPlanner"
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
@@ -115,7 +114,6 @@ class reflection_agent(SubAtomicAgent):
         self.name = "ReflectionAgent"
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Performing Self-Critique...")
         if not self.ctx.successful_traces:

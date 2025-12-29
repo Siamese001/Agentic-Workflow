@@ -18,7 +18,6 @@ class mission_resume_agent:
         self.id = mission_id
 
     def get_resume_point(self):
-                    '''Brief description of functionality and purpose.'''
                     
         # Reads l3_mission:id:steps and completed_steps
         return None

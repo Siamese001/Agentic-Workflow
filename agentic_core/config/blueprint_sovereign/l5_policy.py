@@ -43,7 +43,6 @@ class safety_policy(Protocol):
     policy_id: str
     description: str
     def evaluate(self, context: 'SafetyContext') -> 'PolicyDecision': ...
-                    '''Brief description of functionality and purpose.'''
                     
 
 @dataclass
@@ -80,7 +79,6 @@ class policy_decision:
     findings: List[SafetyFinding] = field(default_factory=list)
     
     def to_dict(self) -> Dict[str, object]:
-                    '''Brief description of functionality and purpose.'''
                     
         return {
             'policy_id': self.policy_id,

@@ -97,6 +97,5 @@ class sovereign_figma_client:
             return {"error": str(e)}
 
     async def close(self):
-                    '''Brief description of functionality and purpose.'''
                     
         await self.client.aclose()

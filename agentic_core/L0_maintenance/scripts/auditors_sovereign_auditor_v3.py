@@ -146,7 +146,6 @@ class sovereign_report:
         return all_issues
 
     def run_check(self, name, check_func, files):
-                    '''Brief description of functionality and purpose.'''
                     
         failures = 0
         self.issues[name] = []
@@ -161,7 +160,6 @@ class sovereign_report:
         else: self.scores[name] = 100.0 * (1 - (failures / len(files)))
 
     def print_summary(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print("\n" + "="*60)
         print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")

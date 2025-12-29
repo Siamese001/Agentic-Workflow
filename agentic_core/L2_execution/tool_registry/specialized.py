@@ -14,7 +14,6 @@ class the_cartographer(SubAtomicAgent):
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         # Explicit validation and defaults
         modified_files = getattr(self.ctx, "modified_files", [])
@@ -22,7 +21,6 @@ class the_cartographer(SubAtomicAgent):
         return len(modified_files) > 0 and pinecone_available
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
         await asyncio.sleep(0)
@@ -60,7 +58,6 @@ class the_omni_context(SubAtomicAgent):
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
         await asyncio.sleep(0)
@@ -73,7 +70,6 @@ class the_strategist(SubAtomicAgent):
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """
     def can_run(self) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         results = getattr(self.ctx, "results", {})
         if not results:
@@ -81,7 +77,6 @@ class the_strategist(SubAtomicAgent):
         return all(r.get("passed", False) for r in results.values())
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing architectural patterns...")
         await asyncio.sleep(0)
@@ -94,7 +89,6 @@ class the_strategist(SubAtomicAgent):
 class naming_enforcer(SubAtomicAgent):
     """ROLE: Semantic Naming Guardian."""
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Semantic Naming...")
         await asyncio.sleep(0)
@@ -104,7 +98,6 @@ class naming_enforcer(SubAtomicAgent):
 class doc_enforcer(SubAtomicAgent):
     """ROLE: Documentation Surgeon."""
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
         await asyncio.sleep(0)
@@ -114,7 +107,6 @@ class doc_enforcer(SubAtomicAgent):
 class type_enforcer(SubAtomicAgent):
     """ROLE: Type Guardian. Enforces PEP 484."""
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
         await asyncio.sleep(0)

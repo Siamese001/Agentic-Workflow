@@ -49,7 +49,6 @@ class sovereign_filesystem_mcp:
         return path_str
 
     async def read_text_file(self, path: str) -> str:
-                    '''Brief description of functionality and purpose.'''
                     
         safe_path = self._validate_path(path)
         try:

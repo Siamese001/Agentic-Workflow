@@ -67,7 +67,6 @@ def retry_with_backoff(func: Callable, max_retries: int = 3, base_delay: float =
         Wrapped function with retry logic
     """
     def wrapper(*args, **kwargs):
-                    '''Brief description of functionality and purpose.'''
                     
         # Delegate the actual retry logic to the helper function
         success, result, exception = _execute_with_retries_internal(

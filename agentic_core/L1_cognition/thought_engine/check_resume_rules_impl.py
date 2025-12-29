@@ -31,12 +31,10 @@ class execution_context:
         self.error = None
 
     def start(self):
-                    '''Brief description of functionality and purpose.'''
                     
         self.start_time = time.time()
 
     def complete(self, success: bool, error: Optional[Exception] = None):
-                    '''Brief description of functionality and purpose.'''
                     
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time

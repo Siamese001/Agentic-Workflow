@@ -23,7 +23,6 @@ class territory_change_handler(FileSystemEventHandler):
         super().__init__()
 
     def on_modified(self, event):
-                    '''Brief description of functionality and purpose.'''
                     
         if event.is_directory:
             return

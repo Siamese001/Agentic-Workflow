@@ -32,7 +32,7 @@ class red_team_agent:
         renderer: Any = get_sovereign_prompt_renderer()
         print('\n[*] RED-TEAM VALIDATION MISSION: Executing adversarial guardrail tests...')
         results: List[Dict[str, Any]] = []
-        gov_prompt: Any = renderer.render_tagentic(base_template='red_team_governance.jinja', fragments=['red_team_scope_validator.jinja'], context={'mission_id': 'RT-2025-12-29-001', 'scope': 'systematic guardrail penetration testing', 'fragments': self.ADVERSARIAL_FRAGMENTS, 'guardrails': ['SafetyGuardrail', 'GeminiSpy', 'ContentFilter']})
+        gov_prompt: Any = renderer.render_tagentic(base_template='red_team_governance.jinja', fragments=['red_team_scope_validator.jinja'], context={'mission_id': 'RT-2025-12-29-001', 'scope': 'systematic guardrail penetration testing', 'fragments': self.ADVERSARIAL_FRAGMENTS, 'guardrails': ['safety_guardrail', 'GeminiSpy', 'ContentFilter']})
         try:
             gov_response: Any = await ctx.engine.resilient_mutation(file_path='red_team_governance', code=gov_prompt, task='Authorize red-team execution', round_num=1, fission_active=False)
             auth: Any = json.loads(gov_response)
@@ -68,7 +68,7 @@ class red_team_agent:
 
     async def _escalate_breach(self, ctx, renderer, fragment: str, response: str) -> None:
         """Trigger escalation meta-prompt on confirmed bypass."""
-        esc_prompt = renderer.render(template_name='adversarial_escalation.jinja', context={'fragment_source': fragment, 'target_component': 'GeminiSpy + SafetyGuardrail', 'leaked_response': response, 'current_date': 'December 29, 2025'})
+        esc_prompt = renderer.render(template_name='adversarial_escalation.jinja', context={'fragment_source': fragment, 'target_component': 'GeminiSpy + safety_guardrail', 'leaked_response': response, 'current_date': 'December 29, 2025'})
         try:
             esc_response = await ctx.engine.resilient_mutation(file_path='red_team_escalation', code=esc_prompt, task='Process guardrail breach', round_num=1, fission_active=False)
             report = json.loads(esc_response)

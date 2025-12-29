@@ -42,7 +42,6 @@ class gravity_compliance_validator:
         return -1  # Unknown = no restriction
 
     def scan_file(self, file_path: Path):
-                    '''Brief description of functionality and purpose.'''
                     
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -70,7 +69,6 @@ class gravity_compliance_validator:
                 })
 
     def run(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):

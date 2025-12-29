@@ -63,7 +63,6 @@ class test_pilot:
         self.scheduler = None
 
     def set_scheduler(self, scheduler):
-                    '''Brief description of functionality and purpose.'''
                     
         self.scheduler = scheduler
         self.ctx._scheduler_ref = scheduler

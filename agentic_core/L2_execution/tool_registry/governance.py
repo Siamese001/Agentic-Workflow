@@ -105,7 +105,7 @@ class architecture_governor(SubAtomicAgent):
                 blueprint = await self._generate_fission_blueprint(file_path, content, loc)
                 
                 if blueprint:
-                    # Store blueprint in context for FissionManager to execute
+                    # Store blueprint in context for fission_manager to execute
                     if not hasattr(self.ctx, 'fission_blueprints'):
                         self.ctx.fission_blueprints = {}
                     self.ctx.fission_blueprints[file_path] = blueprint
@@ -256,7 +256,6 @@ class dependency_sentinel(SubAtomicAgent):
     """
 
     async def execute(self):
-                    '''Brief description of functionality and purpose.'''
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
         await asyncio.sleep(0)

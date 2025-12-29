@@ -60,7 +60,6 @@ def path_shield(request, monkeypatch):
     original_open = builtins.open
     
     def mock_exists(path):
-                    '''Brief description of functionality and purpose.'''
                     
         path_str = str(path).lower()
         # Exclude real test files from mocking
@@ -69,7 +68,6 @@ def path_shield(request, monkeypatch):
         return any(kw in path_str for kw in fixture_keywords)
 
     def mock_open_wrapper(file, *args, **kwargs):
-                    '''Brief description of functionality and purpose.'''
                     
         file_str = str(file).lower()
         # Exclude real test files from path shield

@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     # by providing local type definitions for static analysis without runtime import.
 
     class JobInput(Protocol):
-                    '''Brief description of functionality and purpose.'''
                     
         TITLE: str
         role_type: str
@@ -25,14 +24,12 @@ if TYPE_CHECKING:
         posting_text: str
 
     class ResumeInput(Protocol):
-                    '''Brief description of functionality and purpose.'''
                     
         name: str
         email: str
         sections: Dict[str, Any]
 
     class WorkflowConfig(Protocol):
-                    '''Brief description of functionality and purpose.'''
                     
         enable_rag: bool
         enable_qa: bool
@@ -40,7 +37,6 @@ if TYPE_CHECKING:
         max_drafts: int
 
     class ExecutionContext(Protocol):
-                    '''Brief description of functionality and purpose.'''
                     
         JOB: JobInput
         RESUME: ResumeInput
@@ -48,7 +44,6 @@ if TYPE_CHECKING:
         CONFIG: Optional[WorkflowConfig]
 
     class L2ResultBundle(Protocol):
-                    '''Brief description of functionality and purpose.'''
                     
         STRATEGY: Any
         RAG: Any
@@ -58,7 +53,6 @@ if TYPE_CHECKING:
         final_state_patch: Dict[str, Any]
 
     def run_dag(plans: List[Any], context: ExecutionContext) -> L2ResultBundle: ...
-                    '''Brief description of functionality and purpose.'''
                     
 
     # The actual runtime objects will be Mocks or dynamically created,

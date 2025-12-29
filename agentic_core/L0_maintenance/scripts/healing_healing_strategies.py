@@ -52,7 +52,6 @@ class structure_healing(HealingStrategy):
         super().__init__("Structure", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:
@@ -107,7 +106,6 @@ class underscore_field_healing(HealingStrategy):
         super().__init__("UnderscoreFields", priority=2)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:
@@ -167,7 +165,6 @@ class dark_reasoning_healing(HealingStrategy):
         super().__init__("DarkReasoning", priority=3)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:
@@ -384,7 +381,6 @@ class direct_redis_healing(HealingStrategy):
         super().__init__("DirectRedis", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:
@@ -401,7 +397,6 @@ class direct_redis_healing(HealingStrategy):
         return fixes
 
     async def apply(self, fix: Dict, ctx: Any = None) -> bool:
-                    '''Brief description of functionality and purpose.'''
                     
         try:
             import re
@@ -434,7 +429,6 @@ class direct_llm_healing(HealingStrategy):
         super().__init__("DirectLLM", priority=1)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:
@@ -486,7 +480,6 @@ class filesystem_bypass_healing(HealingStrategy):
         super().__init__("FilesystemBypass", priority=2)
     
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
-                    '''Brief description of functionality and purpose.'''
                     
         fixes = []
         for issue in issues:

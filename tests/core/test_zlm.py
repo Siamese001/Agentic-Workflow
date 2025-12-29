@@ -65,7 +65,6 @@ class test_zlmtc101:
         # Mock the underlying function to return success
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "reason": "PASSED"}
@@ -132,7 +131,6 @@ class test_zlmtc201:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -148,7 +146,6 @@ class test_zlmtc201:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
@@ -219,7 +216,6 @@ class test_zlmtc202:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -235,7 +231,6 @@ class test_zlmtc202:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal fix_count
@@ -310,7 +305,6 @@ class test_zlmtc203:
         """Test ZLM fails after max P6 attempts"""
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "FAILED", "reason": "SANDBOX_VERIFICATION_FAILURE", "details": "Test failed"}
@@ -318,7 +312,6 @@ class test_zlmtc203:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "FAILED"}  # P6 cannot fix
@@ -385,7 +378,6 @@ class test_zlmtc301:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -401,7 +393,6 @@ class test_zlmtc301:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
@@ -474,7 +465,6 @@ class test_zlmtc302:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -490,7 +480,6 @@ class test_zlmtc302:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
@@ -563,7 +552,6 @@ class test_zlmtc303:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -579,7 +567,6 @@ class test_zlmtc303:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
@@ -702,7 +689,6 @@ class test_zlm_non_recoverable:
         """Test ZLM fails immediately for non-recoverable errors (P1, GPG)"""
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "FAILED", "reason": "AST_VALIDATION_FAILURE", "details": "Syntax error"}
@@ -759,7 +745,6 @@ class test_zlmtc204:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -773,7 +758,6 @@ class test_zlmtc204:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed regression issue"}
@@ -846,7 +830,6 @@ class test_zlmtc205:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -870,7 +853,6 @@ class test_zlmtc205:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code with regression"}
@@ -943,7 +925,6 @@ class test_zlmtc206:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -961,7 +942,6 @@ class test_zlmtc206:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed code that breaks regression"}
@@ -1026,7 +1006,6 @@ class test_zlmtc304:
 
 
         def mock_refactor(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             nonlocal call_count
@@ -1042,7 +1021,6 @@ class test_zlmtc304:
 
 
         def mock_propose_fix(*args, **kwargs):
-                                    '''Brief description of functionality and purpose.'''
                                     
 
             return {"status": "SUCCESS", "fixed_code": "# Fixed regression"}

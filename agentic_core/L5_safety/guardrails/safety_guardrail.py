@@ -1,5 +1,5 @@
 """
-L5 Safety: SafetyGuardrail
+L5 Safety: safety_guardrail
 Enforces Zero-Loss principles during code mutation.
 """
 import ast
@@ -10,7 +10,7 @@ class safety_guardrail:
 
     def __init__(self, deletion_limit: int=110):
         """
-        Initialize SafetyGuardrail.
+        Initialize safety_guardrail.
         
         Args:
             deletion_limit: Maximum number of lines that can be deleted in standard mode
