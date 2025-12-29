@@ -40,7 +40,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_AGENT_REGISTRY, # [GAP 2]
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
     ROOT_PROTECTED_FILES,
-    SOVEREIGN_IGNORED_FOLDERS, # [SSOT] The single source of truth for ignored folders
+    SOVEREIGN_EXCLUDED_FOLDERS, # [SSOT] The single source of truth for ignored folders
+    MISSION_CONFIG, # [SSOT] Global mission toggles
+    GRAVITY_SURGERY_ENABLED, # [SSOT] Master toggle
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
@@ -360,7 +362,7 @@ GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
 # [SSOT] Explicit exclusion list to prevent WinError 1450 (Deep LFS/Git recursion)
 # Derived strictly from structure_blueprint.py
-PROTECTED_FOLDERS = SOVEREIGN_IGNORED_FOLDERS
+PROTECTED_FOLDERS = SOVEREIGN_EXCLUDED_FOLDERS
 
 # ==============================================================================
 # [L6 SURGERY] MISSION CONTROL FLAGS — OPERATIONAL RISK GATES
@@ -2080,10 +2082,14 @@ IF (task == "GRAVITY_REFACTOR"):
         
         # HARDENING: Expand check to all upstream roots.
         if root_folder in SOVEREIGN_ROOTS:
-            violations = check_import_waterfall_violations(file_path_obj, project_root)
-            if violations:
-                integrity_violations.extend(violations)
-                integrity_violation_files.append(file_path_obj.name)
+            # [SSOT] Gravity Check (Toggle handled inside check_import_waterfall_violations or here)
+            # Since we imported GRAVITY_SURGERY_ENABLED, we can gate it here for clarity
+            if GRAVITY_SURGERY_ENABLED:
+                violations = check_import_waterfall_violations(file_path_obj, project_root)
+                if violations:
+                    integrity_violations.extend(violations)
+                    integrity_violation_files.append(file_path_obj.name)
+            # Else: implicitly disabled
     
     if integrity_violations:
         print(f"\n   [X] SOVEREIGNTY BREACH DETECTED")
