@@ -2447,7 +2447,6 @@ CURRENT CODE:
                                     print(f"     [L0 HYGIENE] {len(pruned)} dead artifacts pruned. Foundation restored.")
                                 elif mcp_res.get('status') == 'l0_diagnostics':
                                     print(f"     [L0 DIAGNOSTICS] Foundation issues identified and logged.")
-                                    
                                 ctx.report(agent.__class__.__name__, key_id, True, f"MCP-healed: {mcp_res.get('status')}")
                                 changes_this_round += 1
                                 file_healed = True
@@ -2460,36 +2459,32 @@ CURRENT CODE:
                             # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
                             if target_root in FORBIDDEN_ROOT_FOLDERS:
                                 print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
+                                # Do NOT proceed with any mutation
                             else:
                                 # 1. Apply import fixes if provided by the agent
                                 if result.get('healed_code'):
                                     with open(file_path, 'w', encoding='utf-8') as f:
                                         f.write(result['healed_code'])
                                     print("     [✓] Imports Refactored for new path.")
-                                continue
 
-                            # 1. Apply import fixes if provided by the agent
-                            if result.get('healed_code'):
-                                with open(file_path, 'w', encoding='utf-8') as f:
-                                    f.write(result['healed_code'])
-                                print("     [✓] Imports Refactored for new path.")
-
-                            # 2. Execute Physical Move
-                            target_dir = project_root / target_move_path
-                            target_dir.mkdir(parents=True, exist_ok=True)
-                            target_path = target_dir / Path(file_path).name
-                            
-                            shutil.move(file_path, target_path)
-                            print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
-                            
-                            # [KEY 48] Log relocation to the audit ledger
-                            audit_log.record(
-                                file_name=Path(file_path).name,
-                                action="RELOCATED",
-                                source=str(Path(file_path).parent),
-                                destination=result['move_to'],
-                                reason=result.get('reason', 'Structural Re-homing')
-                            )
+                                # 2. Execute Physical Move
+                                target_dir = project_root / target_move_path
+                                target_dir.mkdir(parents=True, exist_ok=True)
+                                target_path = target_dir / Path(file_path).name
+                                
+                                shutil.move(str(file_path), str(target_path))
+                                print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
+                                
+                                # [KEY 48] Log relocation to the audit ledger (safe access)
+                                if 'audit_log' in globals() or hasattr(ctx, 'audit_log'):
+                                    log = globals().get('audit_log') or getattr(ctx, 'audit_log')
+                                    log.record(
+                                        file_name=Path(file_path).name,
+                                        action="RELOCATED",
+                                        source=str(Path(file_path).parent),
+                                        destination=result['move_to'],
+                                        reason=result.get('reason', 'Structural Re-homing')
+                                    )
                             
                             # Update python_files list to reflect the new location
                             if hasattr(ctx, 'python_files'):
@@ -2532,12 +2527,12 @@ CURRENT CODE:
                         file_healed = True
                         
             # Check for convergence (no new violations in this round)
-            # Get current report entries for this file and round
-            current_round_reports = [r for r in ctx.report if file_name in str(r) and r.get('round', 1) == round_idx]
-            fail_count = len([r for r in current_round_reports if r.get('status') == 'FAIL'])
-            
-            # Add structural violations to the total count
-            total_violations = fail_count + violations_this_round
+            # [CONVERGENCE FIX] Count current FAIL entries for this file across ALL rounds
+            fail_count = len([
+                r for r in getattr(ctx.report, 'entries', ctx.report)
+                if file_name in str(r.get('file', '')) and r.get('status') == 'FAIL'
+            ])
+            total_violations = fail_count
             
             print(f"Changes: {changes_this_round} | Violations: {total_violations}")
             
@@ -2617,7 +2612,7 @@ CURRENT CODE:
     
     # [ETERNAL SOVEREIGNTY SEAL] Final Report Banner
     print("\n" + "="*80)
-    print("[L6 ETERNAL SOVEREIGNTY REPORT] December 24, 2025")
+    print("[L6 ETERNAL SOVEREIGNTY REPORT] December 28, 2025")
     print("    All 19 active keys exhaustively enforced recursively")
     print("    Structure matches SSOT exactly — depth, hierarchy, naming")
     print("    Code purity absolute — dead elements pruned")
