@@ -86,7 +86,10 @@ class FissionManager:
             api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if api_key:
                 self._client = genai.Client(api_key=api_key)
-                logger.info("[OK] Fission Manager connected to Gemini 2.5")
+                # [SIGNAL] One-time connection log
+                if not getattr(FissionManager, "_gemini_logged", False):
+                    logger.info("[OK] Fission Manager connected to Gemini 2.5")
+                    FissionManager._gemini_logged = True
             else:
                 self._client = None
                 logger.warning("[!]  Fission Manager: No Gemini API key found")
