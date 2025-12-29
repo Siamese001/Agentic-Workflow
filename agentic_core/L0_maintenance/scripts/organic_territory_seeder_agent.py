@@ -111,24 +111,141 @@ class OrganicTerritorySeederAgent:
 
         # === CANON KEY 8: L2 Execution ===
         "agentic_core/L2_execution/tool_registry": {
-            "base_tool.py": "# Base Tool Primitives\nfrom pydantic import BaseModel\nclass BaseTool(BaseModel):\n    name: str\n    description: str\n"
+            "base_tool.py": '# Sovereign Base Tool Definition\n# Canon Key 8 - External tool contracts\n'
+                            'from pydantic import BaseModel, Field\n'
+                            'from typing import Any, Dict\n'
+                            'class BaseTool(BaseModel):\n'
+                            '    """Sovereign base for all external tools."""\n'
+                            '    name: str = Field(..., description="Unique tool name")\n'
+                            '    description: str = Field(..., description="Tool purpose")\n'
+                            '\n'
+                            '    async def execute(self, **kwargs) -> Dict[str, Any]:\n'
+                            '        """Execute tool with validated input."""\n'
+                            '        raise NotImplementedError\n',
+            "tool_registry.py": '# Sovereign Tool Registry\n'
+                                'class ToolRegistry:\n'
+                                '    """Central registry for tool discovery."""\n'
+                                '    def __init__(self):\n'
+                                '        self.tools: dict[str, BaseTool] = {}\n'
+                                '\n'
+                                '    def register(self, tool: BaseTool):\n'
+                                '        self.tools[tool.name] = tool\n'
+                                '        print(f"Registered tool: {tool.name}")\n'
+                                '\n'
+                                '    def get_available_tools(self) -> list[str]:\n'
+                                '        return list(self.tools.keys())\n'
         },
         "agentic_core/L2_execution/action_handlers": {
-            "action_dispatcher.py": "# Routing for Tool Execution\nclass ActionDispatcher:\n    def dispatch(self, action_name):\n        pass\n"
+            "action_dispatcher.py": '# Sovereign Action Dispatcher\n# Canon Key 8 - Tool call routing\n'
+                                    'class ActionDispatcher:\n'
+                                    '    """Routes agent tool calls to registered handlers."""\n'
+                                    '    def __init__(self, registry: ToolRegistry):\n'
+                                    '        self.registry = registry\n'
+                                    '\n'
+                                    '    async def dispatch(self, tool_name: str, args: dict) -> dict:\n'
+                                    '        tool = self.registry.tools.get(tool_name)\n'
+                                    '        if not tool:\n'
+                                    '            return {"error": f"Tool {tool_name} not found"}\n'
+                                    '        return await tool.execute(**args)\n',
+            "fallback_handler.py": '# Fallback Action Handler\n'
+                                    'class FallbackHandler:\n'
+                                    '    """Graceful fallback for unknown actions."""\n'
+                                    '    async def handle_unknown(self, action: str, context: dict):\n'
+                                    '        return {"status": "unknown_action", "suggested": "check tool registry"}\n'
         },
         "agentic_core/L2_execution/mcp": {
-            "mcp_router.py": "# Multi-Component Protocol Router\nclass MCPRouter:\n    pass\n"
+            "base_mcp_client.py": '# Sovereign MCP Base Client\n# Canon Key 8 - Multi-Component Protocol\n'
+                                  'class BaseMCPClient:\n'
+                                  '    """Abstract base for all MCP tool implementations."""\n'
+                                  '    async def call(self, endpoint: str, payload: dict) -> dict:\n'
+                                  '        raise NotImplementedError\n',
+            "fetch_client.py": '# Example MCP Fetch Client\n'
+                               'class FetchMCPClient(BaseMCPClient):\n'
+                               '    """Web fetch via sovereign proxy."""\n'
+                               '    async def call(self, endpoint: str, payload: dict) -> dict:\n'
+                               '        return {"status": "fetched", "url": payload.get("url")}\n',
+            "filesystem_client.py": '# Filesystem MCP Client\n'
+                                     'class FilesystemMCPClient(BaseMCPClient):\n'
+                                     '    """Local filesystem operations."""\n'
+                                     '    async def call(self, endpoint: str, payload: dict) -> dict:\n'
+                                     '        if endpoint == "list":\n'
+                                     '            return {"files": ["example.py"]}\n'
+                                     '        return {"error": "unsupported"}\n'
         },
 
         # === CANON KEY 9: Knowledge ===
         "agentic_core/knowledge/document_loaders": {
-            "base_loader.py": "# Abstract Ingestion Interface\nclass BaseDocumentLoader:\n    def load(self, path):\n        return []\n"
-        },
-        "agentic_core/knowledge/research_cache": {
-            "example_research.jsonl": '{"query": "sovereign architecture", "content": "Autonomous, self-healing, multi-agent system.", "source": "static_index"}\n'
+            "text_loader.py": '# Sovereign Plain Text Loader\n# Canon Key 9 - Document ingestion\n'
+                              'from pathlib import Path\n'
+                              'from typing import List\n'
+                              'class TextDocumentLoader:\n'
+                              '    @staticmethod\n'
+                              '    def load(file_path: Path) -> List[str]:\n'
+                              '        content = file_path.read_text(encoding="utf-8")\n'
+                              '        return [p.strip() for p in content.split("\\n\\n") if p.strip()]\n',
+            "pdf_loader.py": '# Sovereign PDF Loader (pdfminer.six)\n'
+                              'from pathlib import Path\n'
+                              'from typing import List\n'
+                              'from pdfminer.high_level import extract_text\n'
+                              'class PDFDocumentLoader:\n'
+                              '    @staticmethod\n'
+                              '    def load(file_path: Path) -> List[str]:\n'
+                              '        text = extract_text(str(file_path))\n'
+                              '        return [p.strip() for p in text.split("\\n\\n") if p.strip()]\n',
+            "html_loader.py": '# Sovereign HTML Loader (BeautifulSoup)\n'
+                              'from pathlib import Path\n'
+                              'from bs4 import BeautifulSoup\n'
+                              'from typing import List\n'
+                              'class HTMLDocumentLoader:\n'
+                              '    @staticmethod\n'
+                              '    def load(file_path: Path) -> List[str]:\n'
+                              '        html = file_path.read_text(encoding="utf-8")\n'
+                              '        soup = BeautifulSoup(html, "lxml")\n'
+                              '        return [elem.get_text(strip=True) for elem in soup.find_all(["p","h1","h2","li"]) if len(elem.get_text(strip=True)) > 20]\n'
         },
         "agentic_core/knowledge/static_index": {
-            "resume_sections.py": '# Standard Resume Taxonomy\nRESUME_SECTIONS = ["Summary", "Work", "Education", "Skills"]\n__all__ = ["RESUME_SECTIONS"]\n'
+            "action_verbs.py": '# Sovereign Action Verbs Taxonomy\n'
+                               'ACTION_VERBS = {\n'
+                               '    "leadership": ["Led","Directed","Managed"],\n'
+                               '    "technical": ["Developed","Engineered","Architected"],\n'
+                               '}\n'
+                               'STRONG_VERBS = sorted(set(v for verbs in ACTION_VERBS.values() for v in verbs))\n'
+                               '__all__ = ["ACTION_VERBS", "STRONG_VERBS"]\n',
+            "skill_taxonomy.py": '# Sovereign Technical Skill Taxonomy\n'
+                                  'SKILL_TAXONOMY = {\n'
+                                  '    "programming": ["Python","JavaScript","Go"],\n'
+                                  '    "cloud": ["AWS","Azure","Kubernetes"],\n'
+                                  '    "ml": ["TensorFlow","PyTorch","LLM"],\n'
+                                  '}\n'
+                                  'ALL_SKILLS = sorted(set(s for skills in SKILL_TAXONOMY.values() for s in skills))\n'
+                                  '__all__ = ["SKILL_TAXONOMY", "ALL_SKILLS"]\n',
+            "industry_facts.py": '# Sovereign Industry Keywords\n'
+                                  'INDUSTRY_KEYWORDS = {\n'
+                                  '    "tech": ["SaaS","AI","FinTech"],\n'
+                                  '    "finance": ["Trading","Risk","Quantitative"],\n'
+                                  '}\n'
+                                  '__all__ = ["INDUSTRY_KEYWORDS"]\n'
+        },
+        "agentic_core/knowledge/research_cache": {
+            "redis_cache.py": '# Sovereign Redis Research Cache\n'
+                              'import redis\n'
+                              'class RedisResearchCache:\n'
+                              '    def __init__(self, url: str = "redis://localhost:6379"):\n'
+                              '        self.client = redis.from_url(url)\n'
+                              '    def store(self, query: str, result: str):\n'
+                              '        self.client.set(query.lower(), result)\n'
+                              '    def retrieve(self, query: str) -> str | None:\n'
+                              '        return self.client.get(query.lower())\n',
+            "file_cache.py": '# File-based Research Cache Fallback\n'
+                              'from pathlib import Path\n'
+                              'import json\n'
+                              'class FileResearchCache:\n'
+                              '    def __init__(self, cache_dir: Path):\n'
+                              '        self.cache_dir = cache_dir\n'
+                              '        self.cache_dir.mkdir(parents=True, exist_ok=True)\n'
+                              '    def store(self, query: str, result: str):\n'
+                              '        path = self.cache_dir / f"{hash(query)}.json"\n'
+                              '        path.write_text(json.dumps({"query": query, "result": result}))\n'
         },
 
         # === CANON KEY 10: Utils & Observability ===
