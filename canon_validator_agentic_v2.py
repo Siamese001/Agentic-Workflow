@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import sys
 import os
+import shutil
+import uuid
 
 # [ETERNAL UTF-8] Force Windows consoles to handle unicode symbols (≠, 🚨)
 if sys.platform.startswith("win"):
@@ -17,9 +19,6 @@ import asyncio
 import importlib
 import inspect
 import logging
-import os
-import re
-import sys
 import time
 import traceback
 from pathlib import Path
@@ -362,22 +361,36 @@ PROTECTED_FOLDERS = {
     'legacy_code',     # Deprecated
     'legacy_engines',
     'legacy_resume_gen',
-    '.git',
-    '__pycache__',
-    'node_modules',
 }
 
 # ==============================================================================
-# [FINAL HARDENING] SURGERY CONTROL FLAGS
+# [L6 SURGERY] MISSION CONTROL FLAGS — OPERATIONAL RISK GATES
 # ==============================================================================
-# Toggle these to False for daily work after global sweep is complete
-RUN_GRAVITY_REFACTOR = False  # TEMPORARY: Disabled to allow healing cascade to run without stalling
-RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
+# RATIONALE: High-intensity mutation flags are DISABLED by default to prevent 
+# infinite validation loops and memory exhaustion during daily runs.
+# Engage ONLY during scheduled structural cleanup missions.
 
-# [DEBUG GUARD] Prevent infinite pre-flight loop
-if __name__ == "__main__":
-    print("\n[FORCE PROGRESS] Gravity auto-refactor paused - structural moves recommended first")
-# Justification: Clarifies that import fixing is disabled until hierarchy is clean
+# [RISK: HIGH] Physical file relocation and directory pruning.
+# Triggers 'shutil.move' based on SSOT subfolder maps in structure_blueprint.py.
+RUN_HIERARCHY_HEALING = False  
+
+# [RISK: CRITICAL] Automated LLM-based import refactoring.
+# Invokes SubAtomicEngine to rewrite files to eliminate upward gravity leaks.
+RUN_GRAVITY_REFACTOR = False
+
+# [RISK: MEDIUM] Merges redundant nested folders (e.g., observability/observability).
+RUN_SPRAWL_SURGERY = False    
+
+# [RISK: LOW] Rule-based deterministic healing only (future use).
+# When True, suppresses LLM calls and uses only structural/heuristic agents.
+# Currently unused — reserved for phased convergence strategy.
+STRUCTURAL_ONLY_MODE = False
+
+# [FORCE PROGRESS] Confirm safe operational mode based on actual flag state
+if not (RUN_HIERARCHY_HEALING or RUN_GRAVITY_REFACTOR or RUN_SPRAWL_SURGERY):
+    print("\n[FORCE PROGRESS] High-intensity surgery flags locked. Operating in Validation Mode.\n")
+else:
+    print("\n[!] [L6 SURGERY] HIGH-RISK MUTATION ENABLED — Physical/LLM surgery active. Proceed with extreme caution.\n")
 
 # [L5 RESILIENCE] Configurable agent-level retries with exponential backoff
 AGENT_RETRY_COUNT = int(os.getenv("AGENT_RETRY_COUNT", "3"))
@@ -502,8 +515,6 @@ class GeminiSpy:
 # ==============================================================================
 # L6 HIERARCHY ENFORCEMENT: SUBFOLDER HEALING
 # ==============================================================================
-RUN_HIERARCHY_HEALING = True  # Toggle to enable/disable automatic subfolder enforcement
-
 def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
     """
     [L6 ENFORCEMENT] Heals hierarchy violations by:
@@ -513,9 +524,6 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
     Returns:
         Dict with counts of relocated files and removed folders
     """
-    import shutil
-    from datetime import datetime
-    
     results = {"files_relocated": 0, "folders_removed": 0, "errors": []}
     
     if not RUN_HIERARCHY_HEALING:
@@ -699,20 +707,31 @@ def _remove_empty_dirs(path: Path):
                  and not p.name.startswith(".")]
     
     if not remaining:
-        # Remove __init__.py if it exists
+        # [HARDENING] Aggressively purge empty shell (only .gitkeep remains)
+        # 1. Delete any lingering __init__.py
         init_file = path / "__init__.py"
         if init_file.exists():
-            init_file.unlink()
-        # Remove __pycache__ if it exists
+            init_file.unlink(missing_ok=True)
+        
+        # 2. Delete any __pycache__
         pycache = path / "__pycache__"
         if pycache.exists():
-            import shutil
-            shutil.rmtree(pycache)
-        # Remove the directory itself
+            shutil.rmtree(pycache, ignore_errors=True)
+        
+        # 3. Delete the .gitkeep sentinel itself
+        gitkeep = path / ".gitkeep"
+        if gitkeep.exists():
+            gitkeep.unlink(missing_ok=True)
+        
+        # 4. Now safely remove the empty directory
         try:
             path.rmdir()
         except OSError:
-            pass  # Directory not empty, skip
+            # [DEBUG] Only silence if truly not empty after purge
+            if list(path.iterdir()):
+                print(f"   [!] Failed to remove {path} - still contains files after purge")
+            else:
+                print(f"   [!] rmdir failed on empty {path} - possible permission/issue")
 
 
 # ==============================================================================
@@ -806,6 +825,7 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
                     continue
                 scanned_count += 1
                 py_file = Path(root) / file
+                
                 try:
                     rel_path = py_file.relative_to(project_root)
                     root_folder = rel_path.parts[0]
@@ -1328,6 +1348,7 @@ async def run_mission(target_scope: str = "agentic_core"):
                     broken_code = f.read()
                 
                 repair_prompt = f"""### ROLE: SYNTAX_MEDIC
+
 ### ERROR: {e.msg} at line {e.lineno}
 ### TASK: Fix the syntax error (quotes, indents, or colons) only. Do not change logic.
 ### FILE: {Path(file_path).name}
@@ -1896,12 +1917,12 @@ IF (task == "GRAVITY_REFACTOR"):
     
     for file_path in ctx.python_files:
         file_path_obj = Path(file_path)
-        rel_path = file_path_obj.relative_to(project_root_path)
+        rel_path = file_path_obj.relative_to(project_root)
         root_folder = rel_path.parts[0] if rel_path.parts else ""
         
         # HARDENING: Expand check to all upstream roots.
         if root_folder in SOVEREIGN_ROOTS:
-            violations = check_import_waterfall_violations(file_path_obj, project_root_path)
+            violations = check_import_waterfall_violations(file_path_obj, project_root)
             if violations:
                 integrity_violations.extend(violations)
                 integrity_violation_files.append(file_path_obj.name)
@@ -1951,7 +1972,7 @@ IF (task == "GRAVITY_REFACTOR"):
         for file_path in ctx.python_files:
             file_path_obj = Path(file_path)
             # 1. Check Waterfall Violations (Sovereign -> Apps)
-            waterfall = check_import_waterfall_violations(file_path_obj, project_root_path)
+            waterfall = check_import_waterfall_violations(file_path_obj, project_root)
             
             # 2. Check Gravity Violations (Internal Layer Ranking)
             gravity_leaks = []
@@ -2301,7 +2322,6 @@ CURRENT CODE:
                             target_dir.mkdir(parents=True, exist_ok=True)
                             target_path = target_dir / Path(file_path).name
                             
-                            import shutil
                             shutil.move(file_path, target_path)
                             print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
                             
