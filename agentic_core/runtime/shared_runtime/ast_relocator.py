@@ -2,6 +2,8 @@ import ast
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SEMANTIC_L2_REGISTRY
+
 # [GRAVITY] Resolve project root for relative path calculation
 try:
     project_root = Path(__file__).resolve().parents[3]
@@ -30,7 +32,7 @@ class ASTRelocator(ast.NodeVisitor):
             "start_line": getattr(node, 'lineno', node.lineno), 
             "end_lineno": getattr(node, 'end_lineno', node.lineno),
             "node": node,
-            "suggested_location": self._suggest_placement(node.name)
+            "suggested_location": self._suggest_placement(node, node.name, "Class")
         })
         # Track context to skip inner functions
         old_class = self.current_class
@@ -50,45 +52,60 @@ class ASTRelocator(ast.NodeVisitor):
             "start_line": getattr(node, 'lineno', node.lineno),
             "end_lineno": getattr(node, 'end_lineno', node.lineno),
             "node": node,
-            "suggested_location": self._suggest_placement(node.name)
+            "suggested_location": self._suggest_placement(node, node.name, "Function")
         })
         self.generic_visit(node)
 
-    def _suggest_placement(self, name: str) -> Tuple[str, str]:
+    def _suggest_placement(self, node: ast.AST, name: str, entity_type: str) -> Tuple[str, str, float]:
         """
-        [SSOT MAPPING] Heuristic mapping to L1/L2 coordinates.
-        Returns (L1_Folder, L2_Folder).
+        [SEMANTIC SCORING] Calculates placement confidence using the Rich Semantic Registry.
+        Returns (L1, L2, Confidence_Score).
         """
+        best_match = ("utils", "helpers", 0.0)
         name_lower = name.lower()
+        docstring = ast.get_docstring(node) or ""
+        doc_lower = docstring.lower()
 
-        # L5 Safety
-        if any(k in name_lower for k in ["guard", "security", "protect", "policy", "law"]):
-            return ("L5_safety", "guardrails")
-        if any(k in name_lower for k in ["validator", "check", "verify"]):
-            return ("L5_safety", "validators")
+        for l1, l2_dict in SEMANTIC_L2_REGISTRY.items():
+            for l2, meta in l2_dict.items():
+                score = 0.0
 
-        # L4 State
-        if any(k in name_lower for k in ["memory", "context", "history", "log"]):
-            return ("L4_state", "memory")
-        if any(k in name_lower for k in ["file", "disk", "storage"]):
-            return ("L4_state", "filesystem")
+                # 1. Name/Keyword Match (Strong Signal)
+                for kw in meta.get("keywords", []):
+                    if kw in name_lower:
+                        score += 3.0
+                    elif kw in doc_lower:
+                        score += 1.0
 
-        # L2 Execution
-        if any(k in name_lower for k in ["tool", "search", "api", "client", "scrape"]):
-            return ("L2_execution", "tool_registry")
-        
-        # L3 Orchestration
-        if any(k in name_lower for k in ["agent", "manager", "orchestrator", "workflow"]):
-            return ("L3_orchestration", "workflow_engines")
+                # 2. Entity Type Match (Weak Signal)
+                if entity_type in meta.get("entity_types", []):
+                    score += 0.5
 
-        # Config / Schemas
-        if any(k in name_lower for k in ["config", "setting", "env"]):
-            return ("config", "environments")
-        if any(k in name_lower for k in ["schema", "model", "type", "request"]):
-            return ("schemas", "models")
+                # 3. Purpose/Docstring Match (Medium Signal)
+                purpose_words = meta.get("purpose", "").lower().split()
+                doc_words = set(doc_lower.split())
+                # Check for overlap in significant words (len > 3) to avoid "the", "and", etc.
+                matches = [w for w in purpose_words if len(w) > 3 and w in doc_words]
+                
+                if matches:
+                    score += 1.5  # Base score for any match
+                    # [BONUS] Reward high semantic overlap
+                    if len(matches) > 3:
+                        score += 1.0 * len(matches)
 
-        # Default Fallback
-        return ("utils", "helpers")
+                # 4. Base Class Match (High Signal - Structural Proof)
+                if entity_type == "Class" and hasattr(node, "bases"):
+                    for base in node.bases:
+                        # Handle simple names (class A(B)) and attributes (class A(mod.B))
+                        base_name = getattr(base, "id", "") or getattr(getattr(base, "attr", None), "value", "")
+                        if base_name and any(base_name in b for b in meta.get("bases", [])):
+                            score += 4.0  # Massive boost for explicit inheritance match
+
+                # [WINNER SELECTION]
+                if score > best_match[2]:
+                    best_match = (l1, l2, score)
+
+        return best_match
 
     def get_movable_entities(self) -> List[Dict]:
         self.visit(self.tree)

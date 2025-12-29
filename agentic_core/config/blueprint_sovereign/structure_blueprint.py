@@ -504,3 +504,316 @@ GRAVITY_CONFIG = {
 GRAVITY_SURGERY_ENABLED = GRAVITY_CONFIG["enabled"]
 UPSTREAM_SOVEREIGN_ROOTS = frozenset(GRAVITY_CONFIG["upstream_sovereign_roots"])
 DOWNSTREAM_ROOTS = frozenset(GRAVITY_CONFIG["downstream_domains"])
+
+# [ENHANCEMENT v2] RICH SEMANTIC L2 REGISTRY FOR AST RELOCATION
+# SSOT for intelligent code placement. Used by ASTRelocator to match entities
+# based on name, docstring, imports, base classes, and semantics.
+# Structure: l1_folder -> l2_folder -> metadata
+SEMANTIC_L2_REGISTRY = {
+    "L5_safety": {
+        "guardrails": {
+            "purpose": "Safety limits, mutation controls, deletion guards, and circuit breakers",
+            "entity_types": ["Class"],
+            "keywords": ["guardrail", "safety", "limit", "constraint", "circuit", "breaker", "throttle"],
+            "imports": ["agentic_core.L5_safety.guardrails"],
+            "bases": ["SafetyGuardrail", "BaseGuardrail"],
+        },
+        "red_teaming": {
+            "purpose": "Adversarial testing, threat simulation, exploit probing, and attack vectors",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["redteam", "red_team", "adversary", "attack", "exploit", "probe", "jailbreak", "threat"],
+            "imports": [],
+            "bases": ["RedTeamAgent"],
+        },
+        "gravity": {
+            "purpose": "Import waterfall enforcement, dependency direction control, and layer authority",
+            "entity_types": ["Function", "Class"],
+            "keywords": ["gravity", "waterfall", "import", "dependency", "layer", "authority"],
+            "imports": ["agentic_core.runtime.shared_runtime.void_compliance"],
+            "bases": [],
+        },
+        "validators": {
+            "purpose": "Canon key validators, structural checks, and policy enforcement",
+            "entity_types": ["Class"],
+            "keywords": ["validator", "canon", "key", "rule", "policy", "enforce", "compliance"],
+            "imports": [],
+            "bases": ["CanonBaseAgent", "KeyValidator"],
+        }
+    },
+    "schemas": {
+        "models": {
+            "purpose": "Pydantic data models, domain objects, and structured data contracts",
+            "entity_types": ["Class"],
+            "keywords": ["model", "pydantic", "dataclass", "schema", "dto", "definition"],
+            "imports": ["pydantic"],
+            "bases": ["BaseModel"],
+        },
+        "messages": {
+            "purpose": "API message formats, request/response schemas, and protocol buffers",
+            "entity_types": ["Class"],
+            "keywords": ["message", "request", "response", "payload", "packet"],
+            "imports": ["pydantic"],
+            "bases": ["BaseModel"],
+        }
+    },
+    "prompt_governance": {
+        "templates": {
+            "purpose": "Reusable prompt fragments, system instructions, and jinja templates",
+            "entity_types": ["Class", "str constant"],
+            "keywords": ["prompt", "template", "system", "instruction", "jinja", "persona"],
+            "imports": ["jinja2"],
+            "bases": [],
+        },
+        "rendering": {
+            "purpose": "Dynamic prompt assembly, variable substitution, and rendering logic",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["render", "assemble", "build", "format", "interpolate"],
+            "imports": ["jinja2"],
+            "bases": [],
+        }
+    },
+    "semantic_memory": {
+        "embeddings": {
+            "purpose": "Embedding generation, caching, and dimension management",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["embedding", "embed", "vectorize", "dimension", "latent"],
+            "imports": ["google.generativeai"],
+            "bases": [],
+        },
+        "retrieval": {
+            "purpose": "Semantic search, similarity scoring, and RAG retrieval",
+            "entity_types": ["Class", "Function"],
+            "keywords": ["retriev", "search", "similarity", "rag", "query", "lookup"],
+            "imports": ["pinecone"],
+            "bases": [],
+        }
+    },
+    "L2_execution": {
+        "tool_registry": {
+            "purpose": "External tool definitions, wrappers, and registration",
+            "entity_types": ["Class"],
+            "keywords": ["tool", "wrapper", "browser", "search", "scrape", "client", "api"],
+            "imports": ["selenium", "playwright", "requests"],
+            "bases": ["BaseTool"],
+        }
+    },
+    "L3_orchestration": {
+        "workflow_engines": {
+            "purpose": "Agent orchestration, task routing, and mission lifecycle management",
+            "entity_types": ["Class"],
+            "keywords": ["agent", "manager", "orchestrator", "workflow", "engine", "planner"],
+            "imports": [],
+            "bases": ["CanonBaseAgent"],
+        }
+    },
+    "L1_cognition": {
+        "thought_engine": {
+            "purpose": "Core reasoning primitives, thought nodes, chain-of-thought execution, and internal monologue structures",
+            "entity_types": ["Class", "Protocol"],
+            "keywords": [
+                "thought", "reason", "node", "chain", "cot", "monologue",
+                "step", "decompose", "analyze", "reflect", "critique",
+                "socratic", "deliberate", "ponder", "contemplate"
+            ],
+            "imports": [
+                "agentic_core.L1_cognition.thought_engine",
+                "pydantic"
+            ],
+            "bases": [
+                "ThoughtNode",
+                "ReasoningStep",
+                "BaseThought",
+                "ChainOfThought",
+                "BaseReasoningEngine"
+            ],
+            "examples": [
+                "ReasoningNode",
+                "CritiqueStep",
+                "ReflectionThought",
+                "ChainOfThoughtExecutor",
+                "SocraticReasoner"
+            ]
+        },
+        "intent_analysis": {
+            "purpose": "User intent detection, goal extraction, request classification, and ambiguity resolution",
+            "entity_types": ["Class", "Function"],
+            "keywords": [
+                "intent", "goal", "objective", "request", "classify",
+                "detect", "extract", "parse", "understand", "ambiguity",
+                "user_goal", "task_type", "command", "query_type"
+            ],
+            "imports": [
+                "agentic_core.L1_cognition.intent_analysis",
+                "google.generativeai",
+                "re"
+            ],
+            "bases": [
+                "IntentClassifier",
+                "GoalExtractor",
+                "RequestParser"
+            ],
+            "examples": [
+                "IntentClassifier",
+                "GoalDecomposer",
+                "AmbiguityResolver",
+                "UserRequestParser",
+                "TaskTypeDetector"
+            ]
+        },
+        "planning": {
+            "purpose": "Mission decomposition, strategy formulation, step sequencing, dependency mapping, and plan validation",
+            "entity_types": ["Class", "Function"],
+            "keywords": [
+                "plan", "strategy", "decompose", "sequence", "step",
+                "task", "subtask", "dependency", "order", "validate",
+                "breakdown", "hierarchy", "outline", "roadmap", "execute_order"
+            ],
+            "imports": [
+                "agentic_core.L1_cognition.planning",
+                "networkx",
+                "pydantic"
+            ],
+            "bases": [
+                "Planner",
+                "DecompositionEngine",
+                "PlanValidator",
+                "StrategyBuilder",
+                "BasePlanner"
+            ],
+            "examples": [
+                "MissionDecomposer",
+                "TaskSequencer",
+                "DependencyResolver",
+                "PlanValidator",
+                "StrategicPlanner",
+                "StepHierarchyBuilder"
+            ]
+        }
+    },
+    "apps_rg": {
+        "logic_nodes": {
+            "purpose": "Business logic nodes specific to resume generation workflows",
+            "entity_types": ["Class"],
+            "keywords": ["resume", "cv", "node", "section", "experience", "education", "skill"],
+            "imports": ["apps_rg.logic_nodes"],
+            "bases": ["BaseNode", "ResumeNode"],
+            "examples": ["ExperienceNode", "SkillExtractNode"]
+        },
+        "asset_library": {
+            "purpose": "Static assets, strings, and resource definitions for resumes",
+            "entity_types": ["Class", "Dict"],
+            "keywords": ["asset", "string", "text", "resource", "copy", "wording"],
+            "imports": [],
+            "bases": [],
+            "examples": ["ResumeAssets", "ActionVerbs"]
+        },
+        "system_flow": {
+            "purpose": "Orchestration flows and pipelines for resume creation",
+            "entity_types": ["Class"],
+            "keywords": ["flow", "pipeline", "sequence", "generate", "create", "process"],
+            "imports": [],
+            "bases": ["BaseFlow"],
+            "examples": ["GenerationFlow", "ReviewPipeline"]
+        },
+        "engines": {
+            "purpose": "Core drivers for resume rendering and export",
+            "entity_types": ["Class"],
+            "keywords": ["engine", "render", "export", "pdf", "docx", "builder"],
+            "imports": [],
+            "bases": ["BaseEngine"],
+            "examples": ["PdfEngine", "DocxBuilder"]
+        },
+        "templates": {
+            "purpose": "Visual templates and layout definitions for resumes",
+            "entity_types": ["Class", "Dict"],
+            "keywords": ["template", "layout", "style", "theme", "design", "format"],
+            "imports": [],
+            "bases": ["BaseTemplate"],
+            "examples": ["ModernTemplate", "ClassicLayout"]
+        }
+    },
+    "apps_lic": {
+        "logic_nodes": {
+            "purpose": "Business logic nodes for LinkedIn interaction and messaging",
+            "entity_types": ["Class"],
+            "keywords": ["linkedin", "lic", "node", "message", "connect", "invite", "profile"],
+            "imports": ["apps_lic.logic_nodes"],
+            "bases": ["BaseNode", "LicNode"],
+            "examples": ["ConnectNode", "MessageDraftNode"]
+        },
+        "asset_library": {
+            "purpose": "Message templates, connection notes, and outreach assets",
+            "entity_types": ["Class", "Dict"],
+            "keywords": ["asset", "note", "message", "template", "script", "outreach"],
+            "imports": [],
+            "bases": [],
+            "examples": ["ConnectionNotes", "FollowUpScripts"]
+        },
+        "system_flow": {
+            "purpose": "Campaign flows and outreach sequences",
+            "entity_types": ["Class"],
+            "keywords": ["flow", "campaign", "sequence", "cadence", "outreach", "drip"],
+            "imports": [],
+            "bases": ["BaseFlow"],
+            "examples": ["OutreachCampaign", "DailyFlow"]
+        },
+        "engines": {
+            "purpose": "Drivers for LinkedIn automation and navigation",
+            "entity_types": ["Class"],
+            "keywords": ["engine", "driver", "navigate", "automate", "browser"],
+            "imports": ["selenium", "playwright"],
+            "bases": ["BaseEngine"],
+            "examples": ["NavigationEngine", "BrowserDriver"]
+        },
+        "templates": {
+            "purpose": "Structure definitions for messages and campaigns",
+            "entity_types": ["Class"],
+            "keywords": ["template", "structure", "format", "blueprint"],
+            "imports": [],
+            "bases": ["BaseTemplate"],
+            "examples": ["CampaignTemplate", "MessageFormat"]
+        }
+    },
+    "apps_shared": {
+        "base_definitions": {
+            "purpose": "Base classes and types shared across all apps",
+            "entity_types": ["Class", "TypeAlias"],
+            "keywords": ["base", "definition", "type", "shared", "interface", "abstract"],
+            "imports": ["abc"],
+            "bases": ["ABC"],
+            "examples": ["BaseNode", "BaseFlow"]
+        },
+        "common_utils": {
+            "purpose": "Shared utilities specific to application business logic",
+            "entity_types": ["Function", "Class"],
+            "keywords": ["util", "common", "shared", "helper", "date", "string"],
+            "imports": [],
+            "bases": [],
+            "examples": ["date_utils", "string_helpers"]
+        },
+        "core_components": {
+            "purpose": "Reusable architectural components for apps",
+            "entity_types": ["Class"],
+            "keywords": ["component", "module", "widget", "part", "element"],
+            "imports": [],
+            "bases": [],
+            "examples": ["LoggerComponent", "ConfigLoader"]
+        },
+        "base_agents": {
+            "purpose": "Base agent definitions extended by specific apps",
+            "entity_types": ["Class"],
+            "keywords": ["agent", "base_agent", "worker", "bot"],
+            "imports": [],
+            "bases": ["CanonBaseAgent"],
+            "examples": ["AppBaseAgent", "TaskWorker"]
+        },
+        "models": {
+            "purpose": "Shared data models and DTOs for application domains",
+            "entity_types": ["Class"],
+            "keywords": ["model", "dto", "data", "struct", "object"],
+            "imports": ["pydantic"],
+            "bases": ["BaseModel"],
+            "examples": ["UserProfile", "TaskResult"]
+        }
+    }
+}
