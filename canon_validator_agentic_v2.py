@@ -229,9 +229,42 @@ if __name__ == "__main__":
     print("\n[INFO] Legacy import reconciliation skipped (run manually if needed)")
     print("-" * 70)
 
-    # ===========================================================================
-    # [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
-    # ===========================================================================
+def _get_optimized_order(default_list: List[Tuple[str, List[str]]], project_root: Path) -> List[Tuple[str, List[str]]]:
+    """
+    [CANON KEY 3] Dynamic Re-prioritization
+    Re-orders the agent execution list based on MetaLearningAgent telemetry.
+    """
+    memory_path = project_root / "agentic_core" / "runtime" / "mission_memory.json"
+    if not memory_path.exists():
+        return default_list
+
+    try:
+        memory = json.loads(memory_path.read_text(encoding="utf-8"))
+        priority_names = memory.get("next_priority_order", [])
+        if not priority_names:
+            return default_list
+
+        # Map class names to their full tuple definitions
+        default_map = {item[1][0]: item for item in default_list}
+        optimized_list = []
+
+        # 1. Insert agents in prioritized order
+        for name in priority_names:
+            if name in default_map:
+                optimized_list.append(default_map.pop(name))
+
+        # 2. Append remaining agents (Constitutional Baseline)
+        optimized_list.extend(default_map.values())
+        
+        return optimized_list
+    except Exception as e:
+        print(f"    [!] Mission Memory Load Failure: {e}")
+        return default_list
+
+# ===========================================================================
+# [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
+# ===========================================================================
+if __name__ == "__main__":
     print(f"\n[PHASE 0] Naming Law Amplification: ARMED")
     print(f"[PHASE -1] Gravity Surgery: ARMED")
     print(f"[PHASE +1] Sovereign Registry Sync: SCHEDULED")
@@ -1581,6 +1614,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L3_orchestration.workflow_engines.architecture_governor', ['ArchitectureGovernor']),
             ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['FissionManager']),
             ('agentic_core.L3_orchestration.workflow_engines.metalearning_agent', ['MetaLearningAgent']),
+            ('agentic_core.L3_orchestration.workflow_engines.meta_orchestrator_agent', ['MetaOrchestratorAgent']),
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
             ('agentic_core.L2_execution.tool_registry.code_deduplication_agent', ['CodeDeduplicationAgent']),
             ('agentic_core.L5_safety.gravity.gravity_leak_repair', ['GravityLeakRepairAgent']),
