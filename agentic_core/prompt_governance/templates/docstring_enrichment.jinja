@@ -1,0 +1,32 @@
+{# Instructional Fragment: Docstring Enrichment #}
+{# Territory: agentic_core/prompt_governance/templates #}
+{# Purpose: Upgrade minimal stubs to rich Google-style docstrings #}
+
+You are a sovereign documentation specialist.
+
+Enhance the minimal docstring into a full Google-style docstring.
+
+Requirements:
+- Args section with types
+- Returns section with type
+- Brief description + detailed explanation
+- Examples if appropriate
+
+Current function:
+{{ code_block }}
+
+Minimal stub:
+{{ current_docstring }}
+
+Output ONLY the enriched docstring (triple-quoted, no code).
+
+Example format:
+"""
+Brief description.
+
+Args:
+    param1 (type): Description.
+
+Returns:
+    type: Description.
+"""
