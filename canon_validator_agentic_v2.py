@@ -2353,7 +2353,12 @@ CURRENT CODE:
                     break
         
         # Legacy healing loop for compatibility (will be removed after migration)
-        initial_violations = 0
+        file_name = Path(file_path).name
+        # [SOVEREIGN FIX] Iterate ctx.report list directly (CallableReport inherits list)
+        initial_violations = len([
+            r for r in getattr(ctx, 'report', [])
+            if file_name in str(r.get('file', '')) and r.get('status') == 'FAIL'
+        ])
         file_healed = False
         
         # [CRITICAL WINDSURF FIX] Initialize progress tracker - prevents NameError crash
@@ -2490,11 +2495,14 @@ CURRENT CODE:
                             file_healed = True
 
                             # [L4 FAST INVALIDATION]
-                            if ctx.semantic_cache:
-                                await ctx.semantic_cache.invalidate(file_path)
+                            if getattr(ctx, 'semantic_cache', None):
+                                try:
+                                    await ctx.semantic_cache.invalidate(file_path)
+                                except Exception as e:
+                                    logger.debug(f"Cache invalidate failed: {e}")
 
                             # [L4 CACHE UPDATE] Re-embed healed file with new AST
-                            if ctx.semantic_cache:
+                            if getattr(ctx, 'semantic_cache', None):
                                 try:
                                     healed_code = Path(file_path).read_text(encoding='utf-8', errors='replace')
                                     await ctx.semantic_cache.cache_file(
@@ -2671,7 +2679,9 @@ groups:
         print(f"   [!] Failed to write alerting rules: {e}")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
-    total_violations = len([r for r in ctx.report_list if not r.get("success", True)])
+    report_entries = getattr(ctx, 'report', [])
+    total_violations = len([r for r in report_entries if not r.get("success", True)])
+    
     if total_violations == 0:
         print("\n[SOVEREIGN VERDICT] ZERO violations detected across all keys")
         print("    Canon structure: EXACT SSOT match")
@@ -2681,8 +2691,11 @@ groups:
     else:
         print(f"\n[PROGRESS] {total_violations} violations remain - continuing iteration toward zero")
         print("   Tip: Focus on moving root-level files and fixing depth/hierarchy first")
-        # sys.exit(1)  # Temporarily disabled during convergence phase - re-enable when ready for strict mode
-    # Justification: Removes hard exit(1) that blocks progress when violations >0. You need to iterate!
+        if total_violations > 0:
+            print(f"\n[CONVERGENCE PHASE] {total_violations} violations remain — iteration continues.")
+            print("   Re-run the validator to apply further healing rounds.")
+            # Uncomment the line below when ready for zero-tolerance enforcement
+            # sys.exit(1)
 
     print("\n[KEY COVERAGE REPORT]")
     from collections import defaultdict
