@@ -298,6 +298,12 @@ try:
     
     SubAtomicEngine = dynamic_import('agentic_core.L5_safety.guardrails.subatomic_engine', 'SubAtomicEngine')
     
+    # [CANON KEY 1] Sovereign Prompt Rendering
+    SovereignPromptRenderer = dynamic_import('agentic_core.prompt_governance.rendering.sovereign_prompt_renderer', 'SovereignPromptRenderer')
+    if not SovereignPromptRenderer:
+        # Critical warning: instructional prompts are vulnerable without central rendering
+        print("   [!] SovereignPromptRenderer not found — sovereignty drift detected in Key 1")
+    
     if __name__ == "__main__":
         print(f"   [OK] Core components loaded dynamically (gravity-compliant)")
 except Exception as e:
@@ -1105,6 +1111,12 @@ async def run_mission(target_scope: str = "agentic_core"):
         # Ensure results dict exists
         if not hasattr(ctx, 'results'):
             ctx.results = {}
+        # [SURGERY ACCESS] Expose healing flag to batch agents
+        ctx.RUN_HIERARCHY_HEALING = RUN_HIERARCHY_HEALING
+        # [CONTENT DEDUPLICATION] Expose sprawl surgery flag
+        ctx.RUN_SPRAWL_SURGERY = RUN_SPRAWL_SURGERY
+        # [SSOT] Attach sovereign project_root to context for batch agents
+        ctx.project_root = project_root
         print("   [OK] ValidationContext loaded from agentic_core")
     except (ImportError, AttributeError):
         class FallbackValidationContext:
@@ -1569,6 +1581,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L3_orchestration.workflow_engines.architecture_governor', ['ArchitectureGovernor']),
             ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['FissionManager']),
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
+            ('agentic_core.L2_execution.tool_registry.code_deduplication_agent', ['CodeDeduplicationAgent']),
         ]
         
         for module_path, class_names in agent_modules:
