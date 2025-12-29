@@ -23,7 +23,9 @@ def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
     Skips virtual environments and cache directories to prevent false positives.
     """
     if exclude_dirs is None:
-        exclude_dirs = {'.git', '__pycache__', 'venv', 'env', '.idea', '.vscode'}
+        # [SSOT] Import from structure_blueprint instead of hardcoding
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+        exclude_dirs = SOVEREIGN_IGNORED_FOLDERS
 
     latest_mtime = 0.0
 

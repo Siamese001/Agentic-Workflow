@@ -483,8 +483,10 @@ class TestConfigEquivalence:
         try:
             from canon_validator import EXCLUDED_DIRS
 
+            # [SSOT] Import expected exclusions from structure_blueprint
+            from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+            
             # These are the minimum expected excluded directories
-            # Note: .mypy_cache may not be in all configs - it's optional
             expected_core = {
                 ".git", "__pycache__", ".venv", "venv", "node_modules",
                 ".pytest_cache"
