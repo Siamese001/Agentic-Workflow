@@ -332,13 +332,15 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         return False, f"VOID VIOLATION: File outside project root"
 
 
-def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int]:
+def get_applicable_keys_for_file(file_path: Path, project_root: Path, include_behavioral: bool = True) -> Set[int]:
     """
     Determine which canon keys should apply to a given file based on its location.
-    
+    [NORMALIZED] Handles both Territorial (0-12) and Behavioral (13-19) wildcards.
+
     Args:
         file_path: Absolute path to file
         project_root: Project root directory
+        include_behavioral: Whether to include global behavioral keys (13-19)
         
     Returns:
         Set of applicable key numbers
@@ -351,10 +353,14 @@ def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int
         
         for key_num, folders in KEY_TO_FOLDER_MAP.items():
             for folder_pattern in folders:
-                if rel_path_str.startswith(folder_pattern):
+                # [KEY 20 FIX] Handle territorial prefix OR behavioral wildcard
+                if folder_pattern == "*" or rel_path_str.startswith(folder_pattern):
                     applicable_keys.add(key_num)
                     break
         
+        if not include_behavioral:
+            applicable_keys = {k for k in applicable_keys if k <= 12}
+
         return applicable_keys
         
     except ValueError:
@@ -582,10 +588,12 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     except Exception:
         return violations  # Skip unreadable files
 
-    # Build regex only if there are downstream roots (defensive)
-    if downstream_roots:
+    # [L6 GRAVITY HARDENING] Prevent upstream -> downstream contamination
+    if downstream_roots and current_root in upstream_sovereign_roots:
+        # Use word boundaries and multi-line matching to catch direct imports
+        downstream_regex = "|".join(map(re.escape, sorted(downstream_roots)))
         forbidden_pattern = re.compile(
-            r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(downstream_roots))) + r")(?:\.\w|\s|$)",
+            rf"^(?:import|from)\s+({downstream_regex})(?:\.\w|\s|$)",
             re.MULTILINE
         )
 
