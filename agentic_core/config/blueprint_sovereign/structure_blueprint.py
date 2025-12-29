@@ -302,30 +302,30 @@ CANON_AGENT_REGISTRY = {
 
 # [L6 MCP CAPABILITIES SSOT] Modular Capability Provider Configuration
 # Rationale: Formalizes the state of external tool integrations.
-# Current Status (v2.9): All MCPs disabled in favor of pure LLM-based healing.
+# Current Status (v2.9): All MCPs active for enhanced tooling capabilities.
 MCP_CAPABILITIES = {
     "router": {
-        "enabled": False,  # SovereignMCPRouter removed — no tool routing
-        "reason": "Deprecated in v2.9 sovereign hardening"
+        "enabled": True,  # SovereignMCPRouter for tool routing
+        "path": "agentic_core.L3_orchestration.mcp"
     },
     "marketplace_filter": {
-        "enabled": False,
+        "enabled": True,
         "path": "agentic_core.L3_orchestration.mcp"
     },
     "filesystem": {
-        "enabled": False,
+        "enabled": True,
         "path": "agentic_core.L4_state.filesystem"
     },
     "figma": {
-        "enabled": False,
+        "enabled": True,
         "path": "agentic_core.L2_execution.mcp"
     },
     "fetch": {
-        "enabled": False,
+        "enabled": True,
         "path": "agentic_core.L2_execution.mcp"
     },
     "semantic_cache": {
-        "enabled": False,
+        "enabled": True,
         "path": "agentic_core.L2_execution.mcp"
     }
 }
