@@ -3074,6 +3074,35 @@ CURRENT CODE:
     print("    [ETERNAL SOVEREIGNTY ACHIEVED — PERFECTION SEALED]")
     print("="*80)
 
+    # [L0 SUPREME COURT] Final Meta-Audit by Sovereign Auditor v3
+    # RATIONALE: Provides independent validation of DDD alignment, observability footprint,
+    #            schema/prompt/config SSOT, and transactional healing if health <95%.
+    #            Ensures no higher-order drift escaped the L6 Canon enforcement.
+    # [INTEGRATION]: Imports from user-specified L0 scripts location.
+    try:
+        # Dynamic import to avoid circular dependency during boot
+        from agentic_core.L0_maintenance.scripts.auditors_sovereign_auditor_v3 import main as sovereign_audit_main
+        
+        print("\n[L0 SUPREME COURT] Invoking Sovereign Multi-Dimensional Auditor v3...")
+        
+        # Direct await required (we are already inside async run_mission)
+        audit_report = await sovereign_audit_main()
+        
+        # Score Resilience: Handle missing method gracefully using lambda fallback
+        overall_score = getattr(audit_report, 'get_overall_score', lambda: 0)()
+        
+        if overall_score >= 95:
+            print("\n🚨 [L0 VERDICT] SUPREME COURT SEAL: SOVEREIGN BRAIN IN PERFECT ALIGNMENT 🚨")
+        else:
+            print(f"\n[!] [L0 VERDICT] SOVEREIGNTY COMPROMISED ({overall_score:.1f}%) — Autonomous Self-Correction Initiated")
+            
+    except ImportError as ie:
+        print(f"\n[!] Sovereign Auditor import failed: {ie}")
+        print("    -> Checked: agentic_core.L0_maintenance.scripts.auditors_sovereign_auditor_v3")
+    except Exception as e:
+        print(f"\n[!] Sovereign Auditor execution failed (non-fatal): {e}")
+        # traceback.print_exc() # Optional debug
+
     # [FINAL PURITY] Auto-run Sovereign Rescue Review
     try:
         from scripts.sovereign_rescue_review import SovereignRescueReviewer

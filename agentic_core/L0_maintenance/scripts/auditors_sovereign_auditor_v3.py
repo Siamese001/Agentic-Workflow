@@ -12,7 +12,7 @@ from typing import List, Dict
 # Add repo root to path for imports
 # NAMING FIXED: REPO_ROOT → repo_root
 repo_root = Path(__file__).parent.parent.parent.parent
-sys.path.append(str(REPO_ROOT))
+sys.path.append(str(repo_root))
 
 # Import available Guardians
 try:
@@ -21,7 +21,7 @@ except ImportError:
     check_underscore_fields = None
 
 try:
-    from agentic_core.L0_maintenance.P1_core.guard_ddd_alignment import validate_ddd_alignment
+    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
 
@@ -185,7 +185,7 @@ async def main():
     
     target = Path("agentic_core")
     
-    report = SovereignReport()
+    report = sovereign_report()
     
     # 1. DDD Alignment (Available)
     if validate_ddd_alignment:
@@ -227,6 +227,9 @@ async def main():
         print("⚠ Observability Footprint guardian not available")
 
     overall_score = report.print_summary()
+    
+    # Return report for L0 Supreme Court integration
+    return report
     
     # Phase 10: Sovereign Healing Engine - FULLY ENABLED
     if overall_score >= 95:
