@@ -1326,14 +1326,7 @@ async def run_mission(target_scope: str = "agentic_core"):
         ctx.mcp_router = mcp_router
         print(f"   [OK] Sovereign MCP Router ETERNALLY ARMED — tools ready for L4 healing")
     except Exception as e:
-        # [MCP NOISE SUPPRESSION] Only report once per boot
-        if not hasattr(ctx, "_mcp_failures_logged"):
-            # [SIGNAL] Sovereign summary — MCP architecture removed in v2.9 hardening
-            print("   [INFO] MCP capabilities deprecated — running in pure sovereign LLM validation mode")
-            print("        • LLM-only healing active")
-            print("        • Direct filesystem writes enabled")
-            print("        • No external tool routing (Figma/Fetch/Marketplace)")
-            ctx._mcp_failures_logged = True  # Silence subsequent MCP blocks
+        print(f"   [!] MCP Router failed to arm: {e} — continuing with LLM-only healing")
 
     # [L3 MARKETPLACE] Sovereign-safe MCP discovery
     try:
@@ -1372,8 +1365,7 @@ async def run_mission(target_scope: str = "agentic_core"):
             ctx.figma_client = SovereignFigmaClient(cache=ctx.semantic_cache)
             print(f"   [OK] Sovereign Figma client armed — design truth active")
         except Exception as e:
-            if not hasattr(ctx, "_mcp_failures_logged"):
-                pass  # Already logged info above
+            print(f"   [!] Figma client failed: {e}")
 
     # [L2 FETCH] Sovereign external knowledge client
     ctx.fetch_client = None
