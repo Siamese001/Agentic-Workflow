@@ -23,10 +23,10 @@ ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
 
 # [SSOT] Import from structure_blueprint instead of hardcoding
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
 
 # CONFIGURATION: EXCLUSION ZONES (Strict Subatomic)
-EXCLUDED_DIRS = SOVEREIGN_IGNORED_FOLDERS
+EXCLUDED_DIRS = SOVEREIGN_EXCLUDED_FOLDERS
 
 EXCLUDED_FILES = {
     # Only the active validator and runner

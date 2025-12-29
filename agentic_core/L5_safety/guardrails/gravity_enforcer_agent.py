@@ -9,7 +9,10 @@ import re
 from pathlib import Path
 from typing import Dict, Set
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    UPSTREAM_SOVEREIGN_ROOTS,
+    DOWNSTREAM_ROOTS,
+)
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 
 
@@ -22,12 +25,9 @@ class GravityEnforcerAgent(CachedSafetyShield):
     def __init__(self, project_root: Path, ctx):
         super().__init__(project_root, "gravity_gate")
         self.ctx = ctx
-        # Derive Upstream vs Downstream from SSOT
-        all_roots = set(SOVEREIGN_REGISTRY.keys())
-        # Upstream sovereign: non-apps_* roots and not 'tests'
-        self.upstream_roots = {r for r in all_roots if not r.startswith("apps_") and r != "tests"}
-        # Downstream: everything else (domains + tests)
-        self.downstream_roots = all_roots - self.upstream_roots
+        # [SSOT] Use pre-defined constants from structure_blueprint
+        self.upstream_roots = UPSTREAM_SOVEREIGN_ROOTS
+        self.downstream_roots = DOWNSTREAM_ROOTS
         
         # Build regex pattern to catch forbidden imports
         if self.downstream_roots:
