@@ -184,7 +184,7 @@ AGENT_RESILIENCE_CONFIG = {
 
 MISSION_CONFIG = {
     "gravity_surgery_enabled": True, "hierarchy_healing_enabled": True, "span_surgery_enabled": True, "fission_enabled": True, "run_full_mission": True,
-    "run_hierarchy_healing": False, "run_gravity_refactor": False, "run_sprawl_surgery": False, "structural_only_mode": False,
+    "run_hierarchy_healing": True, "run_gravity_refactor": True, "run_sprawl_surgery": True, "structural_only_mode": False,
     "timeout_seconds": int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
 }
 
