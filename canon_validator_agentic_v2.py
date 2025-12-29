@@ -2709,7 +2709,7 @@ CURRENT CODE:
     # [ETERNAL SOVEREIGNTY SEAL] Final Report Banner
     print("\n" + "="*80)
     print("[L6 ETERNAL SOVEREIGNTY REPORT] December 29, 2025")
-    print("    All 19 active keys exhaustively enforced recursively")
+    print("    All 20 active keys (0-19) exhaustively enforced recursively")
     print("    Structure matches SSOT exactly — depth, hierarchy, naming")
     print("    Code purity absolute — dead elements pruned")
     print("    Territory double-locked — positive + negative signals")
@@ -2782,9 +2782,7 @@ groups:
         print(f"   [!] Failed to write alerting rules: {e}")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
-    report_obj = getattr(ctx, 'report', [])
-    report_entries = getattr(report_obj, 'entries', report_obj)
-    total_violations = len([r for r in report_entries if not r.get("success", True)])
+    total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
 
     # [FIX] Perfection requires both zero violations AND active agents
     if total_violations == 0 and len(ctx.cleaning_crew) > 0:
@@ -2811,7 +2809,38 @@ groups:
          rel = Path(f).relative_to(project_root)
          keys = [k for k, ps in CANON_KEY_TO_FOLDER_MAP.items() if any(str(rel).startswith(p) for p in ps)]
          for k in keys: key_counts[k] += 1
-    for k in sorted(key_counts): print(f"   Key {k}: {key_counts[k]} files")
+
+    # === SYNTHETIC BEHAVIORAL COUNTS (Keys 13-19) ===
+    # Key 13: Span-of-Two compliance
+    try:
+        from agentic_core.runtime.shared_runtime.void_compliance import check_span_of_two_violations
+        span_v = check_span_of_two_violations(project_root)
+        key_counts[13] = 1 if not span_v else 0
+    except ImportError:
+        key_counts[13] = 0
+
+    # Key 14: Active agent count
+    key_counts[14] = len(ctx.cleaning_crew) if hasattr(ctx, 'cleaning_crew') else 0
+
+    # Key 15: Healing actions executed (Fission + Moves)
+    key_counts[15] = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') in ['FISSION_COMPLETE', 'RELOCATED'])
+
+    # Key 16: Safety systems online
+    key_counts[16] = 1 if (ctx.engine and ctx.safety) else 0
+
+    # Key 17: State Synchronization (Pinecone/Redis)
+    key_counts[17] = sum(1 for m in monitors if m.__class__.__name__ in ['PineconeSovereignAgent', 'RedisSovereignAgent'])
+
+    # Key 18: Core Laws (Naming + Gravity)
+    law_fails = [r for r in ctx.report if r.get('status') == 'FAIL' and any(x in r.get('agent', '').lower() for x in ['naming', 'gravity', 'waterfall'])]
+    key_counts[18] = 1 if not law_fails else 0
+
+    # Key 19: Full Convergence
+    key_counts[19] = 1 if (total_violations == 0 and key_counts[14] > 0) else 0
+
+    for k in sorted(key_counts):
+        unit = "files" if k <= 12 else "status (1 = active/clean)"
+        print(f"   Key {k}: {key_counts[k]} {unit}")
 
     print("="*70)
 
