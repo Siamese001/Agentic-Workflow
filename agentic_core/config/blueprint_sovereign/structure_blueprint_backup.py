@@ -130,10 +130,10 @@ CORE_SUBFOLDER_MAP = {
     # - tracing: Distributed trace context
     # - compliance: Audit and compliance reporting
     
-    "utils": ["core_extensions", "wrappers", "helpers", "naming"],
+    "utils": ["core_extensions", "wrappers", "general_helpers", "naming"],
     # - core_extensions: Framework extensions
     # - wrappers: Third-party library adapters
-    # - helpers: General-purpose utilities
+    # - general_helpers: Domain-agnostic helper functions and miscellaneous core utilities
     # - naming: Naming convention enforcement
     
     "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns"],
