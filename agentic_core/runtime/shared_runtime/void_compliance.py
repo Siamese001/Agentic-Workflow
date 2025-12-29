@@ -181,19 +181,24 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             stage: Any = parts[2]
             if stage not in allowed_core_stages and (not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L'))):
                 return (False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory.")
-        return (True, f'{root_folder} depth verified')
-        if root_folder in ALLOWED_ROOT_FOLDERS:
-            return (True, f'File in allowed root folder: {root_folder}')
-        if root_folder in FORBIDDEN_ROOT_FOLDERS:
-            return (False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy)")
+        
+        # [FIX] Check for forbidden folder patterns BEFORE returning success
+        # This was previously unreachable dead code due to early return
         from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_FOLDER_PATTERN
         for part in parts:
             if part in FORBIDDEN_ROOT_FOLDERS:
                 return (False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth.")
             if FORBIDDEN_FOLDER_PATTERN.match(part):
                 return (False, f"VOID VIOLATION: Numbered folder pattern '{part}' forbidden at any depth.")
+        
+        # Check for numbered root folders (e.g., 08_scripts)
         if root_folder and root_folder[0:2].isdigit() and (root_folder[2:3] == '_'):
             return (False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)")
+        
+        if root_folder in ALLOWED_ROOT_FOLDERS:
+            return (True, f'File in allowed root folder: {root_folder}')
+        if root_folder in FORBIDDEN_ROOT_FOLDERS:
+            return (False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy)")
         validator_markers: Any = {'validator', 'compliance', 'canon'}
         if root_folder.startswith('apps_') and any((m in file_path.name.lower() for m in validator_markers)):
             return (False, f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'.")

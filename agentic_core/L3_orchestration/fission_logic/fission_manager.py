@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: fission_manager → fission_manager
+# NAMING FIXED: FissionManager → fission_manager
 class fission_manager:
     """
     L3 Orchestration: The Task Splitter.
@@ -17,7 +17,7 @@ class fission_manager:
 
     async def decompose_task(self, task: str) -> List[Dict]:
         """Splits a complex task into a list of atomic contexts for SubatomicHops."""
-        logging.info("fission_manager: Decomposing task for multi-hop execution...")
+        logging.info("FissionManager: Decomposing task for multi-hop execution...")
         
         # In a real run, this would use L1_cognition to plan the split.
         return [
