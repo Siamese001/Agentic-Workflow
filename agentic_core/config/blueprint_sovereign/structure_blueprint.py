@@ -300,6 +300,36 @@ CANON_AGENT_REGISTRY = {
     20: ["DriftDetectorAgent", "NamingLawHealerAgent", "GlobalComplianceAggregatorAgent"]
 }
 
+# [L6 MCP CAPABILITIES SSOT] Modular Capability Provider Configuration
+# Rationale: Formalizes the state of external tool integrations.
+# Current Status (v2.9): All MCPs disabled in favor of pure LLM-based healing.
+MCP_CAPABILITIES = {
+    "router": {
+        "enabled": False,  # SovereignMCPRouter removed — no tool routing
+        "reason": "Deprecated in v2.9 sovereign hardening"
+    },
+    "marketplace_filter": {
+        "enabled": False,
+        "path": "agentic_core.L3_orchestration.mcp"
+    },
+    "filesystem": {
+        "enabled": False,
+        "path": "agentic_core.L4_state.filesystem"
+    },
+    "figma": {
+        "enabled": False,
+        "path": "agentic_core.L2_execution.mcp"
+    },
+    "fetch": {
+        "enabled": False,
+        "path": "agentic_core.L2_execution.mcp"
+    },
+    "semantic_cache": {
+        "enabled": False,
+        "path": "agentic_core.L2_execution.mcp"
+    }
+}
+
 # [GAP 16] ROOT PROTECTED FILES — SSOT centralized
 ROOT_PROTECTED_FILES = {
     "canon_validator_agentic_v2.py", "pyproject.toml", "README.md", 
@@ -320,6 +350,8 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({
     "Lib", "site-packages", "google", "gapic", "logging", "licenses", 
     "src", "pip", "dist-info", "raw", "golden_state", "logs", "processed", 
     "shared", "refs", "remotes", "v",
+    # [L6 NOISE SUPPRESSION] Transient & Healing Artifacts
+    "stubs", ".sovereign_healing_backup", ".idea", ".vscode",
     # System
     ".DS_Store", "Thumbs.db"
 })
@@ -366,6 +398,18 @@ MISSION_CONFIG = {
     "fission_enabled": True,                    # Split large files
     "run_full_mission": True,                   # False = validation-only mode
 }
+
+# [L6 DISCOVERY SSOT] Territories excluded from 50-key architectural discovery
+# Rationale: Prevents ast.parse/import failures on legacy/example code.
+DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({
+    "runtime_shared",   # Contains broken examples (multi_provider_clients, etc.)
+    "legacy_code",      # Archived code
+    "legacy_engines",
+    "archives",
+    "stubs",            # Type stubs
+    "examples",
+    "scripts"           # Operational tools, not architectural components
+})
 
 # --- SYSTEM EXEMPTIONS ---
 # [L6 HARDENING] ROOT_WHITELIST → derived set for immutability and speed
