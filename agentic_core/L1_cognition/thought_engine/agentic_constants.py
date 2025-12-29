@@ -1,8 +1,12 @@
 """
 Constants for the Agentic Core system.
+[SSOT] Structural constants derived from structure_blueprint.py
 
 Contains all shared constants used across the agentic framework.
 """
+
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
 
 
 # Complexity thresholds
@@ -12,15 +16,8 @@ MAX_NESTING_SPACES = 40
 
 
 # File system constants
-ALLOWED_ROOT_FILES = {
-    "README.md",
-    "requirements.txt",
-    "setup.py",
-    "pyproject.toml",
-    ".gitignore",
-    "Dockerfile",
-    "docker-compose.yml",
-}
+# [SSOT] File system constants from structure_blueprint.py
+ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
 
 
 # Few-shot prompts for various agents
