@@ -2280,6 +2280,25 @@ CURRENT CODE:
     # [PHASE 1] PER-FILE VALIDATION
     # ===========================================================================
     print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
+
+    # [GLOBAL HEALING PROGRESS BAR] Overall progress across the sovereign territory
+    total_files = len(ctx.python_files)
+    completed_files = 0
+    # Format: [HEALING PHASE] X/Y files complete (Z%) [BAR]
+    progress_format = "     [HEALING PHASE] {0:3d}/{1} files complete ({2:5.1f}%) [{3}]"
+    bar_length = 20
+
+    def update_global_progress():
+        nonlocal completed_files
+        percent = (completed_files / total_files) * 100 if total_files > 0 else 100
+        filled = int(bar_length * completed_files // total_files) if total_files > 0 else bar_length
+        bar = '█' * filled + '░' * (bar_length - filled)
+        # Flush true ensures the global signal is persistent in high-concurrency environments
+        print(progress_format.format(completed_files, total_files, percent, bar), end='\r', flush=True)
+
+    # Initial progress display
+    update_global_progress()
+    print()  # Move to next line to prevent overlap with the first file validation line
     
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = Path(file_path).name
@@ -2300,7 +2319,8 @@ CURRENT CODE:
             logger.warning(f"Failed to read preview for {file_path}: {read_err}")
         # Justification: Prevents partial UTF-8 reads or large file hangs in agent context building
         
-        print(f"[{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
+        # Print file header; end with newline because healing rounds have their own progress bars
+        print(f"[{idx}/{total_files}] Processing: {file_name} ({loc_count} LOC)")
         ctx.current_file_path = file_path  # Store for report callback
 
         # --- ACTIVE FISSION TRIGGER (Files > 10000 Lines) ---
@@ -2479,9 +2499,36 @@ CURRENT CODE:
             # Update round tracking in reports
             ctx.report._current_round = round_idx
             
-            print(f"     Round {round_idx}/{MAX_HEALING_ROUNDS}...", end=' ')
+            # [PROGRESS BAR HARDENING] Real-time agent progress within healing round
+            total_agents_this_round = len(atomic_validators)
+            # Format: Round X/Y | Agent A/B [BAR] Name %
+            progress_format = "      Round {0}/{1} | Agent {2:2d}/{3} [{4}] {5:<30} {6:5.1f}%"
             
             for agent in atomic_validators:
+                # Calculate progress metrics
+                current_agent_idx = atomic_validators.index(agent) + 1
+                progress_percent = (current_agent_idx / total_agents_this_round) * 100
+                bar_length = 20
+                filled = int(bar_length * current_agent_idx // total_agents_this_round)
+                bar = '█' * filled + '░' * (bar_length - filled)
+                
+                agent_display_name = agent.__class__.__name__
+                truncated_name = (agent_display_name[:27] + '...') if len(agent_display_name) > 30 else agent_display_name.ljust(30)
+                
+                # Overwrite/Update the progress line
+                print(progress_format.format(
+                    round_idx, MAX_HEALING_ROUNDS,
+                    current_agent_idx, total_agents_this_round,
+                    bar, truncated_name, progress_percent
+                ), end='\r', flush=True)
+
+                # [ENHANCED STATUS LOGGING] Agent-specific start for real-time visibility
+                agent_name = agent.__class__.__name__
+                file_name = Path(file_path).name
+                # Add a leading newline if we want to preserve the bar on top, 
+                # or just print to move the bar up the scrollback.
+                print(f"\n      [>] Starting {agent_name} on {file_name}")
+
                 # [L5 RESILIENCE] Execute with retries
                 result = await retry_agent_execution_async(agent, file_path, ctx)
                 
@@ -2617,7 +2664,11 @@ CURRENT CODE:
                     elif result is True:
                         changes_this_round += 1
                         file_healed = True
-                        
+                
+                # [ENHANCED STATUS LOGGING] Agent completion with status capture
+                healed_status = bool(result.get('healed') if isinstance(result, dict) else result)
+                print(f"      [<] Finished {agent_name} on {file_name} (healed: {healed_status})")
+
             # Check for convergence (no new violations in this round)
             # [CONVERGENCE FIX] Count current FAIL entries for this file across ALL rounds
             fail_count = len([
@@ -2626,7 +2677,9 @@ CURRENT CODE:
             ])
             total_violations = fail_count
             
-            print(f"Changes: {changes_this_round} | Violations: {total_violations}")
+            # [FINAL ROUND PROGRESS] Clear the progress line before summary
+            print(" " * 110, end='\r')
+            print(f"   Round {round_idx}: {changes_this_round} changes | {total_violations} violations remaining")
             
             # If no violations and we're past round 1, we've converged
             if total_violations == 0 and round_idx > 1:
@@ -2638,11 +2691,14 @@ CURRENT CODE:
                 consecutive_no_change = 0
             else:
                 consecutive_no_change += 1
-
-            print(f"   Round {round_idx}: {changes_this_round} changes | {total_violations} violations remaining")
         
         if file_healed:
             print(f"   [HEALING] Complete: {file_name}")
+
+        # [GLOBAL PROGRESS UPDATE] Increment and refresh after each file is closed
+        completed_files += 1
+        update_global_progress()
+        print()  # Spacer for the next file entry
         
         # Execute move instructions if any were generated
         if hasattr(ctx, 'move_instructions') and ctx.move_instructions:
@@ -2656,21 +2712,57 @@ CURRENT CODE:
     # ===========================================================================
     # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
     # ===========================================================================
-    print(f"\n\n[L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
-    for agent in batch_validators:
-        print(f"   [>] Running {agent.__class__.__name__}...")
-        try:
-            method = getattr(agent, 'execute', getattr(agent, 'run', None))
-            # Batch agents typically run without args or manage their own scope
-            if method:
-                # [FIX] Ensure the method is actually awaitable
-                res = method()
-                if inspect.iscoroutine(res):
-                    await res
-                print(f"      [✓] {agent.__class__.__name__} finished pass.")
-        except Exception as e:
-             print(f"   [!] Error in {agent.__class__.__name__}: {e}")
-             ctx.report(agent.__class__.__name__, 0, False, f"Batch Error: {str(e)[:50]}")
+    # [GLOBAL PROGRESS CLEANUP] Clear the healing progress bar before entering Batch Sweep
+    print(" " * 110, end='\r')  # Scrub the line
+    print("[PHASE 1] Territory Remediation Complete.")
+
+    # [PHASE 2 PROGRESS BAR] Real-time progress across cross-file batch agents
+    print(f"\n[L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
+    
+    total_batch_agents = len(batch_validators)
+    if total_batch_agents == 0:
+        print("   [INFO] No batch agents configured — skipping phase.")
+    else:
+        # Format: [BATCH PHASE] XX/YY agents complete [BAR] Name %
+        batch_progress_format = "     [BATCH PHASE] {0:2d}/{1} agents complete [{2}] {3:<35} {4:5.1f}%"
+        bar_length = 20
+        
+        for batch_idx, agent in enumerate(batch_validators, 1):
+            agent_name = agent.__class__.__name__
+            # Truncate for terminal stability
+            truncated_name = (agent_name[:32] + '...') if len(agent_name) > 35 else agent_name.ljust(35)
+            
+            percent = (batch_idx / total_batch_agents) * 100
+            filled = int(bar_length * batch_idx // total_batch_agents)
+            bar = '█' * filled + '░' * (bar_length - filled)
+            
+            # Live update progress bar via carriage return
+            print(batch_progress_format.format(
+                batch_idx,
+                total_batch_agents,
+                bar,
+                truncated_name,
+                percent
+            ), end='\r', flush=True)
+            
+            print(f"\n   [>] Starting batch {agent_name} (cross-file sweep)")
+            try:
+                method = getattr(agent, 'execute', getattr(agent, 'run', None))
+                # Batch agents typically run without args or manage their own scope
+                if method:
+                    # [STABILITY FIX] Check if the method returns a coroutine before awaiting
+                    res = method()
+                    if inspect.iscoroutine(res) or asyncio.iscoroutine(res):
+                        await res
+                print(f"   [<] Finished batch {agent_name}")
+            except Exception as e:
+                print(f"   [!] Batch Agent Error ({agent_name}): {str(e)}")
+                ctx.report(agent.__class__.__name__, 0, False, f"Batch Error: {str(e)[:50]}")
+        
+        # [BATCH PHASE COMPLETE] Scrub progress bar and print summary
+        print(" " * 120, end='\r')  # Clear the line
+        print("   [BATCH PHASE] Complete — all cross-file sweeps finished.")
+        print()  # Spacing before monitors
 
     # ===========================================================================
     # PHASE 3: MONITORING (Final Pass)
