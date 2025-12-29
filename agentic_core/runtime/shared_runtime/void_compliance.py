@@ -269,14 +269,14 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
 
         # [SSOT] All apps_* folders — depth from SOVEREIGN_REGISTRY
         if root_folder.startswith("apps_"):
-            apps_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 3)
+            apps_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth", 2)
             if depth != apps_depth:
                 reason = "SHALLOW" if depth < apps_depth else "DEEP"
                 return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != {apps_depth}"
 
         # [SSOT] tests/ folder lockdown — depth from SOVEREIGN_REGISTRY
         if root_folder == "tests":
-            tests_depth = SOVEREIGN_REGISTRY.get("tests", {}).get("depth", 3)
+            tests_depth = SOVEREIGN_REGISTRY.get("tests", {}).get("depth", 2)
             if depth != tests_depth:
                 reason = "SHALLOW" if depth < tests_depth else "DEEP"
                 return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != {tests_depth}"

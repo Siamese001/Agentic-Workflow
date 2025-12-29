@@ -40,7 +40,6 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS_MK2,
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
-    CANON_AGENT_REGISTRY, # [GAP 2]
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
     ROOT_PROTECTED_FILES,
     SOVEREIGN_EXCLUDED_FOLDERS, # [SSOT] The single source of truth for ignored folders
@@ -77,8 +76,8 @@ if project_root_str not in sys.path:
 
 # 2. Re-establish Neural Link to Resurrected Territories
 SOVEREIGN_PATHS = [
-    project_root / "agentic_core" / "runtime" / "shared",
-    project_root / "apps_shared" / "P1_core"
+    project_root / "agentic_core" / "runtime" / "shared_runtime",
+    project_root / "apps_shared" / "utils"
 ]
 
 for p in SOVEREIGN_PATHS:
@@ -233,10 +232,9 @@ def verify_neural_link():
     
     print(f"   [OK] Model Authorization: GEMINI-ONLY policy enforced.")
 
-    # Verify CANON_AGENT_REGISTRY
-    if not CANON_AGENT_REGISTRY:
-        print(f"\n[!] [NEURAL LINK ERROR] Mission halted. Missing CANON_AGENT_REGISTRY.")
-        # sys.exit(1)  # Commented out to allow pytest collection
+    # Verify SOVEREIGN_REGISTRY is loaded
+    if not SOVEREIGN_REGISTRY:
+        print(f"\n[!] [NEURAL LINK ERROR] Mission halted. Missing SOVEREIGN_REGISTRY.")
         return  # Early return instead of exit
 
 if __name__ == "__main__":
@@ -301,7 +299,7 @@ def dynamic_import(module_path, class_name):
 
 # Try loading components dynamically
 try:
-    apply_fission_blueprint = dynamic_import('agentic_core.L3_orchestration.P1_core.fission_executor', 'apply_fission_blueprint')
+    apply_fission_blueprint = dynamic_import('agentic_core.L3_orchestration.fission_logic.fission_executor', 'apply_fission_blueprint')
     if not apply_fission_blueprint:
         apply_fission_blueprint = lambda *args, **kwargs: None  # Fallback no-op
     
@@ -677,7 +675,7 @@ def _get_best_target_l2(l1_name: str, item_name: str) -> str:
     """Heuristically determine the best approved L2 folder within an L1."""
     approved_l2 = CORE_SUBFOLDER_MAP.get(l1_name, [])
     if not approved_l2:
-        return "P1_core"  # Fallback
+        return approved_l2[0] if approved_l2 else "workflow_engines"  # Fallback to first L2 or default
     
     name_lower = item_name.lower()
     
@@ -1136,9 +1134,16 @@ async def run_mission(target_scope: str = "agentic_core"):
         s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
         return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
     
+    # [SSOT] CANON_AGENT_REGISTRY removed - using inline critical agent list
+    _CRITICAL_AGENTS = {
+        12: ["FissionManager", "ArchitectureGovernor"],
+        13: ["MissionHistorian"],
+        19: ["SafetyGuardrail", "SubAtomicEngine"]
+    }
+    
     required_keys = [12, 13, 19]
     for key_num in required_keys:
-        expected_agents = CANON_AGENT_REGISTRY.get(key_num, [])
+        expected_agents = _CRITICAL_AGENTS.get(key_num, [])
         for agent_name in expected_agents:
             # Try to dynamically import the agent
             found = False
@@ -1147,25 +1152,24 @@ async def run_mission(target_scope: str = "agentic_core"):
             
             if key_num == 12:  # L3_orchestration
                 search_paths = [
-                    f'agentic_core.L3_orchestration.P1_core.{module_name}',
-                    f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
+                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}',
                     f'agentic_core.L3_orchestration.fission_logic.{module_name}',
-                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}'
+                    f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
+                    f'agentic_core.L3_orchestration.mcp.{module_name}'
                 ]
             elif key_num == 13:  # L4_state
                 search_paths = [
-                    f'agentic_core.L4_state.P1_core.{module_name}',
-                    f'agentic_core.L4_state.S1_memory.{module_name}',
                     f'agentic_core.L4_state.validation_context.{module_name}',
-                    f'agentic_core.L4_state.audit_trails.{module_name}'
+                    f'agentic_core.L4_state.memory.{module_name}',
+                    f'agentic_core.L4_state.ledger.{module_name}',
+                    f'agentic_core.L4_state.filesystem.{module_name}'
                 ]
             elif key_num == 19:  # L5_safety
                 search_paths = [
-                    f'agentic_core.L5_safety.P1_core.{module_name}',
+                    f'agentic_core.L5_safety.guardrails.{module_name}',
                     f'agentic_core.L5_safety.gravity.{module_name}',
                     f'agentic_core.L5_safety.validators.{module_name}',
-                    f'agentic_core.L5_safety.guardrails.{module_name}',
-                    f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
+                    f'agentic_core.L5_safety.red_teaming.{module_name}',
                     f'agentic_core.L3_orchestration.workflow_engines.{module_name}'
                 ]
             
@@ -1193,8 +1197,8 @@ async def run_mission(target_scope: str = "agentic_core"):
     if SafetyGuardrail is None:
         print("\n[CRITICAL] SafetyGuardrail class not loaded!")
         print("   -> Check import paths in canon_validator_agentic_v2.py")
-        print("      - agentic_core.L5_safety.P1_core.safety_guardrail")
-        print("      - agentic_core.L3_orchestration.S3_vitality.safety_guardrail")
+        print("      - agentic_core.L5_safety.guardrails.safety_guardrail")
+        print("      - agentic_core.L3_orchestration.workflow_engines.safety_guardrail")
         import sys
         sys.exit(1)
     
@@ -1241,6 +1245,8 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("\n[CRITICAL] FissionManager class not loaded!")
         print("   -> Check import paths in canon_validator_agentic_v2.py")
         print("   -> Expected locations:")
+        print("      - agentic_core.L3_orchestration.workflow_engines.fission_manager")
+        print("      - agentic_core.L3_orchestration.fission_logic.fission_manager")
         print("      - agentic_core.L3_orchestration.P1_core.fission_manager")
         print("      - agentic_core.L3_orchestration.S3_vitality.fission_manager")
         sys.exit(1)
@@ -1252,7 +1258,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     # === INITIALIZE CONTEXT (MOVED UP FOR SAFETY) ===
     # Must exist before CallableReport attempts to use it in closure
     try:
-        from agentic_core.L4_state.P1_core.validation_context import ValidationContext as ImportedValidationContext
+        from agentic_core.L4_state.validation_context.validation_context import ValidationContext as ImportedValidationContext
         ctx = ImportedValidationContext()
         print("   [OK] ValidationContext loaded from agentic_core")
     except (ImportError, AttributeError):
