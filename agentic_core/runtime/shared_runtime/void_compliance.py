@@ -25,6 +25,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
     GRAVITY_SURGERY_ENABLED,
+    PYTHON_STDLIB_MODULES,  # [SSOT] Standard library modules for import validation
 )
 
 logger = logging.getLogger(__name__)
@@ -165,12 +166,8 @@ KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 # IMPORT CONVENTIONS ENFORCEMENT (Key 40/42 Hardening – Full Version)
 # ==============================================================================
 
-STDLIB_MODULES = {
-    "os", "sys", "pathlib", "logging", "asyncio", "typing", "dataclasses",
-    "collections", "json", "re", "datetime", "functools", "itertools",
-    "abc", "enum", "contextlib", "threading", "time", "random", "math",
-    "urllib", "http", "socket", "subprocess", "shutil"
-}
+# [SSOT] Standard library modules — derived from structure_blueprint.py
+STDLIB_MODULES = PYTHON_STDLIB_MODULES
 
 def validate_import_conventions(file_path: Path, project_root: Path) -> List[str]:
     """

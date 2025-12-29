@@ -48,6 +48,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     DISCOVERY_EXCLUDED_TERRITORIES, # [SSOT] Discovery scan exclusions
     MISSION_CONFIG, # [SSOT] Global mission toggles
     GRAVITY_SURGERY_ENABLED, # [SSOT] Master toggle
+    HEALING_CONFIG, # [SSOT] Healing budget parameters
+    AGENT_RESILIENCE_CONFIG, # [SSOT] Retry and backoff config
+    SCOPE_SUMMARY_EXCLUSIONS, # [SSOT] Folders hidden from scope summary
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
@@ -359,10 +362,10 @@ except Exception as e:
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
-# [L6 HARDENING] Healing Configuration
-MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '10'))
-MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
-GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
+# [L6 HARDENING] Healing Configuration — derived from SSOT
+MAX_HEALING_ROUNDS = HEALING_CONFIG["max_rounds"]
+MAX_HEALING_PER_FILE = HEALING_CONFIG["max_per_file"]
+GLOBAL_HEALING_BUDGET = HEALING_CONFIG["global_budget"]
 
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
 # [SSOT] Explicit exclusion list to prevent WinError 1450 (Deep LFS/Git recursion)
@@ -376,21 +379,11 @@ PROTECTED_FOLDERS = SOVEREIGN_EXCLUDED_FOLDERS
 # infinite validation loops and memory exhaustion during daily runs.
 # Engage ONLY during scheduled structural cleanup missions.
 
-# [RISK: HIGH] Physical file relocation and directory pruning.
-# Triggers 'shutil.move' based on SSOT subfolder maps in structure_blueprint.py.
-RUN_HIERARCHY_HEALING = False  
-
-# [RISK: CRITICAL] Automated LLM-based import refactoring.
-# Invokes SubAtomicEngine to rewrite files to eliminate upward gravity leaks.
-RUN_GRAVITY_REFACTOR = False
-
-# [RISK: MEDIUM] Merges redundant nested folders (e.g., observability/observability).
-RUN_SPRAWL_SURGERY = False    
-
-# [RISK: LOW] Rule-based deterministic healing only (future use).
-# When True, suppresses LLM calls and uses only structural/heuristic agents.
-# Currently unused — reserved for phased convergence strategy.
-STRUCTURAL_ONLY_MODE = False
+# [SSOT] Surgery flags derived from MISSION_CONFIG
+RUN_HIERARCHY_HEALING = MISSION_CONFIG["run_hierarchy_healing"]  # [RISK: HIGH]
+RUN_GRAVITY_REFACTOR = MISSION_CONFIG["run_gravity_refactor"]    # [RISK: CRITICAL]
+RUN_SPRAWL_SURGERY = MISSION_CONFIG["run_sprawl_surgery"]        # [RISK: MEDIUM]
+STRUCTURAL_ONLY_MODE = MISSION_CONFIG["structural_only_mode"]    # [RISK: LOW]
 
 # [FORCE PROGRESS] Confirm safe operational mode based on actual flag state
 if not (RUN_HIERARCHY_HEALING or RUN_GRAVITY_REFACTOR or RUN_SPRAWL_SURGERY):
@@ -398,9 +391,9 @@ if not (RUN_HIERARCHY_HEALING or RUN_GRAVITY_REFACTOR or RUN_SPRAWL_SURGERY):
 else:
     print("\n[!] [L6 SURGERY] HIGH-RISK MUTATION ENABLED — Physical/LLM surgery active. Proceed with extreme caution.\n")
 
-# [L5 RESILIENCE] Configurable agent-level retries with exponential backoff
-AGENT_RETRY_COUNT = int(os.getenv("AGENT_RETRY_COUNT", "3"))
-AGENT_RETRY_BACKOFF_BASE = float(os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5"))
+# [L5 RESILIENCE] Agent retry config — derived from SSOT
+AGENT_RETRY_COUNT = AGENT_RESILIENCE_CONFIG["retry_count"]
+AGENT_RETRY_BACKOFF_BASE = AGENT_RESILIENCE_CONFIG["backoff_base"]
 
 async def retry_agent_execution_async(agent, file_path, ctx):
     """
@@ -1448,10 +1441,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"\n   [SCOPE] Verifying Map vs. Territory...")
     folder_summary = get_folder_scope_summary(project_root_path)
     
-    # [SIGNAL] Filter transient/healing artifacts from summary
-    TRANSIENT_TERRITORIES = {"stubs", ".sovereign_healing_backup", "__pycache__"}
+    # [SIGNAL] Filter transient/healing artifacts from summary — using SSOT
     for folder, count in sorted(folder_summary.items()):
-        if count > 0 and folder not in TRANSIENT_TERRITORIES:
+        if count > 0 and folder not in SCOPE_SUMMARY_EXCLUSIONS:
             print(f"      • {folder:<20} : {count} files")
 
     # [L6 HARDENING] Physical structure visualization

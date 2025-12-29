@@ -390,6 +390,33 @@ AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset({
     "neural_auto_immune_agent.py"
 })
 
+# [L6 HEALING CONFIGURATION SSOT] Centralized healing budget parameters
+HEALING_CONFIG = {
+    "max_rounds": int(os.getenv('MAX_HEALING_ROUNDS', '10')),
+    "max_per_file": int(os.getenv('MAX_HEALING_PER_FILE', '8')),
+    "global_budget": int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
+}
+
+# [L6 AGENT RESILIENCE SSOT] Retry and backoff configuration
+AGENT_RESILIENCE_CONFIG = {
+    "retry_count": int(os.getenv("AGENT_RETRY_COUNT", "3")),
+    "backoff_base": float(os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5"))
+}
+
+# [L6 SCOPE DISPLAY EXCLUSIONS] Folders hidden from scope summary output
+SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset({
+    "stubs", ".sovereign_healing_backup", "__pycache__"
+})
+
+# [L6 PYTHON STDLIB REFERENCE] Standard library modules for import validation
+PYTHON_STDLIB_MODULES: frozenset[str] = frozenset({
+    "os", "sys", "pathlib", "logging", "asyncio", "typing", "dataclasses",
+    "collections", "json", "re", "datetime", "functools", "itertools",
+    "abc", "enum", "contextlib", "threading", "time", "random", "math",
+    "urllib", "http", "socket", "subprocess", "shutil", "hashlib", "uuid",
+    "copy", "io", "traceback", "inspect", "importlib", "warnings", "pickle"
+})
+
 # [L6 MISSION CONTROLS SSOT] Global behavioral toggles
 MISSION_CONFIG = {
     "gravity_surgery_enabled": True,            # Upstream → downstream import ban
@@ -397,6 +424,13 @@ MISSION_CONFIG = {
     "span_surgery_enabled": True,               # Flatten redundant tunnels
     "fission_enabled": True,                    # Split large files
     "run_full_mission": True,                   # False = validation-only mode
+    # [SURGERY FLAGS] High-risk mutation controls (disabled by default)
+    "run_hierarchy_healing": False,             # [RISK: HIGH] Physical file relocation
+    "run_gravity_refactor": False,              # [RISK: CRITICAL] LLM-based import refactoring
+    "run_sprawl_surgery": False,                # [RISK: MEDIUM] Merge redundant folders
+    "structural_only_mode": False,              # [RISK: LOW] Rule-based healing only
+    # [TIMEOUT] Mission execution limit
+    "timeout_seconds": int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
 }
 
 # [L6 DISCOVERY SSOT] Territories excluded from 50-key architectural discovery
