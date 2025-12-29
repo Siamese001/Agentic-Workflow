@@ -62,7 +62,7 @@ class RescueReviewer:
             return
 
         print(f"\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---")
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS_MK2, CANON_KEY_TO_FOLDER_MAP
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
         
         for arch_file in self.archive_path.rglob("*.py"):
             rel = arch_file.relative_to(self.archive_path)
@@ -106,8 +106,8 @@ class RescueReviewer:
                         key = k
                         break
                 
-                pos_sigs = CANON_SIGNALS_MK2.get(key, []) if key else []
-                sig_count = sum(1 for s in pos_sigs if s in content.lower())
+                # CANON_SIGNALS is now a flat set, check if any signal matches
+                sig_count = sum(1 for s in CANON_SIGNALS if s in content.lower())
                 
                 print(f"         SUGGESTION: {territory} (Conf: {conf:.2f})")
                 

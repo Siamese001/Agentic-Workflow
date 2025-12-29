@@ -35,9 +35,6 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
     TESTS_SUBFOLDER_MAP,
-    CORE_L3_SUBFOLDER_MAP,
-    CORE_L4_SUBFOLDER_MAP,
-    CANON_SIGNALS_MK2,
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
@@ -90,19 +87,7 @@ _INIT_COMPLETE = getattr(sys.modules.get(__name__), '_INIT_COMPLETE', False)
 if not _INIT_COMPLETE and __name__ == "__main__":
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
 
-    # [ETERNAL INDEX] Ensure territory embeddings bootstrapped
-    # WRAPPED TO PREVENT HANGS
-    try:
-        print("   [INFO] Attempting territory index bootstrap (non-critical, will continue on failure)...")
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import bootstrap_territory_index
-        bootstrap_territory_index()
-        print("   [OK] Semantic territory index ready")
-    except KeyboardInterrupt:
-        print("   [INFO] Territory bootstrap skipped by user (safe to continue)")
-    except ImportError as ie:
-        print(f"   [!] Territory bootstrap failed: {ie}")
-    except Exception as e:
-        print(f"   [INFO] Territory bootstrap failed gracefully (non-fatal): {e}")
+    # [ETERNAL INDEX] Territory bootstrap removed - handled by PineconeSovereignAgent on demand
     
     _INIT_COMPLETE = True
 

@@ -228,13 +228,23 @@ class PineconeSovereignAgent:
 
     async def bootstrap_territory_vectors(self):
         """
-        Syncs the index with the structure_blueprint.py constants.
+        Syncs the index with territory examples.
         Safe to run multiple times (uses upsert).
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
+        # Territory examples defined locally (removed from SSOT)
+        territory_examples = {
+            "agentic_core/L1_cognition": "strategy planning reasoning mission decomposition",
+            "agentic_core/L3_orchestration": "fission orchestration routing workflow manager",
+            "agentic_core/L4_state": "memory cache pinecone redis historian audit",
+            "agentic_core/L5_safety": "guardrail safety policy enforcer filter",
+            "apps_rg/agents": "resume ranking narrative scoring jd match",
+            "apps_lic/agents": "license compliance workflow validation",
+            "apps_shared/utils": "shared helper validation adapter",
+            "scripts": "operational tool cli integrity backup deploy",
+        }
         
         vectors = []
-        for territory, example in TERRITORY_EXAMPLES.items():
+        for territory, example in territory_examples.items():
             emb = await self.get_embedding(example)
             vec_id = f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}"
             vectors.append({
