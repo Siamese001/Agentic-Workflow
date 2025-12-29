@@ -9,7 +9,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
     CORE_SUBFOLDER_MAP,
-    TESTS_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
 )
 
 def finalize_structure(root_path):
@@ -40,7 +40,7 @@ def finalize_structure(root_path):
             ensure_dir(path)
 
     # 5. Force Test Depth (tests L1 > L2)
-    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+    for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             path = os.path.join(root_path, "tests", l1, l2)
             ensure_dir(path)

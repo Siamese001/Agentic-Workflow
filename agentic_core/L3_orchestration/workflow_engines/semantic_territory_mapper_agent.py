@@ -129,20 +129,10 @@ class SemanticTerritoryMapperAgent:
                     territory = best_match['metadata'].get('path', 'unknown')
                     confidence = best_match['score']
                     
-                    # [L4 REFINEMENT] Can we go deeper?
-                    deepest = territory
-                    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-                        CORE_L4_SUBFOLDER_MAP,
-                    )
-                    
-                    for l3, l4_list in CORE_L4_SUBFOLDER_MAP.items():
-                        if l3 in deepest:
-                            for l4 in l4_list:
-                                if l4.lower() in content.lower() or l4.lower() in file_path.name.lower():
-                                    deepest = f"{deepest}/{l4}"
-                                    break
-                    
-                    return deepest, confidence
+                    # [L3 REFINEMENT] Depth 3 structure - no L4 needed
+                    # CORE_L4_SUBFOLDER_MAP is obsolete with Depth 3 structure
+                    # Territory mapping now stops at L2 (agentic_core/L1/L2)
+                    return territory, confidence
         except Exception as e:
             print(f"   [!] Territory mapping failed: {e}")
             

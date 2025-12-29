@@ -11,11 +11,10 @@ CORE = ROOT / "agentic_core"
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 # [SSOT] Import structure from master blueprint
-sys.path.insert(0, str(CORE / "config" / "P1_core"))
-from structure_blueprint import AGENTIC_CORE_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 # Use the master blueprint as CORE_MAP
-CORE_MAP = AGENTIC_CORE_REGISTRY
+CORE_MAP = CORE_SUBFOLDER_MAP
 
 # 2. EXTERNAL TERRITORIES (Depth 3: Root/Folder/Stage)
 EXTERNAL_MAP = {

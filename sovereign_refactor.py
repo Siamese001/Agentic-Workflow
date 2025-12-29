@@ -8,11 +8,10 @@ DRY_RUN = False  # FLIP TO FALSE TO EXECUTE
 PROJECT_ROOT = "C:/Git/Agentic-Workflow"
 
 # [SSOT] Import structure from master blueprint
-sys.path.insert(0, str(Path(PROJECT_ROOT) / "agentic_core" / "config" / "P1_core"))
-from structure_blueprint import AGENTIC_CORE_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 # Use the master blueprint as FULL_CORE_SCHEMA
-FULL_CORE_SCHEMA = AGENTIC_CORE_REGISTRY
+FULL_CORE_SCHEMA = CORE_SUBFOLDER_MAP
 
 # APP TERRITORIES
 APP_SCHEMAS = {

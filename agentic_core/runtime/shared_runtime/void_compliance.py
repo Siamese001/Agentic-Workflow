@@ -293,15 +293,19 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if root_folder in ALLOWED_ROOT_FOLDERS:
             return True, f"File in allowed root folder: {root_folder}"
         
-        # Check if in forbidden folder
+        # Check if in forbidden folder (static legacy list)
         if root_folder in FORBIDDEN_ROOT_FOLDERS:
-            return False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy numbered)"
+            return False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy)"
 
-        # [GAP FIX] Recursive Numbered Folder Check
+        # [GAP FIX] Check for numbered folder pattern at any depth
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_FOLDER_PATTERN
         for part in parts:
-            # Check if part is in FORBIDDEN_ROOT_FOLDERS
+            # Check static forbidden list
             if part in FORBIDDEN_ROOT_FOLDERS:
                 return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth."
+            # Check numbered pattern (e.g., "08_*")
+            if FORBIDDEN_FOLDER_PATTERN.match(part):
+                return False, f"VOID VIOLATION: Numbered folder pattern '{part}' forbidden at any depth."
         
         # Check for numbered prefix pattern (NOT APPROVED)
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
