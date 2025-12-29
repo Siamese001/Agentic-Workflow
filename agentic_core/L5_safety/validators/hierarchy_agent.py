@@ -1,0 +1,192 @@
+"""
+HierarchyAgent: Canon Structural Hierarchy Enforcer (Key 3/12/41 territory)
+
+Enforces:
+- Exact canonical L1/L2 folder structure (no drift)
+- Span-of-Two rule: no redundant tunnel directories (single meaningful child folder)
+- Exact file depth 4 in agentic_core (root/L1/L2/file.py)
+- No Python files directly under sovereign roots or L1 layers (Key 41)
+
+Replaces logic from void_compliance.py:
+  - check_span_of_two_violation()
+  - check_span_of_two_violations()
+  - validate_canonical_hierarchy()
+
+Placed in L5_safety/validators per semantic_l2_registry:
+  "Canon constitution validators, structural policy enforcement..."
+"""
+from pathlib import Path
+from typing import List, Tuple
+import os
+
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+    AUTONOMOUS_AGENT_WHITELIST,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    ROOT_WHITELIST,
+)
+
+
+class hierarchy_agent:
+    """
+    Autonomous agent for hierarchical structure compliance.
+    Scans folders only (no file content parsing).
+    Run after LocationAgent.
+    """
+
+    def __init__(self, project_root: Path):
+        self.project_root = project_root.resolve()
+        self.excluded_folders = SOVEREIGN_EXCLUDED_FOLDERS
+
+    def check_span_of_two_violation(self, folder_path: Path) -> Tuple[bool, str]:
+        """
+        Enforce Span-of-Two rule.
+        Violation only if exactly one meaningful child AND it is a directory (redundant tunnel).
+        Single-file leaves are explicitly allowed.
+        """
+        if not folder_path.is_dir():
+            return True, ""
+
+        meaningful_children = [
+            child for child in folder_path.iterdir()
+            if child.name not in self.excluded_folders
+            and not child.name.startswith('.')
+        ]
+
+        if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
+            return False, f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' → flatten into parent"
+
+        return True, ""
+
+    def check_span_of_two_violations(self) -> List[Tuple[Path, str]]:
+        """Project-wide scan for Span-of-Two violations in sovereign territories."""
+        violations: List[Tuple[Path, str]] = []
+
+        for root_name in ROOT_WHITELIST:
+            root_path = self.project_root / root_name
+            if not root_path.exists():
+                continue
+
+            for dirpath, dirs, _ in os.walk(root_path):
+                # Filter out excluded dirs in-place for walk efficiency
+                dirs[:] = [d for d in dirs if d not in self.excluded_folders and not d.startswith('.')]
+
+                current_dir = Path(dirpath)
+                if current_dir.name in self.excluded_folders or current_dir.name.startswith('.'):
+                    continue
+
+                is_valid, msg = self.check_span_of_two_violation(current_dir)
+                if not is_valid:
+                    violations.append((current_dir, msg))
+
+        return violations
+
+    def validate_canonical_hierarchy(self) -> List[Tuple[Path, str]]:
+        """
+        Enforce canonical hierarchy from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP.
+        Flags:
+        - Unapproved L1 or L2 folders
+        - Files at invalid depths (especially agentic_core strict depth 4)
+        - Files directly under root (Key 41)
+        """
+        violations: List[Tuple[Path, str]] = []
+        MAX_FILE_DEPTH_AGENTIC_CORE = 4  # root/L1/L2/file.py → len(parts) == 4
+
+        # === AGENTIC_CORE: Strict depth 4 enforcement for all .py files ===
+        if (self.project_root / "agentic_core").exists():
+            py_files = list((self.project_root / "agentic_core").rglob("*.py"))
+            for file_path in py_files:
+                try:
+                    rel_parts = file_path.relative_to(self.project_root).parts
+                except ValueError:
+                    continue
+
+                # Skip excluded/hidden
+                if any(p.startswith('.') or p in {"venv", "__pycache__"} for p in rel_parts):
+                    continue
+
+                if rel_parts[0] != "agentic_core":
+                    continue
+
+                depth = len(rel_parts)
+                if depth > MAX_FILE_DEPTH_AGENTIC_CORE:
+                    violations.append((
+                        file_path,
+                        f"DEEP VIOLATION (Key 12): {file_path.name} at depth {depth} (> {MAX_FILE_DEPTH_AGENTIC_CORE})"
+                    ))
+                elif depth < MAX_FILE_DEPTH_AGENTIC_CORE:
+                    violations.append((
+                        file_path,
+                        f"SHALLOW VIOLATION (Key 41): {file_path.name} at depth {depth} (< {MAX_FILE_DEPTH_AGENTIC_CORE})"
+                    ))
+
+        # === CANONICAL L1/L2 DRIFT DETECTION ===
+        for root_key, config in SOVEREIGN_REGISTRY.items():
+            root_path = self.project_root / root_key
+            if not root_path.exists():
+                continue
+
+            subfolders_config = config.get("subfolders", [])
+            is_dict_config = isinstance(subfolders_config, dict)
+
+            # No files directly under root (Key 41)
+            root_py_files = [
+                p.name for p in root_path.iterdir()
+                if p.is_file() and p.suffix == ".py" and p.name != "__init__.py"
+            ]
+            if root_py_files:
+                violations.append((
+                    root_path,
+                    f"DEPTH VIOLATION (Key 41): Files directly under root '{root_key}': {root_py_files}"
+                ))
+
+            # L1 drift
+            expected_l1 = set(subfolders_config.keys() if is_dict_config else subfolders_config)
+            actual_l1 = {
+                p.name for p in root_path.iterdir()
+                if p.is_dir() and not p.name.startswith('.') and p.name not in self.excluded_folders
+            }
+            unexpected_l1 = actual_l1 - expected_l1
+            for bad in unexpected_l1:
+                violations.append((
+                    root_path / bad,
+                    f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {sorted(expected_l1)}"
+                ))
+
+            # L2 drift (only for agentic_core and structured apps)
+            if root_key == "agentic_core":
+                for l1_name in (subfolders_config if isinstance(subfolders_config, list) else subfolders_config.keys()):
+                    l1_path = root_path / l1_name
+                    if not l1_path.exists():
+                        continue
+
+                    expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
+                    actual_l2_dirs = {
+                        p.name for p in l1_path.iterdir()
+                        if p.is_dir() and not p.name.startswith('.') and p.name not in self.excluded_folders
+                    }
+                    unexpected_l2 = actual_l2_dirs - expected_l2
+                    for bad in unexpected_l2:
+                        violations.append((
+                            l1_path / bad,
+                            f"HIERARCHY DRIFT: Unapproved L2 folder '{bad}' under '{l1_name}'. Allowed: {sorted(expected_l2)}"
+                        ))
+
+        return violations
+
+    def run(self) -> List[Tuple[Path, str]]:
+        """
+        Full hierarchy compliance scan.
+        Returns combined list of all violations.
+        """
+        all_violations: List[Tuple[Path, str]] = []
+
+        all_violations.extend(self.check_span_of_two_violations())
+        all_violations.extend(self.validate_canonical_hierarchy())
+
+        return all_violations
+
+
+# Uppercase alias for backward compatibility
+HierarchyAgent = hierarchy_agent
