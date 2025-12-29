@@ -485,9 +485,8 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
 
         # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
-        SYSTEM_FOLDERS = {"__pycache__", ".pytest_cache", ".ruff_cache", ".git", ".venv", "venv"}
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
-        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS}
+        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
 
         unexpected_l1 = actual_l1 - expected_l1
         for bad in unexpected_l1:
@@ -503,7 +502,7 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                 
                 # Get expected L2 folders from CORE_SUBFOLDER_MAP
                 expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS and p.name != "__pycache__"}
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
                 
                 # Whitelist autonomous agents to prevent drift violations
@@ -527,7 +526,7 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
                     continue
                 
                 expected_l2 = set(l2_list)
-                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SOVEREIGN_IGNORED_FOLDERS}
                 actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
                 
                 # Whitelist autonomous agents to prevent drift violations
@@ -552,11 +551,11 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     Unified Integrity Pass: Enforces Gravity (Waterfall) + Style (Conventions).
     """
     violations = []
-    SYSTEM_FOLDERS = {".venv", "venv", ".git", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache"}
+    # [SSOT] Use SOVEREIGN_IGNORED_FOLDERS instead of hardcoding
 
     try:
         rel_path = file_path.relative_to(project_root)
-        if not rel_path.parts or rel_path.parts[0] in SYSTEM_FOLDERS:
+        if not rel_path.parts or rel_path.parts[0] in SOVEREIGN_IGNORED_FOLDERS:
             return []
     except ValueError:
         return []

@@ -22,23 +22,11 @@ MIN_LINES = 10                     # Minimum file size (anti-noise limit)
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
 
+# [SSOT] Import from structure_blueprint instead of hardcoding
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+
 # CONFIGURATION: EXCLUSION ZONES (Strict Subatomic)
-EXCLUDED_DIRS = {
-    # System & Environment
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    # Build & Dependencies
-    'node_modules', '.tox', 'dist', 'build', '.mypy_cache', '.coverage',
-    # IDE & Editor
-    '.vscode', '.idea', '*.swp', '*.swo', '.DS_Store',
-    # Logs & Temp
-    'logs', 'tmp', 'temp', '.tmp',
-    # Data & Cache
-    '.cache', 'cache', 'data', 'archives',
-    # Test Artifacts
-    '.pytest_cache', 'htmlcov', '.coverage', 'coverage.xml',
-    # Documentation Build
-    '_build', 'site', '.doctrees',
-}
+EXCLUDED_DIRS = SOVEREIGN_IGNORED_FOLDERS
 
 EXCLUDED_FILES = {
     # Only the active validator and runner

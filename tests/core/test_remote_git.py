@@ -17,11 +17,10 @@ import pytest
 # (Mirrors canon_validator_agentic.py without heavy dependencies)
 # ==============================================================================
 
-EXCLUDED_DIRS = {
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
-    'site-packages', 'archives', 'data', 'cache', 'logs', 'tmp', 'temp'
-}
+# [SSOT] Import from structure_blueprint instead of hardcoding
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+
+EXCLUDED_DIRS = SOVEREIGN_IGNORED_FOLDERS
 
 
 class MockValidationContext:

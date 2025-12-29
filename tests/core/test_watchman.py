@@ -17,12 +17,11 @@ from pathlib import Path
 
 import pytest
 
+# [SSOT] Import from structure_blueprint instead of hardcoding
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+
 # Constants matching canon_validator_agentic.py
-EXCLUDED_DIRS = {
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
-    'site-packages', 'archives', 'data', 'cache', 'logs', 'tmp', 'temp'
-}
+EXCLUDED_DIRS = SOVEREIGN_IGNORED_FOLDERS
 
 
 # Standalone implementations for testing (mirrors canon_validator_agentic.py)

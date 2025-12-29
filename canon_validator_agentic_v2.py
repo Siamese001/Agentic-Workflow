@@ -539,8 +539,8 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
         return results
     
     # Phase 1: Find all non-approved L1 folders (exclude __pycache__ and hidden folders)
-    SYSTEM_FOLDERS = {"__pycache__", ".pytest_cache", ".ruff_cache", ".git", ".venv", "venv"}
-    actual_l1 = {p.name for p in agentic_core_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS}
+    # [SSOT] Use SOVEREIGN_IGNORED_FOLDERS instead of hardcoding
+    actual_l1 = {p.name for p in agentic_core_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in PROTECTED_FOLDERS}
     non_approved_l1 = actual_l1 - approved_l1
     
     for bad_l1 in non_approved_l1:
@@ -590,7 +590,7 @@ def heal_hierarchy_violations(project_root: Path) -> Dict[str, Any]:
         if not approved_l2:
             continue  # No L2 enforcement for this L1
         
-        actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in SYSTEM_FOLDERS}
+        actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in PROTECTED_FOLDERS}
         non_approved_l2 = actual_l2 - approved_l2
         
         for bad_l2 in non_approved_l2:

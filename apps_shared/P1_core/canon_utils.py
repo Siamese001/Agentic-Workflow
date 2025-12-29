@@ -10,12 +10,11 @@ import os
 from functools import wraps
 from typing import List
 
+# [SSOT] Import from structure_blueprint instead of hardcoding
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_IGNORED_FOLDERS
+
 # Exclusion zones (inlined from config)
-EXCLUDED_DIRS = {
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
-    'archives', 'data',
-}
+EXCLUDED_DIRS = SOVEREIGN_IGNORED_FOLDERS
 
 EXCLUDED_FILES = {
     'auto_canon.py',
