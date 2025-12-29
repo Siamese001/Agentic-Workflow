@@ -61,6 +61,11 @@ CORE_SUBFOLDER_MAP = {
     "L5_safety": ["P1_core", "guardrails", "red_teaming"],
     "schemas": ["P1_core", "models", "requests", "responses", "types", "validators"],
     "config": ["P1_core", "blueprint_sovereign", "environments", "feature_flags", "secrets_manager"],
+    # [DEPTH 4 FIX] Authorized config territories:
+    # - blueprint_sovereign: Sovereign constitution
+    # - environments: Env-specific overrides
+    # - feature_flags: Feature toggles
+    # - secrets_manager: Credential handling
     "prompt_governance": ["P1_core", "meta_prompts", "version_registry", "rendering", "templates", "versioning"],
     "runtime": ["P1_core", "shared_runtime", "environment_setup", "shared", "resource_management"],
     "observability": ["P1_core", "metrics", "telemetry", "schemas", "tracing"],
