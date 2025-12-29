@@ -1,6 +1,7 @@
 """L4 State: Sovereign Filesystem MCP Client — Atomic Eternal Operations
 Ultra-hardened integration of Filesystem MCP with Roots, L5 shielding, and Redis cache.
 Zero tolerance for path escape or unrecorded writes.
+[SSOT] Root prefixes derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 import json
 import logging
@@ -13,12 +14,13 @@ from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
 )
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 logger = logging.getLogger(__name__)
 
-# Sovereign territory boundaries
-ALLOWED_ROOT_PREFIXES = {"agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests", "config"}
-FORBIDDEN_PATTERNS = {"..", "/etc", "/root", "~", ".ssh", ".env"}
+# [SSOT] Sovereign territory boundaries derived from SOVEREIGN_REGISTRY
+ALLOWED_ROOT_PREFIXES = set(SOVEREIGN_REGISTRY.keys()) | {"config"}  # config is a subfolder, add explicitly
+FORBIDDEN_PATH_PATTERNS = {"..", "/etc", "/root", "~", ".ssh", ".env"}  # Renamed to avoid SSOT conflict
 
 class SovereignFilesystemMCP:
     """Ultra-hardened filesystem client — enforcing atomic sovereignty."""
@@ -32,7 +34,7 @@ class SovereignFilesystemMCP:
         """L5 path sovereignty check. Blocks traversals and absolute escapes."""
         # Convert to a clean, relative-style string for validation
         path_str = str(path).replace('\\', '/')
-        if any(p in path_str for p in FORBIDDEN_PATTERNS):
+        if any(p in path_str for p in FORBIDDEN_PATH_PATTERNS):
             raise PermissionError(f"Sovereignty Breach: Forbidden path pattern in '{path}'")
             
         # Ensure we are operating within our declared territory
