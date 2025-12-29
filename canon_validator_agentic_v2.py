@@ -40,6 +40,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_AGENT_REGISTRY, # [GAP 2]
     CANON_KEY_TO_FOLDER_MAP,  # [CRITICAL FIX] Required for final key coverage report
     ROOT_PROTECTED_FILES,
+    SOVEREIGN_IGNORED_FOLDERS, # [SSOT] The single source of truth for ignored folders
 )
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
@@ -357,15 +358,9 @@ MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
 GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
-# [RESOURCE SAFETY] Explicit exclusion list to prevent WinError 1450 (Deep LFS/Git recursion)
-# NOTE: Previously ROOT_WHITELIST was used, which caused logic inversion (skipping code, scanning .git)
-PROTECTED_FOLDERS = {
-    'archives', 'data', '.venv', 'venv', 'env', 'tests', 
-    'legacy_code', 'legacy_engines', 'legacy_resume_gen',
-    '.git', '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules',
-    'golden_state', 'logs', 'processed', 'shared', 'Lib', 'site-packages',
-    'google', 'gapic', 'logging', 'refs', 'remotes', 'dist-info'
-}
+# [SSOT] Explicit exclusion list to prevent WinError 1450 (Deep LFS/Git recursion)
+# Derived strictly from structure_blueprint.py
+PROTECTED_FOLDERS = SOVEREIGN_IGNORED_FOLDERS
 
 # ==============================================================================
 # [L6 SURGERY] MISSION CONTROL FLAGS — OPERATIONAL RISK GATES

@@ -17,6 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,
     ROOT_PROTECTED_FILES,
+    SOVEREIGN_IGNORED_FOLDERS,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
 )
@@ -390,18 +391,15 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
 
     summary = {}
 
-    # Define protected folders locally to avoid NameError (derived from validator context)
-    PROTECTED_FOLDERS = {
-        'archives', 'data', '.venv', 'venv', 'env', 'tests', 
-        'legacy_code', 'legacy_engines', 'legacy_resume_gen',
-        '.pytest_cache', '.ruff_cache', '__pycache__', 'node_modules'
-    }
+    # [SSOT REFACTOR] Use global exclusion set
+    # 'tests' is intentionally NOT in global ignore (it's a root), but we skip it for summary counts
+    SCOPE_SKIP_FOLDERS = SOVEREIGN_IGNORED_FOLDERS | {'tests'}
     
     for folder_path in project_root.iterdir():
         if not folder_path.is_dir():
             continue
         
-        if folder_path.name in PROTECTED_FOLDERS:
+        if folder_path.name in SCOPE_SKIP_FOLDERS:
             # [PROTECTED] Skipping folder logic handled by caller or implicit here
             continue
             
@@ -438,14 +436,6 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
     Replaces the buggy total_children == 1 check to allow single-file leaves.
     """
     violations = []
-    IGNORE_DIRS = {
-        ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache",
-        # [SPAN NOISE SUPPRESSION] Ignore non-code/data territories to fix 16 false positives
-        "golden_state", "logs", "processed", "shared", "Lib", "site-packages", 
-        "google", "gapic", "logging", "refs", "remotes", "v",
-        # [VENV + DATA NOISE SUPPRESSION] pip package and data subdirectories
-        "licenses", "src", "pip", "raw", "dist-info"
-    }
 
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = project_root / root_folder
@@ -454,10 +444,10 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
 
         for dirpath, dirs, _ in os.walk(root_path):
             # [PERFORMANCE FIX] Prune ignored directories in-place to prevent os.walk from entering them
-            dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith(".")]
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_IGNORED_FOLDERS and not d.startswith(".")]
             
             current_dir = Path(dirpath)
-            if current_dir.name in IGNORE_DIRS or current_dir.name.startswith(".") or ".git" in current_dir.parts:
+            if current_dir.name in SOVEREIGN_IGNORED_FOLDERS or current_dir.name.startswith(".") or ".git" in current_dir.parts:
                 continue
 
             valid, msg = check_span_of_two_violation(current_dir)

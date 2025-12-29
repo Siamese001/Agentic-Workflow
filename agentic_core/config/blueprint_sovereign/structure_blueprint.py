@@ -314,6 +314,29 @@ FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({
     "legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"
 })
 
+# [SOVEREIGNTY HARDENING] SOVEREIGN_IGNORED_FOLDERS (SSOT)
+# The immutable blacklist of folders that must NEVER be entered, scanned, or validated.
+# Prevents resource exhaustion (WinError 1450), recursion loops, and noise.
+SOVEREIGN_IGNORED_FOLDERS: frozenset[str] = frozenset({
+    # Version Control & Metadata
+    ".git", ".svn", ".hg", "refs", "remotes",
+    # Python Environments & Caches
+    ".venv", "venv", "venv_stable", "env", "__pycache__",
+    ".pytest_cache", ".ruff_cache", ".mypy_cache", ".tox",
+    # Dependencies (Noise)
+    "node_modules", "site-packages", "Lib", "dist-info",
+    "google", "gapic", "logging", # Common large/deep dependency folders
+    # Data & Artifacts
+    "archives", "data", "logs", "processed", "golden_state", "shared",
+    "build", "dist",
+    # Legacy & Dead Code
+    "legacy_code", "legacy_engines", "legacy_resume_gen",
+    # Documentation (if not part of knowledge base)
+    "docs", "_build",
+    # System
+    ".DS_Store", "Thumbs.db"
+})
+
 # --- SYSTEM EXEMPTIONS ---
 # [L6 HARDENING] ROOT_WHITELIST → derived set for immutability and speed
 # Rationale: List → set conversion on import is wasteful; define as set directly.
@@ -322,14 +345,9 @@ ROOT_WHITELIST: set[str] = {
     # Sovereign active roots
     "agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests",
     # System & environment
-    "data", "archives", ".git", "venv", "venv_stable", "__pycache__",
-    "env", ".venv", "legacy_code", "legacy_engines", "legacy_resume_gen",
-    ".pytest_cache", ".ruff_cache", "node_modules", "docs",
-    # [SPAN-OF-TWO + DEPTH NOISE SUPPRESSION] Common substructures that trigger false positives
-    "Lib", "site-packages", "google", "gapic", "logging", "golden_state",
-    "logs", "processed", "shared", "refs", "remotes", "v",
-    # [VENV NOISE SUPPRESSION] pip package subdirectories
-    "licenses", "src", "pip", "raw", "dist-info"
+    # NOTE: System exclusion is now handled by SOVEREIGN_IGNORED_FOLDERS.
+    # ROOT_WHITELIST now strictly contains ALLOWED roots + necessary root-level exceptions.
+    "scripts", "config", "schemas", "prompt_governance"
 }
 
 # Legacy mapping for backward compatibility (internal remap)
