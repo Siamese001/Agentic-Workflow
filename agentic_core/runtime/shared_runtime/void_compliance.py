@@ -127,7 +127,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
             module_name: Any = node.module.split('.')[0]
         if module_name:
             imported_roots.add(module_name)
-            if module_name in STDLIB_MODULES:
+            if module_name in stdlib_modules:
                 categories['stdlib'].append(node.lineno)
             elif module_name in project_roots:
                 categories['local'].append(node.lineno)

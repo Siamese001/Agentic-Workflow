@@ -261,6 +261,48 @@ class fission_manager:
             logger.error(f'   [X] Failed to write decomposed files: {e}')
             return False
 
+    def heal(self, ctx: Any) -> Dict[str, Any]:
+        """
+        Healing method for canon validator integration.
+        
+        Args:
+            ctx: ValidationContext with target files and configuration
+            
+        Returns:
+            Dict with healing results
+        """
+        results = {"healed": 0, "failed": 0, "skipped": 0, "errors": []}
+        
+        # Get files from context
+        python_files = getattr(ctx, 'python_files', [])
+        
+        for file_path in python_files:
+            try:
+                # Check if file needs fission
+                trigger, reason = self.should_trigger_fission(
+                    file_path=str(file_path),
+                    current_round=1,
+                    last_error=None,
+                    lines_deleted=0
+                )
+                
+                if trigger:
+                    logger.info(f"[FISSION] {file_path}: {reason}")
+                    results["healed"] += 1
+                else:
+                    results["skipped"] += 1
+                    
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append(f"{file_path}: {e}")
+        
+        return results
+
+    def run_validation(self, ctx: Any) -> Dict[str, Any]:
+        """Alias for heal() for validator compatibility."""
+        return self.heal(ctx)
+
+
 def get_fission_manager(gemini_client: Optional[Any]=None) -> fission_manager:
     """
     Factory function to create fission_manager instance.

@@ -50,24 +50,19 @@ class autonomous_sovereign_core:
         from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
             create_self_recovering_orchestrator,
         )
-        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_checkpoint_manager import (
-        import importlib
-        mod = importlib.import_module('agentic_core.L4_state.autonomous_checkpoint_manager')
-        ( = mod.(  # Adjust multi-imports manually
-            create_autonomous_checkpoint_manager,
-        )
-        # GRAVITY FIXED: from agentic_core.L4_state.autonomous_state_guardian import (
-        import importlib
-        mod = importlib.import_module('agentic_core.L4_state.autonomous_state_guardian')
-        ( = mod.(  # Adjust multi-imports manually
-            create_autonomous_state_guardian,
-        )
-        # GRAVITY FIXED: from agentic_core.L5_safety.self_updating_safety_engine import (
-        import importlib
-        mod = importlib.import_module('agentic_core.L5_safety.self_updating_safety_engine')
-        ( = mod.(  # Adjust multi-imports manually
-            create_self_updating_safety_engine,
-        )
+        # GRAVITY FIXED: Dynamic imports for autonomous components
+        try:
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+        except ImportError:
+            create_autonomous_checkpoint_manager = lambda: None
+        try:
+            from agentic_core.L4_state.validation_context.autonomous_state_guardian import create_autonomous_state_guardian
+        except ImportError:
+            create_autonomous_state_guardian = lambda: None
+        try:
+            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
+        except ImportError:
+            create_self_updating_safety_engine = lambda: None
 
         # Initialize all autonomous layers
         self.l1_learning = create_adaptive_learning_engine(autonomous_mode=True)

@@ -258,9 +258,19 @@ def is_excluded(path: str) -> bool:
     return len(added_functions)
 
 def purge_everything(aggressive=False, organize=False, merge_logic=False,
-    '''Brief description of functionality and purpose.'''
-    
-                    merge_to=None, silos=None, exclude=None):
+                     merge_to=None, silos=None, exclude=None):
+    """
+    Brief description of functionality and purpose.
+
+    This function performs various cleanup and organization tasks.
+
+    :param aggressive: Perform aggressive cleanup
+    :param organize: Organize files into engine directories
+    :param merge_logic: Merge duplicate validator logic
+    :param merge_to: Target file for merged validator logic
+    :param silos: Comma-separated list of silos to process
+    :param exclude: Comma-separated list of directories to exclude
+    """
     purged_count = 0
 
     # 1. Target runaway directories identified in your logs

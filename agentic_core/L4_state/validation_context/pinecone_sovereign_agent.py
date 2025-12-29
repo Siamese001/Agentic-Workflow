@@ -237,3 +237,6 @@ class pinecone_sovereign_agent:
             print(f'   [!] PineconeSovereignAgent health check failed: {e}')
             if ctx:
                 ctx.report('VectorHealth', 1, True, f'Pinecone health check warning: {str(e)}')
+
+# Uppercase alias for backward compatibility
+PineconeSovereignAgent = pinecone_sovereign_agent
