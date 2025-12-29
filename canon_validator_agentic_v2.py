@@ -1108,6 +1108,8 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # --- L5 HARDENING INSTANTIATION ---
     # [GAP 6 FIX] Validate critical framework agents exist
+    # [LOG DEDUP] Global sets to suppress repeated messages across phases
+    _agent_validation_seen = set()
     print("\n[*] FRAMEWORK AGENT VALIDATION")
     
     # Helper to convert CamelCase to snake_case
@@ -1160,7 +1162,10 @@ async def run_mission(target_scope: str = "agentic_core"):
                 agent_class = dynamic_import(module_path, agent_name)
                 if agent_class:
                     found = True
-                    print(f"   [OK] Key {key_num}: {agent_name} found at {module_path}")
+                    identifier = f"Key {key_num}: {agent_name} found at {module_path}"
+                    if identifier not in _agent_validation_seen:
+                        _agent_validation_seen.add(identifier)
+                        print(f"   [OK] {identifier}")
                     break
             
             if not found:
