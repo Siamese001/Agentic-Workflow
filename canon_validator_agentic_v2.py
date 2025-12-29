@@ -2388,7 +2388,12 @@ CURRENT CODE:
                     print(f"      [>] Found {len(entities)} movable entities.")
                     
                     for entity in entities:
-                        l1, l2 = entity['suggested_location']
+                        l1, l2, confidence = entity['suggested_location']
+                        
+                        # [SAFETY] Confidence Thresholding
+                        if confidence < 2.5:
+                            print(f"      [SKIP] Low confidence ({confidence:.1f}) placement for {entity['name']} -> {l1}/{l2}")
+                            continue
                         
                         # [SAFETY] Don't move if target L1 is 'utils' (too generic) unless source is worse
                         if l1 == "utils" and "utils" in str(file_path):
