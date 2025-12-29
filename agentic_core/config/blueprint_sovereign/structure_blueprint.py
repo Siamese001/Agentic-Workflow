@@ -415,6 +415,150 @@ SEMANTIC_L2_REGISTRY = {
             "examples": ["SovereignWorkingMemory", "SessionState", "ShortTermCache", "InMemoryLedger"]
         }
     },
+    "config": {
+        "blueprint_sovereign": {
+            "purpose": "Sovereign structure blueprints, constitution enforcement, and registry of registries",
+            "entity_types": ["Dict", "Class"], 
+            "keywords": ["blueprint", "sovereign", "constitution", "registry", "structure", "map", "ssot"],
+            "imports": ["agentic_core.config.blueprint_sovereign"], "bases": ["BaseConfiguration", "Constitution"],
+            "examples": ["StructureBlueprint", "CanonRegistry", "SovereignConstitution"]
+        },
+        "environments": {
+            "purpose": "Environment-specific configuration loaders, .env parsers, and context switching",
+            "entity_types": ["Class", "Function"], 
+            "keywords": ["env", "config", "loader", "dotenv", "dev", "prod", "staging", "variable"],
+            "imports": ["os", "dotenv"], "bases": ["ConfigLoader", "EnvironmentContext"],
+            "examples": ["EnvLoader", "ProductionConfig", "DevContext", "DotenvParser"]
+        },
+        "feature_flags": {
+            "purpose": "Feature toggle management, rollout controls, and A/B testing switches",
+            "entity_types": ["Class"], 
+            "keywords": ["flag", "feature", "toggle", "rollout", "switch", "beta", "enable", "disable"],
+            "imports": ["agentic_core.config.feature_flags"], "bases": ["FeatureToggle", "FlagManager"],
+            "examples": ["LaunchDarklyAdapter", "FeatureFlagStore", "BetaRolloutSwitch"]
+        },
+        "secrets_manager": {
+            "purpose": "Secure secret retrieval, vault integration, and credential rotation",
+            "entity_types": ["Class"], 
+            "keywords": ["secret", "vault", "key", "credential", "token", "password", "encrypt", "decrypt"],
+            "imports": ["agentic_core.config.secrets_manager"], "bases": ["SecretsVault", "CredentialProvider"],
+            "examples": ["VaultClient", "AWSSystemManager", "SecureTokenStore"]
+        }
+    },
+    "runtime": {
+        "shared_runtime": {
+            "purpose": "Shared runtime environment setup, void compliance, and global initialization",
+            "entity_types": ["Class", "Function"], 
+            "keywords": ["runtime", "shared", "void", "compliance", "init", "bootstrap", "setup", "global"],
+            "imports": ["agentic_core.runtime.shared_runtime"], "bases": ["RuntimeContext"],
+            "examples": ["VoidComplianceCheck", "RuntimeBootstrapper", "GlobalInit"]
+        },
+        "resource_management": {
+            "purpose": "Resource allocation, throttling quotas, thread pool management, and cleanup",
+            "entity_types": ["Class"], 
+            "keywords": ["resource", "throttle", "quota", "cleanup", "pool", "thread", "limit", "allocate"],
+            "imports": ["concurrent.futures"], "bases": ["ResourceManager", "QuotaEnforcer"],
+            "examples": ["ThreadPoolManager", "MemoryQuotaGuard", "ResourceCleaner"]
+        }
+    },
+    "observability": {
+        "metrics": {
+            "purpose": "Metric collection, counters, gauges, and prometheus exports",
+            "entity_types": ["Class"], "keywords": ["metric", "counter", "gauge", "histogram", "prometheus", "stat"],
+            "imports": ["prometheus_client"], "bases": ["MetricCollector"],
+            "examples": ["PerformanceMetrics", "RequestCounter", "SystemGauge"]
+        },
+        "telemetry": {
+            "purpose": "Distributed telemetry, event emission, and structured observability events",
+            "entity_types": ["Class"], "keywords": ["telemetry", "event", "emit", "signal", "observe"],
+            "imports": ["opentelemetry"], "bases": ["TelemetryProvider"],
+            "examples": ["EventEmitter", "TelemetrySignal", "StructuredObserver"]
+        },
+        "tracing": {
+            "purpose": "Span tracing, context propagation, and distributed trace ids",
+            "entity_types": ["Class"], "keywords": ["trace", "span", "context", "propagate", "id", "parent"],
+            "imports": ["opentelemetry.trace"], "bases": ["TracerBase"],
+            "examples": ["SpanContext", "DistributedTracer", "ContextPropagator"]
+        },
+        "compliance": {
+            "purpose": "Compliance reporting, canon drift detection logs, and policy violation records",
+            "entity_types": ["Class", "Function"], "keywords": ["compliance", "drift", "report", "canon", "violation", "audit"],
+            "imports": [], "bases": ["ComplianceReporter"],
+            "examples": ["DriftReportGenerator", "CanonComplianceLog", "ViolationTracker"]
+        }
+    },
+    "utils": {
+        "core_extensions": {
+            "purpose": "Core Python extensions, polyfills, and monkey-patches",
+            "entity_types": ["Function", "Class"], "keywords": ["extension", "polyfill", "monkey", "patch", "enhance"],
+            "imports": [], "bases": [],
+            "examples": ["StringExtensions", "DictMergePolyfill", "CoreMonkeyPatch"]
+        },
+        "wrappers": {
+            "purpose": "Decorators, generic wrappers, and function proxies",
+            "entity_types": ["Function"], "keywords": ["wrapper", "decorator", "retry", "cache", "proxy", "intercept"],
+            "imports": ["functools"], "bases": [],
+            "examples": ["retry_with_backoff", "cached_property_wrapper", "LogExecutionDecorator"]
+        },
+        "helpers": {
+            "purpose": "General helper functions and miscellaneous utilities",
+            "entity_types": ["Function"], "keywords": ["helper", "util", "misc", "common", "format"],
+            "imports": [], "bases": [],
+            "examples": ["date_helper", "string_formatter", "generic_util"]
+        },
+        "naming": {
+            "purpose": "Naming law enforcement logic, casing validators, and canon signal checks",
+            "entity_types": ["Class", "Function"], "keywords": ["naming", "canon", "signal", "law", "case", "snake", "camel"],
+            "imports": ["agentic_core.utils.naming", "re"], "bases": ["NamingValidator"],
+            "examples": ["SnakeCaseValidator", "CanonSignalChecker", "NamingLawEnforcer"]
+        }
+    },
+    "patterns": {
+        "agent_roles": {
+            "purpose": "Pre-defined agent personas, role templates, and behavioral archetypes",
+            "entity_types": ["Class", "Dict"], "keywords": ["role", "persona", "agent_type", "archetype", "behavior"],
+            "imports": [], "bases": ["CanonBaseAgent"],
+            "examples": ["SocraticPersona", "CriticRole", "ArchitectArchetype"]
+        },
+        "communication_flow": {
+            "purpose": "Inter-agent message passing patterns and handoff protocols",
+            "entity_types": ["Class"], "keywords": ["communication", "message", "flow", "protocol", "handoff", "channel"],
+            "imports": [], "bases": ["CommunicationProtocol"],
+            "examples": ["MessageBusPattern", "HandoffProtocol", "ChannelPattern"]
+        },
+        "interaction_patterns": {
+            "purpose": "Common human-agent and agent-tool interaction patterns (CLI, Chat, etc)",
+            "entity_types": ["Class"], "keywords": ["interaction", "pattern", "ui", "cli", "chat", "ux"],
+            "imports": [], "bases": [],
+            "examples": ["CliInteractionPattern", "ChatLoopPattern", "ToolUsePattern"]
+        },
+        "reasoning_patterns": {
+            "purpose": "Reusable reasoning strategies (CoT, ToT, ReAct) as abstract patterns",
+            "entity_types": ["Class"], "keywords": ["reasoning", "strategy", "cot", "tot", "react", "chain", "tree"],
+            "imports": ["agentic_core.patterns.reasoning_patterns"], "bases": ["BaseReasoningEngine"],
+            "examples": ["ChainOfThoughtPattern", "TreeOfThoughtsStrategy", "ReActLoopPattern"]
+        }
+    },
+    "knowledge": {
+        "document_loaders": {
+            "purpose": "Document ingestion, parsing, and unstructured data loading utilities",
+            "entity_types": ["Class"], "keywords": ["loader", "ingest", "parse", "document", "pdf", "txt", "html"],
+            "imports": ["unstructured", "langchain"], "bases": ["BaseLoader"],
+            "examples": ["PDFLoader", "TextIngestor", "HTMLParser"]
+        },
+        "static_index": {
+            "purpose": "Hard-coded knowledge bases, static facts, and lookup tables",
+            "entity_types": ["Dict", "Class"], "keywords": ["static", "index", "facts", "knowledge", "lookup", "table", "constants"],
+            "imports": [], "bases": [],
+            "examples": ["WorldFactsIndex", "ConstantLookup", "StaticKnowledgeBase"]
+        },
+        "research_cache": {
+            "purpose": "Cached research results, external knowledge snapshots, and query history",
+            "entity_types": ["Class"], "keywords": ["research", "cache", "snapshot", "history", "query", "stored"],
+            "imports": [], "bases": ["CacheStore"],
+            "examples": ["ResearchResultCache", "KnowledgeSnapshot", "QueryHistoryLog"]
+        }
+    },
     "schemas": {
         "models": {
             "purpose": "Pydantic data models, domain objects, and structured data contracts",
