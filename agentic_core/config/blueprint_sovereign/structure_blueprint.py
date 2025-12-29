@@ -255,91 +255,16 @@ TESTS_L2_SUBFOLDER_MAP = {
     # - security_helpers: Security utility functions
 }
 
-# [L3/L4 maps removed - obsolete with Depth 3 structure]
+# --- BACKWARD COMPATIBILITY EXPORTS ---
+# [DEPRECATED] Use CORE_SUBFOLDER_MAP directly
+AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
+# [DEPRECATED] Use TESTS_L2_SUBFOLDER_MAP directly
+TESTS_SUBFOLDER_MAP = TESTS_L2_SUBFOLDER_MAP
+# [OBSOLETE] Removed with Depth 3 structure
 CORE_L3_SUBFOLDER_MAP = {}
 CORE_L4_SUBFOLDER_MAP = {}
 
-# --- BACKWARD COMPATIBILITY EXPORTS ---
-AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
-TESTS_SUBFOLDER_MAP = TESTS_L2_SUBFOLDER_MAP
-
-# [DEPRECATION NOTICE] The following constants are obsolete:
-# - CANONICAL_PRECISION_DEPTH (duplicate of SOVEREIGN_REGISTRY["depth"])
-# - APPS_EXACT_DEPTH (use SOVEREIGN_REGISTRY["apps_rg"]["depth"])
-# - TESTS_EXACT_DEPTH (use SOVEREIGN_REGISTRY["tests"]["depth"])
-# They have been removed to enforce SSOT and prevent future drift.
-
-# Safe deprecation territory — outside active keys
-DEPRECATION_ARCHIVE = "archives/deprecated_code"
-
-# Semantic index metadata for known territories
-TERRITORY_EXAMPLES = {
-    "agentic_core/L1_cognition": "strategy planning reasoning mission decomposition",
-    "agentic_core/L3_orchestration": "fission orchestration routing workflow manager",
-    "agentic_core/L4_state": "memory cache pinecone redis historian audit",
-    "agentic_core/L5_safety": "guardrail safety policy enforcer filter",
-    "apps_rg/agents": "resume ranking narrative scoring jd match",
-    "apps_lic/agents": "license compliance workflow validation",
-    "apps_shared/utils": "shared helper validation adapter",
-    "scripts": "operational tool cli integrity backup deploy",
-}
-
-# [L6 HARDENING] TERRITORY_POSITIVE_SIGNALS → CANON_SIGNALS_MK2
-# Renamed and hardened to prevent naming drift.
-# Now used exclusively by NamingLawHealerAgent and KeyCoverageAuditorAgent.
-# Expanded with missing high-signal terms to reduce false negatives in naming enforcement.
-CANON_SIGNALS_MK2 = {
-    0:  ["canon", "validator", "orchestrator", "sovereign", "constitution", "windsurf", "blueprint", "compliance"],
-    1:  ["prompt", "persona", "instruction", "directive", "system_prompt", "meta_prompt", "governance", "template"],
-    11: ["strategy", "reasoning", "planner", "decomposition", "intent", "mission", "cognition", "thought", "synthesis", "analysis"],
-    12: ["orchestration", "fission", "workflow", "router", "hop", "coordinator", "healer", "pruner", "mapper", "registry", "governor"],
-    13: ["state", "memory", "cache", "historian", "audit", "ledger", "persistence", "vector", "pinecone", "redis", "embedding", "context"],
-    15: ["resume", "ranking", "narrative", "scoring", "compliance", "license", "specialist", "generator", "processor", "workflow"],
-    17: ["test", "unit", "integration", "e2e", "functional", "fixture", "mock", "scenario", "pytest", "assertion"],
-    18: ["script", "tool", "cli", "operational", "integrity", "backup", "deploy", "maintenance", "guardian", "rescue"],
-    19: ["safety", "guardrail", "filter", "enforcer", "shield", "policy", "gravity", "neural", "subatomic", "gemini", "sentinel"],
-    20: ["drift", "audit", "coverage", "naming", "compliance", "monitor", "detector", "aggregator", "hierarchy", "span", "depth"]
-}
-
-# Backward compatibility export — will be removed in next cycle
-TERRITORY_POSITIVE_SIGNALS = CANON_SIGNALS_MK2
-
-# [SOVEREIGN BOOTSTRAP] Auto-populate Pinecone index on first run
-def bootstrap_territory_index():
-    """
-    Sovereign bootstrap – embeds TERRITORY_EXAMPLES into Pinecone using canonical store.
-    Idempotent and safe for multiple runs.
-    """
-    import hashlib
-    
-    try:
-        from agentic_core.semantic_memory.vector_stores.pinecone_pinecone_store import SovereignPineconeStore
-        # Assumes basic embedding logic exists in the mapped territory
-        from agentic_core.semantic_memory.embedding_logic.core_embedder import get_embedding 
-        
-        store = SovereignPineconeStore()
-        vectors = []
-        for territory, example in TERRITORY_EXAMPLES.items():
-            embedding = get_embedding(example)
-            vectors.append({
-                "id": f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}",
-                "values": embedding,
-                "metadata": {"territory": territory, "source": "sovereign_constitution"}
-            })
-        if vectors:
-            store.upsert(vectors=vectors, namespace="territory_examples")
-            print(f"   [✓] Bootstrapped {len(vectors)} territory examples to Pinecone (namespace=territory_examples)")
-    except Exception as e:
-        print(f"   [!] Territory bootstrap failed: {e}")
-
-# Run on import — eternal index readiness
-# Note: Commented out to avoid auto-execution on import
-# bootstrap_territory_index()
-
 # --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW (Key 20) ---
-# [L6 HARDENING] Expanded and deduplicated set → now flat list for O(1) lookup
-# Rationale: Previous dict caused unnecessary nesting; flat set is faster and clearer.
-# All terms from CANON_SIGNALS_MK2 are merged here for global naming law enforcement.
 CANON_SIGNALS: set[str] = {
     # Core Roles
     "agent", "manager", "engine", "validator", "healer", "auditor", "enforcer", "detector",
@@ -379,9 +304,9 @@ FORBIDDEN_PATTERNS = [
 ACTIVE_CANON_KEYS = list(range(0, 22))
 
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    0:  [".", "scripts"],
-    1:  ["prompt_governance"],
-    7:  ["schemas"],
+    0:  [".",],  # Root-level files only
+    1:  ["agentic_core/prompt_governance"],
+    7:  ["agentic_core/schemas"],
     11: ["agentic_core/L1_cognition"],
     12: ["agentic_core/L3_orchestration"],
     13: ["agentic_core/L4_state"],
@@ -450,16 +375,12 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({
     ".DS_Store", "Thumbs.db"
 })
 
-# [L6 HARDENING] FORBIDDEN_ROOT_FOLDERS → frozen set + expanded legacy coverage
-# Rationale: frozenset is immutable and hashable; prevents accidental mutation.
-# Expanded to catch all known legacy numbered patterns.
+# [L6 HARDENING] FORBIDDEN_FOLDER_PATTERNS — regex + static set
+# Rationale: Catch all numbered folder prefixes (e.g., "08_*") anywhere in tree
+FORBIDDEN_FOLDER_PATTERN = re.compile(r"^\d+_")  # Matches any folder starting with digits + underscore
+
+# Static list of known legacy folders (for backward compat and explicit blocking)
 FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset({
-    "01_runtime_logic", "02_runtime_cache", "03_scripts_logic", "04_scripts_cache",
-    "05_runtime_security", "06_runtime_runtime", "07_runtime_pipeline",
-    "08_shared_security", "09_shared_runtime", "10_shared_pipeline",
-    "11_shared_logic", "12_shared_cache", "13_scripts_security",
-    "14_scripts_runtime", "15_scripts_pipeline",
-    # Additional legacy patterns observed in wild
     "legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"
 })
 
@@ -536,7 +457,6 @@ DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({
     "archives",
     "stubs",            # Type stubs
     "examples",
-    "scripts"           # Operational tools, not architectural components
 })
 
 # --- SYSTEM EXEMPTIONS ---
@@ -571,12 +491,3 @@ GRAVITY_CONFIG = {
 GRAVITY_SURGERY_ENABLED = GRAVITY_CONFIG["enabled"]
 UPSTREAM_SOVEREIGN_ROOTS = frozenset(GRAVITY_CONFIG["upstream_sovereign_roots"])
 DOWNSTREAM_ROOTS = frozenset(GRAVITY_CONFIG["downstream_domains"])
-
-# Legacy mapping for backward compatibility (internal remap)
-_LEGACY_KEY_REMAP = {
-    11: 1, 12: 2, 21: 3, 24: 4, 26: 5, 28: 6,
-    31: 7, 33: 8, 36: 9, 38: 10,
-    40: 11, 42: 12, 51: 13,
-    43: 14, 44: 15, 45: 16,
-    47: 17, 50: 18,
-}

@@ -28,13 +28,12 @@ class TerritoryHealerAgent:
             CANON_KEY_TO_FOLDER_MAP,
             ROOT_PROTECTED_FILES,
             SOVEREIGN_REGISTRY,
-            TERRITORY_EXAMPLES,
-            CANON_SIGNALS_MK2,
+            CANON_SIGNALS,
         )
         from agentic_core.runtime.shared.void_compliance import get_placement_guidance
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
-        self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
+        self.key_positive_signals = CANON_SIGNALS  # Flat set for O(1) lookup
         # Flatten all mapped paths for fast check
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
         
