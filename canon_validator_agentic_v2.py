@@ -2367,6 +2367,65 @@ CURRENT CODE:
                     'needs_move': True
                 }
         
+        # [L6 SURGERY] INTELLIGENT RELOCATION TRIGGER
+        # If the file is in a forbidden location or just a 'temp' dumping ground,
+        # attempt to surgically extract its contents to their proper homes.
+        is_misplaced = "temp" in file_name or "unsorted" in str(file_path) or "legacy" in str(file_path)
+        
+        if is_misplaced and RUN_HIERARCHY_HEALING:
+            try:
+                print(f"   [SURGERY] Scanning {file_name} for relocation targets...")
+                from agentic_core.runtime.shared_runtime.ast_relocator import ASTRelocator
+                
+                # 1. Parse Entities
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    full_content = f.read()
+                
+                relocator = ASTRelocator(Path(file_path), full_content)
+                entities = relocator.get_movable_entities()
+                
+                if entities:
+                    print(f"      [>] Found {len(entities)} movable entities.")
+                    
+                    for entity in entities:
+                        l1, l2 = entity['suggested_location']
+                        
+                        # [SAFETY] Don't move if target L1 is 'utils' (too generic) unless source is worse
+                        if l1 == "utils" and "utils" in str(file_path):
+                            continue
+                            
+                        target_dir = project_root / "agentic_core" / l1 / l2
+                        target_file = target_dir / f"{entity['name']}.py"  # Atomic file per class
+                        
+                        # [DRY RUN] For now, just log the surgical plan
+                        # To Enable: Set execute_surgery = True below
+                        execute_surgery = True 
+                        
+                        if execute_surgery:
+                            target_dir.mkdir(parents=True, exist_ok=True)
+                            if not target_file.exists():
+                                code_block = ASTRelocator.extract_entity_code(
+                                    relocator.content_lines, 
+                                    entity['start_line'], 
+                                    entity['end_lineno']
+                                )
+                                
+                                # Add standard imports to new file
+                                header = "import os\nimport sys\nfrom typing import Any, List, Dict, Optional\n\n"
+                                target_file.write_text(header + code_block, encoding='utf-8')
+                                
+                                import_fix = ASTRelocator.generate_import_fix(Path(file_path), target_file, entity['name'])
+                                
+                                print(f"      [✓] SURGICALLY MOVED: {entity['name']} -> {l1}/{l2}")
+                                print(f"          [IMPORT FIX] {import_fix}")
+                                ctx.report("ASTRelocator", 40, True, f"Moved {entity['name']} to {l1}/{l2}")
+                            else:
+                                print(f"      [SKIP] Target exists: {target_file.name}")
+            except ImportError:
+                print("      [!] ASTRelocator module not found (check runtime path)")
+            except Exception as e:
+                print(f"      [!] Surgical extraction failed: {e}")
+        
         # === 3. HEALING CASCADE (Async & Resource Safe) ===
         # [SOVEREIGN MUTATION] Cycle through armed healers
         healers_to_use = atomic_validators if atomic_validators else ctx.cleaning_crew

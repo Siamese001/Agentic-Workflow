@@ -1,9 +1,19 @@
 import ast
 import re
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 # DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
+# [L6 HARDENING] AST-based validators to eliminate false positives
+from agentic_core.L1_cognition.thought_engine.canon_validators_ast import (
+    validate_print_statements,
+    validate_debugger,
+    validate_empty_except,
+    validate_bare_except,
+    validate_eval_exec,
+)
 
 
 class SafetyInspector:
@@ -63,6 +73,7 @@ class SafetyInspector:
         except Exception:
             # print(f"Error reading file {fp}: {e}")
             return "", False
+    
     def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
         """Helper to find hardcoded secrets in a single file."""
         content, success = self._read_file_content(fp)
@@ -116,131 +127,85 @@ class SafetyInspector:
             violations.extend(self._find_todo_fixme_violations_in_file(fp))
         return len(violations) == 0, violations
 
-    def _find_print_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
-        """Helper to find print statements in an AST tree."""
-        file_violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and \
-               isinstance(node.func, ast.Name) and \
-               node.func.id == "print":
-                file_violations.append(f"{fp}:{node.lineno}")
-        return file_violations
-
     def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
         """
-        Checks for 'print()' statements using AST parsing.
+        [REFACTORED] Checks for 'print()' statements using AST-based validator.
+        Automatically handles TYPE_CHECKING blocks and exception ledger.
         """
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-                violations.extend(self._find_print_violations_in_tree(tree, fp))
+                    content = f.read()
+                results = validate_print_statements(Path(fp), content)
+                for result in results:
+                    violations.append(f"{fp}:{result['line']}")
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
-
-    def _find_debugger_violations_in_file(self, fp: str) -> List[str]:
-        """Helper to find debugger statements in a single file."""
-        file_violations = []
-        try:
-            with open(fp, "r", encoding="utf-8") as f:
-                for i, line in enumerate(f, 1):
-                    if re.search(r'\bbreakpoint\(\)|pdb\.set_trace\(\)', line):
-                        file_violations.append(f"{fp}:{i}")
-        except Exception:
-            # print(f"Error reading file {fp}: {e}")
-            pass
-        return file_violations
 
     def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
         """
-        Checks for debugger statements like 'breakpoint()' or 'pdb.set_trace()'.
+        [REFACTORED] Checks for debugger statements using AST-based validator.
+        Detects breakpoint() and pdb.set_trace() with TYPE_CHECKING awareness.
         """
         violations = []
         for fp in self.agent.ctx.python_files:
-            violations.extend(self._find_debugger_violations_in_file(fp))
+            try:
+                with open(fp, "r", encoding="utf-8") as f:
+                    content = f.read()
+                results = validate_debugger(Path(fp), content)
+                for result in results:
+                    violations.append(f"{fp}:{result['line']}")
+            except Exception:
+                continue
         return len(violations) == 0, violations
-
-    def _is_empty_except_block(self, node: ast.ExceptHandler) -> bool:
-        """Helper to determine if an ExceptHandler node represents an empty except block."""
-        return not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass))
-
-    def _find_empty_except_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
-        """Helper to find empty except blocks in an AST tree."""
-        file_violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ExceptHandler) and self._is_empty_except_block(node):
-                file_violations.append(f"{fp}:{node.lineno}")
-        return file_violations
 
     def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
         """
-        Checks for empty 'except' blocks or 'except: pass' using AST parsing.
+        [REFACTORED] Checks for empty 'except' blocks using AST-based validator.
         """
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-                violations.extend(self._find_empty_except_violations_in_tree(tree, fp))
+                    content = f.read()
+                results = validate_empty_except(Path(fp), content)
+                for result in results:
+                    violations.append(f"{fp}:{result['line']}")
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
-
-    def _is_bare_except_block(self, node: ast.ExceptHandler) -> bool:
-        """Helper to determine if an ExceptHandler node represents a bare except block."""
-        return node.type is None
-
-    def _find_bare_except_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
-        """Helper to find bare except statements in an AST tree."""
-        file_violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ExceptHandler) and self._is_bare_except_block(node):
-                file_violations.append(f"{fp}:{node.lineno}")
-        return file_violations
 
     def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
         """
-        Checks for bare 'except:' statements (catching all exceptions) using AST parsing.
+        [REFACTORED] Checks for bare 'except:' statements using AST-based validator.
         """
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-                violations.extend(self._find_bare_except_violations_in_tree(tree, fp))
+                    content = f.read()
+                results = validate_bare_except(Path(fp), content)
+                for result in results:
+                    violations.append(f"{fp}:{result['line']}")
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
 
-    def _is_eval_exec_call(self, node: ast.Call) -> bool:
-        """Helper to determine if a Call node represents an eval() or exec() call."""
-        return isinstance(node.func, ast.Name) and node.func.id in ("eval", "exec")
-
-    def _find_eval_exec_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
-        """Helper to find eval() or exec() calls in an AST tree."""
-        file_violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and self._is_eval_exec_call(node):
-                file_violations.append(f"{fp}:{node.lineno}")
-        return file_violations
-
     def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
         """
-        Checks for 'eval()' or 'exec()' function calls using AST parsing.
+        [REFACTORED] Checks for 'eval()' or 'exec()' calls using AST-based validator.
         """
         violations = []
         for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-                violations.extend(self._find_eval_exec_violations_in_tree(tree, fp))
+                    content = f.read()
+                results = validate_eval_exec(Path(fp), content)
+                for result in results:
+                    violations.append(f"{fp}:{result['line']}")
             except Exception:
-                # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
 
