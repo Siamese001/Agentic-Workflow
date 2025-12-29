@@ -55,68 +55,209 @@ SOVEREIGN_REGISTRY = {
 # Each L1 layer must contain these L2 subfolders. Files sit directly inside these.
 CORE_SUBFOLDER_MAP = {
     "L0_maintenance": ["scripts", "logs", "benchmarks"],
+    # - scripts: Operational tools, healers, auditors
+    # - logs: Runtime log storage
+    # - benchmarks: Performance measurement utilities
+    
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
+    # - thought_engine: Core reasoning and thought nodes
+    # - intent_analysis: User intent parsing and classification
+    # - planning: Strategy and mission decomposition
+    
     "L2_execution": ["tool_registry", "action_handlers", "mcp"],
+    # - tool_registry: External tool definitions and wrappers
+    # - action_handlers: Execution logic for discrete actions
+    # - mcp: Model Context Protocol client integrations
+    
     "L3_orchestration": ["workflow_engines", "fission_logic", "S3_vitality", "mcp"],
+    # - workflow_engines: Multi-step coordination and routing
+    # - fission_logic: File splitting and healing protocols
+    # - S3_vitality: Health monitors and signal handlers
+    # - mcp: MCP router and marketplace integration
+    
     "L4_state": ["validation_context", "ledger", "filesystem", "memory"],
+    # - validation_context: Mission context and historian
+    # - ledger: Audit trails and transaction logs
+    # - filesystem: Atomic file operations via MCP
+    # - memory: Working memory and context buffers
+    
     "L5_safety": ["guardrails", "red_teaming", "gravity", "validators"],
+    # - guardrails: Safety limits and mutation controls
+    # - red_teaming: Adversarial testing and threat simulation
+    # - gravity: Import waterfall enforcement
+    # - validators: Schema and policy validators
+    
     "schemas": ["models", "messages", "types", "validators"],
+    # - models: Pydantic data models
+    # - messages: API request/response schemas
+    # - types: Type definitions and protocols
+    # - validators: Schema validation utilities
+    
     "config": ["blueprint_sovereign", "environments", "feature_flags", "secrets_manager"],
-    # [DEPTH 3 Semantics] Authorized config territories:
-    # - blueprint_sovereign: Sovereign constitution
+    # - blueprint_sovereign: Sovereign constitution (this file)
     # - environments: Env-specific overrides
     # - feature_flags: Feature toggles
     # - secrets_manager: Credential handling
+    
     "prompt_governance": ["meta_prompts", "version_registry", "rendering", "templates"],
+    # - meta_prompts: System instruction templates
+    # - version_registry: Prompt version tracking
+    # - rendering: Dynamic prompt assembly
+    # - templates: Reusable prompt fragments
+    
     "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management"],
+    # - shared_runtime: Cross-cutting runtime utilities
+    # - environment_setup: Bootstrap and initialization
+    # - shared: Common runtime helpers
+    # - resource_management: Memory and connection pooling
+    
     "observability": ["metrics", "telemetry", "tracing", "compliance"],
+    # - metrics: Prometheus/custom metric definitions
+    # - telemetry: OpenTelemetry instrumentation
+    # - tracing: Distributed trace context
+    # - compliance: Audit and compliance reporting
+    
     "utils": ["core_extensions", "wrappers", "helpers", "naming"],
+    # - core_extensions: Framework extensions
+    # - wrappers: Third-party library adapters
+    # - helpers: General-purpose utilities
+    # - naming: Naming convention enforcement
+    
     "patterns": ["agent_roles", "communication_flow", "interaction_patterns", "reasoning_patterns"],
+    # - agent_roles: Role definitions and personas
+    # - communication_flow: Inter-agent messaging patterns
+    # - interaction_patterns: Human-agent interaction templates
+    # - reasoning_patterns: Chain-of-thought and reasoning templates
+    
     "semantic_memory": ["store", "embeddings", "retrieval", "index"],
-    "knowledge": ["document_loaders", "static_index", "research_cache"]
+    # - store: Vector database interfaces (Pinecone)
+    # - embeddings: Embedding generation and caching
+    # - retrieval: Semantic search and RAG utilities
+    # - index: Index management and optimization
+    
+    "knowledge": ["document_loaders", "static_index", "research_cache"],
+    # - document_loaders: File parsing and ingestion
+    # - static_index: Pre-built knowledge indices
+    # - research_cache: External research caching
 }
 
 # === DOMAIN L2 SUBFOLDER REGISTRIES (Depth 2 Enforcement) ===
 # Map valid subfolders to signify leaf status at Depth 2
-APPS_RG_SUBFOLDER_MAP = {k: [] for k in SOVEREIGN_REGISTRY["apps_rg"]["subfolders"]}
-APPS_LIC_SUBFOLDER_MAP = {k: [] for k in SOVEREIGN_REGISTRY["apps_lic"]["subfolders"]}
-APPS_SHARED_SUBFOLDER_MAP = {k: [] for k in SOVEREIGN_REGISTRY["apps_shared"]["subfolders"]}
-TESTS_L2_SUBFOLDER_MAP = {k: [] for k in SOVEREIGN_REGISTRY["tests"]["subfolders"]}
-
-# === AGENTIC_CORE L3 SUBFOLDER REGISTRY ===
-# Specialized metadata for L2 folders (Optional at Depth 3)
-CORE_L3_SUBFOLDER_MAP = {
-    "fission_logic": ["healing", "pruning", "registry", "protocol"],
-    "workflow_engines": ["coordinator", "router", "hop"],
-    "S3_vitality": ["monitors", "signals", "reports"],
-    "mcp": ["clients", "tools", "registry"],
-    "validation_context": ["historian", "cache", "ledger"],
-    "filesystem": ["core", "adapters", "safety"],
-    "memory": ["context_window", "working_memory", "buffers"],
-    "models": ["core", "domain"],
-    "messages": ["api", "internal"],
-    "gravity": ["enforcement", "reports", "gates"],
-    "compliance": ["reports", "rules", "history"]
+APPS_RG_SUBFOLDER_MAP = {
+    "logic_nodes": ["node_definitions", "node_helpers"],
+    # - node_definitions: Node type definitions
+    # - node_helpers: Node utility functions
+    
+    "asset_library": ["asset_definitions", "asset_helpers"],
+    # - asset_definitions: Asset type definitions
+    # - asset_helpers: Asset utility functions
+    
+    "system_flow": ["flow_definitions", "flow_helpers"],
+    # - flow_definitions: Flow type definitions
+    # - flow_helpers: Flow utility functions
+    
+    "engines": ["engine_definitions", "engine_helpers"],
+    # - engine_definitions: Engine type definitions
+    # - engine_helpers: Engine utility functions
+    
+    "templates": ["template_definitions", "template_helpers"],
+    # - template_definitions: Template type definitions
+    # - template_helpers: Template utility functions
 }
 
-# [L4 ENFORCEMENT] Required Depth 4 specialized territories
-CORE_L4_SUBFOLDER_MAP = {
-    # L3: fission_logic -> L4 specialization
-    "healing": ["territory", "semantic", "scripts", "recursive"],
-    "protocol": ["handshake"],
-    "registry": ["subatomic"],
+APPS_LIC_SUBFOLDER_MAP = {
+    "logic_nodes": ["node_definitions", "node_helpers"],
+    # - node_definitions: Node type definitions
+    # - node_helpers: Node utility functions
     
-    # L3: workflow_engines -> L4 specialization
-    "coordinator": ["multi_hop"],
-    "router": ["task"],
-
-    # L3: state_engines -> L4 specialization
-    "vector": ["pinecone", "hybrid"],
-    "cache": ["redis", "sovereign"],
+    "asset_library": ["asset_definitions", "asset_helpers"],
+    # - asset_definitions: Asset type definitions
+    # - asset_helpers: Asset utility functions
     
-    # L3: guardrails -> L4 specialization
-    "policy": ["gemini", "neural"]
+    "system_flow": ["flow_definitions", "flow_helpers"],
+    # - flow_definitions: Flow type definitions
+    # - flow_helpers: Flow utility functions
+    
+    "engines": ["engine_definitions", "engine_helpers"],
+    # - engine_definitions: Engine type definitions
+    # - engine_helpers: Engine utility functions
+    
+    "templates": ["template_definitions", "template_helpers"],
+    # - template_definitions: Template type definitions
+    # - template_helpers: Template utility functions
 }
+
+APPS_SHARED_SUBFOLDER_MAP = {
+    "base_definitions": ["definition_helpers", "definition_types"],
+    # - definition_helpers: Definition utility functions
+    # - definition_types: Definition type definitions
+    
+    "common_utils": ["utility_helpers", "utility_types"],
+    # - utility_helpers: Utility function helpers
+    # - utility_types: Utility type definitions
+    
+    "core_components": ["component_definitions", "component_helpers"],
+    # - component_definitions: Component type definitions
+    # - component_helpers: Component utility functions
+    
+    "base_agents": ["agent_definitions", "agent_helpers"],
+    # - agent_definitions: Agent type definitions
+    # - agent_helpers: Agent utility functions
+    
+    "models": ["model_definitions", "model_helpers"],
+    # - model_definitions: Model type definitions
+    # - model_helpers: Model utility functions
+    
+    "utils": ["utility_helpers", "utility_types"],
+    # - utility_helpers: Utility function helpers
+    # - utility_types: Utility type definitions
+}
+
+TESTS_L2_SUBFOLDER_MAP = {
+    "unit": ["test_definitions", "test_helpers"],
+    # - test_definitions: Test type definitions
+    # - test_helpers: Test utility functions
+    
+    "integration": ["test_definitions", "test_helpers"],
+    # - test_definitions: Test type definitions
+    # - test_helpers: Test utility functions
+    
+    "e2e": ["test_definitions", "test_helpers"],
+    # - test_definitions: Test type definitions
+    # - test_helpers: Test utility functions
+    
+    "functional": ["test_definitions", "test_helpers"],
+    # - test_definitions: Test type definitions
+    # - test_helpers: Test utility functions
+    
+    "fixtures": ["fixture_definitions", "fixture_helpers"],
+    # - fixture_definitions: Fixture type definitions
+    # - fixture_helpers: Fixture utility functions
+    
+    "automation": ["automation_definitions", "automation_helpers"],
+    # - automation_definitions: Automation type definitions
+    # - automation_helpers: Automation utility functions
+    
+    "core": ["core_definitions", "core_helpers"],
+    # - core_definitions: Core type definitions
+    # - core_helpers: Core utility functions
+    
+    "data": ["data_definitions", "data_helpers"],
+    # - data_definitions: Data type definitions
+    # - data_helpers: Data utility functions
+    
+    "performance": ["performance_definitions", "performance_helpers"],
+    # - performance_definitions: Performance type definitions
+    # - performance_helpers: Performance utility functions
+    
+    "security": ["security_definitions", "security_helpers"],
+    # - security_definitions: Security type definitions
+    # - security_helpers: Security utility functions
+}
+
+# [L3/L4 maps removed - obsolete with Depth 3 structure]
+CORE_L3_SUBFOLDER_MAP = {}
+CORE_L4_SUBFOLDER_MAP = {}
 
 # --- BACKWARD COMPATIBILITY EXPORTS ---
 AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
@@ -146,7 +287,7 @@ TERRITORY_EXAMPLES = {
 # [L6 HARDENING] TERRITORY_POSITIVE_SIGNALS → CANON_SIGNALS_MK2
 # Renamed and hardened to prevent naming drift.
 # Now used exclusively by NamingLawHealerAgent and KeyCoverageAuditorAgent.
-# Expanded with missing high-signal terms to reduce false negatives in Key 49 enforcement.
+# Expanded with missing high-signal terms to reduce false negatives in naming enforcement.
 CANON_SIGNALS_MK2 = {
     0:  ["canon", "validator", "orchestrator", "sovereign", "constitution", "windsurf", "blueprint", "compliance"],
     1:  ["prompt", "persona", "instruction", "directive", "system_prompt", "meta_prompt", "governance", "template"],
@@ -195,7 +336,7 @@ def bootstrap_territory_index():
 # Note: Commented out to avoid auto-execution on import
 # bootstrap_territory_index()
 
-# --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW (Key 49) ---
+# --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW (Key 20) ---
 # [L6 HARDENING] Expanded and deduplicated set → now flat list for O(1) lookup
 # Rationale: Previous dict caused unnecessary nesting; flat set is faster and clearer.
 # All terms from CANON_SIGNALS_MK2 are merged here for global naming law enforcement.
@@ -212,9 +353,9 @@ CANON_SIGNALS: set[str] = {
     "span", "depth", "naming", "rescue", "integrity", "gravity", "subatomic", "gemini"
 }
 
-# [KEY 49 HARDENING] FORBIDDEN NAMING PATTERNS — compiled regex list
+# [KEY 20 HARDENING] FORBIDDEN NAMING PATTERNS — compiled regex list
 # Rationale: Pre-compiled patterns are faster; list allows ordered matching.
-# Added missing dangerous patterns (e.g., copy, backup, legacy).
+# Used by Key 20 (agentic_core/utils/naming) for naming convention enforcement.
 FORBIDDEN_PATTERNS = [
     re.compile(r"^utils\.py$"),
     re.compile(r"^helper\.py$"),
@@ -399,17 +540,11 @@ DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({
 })
 
 # --- SYSTEM EXEMPTIONS ---
-# [L6 HARDENING] ROOT_WHITELIST → derived set for immutability and speed
-# Rationale: List → set conversion on import is wasteful; define as set directly.
-# Added missing system folders to prevent false positives.
-ROOT_WHITELIST: set[str] = {
-    # Sovereign active roots
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests",
-    # System & environment
-    # NOTE: System exclusion is now handled by SOVEREIGN_EXCLUDED_FOLDERS.
-    # ROOT_WHITELIST now strictly contains ALLOWED roots + necessary root-level exceptions.
-    "scripts", "config", "schemas", "prompt_governance"
-}
+# [L6 HARDENING] ROOT_WHITELIST → derived directly from SOVEREIGN_REGISTRY keys
+# Rationale: Single Source of Truth — only roots defined in SOVEREIGN_REGISTRY are allowed.
+# Any other folders (scripts, config, schemas, prompt_governance) are subfolders of agentic_core.
+ROOT_WHITELIST: set[str] = set(SOVEREIGN_REGISTRY.keys())
+# Explicit approved roots: agentic_core, apps_rg, apps_lic, apps_shared, tests
 
 # [L6 GRAVITY SSOT] Single Source of Truth for Gravity Surgery (Waterfall Enforcement)
 # Rationale: Upstream sovereign roots (core brain) MUST NOT import from downstream domains (apps, tests).

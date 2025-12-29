@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 AgentRegistryValidatorAgent - L3 Orchestration Framework Agent
-Validates that all required agents in CANON_AGENT_REGISTRY exist and are properly configured.
+Validates that all required agents in a given registry exist and are properly configured.
 """
 import logging
 from pathlib import Path
@@ -109,11 +109,11 @@ class AgentRegistryValidatorAgent:
         
         module_name = camel_to_snake(agent_name)
         
-        # Map keys to layer directories
+        # Map keys to layer directories (Depth 3 structure - no P1_core)
         layer_map = {
-            12: ['agentic_core.L3_orchestration.P1_core', 'agentic_core.L3_orchestration.S3_vitality'],
-            13: ['agentic_core.L4_state.P1_core', 'agentic_core.L4_state.S1_memory'],
-            19: ['agentic_core.L5_safety.P1_core', 'agentic_core.L5_safety.validators']
+            12: ['agentic_core.L3_orchestration.workflow_engines', 'agentic_core.L3_orchestration.fission_logic', 'agentic_core.L3_orchestration.S3_vitality'],
+            13: ['agentic_core.L4_state.validation_context', 'agentic_core.L4_state.memory', 'agentic_core.L4_state.ledger'],
+            19: ['agentic_core.L5_safety.guardrails', 'agentic_core.L5_safety.validators', 'agentic_core.L5_safety.gravity']
         }
         
         base_paths = layer_map.get(key, ['agentic_core.runtime.shared'])
