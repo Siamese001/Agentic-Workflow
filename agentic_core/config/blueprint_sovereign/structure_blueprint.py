@@ -30,7 +30,14 @@ AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset({'autonomous_checkpoint_m
 protected_folders: Any = SOVEREIGN_EXCLUDED_FOLDERS
 ignore_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
 sovereign_ignored_folders: Any = SOVEREIGN_EXCLUDED_FOLDERS
-healing_config: Any = {'max_rounds': int(os.getenv('MAX_HEALING_ROUNDS', '10')), 'max_per_file': int(os.getenv('MAX_HEALING_PER_FILE', '8')), 'global_budget': int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))}
+healing_config: Any = {
+    "max_rounds": int(os.getenv('MAX_HEALING_ROUNDS', '10')),
+    "max_per_file": int(os.getenv('MAX_HEALING_PER_FILE', '8')),
+    "global_budget": int(os.getenv('GLOBAL_HEALING_BUDGET', '500')),  # [TEMP BOOST] Unblock 10k violation backlog
+    "max_moves_per_run": 250,      # New constraint for Key 15 volume
+    "max_fissions_per_run": 50,     # Prevent file system explosion
+    "dust_threshold": 40            # Minimum lines for a module to exist (Span-of-Two)
+}
 agent_resilience_config: Any = {'retry_count': int(os.getenv('AGENT_RETRY_COUNT', '3')), 'backoff_base': float(os.getenv('AGENT_RETRY_BACKOFF_BASE', '0.5'))}
 mission_config: Any = {'gravity_surgery_enabled': True, 'hierarchy_healing_enabled': True, 'span_surgery_enabled': True, 'fission_enabled': True, 'run_full_mission': True, 'run_hierarchy_healing': True, 'run_gravity_refactor': True, 'run_sprawl_surgery': True, 'structural_only_mode': False, 'timeout_seconds': int(os.getenv('MISSION_TIMEOUT_SECONDS', '1800'))}
 mcp_capabilities: Any = {'router': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'}, 'marketplace_filter': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'}, 'filesystem': {'enabled': True, 'path': 'agentic_core.L4_state.filesystem'}, 'figma': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}, 'fetch': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}, 'semantic_cache': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}}
