@@ -253,7 +253,9 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Get relative path from project root
         rel_path = file_path.relative_to(project_root)
         parts = rel_path.parts
-        depth = len(parts)
+        # Depth = folder levels only (exclude filename)
+        # e.g., agentic_core/config/blueprint_sovereign/file.py -> depth 3
+        depth = len(parts) - 1
         root_folder = parts[0]
         
         # Rule 0: Exempt the root structure
