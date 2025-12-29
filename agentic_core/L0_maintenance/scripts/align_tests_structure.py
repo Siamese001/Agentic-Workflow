@@ -5,14 +5,14 @@ Ensures all test directories have __init__.py for Python package recognition.
 import os
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    TESTS_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
 )
 
 def align_tests_structure(root_path):
     print(f"--- ALIGNING TESTS WITH SOVEREIGN LAW ---")
     tests_root = os.path.join(root_path, "tests")
 
-    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+    for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         l1_path = os.path.join(tests_root, l1)
         
         # Ensure Level 1 (unit, integration, e2e, functional, fixtures, automation)

@@ -10,7 +10,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
     CORE_SUBFOLDER_MAP,
-    TESTS_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
 )
 
 def check_sovereign_law(root_path):
@@ -44,7 +44,7 @@ def check_sovereign_law(root_path):
                 violations.append(f"MISSING APP DEPTH: apps_shared/{l1}/{l2}")
 
     # 3. Check Tests (Depth 3: tests/L1/L2/file)
-    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+    for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             path = os.path.join(root_path, "tests", l1, l2)
             if not os.path.exists(path):
