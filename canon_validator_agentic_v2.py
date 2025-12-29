@@ -1854,15 +1854,21 @@ IF (task == "GRAVITY_REFACTOR"):
                 batch_validators.append(agent)
     
     # [ETERNAL VECTOR GATEWAY] Add PineconeSovereignAgent to monitors
-    pinecone_agent = PineconeSovereignAgent(
-        project_root=project_root,
-        ctx=ctx  # Enables:
-        #   - ctx.python_files: precise final file list (post-healing/moves)
-        #   - ctx.report: violation history for metadata tagging
-        #   - audit_log: relocation events
-    )
-    monitors.append(pinecone_agent)
-    print(f"     [+] PineconeSovereignAgent armed with ValidationContext for precise sync")
+    if PineconeSovereignAgent:
+        try:
+            pinecone_agent = PineconeSovereignAgent(
+                project_root=project_root,
+                ctx=ctx  # Enables:
+                #   - ctx.python_files: precise final file list (post-healing/moves)
+                #   - ctx.report: violation history for metadata tagging
+                #   - audit_log: relocation events
+            )
+            monitors.append(pinecone_agent)
+            print(f"     [+] PineconeSovereignAgent armed with ValidationContext for precise sync")
+        except Exception as e:
+            print(f"     [!] PineconeSovereignAgent failed to arm: {e}")
+    else:
+        print(f"     [!] PineconeSovereignAgent skipped (Class not loaded)")
     
     # [L4 REPRODUCIBILITY HARDENING] DependencyPinnerAgent — exact version locking
     try:
@@ -1953,20 +1959,26 @@ IF (task == "GRAVITY_REFACTOR"):
         ctx.report("System", 0, False, f"Registry failure: {e}")
     
     # [FORENSICS] Add SovereignForensicsAgent to monitors
-    forensics_agent = SovereignForensicsAgent(
-        project_root=project_root,
-        ctx=ctx  # Provides access to report[], traces, audit_log
-    )
-    monitors.append(forensics_agent)
-    print(f"     [+] SovereignForensicsAgent armed with full ValidationContext")
+    try:
+        forensics_agent = SovereignForensicsAgent(
+            project_root=project_root,
+            ctx=ctx  # Provides access to report[], traces, audit_log
+        )
+        monitors.append(forensics_agent)
+        print(f"     [+] SovereignForensicsAgent armed with full ValidationContext")
+    except Exception as e:
+        print(f"     [!] SovereignForensicsAgent skipped: {e}")
     
     # [REDIS TERRITORY GATEWAY] Add RedisSovereignAgent for state persistence & cache purity
-    redis_agent = RedisSovereignAgent(
-        project_root=project_root,
-        ctx=ctx  # Critical: Access to final traces, reports, and audit_log
-    )
-    monitors.append(redis_agent)
-    print(f"     [+] RedisSovereignAgent armed with ValidationContext for eternal state sync")
+    try:
+        redis_agent = RedisSovereignAgent(
+            project_root=project_root,
+            ctx=ctx  # Critical: Access to final traces, reports, and audit_log
+        )
+        monitors.append(redis_agent)
+        print(f"     [+] RedisSovereignAgent armed with ValidationContext for eternal state sync")
+    except Exception as e:
+        print(f"     [!] RedisSovereignAgent skipped: {e}")
     
     # [L4 MEMORY HARDENING] MemoryArchitect — persistent state shaping
     try:
