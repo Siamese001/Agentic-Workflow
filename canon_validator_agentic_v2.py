@@ -19,6 +19,7 @@ import asyncio
 import importlib
 import inspect
 import logging
+import re
 import time
 import traceback
 from pathlib import Path
@@ -34,9 +35,6 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
-import sys
-from pathlib import Path
-
 # 1. Resolve Absolute Project Root by looking for the .env 'Soul' of the project
 current_file_path = Path(__file__).resolve()
 project_root = None
@@ -722,16 +720,152 @@ def _remove_empty_dirs(path: Path):
         gitkeep = path / ".gitkeep"
         if gitkeep.exists():
             gitkeep.unlink(missing_ok=True)
+            print(f"      [✓] Removed .gitkeep sentinel: {gitkeep}")
         
         # 4. Now safely remove the empty directory
         try:
             path.rmdir()
+            print(f"      [✓] PURGED ghost folder: {path}")
         except OSError:
             # [DEBUG] Only silence if truly not empty after purge
             if list(path.iterdir()):
                 print(f"   [!] Failed to remove {path} - still contains files after purge")
             else:
-                print(f"   [!] rmdir failed on empty {path} - possible permission/issue")
+                print(f"   [!] rmdir failed on empty {path} - permission/filesystem issue")
+
+
+def _update_gitignore_for_purge(project_root: Path):
+    """
+    [L6 INTEGRITY] Ensure purge artifacts (*.archived) are permanently ignored by git.
+    Idempotently inserts a clear, dated, commented entry in .gitignore.
+    Preserves existing content and avoids duplicates.
+    """
+    if not RUN_HIERARCHY_HEALING:
+        return
+
+    gitignore_path = project_root / ".gitignore"
+    purge_pattern = "*.archived"
+    marker_comment = "# [CANON VALIDATOR] Sovereign purge artifacts — do not remove"
+    dated_comment = f"# Auto-generated on {time.strftime('%Y-%m-%d')} by canon validator"
+
+    try:
+        if gitignore_path.exists():
+            content = gitignore_path.read_text(encoding="utf-8")
+            lines = content.splitlines()
+        else:
+            lines = []
+            print(f"   [INFO] Creating new .gitignore at {gitignore_path}")
+
+        # Check if pattern or marker already exists
+        pattern_exists = any(purge_pattern in line for line in lines)
+        marker_exists = any(marker_comment in line for line in lines)
+
+        if pattern_exists or marker_exists:
+            print(f"   [OK] .gitignore already configured for purge artifacts")
+            return
+
+        # Find first non-comment line for strategic insertion
+        insert_idx = 0
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped and not stripped.startswith("#"):
+                insert_idx = i
+                break
+            if i > 50:  # Safety guard: don't scan forever
+                break
+
+        new_lines = lines[:insert_idx] + ["", marker_comment, dated_comment, purge_pattern, ""] + lines[insert_idx:]
+        new_content = "\n".join(new_lines).rstrip() + "\n"
+
+        gitignore_path.write_text(new_content, encoding="utf-8")
+        print(f"   [✓] .gitignore hardened: added {purge_pattern} with sovereign marker")
+    except Exception as e:
+        print(f"   [!] Failed to update .gitignore: {e}")
+
+
+def _purge_orphaned_files(project_root: Path):
+    """
+    [L6 HARDENING] Purge code and assets in forbidden or root-level locations.
+    Only files with no legal home are archived — sovereign territory protected.
+    """
+    if not RUN_HIERARCHY_HEALING:
+        return {"purged": 0, "errors": []}
+
+    # [GIT INTEGRATION] Ensure purge artifacts are ignored
+    _update_gitignore_for_purge(project_root)
+
+    purged_count = 0
+    errors = []
+
+    # Define allowed sovereign roots derived from Master Constitution (SSOT)
+    allowed_roots = {"agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"}
+
+    print("   [L6 PURGE] Scanning for orphaned assets (code + config) outside sovereign territory...")
+
+    # [EXTENSION] Common file types to purge if misplaced
+    purge_patterns = [
+        "*.py", "*.pyc",                                 # Code & bytecode
+        "*.txt", "*.md", "*.rst",                        # Docs
+        "*.json", "*.yaml", "*.yml", "*.toml", "*.ini",  # Config
+        "*.sh", "*.bat", "*.ps1",                        # Scripts
+        "*.csv", "*.tsv",                                # Data
+        "*.log",                                         # Logs
+        ".*",                                            # Dotfiles
+        # [BINARY EXTENSION] Common binary/media artifacts
+        "*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.ico", "*.webp",  # Images
+        "*.pdf", "*.docx", "*.xlsx", "*.pptx",           # Documents
+        "*.zip", "*.tar", "*.gz", "*.rar", "*.7z",       # Archives
+        "*.exe", "*.dll", "*.so", "*.dylib",             # Binaries
+        "*.mp3", "*.mp4", "*.wav", "*.avi", "*.mov",     # Media
+        "*.bin", "*.dat", "*.obj", "*.pdb"               # Generic binaries/debug
+    ]
+
+    orphaned_files = []
+    for pattern in purge_patterns:
+        orphaned_files.extend(project_root.rglob(pattern))
+
+    seen = set()
+    for file_path in orphaned_files:
+        if file_path in seen or not file_path.is_file():
+            continue
+        seen.add(file_path)
+
+        try:
+            rel_path = file_path.relative_to(project_root)
+            parts = rel_path.parts
+
+            # Skip if in allowed sovereign root
+            if parts and parts[0] in allowed_roots:
+                continue
+
+            # Skip explicitly protected root files
+            if len(parts) == 1 and file_path.name in ROOT_PROTECTED_FILES:
+                continue
+
+            # Skip if in PROTECTED_FOLDERS (Preserve data/archives voids)
+            if parts and parts[0] in PROTECTED_FOLDERS:
+                if parts[0] in {"data", "archives"}:
+                    continue
+                print(f"      [⚠]  ORPHANED IN {parts[0].upper()}: {rel_path}")
+            elif len(parts) == 1:
+                print(f"      [⚠]  ORPHANED ROOT FILE: {file_path.name}")
+            else:
+                continue
+
+            # [PHYSICAL PURGE] Archive the file
+            backup_path = file_path.with_name(file_path.name + ".archived")
+            if not backup_path.exists():
+                file_path.rename(backup_path)
+                print(f"      [✓] ARCHIVED & PURGED: {file_path.name} → {backup_path.name}")
+            else:
+                file_path.unlink()
+                print(f"      [✓] PURGED (backup exists): {file_path.name}")
+            purged_count += 1
+        except Exception as e:
+            errors.append(f"Failed to purge {file_path}: {e}")
+
+    print(f"   [L6 PURGE] Complete: {purged_count} orphaned files archived/purged")
+    return {"purged": purged_count, "errors": errors}
 
 
 # ==============================================================================
@@ -795,6 +929,12 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
             hierarchy_violations_after = [v for v in hierarchy_violations_after if '.git' not in str(v[0]) and '__init__.py' not in str(v[0])]
             results["hierarchy"] = len(hierarchy_violations_after)
             print(f"   [POST-HEALING] {results['hierarchy']} hierarchy violations remaining")
+
+    # [L6 FINAL PURGE] Eliminate orphaned root-level and misplaced .py files
+    purge_results = _purge_orphaned_files(project_root)
+    results["purged_orphans"] = purge_results["purged"]
+    if purge_results["errors"]:
+        results.setdefault("errors", []).extend(purge_results["errors"])
     
     # Check 3: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
@@ -2565,9 +2705,6 @@ async def _execute_move_instruction(move: dict, project_root: Path, ctx):
         project_root: Project root path
         ctx: Context object for reporting
     """
-    import shutil
-    from pathlib import Path
-    
     source_path = Path(move['source'])
     target_path = project_root / move['target']
     
