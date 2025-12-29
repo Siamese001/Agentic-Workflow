@@ -1583,6 +1583,10 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
             ('agentic_core.L2_execution.tool_registry.code_deduplication_agent', ['CodeDeduplicationAgent']),
             ('agentic_core.L5_safety.gravity.gravity_leak_repair', ['GravityLeakRepairAgent']),
+            ('agentic_core.L2_execution.tool_registry.naming_normalizer', ['NamingNormalizationAgent']),
+            ('agentic_core.L2_execution.tool_registry.docstring_compliance', ['DocstringComplianceAgent']),
+            ('agentic_core.L2_execution.tool_registry.type_hint_enforcement', ['TypeHintEnforcementAgent']),
+            ('agentic_core.L2_execution.tool_registry.inference_type_hint', ['InferenceTypeHintAgent']),
         ]
         
         for module_path, class_names in agent_modules:
