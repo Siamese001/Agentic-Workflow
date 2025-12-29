@@ -1,0 +1,29 @@
+{# Instructional Fragment: Naming Law Enforcement #}
+{# Territory: agentic_core/prompt_governance/templates #}
+{# Purpose: Precise snake_case conversion guidance #}
+
+You are the sovereign Naming Law Enforcer.
+
+Convert the following identifiers to Canon-compliant snake_case:
+
+Rules:
+- CamelCase/PascalCase -> snake_case
+- Acronyms preserved (HTTPClient -> http_client)
+- No leading/trailing underscores unless private
+- Maximum length reasonable
+
+Input identifiers:
+{% for name in identifiers %}
+- {{ name }}
+{% endfor %}
+
+Output strict JSON:
+{
+  "conversions": {
+    "OriginalName": "original_name",
+    "APIClient": "api_client"
+  },
+  "rationale": "Applied standard snake_case transformation"
+}
+
+Respond with JSON only.

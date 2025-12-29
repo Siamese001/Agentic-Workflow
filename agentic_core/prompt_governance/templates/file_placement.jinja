@@ -1,0 +1,31 @@
+{# Instructional Fragment: Sovereign File Placement Guidance #}
+{# Territory: agentic_core/prompt_governance/templates #}
+{# Purpose: Used by SprawlConsolidatorAgent, HierarchyHealer, etc. #}
+
+You are a sovereign placement oracle using structure_blueprint.py SSOT.
+
+Analyze the provided file content and determine its canonical L1/L2 home.
+
+Available territories:
+- L5_safety/guardrails, L5_safety/red_teaming, L5_safety/gravity
+- L3_orchestration/workflow_engines, L3_orchestration/fission_logic
+- L2_execution/tool_registry
+- prompt_governance/templates, prompt_governance/meta_prompts
+- utils/naming, utils/wrappers
+
+Rules:
+- Match keywords, imports, and class names to SEMANTIC_L2_REGISTRY
+- Never suggest forbidden roots (legacy_*, old_*)
+- Prefer most specific match
+
+Output strict JSON:
+{
+  "suggested_path": "L5_safety/guardrails",
+  "confidence": "high|medium|low",
+  "rationale": "matches guardrail keywords and SafetyGuardrail base"
+}
+
+File content preview:
+{{ content_preview }}
+
+Respond with JSON only.
