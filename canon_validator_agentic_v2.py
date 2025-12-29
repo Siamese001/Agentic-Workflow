@@ -1568,6 +1568,7 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ]),
             ('agentic_core.L3_orchestration.workflow_engines.architecture_governor', ['ArchitectureGovernor']),
             ('agentic_core.L3_orchestration.workflow_engines.fission_manager', ['FissionManager']),
+            ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
         ]
         
         for module_path, class_names in agent_modules:
@@ -1592,31 +1593,34 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             continue
             
         try:
-            # Try different initialization patterns
+            # [L6 HARDENING] SIGNATURE-MATCHED ACTIVATION GATE
+            # Instead of brute-force patterns, we introspect the agent's requirements
+            # to bind the mission's runtime state (ctx, project_root) exactly as needed.
             instance = None
+            sig = inspect.signature(agent_class.__init__)
+            params = sig.parameters
             
-            # Pattern 1: project_root only (ArchitectureGovernor, FissionManager)
+            kwargs = {}
+            # Dynamically satisfy the agent's contract using available runtime context
+            if 'ctx' in params:
+                kwargs['ctx'] = ctx
+            if 'project_root' in params:
+                kwargs['project_root'] = project_root
+            if 'name' in params and params['name'].default == inspect.Parameter.empty:
+                kwargs['name'] = cls_name
+
+            # Attempt activation
             try:
-                instance = agent_class(project_root=project_root)
-                print(f"   [+] {cls_name} ARMED (project_root)")
-            except TypeError:
-                pass
-            
-            # Pattern 2: No args (simple agents)
-            if instance is None:
-                try:
+                instance = agent_class(**kwargs)
+                print(f"   [OK] {cls_name} ACTIVATED -> Signature Matched.")
+            except TypeError as te:
+                # Fallback for ultra-legacy agents with zero-arg constructors
+                if not kwargs:
                     instance = agent_class()
-                    print(f"   [+] {cls_name} ARMED (bare)")
-                except TypeError:
-                    pass
-            
-            # Pattern 3: ctx parameter (SubAtomic agents)
-            if instance is None:
-                try:
-                    instance = agent_class(ctx=ctx, name=cls_name)
-                    print(f"   [+] {cls_name} ARMED (ctx)")
-                except TypeError:
-                    pass
+                    print(f"   [OK] {cls_name} ACTIVATED -> Legacy Fallback.")
+                else:
+                    print(f"   [!] {cls_name} ARMING FAILED: Contract mismatch. {te}")
+                    continue
             
             # Add to crew if successfully instantiated
             if instance is not None:
@@ -1632,14 +1636,14 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     print(f"   [OK] {len(ctx.cleaning_crew)} healing agents armed for mutation")
     
     if not ctx.cleaning_crew:
-        print(f"   [!] CRITICAL: No healing agents — mutation disabled")
+        print(f"\n[CRITICAL FAILURE] SOVEREIGNTY VOID: 0 Agents loaded.")
+        print("   -> Key Enforcement requires an active cleaning crew.")
+        print("   -> Verification of 50-keys is IMPOSSIBLE without agents.")
+        # [ETERNAL GUARD] Prevent False Positive Pass
+        ctx.report("System", 0, False, "Mission aborted: Zero agents armed. Verification invalid.")
+        return # Terminate the mission early
 
-    # --- CRITICAL SAFETY CHECK ---
-    if not ctx.cleaning_crew:
-        print("\n[CRITICAL FAILURE] 0 Agents loaded. Mission Aborted.")
-        print("   -> Check if the Import Shim (Diff 1) was applied correctly.")
-        return # Halt execution
-    # -----------------------------
+    print(f"   [OK] {len(ctx.cleaning_crew)} agents armed. Keys are now ENFORCED.")
     
     # Inject "Surgeon Mode" into ArchitectureGovernor
     surgeon_prompt = """
@@ -1814,6 +1818,12 @@ IF (task == "GRAVITY_REFACTOR"):
             agent.target_entropy = "ULTRA"
             atomic_validators.append(agent)
             print(f"     [+] EntropyMaximizerAgent HARDENED — signal density absolute")
+            continue
+        
+        # [L2 HYGIENE] HygieneGuardian — batch sanitation (NOT per-file)
+        if name == 'HygieneGuardian':
+            batch_validators.append(agent)
+            print(f"     [+] HygieneGuardian categorized as BATCH validator (sanitation sweep)")
             continue
             
         # [L1 HARDENING] ArchitectureGovernor — per-file structural enforcement
@@ -2359,11 +2369,15 @@ CURRENT CODE:
         
         # === 3. HEALING CASCADE (Async & Resource Safe) ===
         # [SOVEREIGN MUTATION] Cycle through armed healers
-        if hasattr(ctx, 'cleaning_crew') and ctx.cleaning_crew:
+        healers_to_use = atomic_validators if atomic_validators else ctx.cleaning_crew
+        if healers_to_use:
             # Cap rounds at 3 to prevent WinError 1450 resource exhaustion
             for round_idx in range(1, 4):
                 mutated_this_round = False
-                for agent in ctx.cleaning_crew:
+                for agent in healers_to_use:
+                    # Skip agents without heal_violation method (batch agents like HygieneGuardian)
+                    if not hasattr(agent, 'heal_violation'):
+                        continue
                     try:
                         # [CRITICAL] Await the async heal_violation
                         result = await agent.heal_violation(file_path)
@@ -2704,25 +2718,26 @@ groups:
         print(f"   [!] Failed to write alerting rules: {e}")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
-    # [SOVEREIGN HARDENING] Use ctx.report directly (list subclass) and guard against undefined report_list
-    # Safe access to report entries – CallableReport stores in .entries OR is a list
     report_obj = getattr(ctx, 'report', [])
     report_entries = getattr(report_obj, 'entries', report_obj)
     total_violations = len([r for r in report_entries if not r.get("success", True)])
-    
-    if total_violations == 0:
+
+    # [FIX] Perfection requires both zero violations AND active agents
+    if total_violations == 0 and len(ctx.cleaning_crew) > 0:
         print("\n[SOVEREIGN VERDICT] ZERO violations detected across all keys")
         print("    Canon structure: EXACT SSOT match")
         print("    Code purity: ABSOLUTE")
         print("    Cache + Vector DB: ETERNALLY SYNCHRONIZED")
         print("\n[ETERNAL SOVEREIGNTY CONFIRMED — PERFECTION ABSOLUTE]")
+    elif len(ctx.cleaning_crew) == 0:
+        print("\n[SOVEREIGN VERDICT] INVALID PASS: No agents were active to verify integrity.")
+        print("    Status: BREACHED (Process Failure)")
     else:
         print(f"\n[PROGRESS] {total_violations} violations remain - continuing iteration toward zero")
         print("   Tip: Focus on moving root-level files and fixing depth/hierarchy first")
         if total_violations > 0:
             print(f"\n[CONVERGENCE PHASE] {total_violations} violations remain — iteration continues.")
             print("   Re-run the validator to apply further healing rounds.")
-            # Uncomment the line below when ready for zero-tolerance enforcement
             # sys.exit(1)
 
     print("\n[KEY COVERAGE REPORT]")

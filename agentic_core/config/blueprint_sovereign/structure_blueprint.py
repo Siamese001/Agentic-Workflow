@@ -470,7 +470,7 @@ ROOT_WHITELIST: set[str] = set(SOVEREIGN_REGISTRY.keys())
 # Rationale: Upstream sovereign roots (core brain) MUST NOT import from downstream domains (apps, tests).
 # This prevents core contamination while allowing downstream to depend on core.
 GRAVITY_CONFIG = {
-    "enabled": False,  # Master toggle — set False to disable all gravity enforcement
+    "enabled": True,  # Master toggle — set False to disable all gravity enforcement
     "upstream_sovereign_roots": [
         "agentic_core",            # The eternal brain — highest authority
         # Add future sovereign cores here (e.g., "prompt_governance", "schemas")

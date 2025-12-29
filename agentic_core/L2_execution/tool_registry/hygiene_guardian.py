@@ -57,7 +57,7 @@ class HygieneGuardian(CanonBaseAgent):
         Recursively removes empty folders within Sovereign Roots. 
         Ensures 'orphaned' folders from moves are liquidated.
         """
-        from agentic_core.runtime.shared.void_compliance import ALLOWED_ROOT_FOLDERS
+        from agentic_core.runtime.shared_runtime.void_compliance import ALLOWED_ROOT_FOLDERS
         count = 0
         
         for root_folder in ALLOWED_ROOT_FOLDERS:
