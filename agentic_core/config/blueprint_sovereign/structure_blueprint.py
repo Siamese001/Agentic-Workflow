@@ -327,7 +327,9 @@ ROOT_WHITELIST: set[str] = {
     ".pytest_cache", ".ruff_cache", "node_modules", "docs",
     # [SPAN-OF-TWO + DEPTH NOISE SUPPRESSION] Common substructures that trigger false positives
     "Lib", "site-packages", "google", "gapic", "logging", "golden_state",
-    "logs", "processed", "shared", "refs", "remotes", "v"
+    "logs", "processed", "shared", "refs", "remotes", "v",
+    # [VENV NOISE SUPPRESSION] pip package subdirectories
+    "licenses", "src", "pip", "raw", "dist-info"
 }
 
 # Legacy mapping for backward compatibility (internal remap)

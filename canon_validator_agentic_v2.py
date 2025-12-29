@@ -351,6 +351,7 @@ GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
 
 # === PROTECTED FOLDERS: Skip archives and legacy code ===
 # [SSOT] Derived from ROOT_WHITELIST in structure_blueprint.py — single source of truth
+# [RESOURCE SAFETY] Prevent any scan into Git metadata/LFS — avoids WinError 1450
 PROTECTED_FOLDERS = ROOT_WHITELIST
 
 # ==============================================================================
@@ -2615,7 +2616,7 @@ CURRENT CODE:
     
     # [ETERNAL SOVEREIGNTY SEAL] Final Report Banner
     print("\n" + "="*80)
-    print("[L6 ETERNAL SOVEREIGNTY REPORT] December 28, 2025")
+    print("[L6 ETERNAL SOVEREIGNTY REPORT] December 29, 2025")
     print("    All 19 active keys exhaustively enforced recursively")
     print("    Structure matches SSOT exactly — depth, hierarchy, naming")
     print("    Code purity absolute — dead elements pruned")
@@ -2645,7 +2646,7 @@ CURRENT CODE:
 
     # [L6 ALERTING] Auto-generate/update Prometheus alerting rules (idempotent)
     rules_path = project_root / "alert.rules.yml"
-    rules_content = """# alert.rules.yml — Sovereign Canon Validator Alerting Rules (December 28, 2025)
+    rules_content = """# alert.rules.yml — Sovereign Canon Validator Alerting Rules (December 29, 2025)
 groups:
   - name: canon_validator_alerts
     rules:
