@@ -3,21 +3,10 @@ TEST STRUCTURE ALIGNMENT
 Ensures all test directories have __init__.py for Python package recognition.
 """
 import os
-import sys
 
-# Import from proper location
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     TESTS_SUBFOLDER_MAP,
 )
-BLUEPRINT_DIR = r"C:/Git/Agentic-Workflow/agentic_core/config/blueprint_sovereign"
-if BLUEPRINT_DIR not in sys.path:
-    sys.path.append(BLUEPRINT_DIR)
-
-try:
-    from structure_blueprint import TESTS_SUBFOLDER_MAP
-except ImportError:
-    print(f"❌ ERROR: Could not find structure_blueprint.py in {BLUEPRINT_DIR}")
-    sys.exit(1)
 
 def align_tests_structure(root_path):
     print(f"--- ALIGNING TESTS WITH SOVEREIGN LAW ---")
