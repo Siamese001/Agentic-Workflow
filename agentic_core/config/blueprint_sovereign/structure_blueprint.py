@@ -5,7 +5,20 @@ Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
 """
 import os
 import re
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Set
+
+# [KEY EXCEPTION LEDGER] Central SSOT for False Positive Suppression
+# Format: key_id: { "files": set(), "patterns": list() }
+CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {
+    23: {  # Key 23: External HTTP Forbidden
+        "files": {"agentic_core/L2_execution/mcp/fetch_client_sovereign.py"},
+        "patterns": [r"if TYPE_CHECKING:", r"\"\"\".*requests.*\"\"\""]
+    },
+    20: {  # Key 20: Naming Law
+        "files": {"canon_validator_agentic_v2.py", "pyproject.toml"},
+        "patterns": []
+    }
+}
 
 SOVEREIGN_REGISTRY = {
     # === THE LEAN CORE (Depth 3: Root > Layer > Stage > File) ===
