@@ -1941,6 +1941,18 @@ IF (task == "GRAVITY_REFACTOR"):
     else:
         print(f"     [!] PineconeSovereignAgent skipped (Class not loaded)")
     
+    # [ETERNAL REDIS GATEWAY] Add RedisSovereignAgent to monitors for Key 17
+    try:
+        from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+        redis_agent = RedisSovereignAgent(
+            project_root=project_root,
+            ctx=ctx
+        )
+        monitors.append(redis_agent)
+        print(f"     [+] RedisSovereignAgent armed for state synchronization (Key 17)")
+    except Exception as e:
+        print(f"     [!] RedisSovereignAgent failed to arm: {e}")
+    
     # [L4 REPRODUCIBILITY HARDENING] DependencyPinnerAgent — exact version locking
     # NOTE: DependencyPinnerAgent not implemented - skipping
     # try:
