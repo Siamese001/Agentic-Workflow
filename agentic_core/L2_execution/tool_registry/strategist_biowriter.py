@@ -23,6 +23,13 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @dataclass
 class bio_writer_config:
     """TODO: Add docstring."""

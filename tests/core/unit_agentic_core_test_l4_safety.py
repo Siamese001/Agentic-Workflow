@@ -4,6 +4,13 @@ import time
 import logging
 import re
 from typing import Any
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 _logger = logging.getLogger(__name__)
 
 class test_memory_safety:

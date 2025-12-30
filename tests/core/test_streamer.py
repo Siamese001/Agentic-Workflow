@@ -12,6 +12,13 @@ import shutil
 import tempfile
 import pytest
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class mock_validation_context:
     """Lightweight mock of ValidationContext for streamer testing."""
 

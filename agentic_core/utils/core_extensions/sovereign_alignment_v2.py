@@ -5,6 +5,13 @@ import os
 import re
 import shutil
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path.cwd()
 core: Any = ROOT / 'agentic_core'
 migration_map: Any = {'agentic_core/engines': 'agentic_core/L2_execution/P3_engines', 'agentic_core/interfaces': 'agentic_core/L1_cognition/P1_interfaces', 'agentic_core/security': 'agentic_core/L5_safety/P4_security', 'agentic_core/agentic_workflow': 'agentic_core/L3_orchestration/P5_workflow'}

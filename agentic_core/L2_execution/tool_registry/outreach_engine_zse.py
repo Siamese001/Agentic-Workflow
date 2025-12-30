@@ -12,6 +12,13 @@ from agentic_core.utils.P1_core.core_utilities import log_action, register_proce
 from agentic_core.utils.P1_core.networking import get_networking_utility, send_email, strict_egress_filter
 from agentic_core.utils.P1_core.pitch_generator import PitchGenerator
 from agentic_core.utils.P1_core.shadow_mode import ShadowModeEngine
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class exit_reason(Enum):

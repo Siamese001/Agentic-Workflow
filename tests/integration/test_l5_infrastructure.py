@@ -19,6 +19,13 @@ from L4_state.storage import SignalLedger, create_storage_adapter, get_hot_brain
 from L5_safety.intervention_server import InterventionContext, InterventionServer
 from apps_shared.reflection_agent import ReflectionAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 async def test_intervention_server() -> Any:
     """Test the L5 intervention server."""
     print('=' * 80)

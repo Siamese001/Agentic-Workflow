@@ -17,6 +17,13 @@ from agentic_core.L0_maintenance.scripts.canon_validator_config import (
 )
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: ArchitectureGovernor → architecture_governor
 class architecture_governor(SubAtomicAgent):

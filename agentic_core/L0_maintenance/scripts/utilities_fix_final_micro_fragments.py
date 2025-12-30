@@ -2,6 +2,13 @@
 import logging
 from pathlib import Path
 from services.configuration import ConfigurationService
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('c:/Git/Agentic-Workflow')
 micro_fragments: Any = ['apps_rg/L3_orchestration/subatomic_orchestrator.py', 'apps_rg/L3_orchestration/titanium_integration.py', 'apps_rg/L3_orchestration/state/resume_state.py']
 for file_path in ConfigurationService().micro_fragments:

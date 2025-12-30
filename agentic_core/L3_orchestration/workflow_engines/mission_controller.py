@@ -319,7 +319,20 @@ class MissionController:
             try:
                 method = getattr(agent, 'execute', getattr(agent, 'run', None))
                 if method:
-                    res = method()
+                    # Try to pass appropriate args based on method signature
+                    try:
+                        sig = inspect.signature(method)
+                        param_names = list(sig.parameters.keys())
+                        
+                        if 'valid_files' in param_names:
+                            res = method(ctx.python_files)
+                        elif 'ctx' in param_names or (param_names and param_names[0] not in ['self', 'cls']):
+                            res = method(ctx)
+                        else:
+                            res = method()
+                    except (ValueError, TypeError):
+                        res = method()
+                    
                     if inspect.iscoroutine(res):
                         await res
                 print(f"   [<] Finished batch {agent_name}")

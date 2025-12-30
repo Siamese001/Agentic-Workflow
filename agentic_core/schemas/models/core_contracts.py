@@ -8,6 +8,13 @@ from enum import Enum
 from typing import Optional, List, Dict, Any, Literal, Set
 from pydantic import BaseModel, Field, ConfigDict, validator, field_validator
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 # === SOVEREIGN SEVERITY LEVELS – Phase 12 (Dec 26, 2025) ===
 # Canonical SSOT for SovereignEvent.severity.
 # NAMING FIXED: SovereignSeverity → sovereign_severity

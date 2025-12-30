@@ -7,6 +7,13 @@ import pytest
 from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy, create_gitkraken_healing_strategy
 from agentic_core.config.P1_core.sovereign_config import config
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_git_kraken_healing_strategy:
     """Test suite for GitKraken Healing Strategy."""
 

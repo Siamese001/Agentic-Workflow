@@ -3,6 +3,13 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 @pytest.mark.integration
 # NAMING FIXED: TestSovereignConflictResolution → test_sovereign_conflict_resolution

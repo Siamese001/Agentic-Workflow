@@ -4,6 +4,13 @@ Adds proper imports from corresponding *_types.py files.
 """
 import re
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 type_import_fixes: Any = {'agent_gym_impl.py': {'module': 'agentic_core.L3_orchestration.training.agent_gym_types', 'types': ['GoldenStateEvaluator', 'JudgeEvaluator', 'TrainingScenario', 'BenchmarkResult', 'PerformanceMetrics']}}

@@ -9,6 +9,13 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class tool_execution_error(Exception):

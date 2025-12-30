@@ -10,6 +10,13 @@ from agentic_core.L1_cognition.P1_interfaces import ExecutionContext, ExecutionR
 from agentic_core.L1_cognition.episodic_memory import EpisodicMemory
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class mock_cognitive_plane:
     """Mock cognitive plane for testing."""
 

@@ -12,6 +12,13 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class structural_engineer(CanonBaseAgent):
     """
     Structural Engineer validates code structure and organization.

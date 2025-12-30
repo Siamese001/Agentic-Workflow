@@ -18,6 +18,13 @@ from canon_validator_engine import execute_cost_governed_vulnerability_check
 
 # Import shared test utilities
 from hydrofoil_test_utils import (
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
     create_hydrofoil_validator,
     create_hydrofoil_validator_no_whitelist,
 )

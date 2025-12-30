@@ -3,6 +3,13 @@ import re
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 mission_runner: Any = ROOT / 'agentic_core/L3_orchestration/mission_runner.py'
 

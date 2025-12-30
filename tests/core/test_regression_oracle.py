@@ -11,6 +11,13 @@ import importlib
 mod: Any = importlib.import_module('agentic_core.L5_safety.P1_red_team')
 get_regression_oracle: Any = mod.get_regression_oracle
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger: Any = logging.getLogger(__name__)
 

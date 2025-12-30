@@ -5,6 +5,13 @@ import os
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""

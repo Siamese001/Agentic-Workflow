@@ -8,23 +8,12 @@ SSOT-aligned with structure_blueprint.py layer ordering.
 import re
 from pathlib import Path
 
+# [SSOT IMPORT] Layer authority from structure_blueprint.py
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
-# Matches structure_blueprint.py subfolders order for agentic_core
-# NAMING FIXED: GRAVITY_LAYERS → gravity_layers
-gravity_layers = [
-    "L0_maintenance",     # Bedrock
-    "config",             # Blueprints
-    "utils",              # Core helpers
-    "runtime",            # Infrastructure
-    "schemas",            # Contracts (if present)
-    "L1_cognition",       # Thought
-    "L2_execution",       # Action
-    "L3_orchestration",   # Management
-    "L4_state",           # Persistence
-    "L5_safety",          # Shield
-    "semantic_memory",    # Long-term context
-    "knowledge"           # RAG assets
-]
+# Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
+gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
 # NAMING FIXED: GravityComplianceValidator → gravity_compliance_validator
 class gravity_compliance_validator:

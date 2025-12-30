@@ -11,6 +11,13 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 async def run_hardened_orchestrator(workflow_id: str, workflow_type: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:

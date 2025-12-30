@@ -6,6 +6,13 @@ from pathlib import Path
 from typing import Any, Dict, List
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer import get_sovereign_prompt_renderer
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class red_team_agent:
     """
     Sovereign red-teaming agent for guardrail penetration testing.

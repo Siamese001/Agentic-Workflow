@@ -29,6 +29,13 @@ except ImportError:
     genai: Any = None
     types: Any = None
 from dotenv import load_dotenv
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 load_dotenv()
 logger: Any = logging.getLogger(__name__)
 

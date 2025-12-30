@@ -12,6 +12,13 @@ from unittest.mock import Mock
 import pytest
 from canon_validator import CanonValidator
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: TestCVA002 → test_cva002
 class test_cva002:

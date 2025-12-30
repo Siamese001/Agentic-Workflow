@@ -4,6 +4,13 @@ Files at Layer/file.py need to move to Layer/Stage/file.py
 """
 import shutil
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 stage_mappings: Any = {'L1_cognition': 'P1_core', 'L2_execution': 'P1_core', 'L3_orchestration': 'P1_core', 'L4_state': 'P1_core', 'L5_safety': 'P1_core', 'memory': 'P1_core', 'patterns': 'P1_core', 'runtime': 'P1_core', 'utils': 'P1_core'}

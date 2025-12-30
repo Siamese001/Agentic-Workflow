@@ -6,6 +6,13 @@ L3 routed, L5 shielded, L6 observable.
 import logging
 from typing import List, Dict, Any, Optional
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class sovereign_git_kraken_mcp_client:

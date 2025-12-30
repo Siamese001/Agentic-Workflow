@@ -6,6 +6,13 @@ import ast
 import sys
 from pathlib import Path
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 # Relative path from repo root or absolute check
 # NAMING FIXED: SSOT_TARGET → ssot_target
 ssot_target = "agentic_core/schemas/models/core_contracts.py"

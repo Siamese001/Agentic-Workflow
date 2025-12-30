@@ -13,6 +13,13 @@ try:
 except ImportError:
     NUMPY_AVAILABLE: Any = False
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 try:
     from google import genai
     from google.genai import types

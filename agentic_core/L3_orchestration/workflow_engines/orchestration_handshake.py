@@ -9,6 +9,13 @@ from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestrator
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class orchestration_handshake(CachedOrchestrator):
     """
     Sovereign handshake protocol — now with deep L3 caching.

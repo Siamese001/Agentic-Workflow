@@ -5,6 +5,13 @@ import os
 import re
 from pathlib import Path
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 def fix_imports_in_file(file_path: Path) -> int:
     """Fix imports in a single file."""
     try:

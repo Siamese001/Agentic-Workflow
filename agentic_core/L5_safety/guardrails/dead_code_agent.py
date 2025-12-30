@@ -23,6 +23,13 @@ from pathlib import Path
 from typing import Dict, Set, List, Tuple, Optional, Any
 from collections import defaultdict
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 logger = logging.getLogger(__name__)
 
 # Try to use native ast.unparse (Python 3.9+) for the most reliable rewrite

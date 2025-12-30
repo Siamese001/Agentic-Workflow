@@ -8,6 +8,13 @@ import re
 from typing import Dict, List, Optional
 from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SemanticCache
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class query_planner:

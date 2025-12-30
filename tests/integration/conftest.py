@@ -8,6 +8,13 @@ from unittest.mock import Mock, MagicMock
 from contextlib import contextmanager
 import pytest
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 @pytest.fixture
 def tmp_sovereign_workspace(tmp_path):

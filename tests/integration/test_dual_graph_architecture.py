@@ -13,6 +13,13 @@ import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, Any, List
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class mock_sovereign_graph_client:
     """Mock Knowledge Graph client for testing."""
 

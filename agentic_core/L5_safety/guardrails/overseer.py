@@ -8,6 +8,13 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class violation_check:

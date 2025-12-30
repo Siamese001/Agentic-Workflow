@@ -7,6 +7,13 @@ import logging
 import sys
 from pathlib import Path
 import pytest
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger: Any = logging.getLogger(__name__)
 

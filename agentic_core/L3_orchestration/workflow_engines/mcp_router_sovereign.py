@@ -9,6 +9,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class sovereign_mcp_router:

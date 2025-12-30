@@ -5,6 +5,13 @@ import os
 from pathlib import Path
 from typing import Dict, Any
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class organic_territory_seeder_agent:
     """
     Sovereign agent that seeds empty non-code territories with organic, best-practice content.

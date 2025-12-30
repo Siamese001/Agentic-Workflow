@@ -22,6 +22,13 @@ for file_path, stage in tests:
 print('\n✓ Patch 2: canon_validator_agentic_v2.py - Unified Async/Sync Wrapper')
 print('  Checking telemetry wrapper implementation...')
 import ast
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 validator_path: Any = root / 'canon_validator_agentic_v2.py'
 with open(validator_path, 'r', encoding='utf-8') as f:
     content: Any = f.read()

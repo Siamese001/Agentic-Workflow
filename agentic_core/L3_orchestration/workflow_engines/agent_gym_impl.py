@@ -3,6 +3,13 @@ import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
 from agentic_core.L3_orchestration.training.agent_gym_types import BenchmarkResult, GoldenOutput, GoldenStateEvaluator, JudgeEvaluator, PerformanceMetrics, ScenarioType, TrainingScenario, TrainingSession
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class agent_gym:

@@ -11,6 +11,13 @@ import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, Any, List
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # Mock imports for testing
 # NAMING FIXED: MockMCPManager → mock_mcp_manager

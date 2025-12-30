@@ -17,6 +17,13 @@ few_shot_strategic: Any = '\nYou are the StrategicPlanner, an expert in mission 
 from dataclasses import dataclass, field
 from enum import Enum
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class mission_priority(Enum):
     """Mission priority levels."""
     CRITICAL: Any = 'CRITICAL'

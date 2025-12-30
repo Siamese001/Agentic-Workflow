@@ -14,6 +14,13 @@ from typing import Dict, List
 
 from shared.configuration.config import ContentConstraintsConfig
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: ResumeOrchestrator → resume_orchestrator
 class resume_orchestrator:

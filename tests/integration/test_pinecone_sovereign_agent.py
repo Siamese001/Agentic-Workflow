@@ -7,6 +7,13 @@ import os
 from pathlib import Path
 from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.fixture(scope='module')
 def real_agent(tmp_path_factory: Any) -> Any:
     """The real deal: Connects to your live Pinecone account."""

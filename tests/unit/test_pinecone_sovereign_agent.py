@@ -7,6 +7,13 @@ from pathlib import Path
 import numpy as np
 from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.fixture
 def mock_index() -> Any:
     """A sovereign mock of a Pinecone index."""

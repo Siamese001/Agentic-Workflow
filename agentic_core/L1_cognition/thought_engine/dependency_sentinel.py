@@ -8,7 +8,14 @@ import ast
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+
 logger: Any = logging.getLogger(__name__)
+
+# [SSOT DERIVED] Layer names from CORE_SUBFOLDER_MAP
+LAYER_NAMES = [k for k in CORE_SUBFOLDER_MAP.keys() if k.startswith("L")]
 
 class import_analyzer(ast.NodeVisitor):
     """AST visitor to extract import information."""
@@ -19,21 +26,14 @@ class import_analyzer(ast.NodeVisitor):
         self.from_imports: List[Dict] = []
         self.layer = self._determine_layer()
 
-    def _determine_layer(self1) -> str:
-        """Determine which layer the file belongs to."""
+    def _determine_layer(self) -> str:
+        """Determine which layer the file belongs to. Uses SSOT-derived LAYER_NAMES."""
         parts = self.file_path.parts
-        if 'L1_cognition' in parts:
-            return 'L1'
-        elif 'L2_execution' in parts:
-            return 'L2'
-        elif 'L3_orchestration' in parts:
-            return 'L3'
-        elif 'L4_state' in parts:
-            return 'L4'
-        elif 'L5_safety' in parts:
-            return 'L5'
-        else:
-            return 'UNKNOWN'
+        # [SSOT] Check against dynamically derived layer names
+        for layer_name in LAYER_NAMES:
+            if layer_name in parts:
+                return layer_name.split("_")[0]  # Return L0, L1, L2, etc.
+        return 'UNKNOWN'
 
     def visit_Import(self, node: ast.Import) -> Any:
         """Handle import statements."""
