@@ -40,7 +40,7 @@ except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
 
-class reporting_agent:
+class ReportingAgent:
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.
@@ -196,4 +196,4 @@ class reporting_agent:
 
 
 # Uppercase alias for backward compatibility
-ReportingAgent = reporting_agent
+reporting_agent = ReportingAgent

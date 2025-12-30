@@ -29,7 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger = logging.getLogger(__name__)
 
 
-class bootstrap_agent:
+class BootstrapAgent:
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.
@@ -101,5 +101,5 @@ class bootstrap_agent:
         return result
 
 
-# Uppercase alias for backward compatibility
-BootstrapAgent = bootstrap_agent
+# Backward compatibility alias
+bootstrap_agent = BootstrapAgent

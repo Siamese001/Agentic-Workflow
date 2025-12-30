@@ -11,7 +11,7 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
-class healer_agent(CanonBaseAgent):
+class HealerAgent(CanonBaseAgent):
     """
     Healer Agent provides autonomous code repair for any canon violation.
     
@@ -279,3 +279,7 @@ class healer_agent(CanonBaseAgent):
             print(f'      [SAVE] Stored healing pattern for Key {violation_key}')
         except Exception as e:
             print(f'      [!] Failed to store pattern: {e}')
+
+
+# Backward compatibility alias
+healer_agent = HealerAgent

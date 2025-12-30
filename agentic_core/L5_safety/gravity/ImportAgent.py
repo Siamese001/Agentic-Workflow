@@ -86,7 +86,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-class import_agent:
+class ImportAgent:
     """
     Autonomous agent for import convention and gravity compliance.
     Requires file content access → run only on location-valid files.
@@ -324,4 +324,4 @@ class import_agent:
 
 
 # Uppercase alias for backward compatibility
-ImportAgent = import_agent
+import_agent = ImportAgent

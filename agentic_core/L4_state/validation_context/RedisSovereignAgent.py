@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
-class redis_sovereign_agent:
+class RedisSovereignAgent:
     """
     Sovereign Redis controller — hardened, monitored, eternal.
     """
@@ -106,4 +106,4 @@ class redis_sovereign_agent:
             ctx.report("RedisCache", 1, True, f"Redis online ({mem})")
 
 # Uppercase alias for backward compatibility
-RedisSovereignAgent = redis_sovereign_agent
+redis_sovereign_agent = RedisSovereignAgent

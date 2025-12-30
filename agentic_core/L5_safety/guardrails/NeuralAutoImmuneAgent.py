@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict
 import redis
 
-class neural_auto_immune_agent:
+class NeuralAutoImmuneAgent:
     """
     Sovereign auto-immune response — isolates territories after repeated breaches.
     """
@@ -75,3 +75,7 @@ class neural_auto_immune_agent:
         else:
             print('   [OK] AutoImmune: Shield status green. No outbreaks.')
             ctx.report('AutoImmune', 1, True, 'No repeated breaches detected.')
+
+
+# Backward compatibility alias
+neural_auto_immune_agent = NeuralAutoImmuneAgent

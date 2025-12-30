@@ -32,7 +32,7 @@ from threading import Lock
 logger = logging.getLogger(__name__)
 
 
-class telemetry_agent:
+class TelemetryAgent:
     """
     Autonomous telemetry emission agent.
     Collects and emits structured events for sovereign observability.
@@ -250,4 +250,4 @@ class telemetry_agent:
 
 
 # Uppercase alias for backward compatibility
-TelemetryAgent = telemetry_agent
+telemetry_agent = TelemetryAgent

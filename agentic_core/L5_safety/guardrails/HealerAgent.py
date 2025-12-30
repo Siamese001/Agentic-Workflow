@@ -73,7 +73,7 @@ class ImportUpdater(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-class healer_agent:
+class HealerAgent:
     """
     Autonomous Conductor for structural healing.
     """
@@ -600,4 +600,4 @@ class healer_agent:
 
 
 # Uppercase alias for backward compatibility
-HealerAgent = healer_agent
+healer_agent = HealerAgent

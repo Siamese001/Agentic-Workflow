@@ -54,7 +54,7 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
-class location_agent:
+class LocationAgent:
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -163,5 +163,5 @@ class location_agent:
         return all_violations
 
 
-# Uppercase alias for backward compatibility
-LocationAgent = location_agent
+# Backward compatibility alias
+location_agent = LocationAgent

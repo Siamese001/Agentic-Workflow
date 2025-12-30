@@ -68,13 +68,15 @@ class ComplianceOrchestrator:
         self._abstract_skipped_count = 0
         self._duplicate_skipped_count = 0
 
-        # [ULTRA HARDENING] Mandatory agent registry (SSOT) - snake_case to match actual naming
+        # [ULTRA SOVEREIGN CANON - FINAL PASCALCASE ENFORCEMENT]
+        # All agent classes MUST be named XxxAgent (PascalCase) with matching filename XxxAgent.py
+        # Any deviation will cause hard rejection and sovereignty breach.
         self.MANDATORY_AGENTS: Set[str] = {
-            "bootstrap_agent", "location_agent", "hierarchy_agent", "import_agent",
-            "naming_agent", "tracing_agent", "metrics_agent",
-            "healer_agent", "key_mapping_agent", "reporting_agent",
-            "neural_auto_immune_agent", "meta_learning_agent", "filesystem_agent",
-            "redis_sovereign_agent", "telemetry_agent"
+            "BootstrapAgent", "LocationAgent", "HierarchyAgent", "ImportAgent",
+            "NamingAgent", "TracingAgent", "MetricsAgent",
+            "HealerAgent", "KeyMappingAgent", "ReportingAgent",
+            "NeuralAutoImmuneAgent", "MetaLearningAgent", "FilesystemAgent",
+            "RedisSovereignAgent", "TelemetryAgent"
         }
 
         # [GRAVITY AUTHORITY] Layer rank (lower = higher authority) - derived from SSOT
@@ -195,7 +197,8 @@ class ComplianceOrchestrator:
             print(f"    {len(missing)} critical agents not discovered:")
             for agent in sorted(missing):
                 print(f"      • {agent} — REQUIRED FOR CANON COMPLIANCE")
-            print(f"    [ACTION REQUIRED] Verify file existence, naming, and __init__ signature")
+            print(f"    [ACTION REQUIRED] All agents must use PascalCase 'XxxAgent' naming")
+            print(f"    Legacy snake_case (_agent) is no longer tolerated — rename classes and files")
             print(f"    Discovery will continue but sovereignty is COMPROMISED")
         else:
             print(f"\n[OK] [ETERNAL SOVEREIGNTY] All {len(self.MANDATORY_AGENTS)} mandatory agents discovered")
@@ -224,12 +227,13 @@ class ComplianceOrchestrator:
                 if attr_name.endswith("Agent"):
                     pass  # Canon-compliant
                 elif attr_name.endswith("_agent"):
-                    # Check if this is a mandatory agent - allow temporarily
-                    if attr_name in [name.lower() for name in self.MANDATORY_AGENTS]:
-                        print(f"      [!] MANDATORY LEGACY: {attr_name} uses deprecated snake_case — rename to {attr_name.rsplit('_', 1)[0]}Agent")
-                    else:
-                        print(f"      [!] LEGACY NAMING: {attr_name} uses deprecated snake_case — rename to {attr_name.rsplit('_', 1)[0]}Agent")
-                        continue  # STRICT REJECTION — force migration to PascalCase
+                    # [ULTRA HARDENED - ZERO TOLERANCE]
+                    # All snake_case agents are now HARD REJECTED — no legacy path
+                    print(f"      [!] SOVEREIGNTY BREACH: Rejected snake_case class '{attr_name}'")
+                    print(f"         -> Must be renamed to PascalCase: {attr_name.replace('_', '').capitalize()}Agent")
+                    print(f"         -> File must be renamed accordingly: {attr_name}.py → {attr_name.replace('_', '').capitalize()}Agent.py")
+                    # Do NOT instantiate or register — full purge
+                    continue
                 else:
                     continue
                 
