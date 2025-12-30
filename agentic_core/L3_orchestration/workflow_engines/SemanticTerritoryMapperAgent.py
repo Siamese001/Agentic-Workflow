@@ -13,7 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIG
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
 territory_examples: Any = {'agentic_core/L1_cognition': 'strategy planning reasoning mission decomposition', 'agentic_core/L3_orchestration': 'fission orchestration routing workflow manager', 'agentic_core/L4_state': 'memory cache pinecone redis historian audit', 'agentic_core/L5_safety': 'guardrail safety policy enforcer filter', 'apps_rg/agents': 'resume ranking narrative scoring jd match', 'apps_lic/agents': 'license compliance workflow validation', 'apps_shared/utils': 'shared helper validation adapter', 'scripts': 'operational tool cli integrity backup deploy'}
 
-class semantic_territory_mapper_agent:
+class SemanticTerritoryMapperAgent:
     """
     The Intelligent Brain that maps files to semantic territories
     using real Gemini embeddings and vector similarity search.

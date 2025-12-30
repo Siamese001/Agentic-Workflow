@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: MissionResumeAgent → mission_resume_agent
-class mission_resume_agent:
+class MissionResumeAgent:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path = None, mission_id: str = None):

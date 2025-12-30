@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 # NAMING FIXED: SovereignWatchdogAgent → sovereign_watchdog_agent
-class sovereign_watchdog_agent:
+class SovereignWatchdogAgent:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):

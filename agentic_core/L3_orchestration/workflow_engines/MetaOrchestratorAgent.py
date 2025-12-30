@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer import get_sovereign_prompt_renderer
 
-class meta_orchestrator_agent:
+class MetaOrchestratorAgent:
     """
     Sovereign apex orchestrator — the central command for all meta-governance:
     - Synthesizes convergence planning, immune response, and agent prioritization.

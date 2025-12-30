@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: TestGeneratorAgent → test_generator_agent
-class test_generator_agent(CanonBaseAgent):
+class TestGeneratorAgent(CanonBaseAgent):
     """
     Validates Canon Key 47: QA & Telemetry.
     Ensures that every high-signal file has a corresponding test coverage path.

@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer import get_sovereign_prompt_renderer
 from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry
 
-class autonomous_prompt_evolution_agent:
+class AutonomousPromptEvolutionAgent:
     """
     Sovereign agent for autonomous evolution of prompt templates.
 

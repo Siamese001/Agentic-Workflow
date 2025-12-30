@@ -8,9 +8,9 @@ DDD Compliance:
 - Enables architectural testing without external dependencies
 """
 from typing import Any, Dict, List
-from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+from apps_shared.class_agent_interface import CanonBaseAgentInterface
 
-class mock_canon_base_agent(CanonBaseAgentInterface):
+class BaseAgentsMockCanonAgent:
     """
     Zero-cost mock implementation for architectural testing.
     

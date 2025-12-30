@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class scripts_consolidator_agent:
+class ScriptsConsolidatorAgent:
     """L3 Orchestration: Scripts Consolidation"""
 
     def __init__(self, project_root: Path=None):

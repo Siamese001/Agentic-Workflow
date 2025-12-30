@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class git_agent:
+class GitAgent:
     """
     Agent for managing git operations and remote synchronization.
 

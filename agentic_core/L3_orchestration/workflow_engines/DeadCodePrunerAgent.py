@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class dead_code_pruner_agent:
+class DeadCodePrunerAgent:
     """L3 Orchestration: Dead Code Pruning"""
 
     def __init__(self, project_root: Path=None):

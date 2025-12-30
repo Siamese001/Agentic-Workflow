@@ -6,7 +6,7 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class reflection_agent:
+class ReflectionAgent:
     """
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).

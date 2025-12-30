@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class debugger_agent:
+class DebuggerAgent:
     """
     Introspective maintenance agent that uses telemetry MCP tools
     to debug and fix issues in the system.

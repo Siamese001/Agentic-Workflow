@@ -32,7 +32,7 @@ def validate_research_output_local(output: DeepResearchOutput) -> bool:
     return len(output.content) > 100 and getattr(output, 'confidence_score', 0.0) > 0.5
 k25_reasoning_config: Any = {'temperature': 0.3, 'max_tokens': 4000, 'model': 'gpt-4', 'timeout': 30, 'rag_hops': 5, 'claim_verification_mode': claim_verification_mode.STRICT, 'self_consistency': True}
 
-class k25_deep_research_agent:
+class K25ResearchAgent:
     """Deep research agent for K.2.5 hop execution.
 
     Performs comprehensive research on companies including financial,
