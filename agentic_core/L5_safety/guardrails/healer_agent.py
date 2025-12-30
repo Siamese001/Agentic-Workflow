@@ -6,48 +6,46 @@ Applies safe fixes for detected violations:
 - Remove unused imports (ImportAgent detections)
 - Fission oversized files (>800 lines) into sub-atomic modules
 - Fusion undersized dust files (<80 lines) into meaningful modules
-- Update imports in affected files (same-directory + **cross-directory**)
-- Clean empty directories
+- Update imports in affected files (same-directory + cross-directory)
+- Clean empty directories and purge non-code clutter
 
 Operates under strict guardrails:
-- Backup all changes
+- Backup all changes to .sovereign_healing_backup/
 - Respect HEALING_CONFIG budgets (max_moves, max_fissions)
 - Deletion guardrail (line limits)
-- Dry-run mode
+- Dry-run mode for mission preview
 
-Placed in L5_safety/guardrails per SSOT:
+Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
 
-Depth: agentic_core/L5_safety/guardrails/healer_agent.py → 4 parts → compliant
+Depth: agentic_core/L5_safety/guardrails/healer_agent.py -> 4 parts -> compliant
 """
-import shutil
-import os
 import ast
+import shutil
+import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import List, Tuple, Dict, Any, Set, Optional
+from typing import List, Dict, Set, Tuple, Any, Optional
 from datetime import datetime
-import logging
 from contextlib import nullcontext
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
-    SOVEREIGN_EXCLUDED_FOLDERS
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    CANON_KEY_TO_FOLDER_MAP
 )
 from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
 
-# Fission constants from canon policy
+logger = logging.getLogger(__name__)
+
+# Canon structural constants
 MAX_LINES_PER_FILE = 800
 MIN_LINES_PER_FILE = 80
 DUST_THRESHOLD = 40
 
-logger = logging.getLogger(__name__)
-
 
 class ImportUpdater(ast.NodeVisitor):
-    """
-    AST visitor to extract used symbols and locate existing import blocks.
-    """
+    """AST engine to verify and suggest import updates."""
     def __init__(self, target_symbols: Optional[Set[str]] = None):
         self.target_symbols = target_symbols or set()
         self.found_usage = False
@@ -84,29 +82,23 @@ class ImportUpdater(ast.NodeVisitor):
 
 class healer_agent:
     """
-    Autonomous healer with full guardrail protection.
-    Applies fixes only after validation phase.
+    Autonomous Conductor for structural healing.
     """
-
     def __init__(self, project_root: Path, dry_run: bool = False):
         self.project_root = project_root.resolve()
         self.dry_run = dry_run
         self.backup_dir = self.project_root / ".sovereign_healing_backup" / datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.moves_applied = 0
-        self.fissions_applied = 0
-        self.imports_cleaned = 0
-        self.fusions_applied = 0
-        self.deletions_applied = 0
+        self.archives_root = self.project_root / "archives"
         
-        from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
-        self.naming_agent = NamingAgent(project_root)
+        self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
+        self.naming_agent = NamingAgent(self.project_root)
 
+        # Healing configuration from SSOT
         self.max_moves = HEALING_CONFIG.get("max_moves_per_run", 5)
         self.max_fissions = HEALING_CONFIG.get("max_fissions_per_run", 3)
         self.max_fusions = HEALING_CONFIG.get("max_fusions_per_run", 20)
-        self.max_deletions = HEALING_CONFIG.get("max_deletions_per_run", 10)
 
-        # Optional observability integration
+        # Observability Linkage
         try:
             from agentic_core.observability.tracing.tracing_agent import tracing_agent as TracingAgent
             from agentic_core.observability.telemetry.telemetry_agent import telemetry_agent as TelemetryAgent
@@ -119,17 +111,17 @@ class healer_agent:
 
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
-            logger.info(f"[HealerAgent] Backup directory: {self.backup_dir}")
+            self.archives_root.mkdir(exist_ok=True)
+            logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
 
     def _backup_file(self, file_path: Path) -> Path:
-        """Create backup copy before mutation."""
-        if self.dry_run:
-            return file_path
+        """Standardized backup procedure for all L5 mutations."""
+        if self.dry_run: return file_path
         rel = file_path.relative_to(self.project_root)
-        backup_path = self.backup_dir / rel
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, backup_path)
-        return backup_path
+        backup = self.backup_dir / rel
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(file_path, backup)
+        return backup
 
     def heal_file_moves(self, move_violations: List[Tuple[Path, str]]) -> List[Dict[str, Any]]:
         """
@@ -235,20 +227,14 @@ class healer_agent:
         return actions
 
     def _extract_symbols(self, content: str) -> Set[str]:
-        """
-        Extract high-signal public symbols for module fusion grouping.
-        """
+        """AST symbol extraction for fusion and fission logic."""
         try:
             tree = ast.parse(content)
         except (SyntaxError, ValueError):
             return set()
-            
-        symbols = set()
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Only track public symbols to determine 'Sovereign Intent'
-                if not node.name.startswith("_"):
-                    symbols.add(node.name)
+        symbols = {node.name for node in ast.walk(tree) 
+                   if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                   and not node.name.startswith("_")}
         return symbols
 
     def _get_intelligent_merged_name(self, files: List[Path], combined_preview: str = None) -> Tuple[str, str, str, str]:

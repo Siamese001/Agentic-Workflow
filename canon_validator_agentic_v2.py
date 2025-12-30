@@ -123,83 +123,55 @@ if not _init_complete and __name__ == "__main__":
     
     _init_complete = True
 
-# === SINGLE, HARDENED TELEMETRY BLOCK (Remove duplicate lower in file) ===
-# Keep only ONE instance – the later duplicate was causing metric registry conflicts
-# NAMING FIXED: MockSpan → mock_span
-class mock_span:
-    '''Brief description of functionality and purpose.'''
-    
-    def __enter__(self): return self
-    def __exit__(self, *args): pass
-    def set_attribute(self, *args): pass
-                    
-    def set_status(self, *args): pass
-                    
-    def record_exception(self, *args): pass
-                    
-    def add_event(self, *args, **kwargs): pass
-                    
-    def end(self): pass
-                    
+# [PHASE 12] TELEMETRY: Delegated to L4/L5 TracingAgent
+# RATIONALE: All OTEL/Mock setup is now managed by the sovereign conductor.
+if ORCHESTRATOR_AVAILABLE:
+    try:
+        from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator
+        orchestrator = compliance_orchestrator(Path.cwd())
+        if hasattr(orchestrator, 'tracing') and orchestrator.tracing:
+            tracer = orchestrator.tracing.get_tracer()
+        else:
+            # Orchestrator exists but no tracing configured
+            class MockSpan:
+                def __enter__(self): return self
+                def __exit__(self, *args): pass
+                def set_attribute(self, *args): pass
+                def end(self): pass
 
-# NAMING FIXED: MockTracer → mock_tracer
-class mock_tracer:
-    '''Brief description of functionality and purpose.'''
-    
-    def start_as_current_span(self, name): return mock_span()
-                    
-    def start_span(self, name): return mock_span()
-                    
+            class MockTracer:
+                def start_as_current_span(self, name): return MockSpan()
+                def start_span(self, name): return MockSpan()
+            
+            tracer = MockTracer()
+    except Exception as e:
+        # Emergency L6 Fallback (Zero-Dependency)
+        class MockSpan:
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def set_attribute(self, *args): pass
+            def end(self): pass
 
-# NAMING FIXED: MockTrace → mock_trace
-class mock_trace:
-    '''Brief description of functionality and purpose.'''
-    
-    def get_tracer(self, name): return mock_tracer()
-                    
-    class Status:
-                    
-        def __init__(self, code, description=None): pass
-    class StatusCode:
-                    
-        ERROR = 1
-        OK = 0
-
-# Default safe mode
-tracer = mock_tracer()
-trace = mock_trace()
-
-try:
-    from opentelemetry import trace as otel_trace
-    from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-    from opentelemetry.trace import set_tracer_provider
-    from opentelemetry.instrumentation.asyncio import AsyncioInstrumentor
-    from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
-    otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-    if otlp_endpoint:
-        resource = Resource(attributes={
-            SERVICE_NAME: "canon-validator-agentic",
-            SERVICE_VERSION: "v2.9",
-        })
-        provider = TracerProvider(resource=resource)
-        provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)))
-        set_tracer_provider(provider)
-        AsyncioInstrumentor().instrument()
-        LoggingInstrumentor().instrument()
-        tracer = otel_trace.get_tracer(__name__)
-        trace = otel_trace
+        class MockTracer:
+            def start_as_current_span(self, name): return MockSpan()
+            def start_span(self, name): return MockSpan()
+        
+        tracer = MockTracer()
         if __name__ == "__main__":
-            print(f"   [OK] Distributed tracing enabled -> {otlp_endpoint}")
-    else:
-        if __name__ == "__main__":
-            print("   [INFO] Distributed tracing disabled (set OTEL_EXPORTER_OTLP_ENDPOINT to enable)")
-except Exception as e:
-    if __name__ == "__main__":
-        print(f"   [!] Telemetry setup failed (non-fatal): {e}")
+            print(f"   [!] TracingAgent setup failed: {e}")
+else:
+    # Emergency L6 Fallback (Zero-Dependency)
+    class MockSpan:
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def set_attribute(self, *args): pass
+        def end(self): pass
+
+    class MockTracer:
+        def start_as_current_span(self, name): return MockSpan()
+        def start_span(self, name): return MockSpan()
+    
+    tracer = MockTracer()
 
 if __name__ == "__main__":
     # [PHASE 1] Bootstrap: Verify Environment and Neural Links

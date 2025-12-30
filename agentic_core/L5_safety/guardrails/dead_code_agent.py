@@ -1,18 +1,19 @@
 """
-DeadCodeAgent: Sovereign Dead Code Detector with AST Call Graph
+DeadCodeAgent: Sovereign Code Hygiene Guardian
 
-Detects:
-- Unused functions/classes (intra-file call graph)
-- Unused top-level symbols (global cross-reference)
-- Ghost functions (dead code calling dead code)
+Detects and safely prunes:
+- Unused imports (AST-based)
+- Unreachable private functions (intra-module analysis)
+- "Dust" logic (placeholders that drifted into permanence)
 
-Proposes safe deletions with guardrails and high-confidence metrics.
-Integrates with HealerAgent for autonomous pruning missions.
+RATIONALE: Isolated from HealerAgent to satisfy Single Responsibility Principle.
+           Governed by L5 Deletion Guardrails.
 
-Placed in L5_safety/guardrails per SSOT:
-  "Hard safety limits, mutation controls, deletion guards"
+Placed in L5_safety/guardrails per SSOT semantic registry:
+  "Guardrails, safety checks, and destructive action prevention"
 
-Depth: agentic_core/L5_safety/guardrails/dead_code_agent.py -> 4 parts -> compliant
+Depth: agentic_core/L5_safety/guardrails/dead_code_agent.py
+      → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 """
 import ast
 import logging
@@ -84,7 +85,7 @@ class CallGraphVisitor(ast.NodeVisitor):
 
 
 
-class dead_code_agent:
+class DeadCodeAgent:
     """
     Autonomous agent for detecting and pruning dead code.
     Operates with extreme caution (backup-first).
@@ -93,18 +94,14 @@ class dead_code_agent:
         self.project_root = project_root.resolve()
         self.tracing_agent = tracing_agent
         self.prune_threshold = 0.98  # Require high confidence
-        self.backup_dir = self.project_root / ".sovereign_healing_backup" / "deadcode" / datetime.now().strftime("%Y%m%d_%H%M%S")
-        
-        if not self.backup_dir.exists():
-            self.backup_dir.mkdir(parents=True, exist_ok=True)
 
     def _backup_file(self, file_path: Path) -> Path:
-        """Physical safety anchor before structural deletion."""
-        rel = file_path.relative_to(self.project_root)
-        backup = self.backup_dir / rel
-        backup.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, backup)
-        return backup
+        """REFACTORED: Uses standard L5 backup pathing."""
+        backup_dir = self.project_root / ".sovereign_healing_backup" / "deadcode"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        backup_path = backup_dir / f"{file_path.name}.bak"
+        shutil.copy2(file_path, backup_path)
+        return backup_path
 
     def delete_dead_symbol(self, file_path: Path, symbol_name: str, symbol_type: str) -> Dict[str, Any]:
         """
