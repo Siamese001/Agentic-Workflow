@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: NeuralAutoImmuneAgent → neural_auto_immune_agent
-class neural_auto_immune_agent:
+class PolicyNeuralAutoImmuneAgent:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):

@@ -288,5 +288,4 @@ class MetricsAgent:
             }
 
 
-# Uppercase alias for backward compatibility
-metrics_agent = MetricsAgent
+# PascalCase is now the canonical name

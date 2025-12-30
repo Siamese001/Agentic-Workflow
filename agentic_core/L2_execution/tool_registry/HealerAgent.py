@@ -281,5 +281,4 @@ class HealerAgent(CanonBaseAgent):
             print(f'      [!] Failed to store pattern: {e}')
 
 
-# Backward compatibility alias
-healer_agent = HealerAgent
+# PascalCase is now the canonical name

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, FORBIDDEN_PATTERNS
 
-class naming_law_healer_agent:
+class NamingLawHealerAgent:
     """
     L1 Cognition: High-Signal Naming Law Healer — Key 49 Sovereign Enforcement
     The "Naming Surgeon" that standardizes file identities by renaming

@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class pre_commit_guardian_agent:
+class PreCommitGuardianAgent:
     """L5 Safety: Pre-Commit Hook Guardian"""
 
     def __init__(self):

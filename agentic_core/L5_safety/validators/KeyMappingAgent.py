@@ -112,5 +112,4 @@ class KeyMappingAgent:
         return results
 
 
-# Uppercase alias for backward compatibility
-key_mapping_agent = KeyMappingAgent
+# PascalCase is now the canonical name

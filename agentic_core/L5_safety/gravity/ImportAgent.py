@@ -323,5 +323,4 @@ class ImportAgent:
         return all_violations
 
 
-# Uppercase alias for backward compatibility
-import_agent = ImportAgent
+# PascalCase is now the canonical name

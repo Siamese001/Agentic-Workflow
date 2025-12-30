@@ -192,5 +192,4 @@ class HierarchyAgent:
         return all_violations
 
 
-# Backward compatibility alias
-hierarchy_agent = HierarchyAgent
+# PascalCase is now the canonical name

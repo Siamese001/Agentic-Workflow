@@ -179,7 +179,7 @@ class FilesystemAgent:
         # PRIORITY 3: Keyword fallback using NamingAgent guidance
         if content_preview:
             try:
-                from agentic_core.utils.naming.NamingAgent import naming_agent as NamingAgent
+                from agentic_core.utils.naming.NamingAgent import NamingAgent
                 naming = NamingAgent(self.project_root)
                 guidance = naming.get_placement_guidance(content_preview)
                 if "/" in guidance:
@@ -290,5 +290,4 @@ class FilesystemAgent:
         }
 
 
-# Uppercase alias for backward compatibility
-filesystem_agent = FilesystemAgent
+# PascalCase is now the canonical name

@@ -20,7 +20,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: SovereignForensicsAgent → sovereign_forensics_agent
-class sovereign_forensics_agent:
+class AuditTrailsSovereignForensicsAgent:
     """
     Sovereign forensics — detects uncontrolled structural drift.
     """

@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
-class pinecone_sovereign_agent:
+class PineconeSovereignAgent:
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
     Centralizes all vector operations to prevent configuration drift.

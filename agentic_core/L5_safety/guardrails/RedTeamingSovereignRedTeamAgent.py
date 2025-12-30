@@ -15,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class sovereign_red_team_agent:
+class RedTeamingSovereignRedTeamAgent:
     """
     Sovereign red team — tests shield integrity via controlled drift injection.
     """

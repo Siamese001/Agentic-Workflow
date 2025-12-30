@@ -388,5 +388,4 @@ class TracingAgent:
                     self.export_trace_to_file(trace_id)
 
 
-# Uppercase alias for backward compatibility
-tracing_agent = TracingAgent
+# PascalCase is now the canonical name

@@ -359,5 +359,4 @@ class DeadCodeAgent:
         }
 
 
-# Lowercase alias for discovery
-dead_code_agent = DeadCodeAgent
+# PascalCase is now the canonical name

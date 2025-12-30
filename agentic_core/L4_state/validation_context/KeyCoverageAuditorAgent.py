@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class key_coverage_auditor_agent:
+class KeyCoverageAuditorAgent:
     """L4 State: Canon Key Coverage Auditing"""
 
     def __init__(self):

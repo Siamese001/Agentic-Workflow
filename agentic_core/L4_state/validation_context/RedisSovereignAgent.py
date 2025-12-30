@@ -105,5 +105,4 @@ class RedisSovereignAgent:
         if ctx:
             ctx.report("RedisCache", 1, True, f"Redis online ({mem})")
 
-# Uppercase alias for backward compatibility
-redis_sovereign_agent = RedisSovereignAgent
+# PascalCase is now the canonical name

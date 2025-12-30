@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import redis
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 territory_examples: Any = {'agentic_core/L1_cognition': 'strategy planning reasoning mission decomposition', 'agentic_core/L3_orchestration': 'fission orchestration routing workflow manager', 'agentic_core/L4_state': 'memory cache pinecone redis historian audit', 'agentic_core/L5_safety': 'guardrail safety policy enforcer filter', 'apps_rg/agents': 'resume ranking narrative scoring jd match', 'apps_lic/agents': 'license compliance workflow validation', 'apps_shared/utils': 'shared helper validation adapter', 'scripts': 'operational tool cli integrity backup deploy'}
 
 class SemanticTerritoryMapperAgent:

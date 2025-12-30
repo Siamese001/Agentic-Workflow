@@ -101,5 +101,4 @@ class BootstrapAgent:
         return result
 
 
-# Backward compatibility alias
-bootstrap_agent = BootstrapAgent
+# PascalCase is now the canonical name

@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, List
 logger: Any = logging.getLogger(__name__)
 
-class global_compliance_aggregator_agent:
+class GlobalComplianceAggregatorAgent:
     """Naming/Compliance: Global Compliance Aggregation"""
 
     def __init__(self):

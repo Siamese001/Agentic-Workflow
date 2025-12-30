@@ -13,7 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class red_team_agent:
+class RedTeamAgent:
     """
     Sovereign red-teaming agent for guardrail penetration testing.
 
