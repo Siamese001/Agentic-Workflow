@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import sys
-'''Brief description of functionality and purpose.'''
+# Canon Validator - Orchestration Entry Point
+# Coordinates L1-L5 components for 50-key canon validation.
+# VERSION 2.9 - SOVEREIGN HARDENING (Fixes: Boot Hangs, NoneType Crashes, Syntax Loops)
+# (Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
 
 import os
 import shutil
@@ -14,12 +17,6 @@ _mission_executed = False
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul")
     sys.stdout.reconfigure(encoding='utf-8')
-"""
-Canon Validator - Orchestration Entry Point
-Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.9 - SOVEREIGN HARDENING (Fixes: Boot Hangs, NoneType Crashes, Syntax Loops)
-(Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
-"""
 
 import asyncio
 import importlib
@@ -266,7 +263,7 @@ dashboard_available = False
 # [GRAVITY FIX] DYNAMIC IMPORT SYSTEM
 # Utils layer cannot import from L1-L5 directly - use dynamic loading
 def dynamic_import(module_path, class_name):
-    """Dynamically import classes to avoid gravity violations"""
+    """Dynamically import classes to avoid gravity violations."""
     try:
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
