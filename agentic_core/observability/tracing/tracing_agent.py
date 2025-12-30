@@ -8,7 +8,8 @@ Features:
 - Start/end timing with duration calculation
 - Status tracking (SUCCESS/ERROR)
 - Attribute and event recording
-- In-memory trace storage with export
+- Span sampling configuration (probability + head-based root sampling)
+- File export of completed traces (JSON, timestamped or single file)
 
 Designed for integration with:
 - ComplianceOrchestrator (root span)
@@ -29,6 +30,8 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 import uuid
 import logging
+import random
+import json
 from threading import Lock
 from contextlib import contextmanager
 
@@ -104,13 +107,128 @@ class tracing_agent:
     """
     Autonomous distributed tracing agent.
     Manages trace context and span lifecycle.
+
+    Supports configurable span sampling:
+    - sample_probability: 0.0 to 1.0 (default 1.0 = 100%)
+    - Root mission spans (e.g., full_compliance_mission) always sampled
+    - Thread-safe runtime updates
+
+    Supports file export of completed traces:
+    - Single file (append mode) or timestamped files
+    - JSON format (array of traces)
+    - Auto-export on mission completion optional
     """
 
-    def __init__(self, project_root: Optional[Path] = None):
+    def __init__(
+        self,
+        project_root: Optional[Path] = None,
+        export_path: Optional[Path] = None,
+        timestamped_exports: bool = True,
+        auto_export_on_mission_end: bool = True
+    ):
         self.project_root = project_root.resolve() if project_root else None
         self._lock = Lock()
         self._spans: Dict[str, span] = {}  # span_id → Span
         self._trace_map: Dict[str, List[str]] = {}  # trace_id → [span_ids]
+        self._sample_probability: float = 1.0  # Default: sample everything
+        self._always_sample_traces: set = set()  # trace_ids to force-sample
+
+        # Export configuration
+        self.export_path = export_path.resolve() if export_path else None
+        self.timestamped_exports = timestamped_exports
+        self.auto_export_on_mission_end = auto_export_on_mission_end
+        self._ensure_export_dir()
+
+        if self.export_path:
+            logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
+
+    def _ensure_export_dir(self) -> None:
+        """Create export directory if configured."""
+        if self.export_path and self.export_path.suffix == "":
+            # It's a directory
+            try:
+                self.export_path.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
+                self.export_path = None
+
+    def _get_export_filepath(self, trace_id: Optional[str] = None) -> Optional[Path]:
+        """Resolve actual export file path."""
+        if not self.export_path:
+            return None
+
+        if self.timestamped_exports:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
+            filename = f"trace_{timestamp}_{trace_id or 'batch'}.json"
+            return self.export_path / filename if self.export_path.is_dir() else self.export_path.parent / filename
+        else:
+            return self.export_path
+
+    def export_trace_to_file(self, trace_id: Optional[str] = None) -> bool:
+        """
+        Export one or all completed traces to file.
+
+        Args:
+            trace_id: Specific trace to export; if None, export all
+
+        Returns:
+            True if export succeeded
+        """
+        if not self.export_path:
+            return False
+
+        try:
+            traces = {trace_id: self.get_trace(trace_id)} if trace_id else self.get_all_traces()
+            if not traces or (trace_id and not traces.get(trace_id)):
+                logger.debug(f"[TracingAgent] No completed trace to export: {trace_id or 'all'}")
+                return False
+
+            export_data = list(traces.values()) if trace_id else list(traces.values())
+            filepath = self._get_export_filepath(trace_id)
+
+            if not filepath:
+                return False
+
+            mode = "a" if not self.timestamped_exports else "w"
+            with open(filepath, mode, encoding="utf-8") as f:
+                if not self.timestamped_exports:
+                    # Append with comma separation for JSON array
+                    if filepath.exists() and filepath.stat().st_size > 0:
+                        f.write(",\n")
+                    else:
+                        f.write("[\n")
+                json.dump(export_data[0] if trace_id else export_data, f, indent=2)
+                if not self.timestamped_exports:
+                    f.write("\n]")
+
+            logger.info(f"[TracingAgent] Trace exported to {filepath}")
+            return True
+
+        except Exception as e:
+            logger.error(f"[TracingAgent] Failed to export trace to file: {e}")
+            return False
+
+    def set_sample_probability(self, probability: float) -> None:
+        """
+        Configure span sampling rate.
+
+        Args:
+            probability: 0.0 (none) to 1.0 (all). Values outside clamped.
+        """
+        if not 0.0 <= probability <= 1.0:
+            logger.warning(f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]")
+            probability = max(0.0, min(1.0, probability))
+
+        with self._lock:
+            old = self._sample_probability
+            self._sample_probability = probability
+
+        logger.info(f"[TracingAgent] Span sampling rate updated: {old:.2%} → {probability:.2%}")
+
+    def force_sample_trace(self, trace_id: str) -> None:
+        """Force all spans in a trace to be sampled (e.g., compliance mission root)."""
+        with self._lock:
+            self._always_sample_traces.add(trace_id)
 
     @contextmanager
     def create_span(
@@ -130,6 +248,22 @@ class tracing_agent:
         """
         if not trace_id:
             trace_id = str(uuid.uuid4())
+
+        # Sampling decision
+        sample = True
+        with self._lock:
+            if trace_id in self._always_sample_traces:
+                sample = True
+            elif self._sample_probability < 1.0:
+                sample = random.random() < self._sample_probability
+
+        if not sample:
+            # No-op span: yield dummy to avoid breaking caller
+            class NoOpSpan:
+                def set_attribute(self, *args): pass
+                def add_event(self, *args): pass
+            yield NoOpSpan()
+            return
 
         span_id = str(uuid.uuid4())
         new_span = span(name, trace_id, span_id, parent_span_id, attributes)
@@ -192,9 +326,17 @@ class tracing_agent:
     def trace_compliance_mission(self, mission_id: str = "manual"):
         """High-level context for full compliance mission."""
         trace_id = str(uuid.uuid4())
+        # Force sampling for root mission trace
+        self.force_sample_trace(trace_id)
+
         attributes = {"mission_id": mission_id, "agent": "ComplianceOrchestrator"}
         with self.create_span("full_compliance_mission", trace_id, attributes=attributes) as root_span:
-            yield root_span, trace_id
+            try:
+                yield root_span, trace_id
+            finally:
+                # Auto-export on mission completion if enabled
+                if self.auto_export_on_mission_end and self.export_path:
+                    self.export_trace_to_file(trace_id)
 
 
 # Uppercase alias for backward compatibility
