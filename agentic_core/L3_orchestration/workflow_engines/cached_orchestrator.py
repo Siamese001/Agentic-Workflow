@@ -8,16 +8,12 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
-    RedisSovereignAgent,
-)
+from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 
 
 # NAMING FIXED: CachedOrchestrator → cached_orchestrator

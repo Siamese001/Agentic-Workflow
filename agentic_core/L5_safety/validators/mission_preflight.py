@@ -44,7 +44,7 @@ class MissionPreflight:
         """Lazy load LocationAgent."""
         if self._location_agent is None:
             try:
-                from agentic_core.L5_safety.validators.location_agent import LocationAgent
+                from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 self._location_agent = LocationAgent(self.project_root)
             except ImportError:
                 pass
@@ -54,7 +54,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
                 pass
@@ -64,7 +64,7 @@ class MissionPreflight:
         """Lazy load ImportAgent."""
         if self._import_agent is None:
             try:
-                from agentic_core.L5_safety.gravity.import_agent import ImportAgent
+                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
                 self._import_agent = ImportAgent(self.project_root)
             except ImportError:
                 pass

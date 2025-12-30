@@ -263,7 +263,7 @@ class MissionController:
     async def _run_sovereign_dashboard(self, ctx: Any) -> None:
         """Run Sovereign Dashboard using ReportingAgent."""
         try:
-            from agentic_core.observability.compliance.reporting_agent import ReportingAgent
+            from agentic_core.observability.compliance.ReportingAgent import ReportingAgent
             reporter = ReportingAgent(self.project_root)
             report = reporter.run_diagnostic_report()
             

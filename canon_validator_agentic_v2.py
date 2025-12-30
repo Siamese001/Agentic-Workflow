@@ -41,7 +41,7 @@ except ImportError as e:
 
 # [BOOTSTRAP] Dynamic bootstrap agent discovery
 try:
-    from agentic_core.L0_maintenance.scripts.bootstrap_agent import bootstrap_agent as BootstrapAgent
+    from agentic_core.L0_maintenance.scripts.BootstrapAgent import BootstrapAgent
     BOOTSTRAP_AVAILABLE = True
 except ImportError:
     print("   [!] BootstrapAgent unavailable — skipping boot verification")
@@ -265,3 +265,7 @@ dashboard_available = False
 def dynamic_import(module_path, class_name):
     """Dynamically import classes to avoid gravity violations."""
     try:
+        module = __import__(module_path, fromlist=[class_name])
+        return getattr(module, class_name)
+    except ImportError:
+        return None

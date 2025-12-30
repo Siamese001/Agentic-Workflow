@@ -21,7 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""
     try:
-        from agentic_core.L5_safety.validators.location_agent import LocationAgent
+        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
         return LocationAgent(root).validate_file_location(path)
     except ImportError:
         return True, "Bootstrap"
