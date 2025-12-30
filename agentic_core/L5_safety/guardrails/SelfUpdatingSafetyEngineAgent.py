@@ -89,7 +89,8 @@ class threat_detection:
     confidence: float
     recommendations: List[str]
 
-class self_updating_safety_engine:
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class SelfUpdatingSafetyEngineAgent:
     """
     Safety engine that learns and adapts to new threats.
     

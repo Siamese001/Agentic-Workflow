@@ -65,7 +65,8 @@ class cost_report:
     estimated_cost_usd: float
     recommendations: List[str]
 
-class predictive_cost_auditor(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class PredictiveCostAuditorAgent(SubAtomicAgent):
     """
     The Efficiency Guard - Predictive Cost Auditor
     

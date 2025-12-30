@@ -48,7 +48,8 @@ class handoff_summary:
     warnings: List[str]
     compressed_context: str
 
-class context_curator(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class ContextCuratorAgent(SubAtomicAgent):
     """
     The Context Curator - Prompt Engineer Agent
     

@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
 @dataclass
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class word_count_constraint:
     """Word count constraint for a section."""
     _min: Optional[int] = None
@@ -23,6 +24,7 @@ class word_count_constraint:
         return True
 
 @dataclass
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class char_count_constraint:
     """Character count constraint for a section."""
     min: Optional[int] = None

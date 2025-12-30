@@ -129,7 +129,8 @@ class healing_diff_analyzer:
             max_depth = max(max_depth, self._calculate_nesting(child, child_depth))
         return max_depth
 
-class memory_architect(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class MemoryArchitectAgent(SubAtomicAgent):
     """
     Autonomous Knowledge Distillation Agent
     

@@ -14,7 +14,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class code_janitor(CanonBaseAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class CodeJanitorAgent(CanonBaseAgent):
     """
     Code Janitor validates syntax, style, and formatting.
     

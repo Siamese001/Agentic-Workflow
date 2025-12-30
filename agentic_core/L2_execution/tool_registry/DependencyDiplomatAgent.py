@@ -46,7 +46,8 @@ class blast_radius:
     total_affected: int
     depth: int
 
-class dependency_diplomat(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class DependencyDiplomatAgent(SubAtomicAgent):
     """
     The Dependency Diplomat - Graph Optimizer
     

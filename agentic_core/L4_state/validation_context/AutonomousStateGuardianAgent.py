@@ -20,8 +20,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: AutonomousStateGuardian → autonomous_state_guardian
-class autonomous_state_guardian:
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class AutonomousStateGuardianAgent:
     """
     L4 State Guardian that autonomously monitors and repairs state corruption.
     
