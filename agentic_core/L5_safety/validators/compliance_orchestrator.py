@@ -47,7 +47,113 @@ class ComplianceOrchestrator:
         self.tracing = None
         self.metrics = None
 
-        self._discover_and_instantiate()
+        # [FULL DISCOVERY] Scan ALL layers for agents
+        self._discover_all_layers()
+
+    def _discover_all_layers(self) -> None:
+        """
+        [FULL REPO DISCOVERY] Scan ALL layers for agents:
+        - L0_maintenance/scripts
+        - L1_cognition/thought_engine
+        - L2_execution/tool_registry
+        - L3_orchestration/workflow_engines
+        - L4_state/validation_context
+        - L5_safety/validators, guardrails, gravity
+        - utils/naming, general_helpers
+        - observability/compliance, metrics, telemetry
+        """
+        print(f"\n[FULL AGENT DISCOVERY] Scanning ALL layers...")
+        
+        # Define ALL agent discovery paths
+        discovery_paths = [
+            ("agentic_core.L0_maintenance.scripts", self.project_root / "agentic_core" / "L0_maintenance" / "scripts"),
+            ("agentic_core.L1_cognition.thought_engine", self.project_root / "agentic_core" / "L1_cognition" / "thought_engine"),
+            ("agentic_core.L2_execution.tool_registry", self.project_root / "agentic_core" / "L2_execution" / "tool_registry"),
+            ("agentic_core.L3_orchestration.workflow_engines", self.project_root / "agentic_core" / "L3_orchestration" / "workflow_engines"),
+            ("agentic_core.L4_state.validation_context", self.project_root / "agentic_core" / "L4_state" / "validation_context"),
+            ("agentic_core.L5_safety.validators", self.project_root / "agentic_core" / "L5_safety" / "validators"),
+            ("agentic_core.L5_safety.guardrails", self.project_root / "agentic_core" / "L5_safety" / "guardrails"),
+            ("agentic_core.L5_safety.gravity", self.project_root / "agentic_core" / "L5_safety" / "gravity"),
+            ("agentic_core.utils.naming", self.project_root / "agentic_core" / "utils" / "naming"),
+            ("agentic_core.utils.general_helpers", self.project_root / "agentic_core" / "utils" / "general_helpers"),
+            ("agentic_core.observability.compliance", self.project_root / "agentic_core" / "observability" / "compliance"),
+            ("agentic_core.observability.metrics", self.project_root / "agentic_core" / "observability" / "metrics"),
+            ("agentic_core.observability.telemetry", self.project_root / "agentic_core" / "observability" / "telemetry"),
+        ]
+        
+        total_discovered = 0
+        
+        for module_prefix, path in discovery_paths:
+            if not path.exists():
+                continue
+            
+            discovered_in_path = self._discover_agents_in_path(module_prefix, path)
+            total_discovered += discovered_in_path
+        
+        print(f"   [OK] FULL DISCOVERY COMPLETE: {total_discovered} total agents")
+        print(f"      Atomic (per-file): {len(self._atomic_validators)}")
+        print(f"      Batch (cross-file): {len(self._batch_validators)}")
+        print(f"      Monitors: {len(self._monitors)}")
+
+    def _discover_agents_in_path(self, module_prefix: str, path: Path) -> int:
+        """Discover and instantiate agents from a specific path."""
+        discovered = 0
+        
+        for py_file in path.glob("*.py"):
+            if py_file.name.startswith("_"):
+                continue
+            # Look for files with 'agent' in name
+            if "agent" not in py_file.name.lower():
+                continue
+            
+            module_name = f"{module_prefix}.{py_file.stem}"
+            
+            try:
+                module = importlib.import_module(module_name)
+                
+                for attr_name in dir(module):
+                    # Look for classes ending in Agent or agent
+                    if not (attr_name.endswith("Agent") or attr_name.endswith("agent")):
+                        continue
+                    
+                    attr = getattr(module, attr_name)
+                    if not inspect.isclass(attr):
+                        continue
+                    if attr.__module__ != module_name:
+                        continue
+                    
+                    # Skip if already discovered
+                    if any(type(a).__name__ == attr_name for a in self._all_agents):
+                        continue
+                    
+                    # Try to instantiate
+                    try:
+                        instance = attr(self.project_root)
+                    except TypeError:
+                        try:
+                            instance = attr()
+                        except Exception:
+                            continue
+                    except Exception:
+                        continue
+                    
+                    self._all_agents.append(instance)
+                    discovered += 1
+                    
+                    # Categorize based on capabilities
+                    if hasattr(instance, "heal_violation"):
+                        self._atomic_validators.append(instance)
+                    elif hasattr(instance, "execute") or hasattr(instance, "run"):
+                        if "monitor" in attr_name.lower():
+                            self._monitors.append(instance)
+                        else:
+                            self._batch_validators.append(instance)
+                    
+            except Exception as e:
+                # Silent skip for import errors during discovery
+                pass
+        
+        return discovered
 
     def _discover_and_instantiate(self) -> None:
         """
