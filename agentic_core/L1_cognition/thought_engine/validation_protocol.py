@@ -48,3 +48,6 @@ class validation_protocol(Protocol):
     def set_metadata(self, key: str, value: Any) -> None:
         """Set metadata value."""
         ...
+
+# [NAMING ALIAS] PascalCase alias for backward compatibility
+ValidationProtocol = validation_protocol
