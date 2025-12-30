@@ -22,17 +22,19 @@ Placed in observability/tracing per SSOT semantic registry:
 Depth: agentic_core/observability/tracing/tracing_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
-Pure Python, no external dependencies.
-Thread-safe via lock.
+Sovereign tracing provider:
+- Default: Pure mock (no deps)
+- Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
 """
+import os
+import logging
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, List, Optional, Any
+from threading import Lock
 from datetime import datetime
 import uuid
-import logging
 import random
 import json
-from threading import Lock
 from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
@@ -107,16 +109,10 @@ class tracing_agent:
     """
     Autonomous distributed tracing agent.
     Manages trace context and span lifecycle.
-
-    Supports configurable span sampling:
-    - sample_probability: 0.0 to 1.0 (default 1.0 = 100%)
-    - Root mission spans (e.g., full_compliance_mission) always sampled
-    - Thread-safe runtime updates
-
-    Supports file export of completed traces:
-    - Single file (append mode) or timestamped files
-    - JSON format (array of traces)
-    - Auto-export on mission completion optional
+    
+    Sovereign tracing provider:
+    - Default: Pure mock (no deps)
+    - Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
     """
 
     def __init__(
@@ -128,7 +124,7 @@ class tracing_agent:
     ):
         self.project_root = project_root.resolve() if project_root else None
         self._lock = Lock()
-        self._spans: Dict[str, span] = {}  # span_id → Span
+        self._spans: Dict[str, span] = {}  # Standard span dict
         self._trace_map: Dict[str, List[str]] = {}  # trace_id → [span_ids]
         self._sample_probability: float = 1.0  # Default: sample everything
         self._always_sample_traces: set = set()  # trace_ids to force-sample
@@ -141,6 +137,59 @@ class tracing_agent:
 
         if self.export_path:
             logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
+        
+        # Sovereign tracing provider setup
+        self.tracer = self._setup_sovereign_tracer()
+
+    def _setup_sovereign_tracer(self) -> Any:
+        """Setup mock tracer + optional OTLP export."""
+        # 1. Internal Mock Provider (Zero-Dependency Fallback)
+        class MockSpan:
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def set_attribute(self, *args): pass
+            def set_status(self, *args): pass
+            def record_exception(self, *args): pass
+            def add_event(self, *args, **kwargs): pass
+            def end(self): pass
+
+        class MockTracer:
+            def start_as_current_span(self, name): return MockSpan()
+            def start_span(self, name): return MockSpan()
+
+        tracer = MockTracer()
+
+        # 2. Optional OpenTelemetry/OTLP Integration
+        try:
+            from opentelemetry import trace as otel_trace
+            from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+            from opentelemetry.sdk.trace import TracerProvider
+            from opentelemetry.sdk.trace.export import BatchSpanProcessor
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+            from opentelemetry.trace import set_tracer_provider
+
+            endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+            if endpoint:
+                resource = Resource(attributes={
+                    SERVICE_NAME: "sovereign-agentic",
+                    SERVICE_VERSION: "v2.9"
+                })
+                provider = TracerProvider(resource=resource)
+                processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint, insecure=True))
+                provider.add_span_processor(processor)
+                set_tracer_provider(provider)
+                tracer = otel_trace.get_tracer("sovereign.tracing")
+                logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
+            else:
+                logger.info("[TracingAgent] Using mock provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
+        except Exception as e:
+            logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
+
+        return tracer
+
+    def get_tracer(self) -> Any:
+        """Expose tracer for external mission use."""
+        return self.tracer
 
     def _ensure_export_dir(self) -> None:
         """Create export directory if configured."""
