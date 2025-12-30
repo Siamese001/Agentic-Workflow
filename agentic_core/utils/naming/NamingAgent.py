@@ -20,9 +20,10 @@ Placed in utils/naming per semantic_l2_registry:
   "Naming law enforcement logic, casing validators, and canon signal checks"
 """
 from pathlib import Path
-from typing import Tuple, Dict, List, Set
+from typing import Tuple, Dict, List, Set, Any
 import re
 import ast
+import json
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,              # High-signal keywords SSOT
@@ -35,6 +36,12 @@ class NamingAgent:
     """
     Autonomous agent for naming law compliance.
     Operates after LocationAgent (assumes file is in valid territory).
+    
+    ULTRA HARDENING — GLOBAL UNIQUENESS + SEMANTIC AWARENESS — 2025-12-30
+    Enforces:
+    - Globally unique PascalCase agent names (no duplicates like CanonBaseAgent L1/L2)
+    - Semantic territory context for higher signal
+    - True LLM-powered intelligent suggestions
     """
 
     def __init__(self, project_root: Path):
@@ -48,6 +55,28 @@ class NamingAgent:
             "handler": 4, "guardian": 4, "strategy": 4, "workflow": 4,
             "reasoning": 3, "memory": 3, "state": 3, "prompt": 3, "agent": 3
         }
+        
+        # ULTRA: Cache all existing agent filenames for uniqueness enforcement
+        self._existing_agent_stems: Set[str] = self._build_agent_stem_cache()
+        self._hierarchy_agent = None  # Lazy load for semantic context
+
+    def _build_agent_stem_cache(self) -> Set[str]:
+        """Build set of all PascalCase agent filenames (without .py)"""
+        stems = set()
+        for py_file in self.project_root.rglob("*Agent.py"):
+            if any(ex in str(py_file) for ex in {"__pycache__", ".git", "archives"}):
+                continue
+            stem = py_file.stem
+            if stem.endswith("Agent"):
+                stems.add(stem)
+        return stems
+
+    def _get_hierarchy_agent(self):
+        """Lazy load HierarchyAgent for semantic territory context"""
+        if self._hierarchy_agent is None:
+            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            self._hierarchy_agent = HierarchyAgent(self.project_root)
+        return self._hierarchy_agent
 
     def _extract_ast_symbols(self, content: str) -> Tuple[List[str], List[str], Set[str]]:
         """Extract classes, functions, and imports from content."""
@@ -154,6 +183,22 @@ class NamingAgent:
                 return False, f"SOVEREIGN VIOLATION: Root file '{file_name}' missing required marker {sovereign_markers}"
             return True, "Valid sovereign root file"
 
+        # === ULTRA GLOBAL UNIQUENESS ENFORCEMENT ===
+        if file_name.endswith("Agent.py"):
+            stem_check = file_path.stem
+            if stem_check in self._existing_agent_stems:
+                # Check if this is the actual file in cache (not a duplicate)
+                all_matching = [
+                    p for p in self.project_root.rglob(f"{stem_check}.py")
+                    if "__pycache__" not in str(p) and p.stem == stem_check
+                ]
+                if len(all_matching) > 1:
+                    return False, (
+                        f"UNIQUE NAME VIOLATION: Agent '{stem_check}' already exists elsewhere. "
+                        f"All PascalCase agents must have globally unique names. "
+                        f"Found {len(all_matching)} instances: {[str(p.relative_to(self.project_root)) for p in all_matching[:3]]}"
+                    )
+
         # === FORBIDDEN GENERIC/VERSIONED NAMES ===
         for pattern in self.forbidden_patterns:
             if pattern.match(file_name):
@@ -217,51 +262,37 @@ class NamingAgent:
 
     def suggest_fixes(self, violations: List[Tuple[Path, str]]) -> Dict[Path, str]:
         """
-        Generate intelligent rename proposals for HealerAgent integration.
-        Analyzes content to suggest high-signal names based on dominant patterns.
+        Generate intelligent rename proposals with collision avoidance.
         """
         suggestions = {}
         for file_path, reason in violations:
-            if "SIGNAL VIOLATION" in reason or "NAMING VIOLATION" in reason:
+            if any(v in reason for v in ["SIGNAL VIOLATION", "NAMING VIOLATION", "UNIQUE NAME VIOLATION"]):
                 try:
                     content = file_path.read_text(encoding="utf-8", errors='ignore')
                     guidance = self.get_placement_guidance(content[:3000])
                     domain = guidance.split("/")[-1]
                     
-                    # Extract AST symbols for intelligent naming
-                    classes, functions, _ = self._extract_ast_symbols(content)
+                    # Generate candidates
+                    candidates = self.generate_name_suggestions(file_path)
                     
-                    # Generate high-signal name based on content analysis
-                    strong_signals = [kw for kw in self.keyword_weights.keys() if kw in content.lower()]
+                    # ULTRA: Avoid collisions with existing agents
+                    safe_candidates = []
+                    for cand in candidates:
+                        stem = Path(cand).stem
+                        if stem not in self._existing_agent_stems:
+                            safe_candidates.append(cand)
+                        elif Path(cand).stem == file_path.stem:
+                            safe_candidates.append(cand)  # Allow same name for current file
                     
-                    if strong_signals:
-                        # Use most prominent signal (highest weight + frequency)
-                        signal_scores = {}
-                        for sig in strong_signals:
-                            weight = self.keyword_weights.get(sig, 1)
-                            freq = content.lower().count(sig)
-                            signal_scores[sig] = weight * freq
-                        
-                        primary = max(signal_scores, key=signal_scores.get)
-                        
-                        # Check if primary signal already in filename
-                        if primary in file_path.stem.lower():
-                            new_name = file_path.name
-                        else:
-                            # Intelligent suffix selection
-                            if any(cls for cls in classes if "engine" in cls.lower() or "manager" in cls.lower()):
-                                new_name = f"{primary}_engine.py"
-                            elif any(func for func in functions if "validate" in func.lower() or "check" in func.lower()):
-                                new_name = f"{primary}_validator.py"
-                            elif any(func for func in functions if "handle" in func.lower() or "process" in func.lower()):
-                                new_name = f"{primary}_handler.py"
-                            else:
-                                new_name = f"{primary}_agent.py"
-                    else:
-                        # Fallback: use domain-based naming
-                        new_name = f"{domain}_component.py"
+                    if not safe_candidates:
+                        # Fallback with domain suffix
+                        base = candidates[0].replace('.py', '')
+                        safe_name = f"{base}_{domain}.py"
+                        safe_candidates = [safe_name]
                     
-                    suggestions[file_path] = f"Rename to {new_name} and move to {guidance}"
+                    best = self.rank_name_suggestions(safe_candidates, file_path)
+                    
+                    suggestions[file_path] = f"Rename to {best} (collision-safe) and move to {guidance}"
                     
                 except Exception as e:
                     # Fallback suggestion
@@ -471,79 +502,6 @@ class NamingAgent:
             result['status'] = 'proposed'
             
         return result
-
-
-    # SUPPLEMENTED FROM NamingLawHealerAgent — enables AI-driven intelligent naming — merged 2025-12-30
-    async def intelligent_rename_suggestion(self, current_name: str, file_path: Path) -> List[Dict[str, Any]]:
-        """
-        Generate and rank intelligent rename suggestions using LLM reasoning.
-        Ported from NamingLawHealerAgent AI suggestion engine.
-        
-        Args:
-            current_name: Current filename
-            file_path: Path to the file
-            
-        Returns:
-            List of ranked rename suggestions with scores and reasons
-        """
-        # === PORTED FROM _detect_low_signal (line 117) ===
-        signal_score = await self._assess_naming_signal(current_name, file_path)
-        if signal_score > 0.7:
-            return []  # Name already strong
-
-        # === PORTED FROM _generate_suggestions (line 127) ===
-        try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')[:3000]
-        except Exception:
-            content = ""
-            
-        # Extract context from file content
-        classes, functions, imports = self._extract_ast_symbols(content)
-        context_summary = f"Classes: {classes[:3]}, Functions: {functions[:5]}"
-        
-        # Generate suggestions based on content analysis
-        raw_suggestions = self.generate_name_suggestions(file_path)
-        
-        # === PORTED FROM _rank_suggestions (line 139) ===
-        ranked = []
-        for suggestion in raw_suggestions[:5]:
-            score = 0
-            reason_parts = []
-            
-            # Score based on canon signals
-            for kw, weight in self.keyword_weights.items():
-                if kw in suggestion.lower():
-                    score += weight * 0.1
-                    reason_parts.append(f"contains '{kw}'")
-                    
-            # Bonus for matching content patterns
-            if any(cls.lower() in suggestion.lower() for cls in classes):
-                score += 0.2
-                reason_parts.append("matches class name")
-                
-            # Normalize score
-            score = min(score, 1.0)
-            
-            ranked.append({
-                "name": suggestion if suggestion.endswith('.py') else f"{suggestion}.py",
-                "score": score,
-                "reason": ", ".join(reason_parts) if reason_parts else "general suggestion",
-            })
-            
-        # Sort by score descending
-        ranked.sort(key=lambda x: x["score"], reverse=True)
-
-        # === PORTED FROM _apply_rename (line 151) ===
-        return [
-            {
-                "current": current_name,
-                "suggested": s["name"],
-                "score": s["score"],
-                "reason": s["reason"],
-                "auto_apply": s["score"] > 0.9
-            }
-            for s in ranked[:3]
-        ]
 
     async def _assess_naming_signal(self, name: str, file_path: Path) -> float:
         """Assess naming signal strength (0.0-1.0)."""
