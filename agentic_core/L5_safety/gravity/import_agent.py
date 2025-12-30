@@ -20,7 +20,10 @@ from pathlib import Path
 from typing import List, Tuple, Set, Dict
 import ast
 import re
+import logging
 from collections import defaultdict
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     PYTHON_STDLIB_MODULES,
@@ -49,6 +52,38 @@ def get_ast_safe_imports(content: str):
         regex_imports = re.findall(r'^(?:import|from)\s+([a-zA-Z0-9_.]+)', content, re.MULTILINE)
         imports.update(regex_imports)
     return imports
+
+
+class ImportValidationVisitor(ast.NodeVisitor):
+    """
+    [SUPREME COURT GATEKEEPER]
+    Structural visitor to identify imported vs used modules.
+    """
+    def __init__(self):
+        self.imported_modules = set()
+        self.used_names = set()
+        self.dynamic_access = False
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            self.imported_modules.add(alias.name.split(".")[0])
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        if node.module:
+            self.imported_modules.add(node.module.split(".")[0])
+        self.generic_visit(node)
+
+    def visit_Name(self, node):
+        if isinstance(node.ctx, (ast.Load, ast.Store)):
+            self.used_names.add(node.id)
+        self.generic_visit(node)
+
+    def visit_Call(self, node):
+        # Detect potential dynamic access (Key 13: Dynamic Safeguard)
+        if isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr", "__import__", "eval"}:
+            self.dynamic_access = True
+        self.generic_visit(node)
 
 
 class import_agent:
