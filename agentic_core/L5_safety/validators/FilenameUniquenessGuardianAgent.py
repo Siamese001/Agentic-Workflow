@@ -19,7 +19,8 @@ def get_placement_guidance(content_preview):
         return 'agentic_core/L4_state'
     return 'agentic_core/L1_cognition'
 
-class filename_uniqueness_guardian:
+# NAMING CANON COMPLIANCE — renamed to FilenameUniquenessGuardianAgent for discovery and sovereignty — 2025-12-30
+class FilenameUniquenessGuardianAgent:
     """
     Batch agent that enforces unique filenames across the entire repository.
     

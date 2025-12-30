@@ -5,7 +5,8 @@ import re
 from pathlib import Path
 from typing import Dict, Any, Match
 
-class gravity_leak_repair_agent:
+# NAMING CANON COMPLIANCE — renamed to GravityLeakRepairAgent for discovery and sovereignty — 2025-12-30
+class GravityLeakRepairAgent:
     """
     Converts forbidden static imports from higher layers (L4/L5) into dynamic importlib calls.
 
