@@ -25,10 +25,29 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 # [L0 IMPORTS]
 from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight
-from agentic_core.runtime.shared_runtime.void_compliance import (
-    enforce_void_compliance, get_folder_scope_summary, 
-    ALLOWED_ROOT_FOLDERS, check_import_waterfall_violations
-)
+# [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, SOVEREIGN_EXCLUDED_FOLDERS
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
+
+def enforce_void_compliance(files, project_root):
+    """Bridge to LocationAgent."""
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    return LocationAgent(project_root).enforce_void_compliance(files)
+
+def get_folder_scope_summary(project_root):
+    """Returns py file counts per folder."""
+    from pathlib import Path
+    summary = {}
+    skip = SOVEREIGN_EXCLUDED_FOLDERS | {'tests'}
+    for f in Path(project_root).iterdir():
+        if f.is_dir() and f.name not in skip:
+            summary[f.name] = len(list(f.rglob('*.py')))
+    return summary
+
+def check_import_waterfall_violations(file_path, project_root):
+    """Bridge to ImportAgent."""
+    from agentic_core.L5_safety.gravity.import_agent import ImportAgent
+    return ImportAgent(project_root).check_waterfall_violations(file_path)
 
 # [L2 KNOWLEDGE]
 from agentic_core.knowledge.rag_manager import get_rag_manager

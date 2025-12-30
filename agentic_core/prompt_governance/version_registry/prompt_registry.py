@@ -10,12 +10,13 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
-try:
-    from agentic_core.runtime.shared_runtime.void_compliance import validate_file_location
-except ImportError:
-    # Fallback for bootstrap phase if void_compliance is not yet indexed
-    def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
-                    
+# [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
+def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
+    """Bridge to LocationAgent."""
+    try:
+        from agentic_core.L5_safety.validators.location_agent import LocationAgent
+        return LocationAgent(root).validate_file_location(path)
+    except ImportError:
         return True, "Bootstrap"
 
 # NAMING FIXED: PromptRegistry → prompt_registry

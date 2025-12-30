@@ -5,7 +5,11 @@ import os
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
-from agentic_core.runtime.shared_runtime.void_compliance import validate_file_location
+# [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
+def validate_file_location(file_path, project_root):
+    """Bridge to LocationAgent."""
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    return LocationAgent(project_root).validate_file_location(file_path)
 
 class sovereign_prompt_renderer:
     """

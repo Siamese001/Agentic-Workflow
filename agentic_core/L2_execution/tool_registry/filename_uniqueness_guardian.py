@@ -6,7 +6,18 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import shutil
 from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS, CORE_SUBFOLDER_MAP
-from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
+# [PHASE 20] DEPRECATION: void_compliance.py removed
+def get_placement_guidance(content_preview):
+    """Bridge function for placement heuristics."""
+    if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
+        return 'agentic_core/L1_cognition'
+    if 'node' in content_preview.lower() or 'execute' in content_preview:
+        return 'agentic_core/L1_cognition/thought_engine'
+    if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
+        return 'agentic_core/L3_orchestration'
+    if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
+        return 'agentic_core/L4_state'
+    return 'agentic_core/L1_cognition'
 
 class filename_uniqueness_guardian:
     """
