@@ -45,7 +45,7 @@ class benchmark_result:
     failed_cases: int
     pass_rate: float
     avg_score: float
-    performance_level: PerformanceLevel
+    performance_level: "performance_level"
     execution_time_seconds: float
     detailed_results: List[Dict[str, Any]] = field(default_factory=list)
     recommendations: List[str] = field(default_factory=list)

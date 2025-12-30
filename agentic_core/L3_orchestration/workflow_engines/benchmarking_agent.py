@@ -384,7 +384,7 @@ class benchmarking_agent:
 class benchmark_context:
     """Context manager for benchmarking."""
 
-    def __init__(self, agent: BenchmarkingAgent, name: str, metadata: Dict = None):
+    def __init__(self, agent: "benchmarking_agent", name: str, metadata: Dict = None):
         self.agent = agent
         self.name = name
         self.metadata = metadata
