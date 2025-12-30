@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Optional, Protocol
 class cultural_decoder_agent:
     """Placeholder implementation."""
 
-    def __init__(self: Any, config: Dict) -> None:
+    def __init__(self, config: Dict = None) -> None:
         """Initialize agent."""
-        SELF.CONFIG = config
+        self.config = config or {}
 
     def decode(self: Any, text: str, culture: str) -> str:
         """Decode cultural context."""

@@ -13,7 +13,7 @@ class debugger_agent:
     to debug and fix issues in the system.
     """
 
-    def __init__(self: Any, mcp_manager: Any, llm_client: Any) -> None:
+    def __init__(self, mcp_manager: Any = None, llm_client: Any = None) -> None:
         """
         Initialize the DEBUGGER agent.
 

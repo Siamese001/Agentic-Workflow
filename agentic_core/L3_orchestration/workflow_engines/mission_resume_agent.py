@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 class mission_resume_agent:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, project_root: Path, mission_id: str):
+    def __init__(self, project_root: Path = None, mission_id: str = None):
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.id = mission_id
 

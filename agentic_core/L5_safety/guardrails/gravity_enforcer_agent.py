@@ -15,8 +15,8 @@ class gravity_enforcer_agent(CachedSafetyShield):
     commenting out forbidden imports from upstream sovereign code to downstream domains.
     """
 
-    def __init__(self, project_root: Path, ctx):
-        super().__init__(project_root, 'gravity_gate')
+    def __init__(self, project_root: Path = None, ctx = None):
+        super().__init__(project_root or Path('.'), 'gravity_gate')
         self.ctx = ctx
         self.upstream_roots = UPSTREAM_SOVEREIGN_ROOTS
         self.downstream_roots = DOWNSTREAM_ROOTS

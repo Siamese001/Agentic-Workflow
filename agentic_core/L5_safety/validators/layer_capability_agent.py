@@ -51,7 +51,7 @@ class LayerCapabilityAgent(BaseAgent):
 
     MAX_CAPABILITIES = 2
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path = None):
         super().__init__(name="LayerCapabilityAgent", layer="L5")
         self.project_root = project_root
 

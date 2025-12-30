@@ -106,8 +106,8 @@ class system_architect(CanonBaseAgentInterface):
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -314,8 +314,8 @@ class healer_agent(CanonBaseAgentInterface):
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -426,8 +426,8 @@ class generative_guard(CanonBaseAgentInterface):
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
