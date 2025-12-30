@@ -6,7 +6,8 @@ import shutil
 from pathlib import Path
 from typing import Dict, Any
 
-class naming_normalization_agent:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class NamingNormalizationAgent:
     """
     Normalizes filenames and public symbols to snake_case.
 

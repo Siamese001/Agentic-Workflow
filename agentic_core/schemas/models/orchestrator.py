@@ -54,6 +54,7 @@ class execution_result:
         """Convert to dictionary."""
         return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
 
+# NOT_AN_AGENT — Abstract interface/protocol, not a true agent — excluded from agent discovery
 class i_orchestrator(ABC):
     """Interface for the Orchestrator (Nervous System).
 
