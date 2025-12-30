@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from agentic_core.L5_safety.validators.location_agent import location_agent as LocationAgent
 from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
 from agentic_core.L5_safety.validators.hierarchy_agent import hierarchy_agent as HierarchyAgent
+from agentic_core.L5_safety.validators.filesystem_agent import filesystem_agent as FileSystemAgent
 from agentic_core.L5_safety.validators.key_mapping_agent import key_mapping_agent as KeyMappingAgent
 from agentic_core.L5_safety.gravity.import_agent import import_agent as ImportAgent
 from agentic_core.L5_safety.guardrails.healer_agent import healer_agent as HealerAgent
@@ -46,6 +47,7 @@ class compliance_orchestrator:
         self.location_agent = location_agent(self.project_root)
         self.hierarchy_agent = hierarchy_agent(self.project_root)
         self.naming_agent = naming_agent(self.project_root)
+        self.fs_agent = filesystem_agent(self.project_root)
         self.import_agent = import_agent(self.project_root)
         self.healer = healer_agent(self.project_root, dry_run=False)
 
@@ -122,11 +124,15 @@ class compliance_orchestrator:
                 
                 def run_hierarchy(): 
                     return self.hierarchy_agent.run()
+                
+                def run_filesystem():
+                    return self.fs_agent.run()
 
-                with ThreadPoolExecutor(max_workers=2) as executor:
+                with ThreadPoolExecutor(max_workers=3) as executor:
                     futures = {
                         executor.submit(run_naming): "naming",
-                        executor.submit(run_hierarchy): "hierarchy"
+                        executor.submit(run_hierarchy): "hierarchy",
+                        executor.submit(run_filesystem): "filesystem"
                     }
                     for future in as_completed(futures):
                         agent_type = futures[future]
