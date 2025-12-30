@@ -541,7 +541,7 @@ def create_recursive_planner(
     Returns:
         RecursivePlannerAgent instance
     """
-    return RecursivePlannerAgent(
+    return recursive_planner_agent(
         architect=architect,
         orchestrator_factory=orchestrator_factory,
         max_depth=max_depth,

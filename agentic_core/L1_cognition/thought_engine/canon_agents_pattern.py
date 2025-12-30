@@ -14,6 +14,12 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
+# Forward declaration for SubAtomicAgent
+class SubAtomicAgent:
+    """Base class stub for pattern agents."""
+    def __init__(self, *args, **kwargs):
+        self.agent = type('Agent', (), {'name': 'PatternAgent'})()
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
@@ -258,7 +264,7 @@ class ui_validation_agent(SubAtomicAgent):
             return
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
-class semantic_mapper(SubAtomicAgent):
+class semantic_mapper:
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """
