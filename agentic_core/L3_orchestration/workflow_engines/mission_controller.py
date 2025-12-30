@@ -202,10 +202,25 @@ class MissionController:
         return CallableReport()
 
     def _discover_python_files(self, target_scope: str) -> List[str]:
-        """Discover all Python files in target scope."""
+        """Discover all Python files in target scope or ALL sovereign roots if '.' specified."""
         target_path = Path(target_scope).resolve()
         
-        # Security check
+        # [FULL REPO] If target is project root, scan ALL sovereign root folders
+        if target_path == self.project_root or target_scope == ".":
+            print(f"   [FULL REPO SCAN] Scanning ALL sovereign root folders: {', '.join(sorted(self.allowed_root_folders))}")
+            discovered_files = []
+            for root_folder in self.allowed_root_folders:
+                folder_path = self.project_root / root_folder
+                if folder_path.exists():
+                    for root, dirs, files in os.walk(folder_path):
+                        dirs[:] = [d for d in dirs if d not in self.protected_folders and d != ".git"]
+                        for file in files:
+                            if file.endswith('.py'):
+                                discovered_files.append(str(Path(root) / file))
+            print(f"   [PROTECTED] Skipping folders: {', '.join(sorted(list(self.protected_folders)[:5]))}...")
+            return discovered_files
+        
+        # Security check for single folder targets
         if not target_path.is_relative_to(self.project_root):
             raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
         

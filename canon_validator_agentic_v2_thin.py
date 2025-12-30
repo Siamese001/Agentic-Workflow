@@ -58,8 +58,8 @@ def main():
     parser.add_argument(
         "--target", 
         type=str, 
-        default="agentic_core", 
-        help="Target folder for validation"
+        default=".",  # [FULL REPO] Scan entire repo by default
+        help="Target folder for validation (default: entire repo)"
     )
     parser.add_argument(
         "--reset",
