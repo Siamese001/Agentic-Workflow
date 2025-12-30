@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
-# NAMING FIXED: LOGGER → logger
+# NAMING FIXED: logger → logger
 logger = logging.getLogger(__name__)
 
 
@@ -26,12 +26,16 @@ class sub_task:
     priority: int
 
 
+# Forward declarations
+SubTask = sub_task
+RecursivePlan = recursive_plan = None  # Forward declaration
+
 @dataclass
 # NAMING FIXED: RecursivePlan → recursive_plan
 class recursive_plan:
     """A plan that can spawn sub-workflows."""
     main_goal: str
-    subtasks: List[SubTask]
+    subtasks: List[Any]
     execution_strategy: str  # "sequential", "parallel", "adaptive"
     resource_requirements: Dict[str, Any]
     success_criteria: List[str]
@@ -71,7 +75,7 @@ class recursive_planner_agent:
         self.max_parallel = max_parallel_subtasks
         self.active_children: List[str] = []
 
-        LOGGER.info(f"Recursive planner initialized (max_depth={max_depth})")
+        logger.info(f"Recursive planner initialized (max_depth={max_depth})")
 
     async def plan_and_execute(
         self,
@@ -91,10 +95,10 @@ class recursive_planner_agent:
             Execution results
         """
         if current_depth >= self.max_depth:
-            LOGGER.warning(f"Max recursion depth ({self.max_depth}) reached")
+            logger.warning(f"Max recursion depth ({self.max_depth}) reached")
             return await self._execute_directly(complex_goal, context)
 
-        LOGGER.info(f"Planning complex goal at depth {current_depth}: {complex_goal}")
+        logger.info(f"Planning complex goal at depth {current_depth}: {complex_goal}")
 
         # Step 1: Decompose the goal
         plan = await self._decompose_goal(complex_goal, context)
@@ -179,7 +183,7 @@ Format as JSON:
             return plan
 
         except Exception as e:
-            LOGGER.error(f"Failed to parse decomposition: {e}")
+            logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
             return RecursivePlan(
                 main_goal=goal,
@@ -226,11 +230,11 @@ Format as JSON:
 
         for task in plan.subtasks:
             if has_cycle(task.task_id):
-                LOGGER.error("Circular dependency detected in plan")
+                logger.error("Circular dependency detected in plan")
                 return False
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
-            LOGGER.warning(f"Plan has {len(plan.subtasks)} tasks, exceeding max parallel {self.max_parallel}")
+            logger.warning(f"Plan has {len(plan.subtasks)} tasks, exceeding max parallel {self.max_parallel}")
 
         return True
 
@@ -280,7 +284,7 @@ Format as JSON:
         for task in sorted_tasks:
             # Check dependencies
             if not all(dep in completed_tasks for dep in task.dependencies):
-                LOGGER.warning(f"Skipping task {task.task_id} - dependencies not met")
+                logger.warning(f"Skipping task {task.task_id} - dependencies not met")
                 continue
             # Execute task
             task_result = await self._execute_subtask(task, context, current_depth)
@@ -289,7 +293,7 @@ Format as JSON:
             if task_result.get("success", False):
                 completed_tasks.add(task.task_id)
             else:
-                LOGGER.error(f"Task {task.task_id} failed, stopping sequential execution")
+                logger.error(f"Task {task.task_id} failed, stopping sequential execution")
                 break
         return results
 
@@ -351,7 +355,7 @@ Format as JSON:
     ) -> Dict[str, Any]:
         """Execute a single sub-task."""
 
-        LOGGER.debug(f"Executing subtask {task.task_id}: {task.description}")
+        logger.debug(f"Executing subtask {task.task_id}: {task.description}")
 
         # Create child orchestrator for this sub-task
         child_orchestrator = self.orchestrator_factory.create()
@@ -378,7 +382,7 @@ Format as JSON:
             }
 
         except Exception as e:
-            LOGGER.error(f"Subtask {task.task_id} failed: {e}")
+            logger.error(f"Subtask {task.task_id} failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -414,7 +418,7 @@ Format as JSON:
     ) -> Dict[str, Any]:
         """Execute goal directly when max depth is reached."""
 
-        LOGGER.warning(f"Executing goal directly: {goal}")
+        logger.warning(f"Executing goal directly: {goal}")
 
         # Create a simple hop to handle this
         hop = self.orchestrator_factory.create_hop(role="RESEARCHER")
@@ -468,7 +472,7 @@ Format as JSON:
             ]
             if not ready:
                 # Circular dependency or error
-                LOGGER.warning("Circular dependency detected, adding remaining tasks")
+                logger.warning("Circular dependency detected, adding remaining tasks")
                 ready = remaining
 
             # Add highest priority ready task

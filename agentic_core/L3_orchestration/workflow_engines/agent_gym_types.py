@@ -26,9 +26,9 @@ class training_scenario:
     """Training scenario for agent evaluation."""
     id: str
     name: str
-    scenario_type: ScenarioType
+    scenario_type: "scenario_type"
     description: str
-    test_cases: List[GoldenCase]
+    test_cases: List[Any]
     success_threshold: float = 0.8
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -62,10 +62,10 @@ class training_session:
     scenarios_run: List[str]
     overall_pass_rate: float
     overall_score: float
-    performance_level: PerformanceLevel
+    performance_level: "performance_level"
     started_at: float
     completed_at: float
-    benchmark_results: List[BenchmarkResult] = field(default_factory=list)
+    benchmark_results: List[Any] = field(default_factory=list)
     improvement_areas: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:

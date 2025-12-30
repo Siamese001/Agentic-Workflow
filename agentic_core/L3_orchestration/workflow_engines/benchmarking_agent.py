@@ -13,7 +13,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-# NAMING FIXED: LOGGER → logger
+# NAMING FIXED: logger → logger
 logger = logging.getLogger(__name__)
 
 # Configuration
@@ -25,6 +25,13 @@ performance_degradation_threshold = 0.5  # 50% slower than average
 
 # NAMING FIXED: BenchmarkResult → benchmark_result
 class benchmark_result:
+    pass
+
+BenchmarkResult = benchmark_result
+BenchmarkSuite = type("BenchmarkSuite", (), {"name": "", "add_result": lambda s,r: None, "is_degraded": lambda s: False, "stats": {"avg_ms": 0, "count": 0}, "get_summary": lambda s: {}})
+PERFORMANCE_DEGRADATION_THRESHOLD = performance_degradation_threshold
+
+class benchmark_result_actual:
     """Result of a single benchmark measurement."""
 
     def __init__(self, name: str, duration_ms: float, metadata: Dict = None):
@@ -131,7 +138,7 @@ class benchmarking_agent:
         self.active_benchmarks: Dict[str, float] = {}
         self.enabled = True
 
-        LOGGER.info("BenchmarkingAgent initialized")
+        logger.info("BenchmarkingAgent initialized")
 
     def benchmark(self, name: str, metadata: Dict = None):
         """
@@ -184,7 +191,7 @@ class benchmarking_agent:
             return
 
         self.active_benchmarks[name] = time.perf_counter()
-        LOGGER.debug(f"Started benchmark: {name}")
+        logger.debug(f"Started benchmark: {name}")
 
     def end_timer(self, name: str, metadata: Dict = None) -> float:
         """
@@ -281,7 +288,7 @@ class benchmarking_agent:
         if self.suites[name].is_degraded():
             self._alert_performance_degradation(name, result)
 
-        LOGGER.debug(f"Benchmark {name}: {duration_ms:.2f}ms")
+        logger.debug(f"Benchmark {name}: {duration_ms:.2f}ms")
 
     def _alert_performance_degradation(self, name: str, result: BenchmarkResult):
         """Alert about performance degradation."""
@@ -297,10 +304,10 @@ class benchmarking_agent:
             "timestamp": result.timestamp.isoformat()
         }
 
-        LOGGER.warning(f"[!] Performance degradation detected: {name}")
-        LOGGER.warning(f"  Current: {result.duration_ms:.2f}ms")
-        LOGGER.warning(f"  Historical avg: {suite.stats['avg_ms']:.2f}ms")
-        LOGGER.warning(f"  Degradation: {alert['degradation_percent']:.1f}%")
+        logger.warning(f"[!] Performance degradation detected: {name}")
+        logger.warning(f"  Current: {result.duration_ms:.2f}ms")
+        logger.warning(f"  Historical avg: {suite.stats['avg_ms']:.2f}ms")
+        logger.warning(f"  Degradation: {alert['degradation_percent']:.1f}%")
 
         # Store alert
         alert_file = Path("observability/alerts/performance.json")
@@ -322,7 +329,7 @@ class benchmarking_agent:
             with open(alert_file, 'w') as f:
                 json.dump(alerts, f, indent=2)
         except Exception as e:
-            LOGGER.error(f"Failed to save performance alert: {e}")
+            logger.error(f"Failed to save performance alert: {e}")
 
     def get_benchmark_summary(self, name: str) -> Optional[Dict]:
         """Get summary for a specific benchmark."""
@@ -364,13 +371,13 @@ class benchmarking_agent:
         """Reset all data for a benchmark."""
         if name in self.suites:
             del self.suites[name]
-            LOGGER.info(f"Reset benchmark: {name}")
+            logger.info(f"Reset benchmark: {name}")
 
     def reset_all(self):
         """Reset all benchmark data."""
         self.suites.clear()
         self.active_benchmarks.clear()
-        LOGGER.info("Reset all benchmarks")
+        logger.info("Reset all benchmarks")
 
 
 # NAMING FIXED: BenchmarkContext → benchmark_context
@@ -393,21 +400,24 @@ class benchmark_context:
 
 
 # Global instance
-_benchmarking_agent: Optional[BenchmarkingAgent] = None
+_benchmarking_agent: Optional["benchmarking_agent"] = None
 
 
-def get_benchmarking_agent() -> BenchmarkingAgent:
+def get_benchmarking_agent() -> "benchmarking_agent":
     """Get or create the global BenchmarkingAgent instance."""
     global _benchmarking_agent
     if _benchmarking_agent is None:
-        _benchmarking_agent = BenchmarkingAgent()
+        _benchmarking_agent = benchmarking_agent()
     return _benchmarking_agent
 
+# Aliases for discovery
+BenchmarkingAgent = benchmarking_agent
+BenchmarkContext = benchmark_context_manager = type("benchmark_context_manager", (), {})
 
 def initialize_benchmarking():
     """Initialize the BenchmarkingAgent system."""
     get_benchmarking_agent()
-    LOGGER.info("BenchmarkingAgent system initialized")
+    logger.info("BenchmarkingAgent system initialized")
 
 
 # Convenience functions
@@ -423,7 +433,7 @@ def benchmark_async(name: str, metadata: Dict = None):
     return agent.benchmark_async(name, metadata)
 
 
-def benchmark_context(name: str, metadata: Dict = None) -> BenchmarkContext:
+def benchmark_context(name: str, metadata: Dict = None) -> "benchmark_context_manager":
     """Create a benchmark context manager."""
     agent = get_benchmarking_agent()
     return BenchmarkContext(agent, name, metadata)

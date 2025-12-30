@@ -359,5 +359,5 @@ class DeadCodeAgent:
         }
 
 
-# Uppercase alias for backward compatibility
-DeadCodeAgent = dead_code_agent
+# Lowercase alias for discovery
+dead_code_agent = DeadCodeAgent
