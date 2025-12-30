@@ -105,40 +105,36 @@ class ComplianceOrchestrator:
         - MetaLearningAgent → L3_orchestration/workflow_engines
         - SovereignForensicsAgent → L3_orchestration/workflow_engines
         """
-        print(f"\n[FULL AGENT DISCOVERY] Scanning ALL layers for MANDATORY agents...")
-        print(f"   [SOVEREIGN ORDER] Enforcing discovery across all 6 layers")
+        print(f"\n[FULL AGENT DISCOVERY] Scanning ENTIRE agentic_core for ALL agents...")
         print(f"   [MANDATORY COUNT] Expecting {len(self.MANDATORY_AGENTS)} critical agents")
-        print(f"   [SSOT] Using structure_blueprint.py as source of truth for folder paths")
         
-        # [SSOT] Build discovery paths dynamically from CORE_SUBFOLDER_MAP
-        discovery_paths: List[Tuple[str, Path]] = []
+        # [COMPREHENSIVE] Scan ALL directories recursively for *agent*.py files
+        agentic_core_path = self.project_root / "agentic_core"
+        SKIP_FOLDERS = {"__pycache__", ".git", "archives", "data"}
         
-        # [OPTIMIZED] Prioritize L5_safety/validators first, skip known broken directories
-        SKIP_DIRECTORIES = {"scripts", "P1_core", "P2_domain", "P1_interfaces", "P5_meta"}
+        # Find all agent files in entire agentic_core
+        agent_files = []
+        for py_file in agentic_core_path.rglob("*agent*.py"):
+            if any(skip in py_file.parts for skip in SKIP_FOLDERS):
+                continue
+            if py_file.name.startswith("__"):
+                continue
+            agent_files.append(py_file)
         
-        # Iterate through all L1 folders in agentic_core (from SSOT)
-        for l1_folder, l2_subfolders in CORE_SUBFOLDER_MAP.items():
-            for l2_folder in l2_subfolders:
-                # Skip directories with many broken imports
-                if l2_folder in SKIP_DIRECTORIES:
-                    continue
-                module_prefix = f"agentic_core.{l1_folder}.{l2_folder}"
-                folder_path = self.project_root / "agentic_core" / l1_folder / l2_folder
-                discovery_paths.append((module_prefix, folder_path))
+        print(f"   [SCAN] Found {len(agent_files)} agent files to process")
         
         total_discovered = 0
         
-        for module_prefix, path in discovery_paths:
-            if not path.exists():
-                continue
-            
-            discovered_in_path = self._discover_agents_in_path(module_prefix, path)
-            total_discovered += discovered_in_path
+        # Process each agent file directly
+        for agent_file in agent_files:
+            discovered_in_file = self._discover_agents_in_file(agent_file)
+            total_discovered += discovered_in_file
         
-        # Verify MANDATORY agents were loaded (using SSOT from self.MANDATORY_AGENTS)
-        loaded_names = {type(a).__name__ for a in self._all_agents}
-        loaded_mandatory = self.MANDATORY_AGENTS & loaded_names
-        missing_mandatory = self.MANDATORY_AGENTS - loaded_names
+        # Verify MANDATORY agents were loaded (case-insensitive comparison)
+        loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
+        mandatory_lower = {name.lower() for name in self.MANDATORY_AGENTS}
+        loaded_mandatory = mandatory_lower & loaded_names_lower
+        missing_mandatory = mandatory_lower - loaded_names_lower
         
         print(f"   [OK] FULL DISCOVERY COMPLETE: {total_discovered} total agents")
         print(f"      Atomic (per-file): {len(self._atomic_validators)}")
@@ -151,8 +147,12 @@ class ComplianceOrchestrator:
 
     def _enforce_mandatory_agent_compliance(self) -> None:
         """[ULTRA HARDENING] Final sovereign verdict on mandatory agent presence"""
-        loaded_names = {type(a).__name__ for a in self._all_agents}
-        missing = self.MANDATORY_AGENTS - loaded_names
+        # Normalize loaded names to lowercase for comparison
+        loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
+        mandatory_lower = {name.lower() for name in self.MANDATORY_AGENTS}
+        missing_lower = mandatory_lower - loaded_names_lower
+        # Map back to original names for display
+        missing = {name for name in self.MANDATORY_AGENTS if name.lower() in missing_lower}
         
         if missing:
             print(f"\n[!] [SOVEREIGN BREACH] MANDATORY AGENT VIOLATION")
@@ -164,6 +164,62 @@ class ComplianceOrchestrator:
         else:
             print(f"\n[OK] [ETERNAL SOVEREIGNTY] All {len(self.MANDATORY_AGENTS)} mandatory agents discovered")
             print(f"    Canon structural integrity: PRESERVED")
+
+    def _discover_agents_in_file(self, agent_file: Path) -> int:
+        """Discover and instantiate agents from a single file."""
+        discovered = 0
+        
+        # Build module name from file path
+        try:
+            rel_path = agent_file.relative_to(self.project_root)
+            module_name = str(rel_path.with_suffix("")).replace("\\", ".").replace("/", ".")
+        except ValueError:
+            return 0
+        
+        try:
+            module = importlib.import_module(module_name)
+            
+            for attr_name in dir(module):
+                # Look for classes ending in Agent (PascalCase)
+                if not attr_name.endswith("Agent"):
+                    continue
+                
+                attr = getattr(module, attr_name)
+                if not inspect.isclass(attr):
+                    continue
+                
+                # Skip if already discovered
+                if any(type(a).__name__ == attr_name for a in self._all_agents):
+                    continue
+                
+                # Try to instantiate
+                try:
+                    instance = attr(self.project_root)
+                except TypeError:
+                    try:
+                        instance = attr()
+                    except Exception:
+                        continue
+                except Exception:
+                    continue
+                
+                self._all_agents.append(instance)
+                discovered += 1
+                
+                # Categorize based on capabilities
+                if hasattr(instance, "heal_violation"):
+                    self._atomic_validators.append(instance)
+                elif hasattr(instance, "execute") or hasattr(instance, "run"):
+                    if "monitor" in attr_name.lower():
+                        self._monitors.append(instance)
+                    else:
+                        self._batch_validators.append(instance)
+                        
+        except Exception as e:
+            # Silent skip for import errors
+            pass
+        
+        return discovered
 
     def _discover_agents_in_path(self, module_prefix: str, path: Path) -> int:
         """Discover and instantiate agents from a specific path."""

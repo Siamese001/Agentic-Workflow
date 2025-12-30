@@ -570,6 +570,34 @@ class healer_agent:
 
             return results
 
+    def run(self) -> Dict[str, Any]:
+        """
+        Execute healing sweep - validation only, no file splitting.
+        Fission disabled to avoid creating part1/part2 files.
+        """
+        results = {
+            "scanned": 0,
+            "large_files_flagged": 0,
+            "healing_available": True
+        }
+        
+        for py_file in self.project_root.rglob("*.py"):
+            if any(ex in py_file.parts for ex in SOVEREIGN_EXCLUDED_FOLDERS):
+                continue
+            if "__pycache__" in str(py_file):
+                continue
+            
+            results["scanned"] += 1
+            try:
+                content = py_file.read_text(encoding="utf-8")
+                loc = len([l for l in content.splitlines() if l.strip() and not l.strip().startswith('#')])
+                if loc > MAX_LINES_PER_FILE:
+                    results["large_files_flagged"] += 1
+            except Exception:
+                continue
+        
+        return results
+
 
 # Uppercase alias for backward compatibility
 HealerAgent = healer_agent
