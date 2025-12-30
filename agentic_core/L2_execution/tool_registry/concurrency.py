@@ -10,6 +10,7 @@ from collections import defaultdict
 
 
 # NAMING FIXED: MemoryLeakDetector → memory_leak_detector
+# NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
 class memory_leak_detector:
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
 
@@ -494,7 +495,7 @@ class deadlock_analyzer(ast.NodeVisitor):
         return cycles
 
 
-# NAMING FIXED: DeadlockDetector → deadlock_detector
+# NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
 class deadlock_detector:
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 

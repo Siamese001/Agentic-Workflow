@@ -17,6 +17,7 @@ class retry_result:
     result: Optional[object] = None
     error: Optional[str] = None
 
+# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
 class implement_fallback_templates:
     """Retry executor for outreach domain."""
 

@@ -9,6 +9,7 @@ import time
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
+# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
 class order_call_to_actions:
     """Executor for outreach domain."""
 

@@ -17,6 +17,7 @@ class retry_result:
         self.result = result
         self.error = error
 
+# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
 class handle_service_errors:
     """Retry executor for outreach domain."""
 
