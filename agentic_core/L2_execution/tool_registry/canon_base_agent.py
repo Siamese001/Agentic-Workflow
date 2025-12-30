@@ -73,6 +73,9 @@ def get_safety_guardrail() -> Any:
     """
     return _safety_guardrailPlaceholder()
 
+# Alias for backward compatibility
+CanonBaseAgent = None  # Will be set after class definition
+
 @dataclass
 class canon_base_agent(ABC):
     """
@@ -317,3 +320,6 @@ class canon_base_agent(ABC):
         if not is_valid:
             return (False, f"Banned imports: {', '.join(violations)}")
         return (True, 'Fix verified')
+
+# Set the alias after class definition
+CanonBaseAgent = canon_base_agent

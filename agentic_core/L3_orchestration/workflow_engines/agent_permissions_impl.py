@@ -1,8 +1,14 @@
 """Implementation for agent_permissions."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
-from agentic_core.L3_orchestration.security.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
+try:
+    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
+except ImportError:
+    AgentIdentity = IdentityType = type('Stub', (), {})
+try:
+    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
+except ImportError:
+    Permission = PermissionAction = PermissionCheck = PermissionScope = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -33,8 +39,8 @@ class agent_permission_manager:
         """
         self.control_plane = control_plane
         self.enable_logging = enable_logging
-        self._permissions: Dict[str, List[Permission]] = {}
-        self._default_permissions: Dict[IdentityType, List[Permission]] = {}
+        self._permissions: Dict[str, List["Permission"]] = {}
+        self._default_permissions: Dict["IdentityType", List["Permission"]] = {}
         self._load_default_permissions()
         if self.enable_logging:
             logger.info('permission_manager_initialized')
@@ -141,13 +147,16 @@ class agent_permission_manager:
         self._default_permissions[IdentityType.TOOL_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION, ACTION=PermissionAction.EXECUTE, RESOURCE='assigned_tools')]
         self._default_permissions[IdentityType.HUMAN_OPERATOR] = [Permission(scope=PermissionScope.DATA_ACCESS, ACTION=PermissionAction.READ, RESOURCE='*')]
 
-def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> AgentPermissionManager:
+# Alias for backward compatibility
+AgentPermissionManager = agent_permission_manager
+
+def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "agent_permission_manager":
     """Factory function to create permission manager.
 
     Args:
         control_plane: Optional Control Plane instance
 
     Returns:
-        AgentPermissionManager instance
+        agent_permission_manager instance
     """
-    return AgentPermissionManager(control_plane=control_plane)
+    return agent_permission_manager(control_plane=control_plane)

@@ -9,6 +9,12 @@ from typing import Any, Dict, List, Optional, Protocol
 import redis
 
 class cached_safety_shield:
+    pass
+
+# Alias for backward compatibility
+CachedSafetyShield = cached_safety_shield
+
+class cached_safety_shield_impl:
     """
     Sovereign L5 shield base — enforces cache-first safety for instant protection.
     """

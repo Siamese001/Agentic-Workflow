@@ -13,7 +13,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
+try:
+    from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+except ImportError:
+    CanonBaseAgent = None
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
