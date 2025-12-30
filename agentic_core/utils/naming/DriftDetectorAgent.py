@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 logger: Any = logging.getLogger(__name__)
 
-class drift_detector_agent:
+class DriftDetectorAgent:
     """Naming/Compliance: Drift Detection"""
 
     def __init__(self, project_root: Path=None):

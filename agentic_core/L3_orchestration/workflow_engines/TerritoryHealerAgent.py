@@ -170,7 +170,7 @@ class TerritoryHealerAgent:
         if len(stray_actions) > 10:
             print(f'      ... and {len(stray_actions) - 10} more')
         try:
-            from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+            from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
             from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
             redis_agent: Any = RedisSovereignAgent(self.root)
             pinecone_agent: Any = PineconeSovereignAgent(self.root)

@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

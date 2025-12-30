@@ -2,7 +2,7 @@
 from typing import Any, Optional
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
-class redis_sovereign_agent:
+class CacheRedisSovereignAgent:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, host: str = "localhost", port: int = 6379, **kwargs):

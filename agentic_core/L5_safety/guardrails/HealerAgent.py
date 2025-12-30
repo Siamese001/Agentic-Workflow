@@ -27,7 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP
 )
-from agentic_core.utils.naming.NamingAgent import naming_agent as NamingAgent
+from agentic_core.utils.naming.NamingAgent import NamingAgent
 
 logger = logging.getLogger(__name__)
 
@@ -599,5 +599,4 @@ class HealerAgent:
         return results
 
 
-# Uppercase alias for backward compatibility
-healer_agent = HealerAgent
+# PascalCase is now the canonical name

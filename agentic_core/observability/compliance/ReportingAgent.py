@@ -195,5 +195,4 @@ class ReportingAgent:
         return report
 
 
-# Uppercase alias for backward compatibility
-reporting_agent = ReportingAgent
+# PascalCase is now the canonical name

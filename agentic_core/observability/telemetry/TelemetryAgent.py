@@ -249,5 +249,4 @@ class TelemetryAgent:
             logger.error(f"[TelemetryAgent] Failed to export events: {e}")
 
 
-# Uppercase alias for backward compatibility
-telemetry_agent = TelemetryAgent
+# PascalCase is now the canonical name

@@ -13,9 +13,7 @@ import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
-    PineconeSovereignAgent,
-)
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,

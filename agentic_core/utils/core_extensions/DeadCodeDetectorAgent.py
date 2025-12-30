@@ -106,7 +106,7 @@ class ast_dead_code_visitor(ast.NodeVisitor):
                     break
         self.generic_visit(node)
 
-class dead_code_detector_agent:
+class DeadCodeDetectorAgent:
     """
     Sovereign dead code auditor that identifies unused code across the project.
     Enhanced with class-aware method tracking and parent-node traversal.

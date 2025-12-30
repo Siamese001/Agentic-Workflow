@@ -272,5 +272,4 @@ class NamingAgent:
         return suggestions
 
 
-# Uppercase alias for backward compatibility
-naming_agent = NamingAgent
+# PascalCase is now the canonical name

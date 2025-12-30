@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry
 
-class prompt_validation_agent:
+class PromptValidationAgent:
     """
     Validates prompt governance integrity across the entire repository.
 

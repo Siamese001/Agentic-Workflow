@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: SovereignAlertingAgent → sovereign_alerting_agent
-class sovereign_alerting_agent:
+class SovereignAlertingAgent:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):

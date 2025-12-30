@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, List, Set
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES
 
-class drift_detector_agent:
+class DriftDetectorAgent:
     """Detects files that have drifted outside mapped canon territories."""
 
     def __init__(self, project_root: Path):

@@ -77,5 +77,4 @@ class NeuralAutoImmuneAgent:
             ctx.report('AutoImmune', 1, True, 'No repeated breaches detected.')
 
 
-# Backward compatibility alias
-neural_auto_immune_agent = NeuralAutoImmuneAgent
+# PascalCase is now the canonical name

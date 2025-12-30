@@ -163,5 +163,4 @@ class LocationAgent:
         return all_violations
 
 
-# Backward compatibility alias
-location_agent = LocationAgent
+# PascalCase is now the canonical name

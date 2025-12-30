@@ -70,5 +70,4 @@ def get_meta_learning_agent() -> Any:
     return MetaLearningAgent()
 
 
-# Backward compatibility alias
-meta_learning_agent = MetaLearningAgent
+# PascalCase is now the canonical name
