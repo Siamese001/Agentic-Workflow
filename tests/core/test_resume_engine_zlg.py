@@ -21,6 +21,13 @@ from agentic_core.L2_execution.P3_engines.resume_engine_zlg import DraftResult, 
 from agentic_core.knowledge.l5_consolidated import KnowledgeResult
 from agentic_core.L5_safety.P4_security.security_utilities import SecurityResult, SecurityStatus
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_standard_zlg_success(unittest.TestCase):
     """TC-E2-101: Standard ZLG Success"""
 

@@ -9,6 +9,13 @@ import asyncio
 import logging
 from typing import List, Dict, Any
 from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger('L6.CanonAudit')
 
 class sovereign_canon_auditor:

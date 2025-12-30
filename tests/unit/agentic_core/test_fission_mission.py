@@ -18,6 +18,13 @@ sys.path.insert(0, str(project_root))
 
 from canon_validator_agentic_v2 import run_mission
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.mark.asyncio
 async def test_key_42_fission_execution():
     """

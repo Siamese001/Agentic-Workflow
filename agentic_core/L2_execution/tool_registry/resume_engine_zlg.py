@@ -20,6 +20,13 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L2_execution.knowledge.knowledge_utilities import KnowledgeResult, get_consolidated_knowledge
 from agentic_core.L2_execution.security.security_utilities import SecurityStatus, get_fact_checker, get_prompt_firewall
 from agentic_core.utils.P1_core.core_utilities import DraftGenerator, FileManager, SemanticScorer, log_action, register_process
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('logs/resume_engine_zlg.log'), logging.StreamHandler()])
 logger: Any = logging.getLogger(__name__)
 

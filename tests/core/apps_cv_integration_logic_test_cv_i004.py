@@ -6,6 +6,13 @@ All tests are skipped until the original implementation is fixed.
 """
 import pytest
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_atomic_transaction_with_two_operations() -> Any:
     """

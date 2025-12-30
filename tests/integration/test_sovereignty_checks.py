@@ -7,6 +7,13 @@ import tempfile
 from pathlib import Path
 from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient, get_pinecone_mcp_client
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_pinecone_sovereignty:
     """Test suite for Pinecone sovereignty verification."""
 

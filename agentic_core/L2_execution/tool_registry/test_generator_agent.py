@@ -8,6 +8,13 @@ from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: TestGeneratorAgent → test_generator_agent
 class test_generator_agent(CanonBaseAgent):

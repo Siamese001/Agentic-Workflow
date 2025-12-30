@@ -28,6 +28,13 @@ from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import (
 from agentic_core.L1_cognition.thought_engine.canon_agents_quality import SafetyInspector
 from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: AgentFactory → agent_factory
 class agent_factory:

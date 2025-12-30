@@ -7,6 +7,13 @@ import logging
 from typing import Optional, List, Dict, Any
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class sovereign_pinecone_mcp_client:

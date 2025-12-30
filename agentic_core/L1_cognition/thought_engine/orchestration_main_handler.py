@@ -18,6 +18,13 @@ from typing import Any, Dict, List, Optional, Protocol, Set
 from agentic_core.tools.filesystem import WriteFileArgs, write_file
 from agentic_core.L2_execution.tool_registry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspector, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 try:
     from google import genai
     from google.genai import types

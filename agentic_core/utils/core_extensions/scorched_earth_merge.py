@@ -6,6 +6,13 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 approved_root_folders: Any = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests', 'data', 'archives', '.git', '.venv', '.vscode']

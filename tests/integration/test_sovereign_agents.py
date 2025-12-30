@@ -5,6 +5,13 @@ import pytest
 from pathlib import Path
 from agentic_core.L3_orchestration.healing.territory_healer_agent import TerritoryHealerAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.fixture
 def mock_canon(tmp_path: Any) -> Any:
     """Brief description of functionality and purpose."""

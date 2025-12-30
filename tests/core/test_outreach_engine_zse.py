@@ -13,6 +13,13 @@ from agentic_core.L2_execution.P3_engines.outreach_engine_zse import ExitReason,
 from agentic_core.knowledge.l5_consolidated import KnowledgeResult
 from agentic_core.utils.networking import EgressResult
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_standard_zse_success(unittest.TestCase):
     """TC-E3-101: Standard ZSE Success"""
 

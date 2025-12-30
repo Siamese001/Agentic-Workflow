@@ -11,6 +11,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from rank_bm25 import BM25Okapi
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @dataclass
 class retrieval_result:
     """Brief description of functionality and purpose."""

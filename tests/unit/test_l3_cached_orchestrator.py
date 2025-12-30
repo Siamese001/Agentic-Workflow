@@ -7,6 +7,13 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestrator
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.fixture
 def orchestrator(tmp_path: Any) -> Any:
     """Brief description of functionality and purpose."""

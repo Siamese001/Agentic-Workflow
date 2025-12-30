@@ -18,6 +18,13 @@ from agentic_core.L5_safety.guardrails.pii_vault import PIIVault
 from agentic_core.L5_safety.validators.constitutional_overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.validators.cost_governor import CostGovernor
 from agentic_core.runtime.P1_core.subatomic_hop import SubatomicHop
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class runtime_bootstrapper:

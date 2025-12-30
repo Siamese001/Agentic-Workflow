@@ -8,6 +8,13 @@ from unittest.mock import MagicMock, patch
 from pathlib import Path
 from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.fixture
 def state_ledger(tmp_path: Any) -> Any:
     """Mock setup for L4 state ledger testing."""

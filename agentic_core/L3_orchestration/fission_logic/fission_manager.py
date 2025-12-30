@@ -5,6 +5,13 @@ import logging
 
 from typing import Any, Dict, List, Optional, Protocol
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: FissionManager → fission_manager
 class fission_manager:

@@ -4,6 +4,13 @@ import asyncio
 import logging
 from agentic_core.L1_cognition.P1_interfaces import OrchestratorConfig
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger: Any = logging.getLogger('Phase1_Mission')
 

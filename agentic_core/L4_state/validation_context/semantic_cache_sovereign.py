@@ -13,6 +13,13 @@ from typing import Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
 max_redis_entry_size: Any = 1024 * 1024

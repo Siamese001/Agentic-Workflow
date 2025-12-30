@@ -12,6 +12,13 @@ _logger = logging.getLogger(__name__)
 
 from typing import Dict
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: MergeOutreachHistory → merge_outreach_history
 class merge_outreach_history:

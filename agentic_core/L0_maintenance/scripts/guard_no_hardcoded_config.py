@@ -6,6 +6,13 @@ import re
 import sys
 from pathlib import Path
 from typing import List, Tuple
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 exempt: Any = ['__init__.py', '__pycache__']
 allowed_patterns: Any = ['sovereign_config.py', 'tests/', 'test_']
 

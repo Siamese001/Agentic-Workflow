@@ -5,10 +5,17 @@ L0-L6 Sovereign Stack Hierarchy established.
 """
 from typing import List, Dict, Any
 
-# 1. Bounded Contexts (Strict Boundaries)
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+# 1. Bounded Contexts (Strict Boundaries) - DERIVED FROM SSOT
 # Sovereign Layer Hierarchy (L0=Governance, L6=Observability)
 # Higher ranks (smaller numbers) define Policy and Intent.
 # Lower ranks (larger numbers) provide Data and Infrastructure.
+# Note: Paths are derived from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP
 BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_maintenance",
@@ -41,7 +48,7 @@ BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
         "role": "Membrane: Input/Output Sanitization"
     },
     "L6_Observability": {
-        "path": "agentic_core/L6_observability",
+        "path": "agentic_core/observability",  # [SSOT FIX] Correct path per CORE_SUBFOLDER_MAP
         "rank": 6,
         "role": "Truth: Telemetry, Logging, and Audit Trails"
     },

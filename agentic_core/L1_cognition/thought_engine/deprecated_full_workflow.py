@@ -11,6 +11,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 if TYPE_CHECKING:
     # Define minimal Protocols for type checking to avoid importing from downstream
     # This addresses "Sovereign layer importing from Downstream" and "eliminate ALL imports from 'apps_shared'"

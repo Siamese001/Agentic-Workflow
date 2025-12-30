@@ -3,6 +3,13 @@ Aggressively trim the remaining 6 heavy airlock files.
 Remove all blank lines and condense imports to single lines.
 """
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 heavy_airlocks: Any = ['L1_cognition/P1_core/check_outreach/__init__.py', 'L1_cognition/P1_core/P1_retrieve/get_info/__init__.py', 'L1_cognition/P1_core/P1_retrieve/P1_retrieve/check_resume/__init__.py', 'L1_cognition/P1_core/P3_aggregate/P3_aggregate/pick_resume/__init__.py', 'L1_cognition/P1_core/P4_safety/__init__.py', 'L1_cognition/P1_core/P4_safety/P4_safety/check_resume/__init__.py']

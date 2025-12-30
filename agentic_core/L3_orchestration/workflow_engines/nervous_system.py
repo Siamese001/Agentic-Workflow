@@ -18,6 +18,13 @@ from agentic_core.L1_cognition.P1_interfaces import (
 )
 from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 if TYPE_CHECKING:
     from agentic_core.L1_cognition.sovereign_cognitive_plane import (
         create_sovereign_cognitive_plane,

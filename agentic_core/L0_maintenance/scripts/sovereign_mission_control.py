@@ -9,6 +9,13 @@ sys.path.append(str(REPO_ROOT))
 from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 async def execute_unified_mission(target: Any='agentic_core') -> Any:
     """
     [L6 MISSION CONTROL]

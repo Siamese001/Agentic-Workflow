@@ -8,6 +8,13 @@ import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class sovereign_filesystem_mcp_client:

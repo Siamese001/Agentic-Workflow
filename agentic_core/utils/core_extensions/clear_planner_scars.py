@@ -3,6 +3,13 @@ import os
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 file_path: Any = Path('C:/Git/Agentic-Workflow/agentic_core/L1_cognition/P1_core/persona_planner.py')
 
 def clear_planner_scars() -> Any:

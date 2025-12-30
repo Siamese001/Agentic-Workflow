@@ -9,6 +9,13 @@ from pathlib import Path
 from agentic_core.L2_execution.tool_registry.fetch_mcp_client import SovereignFetchMCPClient, get_fetch_client
 from agentic_core.config.P1_core.sovereign_config import config
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_fetch_mcp_integration:
     """Test suite for Fetch MCP client integration."""
 

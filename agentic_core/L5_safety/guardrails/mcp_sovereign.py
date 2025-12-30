@@ -3,6 +3,13 @@ Enforces zero-trust auditing and auto-immune responses for all MCP tool calls.
 """
 import logging
 from datetime import datetime
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 class mcp_sovereign_authority:

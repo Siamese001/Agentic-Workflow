@@ -7,6 +7,13 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 logger: Any = logging.getLogger(__name__)
 

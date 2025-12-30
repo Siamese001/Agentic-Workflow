@@ -12,6 +12,13 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 # DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: CodeJanitor → code_janitor
 class code_janitor:

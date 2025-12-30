@@ -3,6 +3,13 @@ import os
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 broken_files: Any = ['L1_cognition/P1_core/P2_inspect/rg_validation_gates_impl.py', 'L2_execution/P2_tools/examples.py', 'L2_execution/P4_agents/governance.py', 'L2_execution/P4_agents/healer_agent.py', 'L2_execution/P4_agents/infrastructure.py', 'L2_execution/P4_agents/planning.py', 'L2_execution/P4_agents/quality.py', 'L2_execution/P4_agents/specialized.py']

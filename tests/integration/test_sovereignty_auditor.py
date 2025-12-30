@@ -8,6 +8,13 @@ import tempfile
 from pathlib import Path
 from agentic_core.utils.guardian.sovereignty_auditor import SovereigntyAuditor, run_sovereignty_audit
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_sovereignty_auditor:
     """Test suite for Sovereignty Auditor."""
 

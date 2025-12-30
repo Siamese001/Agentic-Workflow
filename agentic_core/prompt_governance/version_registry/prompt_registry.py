@@ -10,6 +10,13 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""

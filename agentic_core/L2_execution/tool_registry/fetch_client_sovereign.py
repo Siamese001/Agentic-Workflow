@@ -9,6 +9,13 @@ from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.githubusercontent.com', 'readthedocs.io', 'developer.mozilla.org', 'stackoverflow.com', 'pypi.org'}
 chunk_size: Any = 8000

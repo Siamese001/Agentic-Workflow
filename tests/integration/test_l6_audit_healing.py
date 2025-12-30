@@ -10,6 +10,13 @@ from datetime import datetime, timedelta
 from agentic_core.L0_maintenance.P1_core.l6_audit_healing_strategy import L6AuditHealingStrategy, create_l6_audit_healing_strategy
 from agentic_core.config.P1_core.sovereign_config import config
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_l6_audit_healing_strategy:
     """Test suite for L6 Audit Healing Strategy."""
 

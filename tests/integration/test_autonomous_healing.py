@@ -10,6 +10,13 @@ from agentic_core.L0_maintenance.P1_core.healing_engine import SovereignHealingE
 from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
 from agentic_core.config.P1_core.sovereign_config import config
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_healing_engine:
     """Test suite for Sovereign Healing Engine."""
 

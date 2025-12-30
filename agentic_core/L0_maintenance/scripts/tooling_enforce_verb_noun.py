@@ -6,6 +6,13 @@ _logger = logging.getLogger(__name__)
 import shutil
 import sys
 from pathlib import Path
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 for f in sys.argv[1:]:
     p: Any = Path(f)
     if re.match('^[a-z]+_[a-z_]+\\.py$', p.name):

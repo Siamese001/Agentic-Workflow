@@ -17,6 +17,13 @@ from agentic_core.core.proactive_audit import get_proactive_scanner
 from agentic_core.L3_orchestration.S3_vitality.git_safety_handler import get_git_safety_handler
 from agentic_core.L3_orchestration.S3_vitality.mcp_router import get_mcp_router
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class mcp_integration_tests:
     """Comprehensive test suite for MCP hardening system."""
 

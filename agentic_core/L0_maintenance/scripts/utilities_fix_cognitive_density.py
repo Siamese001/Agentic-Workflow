@@ -5,6 +5,13 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
     logging.getLogger(__name__)

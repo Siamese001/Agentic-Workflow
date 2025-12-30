@@ -3,6 +3,13 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 @pytest.mark.unit
 class test_mission_plan_model:
     """Test MissionPlan domain model."""

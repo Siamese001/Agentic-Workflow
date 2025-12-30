@@ -8,6 +8,13 @@ from pathlib import Path
 from typing import Dict, List
 import redis
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class sovereign_red_team_agent:
     """
     Sovereign red team — tests shield integrity via controlled drift injection.

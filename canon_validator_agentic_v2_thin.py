@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Canon Validator - Thin Wrapper Entry Point
 # Coordinates L1-L5 components for 50-key canon validation.
-# VERSION 3.0 - MODULARIZED (Thin Wrapper)
+# VERSION 3.2 - FULL REPO SCAN (All folders, all 20 keys, all agents)
 # RATIONALE: All logic extracted to SSOT-compliant modules. This file is entry point only.
 
 import sys
@@ -71,7 +71,7 @@ def main():
     # Global mission timeout: 30 minutes
     MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
     
-    print(f"\n[*] Canon Validator v3.0 - Thin Wrapper")
+    print(f"\n[*] Canon Validator v3.2 - Full Repo Scan (Thin Wrapper)")
     print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
     
     # Handle reset if requested

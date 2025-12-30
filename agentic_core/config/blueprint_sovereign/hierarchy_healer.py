@@ -6,6 +6,13 @@ from pathlib import Path
 
 from structure_blueprint import CORE_SUBFOLDER_MAP
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 # NAMING FIXED: HierarchyHealer → hierarchy_healer
 class hierarchy_healer:

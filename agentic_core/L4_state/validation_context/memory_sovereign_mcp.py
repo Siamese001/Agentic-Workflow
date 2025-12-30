@@ -9,6 +9,13 @@ from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 max_observation_length: Any = 2000
 max_entity_name_length: Any = 100

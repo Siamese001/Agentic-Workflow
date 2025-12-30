@@ -19,6 +19,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 import logging
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 logger = logging.getLogger(__name__)
 
 

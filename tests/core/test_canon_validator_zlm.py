@@ -20,6 +20,13 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from agentic_core.L2_execution.P3_engines.canon_validator_engine_zlm import CanonValidatorEngineZLM, ExitReason, P6FixResult, PhaseResult, PhaseStatus
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_zlm_standard_successful_merge(unittest.TestCase):
     """TC-ZLM-101: Standard Successful Merge"""
 

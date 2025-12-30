@@ -10,6 +10,13 @@ import logging
 import re
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 logger: Any = logging.getLogger(__name__)
 
 async def run_l5_outreach_orchestrator(campaign_id: str, archetype: str='RECRUITER', max_cycles: int=5, quality_threshold: float=0.75, enable_intervention: bool=True) -> Any:

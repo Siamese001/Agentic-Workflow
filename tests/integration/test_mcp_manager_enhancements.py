@@ -6,6 +6,13 @@ import asyncio
 import pytest
 from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 class test_mcp_connection_manager:
     """Test suite for enhanced MCP Connection Manager."""
 

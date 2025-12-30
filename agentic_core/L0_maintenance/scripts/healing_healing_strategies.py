@@ -8,6 +8,13 @@ from typing import List, Dict, Any
 from pathlib import Path
 import logging
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 logger = logging.getLogger(__name__)
 
 # NAMING FIXED: HealingStrategy → healing_strategy
