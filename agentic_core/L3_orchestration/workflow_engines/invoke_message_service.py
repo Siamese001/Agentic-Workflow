@@ -9,7 +9,8 @@ import time
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class invoke_message_service:
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class InvokeMessageServiceAgent:
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

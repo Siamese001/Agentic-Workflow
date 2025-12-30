@@ -25,8 +25,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: ArchitectureGovernor → architecture_governor
-class architecture_governor(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ArchitectureGovernorAgent(SubAtomicAgent):
     """
     Unified Architecture Governor.
     Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Keys 17, 19), System (Keys 40, 41).
@@ -254,8 +254,8 @@ Generate the blueprint now:"""
             return f.read()
 
 
-# NAMING FIXED: DependencySentinel → dependency_sentinel
-class dependency_sentinel(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class DependencySentinelAgent(SubAtomicAgent):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
           14 (Duplicate Imports), 44 (Circular Imports)

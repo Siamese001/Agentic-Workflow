@@ -24,8 +24,8 @@ except ImportError:
     AUTOGEN_AVAILABLE = False
 
 
-# NAMING FIXED: Sherlock → sherlock
-class sherlock(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SherlockAgent(SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
@@ -112,8 +112,8 @@ Return ONLY the python code for {primary}.
         return None
 
 
-# NAMING FIXED: TestPilot → test_pilot
-class test_pilot(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class TestPilotAgent(SubAtomicAgent):
     """
     ROLE: Integration Guardian. Runs pytest and triggers Sherlock on failure.
     """
@@ -150,8 +150,8 @@ class test_pilot(SubAtomicAgent):
         return test_path if os.path.exists(test_path) else None
 
 
-# NAMING FIXED: ToolsmithAgent → toolsmith_agent
-class toolsmith_agent(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ToolsmithAgent(SubAtomicAgent):
     """
     ROLE: Dynamic Tool Forger.
     Creates diagnostic tools on-the-fly based on detected issues.

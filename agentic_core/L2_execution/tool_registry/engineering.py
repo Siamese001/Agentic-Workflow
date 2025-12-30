@@ -17,8 +17,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: StructuralEngineer → structural_engineer
-class structural_engineer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class StructuralEngineerAgent(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.
@@ -215,8 +215,8 @@ class structural_engineer(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
 
-# NAMING FIXED: PatternEnforcer → pattern_enforcer
-class pattern_enforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class PatternEnforcerAgent(SubAtomicAgent):
     """
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
