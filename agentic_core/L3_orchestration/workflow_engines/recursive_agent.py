@@ -28,7 +28,7 @@ class sub_task:
 
 # Forward declarations
 SubTask = sub_task
-RecursivePlan = recursive_plan = None  # Forward declaration
+# RecursivePlan alias will be set after class definition
 
 @dataclass
 # NAMING FIXED: RecursivePlan → recursive_plan
@@ -115,7 +115,7 @@ class recursive_planner_agent:
         self,
         goal: str,
         context: Dict[str, Any]
-    ) -> RecursivePlan:
+    ) -> "recursive_plan":
         """Decompose a complex goal into manageable sub-tasks."""
 
         decomposition_prompt = f"""
@@ -172,7 +172,7 @@ Format as JSON:
                 )
                 subtasks.append(subtask)
 
-            plan = RecursivePlan(
+            plan = recursive_plan(
                 main_goal=goal,
                 subtasks=subtasks,
                 execution_strategy=plan_data.get("execution_strategy", "sequential"),
@@ -185,7 +185,7 @@ Format as JSON:
         except Exception as e:
             logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
-            return RecursivePlan(
+            return recursive_plan(
                 main_goal=goal,
                 subtasks=[SubTask(
                     task_id="main_task",
@@ -202,7 +202,7 @@ Format as JSON:
 
     async def _validate_plan(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         context: Dict[str, Any]
     ) -> bool:
         """Validate that the plan is executable."""
@@ -240,7 +240,7 @@ Format as JSON:
 
     async def _execute_plan(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         context: Dict[str, Any],
         current_depth: int
     ) -> Dict[str, Any]:
@@ -270,7 +270,7 @@ Format as JSON:
 
     async def _execute_sequential(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         context: Dict[str, Any],
         current_depth: int
     ) -> Dict[str, Any]:
@@ -299,7 +299,7 @@ Format as JSON:
 
     async def _execute_parallel(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         context: Dict[str, Any],
         current_depth: int
     ) -> Dict[str, Any]:
@@ -333,7 +333,7 @@ Format as JSON:
 
     async def _execute_adaptive(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         context: Dict[str, Any],
         current_depth: int
     ) -> Dict[str, Any]:
@@ -441,7 +441,7 @@ Format as JSON:
 
     async def _check_success_criteria(
         self,
-        plan: RecursivePlan,
+        plan: "recursive_plan",
         results: Dict[str, Any]
     ) -> bool:
         """Check if success criteria were met."""
@@ -528,7 +528,7 @@ def create_recursive_planner(
     orchestrator_factory,
     max_depth: int = 3,
     max_parallel_subtasks: int = 5
-) -> RecursivePlannerAgent:
+) -> "recursive_planner_agent":
     """
     Factory function to create a recursive planner.
 
