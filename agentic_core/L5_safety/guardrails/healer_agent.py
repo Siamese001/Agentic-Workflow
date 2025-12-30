@@ -1,19 +1,12 @@
 """
-HealerAgent: Autonomous Structural Healer with Guardrails
+HealerAgent: Sovereign Structural Convergence Conductor
 
-Applies safe fixes for detected violations:
-- Move files to correct territory (Location/Naming guidance)
-- Remove unused imports (ImportAgent detections)
-- Fission oversized files (>800 lines) into sub-atomic modules
-- Fusion undersized dust files (<80 lines) into meaningful modules
-- Update imports in affected files (same-directory + cross-directory)
-- Clean empty directories and purge non-code clutter
+RESPONSIBILITIES:
+- File relocation based on LocationAgent signal.
+- Module Fission (>800 LOC) / Fusion (<80 LOC).
+- Cross-file import synchronization.
 
-Operates under strict guardrails:
-- Backup all changes to .sovereign_healing_backup/
-- Respect HEALING_CONFIG budgets (max_moves, max_fissions)
-- Deletion guardrail (line limits)
-- Dry-run mode for mission preview
+DELEGATION: Dead code pruning moved to specialized DeadCodeAgent.
 
 Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
