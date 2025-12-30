@@ -42,6 +42,14 @@ except ImportError as e:
     print("   [FALLBACK] Running in legacy mode — limited functionality")
     ORCHESTRATOR_AVAILABLE = False
 
+# [BOOTSTRAP] Dynamic bootstrap agent discovery
+try:
+    from agentic_core.L0_maintenance.scripts.bootstrap_agent import bootstrap_agent as BootstrapAgent
+    BOOTSTRAP_AVAILABLE = True
+except ImportError:
+    print("   [!] BootstrapAgent unavailable — skipping boot verification")
+    BOOTSTRAP_AVAILABLE = False
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     FORBIDDEN_ROOT_FOLDERS,
@@ -193,80 +201,13 @@ except Exception as e:
     if __name__ == "__main__":
         print(f"   [!] Telemetry setup failed (non-fatal): {e}")
 
-# [HARDENING] SOVEREIGN NEURAL LINK
-def verify_neural_link():
-    """
-    Physical Path Anchoring: Ensures the Brain can see its resurrected modules.
-    """
-    from dotenv import load_dotenv
-    
-    # Force the absolute path to the root .env
-    env_path = project_root / ".env"
-    
-    if not env_path.exists():
-        print(f"\n[!] [L6 ERROR] GRAVITY LOSS: .env missing at {env_path}")
-        # sys.exit(1)  # Commented out to allow pytest collection
-        return  # Early return instead of exit
-
-    load_dotenv(dotenv_path=env_path, override=True)
-    
-    # --- REDIS/LANGCACHE INTEGRITY CHECK ---
-    try:
-        import urllib.parse
-        import redis # [FIX] Explicit import to prevent NameError
-        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-        parsed = urllib.parse.urlparse(redis_url)
-        
-        # Build compatible connection kwargs
-        connection_kwargs = {
-            "host": parsed.hostname or "localhost",
-            "port": parsed.port or 6379,
-            "password": parsed.password,
-            "username": parsed.username,
-            "socket_timeout": 2,
-        }
-        if parsed.scheme == "rediss":
-            # Explicitly manage SSL params to avoid redis-py version conflicts
-            connection_kwargs.update({
-                "ssl": True, 
-                "ssl_cert_reqs": None,
-                "ssl_check_hostname": False
-            })
-
-        r = redis.Redis(**connection_kwargs)
-        r.ping()
-        print(f"   [OK] Redis State Active: Langcache connected.")
-    except Exception as e:
-        print(f"   [!] [L4 STATE WARNING] Redis offline: {e}")
-
-    # --- MODEL AUTHORIZATION WHITELIST ---
-    # Mandatory for currently approved mission logic
-    APPROVED_MODELS = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-    FUTURE_MODELS = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]
-    
-    # 1. Verify Mandatory Gemini Presence
-    missing_mandatory = [key for key in APPROVED_MODELS if not os.getenv(key)]
-    if missing_mandatory:
-        print(f"\n[!] [NEURAL LINK ERROR] Mission halted. Missing mandatory keys: {', '.join(missing_mandatory)}")
-        sys.exit(1)
-
-    # 2. Strict Model Authorization Check
-    # Even if keys exist in .env, this enforces a zero-call policy for non-Gemini models
-    unauthorized_detected = [key for key in FUTURE_MODELS if os.getenv(key)]
-    
-    print(f"   [OK] Neural Link Sourced: {env_path}")
-    if unauthorized_detected:
-        print(f"   [INFO] Inactive model strings detected in environment: {', '.join(unauthorized_detected)}")
-    
-    print(f"   [OK] Model Authorization: GEMINI-ONLY policy enforced.")
-
-    # Verify SOVEREIGN_REGISTRY is loaded
-    if not SOVEREIGN_REGISTRY:
-        print(f"\n[!] [NEURAL LINK ERROR] Mission halted. Missing SOVEREIGN_REGISTRY.")
-        return  # Early return instead of exit
-
 if __name__ == "__main__":
-    verify_neural_link()
+    # [PHASE 1] Bootstrap: Verify Environment and Neural Links
+    if BOOTSTRAP_AVAILABLE:
+        bootstrap = BootstrapAgent(project_root)
+        bootstrap.run_bootstrap()
+    else:
+        print("   [WARNING] Boot verification skipped (agent missing)")
 
     # [HARDENING] Remove auto-mutation of legacy imports on every run
     print("\n[INFO] Legacy import reconciliation skipped (run manually if needed)")
@@ -3132,50 +3073,18 @@ CURRENT CODE:
     except Exception as e:
         print(f"   [!] SRR failed: {e} — manual archive review needed")
 
-    # [L6 ALERTING] Auto-generate/update Prometheus alerting rules (idempotent)
-    rules_path = project_root / "alert.rules.yml"
-    rules_content = """# alert.rules.yml — Sovereign Canon Validator Alerting Rules (December 29, 2025)
-groups:
-  - name: canon_validator_alerts
-    rules:
-      - alert: CanonHighStructuralViolations
-        expr: canon_validator_violations_total{type="final_total"} > 50
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary: "High violations in canon validator"
-          description: "Total violations >50. Sovereignty breach."
-
-      - alert: CanonCircuitBreakerOpen
-        # Note: PromEnum exports state as label value 1. 
-        # Adjust expr based on exact metric format (Gauge vs Enum)
-        expr: canon_validator_circuit_breaker_state{circuit_breaker_state="open"} == 1
-        for: 2m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Circuit breaker open"
-          description: "External service failing — fast fail active."
-
-      - alert: CanonAgentHighFailureRate
-        expr: rate(canon_validator_agent_failures_total[10m]) > 5
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Agent failure spike"
-          description: "Agent failing rapidly — investigate."
-"""
-
-    try:
-        if not rules_path.exists() or rules_path.read_text(encoding='utf-8').strip() != rules_content.strip():
-            rules_path.write_text(rules_content.strip() + "\n", encoding='utf-8')
-            print(f"   [OK] Alerting rules written to {rules_path}")
-        else:
-            print(f"   [INFO] Alerting rules up-to-date at {rules_path}")
-    except Exception as e:
-        print(f"   [!] Failed to write alerting rules: {e}")
+    # [PHASE 15] ALERTING RULES: Delegated to MetricsAgent
+    if ORCHESTRATOR_AVAILABLE and hasattr(ctx, 'orchestrator') and ctx.orchestrator.metrics:
+        try:
+            yaml_rules = ctx.orchestrator.metrics.generate_alerting_rules()
+            print("\n[OK] Alerting rules synchronized by MetricsAgent.")
+            # High-signal logic preview
+            preview_len = 300
+            print(f"   [PREVIEW]:\n{yaml_rules[:preview_len]}...")
+        except Exception as e:
+            print(f"   [!] Alerting rules generation failed: {e}")
+    else:
+        print("   [INFO] MetricsAgent unavailable — skipping alerting rule synchronization.")
 
     # [ULTIMATE SELF-AUDIT] Final compliance verification
     total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
@@ -3196,81 +3105,51 @@ groups:
         if total_violations > 0:
             print(f"\n[CONVERGENCE PHASE] {total_violations} violations remain — iteration continues.")
             print("   Re-run the validator to apply further healing rounds.")
-            # sys.exit(1)
 
-    print("\n[KEY COVERAGE REPORT]")
-    from collections import defaultdict
-    key_counts = defaultdict(int)
-    for f in ctx.python_files:
-        rel = Path(f).relative_to(project_root)
-        keys = [k for k, ps in CANON_KEY_TO_FOLDER_MAP.items() if any(str(rel).startswith(p) for p in ps)]
-        for k in keys: key_counts[k] += 1
+    # === CANON KEY COVERAGE REPORT (via MetricsAgent) ===
+    # RATIONALE: Decomposition of manual counting into quantitative L4 agents.
+    if ORCHESTRATOR_AVAILABLE and hasattr(ctx, 'orchestrator') and ctx.orchestrator.metrics:
+        metrics = ctx.orchestrator.metrics.get_all_metrics()
 
-    # === SYNTHETIC BEHAVIORAL COUNTS (Keys 13-19) [HARDENED v2] ===
-    # Key 13: Span-of-Two compliance — now requires ZERO violations explicitly
-    try:
-        from agentic_core.runtime.shared_runtime.void_compliance import check_span_of_two_violations
-        span_v = check_span_of_two_violations(project_root)
-        key_counts[13] = 1 if len(span_v) == 0 else 0
-    except ImportError:
-        key_counts[13] = 0
+        print("\n" + "="*70)
+        print("                   CANON KEY COVERAGE REPORT")
+        print("="*70)
 
-    # Key 14: Active agent count — require minimum active validators for sovereignty
-    # NOTE: Threshold lowered to 1 for operational mode (at least one healing agent armed)
-    active_agents = len(getattr(ctx, 'cleaning_crew', []))
-    key_counts[14] = 1 if active_agents >= 1 else 0
+        # 1. Structural Keys (0-12): Resolved per-file by KeyMappingAgent
+        structural_coverage = metrics.get("key_mapping.structural_coverage", {})
+        total_files = metrics.get("compliance.total_files", len(ctx.python_files))
+        for k in range(13):
+            covered = structural_coverage.get(k, 0)
+            print(f"   Key {k:2d}: {covered}/{total_files} files covered")
 
-    # Key 15: Healing capability armed (agent available for healing)
-    # Changed from count-based to boolean - 1 if healing infrastructure is ready
-    key_counts[15] = 1 if active_agents > 0 else 0
+        # 2. Behavioral Keys (13-19): Syncretic state from MetricsAgent
+        behavioral = metrics.get("compliance.behavioral_keys", {})
+        for k in range(13, 20):
+            status = "ACTIVE" if behavioral.get(k, False) else "INACTIVE"
+            print(f"   Key {k:2d}: {status}")
 
-    # Key 16: Safety systems online — require both engine AND guardrail fully armed
-    key_counts[16] = 1 if (getattr(ctx, 'engine', None) and getattr(ctx, 'safety', None)) else 0
+        # 3. Final Sovereignty Convergence Verdict
+        converged = metrics.get("compliance.converged", False)
+        total_violations = metrics.get("compliance.total_violations", 0)
 
-    # Key 17: State Synchronization — require Redis monitor present (Pinecone optional)
-    monitor_names = [m.__class__.__name__ for m in monitors]
-    has_redis = any('redis' in name.lower() for name in monitor_names)
-    key_counts[17] = 1 if has_redis else 0
-
-    # Key 18: Core Laws (Naming + Gravity) — check structural dashboard passed
-    # Since dashboard shows all [OK], key 18 should pass
-    key_counts[18] = 1  # Dashboard structural checks passed
-
-    # Key 19: Full Convergence — relaxed mode for operational validation
-    behavioral_pass = (key_counts[13] == 1 and key_counts[14] == 1 and key_counts[16] == 1 and key_counts[17] == 1 and key_counts[18] == 1)
-    key_counts[19] = 1 if (active_agents > 0 and behavioral_pass) else 0
-
-    # Calculate perfection status for the banner
-    target_files = len(ctx.python_files)
-    structural_perfect = all(key_counts.get(k, 0) == target_files for k in range(13))
-    behavioral_perfect = (key_counts.get(19, 0) == 1)
-    
-    is_eternal_sovereign = structural_perfect and behavioral_perfect
-
-    for k in sorted(key_counts):
-        unit = "files" if k <= 12 else "status (1 = active/clean)"
-        print(f"   Key {k}: {key_counts[k]} {unit}")
-
-    print("="*70)
-    
-    # [ETERNAL SIGNAL HARDENING] Amplified convergence banner
-    if is_eternal_sovereign:
-        print("\n" + "🚨" * 20)
-        print("[ETERNAL SOVEREIGNTY SEAL] ALL 20 CANON KEYS ACHIEVED — PERFECTION ABSOLUTE")
-        print("   • Structural keys (0-12): Full territory coverage")
-        print("   • Behavioral keys (13-19): All systems armed and violation-free")
-        print("   • Zero violations | Active agents | Full synchronization")
-        print("🚨" * 20 + "\n")
-    elif key_counts.get(19, 0) == 1:
-        print("\n[STRONG SIGNAL] Key 19 Convergence achieved — near-perfect sovereignty")
+        if converged:
+            print("\n" + "🚨" * 20)
+            print("[ETERNAL SOVEREIGNTY SEAL] ALL 20 CANON KEYS ACHIEVED — PERFECTION ABSOLUTE")
+            print("   • Full structural territory coverage")
+            print("   • All behavioral L5 systems armed")
+            print("   • Zero violations remaining in territory")
+            print("🚨" * 20 + "\n")
+        elif behavioral.get(19, False):
+            print("\n[STRONG SIGNAL] Key 19 Convergence achieved — near-perfect sovereignty")
+        else:
+            print(f"\n[STATUS] Mission complete — {total_violations} violations remain")
     else:
-        print("\n[STATUS] System Operational - Violations Detected")
-
+        print("\n[INFO] MetricsAgent unavailable — detailed key coverage report skipped")
+        print("   Please ensure the L5 Orchestrator is correctly initialized.")
 
 async def _execute_move_instruction(move: dict, project_root: Path, ctx):
     """
     Execute a file move instruction generated by HealerAgent.
-    
     Args:
         move: Dictionary with 'action', 'source', 'target', 'reason'
         project_root: Project root path
