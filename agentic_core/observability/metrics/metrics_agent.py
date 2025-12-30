@@ -98,10 +98,37 @@ class metrics_agent:
 
             # Compliance rate gauge (0-100)
             self._gauges["compliance.compliance_rate"] = 100.0
+            
+            # State sync monitor default (Key 17)
+            self._gauges["state_sync.redis_monitor_active"] = 0
 
             # Metadata
             self._metadata["compliance.last_scan"] = None
             self._metadata["compliance.scan_count"] = 0
+    
+    def check_redis_monitor(self) -> None:
+        """
+        Probes Redis for the sovereign monitor sentinel.
+        Enforces Key 17 state sync compliance.
+        """
+        try:
+            import redis
+            from agentic_core.config.blueprint_sovereign.sovereign_env import get_redis_connection
+            
+            # Reuse established connection logic from SSOT
+            r = get_redis_connection()
+            monitor_sentinel = r.get("sovereign:monitor:name")
+            
+            is_active = 1 if monitor_sentinel else 0
+            self.set_gauge("state_sync.redis_monitor_active", is_active)
+            
+            if is_active:
+                logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
+            else:
+                logger.warning("[MetricsAgent] Redis Monitor sentinel missing from state.")
+        except Exception as e:
+            self.set_gauge("state_sync.redis_monitor_active", 0)
+            logger.error(f"[MetricsAgent] State sync probe failed: {e}")
 
     # === Counter Operations ===
 
@@ -245,6 +272,9 @@ class metrics_agent:
             self._metadata["compliance.last_scan"] = timestamp
             self._metadata["compliance.scan_count"] = self._metadata.get("compliance.scan_count", 0) + 1
 
+        # Refresh the external monitor heartbeat
+        self.check_redis_monitor()
+        
         logger.info(f"[MetricsAgent] Recorded compliance scan: {total} violations")
 
     def get_all_metrics(self) -> Dict[str, Any]:
