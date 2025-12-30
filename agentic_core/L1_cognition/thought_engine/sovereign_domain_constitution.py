@@ -1,7 +1,7 @@
 """
 Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
 Defines Bounded Contexts, Aggregates, and Ubiquitous Language.
-L0-L6 Sovereign Stack Hierarchy established.
+L0-L5 + Observability Sovereign Stack Hierarchy established.
 """
 from typing import List, Dict, Any
 
@@ -47,8 +47,8 @@ BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
         "rank": 5,
         "role": "Membrane: Input/Output Sanitization"
     },
-    "L6_Observability": {
-        "path": "agentic_core/observability",  # [SSOT FIX] Correct path per CORE_SUBFOLDER_MAP
+    "Observability": {
+        "path": "agentic_core/observability",  # [SSOT] Per structure_blueprint.py
         "rank": 6,
         "role": "Truth: Telemetry, Logging, and Audit Trails"
     },
