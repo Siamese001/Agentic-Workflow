@@ -98,7 +98,7 @@ class nest_visitor(ast.NodeVisitor):
         self.depth -= 1
 
 
-# NAMING FIXED: SystemArchitect → system_architect
+# NOT_AN_AGENT — legacy L1 class, true agent is SystemArchitectAgent in L2 — excluded from discovery
 class system_architect(CanonBaseAgentInterface):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
@@ -217,7 +217,7 @@ class system_architect(CanonBaseAgentInterface):
             tree = self._parse_python_file(fp)
             if tree:
                 # Instantiate the module-level NestVisitor
-                visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
+                visitor = nest_visitor(fp, MAX_NESTING_DEPTH) 
                 visitor.visit(tree)
                 violations.extend(visitor.violations_in_file)
         return len(violations) == 0, violations
@@ -306,7 +306,7 @@ class system_architect(CanonBaseAgentInterface):
             await self.smart_fix(fp, 41)
 
 
-# NAMING FIXED: HealerAgent → healer_agent
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class healer_agent(CanonBaseAgentInterface):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
@@ -418,7 +418,7 @@ class healer_agent(CanonBaseAgentInterface):
             self.ctx.signal_critical_failure()
 
 
-# NAMING FIXED: GenerativeGuard → generative_guard
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class generative_guard(CanonBaseAgentInterface):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
