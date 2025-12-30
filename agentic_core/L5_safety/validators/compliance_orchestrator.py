@@ -6,11 +6,17 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any
 import logging
 
-from agentic_core.L5_safety.validators.location_agent import location_agent
-from agentic_core.L5_safety.validators.hierarchy_agent import hierarchy_agent
-from agentic_core.L5_safety.validators.key_mapping_agent import key_mapping_agent
-from agentic_core.utils.naming.naming_agent import naming_agent
-from agentic_core.L5_safety.gravity.import_agent import import_agent
+# Sovereign Agent Imports
+from agentic_core.L5_safety.validators.location_agent import location_agent as LocationAgent
+from agentic_core.L5_safety.validators.naming_agent import naming_agent as NamingAgent
+from agentic_core.L5_safety.validators.hierarchy_agent import hierarchy_agent as HierarchyAgent
+from agentic_core.L5_safety.validators.key_mapping_agent import key_mapping_agent as KeyMappingAgent
+from agentic_core.L5_safety.gravity.import_agent import import_agent as ImportAgent
+from agentic_core.L5_safety.guardrails.healer_agent import healer_agent as HealerAgent
+from agentic_core.config.blueprint_sovereign.structure_blueprint import MISSION_CONFIG
+
+# Fission threshold from Canon Law
+MAX_LINES = 800
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +29,25 @@ class compliance_orchestrator:
         self.hierarchy_agent = hierarchy_agent(self.project_root)
         self.naming_agent = naming_agent(self.project_root)
         self.import_agent = import_agent(self.project_root)
+        self.healer = healer_agent(self.project_root)
 
-    def run_full_compliance(self) -> List[Tuple[Path, str]]:
+    def run_full_compliance(self, auto_heal: bool = False) -> List[Tuple[Path, str]]:
         all_violations: List[Tuple[Path, str]] = []
+        large_files: List[Path] = []
         logger.info("[ORCHESTRATOR] Starting compliance mission")
 
         py_files = list(self.project_root.rglob("*.py"))
+
+        # [NEW] Line Count Scan for Fission Trigger
+        for file_path in py_files:
+            try:
+                with open(file_path, 'rb') as f:
+                    line_count = sum(1 for _ in f)
+                if line_count > MAX_LINES and file_path.name != "__init__.py":
+                    large_files.append(file_path)
+                    all_violations.append((file_path, f"FISSION VIOLATION: {line_count} lines (> {MAX_LINES})"))
+            except Exception as e:
+                logger.warning(f"Failed to count lines for {file_path.name}: {e}")
 
         # Key mapping (fast)
         self.key_agent.run_on_files(py_files)
@@ -46,6 +65,12 @@ class compliance_orchestrator:
         # Import & Gravity
         for file_path, msgs in self.import_agent.run(valid_files):
             all_violations.extend((file_path, msg) for msg in msgs)
+
+        # Autonomous Healing (if enabled)
+        if auto_heal and (all_violations or large_files):
+            healing_results = self.healer.heal_all(all_violations, large_files=large_files)
+            logger.info(f"[HEALED] {healing_results['total_actions']} structural fixes applied.")
+            logger.info(f"[BACKUP] Safety seal at: {healing_results['backup_dir']}")
 
         total = len(all_violations)
         logger.info(f"[ORCHESTRATOR] Mission complete: {total} violations" if total else "[ORCHESTRATOR] Fully compliant")

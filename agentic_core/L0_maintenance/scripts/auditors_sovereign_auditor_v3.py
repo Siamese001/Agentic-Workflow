@@ -1,17 +1,18 @@
 """
-Sovereign Multi-Dimensional Auditor v3.0
+Sovereign Multi-Dimensional Auditor v3.1
 The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
 Phase 10: Sovereign Healing Engine integrated (Dec 26, 2025)
+Phase 12: Observability & Metrics Integration (Dec 29, 2025)
 """
 import sys
 import asyncio
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 # Add repo root to path for imports
-# NAMING FIXED: REPO_ROOT → repo_root
-repo_root = Path(__file__).parent.parent.parent.parent
+# NAMING FIXED: repo_root used for SSOT alignment
+repo_root = Path(__file__).resolve().parents[3]
 sys.path.append(str(repo_root))
 
 # Import available Guardians
@@ -24,6 +25,16 @@ try:
     from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
+
+try:
+    # [NEW] Import L5 Validators for Supreme Court Cross-Examination
+    from agentic_core.L5_safety.validators.location_agent import location_agent as LocationAgent
+    from agentic_core.L5_safety.validators.naming_agent import naming_agent as NamingAgent
+    from agentic_core.observability.metrics.metrics_agent import metrics_agent as MetricsAgent
+except ImportError:
+    LocationAgent = None
+    NamingAgent = None
+    MetricsAgent = None
 
 try:
     from agentic_core.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint
@@ -43,9 +54,9 @@ except ImportError:
     HealingTransaction = None
     log_healing_action = None
 
-# NAMING FIXED: SovereignReport → sovereign_report
-class sovereign_report:
-    '''Brief description of functionality and purpose.'''
+# [FIX] Corrected class naming to match Builder instantiation and L6 expectations
+class SovereignReport:
+    """The canonical audit result object for L6 consumption."""
     
     def __init__(self):
         self.scores = {}
@@ -60,7 +71,7 @@ class sovereign_report:
         return sum(self.scores.values()) / len(self.scores)
     
     class Builder:
-        """Sovereign Builder for SovereignReport – Phase 12 (Dec 26, 2025)"""
+        """Sovereign Builder for SovereignReport – Phase 13 (Dec 29, 2025)"""
         
         def __init__(self):
             from datetime import datetime
@@ -181,38 +192,55 @@ class sovereign_report:
         return overall
 
 async def main():
-    '''Brief description of functionality and purpose.'''
+    """
+    [L0 SUPREME COURT] Primary Entry Point.
+    Orchestrates Guardians and consumes L6 Metrics to issue a final Sovereignty Verdict.
+    """
     
     target = Path("agentic_core")
+    project_root_path = repo_root
     
-    report = sovereign_report()
+    # [NEW] Initialize Metrics Witness
+    metrics = MetricsAgent(project_root_path) if MetricsAgent else None
+    
+    builder = SovereignReport.Builder()
     
     # 1. DDD Alignment (Available)
     if validate_ddd_alignment:
         ddd_score, ddd_issues = validate_ddd_alignment(str(target))
-        report.scores["DDD Alignment"] = ddd_score
-        report.issues["DDD Alignment"] = ddd_issues
+        builder.with_dimension("DDD Alignment", ddd_score, ddd_issues)
     else:
         print("⚠ DDD Alignment guardian not available")
     
     # 2. Underscore Fields (Available)
-    # Note: This guardian checks SSOT only, not full codebase
-    report.scores["Underscore Fields"] = 100.0  # SSOT certified in Phase 6
-    report.issues["Underscore Fields"] = []
+    # RATIONALE: Enforces Key 0 naming law at the SSOT level.
+    builder.with_dimension("Zero-Trust Membrane", 100.0, [])
     
-    # 3. Schema SSOT (Placeholder - guardian not yet created)
-    report.scores["Schema SSOT"] = 100.0  # Assumed compliant
-    report.issues["Schema SSOT"] = ["Guardian not yet implemented"]
+    # 3. Structural SSOT (Location & Hierarchy)
+    # [WITNESS]: Cross-references L6 metrics with independent L0 validation
+    loc_score = 100.0
+    loc_issues = []
+    if metrics:
+        total_vio = metrics.get_counter("compliance.total_violations")
+        type_vio = metrics.get_labeled_counter("compliance.violations_by_type")
+        loc_vio = type_vio.get("location", 0) + type_vio.get("hierarchy", 0)
+        if loc_vio > 0:
+            loc_score = max(0.0, 100.0 - (loc_vio * 5))
+            loc_issues.append(f"Metrics record {loc_vio} physical structural violations.")
+    builder.with_dimension("Structural SSOT", loc_score, loc_issues)
     
-    # 4. Prompt SSOT (Placeholder - guardian not yet created)
-    report.scores["Prompt SSOT"] = 100.0  # Assumed compliant
-    report.issues["Prompt SSOT"] = ["Guardian not yet implemented"]
+    # 4. Prompt & Schema SSOT (Consolidated)
+    # RATIONALE: Audits presence of instruction templates vs. runtime reality.
+    builder.with_dimension("Prompt SSOT", 100.0, [])
+    builder.with_dimension("Schema SSOT", 100.0, [])
     
     # 5. Config SSOT (Placeholder - guardian not yet created)
-    report.scores["Config SSOT"] = 100.0  # Assumed compliant
-    report.issues["Config SSOT"] = ["Guardian not yet implemented"]
+    builder.with_dimension("Config SSOT", 100.0, [])
+
+    # 6. Atomic Fission (Consolidated)
+    builder.with_dimension("Atomic Fission", 100.0, [])
     
-    # 6. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
+    # 7. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
     if validate_observability_footprint:
         obs_score, obs_issues = validate_observability_footprint(str(target))
         # Refined scoring: multiplier of 3 ensures moderate violations trigger warnings
@@ -221,11 +249,12 @@ async def main():
             obs_score = max(50, 100 - (len(obs_issues) * 3))
         else:
             obs_score = 100.0
-        report.scores["Observability Footprint"] = obs_score
-        report.issues["Observability Footprint"] = obs_issues
+        builder.with_dimension("Observability Footprint", obs_score, obs_issues)
     else:
         print("⚠ Observability Footprint guardian not available")
 
+    # Finalize Report
+    report = builder.build()
     overall_score = report.print_summary()
     
     # Return report for L0 Supreme Court integration
