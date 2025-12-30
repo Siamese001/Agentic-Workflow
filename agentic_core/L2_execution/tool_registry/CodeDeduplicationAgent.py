@@ -138,6 +138,168 @@ class CodeDeduplicationAgent:
         self.scan_for_duplicates(ctx.python_files)
         await self.auto_extract_duplicates(Path(ctx.project_root), ctx)
 
+    # SUPPLEMENTED FROM DeadCodeDetectorAgent + DeadCodePrunerAgent — enhances dead code detection — merged 2025-12-30
+    def detect_dead_code(self, file_path: Path) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DeadCodeDetectorAgent — merged 2025-12-30
+        
+        Analyze a single Python file for dead code (unused imports, functions, classes, methods).
+        
+        Args:
+            file_path: Path to the Python file to analyze
+            
+        Returns:
+            Dict with findings: {unused_imports, unused_functions, unused_classes, unused_methods}
+        """
+        try:
+            content = file_path.read_text(encoding='utf-8')
+        except Exception as e:
+            return {'error': f'Could not read {file_path}: {e}'}
+            
+        if not content.strip() or file_path.name == '__init__.py':
+            return {'skipped': True, 'reason': 'Empty or __init__ file'}
+            
+        try:
+            tree = ast.parse(content, filename=str(file_path))
+        except SyntaxError as e:
+            return {'error': f'Syntax error in {file_path}: {e}'}
+            
+        # Track imports, definitions, and usages
+        imported_names: set = set()
+        defined_functions: set = set()
+        defined_classes: set = set()
+        used_names: set = set()
+        import_lines: Dict[str, int] = {}
+        def_lines: Dict[str, int] = {}
+        
+        for node in ast.walk(tree):
+            # Track imports
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    name = alias.asname or alias.name
+                    imported_names.add(name)
+                    import_lines[name] = node.lineno
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    name = alias.asname or alias.name
+                    imported_names.add(name)
+                    import_lines[name] = node.lineno
+            # Track definitions
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                defined_functions.add(node.name)
+                def_lines[node.name] = node.lineno
+            elif isinstance(node, ast.ClassDef):
+                defined_classes.add(node.name)
+                def_lines[node.name] = node.lineno
+            # Track usage
+            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                used_names.add(node.id)
+                
+        findings = {
+            'file_path': str(file_path),
+            'unused_imports': [],
+            'unused_functions': [],
+            'unused_classes': [],
+        }
+        
+        # Detect unused imports
+        for name in imported_names:
+            if name not in used_names:
+                findings['unused_imports'].append({'name': name, 'line': import_lines.get(name)})
+                
+        # Detect unused functions (excluding private)
+        for name in defined_functions:
+            if name not in used_names and not name.startswith('_'):
+                findings['unused_functions'].append({'name': name, 'line': def_lines.get(name)})
+                
+        # Detect unused classes (excluding private)
+        for name in defined_classes:
+            if name not in used_names and not name.startswith('_'):
+                findings['unused_classes'].append({'name': name, 'line': def_lines.get(name)})
+                
+        return findings
+
+    def scan_dead_code(self, directory: Path, recursive: bool = True) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DeadCodeDetectorAgent — merged 2025-12-30
+        
+        Scan an entire directory for dead code.
+        
+        Args:
+            directory: Directory to scan
+            recursive: Whether to scan recursively
+            
+        Returns:
+            Dict with scan results and summary
+        """
+        if not directory.exists():
+            return {'error': f'Directory {directory} does not exist'}
+            
+        py_files = list(directory.rglob('*.py') if recursive else directory.glob('*.py'))
+        py_files = [f for f in py_files if '__pycache__' not in str(f)]
+        
+        results = {
+            'scanned_files': len(py_files),
+            'findings': [],
+            'summary': {
+                'total_unused_imports': 0,
+                'total_unused_functions': 0,
+                'total_unused_classes': 0,
+            }
+        }
+        
+        for file_path in py_files:
+            finding = self.detect_dead_code(file_path)
+            if 'error' not in finding and 'skipped' not in finding:
+                results['findings'].append(finding)
+                results['summary']['total_unused_imports'] += len(finding['unused_imports'])
+                results['summary']['total_unused_functions'] += len(finding['unused_functions'])
+                results['summary']['total_unused_classes'] += len(finding['unused_classes'])
+                
+        return results
+
+    def prune_dead_code(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DeadCodePrunerAgent — merged 2025-12-30
+        
+        Remove detected dead code from a file.
+        
+        Args:
+            file_path: Path to the file to prune
+            dry_run: If True, only report what would be removed
+            
+        Returns:
+            Dict with pruning results
+        """
+        findings = self.detect_dead_code(file_path)
+        if 'error' in findings or 'skipped' in findings:
+            return findings
+            
+        lines_to_remove = set()
+        for item in findings['unused_imports']:
+            if item['line']:
+                lines_to_remove.add(item['line'])
+                
+        results = {
+            'file': str(file_path),
+            'dry_run': dry_run,
+            'lines_marked': list(lines_to_remove),
+            'imports_removed': len(findings['unused_imports']),
+        }
+        
+        if not dry_run and lines_to_remove:
+            try:
+                content = file_path.read_text(encoding='utf-8')
+                lines = content.splitlines(keepends=True)
+                new_lines = [line for i, line in enumerate(lines, 1) if i not in lines_to_remove]
+                file_path.write_text(''.join(new_lines), encoding='utf-8')
+                results['pruned'] = True
+            except Exception as e:
+                results['error'] = str(e)
+                
+        return results
+
+
 def get_code_deduplication_agent() -> Any:
     """Brief description of functionality and purpose."""
     return CodeDeduplicationAgent()

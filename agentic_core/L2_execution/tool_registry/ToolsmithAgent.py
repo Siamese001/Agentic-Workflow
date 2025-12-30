@@ -252,6 +252,66 @@ class ToolsmithAgent:
             if tool.test_code:
                 stats['with_tests'] += 1
         return stats
+
+    # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
+    TERRITORY_SEED_CONTENT: Dict[str, Dict[str, str]] = {
+        'agentic_core/prompt_governance/meta_prompts': {
+            'convergence_planning.jinja': '{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n'
+        },
+        'agentic_core/prompt_governance/rendering': {
+            'sovereign_prompt_renderer.py': '# sovereign_prompt_renderer - Dynamic Assembly\nclass sovereign_prompt_renderer:\n    def render(self, template_name, context=None):\n        pass\n'
+        },
+        'agentic_core/schemas/models': {
+            'base_models.py': 'from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n'
+        },
+    }
+
+    async def seed_territory(self, project_root: Path, dry_run: bool = False) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
+        
+        Seed organic content in empty territories (Ghost Territories).
+        
+        Targets empty non-code folders and injects sovereign-compliant starter assets.
+        
+        Args:
+            project_root: Root path of the project
+            dry_run: If True, only report what would be seeded without writing
+            
+        Returns:
+            Dict with seeding results: {seeded: [], skipped: [], errors: []}
+        """
+        results = {'seeded': [], 'skipped': [], 'errors': []}
+        
+        for rel_path, files in self.TERRITORY_SEED_CONTENT.items():
+            target_dir = project_root / rel_path
+            if not target_dir.exists():
+                results['skipped'].append(f"{rel_path} (dir not found)")
+                continue
+                
+            # Check if directory already has content (excluding __init__.py and .gitkeep)
+            contents = [p.name for p in target_dir.iterdir() if p.name not in {'__init__.py', '.gitkeep'}]
+            if contents:
+                results['skipped'].append(f"{rel_path} (already populated)")
+                continue
+                
+            for filename, content in files.items():
+                file_path = target_dir / filename
+                if file_path.exists():
+                    results['skipped'].append(str(file_path.relative_to(project_root)))
+                    continue
+                    
+                if dry_run:
+                    results['seeded'].append(f"[DRY RUN] {file_path.relative_to(project_root)}")
+                else:
+                    try:
+                        file_path.write_text(content, encoding='utf-8')
+                        results['seeded'].append(str(file_path.relative_to(project_root)))
+                        logger.info(f"Seeded: {file_path.relative_to(project_root)}")
+                    except IOError as e:
+                        results['errors'].append(f"{filename}: {e}")
+                        
+        return results
 _toolsmith_agent: Optional["toolsmith_agent"] = None
 
 # Aliases for discovery
