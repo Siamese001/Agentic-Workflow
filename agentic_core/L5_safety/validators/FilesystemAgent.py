@@ -33,7 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger = logging.getLogger(__name__)
 
 
-class filesystem_agent:
+class FilesystemAgent:
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.
@@ -291,4 +291,4 @@ class filesystem_agent:
 
 
 # Uppercase alias for backward compatibility
-FileSystemAgent = filesystem_agent
+filesystem_agent = FilesystemAgent

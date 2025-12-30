@@ -30,7 +30,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class metrics_agent:
+class MetricsAgent:
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory metric store with alerting rule generation.
@@ -289,4 +289,4 @@ class metrics_agent:
 
 
 # Uppercase alias for backward compatibility
-MetricsAgent = metrics_agent
+metrics_agent = MetricsAgent

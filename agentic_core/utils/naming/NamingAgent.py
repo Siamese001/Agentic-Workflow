@@ -31,7 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class naming_agent:
+class NamingAgent:
     """
     Autonomous agent for naming law compliance.
     Operates after LocationAgent (assumes file is in valid territory).
@@ -273,4 +273,4 @@ class naming_agent:
 
 
 # Uppercase alias for backward compatibility
-NamingAgent = naming_agent
+naming_agent = NamingAgent

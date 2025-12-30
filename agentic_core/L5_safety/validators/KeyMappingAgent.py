@@ -19,7 +19,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class key_mapping_agent:
+class KeyMappingAgent:
     """
     Autonomous lightweight agent for Canon Key resolution.
     Used by orchestrators, healers, and auditors to know which keys govern a file.
@@ -113,4 +113,4 @@ class key_mapping_agent:
 
 
 # Uppercase alias for backward compatibility
-KeyMappingAgent = key_mapping_agent
+key_mapping_agent = KeyMappingAgent

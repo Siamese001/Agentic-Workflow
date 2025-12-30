@@ -105,7 +105,7 @@ class span:
 Span = span
 
 
-class tracing_agent:
+class TracingAgent:
     """
     Autonomous distributed tracing agent.
     Manages trace context and span lifecycle.
@@ -389,4 +389,4 @@ class tracing_agent:
 
 
 # Uppercase alias for backward compatibility
-TracingAgent = tracing_agent
+tracing_agent = TracingAgent

@@ -28,7 +28,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class hierarchy_agent:
+class HierarchyAgent:
     """
     Autonomous agent for hierarchical structure compliance.
     Scans folders only (no file content parsing).
@@ -192,5 +192,5 @@ class hierarchy_agent:
         return all_violations
 
 
-# Uppercase alias for backward compatibility
-HierarchyAgent = hierarchy_agent
+# Backward compatibility alias
+hierarchy_agent = HierarchyAgent

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer import get_sovereign_prompt_renderer
 
-class meta_learning_agent:
+class MetaLearningAgent:
     """
     Sovereign agent for post-mission analysis and optimization.
 
@@ -68,3 +68,7 @@ class meta_learning_agent:
 def get_meta_learning_agent() -> Any:
     """Brief description of functionality and purpose."""
     return MetaLearningAgent()
+
+
+# Backward compatibility alias
+meta_learning_agent = MetaLearningAgent
