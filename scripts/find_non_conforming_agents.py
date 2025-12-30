@@ -48,18 +48,20 @@ class NonConformingAgentFinder(ast.NodeVisitor):
             self.generic_visit(node)
             return
 
-        # Check for NOT_AN_AGENT exclusion comment on preceding line
+        # Check for NOT_AN_AGENT exclusion comment on preceding lines (up to 3 lines back for decorators)
         line_idx = node.lineno - 1  # 0-indexed
-        if line_idx > 0:
-            prev_line = self.source_lines[line_idx - 1].strip()
-            if "NOT_AN_AGENT" in prev_line:
-                self.excluded_classes.append({
-                    "name": class_name,
-                    "line": node.lineno,
-                    "reason": prev_line,
-                })
-                self.generic_visit(node)
-                return
+        for offset in range(1, 4):  # Check up to 3 lines before class definition
+            check_idx = line_idx - offset
+            if check_idx >= 0:
+                prev_line = self.source_lines[check_idx].strip()
+                if "NOT_AN_AGENT" in prev_line:
+                    self.excluded_classes.append({
+                        "name": class_name,
+                        "line": node.lineno,
+                        "reason": prev_line,
+                    })
+                    self.generic_visit(node)
+                    return
 
         # Scan methods
         suspicious_methods = []
