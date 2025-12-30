@@ -34,9 +34,11 @@ AGENT_LIKE_METHODS = {
 
 
 class NonConformingAgentFinder(ast.NodeVisitor):
-    def __init__(self, file_path: Path):
+    def __init__(self, file_path: Path, source_lines: List[str]):
         self.file_path = file_path
+        self.source_lines = source_lines
         self.suspect_classes: List[Dict] = []
+        self.excluded_classes: List[Dict] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         class_name = node.name
@@ -45,6 +47,19 @@ class NonConformingAgentFinder(ast.NodeVisitor):
         if class_name.endswith("Agent") and class_name[0].isupper():
             self.generic_visit(node)
             return
+
+        # Check for NOT_AN_AGENT exclusion comment on preceding line
+        line_idx = node.lineno - 1  # 0-indexed
+        if line_idx > 0:
+            prev_line = self.source_lines[line_idx - 1].strip()
+            if "NOT_AN_AGENT" in prev_line:
+                self.excluded_classes.append({
+                    "name": class_name,
+                    "line": node.lineno,
+                    "reason": prev_line,
+                })
+                self.generic_visit(node)
+                return
 
         # Scan methods
         suspicious_methods = []
@@ -81,7 +96,8 @@ def main():
         except Exception:
             continue  # Skip unparseable files
 
-        finder = NonConformingAgentFinder(py_file)
+        source_lines = source.splitlines()
+        finder = NonConformingAgentFinder(py_file, source_lines)
         finder.visit(tree)
 
         for suspect in finder.suspect_classes:
@@ -93,8 +109,11 @@ def main():
             })
 
     # Output table
+    # Count excluded classes
+    total_excluded = sum(len(f.get('excluded', [])) for f in [{'excluded': []}])  # placeholder
+    
     if suspects:
-        print(f"\nFound {len(suspects)} non-conforming agent-like classes:\n")
+        print(f"\nFound {len(suspects)} non-conforming agent-like classes (excluding NOT_AN_AGENT marked):\n")
         print(f"{'File':<60} {'Line':<6} {'Class Name':<30} {'Suspicious Methods'}")
         print("-" * 140)
         for s in suspects:

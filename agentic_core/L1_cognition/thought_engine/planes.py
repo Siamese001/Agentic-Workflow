@@ -71,7 +71,7 @@ class i_cognitive_plane(Protocol):
 
 
 @runtime_checkable
-# NAMING FIXED: IActionPlane → i_action_plane
+# NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
 class i_action_plane(Protocol):
     """Interface for the action plane (Hands).
 
@@ -118,7 +118,7 @@ class i_action_plane(Protocol):
         ...
 
 @runtime_checkable
-# NAMING FIXED: IOrchestrator → i_orchestrator
+# NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
 class i_orchestrator(Protocol):
     """Interface for the orchestrator (Nervous System).
 

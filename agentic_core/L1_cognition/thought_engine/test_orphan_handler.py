@@ -8,7 +8,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 """
 Test orphan file in L1_cognition/thought_engine
 """
-# NAMING FIXED: ActionNode → action_node
+# NOT_AN_AGENT — test utility class, not a true agent — excluded from agent discovery
 class action_node:
     """A node for executing actions"""
     def execute(self):

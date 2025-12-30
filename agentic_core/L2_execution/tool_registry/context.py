@@ -12,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: OmniContext → omni_context
+# NOT_AN_AGENT — context utility class, not a true agent — excluded from agent discovery
 class omni_context(SubAtomicAgent):
     """
     ROLE: Global Architectural Context. Concatenates all non-excluded .py files
