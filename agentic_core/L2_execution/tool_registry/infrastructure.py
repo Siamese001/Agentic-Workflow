@@ -44,8 +44,8 @@ except ImportError:
     WATCHDOG_AVAILABLE = False
 
 
-# NAMING FIXED: Historian → historian
-class historian(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class HistorianAgent(SubAtomicAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
@@ -74,8 +74,8 @@ class historian(SubAtomicAgent):
             print(f"   [!] Historian failed to write: {e}")
 
 
-# NAMING FIXED: GitAgent → git_agent
-class git_agent(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class GitAgent(SubAtomicAgent):
     """
     ROLE: Manages Version Control (Branching, Commits).
     """
@@ -112,8 +112,8 @@ class git_agent(SubAtomicAgent):
             print(f"   [!] Git operation failed: {e}")
 
 
-# NAMING FIXED: BenchmarkingAgent → benchmarking_agent
-class benchmarking_agent(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class BenchmarkingAgent(SubAtomicAgent):
     """
     ROLE: Measures execution time and ensures tools aren't too slow.
     """

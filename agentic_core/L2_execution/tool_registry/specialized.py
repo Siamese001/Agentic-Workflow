@@ -15,8 +15,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: TheCartographer → the_cartographer
-class the_cartographer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class CartographerAgent(SubAtomicAgent):
     """
     ROLE: Memory & Embedding. Maps the codebase into semantic space.
     """
@@ -59,8 +59,8 @@ class the_cartographer(SubAtomicAgent):
             pass
 
 
-# NAMING FIXED: TheOmniContext → the_omni_context
-class the_omni_context(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class OmniContextAgent(SubAtomicAgent):
     """
     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
     """
@@ -71,8 +71,8 @@ class the_omni_context(SubAtomicAgent):
         self.ctx.omni_context = self
 
 
-# NAMING FIXED: TheStrategist → the_strategist
-class the_strategist(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class StrategistAgent(SubAtomicAgent):
     """
     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
     """
@@ -92,8 +92,8 @@ class the_strategist(SubAtomicAgent):
             pass
 
 
-# NAMING FIXED: NamingEnforcer → naming_enforcer
-class naming_enforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class NamingEnforcerAgent(SubAtomicAgent):
     """ROLE: Semantic Naming Guardian."""
     async def execute(self):
                     
@@ -101,8 +101,8 @@ class naming_enforcer(SubAtomicAgent):
         await asyncio.sleep(0)
 
 
-# NAMING FIXED: DocEnforcer → doc_enforcer
-class doc_enforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class DocEnforcerAgent(SubAtomicAgent):
     """ROLE: Documentation Surgeon."""
     async def execute(self):
                     
@@ -110,8 +110,8 @@ class doc_enforcer(SubAtomicAgent):
         await asyncio.sleep(0)
 
 
-# NAMING FIXED: TypeEnforcer → type_enforcer
-class type_enforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class TypeEnforcerAgent(SubAtomicAgent):
     """ROLE: Type Guardian. Enforces PEP 484."""
     async def execute(self):
                     

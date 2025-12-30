@@ -19,8 +19,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: SafetyInspector → safety_inspector
-class safety_inspector(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SafetyInspectorAgent(SubAtomicAgent):
     """
     Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
@@ -128,8 +128,8 @@ class safety_inspector(SubAtomicAgent):
                     
 
 
-# NAMING FIXED: ConcurrencyGuardian → concurrency_guardian
-class concurrency_guardian(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ConcurrencyGuardianAgent(SubAtomicAgent):
     """
     Unified concurrency safety agent.
     Covers: Data races (Key 61), Livelock (Key 63), Starvation (Key 64)
@@ -222,8 +222,8 @@ class concurrency_guardian(SubAtomicAgent):
         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
 
-# NAMING FIXED: SecurityEnforcer → security_enforcer
-class security_enforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SecurityEnforcerAgent(SubAtomicAgent):
     """Security enforcement agent for additional security checks."""
 
     async def execute(self):
@@ -233,8 +233,8 @@ class security_enforcer(SubAtomicAgent):
         print("   [OK] Security policies enforced")
 
 
-# NAMING FIXED: RedSentinel → red_sentinel
-class red_sentinel(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class RedSentinelAgent(SubAtomicAgent):
     """Red team sentinel for adversarial security testing."""
 
     async def execute(self):

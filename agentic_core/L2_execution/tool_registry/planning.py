@@ -20,15 +20,15 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: StrategicPlanner → strategic_planner
-class strategic_planner(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class StrategicPlannerAgent(SubAtomicAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.
     """
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.name = "StrategicPlanner"
+        self.name = "StrategicPlannerAgent"
 
     async def execute(self):
                     
@@ -110,8 +110,8 @@ Output ONLY the plan in Markdown.
             print("   [OK] Strategy: Maintain current trajectory.")
 
 
-# NAMING FIXED: ReflectionAgent → reflection_agent
-class reflection_agent(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ReflectionAgent(SubAtomicAgent):
     """
     ROLE: Consolidation and self-critique.
     Consolidates successful mutations into long-term memory and performs self-critique.

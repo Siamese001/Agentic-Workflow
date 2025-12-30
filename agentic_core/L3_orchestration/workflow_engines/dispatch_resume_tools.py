@@ -13,7 +13,8 @@ except ImportError as e:
     TITANIUM_AVAILABLE: Any = False
     LOGGER.warning(f'Titanium RAG Pipeline not available: {e}')
 
-class dispatch_resume_tools:
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class DispatchResumeToolsAgent:
     """Executor for resume domain with Titanium RAG integration."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
