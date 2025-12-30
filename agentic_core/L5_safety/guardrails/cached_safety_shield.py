@@ -9,7 +9,20 @@ from typing import Any, Dict, List, Optional, Protocol
 import redis
 
 class cached_safety_shield:
-    pass
+    def __init__(self, project_root=None, session_id: str='l5_global'):
+        from pathlib import Path
+        self.root = project_root or Path('.')
+        self.session_id = session_id
+        try:
+            import redis
+            self.redis = redis.Redis(host=__import__('os').getenv('REDIS_HOST', 'localhost'), port=int(__import__('os').getenv('REDIS_PORT', 6379)), decode_responses=True)
+            self.redis.ping()
+        except Exception as e:
+            print(f'Warning: Redis connection failed ({e}), using in-memory cache')
+            self.redis = None
+            self._memory_cache = {}
+        self.prefix_gravity = f'l5_gravity:{session_id}'
+        self.prefix_policy = f'l5_policy:{session_id}' 
 
 # Alias for backward compatibility
 CachedSafetyShield = cached_safety_shield
