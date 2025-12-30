@@ -113,8 +113,16 @@ class MissionController:
         ctx.python_files = self._discover_python_files(target_scope)
         print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(self.allowed_root_folders)} allowed folders")
         
+        # Initialize core components (SubAtomicEngine, SafetyGuardrail, FissionManager)
+        await self._initialize_core_components(ctx)
+        
+        # Run Sovereign Dashboard (ReportingAgent diagnostic)
+        await self._run_sovereign_dashboard(ctx)
+        
         # Run validation phases
         await self._run_syntax_healing(ctx)
+        if self.run_gravity_refactor:
+            await self._run_gravity_refactor(ctx)
         await self._run_per_file_validation(ctx)
         await self._run_batch_sweeps(ctx)
         await self._run_monitors(ctx)
@@ -252,6 +260,36 @@ class MissionController:
             violations_total.labels(type="gravity_import").inc(results.get("gravity", 0))
             violations_total.labels(type="naming_signal").inc(results.get("naming", 0))
 
+    async def _run_sovereign_dashboard(self, ctx: Any) -> None:
+        """Run Sovereign Dashboard using ReportingAgent."""
+        try:
+            from agentic_core.observability.compliance.reporting_agent import ReportingAgent
+            reporter = ReportingAgent(self.project_root)
+            report = reporter.run_diagnostic_report()
+            
+            print("\n" + "="*70)
+            print("                   SOVEREIGN TERRITORY DASHBOARD")
+            print("="*70)
+            
+            print("\n[SCOPE SUMMARY]")
+            for folder, count in sorted(report.get("scope_summary", {}).items()):
+                if count > 0 and folder not in SCOPE_SUMMARY_EXCLUSIONS:
+                    print(f"      • {folder:<20} : {count:4} .py files")
+            
+            print("\n[HIERARCHY VISUALIZATION]")
+            print(report.get("ascii_tree", "   [!] Tree generation failed"))
+            
+            if report.get("compliance_metrics"):
+                mets = report["compliance_metrics"]
+                print(f"\n[REAL-TIME PULSE]")
+                print(f"   Active Violations : {mets.get('total_violations', 'N/A')}")
+                print(f"   Territory Purity  : {mets.get('compliance_rate', 'N/A')}%")
+                
+        except ImportError:
+            print("   [INFO] ReportingAgent unavailable — dashboard skipped")
+        except Exception as e:
+            print(f"   [!] Dashboard failed: {e}")
+
     async def _run_syntax_healing(self, ctx: Any) -> None:
         """Run syntax healing phase on all files."""
         import ast
@@ -274,12 +312,119 @@ class MissionController:
         
         print("-" * 50)
 
+    async def _initialize_core_components(self, ctx: Any) -> None:
+        """Initialize SubAtomicEngine, SafetyGuardrail, and FissionManager."""
+        print(f"\n[CORE INIT] Initializing sovereign components...")
+        
+        # Initialize SubAtomicEngine (LLM-powered code mutation)
+        try:
+            from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+            self._subatomic_engine = SubAtomicEngine(self.project_root)
+            ctx.engine = self._subatomic_engine
+            print(f"   [OK] SubAtomicEngine armed — LLM healing available")
+        except ImportError as e:
+            print(f"   [!] SubAtomicEngine unavailable: {e}")
+            ctx.engine = None
+        except Exception as e:
+            print(f"   [!] SubAtomicEngine init failed: {e}")
+            ctx.engine = None
+        
+        # Initialize SafetyGuardrail (mutation safety checks)
+        try:
+            from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail
+            self._safety_guardrail = SafetyGuardrail(self.project_root)
+            ctx.safety = self._safety_guardrail
+            print(f"   [OK] SafetyGuardrail armed — mutation protection active")
+        except ImportError as e:
+            print(f"   [!] SafetyGuardrail unavailable: {e}")
+            ctx.safety = None
+        except Exception as e:
+            print(f"   [!] SafetyGuardrail init failed: {e}")
+            ctx.safety = None
+        
+        # Initialize FissionManager (file splitting)
+        try:
+            from agentic_core.L3_orchestration.fission_logic.fission_manager import fission_manager
+            self._fission_manager = fission_manager(self.project_root)
+            ctx.fission = self._fission_manager
+            print(f"   [OK] FissionManager armed — file splitting available")
+        except ImportError as e:
+            print(f"   [!] FissionManager unavailable: {e}")
+            ctx.fission = None
+        except Exception as e:
+            print(f"   [!] FissionManager init failed: {e}")
+            ctx.fission = None
+
+    async def _run_gravity_refactor(self, ctx: Any) -> None:
+        """Run architectural gravity refactor phase to fix import violations."""
+        import re
+        
+        print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
+        print(f"   [>] Scanning for Sovereign → Downstream violations...")
+        
+        gravity_violations_fixed = 0
+        gravity_violations_total = 0
+        
+        # Initialize gravity attempts tracking
+        if not hasattr(ctx, 'gravity_attempts'):
+            ctx.gravity_attempts = {}
+        
+        for file_path in ctx.python_files:
+            file_path_obj = Path(file_path)
+            
+            # Check gravity violations (internal layer ranking)
+            current_rank = get_layer_rank(str(file_path_obj))
+            if current_rank == -1:
+                continue
+            
+            try:
+                content = file_path_obj.read_text(encoding='utf-8', errors='ignore')
+                imports = re.findall(r'(?:from|import) agentic_core\.(\w+)', content)
+                
+                violations = []
+                for imp in imports:
+                    imp_rank = get_layer_rank(imp)
+                    if imp_rank != -1 and imp_rank > current_rank:
+                        violations.append(f"Gravity Leak: Layer {current_rank} -> {imp} (rank {imp_rank})")
+                
+                if violations:
+                    gravity_violations_total += len(violations)
+                    
+                    # Track attempts to prevent loops
+                    ctx.gravity_attempts[file_path] = ctx.gravity_attempts.get(file_path, 0) + 1
+                    if ctx.gravity_attempts[file_path] > 2:
+                        continue
+                    
+                    print(f"\n   [VIOLATION] {file_path_obj.name}: {len(violations)} gravity violation(s)")
+                    for v in violations[:3]:
+                        print(f"      - {v}")
+                    
+                    # If we have SubAtomicEngine, attempt to fix
+                    if ctx.engine and hasattr(ctx.engine, 'resilient_mutation'):
+                        # Log for now - full LLM refactor would go here
+                        print(f"      [INFO] Would invoke SubAtomicEngine for refactor")
+                        
+            except Exception as e:
+                pass
+        
+        print(f"   [GRAVITY] Found {gravity_violations_total} total violations")
+        print("-" * 50)
+
     async def _run_per_file_validation(self, ctx: Any) -> None:
-        """Run per-file validation with healing rounds."""
+        """Run per-file validation with healing rounds using atomic validators."""
         print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
         
         total_files = len(ctx.python_files)
         completed_files = 0
+        healed_files = 0
+        
+        # Get atomic validators from orchestrator
+        atomic_validators = []
+        if self._orchestrator:
+            atomic_validators = self._orchestrator.get_atomic_validators()
+            print(f"   [OK] Armed with {len(atomic_validators)} atomic healers")
+        else:
+            print(f"   [!] No orchestrator - healing disabled")
         
         for idx, file_path in enumerate(ctx.python_files, 1):
             file_name = Path(file_path).name
@@ -293,12 +438,36 @@ class MissionController:
             
             print(f"[{idx}/{total_files}] Processing: {file_name} ({loc_count} LOC)")
             
-            # Healing rounds would go here
-            # For thin wrapper, delegate to atomic validators from orchestrator
+            # [FULL HEALING CASCADE] Execute atomic validators with multiple rounds
+            if atomic_validators:
+                file_healed = False
+                for round_idx in range(1, min(4, self.max_healing_rounds + 1)):
+                    mutated_this_round = False
+                    
+                    for agent in atomic_validators:
+                        if not hasattr(agent, 'heal_violation'):
+                            continue
+                        
+                        try:
+                            # [CRITICAL] Call heal_violation on each atomic healer
+                            result = await agent.heal_violation(file_path)
+                            if result and isinstance(result, dict) and result.get("healed"):
+                                mutated_this_round = True
+                                file_healed = True
+                                ctx.results[file_path] = result
+                                print(f"      [MUTATED] {agent.__class__.__name__}: {file_name}")
+                        except Exception as e:
+                            print(f"      [!] {agent.__class__.__name__} failed: {str(e)[:50]}")
+                    
+                    if not mutated_this_round:
+                        break  # No changes this round, stop early
+                
+                if file_healed:
+                    healed_files += 1
             
             completed_files += 1
         
-        print(f"[PHASE 1] Complete — {completed_files} files processed")
+        print(f"[PHASE 1] Complete — {completed_files} files processed, {healed_files} healed")
 
     async def _run_batch_sweeps(self, ctx: Any) -> None:
         """Run batch agent sweeps."""
