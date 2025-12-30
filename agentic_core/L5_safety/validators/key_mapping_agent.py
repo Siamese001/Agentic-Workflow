@@ -97,6 +97,20 @@ class key_mapping_agent:
             for file_path in files
         }
 
+    def run(self) -> List[Dict]:
+        """
+        Execute agent on all Python files in project.
+        Required for ComplianceOrchestrator discovery.
+        """
+        results = []
+        for py_file in self.project_root.rglob("*.py"):
+            if "__pycache__" in str(py_file):
+                continue
+            keys = self.get_applicable_keys_for_file(py_file)
+            if keys:
+                results.append({"file": str(py_file), "keys": list(keys)})
+        return results
+
 
 # Uppercase alias for backward compatibility
 KeyMappingAgent = key_mapping_agent
