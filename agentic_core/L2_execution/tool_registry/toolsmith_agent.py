@@ -85,16 +85,16 @@ class toolsmith_agent:
         imports: Any = self._extract_imports(code)
         dependencies: Any = self._identify_dependencies(code)
         test_code: Any = self._generate_test_code(spec)
-        tool: Any = GeneratedTool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
+        tool: Any = generated_tool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
         self.tools[spec.name] = tool
         logger.info(f'Created tool: {spec.name}')
         return tool
 
-    def _is_simple_function(self, spec: ToolSpec) -> bool:
+    def _is_simple_function(self, spec: "tool_spec") -> bool:
         """Check if tool should be a simple function."""
         return len(spec.parameters) <= 5 and spec.category != 'complex'
 
-    def _generate_function_code(self, spec: ToolSpec) -> str:
+    def _generate_function_code(self, spec: "tool_spec") -> str:
         """Generate function code for a tool."""
         params = []
         param_docs = []
@@ -111,7 +111,7 @@ class toolsmith_agent:
         implementation = self._get_implementation(spec)
         return tool_template.FUNCTION_TEMPLATE.format(name=spec.name, params=param_str, return_type=spec.parameters.get('return', {}).get('type', 'Any'), description=spec.description, param_docs=param_doc_str, return_description=spec.parameters.get('return', {}).get('description', 'Result'), implementation=implementation)
 
-    def _generate_class_code(self, spec: ToolSpec) -> str:
+    def _generate_class_code(self, spec: "tool_spec") -> str:
         """Generate class code for a complex tool."""
         init_params = []
         init_body = []
@@ -125,7 +125,7 @@ class toolsmith_agent:
         method_param_docs = ''
         return tool_template.CLASS_TEMPLATE.format(name=spec.name, description=spec.description, init_params=init_param_str, init_body=init_body_str, method_params=method_params, method_param_docs=method_param_docs, return_type=spec.parameters.get('return', {}).get('type', 'Any'), return_description=spec.parameters.get('return', {}).get('description', 'Result'), method_implementation='pass  # TODO: Implement')
 
-    def _get_implementation(self, spec: ToolSpec) -> str:
+    def _get_implementation(self, spec: "tool_spec") -> str:
         """Get implementation code based on tool category and name."""
         template_key = f'{spec.category}_{spec.name}'
         if template_key in self.templates:
@@ -160,12 +160,12 @@ class toolsmith_agent:
                     dependencies.append(lib)
         return dependencies
 
-    def _generate_test_code(self, spec: ToolSpec) -> str:
+    def _generate_test_code(self, spec: "tool_spec") -> str:
         """Generate test code for the tool."""
         test_name = f'test_{spec.name}'
         return f'\nasync def {test_name}():\n    """Test the {spec.name} tool."""\n    # TODO: Implement test\n    pass\n'
 
-    def create_file_tool(self, name: str, operation: str) -> GeneratedTool:
+    def create_file_tool(self, name: str, operation: str) -> "generated_tool":
         """
         Create a file manipulation tool.
 
@@ -176,10 +176,10 @@ class toolsmith_agent:
         Returns:
             Generated tool
         """
-        spec: Any = ToolSpec(name=f'{operation}_{name}', description=f'{operation.capitalize()} {name} file', parameters={'file_path': {'type': 'str', 'description': 'Path to the file', 'required': True}}, function=lambda x: x, category='file')
+        spec: Any = tool_spec(name=f'{operation}_{name}', description=f'{operation.capitalize()} {name} file', parameters={'file_path': {'type': 'str', 'description': 'Path to the file', 'required': True}}, function=lambda x: x, category='file')
         return self.create_tool_from_spec(spec)
 
-    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> GeneratedTool:
+    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> "generated_tool":
         """
         Create an API interaction tool.
 
@@ -191,10 +191,10 @@ class toolsmith_agent:
         Returns:
             Generated tool
         """
-        spec: Any = ToolSpec(name=f'{method.lower()}_{name}', description=f'Make {method} request to {endpoint}', parameters={'url': {'type': 'str', 'description': 'Request URL', 'required': True}, 'headers': {'type': 'Dict[str, str]', 'description': 'Request headers', 'required': False}, 'data': {'type': 'Any', 'description': 'Request data', 'required': False}}, function=lambda x: x, category='network')
+        spec: Any = tool_spec(name=f'{method.lower()}_{name}', description=f'Make {method} request to {endpoint}', parameters={'url': {'type': 'str', 'description': 'Request URL', 'required': True}, 'headers': {'type': 'Dict[str, str]', 'description': 'Request headers', 'required': False}, 'data': {'type': 'Any', 'description': 'Request data', 'required': False}}, function=lambda x: x, category='network')
         return self.create_tool_from_spec(spec)
 
-    def get_tool(self, name: str) -> Optional[GeneratedTool]:
+    def get_tool(self, name: str) -> Optional["generated_tool"]:
         """Get a registered tool by name."""
         return self.tools.get(name)
 
