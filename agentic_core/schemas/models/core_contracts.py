@@ -19,7 +19,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # Canonical SSOT for SovereignEvent.severity.
 # NAMING FIXED: SovereignSeverity → sovereign_severity
 class sovereign_severity(str, Enum):
-    """Canonical SSOT for event severity levels with L6 log mapping."""
+    """Canonical SSOT for event severity levels with observability log mapping."""
     
     CRITICAL = "CRITICAL"
     """Immediate threat to sovereignty — system may be compromised"""
@@ -36,7 +36,7 @@ class sovereign_severity(str, Enum):
     DEBUG = "DEBUG"
     """Detailed internal diagnostics — verbose"""
 
-# Registry for validation and L6 mapping
+# Registry for validation and observability mapping
 # NAMING FIXED: SOVEREIGN_SEVERITIES → sovereign_severities
 sovereign_severities = {e.value for e in SovereignSeverity}
 # NAMING FIXED: SEVERITY_LOG_LEVELS → severity_log_levels
@@ -2058,7 +2058,7 @@ class mission_plan(SovereignBaseModel):
     Sovereign Builder Pattern (Phase 12):
     - Fluent API for mission construction
     - Immutable result with constitutional validation
-    - L6 observability stamping at build time
+    - Observability stamping at build time
     """
     mission_id: str
     cycle_id: int
@@ -2075,7 +2075,7 @@ class mission_plan(SovereignBaseModel):
         Enforces:
         - Fluent, readable mission definitions
         - Early validation (uniqueness, required fields)
-        - L6 observability (construction logging)
+        - Observability (construction logging)
         """
         
         def __init__(self):
@@ -2134,7 +2134,7 @@ class mission_plan(SovereignBaseModel):
             # Sovereign Invariant: No dependency cycles
             self._detect_dependency_cycles()
             
-            # L6 Observability: Log construction
+            # Observability: Log construction
             logger.info(f"[BUILDER] Constructing MissionPlan {self._mission_id} | "
                         f"Phases: {len(self._phases)} | Priority: {self._priority}")
             
@@ -2227,7 +2227,7 @@ class thought_chain(SovereignBaseModel):
     class Builder:
         """
         Sovereign Builder for ThoughtChain – Phase 12 (Dec 26, 2025)
-        Enforces sequential integrity, constitutional validation, and L6 observability.
+        Enforces sequential integrity, constitutional validation, and observability.
         """
         def __init__(self):
             self._chain_id: Optional[str] = None
@@ -2283,8 +2283,8 @@ class thought_chain(SovereignBaseModel):
             if self._steps and self._steps[0].step_id != 1:
                 raise ValueError("Sovereignty Violation: Reasoning steps must begin with ID 1.")
 
-            # L6 Observability: Stamping the birth of the thinking aggregate
-            logger.info(f"[L6_AUDIT] ThoughtChain Constructed: {self._chain_id} | Steps: {len(self._steps)}")
+            # Observability: Stamping the birth of the thinking aggregate
+            logger.info(f"[AUDIT] ThoughtChain Constructed: {self._chain_id} | Steps: {len(self._steps)}")
 
             return ThoughtChain(
                 chain_id=self._chain_id,
@@ -2311,7 +2311,7 @@ class constitutional_violation(SovereignBaseModel):
     - Fluent judicial record construction
     - Severity validation
     - Auto-ID generation
-    - L6 warning trail on detection
+    - Observability warning trail on detection
     """
     violation_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -2331,7 +2331,7 @@ class constitutional_violation(SovereignBaseModel):
         Enforces:
         - Fluent, immutable judicial records
         - Severity and dimension validation
-        - L6 warning trail on creation
+        - Observability warning trail on creation
         """
         def __init__(self):
             self._violation_id: Optional[str] = None
@@ -2398,8 +2398,8 @@ class constitutional_violation(SovereignBaseModel):
             if not self._violation_id:
                 self._violation_id = f"violation-{uuid.uuid4().hex[:8]}"
 
-            # L6 Observability: Witnessing the transgression
-            logger.warning(f"[L6_AUDIT] Violation Detected: {self._violation_id} | "
+            # Observability: Witnessing the transgression
+            logger.warning(f"[AUDIT] Violation Detected: {self._violation_id} | "
                            f"Severity: {self._severity} | Dimension: {self._dimension} | "
                            f"Loc: {self._file_path}:{self._line_number or 'N/A'}")
 
@@ -2425,7 +2425,7 @@ class healing_action(SovereignBaseModel):
     - Fluent correction record construction
     - Explicit success/failure outcome paths
     - Transaction linkage for atomic operations
-    - L6 forensic audit trail
+    - Observability forensic audit trail
     """
     action_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -2445,7 +2445,7 @@ class healing_action(SovereignBaseModel):
         Enforces:
         - Fluent, immutable record of system corrections
         - Explicit success/failure outcome paths
-        - L6 Observability integration for forensic audits
+        - Observability integration for forensic audits
         - Atomic transaction linkage
         """
         def __init__(self):
@@ -2521,9 +2521,9 @@ class healing_action(SovereignBaseModel):
             if not self._action_id:
                 self._action_id = f"healact-{uuid.uuid4().hex[:8]}"
 
-            # L6 Observability: Witnessing the Correction
+            # Observability: Witnessing the Correction
             status = "SUCCESS" if self._success else "FAILED"
-            logger.info(f"[L6_AUDIT] Healing Action Logged: {self._action_id} | "
+            logger.info(f"[AUDIT] Healing Action Logged: {self._action_id} | "
                         f"Outcome: {status} | Strategy: {self._strategy} | "
                         f"Type: {self._action_type} | File: {self._target_file}")
 
@@ -2550,7 +2550,7 @@ class healing_cycle(SovereignBaseModel):
     - Fluent self-correction journey construction
     - Automatic success calculation from scores
     - Metric derivation from action list
-    - L6 observability for sovereignty restoration
+    - Observability for sovereignty restoration
     """
     cycle_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -2569,7 +2569,7 @@ class healing_cycle(SovereignBaseModel):
         - Fluent construction of self-correction journeys
         - Automatic derivation of success metrics and counts
         - Score-based sovereignty validation
-        - L6 Observability logging upon completion
+        - Observability logging upon completion
         """
         def __init__(self):
             self._cycle_id: Optional[str] = None
@@ -2619,9 +2619,9 @@ class healing_cycle(SovereignBaseModel):
             healed = sum(1 for a in self._actions if a.success)
             persistent = len(self._actions) - healed
 
-            # L6 Observability: Witnessing the restoration of sovereignty
+            # Observability: Witnessing the restoration of sovereignty
             status = "SOVEREIGN" if self._success else "PARTIAL"
-            logger.info(f"[L6_AUDIT] Healing Cycle Concluded: {self._cycle_id} | "
+            logger.info(f"[AUDIT] Healing Cycle Concluded: {self._cycle_id} | "
                         f"Outcome: {status} | Delta: {self._trigger_score:.1f}% -> {self._target_score:.1f}% | "
                         f"Restored: {healed}/{len(self._actions)}")
 
@@ -2667,7 +2667,7 @@ class healing_report(SovereignBaseModel):
         - Fluent, immutable report construction
         - Automatic ID generation and strategy deduplication
         - Constitutional invariants (fixed <= found)
-        - L6 Observability integration
+        - Observability integration
         """
         def __init__(self):
             self._report_id: Optional[str] = None
@@ -2714,8 +2714,8 @@ class healing_report(SovereignBaseModel):
             if not self._report_id:
                 self._report_id = f"heal-{uuid.uuid4().hex[:8]}"
             
-            # L6 Observability: Record the formal generation of the healing ledger
-            logger.info(f"[L6_AUDIT] HealingReport Sealed: {self._report_id} | "
+            # Observability: Record the formal generation of the healing ledger
+            logger.info(f"[AUDIT] HealingReport Sealed: {self._report_id} | "
                         f"Outcome: {'SUCCESS' if self._success else 'PARTIAL'} | "
                         f"Remediation: {self._violations_fixed}/{self._violations_found}")
 
@@ -2742,7 +2742,7 @@ class sovereign_event(SovereignBaseModel):
     - Fluent telemetry emission
     - Severity-to-log-level mapping
     - Correlation support for audit trails
-    - L6 observability integration
+    - Observability integration
     """
     event_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -2780,7 +2780,7 @@ class sovereign_event(SovereignBaseModel):
         Sovereign Builder for SovereignEvent – Phase 12 (Dec 26, 2025)
         Enforces:
         - Fluent, immutable telemetry emission
-        - Severity-to-L6 mapping
+        - Severity-to-observability mapping
         - Correlation support for multi-layer audit trails
         """
         def __init__(self):

@@ -1,52 +1,6 @@
 {
   "agents": [
     {
-      "name": "AgenticCodeEvolutionAgent",
-      "module": "agentic_core.L0_maintenance.scripts.AgenticCodeEvolutionAgent",
-      "file": "agentic_core\\L0_maintenance\\scripts\\AgenticCodeEvolutionAgent.py",
-      "layer": "L0",
-      "methods": {
-        "__init__": false,
-        "heal_violation": false,
-        "execute": true,
-        "run": false,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 55,
-      "fingerprint": "43075392824d4db4",
-      "line": 17,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\AgenticCodeEvolutionAgent.py",
-      "usages": {
-        "real": 0,
-        "string_ref": 0,
-        "files": []
-      }
-    },
-    {
-      "name": "AutonomousPromptEvolutionAgent",
-      "module": "agentic_core.L0_maintenance.scripts.AutonomousPromptEvolutionAgent",
-      "file": "agentic_core\\L0_maintenance\\scripts\\AutonomousPromptEvolutionAgent.py",
-      "layer": "L0",
-      "methods": {
-        "__init__": false,
-        "heal_violation": false,
-        "execute": true,
-        "run": false,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 46,
-      "fingerprint": "fca32875c92be177",
-      "line": 11,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\AutonomousPromptEvolutionAgent.py",
-      "usages": {
-        "real": 0,
-        "string_ref": 0,
-        "files": []
-      }
-    },
-    {
       "name": "BootstrapAgent",
       "module": "agentic_core.L0_maintenance.scripts.BootstrapAgent",
       "file": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
@@ -115,13 +69,13 @@
         "real": 7,
         "string_ref": 22,
         "files": [
-          "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
-          "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
           "agentic_core\\L3_orchestration\\workflow_engines\\mission_runner.py",
-          "apps_rg\\engines\\resume_engine\\autonomous\\orchestrator.py",
-          "tests\\integration\\test_l5_infrastructure.py",
           "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
-          "agentic_core\\L4_state\\validation_context\\omni_context.py"
+          "agentic_core\\L4_state\\validation_context\\omni_context.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+          "tests\\integration\\test_l5_infrastructure.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\orchestrator.py"
         ]
       }
     },
@@ -200,32 +154,6 @@
       }
     },
     {
-      "name": "HealerAgent",
-      "module": "agentic_core.L2_execution.tool_registry.HealerAgent",
-      "file": "agentic_core\\L2_execution\\tool_registry\\HealerAgent.py",
-      "layer": "L2",
-      "methods": {
-        "__init__": false,
-        "heal_violation": true,
-        "execute": true,
-        "run": false,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 343,
-      "fingerprint": "353bc5b86fd7fd3f",
-      "line": 14,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\HealerAgent.py",
-      "usages": {
-        "real": 2,
-        "string_ref": 20,
-        "files": [
-          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
-          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py"
-        ]
-      }
-    },
-    {
       "name": "ToolsmithAgent",
       "module": "agentic_core.L2_execution.tool_registry.ToolsmithAgent",
       "file": "agentic_core\\L2_execution\\tool_registry\\ToolsmithAgent.py",
@@ -246,9 +174,9 @@
         "real": 3,
         "string_ref": 8,
         "files": [
-          "tests\\core\\test_toolsmith.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\canon_scheduler.py",
           "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
-          "agentic_core\\L3_orchestration\\workflow_engines\\canon_scheduler.py"
+          "tests\\core\\test_toolsmith.py"
         ]
       }
     },
@@ -371,14 +299,14 @@
         "real": 8,
         "string_ref": 5,
         "files": [
-          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+          "tests\\integration\\test_pinecone_sovereign_agent.py",
           "agentic_core\\L4_state\\validation_context\\semantic_cache_sovereign.py",
           "agentic_core\\L4_state\\validation_context\\subatomic_registry.py",
           "agentic_core\\L0_maintenance\\scripts\\sovereign_rescue_review.py",
-          "agentic_core\\L4_state\\validation_context\\memory_sovereign_mcp.py",
-          "tests\\unit\\test_pinecone_sovereign_agent.py",
           "agentic_core\\L5_safety\\guardrails\\subatomic_engine.py",
-          "tests\\integration\\test_pinecone_sovereign_agent.py"
+          "tests\\unit\\test_pinecone_sovereign_agent.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+          "agentic_core\\L4_state\\validation_context\\memory_sovereign_mcp.py"
         ]
       }
     },
@@ -403,36 +331,13 @@
         "real": 6,
         "string_ref": 3,
         "files": [
-          "agentic_core\\L3_orchestration\\workflow_engines\\cached_orchestrator.py",
-          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+          "tests\\unit\\test_redis_sovereign_agent.py",
           "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
-          "agentic_core\\L4_state\\validation_context\\subatomic_registry.py",
           "agentic_core\\L0_maintenance\\scripts\\sovereign_rescue_review.py",
-          "tests\\unit\\test_redis_sovereign_agent.py"
+          "agentic_core\\L4_state\\validation_context\\subatomic_registry.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\cached_orchestrator.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py"
         ]
-      }
-    },
-    {
-      "name": "DeadCodeAgent",
-      "module": "agentic_core.L5_safety.guardrails.DeadCodeAgent",
-      "file": "agentic_core\\L5_safety\\guardrails\\DeadCodeAgent.py",
-      "layer": "L5",
-      "methods": {
-        "__init__": true,
-        "heal_violation": false,
-        "execute": false,
-        "run": true,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 245,
-      "fingerprint": "305006e45d3e6e66",
-      "line": 95,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\DeadCodeAgent.py",
-      "usages": {
-        "real": 0,
-        "string_ref": 2,
-        "files": []
       }
     },
     {
@@ -477,10 +382,10 @@
       "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
       "usages": {
         "real": 2,
-        "string_ref": 16,
+        "string_ref": 13,
         "files": [
-          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
-          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py"
+          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py"
         ]
       }
     },
@@ -505,8 +410,8 @@
         "real": 3,
         "string_ref": 8,
         "files": [
-          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
           "scripts\\test_capability_enforcement.py",
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
           "agentic_core\\L2_execution\\tool_registry\\system_architect.py"
         ]
       }
@@ -532,8 +437,8 @@
         "real": 2,
         "string_ref": 3,
         "files": [
-          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
-          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py"
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py",
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py"
         ]
       }
     },
@@ -558,10 +463,10 @@
         "real": 4,
         "string_ref": 10,
         "files": [
-          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
-          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py",
           "agentic_core\\prompt_governance\\rendering\\sovereign_prompt_renderer.py",
-          "agentic_core\\prompt_governance\\version_registry\\prompt_registry.py"
+          "agentic_core\\prompt_governance\\version_registry\\prompt_registry.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py",
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py"
         ]
       }
     },
@@ -632,9 +537,9 @@
         "real": 3,
         "string_ref": 5,
         "files": [
-          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
           "agentic_core\\L0_maintenance\\scripts\\auditors_sovereign_auditor_v3.py",
-          "agentic_core\\observability\\compliance\\ReportingAgent.py"
+          "agentic_core\\observability\\compliance\\ReportingAgent.py",
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py"
         ]
       }
     },
@@ -714,52 +619,6 @@
       }
     },
     {
-      "name": "DriftDetectorAgent",
-      "module": "agentic_core.utils.core_extensions.DriftDetectorAgent",
-      "file": "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
-      "layer": "utils",
-      "methods": {
-        "__init__": true,
-        "heal_violation": false,
-        "execute": true,
-        "run": false,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 22,
-      "fingerprint": "cac4776ffa50d85d",
-      "line": 10,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
-      "usages": {
-        "real": 0,
-        "string_ref": 1,
-        "files": []
-      }
-    },
-    {
-      "name": "DriftDetectorAgent",
-      "module": "agentic_core.utils.naming.DriftDetectorAgent",
-      "file": "agentic_core\\utils\\naming\\DriftDetectorAgent.py",
-      "layer": "utils",
-      "methods": {
-        "__init__": true,
-        "heal_violation": false,
-        "execute": false,
-        "run": false,
-        "monitor": false,
-        "validate": false
-      },
-      "loc": 12,
-      "fingerprint": "3cf59fae1467adad",
-      "line": 10,
-      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\naming\\DriftDetectorAgent.py",
-      "usages": {
-        "real": 0,
-        "string_ref": 1,
-        "files": []
-      }
-    },
-    {
       "name": "NamingAgent",
       "module": "agentic_core.utils.naming.NamingAgent",
       "file": "agentic_core\\utils\\naming\\NamingAgent.py",
@@ -780,43 +639,30 @@
         "real": 4,
         "string_ref": 7,
         "files": [
-          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
-          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
           "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
-          "agentic_core\\L1_cognition\\thought_engine\\CanonBaseAgent.py"
+          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
+          "agentic_core\\L1_cognition\\thought_engine\\CanonBaseAgent.py",
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py"
         ]
       }
     }
   ],
   "duplicates": {},
-  "dead_agents": [
-    "AgenticCodeEvolutionAgent",
-    "AutonomousPromptEvolutionAgent"
-  ],
+  "dead_agents": [],
   "suspect_agents": [
     "BootstrapAgent",
     "CodeDeduplicationAgent",
     "MetaLearningAgent",
-    "DeadCodeAgent",
     "FilesystemAgent",
     "NeuralAutoImmuneAgent",
-    "RedTeamAgent",
-    "DriftDetectorAgent",
-    "DriftDetectorAgent"
+    "RedTeamAgent"
   ],
-  "misplacements": [
-    {
-      "agent": "HealerAgent",
-      "current": "L2",
-      "suggested": "L5",
-      "file": "agentic_core\\L2_execution\\tool_registry\\HealerAgent.py"
-    }
-  ],
+  "misplacements": [],
   "summary": {
-    "total": 31,
+    "total": 25,
     "duplicates": 0,
-    "dead": 2,
-    "suspect": 9,
-    "misplacements": 1
+    "dead": 0,
+    "suspect": 6,
+    "misplacements": 0
   }
 }
