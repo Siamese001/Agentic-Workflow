@@ -1,5 +1,5 @@
 """
-Master Mission Orchestrator - L6 Sovereignty Execution
+Master Mission Orchestrator - Observability Sovereignty Execution
 Responsible for:
 - Orchestrating 50-key canon validation sweeps.
 - Enforcing Zero-Latency Neural Link integrity.
@@ -18,7 +18,7 @@ from typing import Any
 
 async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
     """Brief description of functionality and purpose."""
-    print(f"\n{'=' * 70}\n[L6] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
+    print(f"\n{'=' * 70}\n[OBSERVABILITY] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
     try:
         engine: Any = SubAtomicEngine()
         guardrail: Any = safety_guardrail(deletion_limit=110)
@@ -36,7 +36,7 @@ async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
         print(f'\n[X] Mission Aborted: {e}')
         import traceback
         traceback.print_exc()
-    print(f"\n{'=' * 70}\n[L6] MASTER MISSION COMPLETE\n{'=' * 70}")
+    print(f"\n{'=' * 70}\n[OBSERVABILITY] MASTER MISSION COMPLETE\n{'=' * 70}")
 if __name__ == '__main__':
     os.environ['MAX_FILE_LINES'] = '1000'
     os.environ['RUN_GRAVITY_REFACTOR'] = 'True'

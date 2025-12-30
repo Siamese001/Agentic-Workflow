@@ -28,7 +28,7 @@ def infer_layer(file_path: Path) -> str:
     if 'L3_orchestration' in path_str: return 'L3'
     if 'L4_state' in path_str: return 'L4'
     if 'L5_safety' in path_str: return 'L5'
-    if 'observability' in path_str: return 'L6-obs'
+    if 'observability' in path_str: return 'observability'
     if 'utils' in path_str: return 'utils'
     if 'config' in path_str: return 'config'
     if 'prompt_governance' in path_str: return 'prompt'
@@ -227,9 +227,9 @@ def suggest_layer(agent: Dict) -> str:
     if 'bootstrap' in name or 'maintenance' in name or 'watchdog' in name:
         return 'L0'
     
-    # Observability -> L6
+    # Observability
     if 'telemetry' in name or 'metrics' in name or 'tracing' in name or 'reporting' in name:
-        return 'L6-obs'
+        return 'observability'
     
     return agent['layer']  # Keep current
 
