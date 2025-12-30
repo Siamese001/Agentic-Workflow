@@ -12,7 +12,7 @@ Examples:
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-class territory_healer_agent:
+class TerritoryHealerAgent:
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """

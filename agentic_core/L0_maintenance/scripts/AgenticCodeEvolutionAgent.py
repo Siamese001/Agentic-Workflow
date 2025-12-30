@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class agentic_code_evolution_agent:
+class AgenticCodeEvolutionAgent:
     """
     Sovereign agent that evolves the codebase by learning from repeated healing patterns.
 

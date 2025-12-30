@@ -25,7 +25,7 @@ class k3_output:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-class k3_message_body_agent:
+class RuntimeSharedK3MessageBodyAgent:
     """K.3 specialist agent for message body generation."""
 
     def __init__(self, project_root: Path = None, config: Any = None, archetype: str = "", route: str = "", char_limit: Optional[int] = None) -> None:

@@ -24,7 +24,7 @@ class k7_output:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-class k7_assembly_agent:
+class RuntimeSharedK7AssemblyAgent:
     """K.7 specialist agent for final message assembly."""
 
     def __init__(self, project_root: Path = None, config: Any = None, route: str = "", archetype: str = "") -> None:

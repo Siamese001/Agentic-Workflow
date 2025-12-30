@@ -10,7 +10,7 @@ import textwrap
 import shutil
 from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS
 
-class code_deduplication_agent:
+class CodeDeduplicationAgent:
     """
     Batch agent for detecting and optionally refactoring duplicated code.
     

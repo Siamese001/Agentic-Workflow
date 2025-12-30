@@ -3,8 +3,8 @@
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: CulturalDecoderAgent → cultural_decoder_agent
-class cultural_decoder_agent:
+# NAMING FIXED: CulturalDecoderAgent → RuntimeSharedCulturalDecoderAgent
+class RuntimeSharedCulturalDecoderAgent:
     """Placeholder implementation."""
 
     def __init__(self, config: Dict = None) -> None:

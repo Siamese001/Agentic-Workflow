@@ -12,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class organic_territory_seeder_agent:
+class OrganicTerritorySeederAgent:
     """
     Sovereign agent that seeds empty non-code territories with organic, best-practice content.
 

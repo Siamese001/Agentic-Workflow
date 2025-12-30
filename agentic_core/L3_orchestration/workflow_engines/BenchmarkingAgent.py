@@ -121,7 +121,7 @@ class benchmark_suite:
 
 
 # NAMING FIXED: BenchmarkingAgent → benchmarking_agent
-class benchmarking_agent:
+class BenchmarkingAgent:
     """
     Measures and tracks performance metrics.
 

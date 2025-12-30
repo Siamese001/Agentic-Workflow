@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 logger: Any = logging.getLogger(__name__)
 
-class recursive_span_healer_agent:
+class RecursiveSpanHealerAgent:
     """
     L3 Orchestration: Span-of-Two Violation Healer
     Identifies and flattens redundant directory tunnels.

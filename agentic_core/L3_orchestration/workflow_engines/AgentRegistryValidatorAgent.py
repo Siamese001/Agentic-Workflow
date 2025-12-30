@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger = logging.getLogger(__name__)
 
 # NAMING FIXED: AgentRegistryValidatorAgent → agent_registry_validator_agent
-class agent_registry_validator_agent:
+class AgentRegistryValidatorAgent:
     """
     L3 Orchestration: Agent Registry Validation
     Ensures all agents defined in CANON_AGENT_REGISTRY are present and functional.

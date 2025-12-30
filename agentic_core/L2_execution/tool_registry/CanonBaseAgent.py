@@ -77,7 +77,7 @@ def get_safety_guardrail() -> Any:
 CanonBaseAgent = None  # Will be set after class definition
 
 @dataclass
-class canon_base_agent(ABC):
+class CanonBaseAgent(ABC):
     """
     Base class for Canon Validator agents with Subatomic healing capabilities.
 

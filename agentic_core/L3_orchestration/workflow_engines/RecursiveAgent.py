@@ -32,7 +32,7 @@ SubTask = sub_task
 
 @dataclass
 # NAMING FIXED: RecursivePlan → recursive_plan
-class recursive_plan:
+class RecursiveAgent:
     """A plan that can spawn sub-workflows."""
     main_goal: str
     subtasks: List[Any]

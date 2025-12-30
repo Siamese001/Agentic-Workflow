@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 logger: Any = logging.getLogger(__name__)
 
-class sub_atomic_agent:
+class CanonBaseAgent:
     """Base class for all validation agents."""
     VERIFICATION_REGISTRY: dict = {}
     _registry_built: bool = False
