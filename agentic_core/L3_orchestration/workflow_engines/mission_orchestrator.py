@@ -31,7 +31,7 @@ ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 def enforce_void_compliance(files, project_root):
     """Bridge to LocationAgent."""
-    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
     return LocationAgent(project_root).enforce_void_compliance(files)
 
 def get_folder_scope_summary(project_root):
@@ -46,7 +46,7 @@ def get_folder_scope_summary(project_root):
 
 def check_import_waterfall_violations(file_path, project_root):
     """Bridge to ImportAgent."""
-    from agentic_core.L5_safety.gravity.import_agent import ImportAgent
+    from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
     return ImportAgent(project_root).check_waterfall_violations(file_path)
 
 # [L2 KNOWLEDGE]

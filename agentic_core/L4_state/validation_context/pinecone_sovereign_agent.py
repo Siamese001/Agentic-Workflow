@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 class pinecone_sovereign_agent:

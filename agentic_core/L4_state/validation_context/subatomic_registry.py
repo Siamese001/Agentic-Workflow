@@ -16,16 +16,12 @@ from typing import Any, Callable, Dict, List
 from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
     PineconeSovereignAgent,
 )
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
-    RedisSovereignAgent,
-)
+from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 
 
 # NAMING FIXED: SubAtomicRegistry → sub_atomic_registry

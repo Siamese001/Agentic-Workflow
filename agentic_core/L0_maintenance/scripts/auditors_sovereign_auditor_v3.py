@@ -34,9 +34,9 @@ except ImportError:
 
 try:
     # [NEW] Import L5 Validators for Supreme Court Cross-Examination
-    from agentic_core.L5_safety.validators.location_agent import location_agent as LocationAgent
-    from agentic_core.L5_safety.validators.naming_agent import naming_agent as NamingAgent
-    from agentic_core.observability.metrics.metrics_agent import metrics_agent as MetricsAgent
+    from agentic_core.L5_safety.validators.LocationAgent import location_agent as LocationAgent
+    from agentic_core.L5_safety.validators.NamingAgent import naming_agent as NamingAgent
+    from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
 except ImportError:
     LocationAgent = None
     NamingAgent = None

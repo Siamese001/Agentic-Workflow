@@ -27,7 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP
 )
-from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
+from agentic_core.utils.naming.NamingAgent import naming_agent as NamingAgent
 
 logger = logging.getLogger(__name__)
 
@@ -93,9 +93,9 @@ class HealerAgent:
 
         # Observability Linkage
         try:
-            from agentic_core.observability.tracing.tracing_agent import tracing_agent as TracingAgent
-            from agentic_core.observability.telemetry.telemetry_agent import telemetry_agent as TelemetryAgent
-            from agentic_core.observability.metrics.metrics_agent import metrics_agent as MetricsAgent
+            from agentic_core.observability.tracing.TracingAgent import tracing_agent as TracingAgent
+            from agentic_core.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
+            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
             self.tracing = TracingAgent(project_root)
             self.telemetry = TelemetryAgent(project_root)
             self.metrics = MetricsAgent(project_root)

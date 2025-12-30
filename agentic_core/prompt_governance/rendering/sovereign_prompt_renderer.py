@@ -15,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""
-    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
     return LocationAgent(project_root).validate_file_location(file_path)
 
 class sovereign_prompt_renderer:

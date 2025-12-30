@@ -6,7 +6,7 @@ Provides naming agents for file naming compliance and drift detection.
 
 # [GUARDED IMPORTS] Prevent cascading failures during agent discovery
 try:
-    from .naming_agent import naming_agent, NamingAgent
+    from .NamingAgent import naming_agent, NamingAgent
 except ImportError:
     naming_agent = None
     NamingAgent = None
