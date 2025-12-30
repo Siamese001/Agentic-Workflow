@@ -23,6 +23,7 @@ class SubAtomicAgent:
     def __init__(self, *args, **kwargs):
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
+# NOT_AN_AGENT — legacy L1 class, true agent is SafetyInspectorAgent in L2 — excluded from discovery
 class safety_inspector:
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
@@ -196,6 +197,7 @@ class safety_inspector:
                 continue
         return (len(violations) == 0, violations)
 
+# NOT_AN_AGENT — legacy L1 class, true agent is DocEnforcerAgent in L2 — excluded from discovery
 class documentation_agent(SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
@@ -241,6 +243,7 @@ class SubAtomicAgent:
     def __init__(self, *args, **kwargs):
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
+# NOT_AN_AGENT — legacy L1 class, true agent is NamingEnforcerAgent in L2 — excluded from discovery
 class naming_agent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)

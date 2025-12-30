@@ -20,7 +20,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: CodeJanitor → code_janitor
+# NOT_AN_AGENT — legacy L1 class, true agent is CodeJanitorAgent in L2 — excluded from discovery
 class code_janitor:
     """
     KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
@@ -297,7 +297,7 @@ class code_janitor:
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
-# NAMING FIXED: DependencySentinel → dependency_sentinel
+# NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
 class dependency_sentinel:
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)

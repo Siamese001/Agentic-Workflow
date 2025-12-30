@@ -28,6 +28,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 logger: Any = logging.getLogger(__name__)
 
+# NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
 class pattern_enforcer:
     """
     Enforces coding patterns and best practices across Python files.
@@ -243,6 +244,7 @@ class pattern_enforcer:
                                 violations.append(f"{fp}:{node.body[-1].lineno} in function '{node.name}'")
         return (len(violations) == 0, violations)
 
+# NOT_AN_AGENT — legacy L1 class, placeholder for Figma MCP — excluded from discovery
 class ui_validation_agent(SubAtomicAgent):
     """
     ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.
@@ -264,6 +266,7 @@ class ui_validation_agent(SubAtomicAgent):
             return
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class semantic_mapper:
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.

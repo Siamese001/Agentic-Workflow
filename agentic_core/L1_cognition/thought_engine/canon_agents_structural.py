@@ -12,6 +12,7 @@ class sub_atomic_agent:
 # Alias for backward compatibility
 SubAtomicAgent = sub_atomic_agent
 
+# NOT_AN_AGENT — base implementation class, not a true agent — excluded from discovery
 class sub_atomic_agent_impl:
     '''Brief description of functionality and purpose.'''
     
@@ -105,7 +106,7 @@ class nesting_depth_visitor(ast.NodeVisitor):
         self._generic_visit_with_depth(node)
 
 
-# NAMING FIXED: TypeMechanic → type_mechanic
+# NOT_AN_AGENT — legacy L1 class, true agent is TypeEnforcerAgent in L2 — excluded from discovery
 class type_mechanic(SubAtomicAgent):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
@@ -275,7 +276,7 @@ class type_mechanic(SubAtomicAgent):
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
 
-# NAMING FIXED: BudgetAgent → budget_agent
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class budget_agent(SubAtomicAgent):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
@@ -362,7 +363,7 @@ class budget_agent(SubAtomicAgent):
                     complexity += len(child.ifs)
         return complexity
 
-# NAMING FIXED: StructuralEngineer → structural_engineer
+# NOT_AN_AGENT — legacy L1 class, true agent is StructuralEngineerAgent in L2 — excluded from discovery
 class structural_engineer(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 41 (Excessive Nesting),
