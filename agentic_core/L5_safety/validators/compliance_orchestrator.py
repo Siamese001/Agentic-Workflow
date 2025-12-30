@@ -165,6 +165,8 @@ class compliance_orchestrator:
                 self.telemetry.compliance_scan_completed(total, duration, compliant)
             if self.metrics:
                 self.metrics.record_compliance_scan(all_violations)
+                # Explicitly trigger infrastructure probe for Key 17
+                self.metrics.check_redis_monitor()
 
             if root_span:
                 root_span.set_attribute("total_violations", total)
