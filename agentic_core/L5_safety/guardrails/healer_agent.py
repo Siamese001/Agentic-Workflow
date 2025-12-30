@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any, Set, Optional
 from datetime import datetime
 import logging
+from contextlib import nullcontext
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
@@ -102,6 +103,17 @@ class healer_agent:
         self.max_fissions = HEALING_CONFIG.get("max_fissions_per_run", 3)
         self.max_fusions = HEALING_CONFIG.get("max_fusions_per_run", 20)
         self.max_deletions = HEALING_CONFIG.get("max_deletions_per_run", 10)
+
+        # Optional observability integration
+        try:
+            from agentic_core.observability.tracing.tracing_agent import tracing_agent as TracingAgent
+            from agentic_core.observability.telemetry.telemetry_agent import telemetry_agent as TelemetryAgent
+            from agentic_core.observability.metrics.metrics_agent import metrics_agent as MetricsAgent
+            self.tracing = TracingAgent(project_root)
+            self.telemetry = TelemetryAgent(project_root)
+            self.metrics = MetricsAgent(project_root)
+        except ImportError:
+            self.tracing = self.telemetry = self.metrics = None
 
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
@@ -515,32 +527,49 @@ class healer_agent:
         return actions
 
     def heal_all(self, violations: List[Tuple[Path, str]], large_files: List[Path] = None, dust_files: List[Path] = None, dead_files: List[Path] = None) -> Dict[str, Any]:
-        """Orchestrate all healing actions."""
-        move_violations = [v for v in violations if "VIOLATION" in v[1] and ("depth" in v[1].lower() or "placement" in v[1].lower())]
+        """Orchestrate all healing actions with tracing and telemetry."""
+        trace_ctx = self.tracing.create_span("healing_mission") if self.tracing else nullcontext()
         
-        import_violations = [] 
-        large_files = large_files or []
-        dust_files = dust_files or []
-        dead_files = dead_files or []
+        with trace_ctx as span:
+            if span:
+                span.set_attribute("violations_in", len(violations))
+                span.set_attribute("large_files", len(large_files or []))
 
-        results = {
-            "moves": self.heal_file_moves(move_violations),
-            "imports_cleaned": self.heal_unused_imports(import_violations),
-            "fissions": self.heal_fission(large_files),
-            "deletions": self.heal_deletions(dead_files),
-            "import_updates": [],  # Aggregated list
-            "total_actions": 0,
-            "backup_dir": str(self.backup_dir) if not self.dry_run else "DRY-RUN"
-        }
-        
-        # Aggregate all internal import updates into results summary
-        for f_op in results["fissions"]:
-            if "import_updates" in f_op:
-                results["import_updates"].extend(f_op["import_updates"])
+            move_violations = [v for v in violations if "VIOLATION" in v[1] and ("depth" in v[1].lower() or "placement" in v[1].lower())]
+            import_violations = [] 
+            large_files = large_files or []
+            dust_files = dust_files or []
+            dead_files = dead_files or []
 
-        results["total_actions"] = len(results["moves"]) + len(results["imports_cleaned"]) + len(results["fissions"]) + len(results["deletions"]) + len(results["import_updates"])
+            results = {
+                "moves": self.heal_file_moves(move_violations),
+                "imports_cleaned": self.heal_unused_imports(import_violations),
+                "fissions": self.heal_fission(large_files),
+                "deletions": self.heal_deletions(dead_files),
+                "import_updates": [],
+                "total_actions": 0,
+                "backup_dir": str(self.backup_dir) if not self.dry_run else "DRY-RUN"
+            }
 
-        return results
+            # Aggregate internal import fixes
+            for op in results["fissions"]:
+                if "import_updates" in op:
+                    results["import_updates"].extend(op["import_updates"])
+
+            results["total_actions"] = sum([len(results[k]) for k in ["moves", "imports_cleaned", "fissions", "deletions", "import_updates"]])
+            
+            # Final Observability Dispatch
+            if self.telemetry:
+                self.telemetry.emit("healing.mission_completed", details={"total": results["total_actions"]})
+            if self.metrics:
+                self.metrics.increment("healing.actions_total", results["total_actions"])
+                self.metrics.increment("healing.fissions", len(results["fissions"]))
+
+            if span:
+                span.set_attribute("actions_applied", results["total_actions"])
+                span.set_status("SUCCESS" if results["total_actions"] > 0 else "OK")
+
+            return results
 
 
 # Uppercase alias for backward compatibility
