@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
+from agentic_core.L4_state.validation_context.cached_state_ledger import cached_state_ledger as CachedStateLedger
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -154,6 +154,9 @@ class validation_context:
             LOGGER.error(f'Failed to load ValidationContext: {e}')
             return None
 
+# [NAMING ALIAS] PascalCase alias for backward compatibility
+ValidationContext = validation_context
+
 class validation_context_manager:
     """
     Manages ValidationContext persistence and history.
@@ -250,6 +253,10 @@ class validation_context_manager:
             except Exception as e:
                 LOGGER.error(f'Failed to load flapping files: {e}')
         return {}
+
+# [NAMING ALIAS] PascalCase alias for backward compatibility
+ValidationContextManager = validation_context_manager
+
 _context_manager: Optional[ValidationContextManager] = None
 
 def get_context_manager() -> ValidationContextManager:
