@@ -1,4 +1,4 @@
 """L6 Observability Layer"""
-from .security_logger import log_security_event
+# Removed non-existent security_logger import
 
-__all__ = ['log_security_event']
+__all__ = []
