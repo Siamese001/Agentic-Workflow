@@ -5,7 +5,7 @@ Enforces centralized config usage - bans os.getenv outside SSOT.
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

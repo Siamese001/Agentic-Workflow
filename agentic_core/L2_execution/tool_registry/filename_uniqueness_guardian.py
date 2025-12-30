@@ -3,7 +3,7 @@ from collections import defaultdict
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 import shutil
 from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS, CORE_SUBFOLDER_MAP
 # [PHASE 20] DEPRECATION: void_compliance.py removed

@@ -6,6 +6,7 @@ import importlib
 import logging
 import sys
 from services.configuration import ConfigurationService
+from typing import Any
 logger: Any = logging.getLogger(__name__)
 
 def test_import(package_name: Any, min_version: Any=None) -> Any:

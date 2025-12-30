@@ -1,3 +1,4 @@
+from typing import Any
 """
 Safety and concurrency few-shot patterns.
 Used by SafetyInspector, ConcurrencyGuardian, SecurityEnforcer.

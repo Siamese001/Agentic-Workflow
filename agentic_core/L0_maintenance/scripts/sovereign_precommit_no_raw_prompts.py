@@ -7,6 +7,7 @@ Usage: Called automatically by pre-commit hook
 import re
 import sys
 from pathlib import Path
+from typing import Any
 exempt: Any = {'agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py', 'test_', 'tests/'}
 prompt_patterns: Any = ['""".*You are.*"""', "'''.*You are.*'''", '{"role":\\s*"system",\\s*"content":\\s*"', 'f""".*You are.*"""', "f\\'\\'\\'.*You are.*\\'\\'\\'"]
 

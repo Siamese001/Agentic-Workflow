@@ -7,6 +7,7 @@ Usage: Called automatically by pre-commit hook
 import ast
 import sys
 from pathlib import Path
+from typing import Any
 exempt: Any = {'agentic_core/schemas/models/core_contracts.py'}
 
 class sovereign_model_visitor(ast.NodeVisitor):

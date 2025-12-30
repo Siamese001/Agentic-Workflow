@@ -7,6 +7,7 @@ import re
 import sys
 import logging
 from pathlib import Path
+from typing import Any
 logger: Any = logging.getLogger('sovereign.prompts')
 handler: Any = logging.StreamHandler(sys.stderr)
 handler.setFormatter(logging.Formatter('[PROMPTS] %(levelname)s %(asctime)s | %(message)s', '%H:%M:%S'))

@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from services.configuration import ConfigurationService
+from typing import Any
 logger: Any = logging.getLogger(__name__)
 
 def load_review_log() -> Any:

@@ -2,7 +2,7 @@ from rank_bm25 import BM25Okapi
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import List, Dict, Optional
+from typing import Any, List, Dict, Optional
 import json
 from pathlib import Path
 

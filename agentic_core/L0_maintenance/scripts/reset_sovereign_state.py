@@ -5,6 +5,7 @@ Purges volatile state that causes MemoryError and ensures clean SSL fixes.
 import os
 import shutil
 from pathlib import Path
+from typing import Any
 
 def purge_volatile_state() -> Any:
     """Brief description of functionality and purpose."""

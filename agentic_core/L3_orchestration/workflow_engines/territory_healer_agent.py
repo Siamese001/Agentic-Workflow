@@ -10,7 +10,7 @@ Examples:
 - Healing agents in L4_state (belongs in L3_orchestration/healing/)
 """
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 class territory_healer_agent:
     """

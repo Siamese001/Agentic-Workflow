@@ -2,6 +2,7 @@
 import logging
 import os
 from services.configuration import ConfigurationService
+from typing import Any
 logger: Any = logging.getLogger(__name__)
 
 def find_long_lines() -> None:

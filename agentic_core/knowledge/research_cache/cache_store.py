@@ -3,7 +3,7 @@ import json
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 
 class research_cache:
     """Simple file-based cache for RAG results, optimized for agentic retrieval."""

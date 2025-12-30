@@ -5,7 +5,7 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 import redis
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

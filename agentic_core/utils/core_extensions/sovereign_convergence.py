@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 from pathlib import Path
+from typing import Any
 root: Any = Path.cwd()
 core: Any = ROOT / 'agentic_core'
 migration_map: Any = {}

@@ -5,6 +5,7 @@ Constants for the Agentic Core system.
 Contains all shared constants used across the agentic framework.
 """
 from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+from typing import Any
 max_complexity: Any = 10
 max_func_lines: Any = 50
 max_nesting_spaces: Any = 40

@@ -8,6 +8,7 @@ logger.error
 import logging
 import os
 import re
+from typing import Any
 
 def fix_indentation_errors(file_path: Any) -> Any:
     """Fix indentation errors in a Python file."""

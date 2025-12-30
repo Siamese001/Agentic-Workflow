@@ -6,7 +6,7 @@ import asyncio
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 try:
     import pdfplumber
     PDF_PLUMBER_AVAILABLE: Any = True

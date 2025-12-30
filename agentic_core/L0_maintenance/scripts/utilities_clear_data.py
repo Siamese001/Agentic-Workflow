@@ -1,6 +1,7 @@
 """Clear all data from Redis and Pinecone for clean simulation."""
 import os
 from connection_manager import ConnectionFactory
+from typing import Any
 try:
     redis_conn: Any = ConnectionFactory.get_redis_connection()
     redis_conn.flushall()

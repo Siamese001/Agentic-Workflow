@@ -6,7 +6,7 @@ This agent prevents circular drift by ensuring all files have high-signal names.
 import json
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, FORBIDDEN_PATTERNS
 
 class naming_law_healer_agent:

@@ -12,6 +12,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 sovereign_agents: Any = {'agentic_core', 'apps_lic', 'apps_rg'}
 
 def main() -> None:

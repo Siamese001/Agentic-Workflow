@@ -8,6 +8,6 @@ Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 """
 import logging
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.schemas.models.core_contracts import ToneType, StyleProfile, GenerationConfig
 logger: Any = logging.getLogger(__name__)

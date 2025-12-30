@@ -1,6 +1,7 @@
 """Enum types for agent_registry."""
 import logging
 from enum import Enum, auto
+from typing import Any
 _logger = logging.getLogger(__name__)
 
 class agent_capability(Enum):

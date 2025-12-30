@@ -8,6 +8,7 @@ import ast
 import re
 import sys
 from pathlib import Path
+from typing import Any
 exempt: Any = {'agentic_core/config/blueprint_sovereign/environments/sovereign_config.py', 'test_', 'tests/'}
 hardcoded_patterns: Any = [('PRIMARY_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('REASONING_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('MAX_RETRY_ATTEMPTS\\s*=\\s*\\d+', 'Retry configuration'), ('CHECKPOINT_INTERVAL\\s*=\\s*\\d+', 'Checkpoint configuration'), ('SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+', 'Threshold configuration'), ('BASE_GIT_PATH\\s*=\\s*["\\\']', 'Path configuration'), ('gpt-4o["\\\']', 'Hardcoded model name'), ('o1-preview["\\\']', 'Hardcoded model name')]
 

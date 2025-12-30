@@ -5,7 +5,7 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 """
 import re
 from pathlib import Path
-from typing import Dict, Set
+from typing import Any, Dict, Set
 from agentic_core.config.blueprint_sovereign.structure_blueprint import UPSTREAM_SOVEREIGN_ROOTS, DOWNSTREAM_ROOTS
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 

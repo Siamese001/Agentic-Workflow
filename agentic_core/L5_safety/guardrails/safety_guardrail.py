@@ -3,7 +3,7 @@ L5 Safety: safety_guardrail
 Enforces Zero-Loss principles during code mutation.
 """
 import ast
-from typing import Tuple
+from typing import Any, Tuple
 
 class safety_guardrail:
     """Enforces Zero-Loss principles during mutation."""

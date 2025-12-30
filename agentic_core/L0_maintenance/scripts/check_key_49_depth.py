@@ -4,6 +4,7 @@ Standalone Key 49 Depth Violation Checker
 """
 from pathlib import Path
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from typing import Any
 
 def check_key_49_depth() -> Any:
     """Check directory depth violations per Key 49 using SSOT"""

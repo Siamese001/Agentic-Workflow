@@ -4,6 +4,7 @@ import os
 'Brief description of functionality and purpose.'
 import re
 from pathlib import Path
+from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 apps: Any = [ROOT / 'apps_rg', ROOT / 'apps_lic', ROOT / 'apps_shared']
 rewire_map: Any = [('from agentic_core\\.utils\\.', 'from agentic_core.utils.P1_core.')]

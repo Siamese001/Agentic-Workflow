@@ -6,6 +6,7 @@ import os
 import shutil
 from pathlib import Path
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']

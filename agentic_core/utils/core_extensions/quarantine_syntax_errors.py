@@ -4,6 +4,7 @@ import ast
 'Brief description of functionality and purpose.'
 import shutil
 from pathlib import Path
+from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 quarantine: Any = ROOT / 'quarantine_syntax_errors'
