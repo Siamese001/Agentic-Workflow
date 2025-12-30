@@ -109,6 +109,10 @@ class hierarchy_agent:
                 if rel_parts[0] != "agentic_core":
                     continue
 
+                # Skip __init__.py files - structural package markers at every level
+                if file_path.name == "__init__.py":
+                    continue
+
                 depth = len(rel_parts)
                 if depth > MAX_FILE_DEPTH_AGENTIC_CORE:
                     violations.append((

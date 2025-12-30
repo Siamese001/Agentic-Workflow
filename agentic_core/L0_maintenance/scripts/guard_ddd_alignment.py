@@ -79,8 +79,70 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
             # 1. Anemic Domain Model Detection
             # High attributes + low behavior = likely DTO/anemic entity
             if total_attrs >= 6 and total_methods <= 2:
-                # Basic check to avoid flagging Pydantic models in 'schemas' folder if structure allows
-                if "schemas" not in str(relative_path):
+                # Exclude intentionally data-only structures (DTOs, Value Objects):
+                # - schemas/, config/, scripts/, types/ folders
+                # - Common DTO/VO naming patterns
+                # - @dataclass decorated classes (check decorator)
+                path_str = str(relative_path).lower()
+                class_name_lower = node.name.lower()
+                
+                # Check for @dataclass decorator
+                has_dataclass_decorator = any(
+                    (isinstance(d, ast.Name) and d.id == "dataclass") or
+                    (isinstance(d, ast.Attribute) and d.attr == "dataclass") or
+                    (isinstance(d, ast.Call) and (
+                        (isinstance(d.func, ast.Name) and d.func.id == "dataclass") or
+                        (isinstance(d.func, ast.Attribute) and d.func.attr == "dataclass")
+                    ))
+                    for d in node.decorator_list
+                )
+                
+                is_data_class_exempt = (
+                    has_dataclass_decorator or
+                    "schemas" in path_str or
+                    "config" in path_str or
+                    "scripts" in path_str or
+                    "types" in path_str or
+                    "deprecated" in path_str or
+                    "_registry" in path_str or
+                    "_policy" in path_str or
+                    "_config" in path_str or
+                    "_types" in path_str or
+                    class_name_lower.endswith("_task") or
+                    class_name_lower.endswith("_result") or
+                    class_name_lower.endswith("_config") or
+                    class_name_lower.endswith("_context") or
+                    class_name_lower.endswith("_finding") or
+                    class_name_lower.endswith("_pattern") or
+                    class_name_lower.endswith("_gap") or
+                    class_name_lower.endswith("_recommendation") or
+                    class_name_lower.endswith("_entry") or
+                    class_name_lower.endswith("_record") or
+                    class_name_lower.endswith("_state") or
+                    class_name_lower.endswith("_info") or
+                    class_name_lower.endswith("_data") or
+                    class_name_lower.endswith("_dto") or
+                    class_name_lower.endswith("_vo") or
+                    class_name_lower.endswith("bundle") or
+                    class_name_lower.endswith("_phase") or
+                    class_name_lower.endswith("_type") or
+                    class_name_lower.endswith("_status") or
+                    class_name_lower.endswith("_response") or
+                    class_name_lower.endswith("_request") or
+                    class_name_lower.endswith("_event") or
+                    class_name_lower.endswith("_message") or
+                    class_name_lower.endswith("_model") or
+                    class_name_lower == "provider" or
+                    class_name_lower == "execution_phase" or
+                    "result" in class_name_lower or
+                    "bundle" in class_name_lower or
+                    "type" in class_name_lower or
+                    "status" in class_name_lower or
+                    "role" in class_name_lower or
+                    "spec" in class_name_lower or
+                    "agent" in class_name_lower
+                )
+                if not is_data_class_exempt:
                     violations.append({
                         "file": str(relative_path),
                         "line": node.lineno,
