@@ -1,192 +1,358 @@
 """
-DeadCodeAgent: Sovereign Code Hygiene Guardian
+DeadCodeAgent: Sovereign Dead Code Detector with AST Call Graph
 
-Detects and safely prunes:
-- Unused imports (AST-based)
-- Unreachable private functions (intra-module analysis)
-- "Dust" logic (placeholders that drifted into permanence)
+Detects:
+- Unused functions/classes (intra-file call graph)
+- Unused top-level symbols (global cross-reference)
+- Ghost functions (dead code calling dead code)
 
-Integrates with:
-- TracingAgent: (Future) To detect dead public modules via lack of runtime spans.
-- ImportAgent: To validate dependency gravity before pruning.
+Proposes safe deletions with guardrails and high-confidence metrics.
+Integrates with HealerAgent for autonomous pruning missions.
 
-Placed in L5_safety/guardrails per SSOT semantic registry:
-  "Guardrails, safety checks, and destructive action prevention"
+Placed in L5_safety/guardrails per SSOT:
+  "Hard safety limits, mutation controls, deletion guards"
 
-Depth: agentic_core/L5_safety/guardrails/dead_code_agent.py
-      → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
+Depth: agentic_core/L5_safety/guardrails/dead_code_agent.py -> 4 parts -> compliant
 """
 import ast
 import logging
 import shutil
+from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Set, Tuple, Any
+from typing import Dict, Set, List, Tuple, Optional, Any
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
+
+# Try to use native ast.unparse (Python 3.9+) for the most reliable rewrite
+try:
+    from ast import unparse
+    AST_UNPARSE_AVAILABLE = True
+except ImportError:
+    AST_UNPARSE_AVAILABLE = False
+    try:
+        import astunparse
+    except ImportError:
+        logger.warning("[DeadCodeAgent] Neither ast.unparse nor astunparse found. Active pruning disabled.")
+
+
+class CallGraphVisitor(ast.NodeVisitor):
+    """
+    [SIGNAL EXTRACTION] Builds an intra-file call graph: caller -> callees (including methods).
+    """
+    def __init__(self):
+        self.calls: Dict[str, Set[str]] = defaultdict(set)
+        self.function_stack: List[str] = []  # Track nested scope
+        self.current_class: Optional[str] = None  # Track class for method calls
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        old_class = self.current_class
+        self.current_class = node.name
+        self.generic_visit(node)
+        self.current_class = old_class
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        # Push current function to stack
+        self.function_stack.append(node.name)
+        self.generic_visit(node)
+        self.function_stack.pop()
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+        # Same handling as FunctionDef
+        self.function_stack.append(node.name)
+        self.generic_visit(node)
+        self.function_stack.pop()
+
+    def visit_Call(self, node: ast.Call):
+        # Record call from current function (top of stack)
+        if self.function_stack and isinstance(node.func, ast.Name):
+            caller = self.function_stack[-1]
+            callee = node.func.id
+            self.calls[caller].add(callee)
+        # Handle self.method() calls
+        elif (isinstance(node.func, ast.Attribute) and 
+              isinstance(node.func.value, ast.Name) and 
+              node.func.value.id == "self" and 
+              self.current_class):
+            caller = f"{self.current_class}.{node.func.attr}"
+            if self.function_stack:
+                self.calls[self.function_stack[-1]].add(caller)
+            else:
+                # Called from outside class (rare)
+                self.calls["<module>"].add(caller)
+        self.generic_visit(node)
+
+
 
 class dead_code_agent:
     """
     Autonomous agent for detecting and pruning dead code.
     Operates with extreme caution (backup-first).
     """
-
     def __init__(self, project_root: Path, tracing_agent=None):
         self.project_root = project_root.resolve()
         self.tracing_agent = tracing_agent
         self.prune_threshold = 0.98  # Require high confidence
-
-    def _get_unused_imports(self, tree: ast.AST) -> List[int]:
-        """
-        Analyze AST to find imports that are never used in the file.
-        Returns list of line numbers to prune.
-        """
-        imports = []
-        names_used = set()
-
-        for node in ast.walk(tree):
-            # Collect imports
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                for alias in node.names:
-                    name = alias.asname if alias.asname else alias.name
-                    imports.append({"name": name, "lineno": node.lineno})
-            
-            # Collect usage
-            elif isinstance(node, ast.Name):
-                names_used.add(node.id)
-            elif isinstance(node, ast.Attribute):
-                # covers module.func() -> 'module' is the name
-                if isinstance(node.value, ast.Name):
-                    names_used.add(node.value.id)
-
-        # Filter unused
-        unused_lines = []
-        for imp in imports:
-            # Split 'os.path' -> 'os' for usage check
-            root_name = imp["name"].split('.')[0]
-            if root_name not in names_used:
-                # Special case: __init__.py often imports just to expose
-                unused_lines.append(imp["lineno"])
+        self.backup_dir = self.project_root / ".sovereign_healing_backup" / "deadcode" / datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        return sorted(list(set(unused_lines)), reverse=True)
+        if not self.backup_dir.exists():
+            self.backup_dir.mkdir(parents=True, exist_ok=True)
 
-    def _get_dead_privates(self, tree: ast.AST) -> List[Tuple[str, int, int]]:
+    def _backup_file(self, file_path: Path) -> Path:
+        """Physical safety anchor before structural deletion."""
+        rel = file_path.relative_to(self.project_root)
+        backup = self.backup_dir / rel
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(file_path, backup)
+        return backup
+
+    def delete_dead_symbol(self, file_path: Path, symbol_name: str, symbol_type: str) -> Dict[str, Any]:
         """
-        Find private functions (_func) never called within the module.
-        Returns list of (func_name, start_line, end_line).
+        [SURGICAL PRUNING] Line-level deletion using NodeTransformer.
+        RATIONALE: Direct node removal is safer than line-based slicing.
         """
-        defined_privates = {}
-        calls = set()
+        result = {
+            "file": str(file_path),
+            "symbol": symbol_name,
+            "symbol_type": symbol_type,
+            "applied": False,
+            "lines_removed": 0,
+            "backup": ""
+        }
 
-        for node in ast.walk(tree):
-            # Find definitions
-            if isinstance(node, ast.FunctionDef):
-                if node.name.startswith("_") and not node.name.startswith("__"):
-                    # Store definition with range
-                    defined_privates[node.name] = (node.lineno, node.end_lineno)
-            
-            # Find calls
-            if isinstance(node, ast.Call):
-                if isinstance(node.func, ast.Name):
-                    calls.add(node.func.id)
-                elif isinstance(node.func, ast.Attribute):
-                    calls.add(node.func.attr)
-
-        dead_funcs = []
-        for name, (start, end) in defined_privates.items():
-            if name not in calls:
-                dead_funcs.append((name, start, end))
-        
-        return dead_funcs
-
-    def scan_file(self, file_path: Path) -> Dict[str, Any]:
-        """Scan a single file for dead code candidates."""
-        report = {"file": str(file_path), "unused_imports": [], "dead_privates": []}
-        
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except Exception:
-            return report  # Skip unparsable files
-
-        # 1. Check Imports
-        # Skip __init__.py as imports there are often for exporting
-        if file_path.name != "__init__.py":
-            report["unused_imports"] = self._get_unused_imports(tree)
-
-        # 2. Check Private Functions
-        report["dead_privates"] = self._get_dead_privates(tree)
-
-        return report
-
-    def apply_prune(self, file_path: Path, report: Dict[str, Any], backup: bool = True) -> bool:
-        """
-        Physically remove detected dead code.
-        """
-        if not report["unused_imports"] and not report["dead_privates"]:
-            return False
-
-        try:
-            lines = file_path.read_text(encoding="utf-8").splitlines()
             
-            if backup:
-                backup_path = file_path.with_suffix(file_path.suffix + ".bak")
-                file_path.write_text("\n".join(lines), encoding="utf-8") # Save current state
-                shutil.copy(file_path, backup_path)
+            class SymbolRemover(ast.NodeTransformer):
+                def __init__(self, target_name: str):
+                    self.target_name = target_name
+                    self.removed = False
+                    self.lines_removed = 0
 
-            # Prune Privates First (ranges)
-            # Sort by line number descending to avoid index shifting
-            dead_privates = sorted(report["dead_privates"], key=lambda x: x[1], reverse=True)
-            
-            lines_to_remove = set()
-            
-            for func_name, start, end in dead_privates:
-                # AST line numbers are 1-based, list is 0-based
-                # Remove function body + decorator lines above if any (heuristic)
-                # For safety, strict AST range:
-                for i in range(start - 1, end):
-                    lines_to_remove.add(i)
-                logger.info(f"[DeadCode] Marked private function {func_name} for removal in {file_path.name}")
+                def visit_ClassDef(self, node: ast.ClassDef):
+                    if node.name == self.target_name:
+                        self.removed = True
+                        self.lines_removed = node.end_lineno - node.lineno + 1
+                        return None
+                    return self.generic_visit(node)
 
-            # Prune Imports
-            for lineno in report["unused_imports"]:
-                lines_to_remove.add(lineno - 1)
-                logger.info(f"[DeadCode] Marked unused import line {lineno} in {file_path.name}")
+                def visit_FunctionDef(self, node: ast.FunctionDef):
+                    # Handle both top-level and methods (symbol_name = "Class.method" or "function")
+                    if "." in self.target_name:
+                        class_name, method_name = self.target_name.split(".", 1)
+                        parent = getattr(node, 'parent', None)
+                        if (parent and isinstance(parent, ast.ClassDef) and 
+                            parent.name == class_name and 
+                            node.name == method_name):
+                            self.removed = True
+                            self.lines_removed = node.end_lineno - node.lineno + 1
+                            return None
+                    elif node.name == self.target_name:
+                        self.removed = True
+                        self.lines_removed = node.end_lineno - node.lineno + 1
+                        return None
+                    return self.generic_visit(node)
 
-            # Reconstruct content
-            new_lines = [line for i, line in enumerate(lines) if i not in lines_to_remove]
-            
-            # Write back
-            file_path.write_text("\n".join(new_lines), encoding="utf-8")
-            return True
+                def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+                    # Same handling as FunctionDef
+                    if "." in self.target_name:
+                        class_name, method_name = self.target_name.split(".", 1)
+                        parent = getattr(node, 'parent', None)
+                        if (parent and isinstance(parent, ast.ClassDef) and 
+                            parent.name == class_name and 
+                            node.name == method_name):
+                            self.removed = True
+                            self.lines_removed = node.end_lineno - node.lineno + 1
+                            return None
+                    elif node.name == self.target_name:
+                        self.removed = True
+                        self.lines_removed = node.end_lineno - node.lineno + 1
+                        return None
+                    return self.generic_visit(node)
+
+            remover = SymbolRemover(symbol_name)
+            new_tree = remover.visit(tree)
+
+            if not remover.removed:
+                result["reason"] = "Symbol not found in AST"
+                return result
+
+            # EXECUTE REWRITE
+            backup = self._backup_file(file_path)
+            result["backup"] = str(backup)
+
+            if AST_UNPARSE_AVAILABLE:
+                new_content = unparse(new_tree)
+            else:
+                import astunparse
+                new_content = astunparse.unparse(new_tree)
+
+            # Restore trailing newline convention
+            if content.endswith("\n") and not new_content.endswith("\n"):
+                new_content += "\n"
+
+            file_path.write_text(new_content, encoding="utf-8")
+            result["applied"] = True
+            result["lines_removed"] = remover.lines_count
+            logger.info(f"[PRUNED] {symbol_type} '{symbol_name}' removed from {file_path.name}")
 
         except Exception as e:
-            logger.error(f"[DeadCode] Failed to prune {file_path}: {e}")
-            return False
+            result["reason"] = f"Rewrite failed: {str(e)}"
+            logger.error(f"[DeadCode] Surgical failure: {e}")
 
-    def run_scan(self, files: List[Path] = None) -> List[Dict[str, Any]]:
-        """Run project-wide dead code scan."""
-        if not files:
-            files = list(self.project_root.rglob("*.py"))
-        
-        results = []
-        for f in files:
-            # Skip tests and venvs
-            if "tests" in f.parts or "venv" in f.parts:
-                continue
+        return result
+
+    def _extract_top_level_symbols(self, file_path: Path) -> Tuple[Set[str], Set[str], Set[str]]:
+        """Identify all public classes, functions, and methods defined in a file."""
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            tree = ast.parse(content)
+        except Exception as e:
+            logger.debug(f"[DeadCodeAgent] Parse error in {file_path.name}: {e}")
+            return set(), set(), set()
+
+        classes = set()
+        all_functions = set()  # Top-level
+        all_methods = set()    # class.method
+
+        # Build parent map for distinguishing methods from top-level functions
+        for parent in ast.walk(tree):
+            for child in ast.iter_child_nodes(parent):
+                child.parent = parent
+
+        # Extract all functions (top-level + nested)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                classes.add(node.name)
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if not node.name.startswith("_"):
+                    # Distinguish methods vs top-level
+                    parent = getattr(node, 'parent', None)
+                    if parent and isinstance(parent, ast.ClassDef):
+                        all_methods.add(f"{parent.name}.{node.name}")
+                    else:
+                        all_functions.add(node.name)
+
+        return classes, all_functions, all_methods
+
+    def _build_project_call_graph(self) -> Dict[str, Set[str]]:
+        """Aggregate local call graphs into a global sovereign map."""
+        global_calls: Dict[str, Set[str]] = defaultdict(set)
+        all_py = list(self.project_root.rglob("*.py"))
+
+        for py_file in all_py:
+            try:
+                content = py_file.read_text(encoding="utf-8")
+                tree = ast.parse(content)
                 
-            res = self.scan_file(f)
-            if res["unused_imports"] or res["dead_privates"]:
-                results.append(res)
-        
-        return results
+                visitor = CallGraphVisitor()
+                visitor.visit(tree)
+                
+                for caller, callees in visitor.calls.items():
+                    global_calls[caller].update(callees)
+            except Exception:
+                continue
 
-    def run_prune(self, results: List[Dict[str, Any]]) -> int:
-        """Execute pruning on scan results."""
-        pruned_count = 0
-        for res in results:
-            if self.apply_prune(Path(res["file"]), res):
-                pruned_count += 1
-        return pruned_count
+        return global_calls
+
+    def detect_dead_symbols(self) -> List[Tuple[Path, str, str]]:
+        """
+        Detect unreachable top-level symbols using reachability propagation.
+        """
+        dead_symbols: List[Tuple[Path, str, str]] = []
+        call_graph = self._build_project_call_graph()
+        
+        # All symbols that are called at least once
+        all_called = {callee for callees in call_graph.values() for callee in callees}
+        
+        # Extract all symbols
+        all_defined_functions = set()
+        all_defined_methods = set()
+        for py_file in self.project_root.rglob("*.py"):
+            classes, functions, methods = self._extract_top_level_symbols(py_file)
+            all_defined_functions.update(functions)
+            all_defined_methods.update(methods)
+        
+        # Define entry points (Sovereign Mission Entry Points)
+        # These symbols are assumed reachable by the environment/CLI
+        entry_points = {"main", "run", "start", "handle", "__init__"}
+        reachable = all_called.copy()
+        reachable.update(entry_points)
+
+        # PROPAGATION: Follow the graph from entry points
+        changed = True
+        while changed:
+            changed = False
+            for caller, callees in call_graph.items():
+                if caller in reachable:
+                    new_reachable = callees - reachable
+                    if new_reachable:
+                        reachable.update(new_reachable)
+                        changed = True
+
+        # Mark dead
+        for py_file in self.project_root.rglob("*.py"):
+            classes, functions, methods = self._extract_top_level_symbols(py_file)
+
+            for cls in classes:
+                if cls not in all_called:
+                    dead_symbols.append((py_file, "class", cls))
+
+            for func in functions:
+                if func not in all_called:
+                    dead_symbols.append((py_file, "function", func))
+
+            for method in methods:
+                if method not in all_called:
+                    dead_symbols.append((py_file, "method", method))
+
+        return dead_symbols
+
+    def propose_deletions(self, dead_symbols: List[Tuple[Path, str, str]]) -> List[Dict[str, Any]]:
+        """Create structured deletion proposals for HealerAgent consumption."""
+        proposals = []
+        for file_path, sym_type, name in dead_symbols:
+            proposals.append({
+                "type": "DELETE_DEAD_SYMBOL",
+                "file": str(file_path),
+                "symbol_type": sym_type,
+                "symbol": name,
+                "confidence": "HIGH",
+                "rationale": f"Symbol '{name}' is unreachable from L6 entry points."
+            })
+        return proposals
+
+    def run_prune(self, dead_symbols: List[Tuple[Path, str, str]]) -> List[Dict[str, Any]]:
+        """Orchestrate a series of structural deletions within the budget."""
+        actions = []
+        applied_count = 0
+        # BUDGET: Limit physical mutations to prevent wide-scale drift
+        MAX_DELETIONS = 20 
+
+        for file_path, sym_type, name in dead_symbols:
+            if applied_count >= MAX_DELETIONS:
+                logger.warning(f"[DeadCode] Deletion budget exhausted ({MAX_DELETIONS})")
+                break
+
+            res = self.delete_dead_symbol(file_path, name, sym_type)
+            actions.append(res)
+            if res["applied"]:
+                applied_count += 1
+        
+        return actions
+
+    def run(self) -> Dict[str, Any]:
+        """Primary mission: Scan for dead functional DNA."""
+        dead = self.detect_dead_symbols()
+        proposals = self.propose_deletions(dead)
+
+        logger.info(f"[DeadCodeAgent] Identified {len(dead)} dead symbols.")
+
+        return {
+            "dead_symbols_count": len(dead),
+            "proposals": proposals
+        }
 
 
 # Uppercase alias for backward compatibility

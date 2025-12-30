@@ -235,16 +235,19 @@ class healer_agent:
         return actions
 
     def _extract_symbols(self, content: str) -> Set[str]:
-        """Extract top-level class/function names from file content."""
+        """
+        Extract high-signal public symbols for module fusion grouping.
+        """
         try:
             tree = ast.parse(content)
-        except Exception:
+        except (SyntaxError, ValueError):
             return set()
-
+            
         symbols = set()
         for node in ast.walk(tree):
             if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-                if not node.name.startswith("__"): # Skip private dunders
+                # Only track public symbols to determine 'Sovereign Intent'
+                if not node.name.startswith("_"):
                     symbols.add(node.name)
         return symbols
 
@@ -437,21 +440,20 @@ class healer_agent:
 
     def _find_split_points(self, lines: List[str]) -> List[int]:
         """
-        Find logical split points using AST (class/function defs).
+        [SOVEREIGN FISSION] Identifies safe line numbers to split a file.
+        RATIONALE: Splits must occur at the end of structural blocks (Key 15).
         """
-        content = "".join(lines)
+        content = "\n".join(lines)
         try:
             tree = ast.parse(content)
-        except Exception:
-            return []  # Fallback: no safe splits if file is currently broken
-
-        splits = []
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-                if hasattr(node, 'end_lineno') and node.end_lineno:
-                    if node.end_lineno > MIN_LINES_PER_FILE:
-                        splits.append(node.end_lineno)
-        return sorted(set(splits))
+        except SyntaxError:
+            return []
+            
+        # Collect end line numbers for all top-level structures
+        points = [node.end_lineno for node in ast.walk(tree) 
+                 if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and node.end_lineno]
+        
+        return sorted(set(p for p in points if p))
 
     def heal_fission(self, large_files: List[Path]) -> List[Dict[str, Any]]:
         """

@@ -5,7 +5,7 @@ Enforces naming laws on all files (not just .py):
 - No repeated suffixes (.archived.archived...)
 - No generic/versioned names
 - High-signal where applicable
-- Move clutter to dedicated archives/ with AST-aware sub-paths
+- Move clutter to archives/ with multi-priority AST-based categorization
 - Automatic cleanup (rename/archive) with guardrails
 
 Integrates with HealerAgent safety system (backup, budget, dry-run) per Phase 10.
@@ -91,54 +91,108 @@ class filesystem_agent:
 
     def _determine_archive_subpath(self, file_path: Path) -> Path:
         """
-        Determine the closest matching sovereign territory sub-path in archives/
-        by analyzing the AST of surrounding Python files.
+        AST-based categorization of non-Python files.
+        Analyzes all .py files in directory:
+        - Priority 1: Class/function names (strong signal)
+        - Priority 2: Import paths
+        - Priority 3: Keyword density (via NamingAgent)
+        - Maps to CANON_KEY_TO_FOLDER_MAP paths
+        - Fallback: archives/uncategorized/
         """
         dir_path = file_path.parent
-        # Find nearby .py files to establish context
         py_files = list(dir_path.glob("*.py"))
 
         if not py_files:
-            return self.archives_root / "uncategorized"
+            uncat = self.archives_root / "uncategorized"
+            uncat.mkdir(exist_ok=True)
+            return uncat
 
-        # Analyze the primary script in the directory for context
-        try:
-            content = py_files[0].read_text(encoding="utf-8")
-            tree = ast.parse(content)
-            
-            imports: Set[str] = set()
-            classes: Set[str] = set()
-            
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Import):
-                    for alias in node.names:
-                        imports.add(alias.name.split(".")[0])
-                elif isinstance(node, ast.ImportFrom) and node.module:
-                    imports.add(node.module.split(".")[0])
-                elif isinstance(node, ast.ClassDef):
-                    classes.add(node.name)
+        # Aggregate signals from all .py files in current territory
+        all_classes = set()
+        all_functions = set()
+        all_imports = set()
+        content_preview = ""
 
-            best_match = ""
-            # Cross-reference symbols with the SSOT Folder Map
-            for key_patterns in CANON_KEY_TO_FOLDER_MAP.values():
-                for pattern in key_patterns:
-                    if pattern == "*": continue
-                    # Dot-notation match for imports (e.g., L1_cognition)
-                    dot_pattern = pattern.replace("/", ".")
-                    if any(imp.startswith(dot_pattern) for imp in imports) or \
-                       any(cls.lower() in pattern.lower() for cls in classes):
-                        best_match = pattern # Keyed to blueprint path
+        for py_file in py_files:
+            try:
+                content = py_file.read_text(encoding="utf-8")
+                content_preview += content[:3000]  # Limit per file to avoid OOM
+                tree = ast.parse(content)
 
-            if best_match:
-                target_sub = self.archives_root / best_match
-                target_sub.mkdir(parents=True, exist_ok=True)
-                return target_sub
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef):
+                        all_classes.add(node.name)
+                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        all_functions.add(node.name)
+                    elif isinstance(node, ast.Import):
+                        for alias in node.names:
+                            root = alias.name.split(".")[0]
+                            all_imports.add(root)
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        root = node.module.split(".")[0]
+                        all_imports.add(root)
+            except Exception:
+                continue
 
-        except Exception as e:
-            logger.debug(f"[FileSystemAgent] AST contextualization failed: {e}")
+        # PRIORITY 1: Strong class/function symbols
+        strong_symbols = all_classes.union(all_functions)
+        symbol_signals = {
+            "orchestrator": "agentic_core/L3_orchestration",
+            "engine": "agentic_core/L3_orchestration",
+            "workflow": "agentic_core/L3_orchestration",
+            "strategy": "agentic_core/L1_cognition",
+            "reasoning": "agentic_core/L1_cognition",
+            "memory": "agentic_core/L4_state",
+            "state": "agentic_core/L4_state",
+            "validator": "agentic_core/L5_safety",
+            "guardrail": "agentic_core/L5_safety",
+            "prompt": "agentic_core/prompt_governance",
+            "template": "agentic_core/prompt_governance",
+            "schema": "agentic_core/schemas",
+        }
 
-        # Explicit fallback to maintain structured purity
-        return self.archives_root / "uncategorized"
+        for symbol in strong_symbols:
+            lower_symbol = symbol.lower()
+            for keyword, path in symbol_signals.items():
+                if keyword in lower_symbol:
+                    subpath = self.archives_root / path
+                    subpath.mkdir(parents=True, exist_ok=True)
+                    return subpath
+
+        # PRIORITY 2: Import-based territory signals
+        import_signals = {
+            "L3_orchestration": "agentic_core/L3_orchestration",
+            "L1_cognition": "agentic_core/L1_cognition",
+            "L4_state": "agentic_core/L4_state",
+            "L5_safety": "agentic_core/L5_safety",
+            "prompt_governance": "agentic_core/prompt_governance",
+            "schemas": "agentic_core/schemas",
+        }
+
+        for imp in all_imports:
+            for key, path in import_signals.items():
+                if key.lower() in imp.lower():
+                    subpath = self.archives_root / path
+                    subpath.mkdir(parents=True, exist_ok=True)
+                    return subpath
+
+        # PRIORITY 3: Keyword fallback using NamingAgent guidance
+        if content_preview:
+            try:
+                from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
+                naming = NamingAgent(self.project_root)
+                guidance = naming.get_placement_guidance(content_preview)
+                if "/" in guidance:
+                    subpath = self.archives_root / guidance
+                    subpath.mkdir(parents=True, exist_ok=True)
+                    return subpath
+            except Exception as e:
+                logger.debug(f"[FileSystemAgent] NamingAgent guidance failed: {e}")
+
+        # FINAL FALLBACK: Uncategorized purge
+        uncat = self.archives_root / "uncategorized"
+        uncat.mkdir(exist_ok=True)
+        return uncat
 
     def _backup_file(self, file_path: Path) -> Path:
         """
