@@ -48,7 +48,8 @@ class red_team_result:
     severity: Optional[str]
     recommendation: str
 
-class adversarial_red_teamer(SubAtomicAgent):
+# NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
+class AdversarialRedTeamerAgent(SubAtomicAgent):
     """
     The Skeptic - Adversarial Red Team Agent
 

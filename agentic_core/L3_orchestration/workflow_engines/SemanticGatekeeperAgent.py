@@ -11,7 +11,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
-class semantic_gatekeeper:
+# NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
+class SemanticGatekeeperAgent:
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """

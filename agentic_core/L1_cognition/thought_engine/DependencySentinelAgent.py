@@ -61,7 +61,8 @@ class dependency_violation:
         """Convert to dictionary."""
         return {'type': self.type, 'file': str(self.file_path), 'line': self.line, 'message': self.message, 'details': self.details}
 
-class dependency_sentinel:
+# NAMING CANON COMPLIANCE — renamed to DependencySentinelAgent for discovery and sovereignty — 2025-12-30
+class DependencySentinelAgent:
     """
     Guards the codebase against illegal dependencies.
 

@@ -1403,6 +1403,7 @@ class executive_profile:
 
 @dataclass
 # NAMING FIXED: FinancialMetric → financial_metric
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class financial_metric:
     """Financial metric with validation."""
     metric_name: str
@@ -1417,6 +1418,7 @@ class financial_metric:
 
 @dataclass
 # NAMING FIXED: TechnicalImplementation → technical_implementation
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class technical_implementation:
     """Technical implementation details with validation."""
     technology_name: str
@@ -1430,6 +1432,7 @@ class technical_implementation:
 
 @dataclass
 # NAMING FIXED: StrategicLayer → strategic_layer
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class strategic_layer:
     """Strategic research layer."""
     core_thesis: str
@@ -1446,6 +1449,7 @@ class strategic_layer:
 
 @dataclass
 # NAMING FIXED: TechnicalLayer → technical_layer
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class technical_layer:
     """Technical research layer."""
     key_technologies: List[TechnicalImplementation] = field(default_factory=list)
@@ -1460,6 +1464,7 @@ class technical_layer:
 
 @dataclass
 # NAMING FIXED: LeadershipLayer → leadership_layer
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class leadership_layer:
     """Leadership research layer."""
     key_executives: List[ExecutiveProfile] = field(default_factory=list)
@@ -1473,6 +1478,7 @@ class leadership_layer:
 
 @dataclass
 # NAMING FIXED: CitationMap → citation_map
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class citation_map:
     """Citation tracking for research sources."""
     citations: Dict[str, str] = field(default_factory=dict)
@@ -1491,6 +1497,7 @@ class citation_map:
 
 @dataclass
 # NAMING FIXED: DeepResearchOutput → deep_research_output
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class deep_research_output:
     """Output data structure for K.2.5 deep research results."""
     company_name: str
@@ -1782,6 +1789,7 @@ CORE_CONTRACTS_REGISTRY.update({
 
 @dataclass
 # NAMING FIXED: WordCountConstraint → word_count_constraint
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class word_count_constraint:
     """Word count constraint for a section."""
     min_words: int
@@ -1798,6 +1806,7 @@ class word_count_constraint:
 
 @dataclass
 # NAMING FIXED: CharCountConstraint → char_count_constraint
+# NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
 class char_count_constraint:
     """Character count constraint for a section."""
     max_chars: int

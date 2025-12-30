@@ -202,7 +202,8 @@ class dependency_graph:
             LOGGER.info(f'Graph visualization saved to {output_file}')
         return dot_str
 
-class architecture_governor:
+# NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
+class GovernanceAgent:
     """
     Enforces architectural governance laws and constraints.
 
