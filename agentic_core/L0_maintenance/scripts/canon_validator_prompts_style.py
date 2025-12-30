@@ -1,3 +1,4 @@
+from typing import Any
 """
 Code style and hygiene few-shot patterns.
 Used by CodeStyleGuardian, HygieneGuardian.

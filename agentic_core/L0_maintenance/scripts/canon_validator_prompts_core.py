@@ -1,3 +1,4 @@
+from typing import Any
 """
 Core instructional context and global few-shot patterns.
 Foundation prompts used across all agents.

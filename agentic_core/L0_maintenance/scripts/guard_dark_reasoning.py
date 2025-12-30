@@ -8,7 +8,7 @@ operations that don't leave an L6 observability footprint.
 import ast
 import sys
 from pathlib import Path
-from typing import List, Dict
+from typing import Any, List, Dict
 reasoning_signals: Any = {'think', 'plan', 'reason', 'decide', 'analyze', 'generate', 'synthesize'}
 observability_signals: Any = {'logger.', 'logging.', 'self.logger.', 'trace(', 'metric('}
 

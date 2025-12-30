@@ -4,7 +4,7 @@ Scans for files that exist outside the CANON_KEY_TO_FOLDER_MAP.
 Exempts root protected files and __init__.py glue files.
 """
 from pathlib import Path
-from typing import List, Set
+from typing import Any, List, Set
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES
 
 class drift_detector_agent:

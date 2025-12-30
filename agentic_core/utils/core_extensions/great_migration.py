@@ -9,6 +9,7 @@ import os
 import shutil
 from pathlib import Path
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from typing import Any
 # [PHASE 20] DEPRECATION: void_compliance.py removed
 def get_placement_guidance(content_preview):
     if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):

@@ -8,6 +8,7 @@ Audits the codebase for compliance with the Three Laws:
 """
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 folders: Any = ['apps_rg', 'apps_lic', 'apps_shared', 'agentic_core', 'schemas', 'prompt_governance', 'observability', 'config', 'scripts']
 
 def count_lines(filepath: Any) -> Any:

@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from modulefinder import ModuleFinder
+from typing import Any
 
 def get_active_files(entry_points: Any, root_dir: Any) -> Any:
     """

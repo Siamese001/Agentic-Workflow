@@ -4,7 +4,7 @@ Enforces Bounded Contexts and Aggregate Root access.
 """
 import ast
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, List, Tuple
 from agentic_core.L1_cognition.P2_domain.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

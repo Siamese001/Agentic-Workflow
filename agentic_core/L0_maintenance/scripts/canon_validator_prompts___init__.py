@@ -12,6 +12,7 @@ from agentic_core.testing import FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_TESTPILOT
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

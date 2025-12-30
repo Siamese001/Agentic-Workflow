@@ -4,7 +4,7 @@ Uses OpenAI text-embedding-3-large (SOTA as of Dec 2025).
 Configurable dimensions for Pinecone cost/accuracy trade-off.
 SSOT for all embedding calls in the agentic core.
 """
-from typing import List
+from typing import Any, List
 import openai
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 

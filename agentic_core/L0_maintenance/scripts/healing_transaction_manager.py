@@ -7,7 +7,7 @@ Phase 10B: Transactional Healing (Dec 26, 2025)
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import Any, List, Tuple, Optional
 import logging
 logger: Any = logging.getLogger(__name__)
 

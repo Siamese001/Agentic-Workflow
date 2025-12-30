@@ -8,7 +8,7 @@ import os
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 def add_parents(node: Any, parent: Any=None) -> Any:
     """Add parent reference to all AST nodes for upward traversal."""

@@ -2,7 +2,7 @@ from pinecone import Pinecone, ServerlessSpec
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import List, Optional
+from typing import Any, List, Optional
 import os
 
 class pinecone_vector_store:

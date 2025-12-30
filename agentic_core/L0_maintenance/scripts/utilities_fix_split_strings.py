@@ -5,6 +5,7 @@ split across lines without proper line continuation.
 """
 import sys
 from pathlib import Path
+from typing import Any
 
 def fix_split_strings_in_file(filepath: Any) -> Any:
     """Fix split string literals in a single file."""

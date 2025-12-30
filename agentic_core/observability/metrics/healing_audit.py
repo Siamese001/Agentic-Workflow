@@ -7,7 +7,7 @@ Phase 10B: Transactional Healing with L6 Audit Trail (Dec 26, 2025)
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 healing_log: Any = Path('agentic_core/L6_observability/logs/healing_audit.jsonl')
 
 def log_healing_action(action: str, fix: Dict, success: bool, error: Optional[str]=None) -> None:

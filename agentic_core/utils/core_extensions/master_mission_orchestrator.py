@@ -14,6 +14,7 @@ project_root: Any = Path(__file__).resolve().parent
 sys.path.insert(0, str(project_root))
 load_dotenv(dotenv_path=project_root / '.env', override=True)
 from canon_validator_agentic_v2 import run_mission
+from typing import Any
 
 async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
     """Brief description of functionality and purpose."""

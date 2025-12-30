@@ -4,6 +4,7 @@ import os
 'Brief description of functionality and purpose.'
 import re
 from pathlib import Path
+from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 rewire_rules: Any = [('from agentic_core\\.utils import', 'from agentic_core.utils.P1_core import'), ('from agentic_core\\.memory import', 'from agentic_core.memory.P1_core import')]

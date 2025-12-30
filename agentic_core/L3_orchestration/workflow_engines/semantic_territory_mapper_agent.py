@@ -6,7 +6,7 @@ This agent replaces mock logic with actual SubAtomicEngine integration.
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import redis
 from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY

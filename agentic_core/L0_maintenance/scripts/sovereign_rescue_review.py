@@ -6,7 +6,7 @@ import hashlib
 import json
 import argparse
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
 

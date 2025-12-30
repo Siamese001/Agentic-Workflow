@@ -3,6 +3,7 @@ Trim heavy airlock __init__.py files to meet 50-line limit.
 Condenses verbose __all__ lists and removes blank lines.
 """
 from pathlib import Path
+from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 

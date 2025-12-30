@@ -3,6 +3,7 @@ Fix all Unicode emojis in Python files to ASCII equivalents.
 Prevents Windows encoding issues.
 """
 from pathlib import Path
+from typing import Any
 emoji_map: Any = {'✅': '[OK]', '⚠️': '[!]', '🔧': '[+]', '🔄': '[~]', '🆕': '[NEW]', '♻️': '[REUSE]', '🚨': '[ALERT]', '🚫': '[X]', '❌': '[X]', '🧹': '[CLEAN]', '🏛️': '[ARCH]', '💾': '[SAVE]', '🔍': '[SCAN]', '📊': '[STATS]', '📂': '[DIR]', '📋': '[PLAN]', '🚀': '[START]', '🌱': '[GIT]', '🧬': '[CYCLE]'}
 
 def fix_emojis_in_file(file_path: str) -> bool:

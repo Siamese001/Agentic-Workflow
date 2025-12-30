@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 import sys
 import tomllib
 from pathlib import Path
+from typing import Any
 pyproject: Any = Path('pyproject.toml')
 data: Any = tomllib.loads(PYPROJECT.read_text())
 paths: Any = DATA.setdefault('tool', {}).setdefault('ruff', {}).setdefault('extend-include', [])

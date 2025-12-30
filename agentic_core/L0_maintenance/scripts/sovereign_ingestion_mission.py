@@ -6,7 +6,7 @@ import asyncio
 import hashlib
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 async def load_text_file(file_path: Path) -> str:
     """Load text from supported files with encoding fallback"""

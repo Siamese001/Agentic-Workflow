@@ -6,7 +6,7 @@ import os
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict
 import redis
 
 class neural_auto_immune_agent:

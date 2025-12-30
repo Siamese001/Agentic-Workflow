@@ -4,7 +4,7 @@ Centralizes all environment variables, feature flags, and system constants.
 """
 import os
 from dataclasses import dataclass
-from typing import Optional, Dict, List
+from typing import Any, Optional, Dict, List
 
 @dataclass(frozen=True)
 class sovereign_config:

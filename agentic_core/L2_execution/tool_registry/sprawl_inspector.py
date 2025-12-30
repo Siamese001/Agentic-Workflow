@@ -7,6 +7,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 class sprawl_inspector:
     """Brief description of functionality and purpose."""

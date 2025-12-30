@@ -2,7 +2,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Set
+from typing import Any, Set
 sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
 
 def get_existing_files() -> Set[str]:

@@ -8,7 +8,7 @@ import ast
 import os
 from pathlib import Path
 from typing import List, Dict, Tuple, Any, Set
-from agentic_core.agents.base_agent import BaseAgent
+from agentic_core.L1_cognition.thought_engine.canon_base_agent import sub_atomic_agent as BaseAgent
 
 class LayerCapabilityAgent(BaseAgent):
     """

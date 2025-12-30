@@ -4,6 +4,7 @@ import os
 'Brief description of functionality and purpose.'
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
+from typing import Any
 load_dotenv()
 api_key: Any = os.getenv('PINECONE_API_KEY')
 pc: Any = Pinecone(api_key=api_key)

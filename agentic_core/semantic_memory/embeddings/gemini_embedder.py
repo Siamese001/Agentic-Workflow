@@ -2,7 +2,7 @@ import google.generativeai as genai
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-from typing import List
+from typing import Any, List
 import os
 
 class gemini_embedder:

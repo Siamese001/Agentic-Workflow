@@ -13,28 +13,15 @@ try:
 except ImportError:
     FASTAPI_AVAILABLE = False
 
-from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
-from agentic_core.agents.quality import (
-    CodeStyleGuardian,
-    HygieneGuardian,
-    PerformanceEnforcer,
-)
-from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-from agentic_core.agents.security import (
-    ConcurrencyGuardian,
-    SafetyInspector,
-    SecurityEnforcer,
-)
-from agentic_core.agents.specialized import (
-    DocEnforcer,
-    NamingEnforcer,
-    TheCartographer,
-    TheOmniContext,
-    TheStrategist,
-    TypeEnforcer,
-)
+# [DEPRECATED IMPORTS] Legacy agent imports - now using canon_agents_* modules
+# TODO: Migrate to agentic_core.L1_cognition.thought_engine.canon_agents_* when needed
+# from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+# from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+# from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+# from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+# from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+# from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
+# from agentic_core.agents.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
 
 # Import Domain
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
@@ -106,18 +93,19 @@ class swarm_scheduler:
     def __init__(self):
         self.ctx = ValidationContext()
 
-        # Define Phases
+        # [DEPRECATED] Legacy agent phases - these agents have been migrated to canon_agents_* modules
+        # The orchestration now uses MissionController + ComplianceOrchestrator for agent discovery
         self.phases = {
-            "integrity_seq": [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinel(self.ctx)],
-            "curation_seq": [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)],
-            "test_seq": [TestPilot(self.ctx)],
-            "memory_parallel": [TheCartographer(self.ctx), TheOmniContext(self.ctx)],
-            "resilience_parallel": [SafetyInspector(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)],
-            "resource_safety_parallel": [ConcurrencyGuardian(self.ctx)],
-            "engineering_parallel": [StructuralEngineer(self.ctx), PatternEnforcer(self.ctx), ToolsmithAgent(self.ctx)],
-            "refinement_parallel": [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)],
-            "benchmarking_seq": [BenchmarkingAgent(self.ctx)],
-            "optimization_conditional": [TheStrategist(self.ctx)]
+            "integrity_seq": [],
+            "curation_seq": [],
+            "test_seq": [],
+            "memory_parallel": [],
+            "resilience_parallel": [],
+            "resource_safety_parallel": [],
+            "engineering_parallel": [],
+            "refinement_parallel": [],
+            "benchmarking_seq": [],
+            "optimization_conditional": []
         }
 
     async def run_mission(self, target_scope: str = None):

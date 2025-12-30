@@ -6,6 +6,7 @@ import os
 import shutil
 from pathlib import Path
 from datetime import datetime
+from typing import Any
 target_root: Any = 'agentic_core'
 legacy_folders: Any = ['P1_core', 'P2_tools', 'P3_engines', 'P4_agents', 'P5_healing', 'P1_domain', 'P1_interfaces', 'P2_domain', 'P3_aggregation', 'P5_meta', 'boundaries', 'discovery', 'identity', 'inference', 'planning', 'planning_logic', 'mcp', 'sandbox', 'tools', 'event_bus', 'framework', 'handoff_logic', 'health', 'P5_workflow', 'protocol', 'security', 'training', 'automation', 'migrations', 'cache', 'checkpoints', 'filesystem', 'memory', 'persistence_layer', 'S1_store', 'semantic', 'session_manager', 'vector', 'P1_red_team', 'P4_security', 'audit_logs', 'gravity', 'policy', 'validators']
 

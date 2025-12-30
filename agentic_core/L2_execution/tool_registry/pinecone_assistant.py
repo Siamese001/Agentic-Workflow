@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
+from typing import Any
 index_name: Any = 'canon-memory-l2'
 index_dimension: Any = 768
 index_metric: Any = 'cosine'

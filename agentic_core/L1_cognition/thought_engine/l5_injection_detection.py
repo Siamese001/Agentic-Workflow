@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 """
 import pytest
+from typing import Any
 
 class test_injection_detector:
     """Test cases for injection detection patterns."""

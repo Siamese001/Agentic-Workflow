@@ -3,6 +3,7 @@ Canon Validator Configuration
 Defines exclusion zones and constants for validation.
 """
 import os
+from typing import Any
 excluded_dirs: Any = {'.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache', 'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs', 'archives', 'data'}
 excluded_files: Any = {'canon_validator.py', 'canon_validator_backup.py', 'canon_validator_v2_agentic.py', 'auto_canon.py', '.DS_Store'}
 max_healing_per_file: Any = int(os.getenv('MAX_HEALING_PER_FILE', '8'))

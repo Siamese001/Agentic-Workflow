@@ -4,6 +4,7 @@ Creates all missing directories to enforce the 3-level depth law.
 """
 import os
 from agentic_core.config.blueprint_sovereign.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
+from typing import Any
 
 def finalize_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
