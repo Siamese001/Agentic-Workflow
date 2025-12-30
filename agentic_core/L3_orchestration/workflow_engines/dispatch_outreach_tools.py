@@ -3,6 +3,9 @@ dispatch_outreach_tools.py - Execution Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.137995
+
+# DEDUPLICATED — absorbed logic from InvokeGenerationServiceAgent, InvokeMessageServiceAgent
+# — redundancy eliminated — 2025-12-30
 """
 import logging
 import time
