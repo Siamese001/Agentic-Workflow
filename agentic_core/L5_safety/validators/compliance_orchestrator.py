@@ -1,6 +1,6 @@
 # compliance_orchestrator.py
 # L5 Sovereign Compliance Orchestrator - ULTRA HARDENED EDITION
-# VERSION: 3.0 Sovereign Hardened (December 29, 2025)
+# VERSION: 3.1 ULTRA Sovereign Hardened (December 30, 2025)
 # ULTRA HARDENING FEATURES:
 #   • Fail-closed discovery with mandatory agent enforcement
 #   • Layer-specific gravity authority mapping
@@ -13,6 +13,12 @@
 #        - Async capability enforcement for atomic healers
 #        - No direct higher-layer imports (gravity check)
 #        - Sub-atomic size compliance (≤800 LOC)
+#   • ULTRA 3.1 ADDITIONS:
+#        - Strict PascalCase "Agent" suffix enforcement (deprecates snake_case _agent)
+#        - O(1) class-object deduplication across all import paths
+#        - Immediate abstract base class rejection
+#        - Full purge of validation-rejected agents from all tracking structures
+#        - Sovereign diagnostics: exact counts for duplicates, ABCs, rejections
 
 import importlib
 import inspect
@@ -57,7 +63,12 @@ class ComplianceOrchestrator:
         # [ULTRA HARDENING] Track seen concrete classes for O(1) deduplication and performance
         self._seen_classes: Set[type] = set()
 
-        # [ULTRA HARDENING] Mandatory agent registry (SSOT) - snake_case to match actual class names
+        # [ULTRA 3.1] Sovereign counters for post-mortem clarity
+        self._rejected_count = 0
+        self._abstract_skipped_count = 0
+        self._duplicate_skipped_count = 0
+
+        # [ULTRA HARDENING] Mandatory agent registry (SSOT) - snake_case to match actual naming
         self.MANDATORY_AGENTS: Set[str] = {
             "bootstrap_agent", "location_agent", "hierarchy_agent", "import_agent",
             "naming_agent", "tracing_agent", "metrics_agent",
@@ -138,6 +149,12 @@ class ComplianceOrchestrator:
         print(f"      After deduplication + abstract filtering: {unique_classes} unique concrete classes")
         print(f"      Currently in registry (_all_agents): {raw_instantiations} (pre-validation)")
         
+        # [ULTRA 3.1] Sovereign post-discovery audit
+        print(f"      [SOVEREIGN AUDIT]")
+        print(f"        Abstract bases skipped: {self._abstract_skipped_count}")
+        print(f"        Duplicate imports collapsed: {self._duplicate_skipped_count}")
+        print(f"        Agents rejected by strict validation: {self._rejected_count}")
+        
         # Verify MANDATORY agents were loaded (case-insensitive comparison)
         loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
         mandatory_lower = {name.lower() for name in self.MANDATORY_AGENTS}
@@ -154,9 +171,12 @@ class ComplianceOrchestrator:
         final_healthy = len(self._all_agents)
         print(f"      [SOVEREIGN REGISTRY] Final healthy agents: {final_healthy}")
         print(f"      -> Expected gap from {len(agent_files)} files due to:")
-        print(f"        - Abstract bases excluded (CanonBaseAgent, SubAtomicAgent, etc.)")
-        print(f"        - Duplicate imports collapsed to single instance")
-        print(f"        - Failed strict validation -> removed")
+        print(f"        - Abstract bases skipped: {self._abstract_skipped_count}")
+        print(f"        - Duplicate imports collapsed: {self._duplicate_skipped_count}")
+        print(f"        - Strict validation rejections: {self._rejected_count}")
+
+        if self._duplicate_skipped_count == 0 and self._abstract_skipped_count == 0 and self._rejected_count == 0:
+            print(f"      [ETERNAL PURITY] Zero noise — registry is maximally sovereign")
         
         if missing_mandatory:
             print(f"   [!] Missing mandatory agents: {', '.join(sorted(missing_mandatory)[:5])}")
@@ -199,22 +219,33 @@ class ComplianceOrchestrator:
             
             for attr_name in dir(module):
                 # Look for classes ending in Agent (PascalCase) OR _agent (snake_case)
-                is_agent_class = attr_name.endswith("Agent") or attr_name.endswith("_agent")
-                if not is_agent_class:
+                # [ULTRA 3.1] CANON ENFORCEMENT: Strict PascalCase "Agent" suffix only
+                # Legacy snake_case _agent tolerated temporarily but logged for cleanup
+                if attr_name.endswith("Agent"):
+                    pass  # Canon-compliant
+                elif attr_name.endswith("_agent"):
+                    # Check if this is a mandatory agent - allow temporarily
+                    if attr_name in [name.lower() for name in self.MANDATORY_AGENTS]:
+                        print(f"      [!] MANDATORY LEGACY: {attr_name} uses deprecated snake_case — rename to {attr_name.rsplit('_', 1)[0]}Agent")
+                    else:
+                        print(f"      [!] LEGACY NAMING: {attr_name} uses deprecated snake_case — rename to {attr_name.rsplit('_', 1)[0]}Agent")
+                        continue  # STRICT REJECTION — force migration to PascalCase
+                else:
                     continue
                 
                 attr = getattr(module, attr_name)
                 if not inspect.isclass(attr):
                     continue
                 
-                # [ULTRA HARDENING] Explicitly reject abstract base classes — they must never execute
+                # [ULTRA HARDENING] Immediate rejection of abstract base classes
                 if inspect.isabstract(attr):
-                    # Known ABCs: CanonBaseAgent, SubAtomicAgent, mock_canon_base_agent, etc.
+                    self._abstract_skipped_count += 1
                     continue
                 
                 # Skip if already discovered (case-insensitive)
                 # [HARDENING] Deduplicate by actual class object (handles multi-module imports/re-exports)
                 if attr in self._seen_classes:
+                    self._duplicate_skipped_count += 1
                     continue
                 
                 # Try to instantiate with various signatures
@@ -425,6 +456,7 @@ class ComplianceOrchestrator:
                         # [CONSISTENCY] Ensure rejected agents are fully purged from master registry
                         if instance in self._all_agents:
                             self._all_agents.remove(instance)
+                        self._rejected_count += 1
                         if instance in self._atomic_validators:
                             self._atomic_validators.remove(instance)
                         if instance in self._batch_validators:
