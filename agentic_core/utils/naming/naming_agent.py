@@ -197,12 +197,16 @@ class naming_agent:
 
         return True, f"Naming compliant with high-signal requirement [Score {score}/20]"
 
-    def run(self, files: List[Path]) -> List[Tuple[Path, str]]:
+    def run(self, files: List[Path] = None) -> List[Tuple[Path, str]]:
         """
         Full naming compliance scan on provided files.
         Returns list of violations as (file_path, reason).
         """
         violations: List[Tuple[Path, str]] = []
+
+        if files is None:
+            # If no files provided, scan project root for Python files
+            files = list(self.project_root.rglob("*.py"))
 
         for file_path in files:
             is_valid, reason = self.validate_file_naming(file_path)
