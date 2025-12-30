@@ -125,4 +125,6 @@ class sovereign_config:
             errors.append('CRITICAL: OPENAI_API_KEY is missing.')
         if errors:
             raise ValueError('\n'.join(errors))
-config: Any = SovereignConfig()
+# Alias for backward compatibility
+SovereignConfig = sovereign_config
+config: Any = sovereign_config()
