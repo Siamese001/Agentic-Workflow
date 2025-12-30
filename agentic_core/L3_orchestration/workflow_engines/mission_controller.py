@@ -136,6 +136,15 @@ class MissionController:
         except ImportError:
             ctx = self._create_fallback_context()
         
+        # [FULL AGENT DISCOVERY] Initialize orchestrator with ALL agents from ALL layers
+        try:
+            from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator
+            self._orchestrator = compliance_orchestrator(self.project_root)
+            print(f"   [OK] Orchestrator armed with {len(self._orchestrator.get_all_agents())} agents")
+        except Exception as e:
+            print(f"   [!] Orchestrator init failed: {e}")
+            self._orchestrator = None
+        
         # Harden attributes
         if not hasattr(ctx, 'results'):
             ctx.results = {}
