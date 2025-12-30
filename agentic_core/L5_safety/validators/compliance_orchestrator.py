@@ -54,6 +54,9 @@ class ComplianceOrchestrator:
         self._monitors: List[Any] = []            # Global single-pass monitors
         self._all_agents: List[Any] = []
 
+        # [ULTRA HARDENING] Track seen concrete classes for O(1) deduplication and performance
+        self._seen_classes: Set[type] = set()
+
         # [ULTRA HARDENING] Mandatory agent registry (SSOT) - snake_case to match actual class names
         self.MANDATORY_AGENTS: Set[str] = {
             "bootstrap_agent", "location_agent", "hierarchy_agent", "import_agent",
@@ -125,6 +128,15 @@ class ComplianceOrchestrator:
         for agent_file in agent_files:
             discovered_in_file = self._discover_agents_in_file(agent_file)
             total_discovered += discovered_in_file
+
+        # [SOVEREIGN CLARITY] Final diagnostics after raw discovery
+        unique_classes = len(self._seen_classes)
+        raw_instantiations = len(self._all_agents)
+        print(f"   [OK] RAW DISCOVERY PHASE COMPLETE")
+        print(f"      Physical *agent*.py files scanned: {len(agent_files)}")
+        print(f"      Raw instantiations attempted: {total_discovered}")
+        print(f"      After deduplication + abstract filtering: {unique_classes} unique concrete classes")
+        print(f"      Currently in registry (_all_agents): {raw_instantiations} (pre-validation)")
         
         # Verify MANDATORY agents were loaded (case-insensitive comparison)
         loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
@@ -138,12 +150,20 @@ class ComplianceOrchestrator:
         print(f"      Monitors: {len(self._monitors)}")
         print(f"      Mandatory loaded: {len(loaded_mandatory)}/{len(self.MANDATORY_AGENTS)}")
         
+        # [ULTRA CLARITY] Final sovereign registry state
+        final_healthy = len(self._all_agents)
+        print(f"      [SOVEREIGN REGISTRY] Final healthy agents: {final_healthy}")
+        print(f"      -> Expected gap from {len(agent_files)} files due to:")
+        print(f"        - Abstract bases excluded (CanonBaseAgent, SubAtomicAgent, etc.)")
+        print(f"        - Duplicate imports collapsed to single instance")
+        print(f"        - Failed strict validation -> removed")
+        
         if missing_mandatory:
             print(f"   [!] Missing mandatory agents: {', '.join(sorted(missing_mandatory)[:5])}")
 
     def _enforce_mandatory_agent_compliance(self) -> None:
         """[ULTRA HARDENING] Final sovereign verdict on mandatory agent presence"""
-        # Normalize loaded names to lowercase for comparison
+        # Use final healthy agents after validation cleanup
         loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
         mandatory_lower = {name.lower() for name in self.MANDATORY_AGENTS}
         missing_lower = mandatory_lower - loaded_names_lower
@@ -187,8 +207,14 @@ class ComplianceOrchestrator:
                 if not inspect.isclass(attr):
                     continue
                 
+                # [ULTRA HARDENING] Explicitly reject abstract base classes — they must never execute
+                if inspect.isabstract(attr):
+                    # Known ABCs: CanonBaseAgent, SubAtomicAgent, mock_canon_base_agent, etc.
+                    continue
+                
                 # Skip if already discovered (case-insensitive)
-                if any(type(a).__name__.lower() == attr_name.lower() for a in self._all_agents):
+                # [HARDENING] Deduplicate by actual class object (handles multi-module imports/re-exports)
+                if attr in self._seen_classes:
                     continue
                 
                 # Try to instantiate with various signatures
@@ -211,6 +237,7 @@ class ComplianceOrchestrator:
                     continue
                 
                 self._all_agents.append(instance)
+                self._seen_classes.add(attr)  # Mark as seen only after successful instantiation
                 discovered += 1
                 
                 # Categorize based on capabilities
@@ -395,16 +422,17 @@ class ComplianceOrchestrator:
                         extra_count = len(validation_errors) - 1
                         extra = f" (+{extra_count} more)" if extra_count > 0 else ""
                         print(f"         [!] REJECTED {attr_name}: {primary_error}{extra}")
-                        # Remove from _all_agents if already appended
+                        # [CONSISTENCY] Ensure rejected agents are fully purged from master registry
                         if instance in self._all_agents:
                             self._all_agents.remove(instance)
-                        # Remove from categorized lists
                         if instance in self._atomic_validators:
                             self._atomic_validators.remove(instance)
                         if instance in self._batch_validators:
                             self._batch_validators.remove(instance)
                         if instance in self._monitors:
                             self._monitors.remove(instance)
+                        # Remove from seen set to allow potential re-instantiation if logic changes
+                        self._seen_classes.discard(attr)
                         continue  # Skip to next agent
 
                     print(f"         [VALIDATED] {attr_name} passed STRICT sovereign checks")
