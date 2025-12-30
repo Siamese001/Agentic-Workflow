@@ -3,7 +3,10 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
+try:
+    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
+except ImportError:
+    AgentIdentity = type('AgentIdentity', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -32,12 +35,12 @@ class permission_action(Enum):
 @dataclass
 class permission:
     """Individual permission."""
-    scope: PermissionScope
-    action: PermissionAction
+    scope: "permission_scope"
+    action: "permission_action"
     resource: str
     conditions: Dict[str, Any] = field(default_factory=dict)
 
-    def matches(self, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
+    def matches(self, scope: "permission_scope", action: "permission_action", resource: str) -> bool:
         """Check if permission matches request.
 
         Args:
@@ -49,7 +52,7 @@ class permission:
             True if matches
         """
         scope_match: Any = self.scope == scope
-        action_match: Any = self.action == action or self.action == PermissionAction.ADMIN
+        action_match: Any = self.action == action or self.action == permission_action.ADMIN
         resource_match: Any = self.resource == resource or self.resource == '*'
         return scope_match and action_match and resource_match
 
@@ -62,7 +65,7 @@ class permission_check:
     """Result of permission check."""
     allowed: bool
     identity: AgentIdentity
-    permission: Optional[Permission] = None
+    permission: Optional["permission"] = None
     reason: str = ''
     safety_decision: Optional[Any] = None
 

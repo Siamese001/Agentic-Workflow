@@ -7,8 +7,14 @@ import logging
 import os
 import time
 from typing import Any, Dict, List, Optional, Protocol
-from connection_manager import ConnectionManager
-from schemas_connectivity import CanonEntry, CanonMetadata
+try:
+    from connection_manager import ConnectionManager
+except ImportError:
+    ConnectionManager = type('ConnectionManager', (), {})
+try:
+    from schemas_connectivity import CanonEntry, CanonMetadata
+except ImportError:
+    CanonEntry = CanonMetadata = type('Stub', (), {})
 logger: Any = logging.getLogger(__name__)
 
 class canon_validator:

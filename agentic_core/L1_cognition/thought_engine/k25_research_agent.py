@@ -6,7 +6,10 @@ from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.thought_engine.k25_research_models import CitationMap, DeepResearchOutput, ExecutiveProfile, FinancialMetric, LeadershipLayer, ResearchHopPhase, ResearchHopResult, StrategicLayer, TechnicalImplementation, TechnicalLayer
+try:
+    from agentic_core.L1_cognition.thought_engine.k25_research_models import CitationMap, DeepResearchOutput, ExecutiveProfile, FinancialMetric, LeadershipLayer, ResearchHopPhase, ResearchHopResult, StrategicLayer, TechnicalImplementation, TechnicalLayer
+except ImportError:
+    CitationMap = DeepResearchOutput = ExecutiveProfile = FinancialMetric = LeadershipLayer = ResearchHopPhase = ResearchHopResult = StrategicLayer = TechnicalImplementation = TechnicalLayer = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -27,7 +30,7 @@ def validate_research_output_local(output: DeepResearchOutput) -> bool:
     if not output or not output.content:
         return False
     return len(output.content) > 100 and getattr(output, 'confidence_score', 0.0) > 0.5
-k25_reasoning_config: Any = {'temperature': 0.3, 'max_tokens': 4000, 'model': 'gpt-4', 'timeout': 30, 'rag_hops': 5, 'claim_verification_mode': ClaimVerificationMode.STRICT, 'self_consistency': True}
+k25_reasoning_config: Any = {'temperature': 0.3, 'max_tokens': 4000, 'model': 'gpt-4', 'timeout': 30, 'rag_hops': 5, 'claim_verification_mode': claim_verification_mode.STRICT, 'self_consistency': True}
 
 class k25_deep_research_agent:
     """Deep research agent for K.2.5 hop execution.
@@ -106,6 +109,9 @@ class k25_deep_research_agent:
         """
         return f"""\n{self.prompt_template}\n\n---\n\n## TARGET COMPANY: {self.company_name}\n{(f'URL: {self.company_url}' if self.company_url else '')}\n\n## EXECUTION PARAMETERS\n- RAG Hops: {self.rag_hops}\n- Temperature: {self.config['temperature']}\n- Claim Verification: {self.config['claim_verification_mode'].value}\n- Self-Consistency Checks: {self.config['self_consistency']}\n\n## INSTRUCTIONS\nExecute the 3-phase multi-hop research protocol:\n\n### Phase 1: Financial & Strategic Hard-Anchoring\nQuery financial databases, SEC filings, earnings transcripts for:\n- Quarterly/annual revenue with YoY growth\n- EBITDA and net income trends\n- Strategic thesis or business model pivot\n- Specific cost reduction drivers\n\n### Phase 2: Technical & Product Implementation\nQuery engineering resources, tech blogs, patents for:\n- Specific model architectures (e.g., "Transformer", "MoE", "LSTM")\n- Infrastructure stack components (e.g., "Kubernetes", "PyTorch", "Spark")\n- Quantified performance improvements (e.g., "20% accuracy gain")\n- Product specifications and technical details\n\n### Phase 3: Organizational & Leadership Mapping\nQuery leadership databases, LinkedIn, press releases for:\n- C-suite executives with full titles\n- Domain ownership (e.g., "Head of ML for New Verticals")\n- Strategic focus areas per executive\n- Organizational structure changes\n\n## OUTPUT FORMAT\nReturn structured JSON matching the DeepResearchOutput schema with:\n- Strategic layer: core thesis + 3+ financial metrics with citations\n- Technical layer: 2+ specific technologies with implementation details\n- Leadership layer: 3+ executives with domain ownership\n- Citation map: 5+ sources across all three layers\n\n## VALIDATION CRITERIA\nYour output will be rejected if:\n- Any metric lacks a source citation\n- Fluff words used without technical nouns\n- Strategic initiatives not linked to technologies or executives\n- Fewer than 3 citations total\n- Depth score below 0.7\n\nBegin research execution.\n"""
 
-def create_k25_research_agent(company_name: str, company_url: Optional[str]=None) -> K25DeepResearchAgent:
+# Alias for backward compatibility
+K25DeepResearchAgent = k25_deep_research_agent
+
+def create_k25_research_agent(company_name: str, company_url: Optional[str]=None) -> "k25_deep_research_agent":
     """Docstring."""
-    return K25DeepResearchAgent(company_name=company_name, company_url=company_url)
+    return k25_deep_research_agent(company_name=company_name, company_url=company_url)

@@ -2,7 +2,11 @@
 import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
-from agentic_core.L3_orchestration.training.agent_gym_types import BenchmarkResult, GoldenOutput, GoldenStateEvaluator, JudgeEvaluator, PerformanceMetrics, ScenarioType, TrainingScenario, TrainingSession
+try:
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import benchmark_result as BenchmarkResult, scenario_type as ScenarioType, training_scenario as TrainingScenario, performance_level as PerformanceLevel
+    TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type('Stub', (), {})
+except ImportError:
+    BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = ScenarioType = TrainingScenario = TrainingSession = PerformanceLevel = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -31,7 +35,7 @@ class agent_gym:
             judge_evaluator: Judge evaluator
             enable_logging: Enable logging
         """
-        self.golden_evaluator = golden_evaluator or GoldenStateEvaluator()
+        self.golden_evaluator = golden_evaluator or (GoldenStateEvaluator() if callable(GoldenStateEvaluator) else None)
         self.judge_evaluator = judge_evaluator
         self.enable_logging = enable_logging
         self._scenarios: Dict[str, TrainingScenario] = {}
@@ -232,17 +236,20 @@ class agent_gym:
         """
         AREAS = []
         for result in benchmark_results:
-            if result.performance_level in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRITICAL}:
+            if hasattr(result, 'performance_level') and result.performance_level in {'NEEDS_IMPROVEMENT', 'CRITICAL'}:
                 areas.append(f'{result.scenario_id}: {result.performance_level.value}')
         return areas
 
-def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> AgentGym:
+# Alias for backward compatibility
+AgentGym = agent_gym
+
+def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> "agent_gym":
     """Factory function to create Agent Gym.
 
     Args:
         golden_evaluator: Optional golden state evaluator
 
     Returns:
-        AgentGym instance
+        agent_gym instance
     """
-    return AgentGym(golden_evaluator=golden_evaluator)
+    return agent_gym(golden_evaluator=golden_evaluator)

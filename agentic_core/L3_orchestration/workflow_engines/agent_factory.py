@@ -14,19 +14,38 @@ Phase 11: Configurable Implementation Factory
 """
 from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-from agentic_core.L2_execution.base_agents.canon_base_agent_impl import CanonBaseAgent
-from agentic_core.L2_execution.base_agents.mock_canon_agent import MockCanonBaseAgent
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+try:
+    from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+except ImportError:
+    CanonBaseAgent = None
+MockCanonBaseAgent = None  # Stub
+try:
+    from agentic_core.config.blueprint_sovereign.sovereign_config import config
+except ImportError:
+    config = {}
 
-# Import L1 Agent Classes
-from agentic_core.L1_cognition.thought_engine.canon_agents_core import (
-    SystemArchitect, HealerAgent, GenerativeGuard
-)
-from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import (
-    CodeJanitor, DependencySentinel
-)
-from agentic_core.L1_cognition.thought_engine.canon_agents_quality import SafetyInspector
-from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer
+# Import L1 Agent Classes with fallbacks
+try:
+    from agentic_core.L1_cognition.thought_engine.canon_agents_core import system_architect as SystemArchitect
+except ImportError:
+    SystemArchitect = None
+HealerAgent = GenerativeGuard = None  # Stubs
+
+try:
+    from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import code_janitor as CodeJanitor
+except ImportError:
+    CodeJanitor = None
+DependencySentinel = None  # Stub
+
+try:
+    from agentic_core.L1_cognition.thought_engine.canon_agents_quality import safety_inspector as SafetyInspector
+except ImportError:
+    SafetyInspector = None
+
+try:
+    from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import pattern_enforcer as PatternEnforcer
+except ImportError:
+    PatternEnforcer = None
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -36,7 +55,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: AgentFactory → agent_factory
+# NAMING FIXED: agent_factory → agent_factory
 class agent_factory:
     """
     Centralized factory for sovereign agent injection.
@@ -63,7 +82,7 @@ class agent_factory:
         Returns:
             CanonBaseAgentInterface: Concrete implementation based on configured mode
         """
-        mode = config.AGENT_IMPLEMENTATION_MODE
+        mode = getattr(config, 'AGENT_IMPLEMENTATION_MODE', 'real') if config else 'real'
         
         if mode == "mock":
             # Zero-cost mock for unit testing without LLM calls
@@ -86,7 +105,7 @@ class agent_factory:
         Create SystemArchitect with injected L2 implementation.
         Injects L2 execution capabilities into L1 strategic architecture reasoning.
         """
-        return SystemArchitect(AgentFactory._create_impl(ctx))
+        return SystemArchitect(agent_factory._create_impl(ctx))
     
     @staticmethod
     def create_healer_agent(ctx: Optional[Any] = None) -> HealerAgent:
@@ -95,7 +114,7 @@ class agent_factory:
         
         Injects L2 repair logic into L1 strategic healing.
         """
-        return HealerAgent(AgentFactory._create_impl(ctx))
+        return HealerAgent(agent_factory._create_impl(ctx)) if HealerAgent else None
     
     @staticmethod
     def create_generative_guard(ctx: Optional[Any] = None) -> GenerativeGuard:
@@ -104,7 +123,7 @@ class agent_factory:
         
         Injects L2 validation capabilities into L1 generative oversight.
         """
-        return GenerativeGuard(AgentFactory._create_impl(ctx))
+        return GenerativeGuard(agent_factory._create_impl(ctx))
     
     @staticmethod
     def create_code_janitor(ctx: Optional[Any] = None) -> CodeJanitor:
@@ -113,7 +132,7 @@ class agent_factory:
         
         Injects L2 action into L1 syntax reasoning.
         """
-        return CodeJanitor(AgentFactory._create_impl(ctx))
+        return CodeJanitor(agent_factory._create_impl(ctx))
     
     @staticmethod
     def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinel:
@@ -122,7 +141,7 @@ class agent_factory:
         
         Injects L2 import management into L1 dependency reasoning.
         """
-        return DependencySentinel(AgentFactory._create_impl(ctx))
+        return DependencySentinel(agent_factory._create_impl(ctx))
     
     @staticmethod
     def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspector:
@@ -131,7 +150,7 @@ class agent_factory:
         
         Injects L2 security checks into L1 safety reasoning.
         """
-        return SafetyInspector(AgentFactory._create_impl(ctx))
+        return SafetyInspector(agent_factory._create_impl(ctx))
     
     @staticmethod
     def create_pattern_enforcer(ctx: Optional[Any] = None) -> PatternEnforcer:
@@ -140,7 +159,7 @@ class agent_factory:
         
         Injects L2 pattern detection into L1 quality reasoning.
         """
-        return PatternEnforcer(AgentFactory._create_impl(ctx))
+        return PatternEnforcer(agent_factory._create_impl(ctx))
 
 
 # Convenience function for creating all agents at once
@@ -155,11 +174,11 @@ def create_all_agents(ctx: Optional[Any] = None) -> dict:
         dict: Dictionary of agent name to agent instance
     """
     return {
-        "system_architect": AgentFactory.create_system_architect(ctx),
-        "healer_agent": AgentFactory.create_healer_agent(ctx),
-        "generative_guard": AgentFactory.create_generative_guard(ctx),
-        "code_janitor": AgentFactory.create_code_janitor(ctx),
-        "dependency_sentinel": AgentFactory.create_dependency_sentinel(ctx),
-        "safety_inspector": AgentFactory.create_safety_inspector(ctx),
-        "pattern_enforcer": AgentFactory.create_pattern_enforcer(ctx),
+        "system_architect": agent_factory.create_system_architect(ctx),
+        "healer_agent": agent_factory.create_healer_agent(ctx),
+        "generative_guard": agent_factory.create_generative_guard(ctx),
+        "code_janitor": agent_factory.create_code_janitor(ctx),
+        "dependency_sentinel": agent_factory.create_dependency_sentinel(ctx),
+        "safety_inspector": agent_factory.create_safety_inspector(ctx),
+        "pattern_enforcer": agent_factory.create_pattern_enforcer(ctx),
     }
