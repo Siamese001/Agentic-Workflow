@@ -14,7 +14,8 @@ class sovereign_dependency_error(Exception):
     """Raised when a required dependency is not injected into a Sovereign component."""
     pass
 
-class subatomic_hop:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class SubatomicHopAgent:
     """
     Sovereign SubatomicHop with Dependency Injection.
     

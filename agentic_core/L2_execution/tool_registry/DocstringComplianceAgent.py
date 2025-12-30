@@ -5,7 +5,8 @@ import ast
 from pathlib import Path
 from typing import Dict, Any
 
-class docstring_compliance_agent:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class DocstringComplianceAgent:
     """
     Ensures public functions, classes, and modules have docstrings.
 

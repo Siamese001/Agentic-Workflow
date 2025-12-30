@@ -15,6 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+# NOT_AN_AGENT — Base class for agents, not a true agent itself — excluded from agent discovery
 class sub_atomic_agent:
     """Base class for all validation agents with async support."""
 

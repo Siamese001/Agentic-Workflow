@@ -32,7 +32,8 @@ class orchestration_result:
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
 
-class coordinate_observability_operations:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class CoordinateObservabilityOperationsAgent:
     """Orchestrator for operations domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

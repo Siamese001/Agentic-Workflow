@@ -114,8 +114,8 @@ class deep_research_output:
 # --- End Inlined Type Definitions ---
 
 
-# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
-class integrity_gate_executor:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class IntegrityGateExecutorAgent:
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including

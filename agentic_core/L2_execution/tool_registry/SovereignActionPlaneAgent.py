@@ -90,7 +90,8 @@ class sovereign_sandbox:
                     except:
                         pass
 
-class sovereign_action_plane(IActionPlane):
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class SovereignActionPlaneAgent(IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
 
     def __init__(self, safety_layer=None, signal_ledger=None):

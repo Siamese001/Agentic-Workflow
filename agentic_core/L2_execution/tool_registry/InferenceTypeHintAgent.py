@@ -5,7 +5,8 @@ import ast
 from pathlib import Path
 from typing import Dict, Any, List
 
-class inference_type_hint_agent:
+# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+class InferenceTypeHintAgent:
     """
     Uses LLM inference to add accurate type hints to functions/methods.
 
