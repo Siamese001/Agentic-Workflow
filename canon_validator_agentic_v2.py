@@ -30,6 +30,23 @@ import time
 import traceback
 from pathlib import Path
 from typing import Any, Optional, List, Dict, Tuple
+
+# [MODULARIZED] Migrating from void_compliance utility to L5_safety Validators
+try:
+    from agentic_core.L5_safety.validators.location_agent import location_agent as LocationAgent
+    from agentic_core.L5_safety.validators.naming_agent import naming_agent as NamingAgent
+    from agentic_core.L5_safety.validators.hierarchy_agent import hierarchy_agent as HierarchyAgent
+    from agentic_core.L5_safety.validators.key_mapping_agent import key_mapping_agent as KeyMappingAgent
+    from agentic_core.L5_safety.gravity.import_agent import import_agent as ImportAgent
+    from agentic_core.L5_safety.guardrails.dead_code_agent import dead_code_agent as DeadCodeAgent
+    from agentic_core.observability.metrics.metrics_agent import metrics_agent as MetricsAgent
+    from agentic_core.observability.telemetry.telemetry_agent import telemetry_agent as TelemetryAgent
+    from agentic_core.observability.tracing.tracing_agent import tracing_agent as TracingAgent
+    MODULAR_AGENTS_AVAILABLE = True
+except ImportError as e:
+    print(f"   [!] Critical Modular Import Failure: {e}")
+    MODULAR_AGENTS_AVAILABLE = False
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     FORBIDDEN_ROOT_FOLDERS,
@@ -1709,7 +1726,15 @@ Return ONLY the fixed Python code. No explanations, no markdown.
             ('agentic_core.L3_orchestration.workflow_engines.meta_orchestrator_agent', ['MetaOrchestratorAgent']),
             ('agentic_core.L2_execution.tool_registry.hygiene_guardian', ['HygieneGuardian']),
             ('agentic_core.L2_execution.tool_registry.code_deduplication_agent', ['CodeDeduplicationAgent']),
-            ('agentic_core.L5_safety.gravity.gravity_leak_repair', ['GravityLeakRepairAgent']),
+            ('agentic_core.L5_safety.gravity.import_agent', ['import_agent']),
+            ('agentic_core.L5_safety.validators.location_agent', ['location_agent']),
+            ('agentic_core.L5_safety.validators.naming_agent', ['naming_agent']),
+            ('agentic_core.L5_safety.validators.hierarchy_agent', ['hierarchy_agent']),
+            ('agentic_core.L5_safety.validators.key_mapping_agent', ['key_mapping_agent']),
+            ('agentic_core.L5_safety.guardrails.dead_code_agent', ['dead_code_agent']),
+            ('agentic_core.observability.metrics.metrics_agent', ['metrics_agent']),
+            ('agentic_core.observability.telemetry.telemetry_agent', ['telemetry_agent']),
+            ('agentic_core.observability.tracing.tracing_agent', ['tracing_agent']),
             ('agentic_core.L5_safety.red_teaming.red_team_agent', ['RedTeamAgent']),
             ('agentic_core.L5_safety.validators.prompt_validation_agent', ['PromptValidationAgent']),
             ('agentic_core.L0_maintenance.scripts.autonomous_prompt_evolution_agent', ['AutonomousPromptEvolutionAgent']),
