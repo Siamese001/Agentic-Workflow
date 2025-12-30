@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
     from agentic_core.types import ValidationContext
 
+# NOT_AN_AGENT — base class for agents, not a true agent itself — excluded from agent discovery
 class sub_atomic_agent:
     """Base class for all validation agents with async support."""
 

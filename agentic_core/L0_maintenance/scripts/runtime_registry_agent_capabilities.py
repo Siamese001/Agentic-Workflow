@@ -57,6 +57,7 @@ class agent_spec:
         pass
 
 
+# NOT_AN_AGENT — registry utility class, not a true agent — excluded from agent discovery
 class agent_registry:
     """Registry for managing agent capabilities and specifications."""
 

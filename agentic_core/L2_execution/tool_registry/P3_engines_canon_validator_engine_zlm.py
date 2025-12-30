@@ -45,7 +45,7 @@ class p6_fix_result:
         self.message = message
         self.fixed_count = fixed_count
 
-# NAMING FIXED: CanonValidatorEngineZLM → canon_validator_engine_zlm
+# NOT_AN_AGENT — engine/validator utility, not a true agent — excluded from agent discovery
 class canon_validator_engine_zlm:
     '''Brief description of functionality and purpose.'''
     
