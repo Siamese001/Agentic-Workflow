@@ -97,6 +97,8 @@ class healer_agent:
         self.imports_cleaned = 0
         self.fusions_applied = 0
         self.deletions_applied = 0
+        
+        from agentic_core.utils.naming.naming_agent import naming_agent as NamingAgent
         self.naming_agent = NamingAgent(project_root)
 
         self.max_moves = HEALING_CONFIG.get("max_moves_per_run", 5)
@@ -246,23 +248,39 @@ class healer_agent:
                     symbols.add(node.name)
         return symbols
 
-    def _get_intelligent_merged_name(self, files: List[Path]) -> str:
-        """Use NamingAgent to find the most high-signal name for fused content."""
-        combined_preview = ""
-        for f in files:
-            try:
-                combined_preview += f.read_text(encoding="utf-8")[:1000]
-            except Exception:
-                continue
+    def _get_intelligent_merged_name(self, files: List[Path], combined_preview: str = None) -> Tuple[str, str, str, str]:
+        """
+        Use NamingAgent to find the most high-signal name for fused content.
+        Returns: (merged_name, naming_source, guidance_path, matched_signal)
+        """
+        if combined_preview is None:
+            combined_preview = ""
+            for f in files:
+                try:
+                    content = f.read_text(encoding="utf-8")
+                    combined_preview += content + "\n\n"
+                    if len(combined_preview) > 5000:  # Limit for performance
+                        break
+                except Exception:
+                    continue
         
-        guidance = self.naming_agent.get_placement_guidance(combined_preview)
-        suggested_stem = guidance.split("/")[-1] if "/" in guidance else "merged_utils"
+        guidance = "agentic_core/utils"
+        if combined_preview.strip():
+            guidance = self.naming_agent.get_placement_guidance(combined_preview)
+            # Extract domain stem (e.g., "agentic_core/L3_orchestration" -> "orchestrator")
+            suggested_domain = guidance.split("/")[-1] if "/" in guidance else "component"
+        else:
+            suggested_domain = "merged"
+
+        # Strong signal fallback from keywords in content
+        lower_preview = combined_preview.lower()
+        strong_signals = ["engine", "manager", "handler", "validator", "strategy", "orchestrator", "guardian"]
+        matched_signal = next((kw for kw in strong_signals if kw in lower_preview), None)
         
-        high_signal_map = ["engine", "manager", "handler", "validator", "strategy"]
-        for keyword in high_signal_map:
-            if keyword in combined_preview.lower():
-                return f"{keyword}.py"
-        return f"{suggested_stem}.py"
+        merged_name = f"{matched_signal}.py" if matched_signal else f"{suggested_domain}.py"
+        naming_source = f"Strong keyword: {matched_signal}" if matched_signal else "NamingAgent guidance"
+        
+        return merged_name, naming_source, guidance if combined_preview else "N/A", matched_signal or ""
 
     def heal_deletions(self, dead_files: List[Path]) -> List[Dict[str, Any]]:
         """Safe deletion of confirmed dead files (no imports, no traces)."""

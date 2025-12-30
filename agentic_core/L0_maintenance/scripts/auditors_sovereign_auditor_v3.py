@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 # Add repo root to path for imports
-# NAMING FIXED: repo_root used for SSOT alignment
 repo_root = Path(__file__).resolve().parents[3]
 sys.path.append(str(repo_root))
 
@@ -241,7 +240,26 @@ async def main():
     # 6. Atomic Fission (Consolidated)
     builder.with_dimension("Atomic Fission", 100.0, [])
     
-    # 7. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
+    # 7. Healing Resilience (Success Ratio)
+    # [NEW]: Quantitative measure of the system's self-correction capacity.
+    heal_score = 100.0
+    heal_issues = []
+    if metrics:
+        total_violations = metrics.get_counter("compliance.total_violations")
+        applied_heals = metrics.get_counter("healing.actions_total")
+        
+        if total_violations > 0:
+            # Success Ratio = (Remediated / Total)
+            # RATIONALE: High remediation = High resilience even if drift exists.
+            ratio = min(1.0, applied_heals / total_violations)
+            heal_score = ratio * 100.0
+            if ratio < 0.9:
+                heal_issues.append(f"Healing Success Ratio ({ratio:.1%}) below sovereign target (90%).")
+        else:
+            heal_issues.append("Zero violations detected: Healing logic in standby.")
+    builder.with_dimension("Healing Resilience", heal_score, heal_issues)
+
+    # 8. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
     if validate_observability_footprint:
         obs_score, obs_issues = validate_observability_footprint(str(target))
         # Refined scoring: multiplier of 3 ensures moderate violations trigger warnings
