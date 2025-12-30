@@ -107,7 +107,7 @@ class system_architect(CanonBaseAgentInterface):
     """
 
     def __init__(self, ctx: Any = None):
-        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -315,7 +315,7 @@ class healer_agent(CanonBaseAgentInterface):
     """
 
     def __init__(self, ctx: Any = None):
-        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -427,7 +427,7 @@ class generative_guard(CanonBaseAgentInterface):
     """
 
     def __init__(self, ctx: Any = None):
-        self.impl = CanonBaseAgent(ctx) if CanonBaseAgent else None
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
