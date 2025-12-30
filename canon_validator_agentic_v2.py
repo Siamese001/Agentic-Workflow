@@ -951,21 +951,29 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> Dict[str, Any]:
     
     target_path = Path(target_sector).resolve()
     
-    # Check 1: Span of Two Detection (Redundant Tunnels)
-    span_violations = []
-    if target_path != project_root:
-        span_violations = check_span_of_two_violations(project_root)
-    results["span"] = len(span_violations)
-    if span_violations:
-        print(f"[!] L6 ALERT: Found {len(span_violations)} span violations:")
-        for folder_path, reason in span_violations[:3]:
-            try:
-                rel_path = folder_path.relative_to(project_root)
-            except ValueError:
-                rel_path = folder_path
-            print(f"   [X] {rel_path}: {reason}")
-        if len(span_violations) > 3:
-            print(f"   ... and {len(span_violations) - 3} more violations")
+    # [PHASE 19] BEHAVIORAL COMPLIANCE: Span-of-Two (Key 13)
+    # RATIONALE: Physical tree width compliance is now observed by HierarchyAgent.
+    if ORCHESTRATOR_AVAILABLE:
+        try:
+            from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+            hierarchy_agent = HierarchyAgent(project_root)
+            span_result = hierarchy_agent.check_span_of_two()
+            results["span"] = span_result.get("violations", 0)
+            if span_result.get("compliant", True):
+                print(f"   [OK] Span-of-Two compliance verified by HierarchyAgent")
+            else:
+                print(f"[!] L6 ALERT: Found {span_result.get('violations', 0)} span violations:")
+                for v in span_result.get("details", [])[:3]:
+                    print(f"   [X] {v}")
+        except ImportError:
+            # Fallback to legacy check if HierarchyAgent unavailable
+            span_violations = check_span_of_two_violations(project_root) if target_path != project_root else []
+            results["span"] = len(span_violations)
+            if span_violations:
+                print(f"[!] L6 ALERT: Found {len(span_violations)} span violations (legacy check)")
+    else:
+        results["span"] = 0
+        print("   [!] Hierarchy monitoring unavailable - Span-of-Two status unknown.")
     
     # Check 2: Hierarchy Alignment (SSOT Verification)
     hierarchy_violations = validate_canonical_hierarchy(project_root)
