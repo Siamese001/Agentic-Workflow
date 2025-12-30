@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Mock SubatomicHop for demonstration
-# NAMING FIXED: MockSubatomicHop → mock_subatomic_hop
+# NOT_AN_AGENT — mock/example class, not a true agent — excluded from agent discovery
 class mock_subatomic_hop:
     """Mock SubatomicHop for testing swarm execution."""
 

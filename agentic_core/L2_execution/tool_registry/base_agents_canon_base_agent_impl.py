@@ -9,7 +9,7 @@ Cognition layer agents should use the interface, not this implementation directl
 from typing import Any, Dict, List
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
-# NAMING FIXED: CanonBaseAgent → canon_base_agent
+# NOT_AN_AGENT — base class implementation, not a true agent — excluded from agent discovery
 class canon_base_agent(CanonBaseAgentInterface):
     """
     Implementation of canon agent base — lives in Execution context.

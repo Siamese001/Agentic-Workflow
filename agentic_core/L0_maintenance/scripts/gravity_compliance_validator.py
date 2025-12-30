@@ -15,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUB
 # Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
-# NAMING FIXED: GravityComplianceValidator → gravity_compliance_validator
+# NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
 class gravity_compliance_validator:
     '''Brief description of functionality and purpose.'''
     

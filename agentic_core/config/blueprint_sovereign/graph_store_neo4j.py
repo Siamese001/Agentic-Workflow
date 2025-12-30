@@ -10,7 +10,7 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: Neo4jGraphStore → neo4j_graph_store
+# NOT_AN_AGENT — data store utility, not a true agent — excluded from agent discovery
 class neo4j_graph_store:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.

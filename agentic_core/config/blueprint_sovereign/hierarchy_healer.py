@@ -14,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: HierarchyHealer → hierarchy_healer
+# NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
 class hierarchy_healer:
     """
     [L3 AGENT] The Structural Surgeon.

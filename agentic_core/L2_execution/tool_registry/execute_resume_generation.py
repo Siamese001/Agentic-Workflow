@@ -23,6 +23,7 @@ def create_local_workflow_loader() -> LocalWorkflowLoader:
     return LocalWorkflowLoader()
 logger: Any = logging.getLogger(__name__)
 
+# NOT_AN_AGENT — task executor service, not a true agent — excluded from agent discovery
 class execute_resume_generation:
     """Executor for resume domain."""
 

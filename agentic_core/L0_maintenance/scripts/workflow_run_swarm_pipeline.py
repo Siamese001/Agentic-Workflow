@@ -29,6 +29,7 @@ def mock_embedder(texts: List[str]) -> List[List[float]]:
     time.sleep(0.1)
     return [[0.1] * 768 for _ in texts]
 
+# NOT_AN_AGENT — mock/example class, not a true agent — excluded from agent discovery
 class mock_subatomic_hop:
     """Mock SubatomicHop for demonstration."""
 
