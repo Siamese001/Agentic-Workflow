@@ -6,15 +6,12 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
-)
-
-    RedisSovereignAgent,
 )
 
 

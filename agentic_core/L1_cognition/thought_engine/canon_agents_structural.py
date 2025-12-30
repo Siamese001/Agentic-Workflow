@@ -7,6 +7,12 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # NAMING FIXED: SubAtomicAgent → sub_atomic_agent
 class sub_atomic_agent:
+    pass
+
+# Alias for backward compatibility
+SubAtomicAgent = sub_atomic_agent
+
+class sub_atomic_agent_impl:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, ctx: Any, name: str):

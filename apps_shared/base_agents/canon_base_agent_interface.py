@@ -8,6 +8,12 @@ from typing import Any, Dict, List, Optional
 
 # NAMING FIXED: CanonBaseAgentInterface → canon_base_agent_interface
 class canon_base_agent_interface(ABC):
+    pass
+
+# Alias for backward compatibility
+CanonBaseAgentInterface = canon_base_agent_interface
+
+class canon_base_agent_interface_impl(ABC):
     """Sovereign interface for all canon agents — shared across contexts."""
     
     @abstractmethod

@@ -199,11 +199,11 @@ class debugger_agent:
             fix_history = await self.mcp_manager.call_tool('search_traces', {'query': f'fix_id:{trace_id}', 'limit': max_attempts + 1})
             attempt_count = str(fix_history).count('fix_id:')
             if attempt_count >= max_attempts:
-                LOGGER.warning(f'Circuit breaker triggered for {trace_id}: {attempt_count} attempts')
+                logger.warning(f'Circuit breaker triggered for {trace_id}: {attempt_count} attempts')
                 return True
             return False
         except Exception as e:
-            LOGGER.error(f'Error checking circuit breaker: {e}')
+            logger.error(f'Error checking circuit breaker: {e}')
             return False
 
     def _generate_summary(self: Any, results: Dict) -> str:
@@ -218,7 +218,7 @@ class debugger_agent:
             summary += f"\nError encountered: {results['error']}"
         return summary
 
-async def create_debugger_agent(mcp_manager: Any, llm_client: Any) -> DebuggerAgent:
+async def create_debugger_agent(mcp_manager: Any, llm_client: Any) -> "debugger_agent":
     """Create and initialize a DEBUGGER agent."""
     await mcp_manager.connect('DEBUGGER')
-    return DebuggerAgent(mcp_manager, llm_client)
+    return debugger_agent(mcp_manager, llm_client)

@@ -31,7 +31,7 @@ class tool_spec:
 @dataclass
 class generated_tool:
     """A dynamically generated tool."""
-    spec: ToolSpec
+    spec: "tool_spec"
     code: str
     imports: List[str]
     dependencies: List[str]
@@ -58,15 +58,15 @@ class toolsmith_agent:
 
     def __init__(self):
         """Initialize the ToolsmithAgent."""
-        self.tools: Dict[str, GeneratedTool] = {}
+        self.tools: Dict[str, "generated_tool"] = {}
         self.templates: Dict[str, str] = {}
         self.categories = {'file': 'File manipulation tools', 'network': 'Network and API tools', 'data': 'Data processing tools', 'validation': 'Validation and checking tools', 'utility': 'General utility tools'}
         self._load_templates()
-        LOGGER.info('ToolsmithAgent initialized')
+        logger.info('ToolsmithAgent initialized')
 
     def _load_templates(self):
         """Load tool generation templates."""
-        self.templates.update({'file_reader': ToolTemplate.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': ToolTemplate.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': ToolTemplate.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
+        self.templates.update({'file_reader': tool_template.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': tool_template.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': tool_template.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
 
     def create_tool_from_spec(self, spec: ToolSpec) -> GeneratedTool:
         """
@@ -87,7 +87,7 @@ class toolsmith_agent:
         test_code: Any = self._generate_test_code(spec)
         tool: Any = GeneratedTool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
         self.tools[spec.name] = tool
-        LOGGER.info(f'Created tool: {spec.name}')
+        logger.info(f'Created tool: {spec.name}')
         return tool
 
     def _is_simple_function(self, spec: ToolSpec) -> bool:
@@ -109,7 +109,7 @@ class toolsmith_agent:
         param_str = ', '.join(params)
         param_doc_str = '\n'.join(param_docs)
         implementation = self._get_implementation(spec)
-        return ToolTemplate.FUNCTION_TEMPLATE.format(name=spec.name, params=param_str, return_type=spec.parameters.get('return', {}).get('type', 'Any'), description=spec.description, param_docs=param_doc_str, return_description=spec.parameters.get('return', {}).get('description', 'Result'), implementation=implementation)
+        return tool_template.FUNCTION_TEMPLATE.format(name=spec.name, params=param_str, return_type=spec.parameters.get('return', {}).get('type', 'Any'), description=spec.description, param_docs=param_doc_str, return_description=spec.parameters.get('return', {}).get('description', 'Result'), implementation=implementation)
 
     def _generate_class_code(self, spec: ToolSpec) -> str:
         """Generate class code for a complex tool."""
@@ -123,7 +123,7 @@ class toolsmith_agent:
         init_body_str = '\n'.join(init_body)
         method_params = ''
         method_param_docs = ''
-        return ToolTemplate.CLASS_TEMPLATE.format(name=spec.name, description=spec.description, init_params=init_param_str, init_body=init_body_str, method_params=method_params, method_param_docs=method_param_docs, return_type=spec.parameters.get('return', {}).get('type', 'Any'), return_description=spec.parameters.get('return', {}).get('description', 'Result'), method_implementation='pass  # TODO: Implement')
+        return tool_template.CLASS_TEMPLATE.format(name=spec.name, description=spec.description, init_params=init_param_str, init_body=init_body_str, method_params=method_params, method_param_docs=method_param_docs, return_type=spec.parameters.get('return', {}).get('type', 'Any'), return_description=spec.parameters.get('return', {}).get('description', 'Result'), method_implementation='pass  # TODO: Implement')
 
     def _get_implementation(self, spec: ToolSpec) -> str:
         """Get implementation code based on tool category and name."""
@@ -252,26 +252,31 @@ class toolsmith_agent:
             if tool.test_code:
                 stats['with_tests'] += 1
         return stats
-_toolsmith_agent: Optional[ToolsmithAgent] = None
+_toolsmith_agent: Optional["toolsmith_agent"] = None
 
-def get_toolsmith_agent() -> ToolsmithAgent:
+# Aliases for discovery
+ToolsmithAgent = toolsmith_agent
+ToolSpec = tool_spec
+GeneratedTool = generated_tool
+
+def get_toolsmith_agent() -> "toolsmith_agent":
     """Get or create the global ToolsmithAgent instance."""
     global _toolsmith_agent
     if _toolsmith_agent is None:
-        _toolsmith_agent = ToolsmithAgent()
+        _toolsmith_agent = toolsmith_agent()
     return _toolsmith_agent
 
 def initialize_toolsmith_agent() -> Any:
     """Initialize the ToolsmithAgent system."""
     get_toolsmith_agent()
-    LOGGER.info('ToolsmithAgent system initialized')
+    logger.info('ToolsmithAgent system initialized')
 
-def create_file_tool(name: str, operation: str) -> GeneratedTool:
+def create_file_tool(name: str, operation: str) -> "generated_tool":
     """Create a file manipulation tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_file_tool(name, operation)
 
-def create_api_tool(name: str, endpoint: str, method: str='GET') -> GeneratedTool:
+def create_api_tool(name: str, endpoint: str, method: str='GET') -> "generated_tool":
     """Create an API interaction tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_api_tool(name, endpoint, method)
