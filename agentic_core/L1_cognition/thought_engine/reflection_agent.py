@@ -30,23 +30,23 @@ class reflection_agent:
         if self.pinecone_client:
             self._initialize_pinecone()
         else:
-            LOGGER.warning('Pinecone not available - using local fallback only')
+            logger.warning('Pinecone not available - using local fallback only')
 
     def _initialize_pinecone(self):
         """Initialize Pinecone index for storing traces."""
         try:
             if not hasattr(self.pinecone_client, 'list_indexes'):
-                LOGGER.error('Invalid Pinecone client provided.')
+                logger.error('Invalid Pinecone client provided.')
                 self.pinecone_client = None
                 return
             existing_indexes = self.pinecone_client.list_indexes().names()
             if self._index_name not in existing_indexes:
                 self.pinecone_client.create_index(name=self._index_name, dimension=int(os.getenv('PINECONE_DIMENSION', '768')), metric='cosine')
-                LOGGER.info(f'Created Pinecone index: {self._index_name}')
+                logger.info(f'Created Pinecone index: {self._index_name}')
             self.index = self.pinecone_client.Index(self._index_name)
-            LOGGER.info(f'Pinecone index ready: {self._index_name}')
+            logger.info(f'Pinecone index ready: {self._index_name}')
         except Exception as e:
-            LOGGER.error(f'Failed to initialize Pinecone: {str(e)}')
+            logger.error(f'Failed to initialize Pinecone: {str(e)}')
             self.pinecone_client = None
 
     async def execute(self, file_path: Optional[str]=None) -> Dict[str, Any]:
@@ -65,12 +65,12 @@ class reflection_agent:
         if self.ctx and hasattr(self.ctx, 'successful_traces'):
             successful_traces: Any = self.ctx.successful_traces
         if not isinstance(successful_traces, list):
-            LOGGER.error("Input 'successful_traces' must be a list.")
+            logger.error("Input 'successful_traces' must be a list.")
             return {'processed': 0, 'internalized': 0, 'errors': ['Invalid input type']}
         if not successful_traces:
-            LOGGER.debug('No successful traces to process')
+            logger.debug('No successful traces to process')
             return {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
-        LOGGER.info(f'ReflectionAgent processing {len(successful_traces)} successful traces')
+        logger.info(f'ReflectionAgent processing {len(successful_traces)} successful traces')
         results: Any = {'processed': 0, 'internalized': 0, 'errors': [], 'recommendations': []}
         for trace in successful_traces:
             try:
@@ -81,7 +81,7 @@ class reflection_agent:
                 trace.get('code_after', '')
                 trace.get('context', {})
                 if not task or not code_before:
-                    LOGGER.warning("Skipping trace with missing mandatory fields 'task' or 'code_before'")
+                    logger.warning("Skipping trace with missing mandatory fields 'task' or 'code_before'")
                     continue
                 analysis: Any = await self._analyze_success_pattern(trace)
                 if await self._internalize_trace(trace, analysis):
@@ -92,12 +92,12 @@ class reflection_agent:
                     results['recommendations'].extend(recommendations)
             except Exception as e:
                 error_msg: Any = f'Error processing trace: {str(e)}'
-                LOGGER.error(error_msg)
+                logger.error(error_msg)
                 results['errors'].append(error_msg)
         try:
             results['critique'] = await self._self_critique(results)
         except Exception as e:
-            LOGGER.error(f'Self-critique failed: {e}')
+            logger.error(f'Self-critique failed: {e}')
             results['critique'] = 'Internal critique unavailable'
         return results
 

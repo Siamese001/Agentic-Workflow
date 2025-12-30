@@ -55,8 +55,8 @@ class recursive_planner_agent:
 
     def __init__(
         self,
-        architect,
-        orchestrator_factory,
+        architect=None,
+        orchestrator_factory=None,
         max_depth: int = 3,
         max_parallel_subtasks: int = 5
     ):

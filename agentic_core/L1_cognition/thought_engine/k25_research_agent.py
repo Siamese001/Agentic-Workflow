@@ -42,7 +42,7 @@ class k25_deep_research_agent:
     def __init__(self, company_name: str, company_url: Optional[str]=None):
         self.company_name = company_name
         self.company_url = company_url
-        self.config = K25_REASONING_CONFIG
+        self.config = k25_reasoning_config
         self.rag_hops = self.config.get('rag_hops', 5)
         self.prompt_template = self._load_prompt_template()
 
