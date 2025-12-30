@@ -18,8 +18,13 @@ Placed in L5_safety/validators per semantic_l2_registry purpose:
   "Canon constitution validators, structural policy enforcement..."
 """
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
+from datetime import datetime
 import re
+import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
@@ -161,6 +166,137 @@ class LocationAgent:
         all_violations.extend(file_violations)
 
         return all_violations
+
+
+    # SUPPLEMENTED FROM FilesystemAgent — enhances backup + cleanup capability — merged 2025-12-30
+    def _init_backup_dir(self) -> Path:
+        """
+        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
+        Initialize backup directory for safe mutations.
+        """
+        backup_dir = self.project_root / ".sovereign_healing_backup" / "location" / datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        return backup_dir
+
+    def _backup_file(self, file_path: Path, backup_dir: Path = None) -> Path:
+        """
+        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
+        Create a physical safety copy before mutation.
+        
+        Args:
+            file_path: File to backup
+            backup_dir: Optional backup directory (auto-created if None)
+            
+        Returns:
+            Path to the backup file
+        """
+        if backup_dir is None:
+            backup_dir = self._init_backup_dir()
+            
+        rel = file_path.relative_to(self.project_root)
+        backup_path = backup_dir / rel
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(file_path, backup_path)
+        logger.info(f"[LocationAgent] Backed up: {rel}")
+        return backup_path
+
+    def cleanup_violations(
+        self, 
+        violations: List[Tuple[Path, str]], 
+        dry_run: bool = True,
+        max_actions: int = 50
+    ) -> List[Dict[str, Any]]:
+        """
+        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
+        
+        Execute autonomous cleanup of location violations.
+        Relocates violating files to archives/ with proper categorization.
+        
+        Args:
+            violations: List of (path, reason) tuples
+            dry_run: If True, only preview actions without executing
+            max_actions: Maximum number of cleanup actions per run
+            
+        Returns:
+            List of action dicts with results
+        """
+        actions = []
+        archives_root = self.project_root / "archives"
+        backup_dir = None if dry_run else self._init_backup_dir()
+        
+        for i, (file_path, msg) in enumerate(violations):
+            if i >= max_actions:
+                logger.warning(f"[LocationAgent] Cleanup budget exhausted ({max_actions} actions).")
+                break
+                
+            action = {
+                "type": "LOCATION_CLEANUP",
+                "file": str(file_path),
+                "violation": msg,
+                "applied": False,
+                "action_taken": "",
+            }
+            
+            # Determine archive target based on violation type
+            if "VOID VIOLATION" in msg or "GRAVITY ERROR" in msg:
+                target_subdir = archives_root / "void_violations"
+            elif "DEPTH VIOLATION" in msg:
+                target_subdir = archives_root / "depth_violations"
+            else:
+                target_subdir = archives_root / "location_violations"
+                
+            target_path = target_subdir / file_path.name
+            
+            if dry_run:
+                action["applied"] = True
+                action["action_taken"] = f"PREVIEW: Would archive to {target_path.relative_to(self.project_root)}"
+            else:
+                try:
+                    target_subdir.mkdir(parents=True, exist_ok=True)
+                    self._backup_file(file_path, backup_dir)
+                    
+                    # Handle collision
+                    if target_path.exists():
+                        stem = target_path.stem
+                        suffix = target_path.suffix
+                        counter = 1
+                        while target_path.exists():
+                            target_path = target_subdir / f"{stem}_{counter}{suffix}"
+                            counter += 1
+                    
+                    file_path.rename(target_path)
+                    action["applied"] = True
+                    action["action_taken"] = f"ARCHIVED: {target_path.relative_to(self.project_root)}"
+                    logger.info(f"[LocationAgent] Archived: {file_path.name}")
+                except Exception as e:
+                    action["error"] = str(e)
+                    
+            actions.append(action)
+            
+        return actions
+
+    def run_with_cleanup(self, files: List[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM FilesystemAgent — merged 2025-12-30
+        
+        Full location compliance scan with automatic cleanup.
+        
+        Args:
+            files: Optional list of files to scan (defaults to all .py files)
+            dry_run: If True, only preview cleanup actions
+            
+        Returns:
+            Dict with violation count, actions applied, and details
+        """
+        violations = self.run(files)
+        cleanup_results = self.cleanup_violations(violations, dry_run=dry_run) if violations else []
+        
+        return {
+            "violations_detected": len(violations),
+            "actions_applied": sum(1 for a in cleanup_results if a.get("applied")),
+            "detailed_actions": cleanup_results,
+            "dry_run": dry_run,
+        }
 
 
 # PascalCase is now the canonical name

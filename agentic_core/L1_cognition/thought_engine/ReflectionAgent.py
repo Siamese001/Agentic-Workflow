@@ -116,3 +116,84 @@ class ReflectionAgent:
     async def _self_critique(self, results: Dict[str, Any]) -> str:
         """Evaluates the quality of the learning cycle."""
         return 'Learning cycle consolidated successfully.'
+
+    # SUPPLEMENTED FROM K25ResearchAgent — multi-hop structured research — merged 2025-12-30
+    async def execute_structured_research(self, topic: str, llm_client: Any = None) -> Dict[str, Any]:
+        """
+        Multi-hop research: financial → technical → organizational.
+        Ported from K25ResearchAgent._execute_hop_* methods (lines 79-94).
+        
+        Args:
+            topic: Research topic (company name, technology, etc.)
+            llm_client: Optional LLM client for research queries
+            
+        Returns:
+            Dict with multi-hop research results and synthesis
+        """
+        hops = [
+            ("Financial/Strategic", 
+             f"Research {topic}: Analyze market positioning, financial metrics, risks, and strategic alignment. "
+             "Include: revenue trends, EBITDA, strategic thesis, cost drivers."),
+            ("Technical/Product", 
+             f"Research {topic}: Deep dive into architecture, tools, frameworks, and implementation. "
+             "Include: specific technologies, infrastructure stack, performance gains."),
+            ("Organizational/Leadership", 
+             f"Research {topic}: Evaluate team structure, key executives, and vision. "
+             "Include: C-suite roles, domain ownership, organizational changes."),
+        ]
+        
+        research_output = {}
+        
+        for hop_name, prompt_focus in hops:
+            try:
+                if llm_client:
+                    # Use LLM for actual research
+                    response = await llm_client.chat.completions.create(
+                        model='gpt-4',
+                        messages=[
+                            {'role': 'system', 'content': 'You are a research analyst. Output structured JSON.'},
+                            {'role': 'user', 'content': prompt_focus}
+                        ],
+                        temperature=0.3
+                    )
+                    import json
+                    try:
+                        result = json.loads(response.choices[0].message.content)
+                    except json.JSONDecodeError:
+                        result = {"raw": response.choices[0].message.content}
+                else:
+                    # Placeholder for when no LLM available
+                    result = {
+                        "status": "pending",
+                        "query": prompt_focus,
+                        "note": "LLM client required for actual research"
+                    }
+                    
+                research_output[hop_name] = result
+                logger.info(f"Research hop '{hop_name}' completed for {topic}")
+                
+            except Exception as e:
+                logger.error(f"Research hop '{hop_name}' failed: {e}")
+                research_output[hop_name] = {"error": str(e)}
+        
+        # Synthesize results
+        synthesis = await self._synthesize_research(research_output, topic)
+        
+        return {
+            "topic": topic,
+            "multi_hop_analysis": research_output,
+            "synthesis": synthesis,
+            "hops_completed": len([h for h in research_output.values() if "error" not in h])
+        }
+
+    async def _synthesize_research(self, research_output: Dict[str, Any], topic: str = "") -> str:
+        """Synthesize multi-hop research into unified insights."""
+        findings = []
+        for hop_name, result in research_output.items():
+            if isinstance(result, dict) and "error" not in result:
+                findings.append(f"- {hop_name}: {len(result)} data points collected")
+                
+        if not findings:
+            return f"Research synthesis for {topic}: Insufficient data collected across hops."
+            
+        return f"Research synthesis for {topic}: {len(findings)} hops completed successfully. " + " ".join(findings)

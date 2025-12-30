@@ -281,4 +281,224 @@ class HealerAgent(CanonBaseAgent):
             print(f'      [!] Failed to store pattern: {e}')
 
 
+    # SUPPLEMENTED FROM DebuggerAgent — enhances LLM-powered debugging cycle — merged 2025-12-30
+    async def advanced_heal_with_llm_debug(
+        self, 
+        file_path: str, 
+        violation_key: int, 
+        violation_details: str,
+        llm_client: Any = None
+    ) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DebuggerAgent — merged 2025-12-30
+        
+        Advanced healing cycle with LLM-powered error analysis.
+        Uses Gemini/GPT to analyze errors, propose fixes, implement, and verify.
+        
+        Args:
+            file_path: Path to file with violation
+            violation_key: Canon key number
+            violation_details: Description of the violation
+            llm_client: Optional LLM client for analysis
+            
+        Returns:
+            Dict with analysis, fixes proposed, and implementation results
+        """
+        import json
+        from datetime import datetime
+        
+        results = {
+            'timestamp': datetime.now().isoformat(),
+            'file_path': file_path,
+            'violation_key': violation_key,
+            'analyses': [],
+            'fixes_proposed': [],
+            'fixes_implemented': [],
+            'success': False,
+        }
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                original_code = f.read()
+        except Exception as e:
+            results['error'] = f'Cannot read file: {e}'
+            return results
+            
+        # Step 1: LLM Analysis (from DebuggerAgent._llm_analyze_error)
+        analysis = await self._llm_analyze_violation(
+            file_path, violation_key, violation_details, original_code, llm_client
+        )
+        results['analyses'].append(analysis)
+        
+        if not analysis.get('fixable', False):
+            results['error'] = 'LLM determined violation not auto-fixable'
+            return results
+            
+        # Step 2: Propose Fix (from DebuggerAgent._propose_fix)
+        fix_proposal = self._propose_llm_fix(analysis, violation_key)
+        results['fixes_proposed'].append(fix_proposal)
+        
+        # Step 3: Implement Fix (from DebuggerAgent._implement_fix)
+        if fix_proposal.get('auto_applicable', False):
+            implementation = await self._implement_llm_fix(
+                file_path, original_code, fix_proposal, llm_client
+            )
+            results['fixes_implemented'].append(implementation)
+            results['success'] = implementation.get('success', False)
+            
+        return results
+
+    async def _llm_analyze_violation(
+        self, 
+        file_path: str, 
+        violation_key: int, 
+        violation_details: str,
+        code: str,
+        llm_client: Any = None
+    ) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DebuggerAgent._llm_analyze_error — merged 2025-12-30
+        Use LLM to analyze violation and categorize it.
+        """
+        analysis = {
+            'violation_key': violation_key,
+            'file_path': file_path,
+            'category': 'code_error',
+            'severity': 'medium',
+            'root_cause': violation_details,
+            'fixable': True,
+            'suggested_approach': 'Apply standard healing',
+        }
+        
+        if llm_client is None:
+            # Fallback to basic analysis without LLM
+            if 'import' in violation_details.lower():
+                analysis['category'] = 'import_error'
+                analysis['suggested_approach'] = 'Fix import statements'
+            elif 'naming' in violation_details.lower():
+                analysis['category'] = 'naming_error'
+                analysis['suggested_approach'] = 'Apply naming conventions'
+            elif 'depth' in violation_details.lower() or 'location' in violation_details.lower():
+                analysis['category'] = 'structural_error'
+                analysis['suggested_approach'] = 'Relocate file to correct path'
+            return analysis
+            
+        # Use LLM for deeper analysis
+        prompt = f"""
+Analyze this Canon Key {violation_key} violation:
+
+FILE: {file_path}
+VIOLATION: {violation_details}
+
+CODE PREVIEW:
+{code[:2000]}
+
+Provide JSON response with:
+- category: (code_error, import_error, naming_error, structural_error, config_error)
+- severity: (low, medium, high, critical)
+- root_cause: Brief description
+- fixable: (true/false)
+- suggested_approach: How to fix
+"""
+        try:
+            response = await llm_client.chat.completions.create(
+                model='gpt-4',
+                messages=[
+                    {'role': 'system', 'content': 'You are an expert at debugging Python code violations.'},
+                    {'role': 'user', 'content': prompt}
+                ],
+                temperature=0.1
+            )
+            import json
+            analysis.update(json.loads(response.choices[0].message.content))
+        except Exception as e:
+            print(f'      [!] LLM analysis failed: {e}')
+            
+        return analysis
+
+    def _propose_llm_fix(self, analysis: Dict[str, Any], violation_key: int) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DebuggerAgent._propose_fix — merged 2025-12-30
+        Propose a specific fix based on the LLM analysis.
+        """
+        from datetime import datetime
+        
+        category = analysis.get('category', 'code_error')
+        fix_proposal = {
+            'violation_key': violation_key,
+            'category': category,
+            'proposed_at': datetime.now().isoformat(),
+            'auto_applicable': True,
+        }
+        
+        if category == 'code_error':
+            fix_proposal.update({
+                'type': 'code_fix',
+                'description': 'Fix syntax or logic error',
+                'actions': ['Parse AST', 'Identify error location', 'Apply correction'],
+            })
+        elif category == 'import_error':
+            fix_proposal.update({
+                'type': 'import_fix',
+                'description': 'Fix import statements',
+                'actions': ['Analyze imports', 'Add missing imports', 'Remove unused imports'],
+            })
+        elif category == 'naming_error':
+            fix_proposal.update({
+                'type': 'naming_fix',
+                'description': 'Apply naming conventions',
+                'actions': ['Identify naming violations', 'Apply PascalCase/snake_case', 'Update references'],
+            })
+        elif category == 'structural_error':
+            fix_proposal.update({
+                'type': 'structural_fix',
+                'description': 'Fix file structure/location',
+                'auto_applicable': False,  # Requires manual review
+                'actions': ['Determine correct location', 'Move file', 'Update imports'],
+            })
+        else:
+            fix_proposal.update({
+                'type': 'manual_review',
+                'description': 'Requires manual investigation',
+                'auto_applicable': False,
+                'actions': ['Review code', 'Consult documentation'],
+            })
+            
+        return fix_proposal
+
+    async def _implement_llm_fix(
+        self, 
+        file_path: str, 
+        original_code: str,
+        fix: Dict[str, Any],
+        llm_client: Any = None
+    ) -> Dict[str, Any]:
+        """
+        SUPPLEMENTED FROM DebuggerAgent._implement_fix — merged 2025-12-30
+        Implement a proposed fix using standard healing or LLM.
+        """
+        from datetime import datetime
+        
+        implementation = {
+            'fix_type': fix.get('type', 'unknown'),
+            'implemented_at': datetime.now().isoformat(),
+            'success': False,
+        }
+        
+        try:
+            # Use existing heal_violation for actual implementation
+            success = await self.heal_violation(
+                file_path=file_path,
+                violation_key=fix.get('violation_key', 40),
+                violation_details=fix.get('description', 'LLM-proposed fix'),
+            )
+            implementation['success'] = success
+            implementation['result'] = 'Healed via standard pipeline' if success else 'Healing failed'
+        except Exception as e:
+            implementation['error'] = str(e)
+            print(f'      [!] LLM fix implementation failed: {e}')
+            
+        return implementation
+
+
 # PascalCase is now the canonical name

@@ -18,6 +18,7 @@ import redis
 from pathlib import Path
 from dotenv import load_dotenv
 import logging
+from typing import Any, Dict, List
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -99,6 +100,131 @@ class BootstrapAgent:
         else:
             print("   [BOOTSTRAP FAILED] Neural link compromised - check .env and Redis.")
         return result
+
+
+    # SUPPLEMENTED FROM OrganicTerritorySeederAgent — sovereign project initialization — merged 2025-12-30
+    async def seed_initial_territory(self, project_root: Path = None) -> Dict[str, Any]:
+        """
+        Seed critical sovereign directories and starter files on first boot.
+        Ported from OrganicTerritorySeederAgent.execute().
+        
+        Args:
+            project_root: Project root path (defaults to self.project_root)
+            
+        Returns:
+            Dict with seeding results
+        """
+        from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+        
+        root = project_root or self.project_root
+        toolsmith = ToolsmithAgent()
+        
+        result = await toolsmith.seed_territory(root, dry_run=False)
+        
+        if result.get('seeded'):
+            logger.info(f"Territory seeded: {len(result['seeded'])} files")
+            for f in result['seeded']:
+                print(f"   [SEEDED] {f}")
+        if result.get('errors'):
+            logger.warning(f"Seeding errors: {result['errors']}")
+            
+        return result
+
+    # SUPPLEMENTED FROM AgentRegistryValidatorAgent — meta-sovereignty registry check — merged 2025-12-30
+    def validate_sovereign_registry(self) -> List[str]:
+        """
+        Ensure all mandatory agents exist and are discoverable.
+        Ported from AgentRegistryValidatorAgent.validate_registry().
+        
+        Returns:
+            List of missing agent names (empty if all present)
+        """
+        import importlib
+        
+        # Mandatory agents that must exist for sovereign operation
+        MANDATORY_AGENTS = [
+            'LocationAgent',
+            'HierarchyAgent', 
+            'NamingAgent',
+            'HealerAgent',
+            'ImportAgent',
+        ]
+        
+        # Search paths for agents
+        SEARCH_PATHS = [
+            'agentic_core.L5_safety.validators',
+            'agentic_core.L5_safety.guardrails',
+            'agentic_core.L5_safety.gravity',
+            'agentic_core.L2_execution.tool_registry',
+            'agentic_core.utils.naming',
+        ]
+        
+        missing = []
+        found = []
+        
+        for agent_name in MANDATORY_AGENTS:
+            agent_found = False
+            for module_path in SEARCH_PATHS:
+                try:
+                    # Try to import as module.AgentName
+                    full_path = f"{module_path}.{agent_name}"
+                    module = importlib.import_module(full_path)
+                    if hasattr(module, agent_name):
+                        agent_found = True
+                        found.append(agent_name)
+                        break
+                except (ImportError, AttributeError):
+                    continue
+                    
+            if not agent_found:
+                missing.append(agent_name)
+        
+        if missing:
+            logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {missing}")
+            print(f"\n[!] [SOVEREIGN BREACH] Missing mandatory agents: {missing}")
+        else:
+            logger.info("[OK] All mandatory agents present — registry sovereign")
+            print(f"   [OK] All {len(found)} mandatory agents present — registry sovereign")
+        
+        return missing
+
+    async def run_full_bootstrap(self) -> Dict[str, Any]:
+        """
+        Execute full bootstrap with territory seeding and registry validation.
+        """
+        print("\n[BOOTSTRAP PHASE] Full Sovereign Bootstrap Sequence...")
+        
+        results = {
+            'neural_link': False,
+            'registry_valid': False,
+            'territory_seeded': False,
+        }
+        
+        # Step 1: Neural link verification
+        results['neural_link'] = self.verify_neural_link()
+        
+        # Step 2: Registry validation
+        missing = self.validate_sovereign_registry()
+        results['registry_valid'] = len(missing) == 0
+        results['missing_agents'] = missing
+        
+        # Step 3: Territory seeding (async)
+        try:
+            seed_result = await self.seed_initial_territory()
+            results['territory_seeded'] = len(seed_result.get('errors', [])) == 0
+            results['seeded_files'] = seed_result.get('seeded', [])
+        except Exception as e:
+            logger.error(f"Territory seeding failed: {e}")
+            results['territory_seeded'] = False
+            
+        # Summary
+        all_ok = all([results['neural_link'], results['registry_valid']])
+        if all_ok:
+            print("\n   [BOOTSTRAP COMPLETE] All critical systems active.")
+        else:
+            print("\n   [BOOTSTRAP PARTIAL] Some systems require attention.")
+            
+        return results
 
 
 # PascalCase is now the canonical name

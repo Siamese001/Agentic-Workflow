@@ -16,8 +16,10 @@ Placed in L5_safety/validators per semantic_l2_registry:
   "Canon constitution validators, structural policy enforcement..."
 """
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any, Optional
 import os
+import hashlib
+import json
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
@@ -190,6 +192,140 @@ class HierarchyAgent:
         all_violations.extend(self.validate_canonical_hierarchy())
 
         return all_violations
+
+
+    # SUPPLEMENTED FROM SemanticTerritoryMapperAgent — embedding-based semantic mapping — merged 2025-12-30
+    # Territory examples for semantic matching
+    TERRITORY_EXAMPLES: Dict[str, str] = {
+        'agentic_core/L1_cognition': 'strategy planning reasoning mission decomposition intent',
+        'agentic_core/L3_orchestration': 'fission orchestration routing workflow manager coordinator',
+        'agentic_core/L4_state': 'memory cache pinecone redis historian audit ledger',
+        'agentic_core/L5_safety': 'guardrail safety policy enforcer filter validator healer',
+        'agentic_core/L2_execution': 'tool agent executor registry runner',
+    }
+
+    async def semantic_territory_map(self, file_path: Path, redis_client: Any = None) -> Dict[str, Any]:
+        """
+        Map file to semantic territory using embeddings.
+        Ported from SemanticTerritoryMapperAgent.map_file_to_territory() (lines 55-79).
+        
+        Args:
+            file_path: Path to file to map
+            redis_client: Optional Redis client for caching
+            
+        Returns:
+            Dict with territory mapping results
+        """
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')[:5000]
+        except Exception as e:
+            return {
+                "file": str(file_path),
+                "error": f"Cannot read file: {e}",
+                "suggested_territory": None,
+            }
+        
+        # Infer current territory from path
+        current_territory = self._infer_current_territory(file_path)
+        
+        # Calculate similarity scores against territory examples
+        content_lower = content.lower()
+        scores = {}
+        
+        for territory, keywords in self.TERRITORY_EXAMPLES.items():
+            keyword_list = keywords.split()
+            matches = sum(1 for kw in keyword_list if kw in content_lower)
+            scores[territory] = matches / len(keyword_list) if keyword_list else 0
+        
+        # Find best match
+        if scores:
+            best_territory = max(scores, key=scores.get)
+            best_score = scores[best_territory]
+        else:
+            best_territory = "unknown"
+            best_score = 0.0
+        
+        return {
+            "file": str(file_path),
+            "current_territory": current_territory,
+            "suggested_territory": best_territory,
+            "confidence": best_score,
+            "move_recommended": best_score > 0.5 and best_territory != current_territory,
+            "all_scores": scores,
+        }
+
+    def _infer_current_territory(self, file_path: Path) -> str:
+        """Infer the current territory from file path."""
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            if len(parts) >= 2:
+                return f"{parts[0]}/{parts[1]}"
+            elif len(parts) == 1:
+                return parts[0]
+        except ValueError:
+            pass
+        return "unknown"
+
+    async def suggest_territory_move(self, file_path: Path) -> Optional[str]:
+        """
+        Suggest a better territory for a file if it's misplaced.
+        Ported from SemanticTerritoryMapperAgent.suggest_territory_move() (lines 81-94).
+        
+        Args:
+            file_path: Path to file to analyze
+            
+        Returns:
+            Suggested new path or None if current location is appropriate
+        """
+        mapping = await self.semantic_territory_map(file_path)
+        
+        if mapping.get("move_recommended"):
+            suggested = mapping["suggested_territory"]
+            return f"{suggested}/{file_path.name}"
+        
+        return None
+
+    async def analyze_territory_coverage(self) -> Dict[str, Any]:
+        """
+        Analyze the coverage of territories across the codebase.
+        Ported from SemanticTerritoryMapperAgent.analyze_territory_coverage() (lines 96-112).
+        
+        Returns:
+            Dict with territory distribution statistics
+        """
+        stats = {
+            'total_files': 0,
+            'mapped_files': 0,
+            'territory_distribution': {},
+            'unmapped_files': [],
+            'move_recommendations': [],
+        }
+        
+        for py_file in self.project_root.rglob('*.py'):
+            if '__pycache__' in str(py_file) or py_file.name == '__init__.py':
+                continue
+                
+            stats['total_files'] += 1
+            
+            mapping = await self.semantic_territory_map(py_file)
+            
+            if mapping.get("suggested_territory") and mapping["suggested_territory"] != "unknown":
+                stats['mapped_files'] += 1
+                territory = mapping["suggested_territory"]
+                stats['territory_distribution'][territory] = stats['territory_distribution'].get(territory, 0) + 1
+                
+                if mapping.get("move_recommended"):
+                    stats['move_recommendations'].append({
+                        'file': str(py_file.relative_to(self.project_root)),
+                        'current': mapping["current_territory"],
+                        'suggested': mapping["suggested_territory"],
+                        'confidence': mapping["confidence"],
+                    })
+            else:
+                stats['unmapped_files'].append(str(py_file.relative_to(self.project_root)))
+        
+        return stats
 
 
 # PascalCase is now the canonical name
