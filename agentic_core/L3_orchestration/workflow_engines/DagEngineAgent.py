@@ -70,7 +70,8 @@ class dag_execution_result:
         """Convert to dictionary."""
         return {'success': self.success, 'completed_tasks': self.completed_tasks, 'failed_tasks': self.failed_tasks, 'skipped_tasks': self.skipped_tasks, 'task_results': self.task_results, 'execution_order': self.execution_order, 'metadata': self.metadata}
 
-class dag_engine:
+# NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
+class DagEngineAgent:
     """Lightweight DAG engine for workflow execution.
 
     Features:
