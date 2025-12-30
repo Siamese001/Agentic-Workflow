@@ -83,7 +83,10 @@ class system_architect(CanonBaseAgent):
         """
         violations: Any = []
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from agentic_core.runtime.shared.void_compliance import validate_canonical_hierarchy
+        # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
+        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        def validate_canonical_hierarchy(proj_root):
+            return HierarchyAgent(proj_root).validate_hierarchy()
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
         hierarchy_violations: Any = validate_canonical_hierarchy(project_root)
         for path, reason in hierarchy_violations:

@@ -21,7 +21,17 @@ class territory_healer_agent:
         self.root = project_root
         self.ctx = ctx
         from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY, CANON_SIGNALS
-        from agentic_core.runtime.shared.void_compliance import get_placement_guidance
+        # [PHASE 20] DEPRECATION: void_compliance.py removed - inline placement guidance
+        def get_placement_guidance(content_preview):
+            if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
+                return 'agentic_core/L1_cognition'
+            if 'node' in content_preview.lower() or 'execute' in content_preview:
+                return 'agentic_core/L1_cognition/thought_engine'
+            if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
+                return 'agentic_core/L3_orchestration'
+            if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
+                return 'agentic_core/L4_state'
+            return 'agentic_core/L1_cognition'
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps if p != '*'}

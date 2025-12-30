@@ -9,7 +9,17 @@ import os
 import shutil
 from pathlib import Path
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.runtime.shared.void_compliance import get_placement_guidance
+# [PHASE 20] DEPRECATION: void_compliance.py removed
+def get_placement_guidance(content_preview):
+    if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
+        return 'agentic_core/L1_cognition'
+    if 'node' in content_preview.lower() or 'execute' in content_preview:
+        return 'agentic_core/L1_cognition/thought_engine'
+    if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
+        return 'agentic_core/L3_orchestration'
+    if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
+        return 'agentic_core/L4_state'
+    return 'agentic_core/L1_cognition'
 canonical_hierarchy: Any = {k: v['subfolders'] for k, v in SOVEREIGN_REGISTRY.items()}
 
 def migrate_shallow_files(project_root: str) -> Any:

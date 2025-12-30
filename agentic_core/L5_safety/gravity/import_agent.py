@@ -30,11 +30,25 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-try:
-    from void_compliance_helpers import get_ast_safe_imports
-except ImportError:
-    # Placeholder if helper not immediately available in context
-    def get_ast_safe_imports(*args): return []
+# [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
+def get_ast_safe_imports(content: str):
+    """Extract imports using AST, ignoring comments/docstrings."""
+    import ast
+    imports = set()
+    try:
+        tree = ast.parse(content)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for name in node.names:
+                    imports.add(name.name)
+            elif isinstance(node, ast.ImportFrom):
+                if node.module:
+                    imports.add(node.module)
+    except SyntaxError:
+        import re
+        regex_imports = re.findall(r'^(?:import|from)\s+([a-zA-Z0-9_.]+)', content, re.MULTILINE)
+        imports.update(regex_imports)
+    return imports
 
 
 class import_agent:

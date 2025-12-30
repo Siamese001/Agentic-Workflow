@@ -330,19 +330,78 @@ except Exception as e:
         print(f"   [CRITICAL] Dynamic import failed: {e}")
     sys.exit(1)
 
-# Load void_compliance from runtime (allowed - same layer)
-from agentic_core.runtime.shared_runtime.void_compliance import (
-    ALLOWED_ROOT_FOLDERS,
+# [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
+# RATIONALE: All compliance logic migrated to L5_safety/validators agents
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    ROOT_WHITELIST,
     FORBIDDEN_ROOT_FOLDERS,
-    check_import_waterfall_violations,
-    check_span_of_two_violations,
-    validate_canonical_hierarchy,
-    validate_file_location,
-    enforce_void_compliance,
-    get_folder_scope_summary,
-    get_placement_guidance,
-    validate_sovereign_roots
 )
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
+
+# Import modular agents for compliance checks
+try:
+    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+    from agentic_core.L5_safety.gravity.import_agent import ImportAgent
+    from agentic_core.utils.naming.naming_agent import NamingAgent
+    
+    def enforce_void_compliance(files, project_root):
+        """Bridge function using LocationAgent."""
+        agent = LocationAgent(project_root)
+        return agent.enforce_void_compliance(files)
+    
+    def validate_file_location(file_path, project_root):
+        """Bridge function using LocationAgent."""
+        agent = LocationAgent(project_root)
+        return agent.validate_file_location(file_path)
+    
+    def check_span_of_two_violations(project_root):
+        """Bridge function using HierarchyAgent."""
+        agent = HierarchyAgent(project_root)
+        result = agent.check_span_of_two()
+        return [(v.get('path'), v.get('reason', '')) for v in result.get('details', [])]
+    
+    def validate_canonical_hierarchy(project_root):
+        """Bridge function using HierarchyAgent."""
+        agent = HierarchyAgent(project_root)
+        return agent.validate_hierarchy()
+    
+    def check_import_waterfall_violations(file_path, project_root):
+        """Bridge function using ImportAgent."""
+        agent = ImportAgent(project_root)
+        return agent.check_waterfall_violations(file_path)
+    
+    def get_folder_scope_summary(project_root):
+        """Bridge function - returns py file counts per folder."""
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_EXCLUDED_FOLDERS
+        from pathlib import Path
+        summary = {}
+        skip_folders = SOVEREIGN_EXCLUDED_FOLDERS | {'tests'}
+        for folder in Path(project_root).iterdir():
+            if folder.is_dir() and folder.name not in skip_folders:
+                summary[folder.name] = len(list(folder.rglob('*.py')))
+        return summary
+    
+    def get_placement_guidance(content_preview):
+        """Bridge function using NamingAgent heuristics."""
+        if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
+            return 'agentic_core/L1_cognition'
+        if 'node' in content_preview.lower() or 'execute' in content_preview:
+            return 'agentic_core/L1_cognition/thought_engine'
+        if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
+            return 'agentic_core/L3_orchestration'
+        if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
+            return 'agentic_core/L4_state'
+        return 'agentic_core/L1_cognition'
+    
+    def validate_sovereign_roots(project_root):
+        """Bridge function using LocationAgent."""
+        agent = LocationAgent(project_root)
+        return agent.validate_sovereign_roots()
+        
+except ImportError as e:
+    print(f"   [!] Modular agents unavailable: {e}")
+    print("   [FALLBACK] Some compliance checks will be skipped")
 
 # [GRAVITY SURGERY ENABLED] waterfall enforcement active
 

@@ -29,11 +29,29 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     TESTS_ROOT_FILE_WHITELIST,
 )
-try:
-    from void_compliance_helpers import is_excepted_from_key
-except ImportError:
-    # Placeholder for helper if not immediately available in context
-    def is_excepted_from_key(*args): return False
+# [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
+def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool:
+    """Check if file/line is excepted from key validation."""
+    import fnmatch
+    import re
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+    exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
+    if not exceptions:
+        return False
+    try:
+        from pathlib import Path
+        project_root = Path(__file__).resolve().parents[3]
+        rel_path = str(file_path.relative_to(project_root)).replace('\\', '/')
+    except (ValueError, IndexError):
+        rel_path = str(file_path.name) if hasattr(file_path, 'name') else str(file_path)
+    file_exceptions = exceptions.get('files', set())
+    if rel_path in file_exceptions or any(fnmatch.fnmatch(rel_path, p) for p in file_exceptions):
+        return True
+    if line_content:
+        for pattern in exceptions.get('patterns', []):
+            if re.search(pattern, line_content):
+                return True
+    return False
 
 
 class location_agent:
