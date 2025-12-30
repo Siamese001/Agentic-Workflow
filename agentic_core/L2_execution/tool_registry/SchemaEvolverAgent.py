@@ -63,7 +63,8 @@ class schema_registry:
     dependencies: Dict[str, Set[str]] = field(default_factory=dict)
     reverse_deps: Dict[str, Set[str]] = field(default_factory=dict)
 
-class schema_evolver(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class SchemaEvolverAgent(SubAtomicAgent):
     """
     The Structural Guard - Schema Evolution Agent
     Monitors all Pydantic definitions and database schemas.

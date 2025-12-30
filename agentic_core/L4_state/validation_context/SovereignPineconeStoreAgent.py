@@ -17,7 +17,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 logger: Any = logging.getLogger('L4.PineconeStore')
 
-class sovereign_pinecone_store:
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class SovereignPineconeStoreAgent:
     """
     ADAPTER: Legacy Interface -> New MCP Client.
     Maintains backward compatibility for 'add_texts' and 'similarity_search'.

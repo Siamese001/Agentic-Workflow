@@ -67,8 +67,8 @@ class complexity_profile:
     complexity_score: float  # 0-100
 
 
-# NAMING FIXED: DynamicModelRouter → dynamic_model_router
-class dynamic_model_router(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class DynamicModelRouterAgent(SubAtomicAgent):
     """
     The Throttler - Dynamic Model Router
     

@@ -298,7 +298,8 @@ class regression_test_runner:
                     logger.info(f'  {test.test_name} → {test.test_file}')
         logger.info(f"{'=' * 80}\n")
 
-class regression_oracle(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class RegressionOracleAgent(SubAtomicAgent):
     """
     The Regression Oracle - Automated Test Synthesizer
     

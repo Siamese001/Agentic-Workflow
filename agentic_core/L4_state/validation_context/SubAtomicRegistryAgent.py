@@ -22,8 +22,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 
 
-# NAMING FIXED: SubAtomicRegistry → sub_atomic_registry
-class sub_atomic_registry:
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class SubAtomicRegistryAgent:
     """
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.

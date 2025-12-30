@@ -165,7 +165,8 @@ class claim_verifier:
         union = len(words1 | words2)
         return intersection / union if union > 0 else 0.0
 
-class hallucination_hunter(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class HallucinationHunterAgent(SubAtomicAgent):
     """
     The Hallucination Hunter - Ground Truth Verifier
     

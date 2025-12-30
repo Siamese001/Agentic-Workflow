@@ -46,7 +46,8 @@ class recovery_result:
     errors: List[str] = field(default_factory=list)
     recovery_time: float = 0.0
 
-class autonomous_checkpoint_manager:
+# NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
+class AutonomousCheckpointManagerAgent:
     """
     Manages state checkpoints with automatic recovery capabilities.
     
