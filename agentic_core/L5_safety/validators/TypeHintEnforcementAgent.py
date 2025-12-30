@@ -17,8 +17,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: TypeHintEnforcementAgent → type_hint_enforcement_agent
-class type_hint_enforcement_agent:
+# NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
+class TypeHintEnforcementAgent:
     """
     Ensures public functions, methods, and module-level assignments have type hints.
 

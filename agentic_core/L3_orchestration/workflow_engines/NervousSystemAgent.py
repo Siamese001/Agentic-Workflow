@@ -1023,8 +1023,8 @@ class nervous_system_phase_orchestrator:
         
         return converged, errors
 
-# NAMING FIXED: NervousSystem → nervous_system
-class nervous_system:
+# NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
+class NervousSystemAgent:
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
