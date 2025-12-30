@@ -3,7 +3,7 @@ Sovereign Multi-Dimensional Auditor v3.1
 The Supreme Court of the Agentic Architecture.
 Aggregates reports from all Guardians.
 Phase 10: Sovereign Healing Engine integrated (Dec 26, 2025)
-Phase 12: Observability & Metrics Integration (Dec 29, 2025)
+Phase 14: Healing Resilience Scoring (Dec 29, 2025)
 """
 import sys
 import asyncio
@@ -84,6 +84,7 @@ class SovereignReport:
                 "Atomic Fission": {"score": 0.0, "issues": []},
                 "Zero-Trust Membrane": {"score": 0.0, "issues": []},
                 "Observability Footprint": {"score": 0.0, "issues": []},
+                "Healing Resilience": {"score": 0.0, "issues": []},
             }
             self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
