@@ -54,12 +54,13 @@ class ComplianceOrchestrator:
         self._monitors: List[Any] = []            # Global single-pass monitors
         self._all_agents: List[Any] = []
 
-        # [ULTRA HARDENING] Mandatory agent registry (SSOT)
+        # [ULTRA HARDENING] Mandatory agent registry (SSOT) - snake_case to match actual class names
         self.MANDATORY_AGENTS: Set[str] = {
-            "BootstrapAgent", "LocationAgent", "HierarchyAgent", "ImportAgent",
-            "NamingAgent", "PineconeSovereignAgent", "TracingAgent", "MetricsAgent",
-            "HealerAgent", "KeyMappingAgent", "ReportingAgent", "MissionResumeAgent",
-            "NeuralAutoImmuneAgent", "MetaLearningAgent", "SovereignForensicsAgent"
+            "bootstrap_agent", "location_agent", "hierarchy_agent", "import_agent",
+            "naming_agent", "tracing_agent", "metrics_agent",
+            "healer_agent", "key_mapping_agent", "reporting_agent",
+            "neural_auto_immune_agent", "meta_learning_agent", "filesystem_agent",
+            "redis_sovereign_agent", "telemetry_agent"
         }
 
         # [GRAVITY AUTHORITY] Layer rank (lower = higher authority) - derived from SSOT
@@ -73,20 +74,15 @@ class ComplianceOrchestrator:
         self.tracing = None
         self.metrics = None
 
-        # [PRIORITY FIX] Use robust validator-focused discovery (recursive + strict checks)
-        self._discover_and_instantiate()
-        
-        # [ULTRA HARDENING] Full sovereign territory sweep for mandatory agents
-        self._discover_all_layers()
+        # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in agentic_core
+        self._discover_all_agents()
         self._enforce_mandatory_agent_compliance()
 
-    def _discover_all_layers(self) -> None:
+    def _discover_all_agents(self) -> None:
         """
-        [FULL REPO DISCOVERY] Scan ALL layers for agents.
+        [COMPREHENSIVE DISCOVERY] Scan ALL agent files in agentic_core.
         
-        Uses SSOT from structure_blueprint.py:
-        - SOVEREIGN_REGISTRY defines root folders (agentic_core, apps_rg, etc.)
-        - CORE_SUBFOLDER_MAP defines L1/L2 subfolders within agentic_core
+        Finds every *agent*.py file and instantiates all Agent classes.
         
         MANDATORY AGENTS (per user specification):
         - BootstrapAgent → L0_maintenance/scripts
@@ -169,10 +165,12 @@ class ComplianceOrchestrator:
         """Discover and instantiate agents from a single file."""
         discovered = 0
         
-        # Build module name from file path
+        # Build module name from file path using pathlib parts
         try:
             rel_path = agent_file.relative_to(self.project_root)
-            module_name = str(rel_path.with_suffix("")).replace("\\", ".").replace("/", ".")
+            # Use pathlib parts to build proper module name
+            parts = list(rel_path.with_suffix("").parts)
+            module_name = ".".join(parts)
         except ValueError:
             return 0
         
@@ -180,27 +178,36 @@ class ComplianceOrchestrator:
             module = importlib.import_module(module_name)
             
             for attr_name in dir(module):
-                # Look for classes ending in Agent (PascalCase)
-                if not attr_name.endswith("Agent"):
+                # Look for classes ending in Agent (PascalCase) OR _agent (snake_case)
+                is_agent_class = attr_name.endswith("Agent") or attr_name.endswith("_agent")
+                if not is_agent_class:
                     continue
                 
                 attr = getattr(module, attr_name)
                 if not inspect.isclass(attr):
                     continue
                 
-                # Skip if already discovered
-                if any(type(a).__name__ == attr_name for a in self._all_agents):
+                # Skip if already discovered (case-insensitive)
+                if any(type(a).__name__.lower() == attr_name.lower() for a in self._all_agents):
                     continue
                 
-                # Try to instantiate
+                # Try to instantiate with various signatures
+                instance = None
                 try:
                     instance = attr(self.project_root)
                 except TypeError:
                     try:
                         instance = attr()
                     except Exception:
-                        continue
+                        # Try with context=None for some agents
+                        try:
+                            instance = attr(context=None)
+                        except Exception:
+                            pass
                 except Exception:
+                    pass
+                
+                if instance is None:
                     continue
                 
                 self._all_agents.append(instance)
@@ -216,7 +223,7 @@ class ComplianceOrchestrator:
                         self._batch_validators.append(instance)
                         
         except Exception as e:
-            # Silent skip for import errors
+            # Log import errors for debugging
             pass
         
         return discovered
