@@ -3206,57 +3206,9 @@ async def _execute_move_instruction(move: dict, project_root: Path, ctx):
         ctx.report("MoveExecutor", 40, False, f"Move failed: {str(e)}")
 
 
-# ==============================================================================
-# FACTORY FUNCTIONS
-# ==============================================================================
-
-def get_fission_manager(max_lines: int = 800, min_lines: int = 80, dust_threshold: int = 40, max_rounds: int = 3) -> fission_manager:
-    """
-    Factory function to create fission_manager instance.
-    
-    Args:
-        max_lines: Maximum lines per file (upper bound for fission trigger)
-        min_lines: Minimum lines per file (lower bound for fission trigger)
-        dust_threshold: Minimum lines required to prevent dust creation
-        max_rounds: Maximum healing rounds before exhaustion
-        
-    Returns:
-        fission_manager instance
-    """
-    # [SOVEREIGN HARDENING] Re-introduce size guards to prevent fragmentation.
-    # Violation justification: This ensures the 'Span-of-Two' law is applied physically.
-    return fission_manager(
-        max_lines=max_lines,          # Constitutional limit (e.g., 800)
-        min_lines=min_lines,          # Prevents creating <80 line modules
-        dust_threshold=dust_threshold,# Rejects splits resulting in <40 line scraps
-        max_rounds=max_rounds
-    )
-
-
-def get_safety_guardrail(deletion_limit: int = 110) -> safety_guardrail:
-    """
-    Factory function to create safety_guardrail instance.
-    
-    Args:
-        deletion_limit: Maximum lines that can be deleted
-        
-    Returns:
-        safety_guardrail instance
-    """
-    return safety_guardrail(deletion_limit=deletion_limit)
-
-
-def get_subatomic_engine(gemini_client: Optional[Any] = None) -> SubAtomicEngine:
-    """
-    Factory function to create SubAtomicEngine instance.
-    
-    Args:
-        gemini_client: Optional Gemini client
-        
-    Returns:
-        SubAtomicEngine instance
-    """
-    return SubAtomicEngine(gemini_client=gemini_client)
+# [PHASE 16] DEPRECATION: Legacy factory functions removed.
+# RATIONALE: All component instantiation is now managed internally by L5 HealerAgent.
+# Fission limits and safety guardrails are derived from MISSION_CONFIG/HEALING_CONFIG SSOT.
 
 
 # ==============================================================================
