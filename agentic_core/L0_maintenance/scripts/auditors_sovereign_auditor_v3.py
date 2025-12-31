@@ -23,6 +23,9 @@ from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
 # [PHASE 15] SSOT-compliant Guardian Orchestrator
 from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
 
+# [PHASE 16] Healing Orchestrator – Sovereign Agent
+from agentic_core.L0_maintenance.scripts.healing_orchestrator import HealingOrchestrator
+
 
 # Add repo root to path for imports
 repo_root = Path(__file__).resolve().parents[3]
@@ -47,19 +50,7 @@ except ImportError:
     NamingAgent = None
     MetricsAgent = None
 
-# Healing infrastructure (P1_core files not yet relocated - will gracefully degrade)
-try:
-    from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES, get_strategies_by_priority
-except ImportError:
-    HEALING_STRATEGIES = []
-    get_strategies_by_priority = lambda: []
-
-try:
-    from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
-    from agentic_core.observability.healing_audit import log_healing_action
-except ImportError:
-    HealingTransaction = None
-    log_healing_action = None
+# Healing components now loaded internally by HealingOrchestrator
 
 async def main():
     """
@@ -114,118 +105,20 @@ async def main():
     report = builder.build()
     overall_score = report.print_summary()
     
-    # Return report for L0 Supreme Court integration
-    return report
-    
-    # Phase 10: Sovereign Healing Engine - FULLY ENABLED
+    # Phase 16: Sovereign Healing Engine – Delegated to HealingOrchestrator
+    healing_orchestrator = HealingOrchestrator()
+
     if overall_score >= 95:
         print("\n[OK] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
     else:
         print("\n[WARN] SOVEREIGNTY COMPROMISED - Initiating Autonomous Self-Correction")
-        
         issues = report.get_all_issues()
-        if issues:
-            try:
-                # Run the async healing loop
-                await sovereign_self_correction(issues)
-            except Exception as e:
-                print(f"[✗] Healing engine launch failed: {e}")
-                import traceback
-                traceback.print_exc()
-        else:
-            print("   No structured violations detected for healing.")
-            
+        await healing_orchestrator.execute_self_correction(issues)
+    
     return report
 
-async def sovereign_self_correction(issues: List[Dict]):
-    """
-    L0 Transactional Healing: Atomic repair with automated rollback.
-    
-    This is the core of the Sovereign Control Circuit:
-    1. L0 detects violations via guardians
-    2. L0 diagnoses root causes via healing strategies
-    3. L0 applies fixes atomically with transaction manager
-    4. L0 logs to L6 for audit trail
-    5. L0 rolls back on failure
-    """
-    print(f"   [L0 HEALING] Analyzing {len(issues)} violations...")
-    
-    # Diagnose fixes from all strategies
-    all_fixes = []
-    for strategy in get_strategies_by_priority():
-        fixes = await strategy.diagnose(issues)
-        if fixes:
-            # Tag each fix with strategy name
-            for fix in fixes:
-                fix["strategy"] = strategy.name
-            print(f"   [L0 HEALING] {strategy.name} strategy proposed {len(fixes)} fixes")
-            all_fixes.extend(fixes)
-    
-    if not all_fixes:
-        print("   [L0 HEALING] No automated fixes available for current violations")
-        return
-    
-    # Check if transactional healing is available
-    if HealingTransaction is None or log_healing_action is None:
-        print(f"\n   [L0 HEALING] Transactional healing not available")
-        print(f"   [L0 HEALING] Logging {len(all_fixes)} proposed fixes for manual review...")
-        for fix in sorted(all_fixes, key=lambda f: f.get("priority", 10)):
-            print(f"   [L0 HEALING] {fix['action']}: {fix['reason']}")
-            print(f"                File: {fix.get('file', 'N/A')}")
-        return
-    
-    # Execute fixes with transaction manager
-    print(f"\n   [L0 HEALING] Initiating transactional healing for {len(all_fixes)} fixes...")
-    
-    tx = HealingTransaction()
-    fixes_applied = 0
-    
-    try:
-        for fix in sorted(all_fixes, key=lambda f: f.get("priority", 10)):
-            # Backup file if specified
-            if 'file' in fix and fix['file'] != 'N/A':
-                file_path = Path(fix['file'])
-                if file_path.exists():
-                    tx.backup(file_path)
-            
-            # Log the proposed fix
-            print(f"   [L0 HEALING] {fix['action']}: {fix['reason']}")
-            print(f"                File: {fix.get('file', 'N/A')}")
-            
-            # Apply the fix using the strategy that proposed it
-            strategy_name = fix.get('strategy')
-            strategy = None
-            for s in get_strategies_by_priority():
-                if s.name == strategy_name:
-                    strategy = s
-                    break
-            
-            if strategy:
-                success = await strategy.apply(fix, ctx=None)
-            else:
-                print(f"   [L0 HEALING] Warning: Strategy '{strategy_name}' not found, skipping fix")
-                success = False
-            
-            # Log to L6 audit trail
-            log_healing_action(fix['action'], fix, success)
-            
-            if not success:
-                print(f"   [L0 HEALING] Warning: Fix failed but continuing: {fix['reason']}")
-                # Don't raise exception - continue with other fixes
-            else:
-                fixes_applied += 1
-        
-        # Commit transaction
-        tx.commit()
-        print(f"\n   [✓] Healing Complete: {fixes_applied} fixes committed.")
-        print(f"   [✓] Audit trail logged to L6 observability layer")
-        
-    except Exception as e:
-        # Rollback on failure
-        tx.rollback()
-        print(f"\n   [✗] Healing Aborted: {e}")
-        print(f"   [✗] Rollback executed - all changes reverted")
-        print(f"   [✗] {fixes_applied} fixes were attempted before failure")
+# Healing logic fully extracted to HealingOrchestrator agent
+# Supreme Court now only triggers sovereign self-correction
 
 if __name__ == "__main__":
     main()
