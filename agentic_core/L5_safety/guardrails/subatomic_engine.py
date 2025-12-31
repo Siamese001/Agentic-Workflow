@@ -194,11 +194,39 @@ class sub_atomic_engine_impl:
                 logger.error(f'   [X] Gemini Fatal Error: {e}')
                 return code
         if response and response.candidates and response.candidates[0].content.parts:
-            output = response.candidates[0].content.parts[0].text.strip()
+            raw_output = response.candidates[0].content.parts[0].text.strip()
             duration = time.time() - start_time
-            if duration < 0.1 and (not output or len(output) < 50):
+            if duration < 0.1 and (not raw_output or len(raw_output) < 50):
                 logger.error(f'   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).')
                 return code
+            
+            # Extract code block if fenced (common LLM output format)
+            code_match = re.search(r'```python\n(.*?)\n```', raw_output, re.DOTALL)
+            healed_code = code_match.group(1) if code_match else raw_output
+            
+            # [HARDENING] Stage 1: Post-LLM Validation Pipeline
+            if not fission_active:
+                try:
+                    from agentic_core.L5_safety.validators.heal_validator import HealValidator
+                    validator = HealValidator(Path('.'))
+                    validation_result = validator.validate_healed_code(code, healed_code, Path(file_path))
+                    
+                    if not validation_result['valid']:
+                        logger.error(f"   [X] HEAL REJECTED ({validation_result['stage']}): {validation_result['reason']}")
+                        if self.redis_client:
+                            self.redis_client.incr(f'fail_count:{file_path}')
+                        return code
+                    
+                    logger.info(f"   [✓] Heal validated: {os.path.basename(file_path)}")
+                except ImportError as e:
+                    logger.warning(f'   [!] HealValidator unavailable: {e}')
+                except Exception as e:
+                    logger.error(f'   [!] Validation failed: {e}')
+                    return code
+            
+            output = healed_code
+            
+            # Legacy truncation check (now redundant with HealValidator but kept for defense-in-depth)
             if not fission_active and '...' in output and (len(output) < len(code) * 0.8):
                 logger.warning('   [X] TRUNCATION DETECTED. Rejecting mutation.')
                 if self.redis_client:
