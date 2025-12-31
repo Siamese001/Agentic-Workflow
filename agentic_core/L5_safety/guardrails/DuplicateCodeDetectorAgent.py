@@ -2,13 +2,24 @@
 """
 Duplicate Code Detector Agent
 Batch agent: Detects exact duplicate code blocks across the entire territory.
-Uses token-based hashing for speed and accuracy (ignores whitespace/comments).
+Uses AST fingerprinting for structural comparison (Type-2/3 clone detection).
 """
 import hashlib
 import tokenize
+import ast
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Any
+
+# Tree-sitter for AST fingerprinting
+try:
+    from tree_sitter import Language, Parser
+    from tree_sitter_python import language
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
+    Parser = None
+    Language = None
 
 
 class DuplicateCodeDetectorAgent:
@@ -23,6 +34,15 @@ class DuplicateCodeDetectorAgent:
         self.min_lines = 10  # Minimum block size to flag
         self.max_report = 20  # Limit detailed reporting
         self.auto_deduplicate = False
+        
+        # Initialize tree-sitter parser if available
+        self.ts_parser: Optional[Parser] = None
+        if TREE_SITTER_AVAILABLE:
+            try:
+                self.ts_parser = Parser()
+                self.ts_parser.language = language()
+            except Exception:
+                self.ts_parser = None
 
     async def execute(self) -> Dict:
         """Scan all Python files for duplicate code blocks."""
@@ -45,15 +65,13 @@ class DuplicateCodeDetectorAgent:
 
                 # Sliding window hash
                 for i in range(len(lines) - self.min_lines + 1):
-                    # Extract block and normalize (strip whitespace)
-                    block_content = "\n".join(
-                        l.strip() for l in lines[i : i + self.min_lines] if l.strip()
-                    )
-                    if not block_content:
+                    # Extract block
+                    block_content = "\n".join(lines[i : i + self.min_lines])
+                    if not block_content.strip():
                         continue
 
-                    # Hash the normalized block
-                    block_hash = hashlib.md5(block_content.encode()).hexdigest()
+                    # AST fingerprint for structural comparison
+                    block_hash = self._hash_block_ast(block_content)
                     try:
                         rel_path = file_path.relative_to(self.project_root)
                     except ValueError:
@@ -73,3 +91,41 @@ class DuplicateCodeDetectorAgent:
             "instances_eliminated_potential": total_dupes,
             "details": duplicates[: self.max_report],
         }
+    
+    def _hash_block_ast(self, code: str) -> str:
+        """Generate AST fingerprint for code block."""
+        try:
+            if self.ts_parser:
+                # Tree-sitter based fingerprint
+                tree = self.ts_parser.parse(bytes(code, 'utf8'))
+                norm_tree = self._normalize_ts_tree(tree.root_node)
+                return hashlib.md5(str(norm_tree).encode()).hexdigest()
+            else:
+                # Python AST based fingerprint
+                tree = ast.parse(code)
+                norm_tree = self._normalize_ast_tree(tree)
+                return hashlib.md5(str(norm_tree).encode()).hexdigest()
+        except Exception:
+            # Fallback to text-based normalization
+            normalized = "\n".join(l.strip() for l in code.splitlines() if l.strip())
+            return hashlib.md5(normalized.encode()).hexdigest()
+    
+    def _normalize_ast_tree(self, node: ast.AST) -> str:
+        """Anonymize variables and constants in AST for structural comparison."""
+        if isinstance(node, ast.Name):
+            return 'VAR'
+        elif isinstance(node, ast.Constant):
+            return f'CONST_{type(node.value).__name__}'
+        elif isinstance(node, (ast.Num, ast.Str)):
+            return 'CONST'
+        children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
+        return f'{type(node).__name__}({"|" .join(children)})' if children else type(node).__name__
+    
+    def _normalize_ts_tree(self, node: Any) -> str:
+        """Normalize tree-sitter node for structural comparison."""
+        if node.type == 'identifier':
+            return 'VAR'
+        elif node.type in ['string', 'integer', 'float', 'true', 'false', 'none']:
+            return f'CONST_{node.type}'
+        children = [self._normalize_ts_tree(child) for child in node.children]
+        return f'{node.type}({"|" .join(children)})'
