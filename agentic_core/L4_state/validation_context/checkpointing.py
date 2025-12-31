@@ -9,14 +9,11 @@ import json
 import logging
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
-
 if TYPE_CHECKING:
     from agentic_core.storage import BlobStorageProvider
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class VerifiableCheckpointManager:
+class verifiable_checkpoint_manager:
     """
     Manages agent checkpoints with cryptographic verification.
 
@@ -32,14 +29,9 @@ class VerifiableCheckpointManager:
             storage_provider: Storage backend (LocalDisk or S3)
         """
         self.storage = storage_provider
-        LOGGER.info("Verifiable checkpoint manager initialized")
+        LOGGER.info('Verifiable checkpoint manager initialized')
 
-    async def save_checkpoint(
-        self,
-        session_id: str,
-        node_id: str,
-        state: Dict[str, Any]
-    ) -> str:
+    async def save_checkpoint(self, session_id: str, node_id: str, state: Dict[str, Any]) -> str:
         """
         Saves a checkpoint with cryptographic verification.
 
@@ -51,34 +43,15 @@ class VerifiableCheckpointManager:
         Returns:
             Storage ETag/checksum
         """
-        payload_str = json.dumps(state, sort_keys=True)
-        payload_bytes = payload_str.encode('utf-8')
-
-        checksum = hashlib.sha256(payload_bytes).hexdigest()
-
-        key = f"checkpoints/{session_id}/{node_id}.json"
-
-        storage_etag = await self.storage.write_blob(
-            key=key,
-            data=payload_bytes,
-            metadata={
-                "checksum": checksum,
-                "timestamp": str(state.get("timestamp", "")),
-                "session_id": session_id,
-                "node_id": node_id
-            }
-        )
-
-        LOGGER.info(f"Saved checkpoint: {session_id}/{node_id} (checksum={checksum[:8]}...)")
-
+        payload_str: Any = json.dumps(state, sort_keys=True)
+        payload_bytes: Any = payload_str.encode('utf-8')
+        checksum: Any = hashlib.sha256(payload_bytes).hexdigest()
+        key: Any = f'checkpoints/{session_id}/{node_id}.json'
+        storage_etag: Any = await self.storage.write_blob(key=key, data=payload_bytes, metadata={'checksum': checksum, 'timestamp': str(state.get('timestamp', '')), 'session_id': session_id, 'node_id': node_id})
+        LOGGER.info(f'Saved checkpoint: {session_id}/{node_id} (checksum={checksum[:8]}...)')
         return storage_etag
 
-    async def load_checkpoint(
-        self,
-        session_id: str,
-        node_id: str,
-        verify: bool = True
-    ) -> Optional[Dict[str, Any]]:
+    async def load_checkpoint(self, session_id: str, node_id: str, verify: bool=True) -> Optional[Dict[str, Any]]:
         """
         Loads and verifies a checkpoint.
 
@@ -93,35 +66,28 @@ class VerifiableCheckpointManager:
         Raises:
             ValueError: If checksum verification fails
         """
-        key = f"checkpoints/{session_id}/{node_id}.json"
-
+        key: Any = f'checkpoints/{session_id}/{node_id}.json'
         try:
-            data_bytes = await self.storage.read_blob(key)
+            data_bytes: Any = await self.storage.read_blob(key)
         except FileNotFoundError:
-            LOGGER.debug(f"Checkpoint not found: {session_id}/{node_id}")
+            LOGGER.debug(f'Checkpoint not found: {session_id}/{node_id}')
             return None
-
         if verify:
-            calculated_checksum = hashlib.sha256(data_bytes).hexdigest()
-            LOGGER.debug(f"Verifying checkpoint checksum: {calculated_checksum[:8]}...")
-
-            # Get stored checksum from metadata if available
-            metadata = await self.storage.get_blob_metadata(key)
-            stored_checksum = metadata.get("checksum")
+            calculated_checksum: Any = hashlib.sha256(data_bytes).hexdigest()
+            LOGGER.debug(f'Verifying checkpoint checksum: {calculated_checksum[:8]}...')
+            metadata: Any = await self.storage.get_blob_metadata(key)
+            stored_checksum: Any = metadata.get('checksum')
             if stored_checksum != calculated_checksum:
-                LOGGER.error(f"Checkpoint verification failed: {session_id}/{node_id}")
-                raise ValueError(f"Corrupted checkpoint: {stored_checksum} != {calculated_checksum}")
+                LOGGER.error(f'Checkpoint verification failed: {session_id}/{node_id}')
+                raise ValueError(f'Corrupted checkpoint: {stored_checksum} != {calculated_checksum}')
             else:
-                LOGGER.info(f"Checkpoint verified: {session_id}/{node_id}")
-
+                LOGGER.info(f'Checkpoint verified: {session_id}/{node_id}')
         try:
-            state = json.loads(data_bytes)
+            state: Any = json.loads(data_bytes)
         except json.JSONDecodeError as e:
-            LOGGER.error(f"Checkpoint corrupted (invalid JSON): {session_id}/{node_id}")
-            raise ValueError(f"Corrupted checkpoint: {e}")
-
-        LOGGER.info(f"Loaded checkpoint: {session_id}/{node_id}")
-
+            LOGGER.error(f'Checkpoint corrupted (invalid JSON): {session_id}/{node_id}')
+            raise ValueError(f'Corrupted checkpoint: {e}')
+        LOGGER.info(f'Loaded checkpoint: {session_id}/{node_id}')
         return state
 
     async def checkpoint_exists(self, session_id: str, node_id: str) -> bool:
@@ -135,7 +101,7 @@ class VerifiableCheckpointManager:
         Returns:
             True if checkpoint exists
         """
-        key = f"checkpoints/{session_id}/{node_id}.json"
+        key: Any = f'checkpoints/{session_id}/{node_id}.json'
         return await self.storage.exists(key)
 
     async def delete_checkpoint(self, session_id: str, node_id: str) -> bool:
@@ -149,17 +115,15 @@ class VerifiableCheckpointManager:
         Returns:
             True if deleted, False if didn't exist
         """
-        key = f"checkpoints/{session_id}/{node_id}.json"
-
+        key: Any = f'checkpoints/{session_id}/{node_id}.json'
         if hasattr(self.storage, 'delete_blob'):
-            result = await self.storage.delete_blob(key)
+            result: Any = await self.storage.delete_blob(key)
             if result:
-                LOGGER.info(f"Deleted checkpoint: {session_id}/{node_id}")
+                LOGGER.info(f'Deleted checkpoint: {session_id}/{node_id}')
             return result
-
         return False
 
-    async def list_checkpoints(self, session_id: Optional[str] = None) -> list:
+    async def list_checkpoints(self, session_id: Optional[str]=None) -> list:
         """
         List all checkpoints, optionally filtered by session.
 
@@ -169,19 +133,12 @@ class VerifiableCheckpointManager:
         Returns:
             List of checkpoint keys
         """
-        prefix = f"checkpoints/{session_id}/" if session_id else "checkpoints/"
-
+        prefix: Any = f'checkpoints/{session_id}/' if session_id else 'checkpoints/'
         if hasattr(self.storage, 'list_blobs'):
             return await self.storage.list_blobs(prefix=prefix)
-
         return []
 
-    async def save_snapshot(
-        self,
-        session_id: str,
-        snapshot_name: str,
-        state: Dict[str, Any]
-    ) -> str:
+    async def save_snapshot(self, session_id: str, snapshot_name: str, state: Dict[str, Any]) -> str:
         """
         Save a named snapshot (for rollback/replay).
 
@@ -193,32 +150,15 @@ class VerifiableCheckpointManager:
         Returns:
             Storage ETag/checksum
         """
-        payload_str = json.dumps(state, sort_keys=True, indent=2)
-        payload_bytes = payload_str.encode('utf-8')
-
-        checksum = hashlib.sha256(payload_bytes).hexdigest()
-
-        key = f"snapshots/{session_id}/{snapshot_name}.json"
-
-        storage_etag = await self.storage.write_blob(
-            key=key,
-            data=payload_bytes,
-            metadata={
-                "checksum": checksum,
-                "snapshot_name": snapshot_name,
-                "session_id": session_id
-            }
-        )
-
-        LOGGER.info(f"Saved snapshot: {session_id}/{snapshot_name}")
-
+        payload_str: Any = json.dumps(state, sort_keys=True, indent=2)
+        payload_bytes: Any = payload_str.encode('utf-8')
+        checksum: Any = hashlib.sha256(payload_bytes).hexdigest()
+        key: Any = f'snapshots/{session_id}/{snapshot_name}.json'
+        storage_etag: Any = await self.storage.write_blob(key=key, data=payload_bytes, metadata={'checksum': checksum, 'snapshot_name': snapshot_name, 'session_id': session_id})
+        LOGGER.info(f'Saved snapshot: {session_id}/{snapshot_name}')
         return storage_etag
 
-    async def load_snapshot(
-        self,
-        session_id: str,
-        snapshot_name: str
-    ) -> Optional[Dict[str, Any]]:
+    async def load_snapshot(self, session_id: str, snapshot_name: str) -> Optional[Dict[str, Any]]:
         """
         Load a named snapshot.
 
@@ -229,22 +169,17 @@ class VerifiableCheckpointManager:
         Returns:
             State dictionary or None if not found
         """
-        key = f"snapshots/{session_id}/{snapshot_name}.json"
-
+        key: Any = f'snapshots/{session_id}/{snapshot_name}.json'
         try:
-            data_bytes = await self.storage.read_blob(key)
-            state = json.loads(data_bytes)
-            LOGGER.info(f"Loaded snapshot: {session_id}/{snapshot_name}")
+            data_bytes: Any = await self.storage.read_blob(key)
+            state: Any = json.loads(data_bytes)
+            LOGGER.info(f'Loaded snapshot: {session_id}/{snapshot_name}')
             return state
         except FileNotFoundError:
-            LOGGER.debug(f"Snapshot not found: {session_id}/{snapshot_name}")
+            LOGGER.debug(f'Snapshot not found: {session_id}/{snapshot_name}')
             return None
 
-
-def create_checkpoint_manager(
-    storage_type: str = "local",
-    **storage_kwargs
-) -> VerifiableCheckpointManager:
+def create_checkpoint_manager(storage_type: str='local', **storage_kwargs) -> VerifiableCheckpointManager:
     """
     Factory function to create a checkpoint manager.
 
@@ -256,6 +191,5 @@ def create_checkpoint_manager(
         VerifiableCheckpointManager instance
     """
     from agentic_core.storage import create_storage_adapter
-
     create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(storage)

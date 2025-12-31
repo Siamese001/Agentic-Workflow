@@ -3,7 +3,8 @@
 from typing import Any, Dict, List, Optional, Protocol
 
 
-class StrategistBioWriter:
+# NAMING FIXED: StrategistBioWriter → strategist_bio_writer
+class strategist_bio_writer:
     """Placeholder implementation."""
 
     def __init__(

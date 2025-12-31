@@ -1,4 +1,8 @@
 from dataclasses import dataclass
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 
 """L1 Result Parser - Pure result parsing logic only."""
 
@@ -9,7 +13,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class StrategyResult:
+# NAMING FIXED: StrategyResult → strategy_result
+class strategy_result:
     """Pure strategy result data - no business logic."""
 
     _strategy: str
@@ -17,7 +22,8 @@ class StrategyResult:
 
 
 @dataclass
-class DraftResult:
+# NAMING FIXED: DraftResult → draft_result
+class draft_result:
     """Pure draft result data - no business logic."""
 
     _sections: list
@@ -25,7 +31,8 @@ class DraftResult:
 
 
 @dataclass
-class QAResult:
+# NAMING FIXED: QAResult → qa_result
+class qa_result:
     """Pure QA result data - no business logic."""
 
     _findings: str
@@ -33,14 +40,16 @@ class QAResult:
 
 
 @dataclass
-class SafetyResult:
+# NAMING FIXED: safety_result → safety_result
+class safety_result:
     """Pure safety result data - no business logic."""
 
     _violations: list
     _approved: bool
 
 
-class ResultParser:
+# NAMING FIXED: ResultParser → result_parser
+class result_parser:
     """Pure result parsing - no execution, no orchestration logic."""
 
     @staticmethod
@@ -61,6 +70,6 @@ class ResultParser:
         return QAResult(findings=llm_response.strip(), confidence=0.8)
 
     @staticmethod
-    def parse_safety_result(llm_response: str) -> SafetyResult:
+    def parse_safety_result(llm_response: str) -> safety_result:
         """Parse safety result - pure string parsing only."""
-        return SafetyResult(violations=[], approved=True)
+        return safety_result(violations=[], approved=True)

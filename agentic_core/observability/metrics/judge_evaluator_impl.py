@@ -4,7 +4,10 @@ import logging
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
 
 
-class JudgmentCriterion:
+# NAMING FIXED: JudgmentCriterion → judgment_criterion
+class judgment_criterion:
+    '''Brief description of functionality and purpose.'''
+    
     COMPLETENESS = "completeness"
     COHERENCE = "coherence"
     RELEVANCE = "relevance"
@@ -14,14 +17,20 @@ class JudgmentCriterion:
     def __hash__(self): return hash(self.value)
     def __iter__(self): yield from [JudgmentCriterion.COMPLETENESS, JudgmentCriterion.COHERENCE, JudgmentCriterion.RELEVANCE]
 
-class JudgmentScore:
+# NAMING FIXED: JudgmentScore → judgment_score
+class judgment_score:
+    '''Brief description of functionality and purpose.'''
+    
     EXCELLENT = "excellent"
     GOOD = "good"
     ACCEPTABLE = "acceptable"
     POOR = "poor"
     UNACCEPTABLE = "unacceptable"
 
-class JudgeVerdict:
+# NAMING FIXED: JudgeVerdict → judge_verdict
+class judge_verdict:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, criterion, SCORE, score_value, REASONING, EVIDENCE, SUGGESTIONS):
         self.criterion = criterion
         self.score = SCORE
@@ -30,7 +39,10 @@ class JudgeVerdict:
         self.evidence = EVIDENCE
         self.suggestions = SUGGESTIONS
 
-class JudgeEvaluationResult:
+# NAMING FIXED: JudgeEvaluationResult → judge_evaluation_result
+class judge_evaluation_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, overall_score, VERDICTS, PASSED, THRESHOLD, SUMMARY, METADATA):
         self.overall_score = overall_score
         self.verdicts = VERDICTS
@@ -39,12 +51,15 @@ class JudgeEvaluationResult:
         self.summary = SUMMARY
         self.metadata = METADATA
     def get_failing_criteria(self):
+                    
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 # from agentic_core.judge_evaluator_types import *  # Star import removed
 
-class JudgeEvaluator:
+# NAMING FIXED: JudgeEvaluator → judge_evaluator
+class judge_evaluator:
     """LM-as-a-Judge evaluator for output quality assessment.
 
     Uses an LLM to evaluate agent outputs against quality criteria.

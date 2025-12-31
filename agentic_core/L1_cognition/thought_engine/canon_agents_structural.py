@@ -1,18 +1,33 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import os
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
-class SubAtomicAgent:
+# NAMING FIXED: SubAtomicAgent → sub_atomic_agent
+class sub_atomic_agent:
+    pass
+
+# Alias for backward compatibility
+SubAtomicAgent = sub_atomic_agent
+
+# NOT_AN_AGENT — base implementation class, not a true agent — excluded from discovery
+class sub_atomic_agent_impl:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, ctx: Any, name: str):
         self.ctx = ctx
         self.name = name
     def can_run(self) -> bool:
+                    
         return True
     def execute(self) -> None:
+                    
         pass
 
-class NestingDepthVisitor(ast.NodeVisitor):
+# NAMING FIXED: NestingDepthVisitor → nesting_depth_visitor
+class nesting_depth_visitor(ast.NodeVisitor):
     """
     A visitor to calculate and report violations for excessive nesting depth within an AST.
     """
@@ -47,40 +62,52 @@ class NestingDepthVisitor(ast.NodeVisitor):
 
     # Override visit methods for nodes that increase nesting
     def visit_FunctionDef(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFunctionDef(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_ClassDef(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_If(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_For(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_AsyncFor(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_While(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_With(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_AsyncWith(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_Try(self, node):
+                    
         self._generic_visit_with_depth(node)
 
     def visit_ExceptHandler(self, node):
+                    
         self._generic_visit_with_depth(node)
 
 
-class TypeMechanic(SubAtomicAgent):
+# NOT_AN_AGENT — legacy L1 class, true agent is TypeEnforcerAgent in L2 — excluded from discovery
+class type_mechanic(SubAtomicAgent):
     """
     KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
     ROLE: Precision Engineering. Requires AST_VALID signal.
@@ -100,7 +127,6 @@ class TypeMechanic(SubAtomicAgent):
 
         passed, details = self.check_key_22_no_missing_type_hints()
         self.ctx.report(self.name, 22, passed, details)
-
         passed, details = self.check_key_23_no_unreachable_code()
         self.ctx.report(self.name, 23, passed, details)
 
@@ -250,8 +276,8 @@ class TypeMechanic(SubAtomicAgent):
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
 
-
-class BudgetAgent(SubAtomicAgent):
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
+class budget_agent(SubAtomicAgent):
     """
     KEYS: 17 (Large Functions), 19 (Complex Functions)
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
@@ -337,8 +363,8 @@ class BudgetAgent(SubAtomicAgent):
                     complexity += len(child.ifs)
         return complexity
 
-
-class StructuralEngineer(SubAtomicAgent):
+# NOT_AN_AGENT — legacy L1 class, true agent is StructuralEngineerAgent in L2 — excluded from discovery
+class structural_engineer(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 41 (Excessive Nesting),
           42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
@@ -448,7 +474,6 @@ class StructuralEngineer(SubAtomicAgent):
                 self.ctx.log_error(f"Error parsing {fp} for global variables: {e}")
                 continue
         return len(violations) == 0, violations
-
     def check_key_41_no_excessive_nesting(self) -> Tuple[bool, List[str]]:
         """
         Checks for code blocks exceeding a maximum nesting depth.

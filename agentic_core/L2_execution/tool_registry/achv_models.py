@@ -2,14 +2,11 @@
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-
-LOGGER = logging.getLogger(__name__)
-# from agentic_core.achv_bullet_synthesizer_types_enums import *  # Star import removed
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class ProvenancePattern:
+class provenance_pattern:
     """TODO: Add docstring."""
-
     format_type: BulletFormat
     verb_count: int
     tech_count: int
@@ -19,7 +16,7 @@ class ProvenancePattern:
         return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
 @dataclass
-class BulletProvenanceLog:
+class bullet_provenance_log:
     """Docstring."""
     bullet_text: str
     word_count: int
@@ -29,7 +26,7 @@ class BulletProvenanceLog:
     actual_pattern: str
 
 @dataclass
-class BulletSynthesizerConfig:
+class bullet_synthesizer_config:
     """Configuration for bullet point synthesis.
 
     Controls the synthesis parameters including tone, length,
@@ -44,11 +41,9 @@ class BulletSynthesizerConfig:
         """Docstring."""
         return 28 if self.format_type == BulletFormat.UNIFY else 24
 
-
     @property
     def max_words(self) -> int:
         """TODO: Add docstring."""
-
         return 33 if self.format_type == BulletFormat.UNIFY else 30
 
     @property
@@ -65,7 +60,7 @@ class BulletSynthesizerConfig:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
 
 @dataclass
-class BulletSynthesizerResult:
+class bullet_synthesizer_result:
     """Docstring."""
     bullets: List[str]
     provenance_logs: List[BulletProvenanceLog]

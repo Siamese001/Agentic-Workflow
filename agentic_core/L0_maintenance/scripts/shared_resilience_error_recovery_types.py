@@ -8,12 +8,14 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class RecoveryStrategy(Enum):
+# NAMING FIXED: RecoveryStrategy → recovery_strategy
+class recovery_strategy(Enum):
     """TODO: Add docstring."""
 
 
 @dataclass
-class ResilienceError:
+# NAMING FIXED: ResilienceError → resilience_error
+class resilience_error:
     """Base descriptor for resilience errors."""
 
     _message: str
@@ -22,17 +24,20 @@ class ResilienceError:
 
 
 @dataclass
-class TransientError(ResilienceError):
+# NAMING FIXED: TransientError → transient_error
+class transient_error(ResilienceError):
     """Temporary error that may succeed on retry."""
 
 
 @dataclass
-class PermanentError(ResilienceError):
+# NAMING FIXED: PermanentError → permanent_error
+class permanent_error(ResilienceError):
     """Permanent error that will not succeed on retry."""
 
 
 @dataclass
-class RetryExhaustedError(ResilienceError):
+# NAMING FIXED: RetryExhaustedError → retry_exhausted_error
+class retry_exhausted_error(ResilienceError):
     """Error indicating all retry attempts have been exhausted."""
 
     _attempts: int = 0

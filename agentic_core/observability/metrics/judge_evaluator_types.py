@@ -1,31 +1,33 @@
 from dataclasses import dataclass, field
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-
-"""Types and models for judge_evaluator."""
+'Types and models for judge_evaluator.'
 import logging
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class JudgmentCriterion(Enum):
+class judgment_criterion(Enum):
     """Criteria for judging output quality."""
-    ACCURACY = 'accuracy'
-    COMPLETENESS = 'completeness'
-    RELEVANCE = 'relevance'
-    COHERENCE = 'coherence'
-    FACTUALITY = 'factuality'
-    SAFETY = 'safety'
-    HELPFULNESS = 'helpfulness'
+    ACCURACY: Any = 'accuracy'
+    COMPLETENESS: Any = 'completeness'
+    RELEVANCE: Any = 'relevance'
+    COHERENCE: Any = 'coherence'
+    FACTUALITY: Any = 'factuality'
+    SAFETY: Any = 'safety'
+    HELPFULNESS: Any = 'helpfulness'
 
-class JudgmentScore(Enum):
+class judgment_score(Enum):
     """Judgment score levels."""
-    EXCELLENT = 'excellent'
-    GOOD = 'good'
-    ACCEPTABLE = 'acceptable'
-    POOR = 'poor'
-    UNACCEPTABLE = 'unacceptable'
+    EXCELLENT: Any = 'excellent'
+    GOOD: Any = 'good'
+    ACCEPTABLE: Any = 'acceptable'
+    POOR: Any = 'poor'
+    UNACCEPTABLE: Any = 'unacceptable'
 
 @dataclass
-class JudgeVerdict:
+class judge_verdict:
     """Verdict from LM-as-a-Judge evaluation."""
     criterion: JudgmentCriterion
     score: JudgmentScore
@@ -36,13 +38,10 @@ class JudgeVerdict:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.score_value,
-        'reasoning': self.reasoning,
-        'evidence': self.evidence,
-        'suggestions': self.suggestions}
+        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.score_value, 'reasoning': self.reasoning, 'evidence': self.evidence, 'suggestions': self.suggestions}
 
 @dataclass
-class JudgeEvaluationResult:
+class judge_evaluation_result:
     """Complete evaluation result from judge."""
     overall_score: float
     verdicts: List[JudgeVerdict]
@@ -53,12 +52,7 @@ class JudgeEvaluationResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'overall_score': self.overall_score,
-            'verdicts': [v.to_dict() for v in self.verdicts],
-            'passed': self.passed,
-            'threshold': self.threshold,
-            'summary': self.summary,
-            'metadata': self.metadata}
+        return {'overall_score': self.overall_score, 'verdicts': [v.to_dict() for v in self.verdicts], 'passed': self.passed, 'threshold': self.threshold, 'summary': self.summary, 'metadata': self.metadata}
 
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""

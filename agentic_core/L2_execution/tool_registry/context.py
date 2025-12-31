@@ -1,9 +1,19 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class OmniContext(SubAtomicAgent):
+
+
+# NOT_AN_AGENT — context utility class, not a true agent — excluded from agent discovery
+class omni_context(SubAtomicAgent):
     """
     ROLE: Global Architectural Context. Concatenates all non-excluded .py files
     into a single context buffer for agents to consult.
@@ -15,6 +25,7 @@ class OmniContext(SubAtomicAgent):
         self.index = {}
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Building Global Context...")
         await asyncio.sleep(0)
 

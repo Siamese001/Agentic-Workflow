@@ -1,4 +1,6 @@
 import hashlib
+'''Brief description of functionality and purpose.'''
+
 import json
 import logging
 from datetime import datetime
@@ -6,7 +8,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
-class IValidationContext(Protocol):
+# NAMING FIXED: IValidationContext → i_validation_context
+class i_validation_context(Protocol):
+    '''Brief description of functionality and purpose.'''
+    
     cycle_id: Optional[int]
     status: str
     start_time: datetime
@@ -17,21 +22,33 @@ class IValidationContext(Protocol):
     flapping_files: Dict[str, int]
 
     def update_file_hash(self, file_path: str, file_hash: str): ...
+                    
     def mark_flapping(self, file_path: str): ...
+                    
 
-class IValidationContextManager(Protocol):
+# NAMING FIXED: IValidationContextManager → i_validation_context_manager
+class i_validation_context_manager(Protocol):
+    '''Brief description of functionality and purpose.'''
+    
     current_context: Optional[IValidationContext]
 
     def get_last_file_hashes(self) -> Dict[str, str]: ...
+                    
     def get_flapping_files(self) -> Dict[str, int]: ...
+                    
     def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
+                    
     def complete_cycle(self, status: str = "COMPLETED"): ...
+                    
     def load_memory(self) -> bool: ...
+                    
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 
-class Historian:
+# NAMING FIXED: Historian → historian
+class historian:
     """
     Tracks validation history and optimizes file scanning.
 

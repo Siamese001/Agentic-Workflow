@@ -6,26 +6,25 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class RuleType(Enum):
+class rule_type(Enum):
     """Types of constitutional rules."""
-    SAFETY = "safety"
-    ETHICS = "ethics"
-    PRIVACY = "privacy"
-    BIAS = "bias"
-    TOXICITY = "toxicity"
+    SAFETY: Any = 'safety'
+    ETHICS: Any = 'ethics'
+    PRIVACY: Any = 'privacy'
+    BIAS: Any = 'bias'
+    TOXICITY: Any = 'toxicity'
 
-class RuleSeverity(Enum):
+class rule_severity(Enum):
     """Severity levels for rule violations."""
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
+    CRITICAL: Any = 'critical'
+    HIGH: Any = 'high'
+    MEDIUM: Any = 'medium'
+    LOW: Any = 'low'
 
 @dataclass
-class ConstitutionalRule:
+class constitutional_rule:
     """A constitutional rule definition."""
     rule_id: str
     rule_type: RuleType
@@ -36,7 +35,7 @@ class ConstitutionalRule:
     action: str
 
 @dataclass
-class ViolationReport:
+class violation_report:
     """Report of a rule violation."""
     rule_id: str
     rule_type: RuleType
@@ -46,7 +45,7 @@ class ViolationReport:
     position: int
 
 @dataclass
-class ConstitutionalReviewResult:
+class constitutional_review_result:
     """Result of constitutional review."""
     is_compliant: bool
     violations: List[ViolationReport]
@@ -54,7 +53,7 @@ class ConstitutionalReviewResult:
     recommendations: List[str]
     reviewed_at: float
 
-class ConstitutionalAISystem:
+class constitutional_ai_system:
     """Constitutional AI System for Safety and Alignment.
 
     Provides rule-based validation, ethical guidelines,
@@ -90,13 +89,13 @@ class ConstitutionalAISystem:
             rule_id: ID of rule to remove
         """
         if rule_id in self.rules:
-            RULE = self.rules[rule_id]
+            RULE: Any = self.rules[rule_id]
             self.rule_patterns[rule.rule_type].remove(rule)
             del self.rules[rule_id]
             if self.enable_logging:
                 logger.debug(f'Removed constitutional rule: {rule_id}')
 
-    def review_content(self, content: str, context: Optional[Dict[str, Any]] = None) -> ConstitutionalReviewResult:
+    def review_content(self, content: str, context: Optional[Dict[str, Any]]=None) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
         Args:
@@ -107,28 +106,16 @@ class ConstitutionalAISystem:
             ConstitutionalReviewResult with violations and recommendations
         """
         if not content:
-            return ConstitutionalReviewResult(is_compliant=True,
-                VIOLATIONS=[],
-                compliance_score=1.0,
-                RECOMMENDATIONS=[],
-                reviewed_at=time.time())
-        VIOLATIONS = self._check_compliance(content, context)
-        is_compliant = len(violations) == 0
-        compliance_score = self._calculate_compliance_score(violations)
-        RECOMMENDATIONS = self._generate_recommendations(violations)
+            return ConstitutionalReviewResult(is_compliant=True, VIOLATIONS=[], compliance_score=1.0, RECOMMENDATIONS=[], reviewed_at=time.time())
+        VIOLATIONS: Any = self._check_compliance(content, context)
+        is_compliant: Any = len(violations) == 0
+        compliance_score: Any = self._calculate_compliance_score(violations)
+        RECOMMENDATIONS: Any = self._generate_recommendations(violations)
         if self.enable_logging and violations:
-            logger.warning('constitutional_violations',
-                EXTRA={'violation_count': len(violations),
-                'compliance_score': compliance_score,
-                'critical_count': sum((1 for v in violations if v.severity == RuleSeverity.CRITICAL)
-    )})
-        return ConstitutionalReviewResult(is_compliant=is_compliant,
-            VIOLATIONS=violations,
-            compliance_score=compliance_score,
-            RECOMMENDATIONS=recommendations,
-            reviewed_at=time.time())
+            logger.warning('constitutional_violations', EXTRA={'violation_count': len(violations), 'compliance_score': compliance_score, 'critical_count': sum((1 for v in violations if v.severity == RuleSeverity.CRITICAL))})
+        return ConstitutionalReviewResult(is_compliant=is_compliant, VIOLATIONS=violations, compliance_score=compliance_score, RECOMMENDATIONS=recommendations, reviewed_at=time.time())
 
-    def _check_compliance(self, content: str, context: Optional[Dict[str, Any]] = None) -> List[ViolationReport]:
+    def _check_compliance(self, content: str, context: Optional[Dict[str, Any]]=None) -> List[ViolationReport]:
         """Check content against all rules.
 
         Args:
@@ -146,7 +133,7 @@ class ConstitutionalAISystem:
         violations.sort(key=lambda v: severity_order.get(v.severity, 4))
         return violations
 
-    def _check_rule(self, content: str, rule: ConstitutionalRule, context: Optional[Dict[str, Any]] = None) -> List[ViolationReport]:
+    def _check_rule(self, content: str, rule: ConstitutionalRule, context: Optional[Dict[str, Any]]=None) -> List[ViolationReport]:
         """Check content against a specific rule.
 
         Args:
@@ -161,13 +148,7 @@ class ConstitutionalAISystem:
         try:
             MATCHES = re.finditer(rule.pattern, content, re.IGNORECASE)
             for match in matches:
-                VIOLATION = ViolationReport(rule_id=rule.rule_id,
-                    violation_type=ViolationType.CONTENT,
-                    SEVERITY=rule.severity,
-                    LOCATION=f'Position {match.span()}',
-                    CONTENT=match.group(),
-                    SUGGESTION=rule.replacement or f'Remove or rephrase: {match.group()}',
-                    CONFIDENCE=0.9)
+                VIOLATION = ViolationReport(rule_id=rule.rule_id, violation_type=ViolationType.CONTENT, SEVERITY=rule.severity, LOCATION=f'Position {match.span()}', CONTENT=match.group(), SUGGESTION=rule.replacement or f'Remove or rephrase: {match.group()}', CONFIDENCE=0.9)
                 violations.append(violation)
         except re.error as e:
             if self.enable_logging:
@@ -185,8 +166,7 @@ class ConstitutionalAISystem:
         """
         if not violations:
             return 1.0
-        severity_weights = {RuleSeverity.CRITICAL: 1.0, RuleSeverity.HIGH: 0.7, RuleSeverity.MEDIUM:
-    0.4, RuleSeverity.LOW: 0.2}
+        severity_weights = {RuleSeverity.CRITICAL: 1.0, RuleSeverity.HIGH: 0.7, RuleSeverity.MEDIUM: 0.4, RuleSeverity.LOW: 0.2}
         total_penalty = sum((severity_weights.get(v.severity, 0.5) for v in violations))
         SCORE = max(0.0, 1.0 - total_penalty / 10.0)
         return round(score, 2)
@@ -207,9 +187,9 @@ class ConstitutionalAISystem:
         for v in violations:
             violation_by_type[v.severity].append(v)
         if RuleSeverity.CRITICAL in violation_by_type:
-            recommendations.append(f"CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} violations.")
+            recommendations.append(f'CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} violations.')
         if RuleSeverity.HIGH in violation_by_type:
-            recommendations.append(f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-severity violations")
+            recommendations.append(f'HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-severity violations')
         unique_rules = set((v.rule_id for v in violations))
         if len(unique_rules) <= 3:
             for rule_id in unique_rules:
@@ -220,31 +200,11 @@ class ConstitutionalAISystem:
 
     def _load_default_rules(self) -> None:
         """Load default constitutional rules."""
-        default_rules = [ConstitutionalRule(rule_id='safety_001',
-            rule_type=RuleType.SAFETY,
-            TITLE='No harmful content',
-            DESCRIPTION='Prevent harmful or dangerous content',
-            PATTERN='\\b(kill|harm|attack|destroy)\\b',
-            SEVERITY=RuleSeverity.CRITICAL,
-            ACTION='block'),
-            ConstitutionalRule(rule_id='privacy_001',
-            rule_type=RuleType.PRIVACY,
-            TITLE='No PII exposure',
-            DESCRIPTION='Prevent exposure of personal information',
-            PATTERN='\\b\\d{3}-\\d{2}-\\d{4}\\b',
-            SEVERITY=RuleSeverity.HIGH,
-            ACTION='block'),
-            ConstitutionalRule(rule_id='ethics_001',
-            rule_type=RuleType.ETHICS,
-            TITLE='No deceptive content',
-            DESCRIPTION='Prevent misleading or deceptive content',
-            PATTERN='\\b(fake|fraud|scam|trick)\\b',
-            SEVERITY=RuleSeverity.MEDIUM,
-            ACTION='warn')]
+        default_rules = [ConstitutionalRule(rule_id='safety_001', rule_type=RuleType.SAFETY, TITLE='No harmful content', DESCRIPTION='Prevent harmful or dangerous content', PATTERN='\\b(kill|harm|attack|destroy)\\b', SEVERITY=RuleSeverity.CRITICAL, ACTION='block'), ConstitutionalRule(rule_id='privacy_001', rule_type=RuleType.PRIVACY, TITLE='No PII exposure', DESCRIPTION='Prevent exposure of personal information', PATTERN='\\b\\d{3}-\\d{2}-\\d{4}\\b', SEVERITY=RuleSeverity.HIGH, ACTION='block'), ConstitutionalRule(rule_id='ethics_001', rule_type=RuleType.ETHICS, TITLE='No deceptive content', DESCRIPTION='Prevent misleading or deceptive content', PATTERN='\\b(fake|fraud|scam|trick)\\b', SEVERITY=RuleSeverity.MEDIUM, ACTION='warn')]
         for rule in default_rules:
             self.add_rule(rule)
 
-def review_content(content: str, context: Optional[Dict[str, Any]] = None) -> ConstitutionalReviewResult:
+def review_content(content: str, context: Optional[Dict[str, Any]]=None) -> ConstitutionalReviewResult:
     """Convenience function to review content.
 
     Args:
@@ -254,5 +214,5 @@ def review_content(content: str, context: Optional[Dict[str, Any]] = None) -> Co
     Returns:
         ConstitutionalReviewResult
     """
-    SYSTEM = ConstitutionalAISystem()
+    SYSTEM: Any = ConstitutionalAISystem()
     return system.review_content(content, context)

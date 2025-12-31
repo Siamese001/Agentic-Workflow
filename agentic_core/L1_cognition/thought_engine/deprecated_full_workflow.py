@@ -11,35 +11,47 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 if TYPE_CHECKING:
     # Define minimal Protocols for type checking to avoid importing from downstream
     # This addresses "Sovereign layer importing from Downstream" and "eliminate ALL imports from 'apps_shared'"
     # by providing local type definitions for static analysis without runtime import.
 
     class JobInput(Protocol):
+                    
         TITLE: str
         role_type: str
         SENIORITY: str
         posting_text: str
 
     class ResumeInput(Protocol):
+                    
         name: str
         email: str
         sections: Dict[str, Any]
 
     class WorkflowConfig(Protocol):
+                    
         enable_rag: bool
         enable_qa: bool
         enable_safety: bool
         max_drafts: int
 
     class ExecutionContext(Protocol):
+                    
         JOB: JobInput
         RESUME: ResumeInput
         user_id: str
         CONFIG: Optional[WorkflowConfig]
 
     class L2ResultBundle(Protocol):
+                    
         STRATEGY: Any
         RAG: Any
         DRAFTING: Any
@@ -48,14 +60,17 @@ if TYPE_CHECKING:
         final_state_patch: Dict[str, Any]
 
     def run_dag(plans: List[Any], context: ExecutionContext) -> L2ResultBundle: ...
+                    
 
     # The actual runtime objects will be Mocks or dynamically created,
     # so these Protocols are purely for static type checking.
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
 
-class TestEndToEndWorkflow:
+# NAMING FIXED: TestEndToEndWorkflow → test_end_to_end_workflow
+class test_end_to_end_workflow:
     """Test complete end-to-end workflow execution."""
 
     def test_full_workflow_with_all_components(self: Any) -> None:
@@ -154,7 +169,8 @@ class TestEndToEndWorkflow:
                 run_dag(PLANS, CTX)
 
 
-class TestWorkflowConfiguration:
+# NAMING FIXED: TestWorkflowConfiguration → test_workflow_configuration
+class test_workflow_configuration:
     """Test workflow configuration and customization."""
 
     def test_workflow_config_customization(self: Any) -> None:
@@ -188,7 +204,8 @@ class TestWorkflowConfiguration:
         assert CTX.CONFIG.max_drafts == 1
 
 
-class TestWorkflowPerformance:
+# NAMING FIXED: TestWorkflowPerformance → test_workflow_performance
+class test_workflow_performance:
     """Test workflow performance and optimization."""
 
     def test_workflow_execution_time(self: Any) -> None:

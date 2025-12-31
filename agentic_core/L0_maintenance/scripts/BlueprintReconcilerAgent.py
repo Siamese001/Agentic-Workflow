@@ -1,0 +1,717 @@
+"""
+BlueprintReconcilerAgent - Sovereign SSOT Reconciler
+Territory: agentic_core/L0_maintenance/scripts/
+
+Responsibilities:
+- Scan filesystem for actual folder structure (L1/L2 depth)
+- Scan agents for canonical signals usage
+- Detect drift between structure_blueprint.py and reality
+- Generate reconciliation proposals
+- Auto-update blueprint with safety checks (opt-in)
+
+Mirrors the successful prompt_registry.py pattern:
+- Deduplication-safe updates
+- Atomic writes with tempfile + rename
+- Backup before modifications
+- Syntax validation after changes
+
+Invoked by:
+- MissionController (post-mission hook, env: RECONCILE_BLUEPRINT)
+- SovereignAuditor (on sovereignty degradation)
+- Manual CLI trigger
+
+Phase 1: Read-only drift detection (auto_apply=False by default)
+Phase 2: Manual approval workflow
+Phase 3: Autonomous updates (auto_apply=True with safety checks)
+"""
+
+import ast
+import hashlib
+import logging
+import os
+import shutil
+import tempfile
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+
+logger = logging.getLogger(__name__)
+
+
+class BlueprintReconcilerAgent(
+    AutonomyMixin,
+    AdaptiveExecutionMixin,
+    SelfDiagnosisMixin,
+):
+    """
+    Sovereign agent responsible for auto-reconciling structure_blueprint.py
+    with actual system state.
+    
+    Ensures the SSOT blueprint always reflects reality:
+    - Folder structure (sovereign_registry, core_subfolder_map)
+    - Agent canonical signals (CANON_SIGNALS)
+    - Configuration drift detection
+    
+    Safety mechanisms:
+    - Timestamped backups before modifications
+    - Atomic writes (tempfile + rename)
+    - Syntax validation after updates
+    - Dry-run mode by default (auto_apply=False)
+    """
+    
+    BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root.resolve()
+        self.blueprint_file = self.project_root / self.BLUEPRINT_PATH
+        
+        # Track discovered state
+        self.actual_folders: Dict[str, Set[str]] = {}
+        self.actual_agents: Set[str] = set()
+        self.actual_signals: Set[str] = set()
+        self.drift_detected: List[Dict[str, Any]] = []
+        
+        logger.info(f"BlueprintReconcilerAgent initialized for {self.project_root}")
+    
+    # ===================================================================
+    # Core Reconciliation Methods
+    # ===================================================================
+    
+    async def reconcile_blueprint(self, auto_apply: bool = False, interactive: bool = True) -> Dict[str, Any]:
+        """
+        Main entry point: Scan system and reconcile blueprint.
+        
+        Phase 1 (Dry-Run): auto_apply=False, interactive=False → Report only
+        Phase 2 (Manual Approval): auto_apply=False, interactive=True → Request approval
+        Phase 3 (Autonomous): auto_apply=True → Apply with backup + auto-rollback
+        
+        Args:
+            auto_apply: If True, apply proposals automatically (with backup).
+                       If False (default), dry-run or interactive mode.
+            interactive: If True and drift detected, request user approval.
+                        Ignored if auto_apply=True.
+        
+        Returns:
+            {
+                "drift_detected": bool,
+                "proposals": List[Dict],
+                "applied": bool,
+                "backup_path": Optional[str],
+                "rollback_performed": Optional[bool],
+                "message": Optional[str]
+            }
+        """
+        logger.info("Starting blueprint reconciliation scan...")
+        
+        # 1. Scan actual system state
+        await self._scan_filesystem()
+        await self._scan_agents()
+        
+        # 2. Load current blueprint
+        current_blueprint = self._load_current_blueprint()
+        
+        # 3. Detect drift
+        drift = self._detect_drift(current_blueprint)
+        
+        if not drift:
+            logger.info("No drift detected - blueprint is synchronized")
+            return {
+                "drift_detected": False,
+                "proposals": [],
+                "applied": False
+            }
+        
+        logger.warning(f"Drift detected: {len(drift)} discrepancies found")
+        
+        # 4. Generate reconciliation proposals
+        proposals = self._generate_proposals(drift)
+        
+        # 5. Phase 2: Interactive approval flow (if not auto-applying)
+        if not auto_apply and interactive:
+            logger.info("Interactive mode - requesting user approval")
+            try:
+                approved = self._request_user_approval(proposals)
+                if not approved:
+                    logger.info("User rejected proposed changes")
+                    return {
+                        "drift_detected": True,
+                        "proposals": proposals,
+                        "applied": False,
+                        "message": "Changes rejected by user"
+                    }
+                # If approved, proceed as if auto_apply=True
+                logger.info("User approved changes - proceeding with application")
+                auto_apply = True
+            except KeyboardInterrupt:
+                logger.warning("User aborted reconciliation")
+                return {
+                    "drift_detected": True,
+                    "proposals": proposals,
+                    "applied": False,
+                    "message": "Reconciliation aborted by user"
+                }
+        
+        # 6. Apply if auto_apply enabled (Phase 3) or approved (Phase 2)
+        if auto_apply:
+            logger.info("Auto-apply enabled - creating backup and applying proposals")
+            backup_path = self._backup_blueprint()
+            
+            try:
+                self._apply_proposals(proposals)
+                
+                # Validate syntax after modifications (Phase 3 safety check)
+                if not self._validate_blueprint_syntax():
+                    logger.error("Blueprint syntax validation failed - rolling back")
+                    self._rollback_to_backup(backup_path)
+                    return {
+                        "drift_detected": True,
+                        "proposals": proposals,
+                        "applied": False,
+                        "rollback_performed": True,
+                        "backup_path": str(backup_path),
+                        "error": "Syntax validation failed, rolled back to backup"
+                    }
+                
+                logger.info("Blueprint reconciliation applied successfully")
+                return {
+                    "drift_detected": True,
+                    "proposals": proposals,
+                    "applied": True,
+                    "backup_path": str(backup_path)
+                }
+            except Exception as e:
+                logger.error(f"Failed to apply proposals: {e}")
+                self._rollback_to_backup(backup_path)
+                return {
+                    "drift_detected": True,
+                    "proposals": proposals,
+                    "applied": False,
+                    "rollback_performed": True,
+                    "backup_path": str(backup_path),
+                    "error": str(e)
+                }
+        else:
+            logger.info("Dry-run mode - proposals generated but not applied")
+            return {
+                "drift_detected": True,
+                "proposals": proposals,
+                "applied": False,
+                "message": "Set auto_apply=True to apply changes"
+            }
+    
+    async def _scan_filesystem(self) -> None:
+        """
+        Scan actual folder structure in agentic_core, apps_*, tests.
+        
+        Discovers:
+        - L1 subfolders (e.g., agentic_core/L0_maintenance)
+        - L2 subfolders (e.g., agentic_core/L0_maintenance/scripts)
+        """
+        logger.info("Scanning filesystem structure...")
+        
+        roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
+        
+        for root in roots_to_scan:
+            root_path = self.project_root / root
+            if not root_path.exists():
+                logger.debug(f"Root {root} does not exist - skipping")
+                continue
+            
+            # Scan L1 subfolders
+            l1_folders = set()
+            for item in root_path.iterdir():
+                if item.is_dir() and not item.name.startswith(('.', '__')):
+                    l1_folders.add(item.name)
+                    
+                    # For agentic_core, scan L2 subfolders
+                    if root == "agentic_core":
+                        l2_folders = set()
+                        for subitem in item.iterdir():
+                            if subitem.is_dir() and not subitem.name.startswith(('.', '__')):
+                                l2_folders.add(subitem.name)
+                        
+                        if l2_folders:
+                            self.actual_folders[f"{root}/{item.name}"] = l2_folders
+                            logger.debug(f"Discovered L2 in {root}/{item.name}: {l2_folders}")
+            
+            self.actual_folders[root] = l1_folders
+            logger.debug(f"Discovered L1 in {root}: {l1_folders}")
+        
+        logger.info(f"Filesystem scan complete: {len(self.actual_folders)} folder hierarchies discovered")
+    
+    async def _scan_agents(self) -> None:
+        """
+        Scan all agents to extract canonical signals and patterns.
+        
+        Discovers:
+        - Agent class names (e.g., ImportAgent, LocationAgent)
+        - Canonical signals from class names (e.g., "import", "location")
+        """
+        logger.info("Scanning agents for canonical signals...")
+        
+        agentic_core = self.project_root / "agentic_core"
+        
+        for py_file in agentic_core.rglob("*agent*.py"):
+            if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
+                continue
+            
+            try:
+                content = py_file.read_text(encoding='utf-8')
+                tree = ast.parse(content)
+                
+                # Extract class names for signal detection
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef):
+                        if node.name.endswith("Agent"):
+                            self.actual_agents.add(node.name)
+                            
+                            # Extract signal tokens from class name
+                            # e.g., "ImportAgent" → "import"
+                            name_lower = node.name.replace("Agent", "").lower()
+                            if name_lower:
+                                self.actual_signals.add(name_lower)
+                                logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
+                
+            except Exception as e:
+                logger.debug(f"Failed to parse {py_file}: {e}")
+        
+        logger.info(f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered")
+    
+    def _load_current_blueprint(self) -> Dict[str, Any]:
+        """
+        Load current blueprint values by dynamically importing it.
+        
+        Returns dict with:
+        - sovereign_registry
+        - core_subfolder_map
+        - CANON_SIGNALS
+        """
+        logger.info("Loading current blueprint configuration...")
+        
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("blueprint", self.blueprint_file)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        blueprint = {
+            "sovereign_registry": getattr(module, "sovereign_registry", {}),
+            "core_subfolder_map": getattr(module, "core_subfolder_map", {}),
+            "CANON_SIGNALS": getattr(module, "CANON_SIGNALS", set()),
+        }
+        
+        logger.info(f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, "
+                   f"{len(blueprint['core_subfolder_map'])} L1 folders, "
+                   f"{len(blueprint['CANON_SIGNALS'])} signals")
+        
+        return blueprint
+    
+    def _detect_drift(self, current_blueprint: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Compare actual state vs blueprint, return list of drift items.
+        
+        Checks:
+        1. sovereign_registry subfolders (L1 depth)
+        2. core_subfolder_map (L2 depth for agentic_core)
+        3. CANON_SIGNALS (agent-derived signals)
+        """
+        drift = []
+        
+        logger.info("Detecting drift between actual state and blueprint...")
+        
+        # 1. Check SOVEREIGN_REGISTRY subfolders
+        blueprint_registry = current_blueprint.get("sovereign_registry", {})
+        
+        for root, actual_subfolders in self.actual_folders.items():
+            if "/" in root:  # Skip L2 folders for now
+                continue
+            
+            blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
+            
+            # Missing in blueprint
+            missing = actual_subfolders - blueprint_subfolders
+            if missing:
+                drift.append({
+                    "type": "missing_subfolders",
+                    "root": root,
+                    "folders": sorted(list(missing)),
+                    "severity": "high"
+                })
+                logger.warning(f"Missing subfolders in {root}: {missing}")
+            
+            # Extra in blueprint (deleted folders)
+            extra = blueprint_subfolders - actual_subfolders
+            if extra:
+                drift.append({
+                    "type": "orphaned_subfolders",
+                    "root": root,
+                    "folders": sorted(list(extra)),
+                    "severity": "medium"
+                })
+                logger.warning(f"Orphaned subfolders in {root}: {extra}")
+        
+        # 2. Check CORE_SUBFOLDER_MAP (L2 depth)
+        blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
+        
+        for key, actual_l2 in self.actual_folders.items():
+            if "/" not in key or not key.startswith("agentic_core/"):
+                continue
+            
+            l1_folder = key.split("/")[1]
+            blueprint_l2 = set(blueprint_core_map.get(l1_folder, []))
+            
+            missing_l2 = actual_l2 - blueprint_l2
+            if missing_l2:
+                drift.append({
+                    "type": "missing_l2_subfolders",
+                    "l1_folder": l1_folder,
+                    "folders": sorted(list(missing_l2)),
+                    "severity": "high"
+                })
+                logger.warning(f"Missing L2 subfolders in {l1_folder}: {missing_l2}")
+        
+        # 3. Check CANON_SIGNALS
+        blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
+        missing_signals = self.actual_signals - blueprint_signals
+        
+        if missing_signals:
+            drift.append({
+                "type": "missing_canon_signals",
+                "signals": sorted(list(missing_signals)),
+                "severity": "low"
+            })
+            logger.info(f"Missing canonical signals: {missing_signals}")
+        
+        logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
+        return drift
+    
+    def _generate_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Generate concrete code change proposals to fix drift.
+        
+        Each proposal includes:
+        - action: Type of update (add_to_sovereign_registry, etc.)
+        - target data (root, folders, signals)
+        - code_change: Human-readable description
+        """
+        proposals = []
+        
+        logger.info("Generating reconciliation proposals...")
+        
+        for drift_item in drift:
+            if drift_item["type"] == "missing_subfolders":
+                proposals.append({
+                    "action": "add_to_sovereign_registry",
+                    "root": drift_item["root"],
+                    "subfolders": drift_item["folders"],
+                    "code_change": f"sovereign_registry['{drift_item['root']}']['subfolders'].extend({drift_item['folders']})"
+                })
+            
+            elif drift_item["type"] == "missing_l2_subfolders":
+                proposals.append({
+                    "action": "add_to_core_subfolder_map",
+                    "l1_folder": drift_item["l1_folder"],
+                    "subfolders": drift_item["folders"],
+                    "code_change": f"core_subfolder_map['{drift_item['l1_folder']}'].extend({drift_item['folders']})"
+                })
+            
+            elif drift_item["type"] == "missing_canon_signals":
+                proposals.append({
+                    "action": "add_to_canon_signals",
+                    "signals": drift_item["signals"],
+                    "code_change": f"CANON_SIGNALS.update({set(drift_item['signals'])})"
+                })
+        
+        logger.info(f"Generated {len(proposals)} reconciliation proposals")
+        return proposals
+    
+    def _backup_blueprint(self) -> Path:
+        """Create timestamped backup before modifications."""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = self.blueprint_file.parent / f"structure_blueprint_backup_{timestamp}.py"
+        
+        shutil.copy2(self.blueprint_file, backup_path)
+        
+        logger.info(f"Backup created: {backup_path}")
+        return backup_path
+    
+    def _apply_proposals(self, proposals: List[Dict[str, Any]]) -> None:
+        """
+        Apply proposals by modifying structure_blueprint.py.
+        
+        Uses string-based updates for safe append-style modifications.
+        Atomic write at the end via tempfile + rename.
+        """
+        logger.info(f"Applying {len(proposals)} proposals to blueprint...")
+        
+        # Load current content
+        content = self.blueprint_file.read_text(encoding='utf-8')
+        
+        # Apply each proposal
+        for proposal in proposals:
+            action = proposal["action"]
+            
+            if action == "add_to_sovereign_registry":
+                content = self._apply_sovereign_registry_update(
+                    content, 
+                    proposal["root"], 
+                    proposal["subfolders"]
+                )
+            elif action == "add_to_core_subfolder_map":
+                content = self._apply_core_map_update(
+                    content,
+                    proposal["l1_folder"],
+                    proposal["subfolders"]
+                )
+            elif action == "add_to_canon_signals":
+                content = self._apply_signals_update(
+                    content,
+                    proposal["signals"]
+                )
+            
+            logger.debug(f"Applied proposal: {action}")
+        
+        # Write back atomically
+        with tempfile.NamedTemporaryFile(
+            mode='w',
+            encoding='utf-8',
+            dir=self.blueprint_file.parent,
+            delete=False,
+            suffix='.py'
+        ) as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+        
+        Path(tmp_path).replace(self.blueprint_file)
+        logger.info("Blueprint updated successfully with atomic write")
+    
+    def _apply_sovereign_registry_update(self, content: str, root: str, folders: List[str]) -> str:
+        """
+        Add subfolders to sovereign_registry[root]['subfolders'].
+        
+        Strategy: Find the line with the root key and 'subfolders', insert extend() call.
+        """
+        logger.debug(f"Updating sovereign_registry for root '{root}' with folders {folders}")
+        
+        lines = content.splitlines(keepends=True)
+        marker = f"'{root}'"
+        
+        # Find the sovereign_registry definition for this root
+        for i, line in enumerate(lines):
+            if marker in line and "'subfolders'" in line:
+                # Insert extend call after this line
+                indent = "    "  # Match dict indentation
+                insert_line = f"{indent}# Auto-added by BlueprintReconcilerAgent\n"
+                insert_line += f"{indent}sovereign_registry['{root}']['subfolders'].extend({folders})\n"
+                lines.insert(i + 1, insert_line)
+                return "".join(lines)
+        
+        # Fallback: append at end of file
+        logger.warning(f"Could not find exact insertion point for {root}, appending at end")
+        return content + f"\n# Auto-added by BlueprintReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
+    
+    def _apply_core_map_update(self, content: str, l1_folder: str, folders: List[str]) -> str:
+        """
+        Add subfolders to core_subfolder_map[l1_folder].
+        
+        Strategy: Find the line with the l1_folder key, insert extend() call.
+        """
+        logger.debug(f"Updating core_subfolder_map for '{l1_folder}' with folders {folders}")
+        
+        lines = content.splitlines(keepends=True)
+        marker = f"'{l1_folder}'"
+        
+        # Find the core_subfolder_map definition for this L1 folder
+        for i, line in enumerate(lines):
+            if "core_subfolder_map" in line and marker in line:
+                # Insert extend call after this line
+                indent = "    "
+                insert_line = f"{indent}# Auto-added by BlueprintReconcilerAgent\n"
+                insert_line += f"{indent}core_subfolder_map['{l1_folder}'].extend({folders})\n"
+                lines.insert(i + 1, insert_line)
+                return "".join(lines)
+        
+        # Fallback: append at end
+        logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
+        return content + f"\n# Auto-added by BlueprintReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
+    
+    def _apply_signals_update(self, content: str, signals: List[str]) -> str:
+        """
+        Add signals to CANON_SIGNALS set.
+        
+        Strategy: Find CANON_SIGNALS definition, insert update() call.
+        """
+        logger.debug(f"Updating CANON_SIGNALS with signals {signals}")
+        
+        lines = content.splitlines(keepends=True)
+        
+        # Find CANON_SIGNALS definition
+        for i, line in enumerate(lines):
+            if "CANON_SIGNALS:" in line or "CANON_SIGNALS =" in line:
+                # Insert update call after the set definition closes
+                # Look for the closing brace
+                for j in range(i, min(i + 50, len(lines))):
+                    if "}" in lines[j]:
+                        insert_line = f"# Auto-added by BlueprintReconcilerAgent\n"
+                        insert_line += f"CANON_SIGNALS.update({set(signals)})\n"
+                        lines.insert(j + 1, insert_line)
+                        return "".join(lines)
+        
+        # Fallback: append at end
+        logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
+        return content + f"\n# Auto-added by BlueprintReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
+    
+    def _request_user_approval(self, proposals: List[Dict[str, Any]]) -> bool:
+        """
+        Interactive approval for blueprint changes (Phase 2).
+        
+        Displays proposed changes and requests user confirmation.
+        
+        Args:
+            proposals: List of reconciliation proposals
+            
+        Returns:
+            True if user approves, False if rejected
+            
+        Raises:
+            KeyboardInterrupt: If user chooses to quit
+        """
+        print("\n" + "="*80)
+        print("[BLUEPRINT RECONCILIATION] Drift detected - approval required")
+        print("="*80)
+        print(f"\n{len(proposals)} proposed change(s):\n")
+        
+        for i, proposal in enumerate(proposals, 1):
+            # Format action name
+            action = proposal["action"].replace("_", " ").title()
+            
+            # Determine target
+            target = proposal.get("root") or proposal.get("l1_folder") or "CANON_SIGNALS"
+            
+            # Determine items to add
+            items = proposal.get("subfolders") or proposal.get("signals") or []
+            
+            print(f"{i:2d}. {action}")
+            print(f"     Target: {target}")
+            print(f"     Add: {items}")
+            print(f"     Code: {proposal['code_change']}\n")
+        
+        print("="*80)
+        
+        # Request approval with retry loop
+        while True:
+            try:
+                response = input("\nApprove and apply all changes? (yes/no/quit): ").strip().lower()
+                
+                if response in ("yes", "y"):
+                    logger.info("User approved all changes")
+                    return True
+                elif response in ("no", "n"):
+                    logger.info("User rejected changes")
+                    return False
+                elif response in ("quit", "q", "exit"):
+                    print("\n[ABORT] Blueprint reconciliation aborted by user")
+                    logger.warning("User aborted reconciliation")
+                    raise KeyboardInterrupt
+                else:
+                    print("Invalid response. Please answer 'yes', 'no', or 'quit'")
+            except EOFError:
+                # Handle non-interactive environments
+                logger.warning("Non-interactive environment detected - cannot request approval")
+                print("\n[ERROR] Cannot request approval in non-interactive environment")
+                return False
+    
+    def _validate_blueprint_syntax(self) -> bool:
+        """
+        Ensure blueprint is still valid Python after modifications.
+        
+        Returns:
+            True if syntax is valid, False otherwise
+        """
+        try:
+            content = self.blueprint_file.read_text(encoding='utf-8')
+            compile(content, str(self.blueprint_file), 'exec')
+            logger.info("Blueprint syntax validation passed")
+            return True
+        except SyntaxError as e:
+            logger.error(f"Blueprint syntax error after update: {e}")
+            return False
+    
+    def _rollback_to_backup(self, backup_path: Path) -> None:
+        """
+        Restore blueprint from backup (Phase 3 safety mechanism).
+        
+        Args:
+            backup_path: Path to backup file to restore from
+        """
+        shutil.copy2(backup_path, self.blueprint_file)
+        logger.warning(f"Rolled back blueprint to {backup_path}")
+        print(f"\n[ROLLBACK] Blueprint restored from backup: {backup_path}")
+    
+    # ===================================================================
+    # Mixin Implementations
+    # ===================================================================
+    
+    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+        """
+        Proactively detect when blueprint needs reconciliation.
+        
+        Triggers:
+        - New folder detected
+        - Agent count changed significantly
+        - Sovereignty score dropped
+        
+        Returns:
+            Dict with opportunity details, or None if no action needed
+        """
+        # Simple heuristic: check if last reconciliation was > 24h ago
+        # Future: integrate with MetricsWitness for sovereignty score
+        return None
+    
+    async def self_diagnose(self) -> Dict[str, Any]:
+        """
+        Health check for reconciler.
+        
+        Returns:
+            {
+                "overall_health": "healthy" | "degraded",
+                "issues": List[str]
+            }
+        """
+        issues = []
+        
+        if not self.blueprint_file.exists():
+            issues.append("Blueprint file not found")
+        
+        # Check write permissions
+        if not os.access(self.blueprint_file.parent, os.W_OK):
+            issues.append("No write permission to blueprint directory")
+        
+        # Check if blueprint is valid Python
+        try:
+            content = self.blueprint_file.read_text(encoding='utf-8')
+            compile(content, str(self.blueprint_file), 'exec')
+        except Exception as e:
+            issues.append(f"Blueprint syntax error: {e}")
+        
+        return {
+            "overall_health": "healthy" if not issues else "degraded",
+            "issues": issues
+        }
+    
+    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Standard execution mode - full reconciliation scan."""
+        return await self.reconcile_blueprint(auto_apply=False)
+    
+    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Conservative mode - minimal scanning."""
+        # Only scan filesystem, skip agent analysis
+        await self._scan_filesystem()
+        return {"mode": "conservative", "filesystem_scanned": True}
+    
+    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Minimal mode - health check only."""
+        return await self.self_diagnose()

@@ -3,104 +3,45 @@ Tool Registry - Type-Safe FunctionDeclaration Generation for Gemini 2.5/3.0
 Automatically generates google.genai.types.FunctionDeclaration from Pydantic models.
 """
 from typing import Any, Callable, Dict, List, Optional, Protocol
-
 from pydantic import BaseModel
-
 try:
     from google.genai import types
-    GENAI_AVAILABLE = True
+    GENAI_AVAILABLE: Any = True
 except ImportError:
-    GENAI_AVAILABLE = False
-    types = None
-
-from agentic_core.L2_execution.tool_registry.definitions import (
-    CreateDirectoryArgs,
-    DeleteFileArgs,
-    ExecuteCommandArgs,
-    ListFilesArgs,
-    MoveFileArgs,
-    ReadFileArgs,
-    WriteFileArgs,
-)
+    GENAI_AVAILABLE: Any = False
+    types: Any = None
+from agentic_core.L2_execution.tool_registry.definitions import CreateDirectoryArgs, DeleteFileArgs, ExecuteCommandArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
 from agentic_core.L2_execution.tool_registry.execution import execute_command
-from agentic_core.L2_execution.tool_registry.filesystem import (
-    create_directory,
-    delete_file,
-    list_files,
-    move_file,
-    read_file,
-    write_file,
+from agentic_core.L2_execution.tool_registry.filesystem import create_directory, delete_file, list_files, move_file, read_file, write_file
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
 )
 
 
-class ToolRegistry:
+class tool_registry:
     """
     Registry for managing tools and generating FunctionDeclarations.
     Ensures Gemini always sees the exact tools available in Python.
     """
-    
+
     def __init__(self):
         self.tools: Dict[str, Dict[str, Any]] = {}
         self._register_default_tools()
-    
+
     def _register_default_tools(self):
         """Register default filesystem and execution tools."""
-        self.register_tool(
-            name="read_file",
-            description="Read the contents of a file",
-            args_model=ReadFileArgs,
-            function=read_file
-        )
-        
-        self.register_tool(
-            name="write_file",
-            description="Write content to a file with sandbox validation and HealingLease verification",
-            args_model=WriteFileArgs,
-            function=write_file
-        )
-        
-        self.register_tool(
-            name="move_file",
-            description="Move or rename a file with sandbox validation",
-            args_model=MoveFileArgs,
-            function=move_file
-        )
-        
-        self.register_tool(
-            name="list_files",
-            description="List files in a directory with optional pattern filtering",
-            args_model=ListFilesArgs,
-            function=list_files
-        )
-        
-        self.register_tool(
-            name="delete_file",
-            description="Delete a file with sandbox validation and HealingLease verification",
-            args_model=DeleteFileArgs,
-            function=delete_file
-        )
-        
-        self.register_tool(
-            name="create_directory",
-            description="Create a directory with sandbox validation",
-            args_model=CreateDirectoryArgs,
-            function=create_directory
-        )
-        
-        self.register_tool(
-            name="execute_command",
-            description="Execute a shell command with timeout protection (max 300s)",
-            args_model=ExecuteCommandArgs,
-            function=execute_command
-        )
-    
-    def register_tool(
-        self,
-        name: str,
-        description: str,
-        args_model: type[BaseModel],
-        function: Callable
-    ):
+        self.register_tool(name='read_file', description='Read the contents of a file', args_model=ReadFileArgs, function=read_file)
+        self.register_tool(name='write_file', description='Write content to a file with sandbox validation and HealingLease verification', args_model=WriteFileArgs, function=write_file)
+        self.register_tool(name='move_file', description='Move or rename a file with sandbox validation', args_model=MoveFileArgs, function=move_file)
+        self.register_tool(name='list_files', description='List files in a directory with optional pattern filtering', args_model=ListFilesArgs, function=list_files)
+        self.register_tool(name='delete_file', description='Delete a file with sandbox validation and HealingLease verification', args_model=DeleteFileArgs, function=delete_file)
+        self.register_tool(name='create_directory', description='Create a directory with sandbox validation', args_model=CreateDirectoryArgs, function=create_directory)
+        self.register_tool(name='execute_command', description='Execute a shell command with timeout protection (max 300s)', args_model=ExecuteCommandArgs, function=execute_command)
+
+    def register_tool(self, name: str, description: str, args_model: type[BaseModel], function: Callable) -> Any:
         """
         Register a tool with its Pydantic model and function.
         
@@ -110,13 +51,8 @@ class ToolRegistry:
             args_model: Pydantic model for tool arguments
             function: Python function to execute
         """
-        self.tools[name] = {
-            "description": description,
-            "args_model": args_model,
-            "function": function,
-            "schema": args_model.schema()
-        }
-    
+        self.tools[name] = {'description': description, 'args_model': args_model, 'function': function, 'schema': args_model.schema()}
+
     def get_function_declarations(self) -> List:
         """
         Generate google.genai.types.FunctionDeclaration for all registered tools.
@@ -125,52 +61,27 @@ class ToolRegistry:
             List of FunctionDeclaration objects for Gemini
         """
         if not GENAI_AVAILABLE:
-            raise ImportError("google-genai not installed. Run: pip install google-genai")
-        
-        declarations = []
-        
+            raise ImportError('google-genai not installed. Run: pip install google-genai')
+        declarations: Any = []
         for name, tool_info in self.tools.items():
-            schema = tool_info["schema"]
-            
-            parameters = {
-                "type": "object",
-                "properties": {},
-                "required": []
-            }
-            
-            if "properties" in schema:
-                for prop_name, prop_info in schema["properties"].items():
-                    param_def = {
-                        "type": self._convert_type(prop_info.get("type")),
-                        "description": prop_info.get("description", "")
-                    }
-                    
-                    if "enum" in prop_info:
-                        param_def["enum"] = prop_info["enum"]
-                    
-                    if "default" in prop_info:
-                        param_def["default"] = prop_info["default"]
-                    
-                    if "items" in prop_info:
-                        param_def["items"] = {
-                            "type": self._convert_type(prop_info["items"].get("type"))
-                        }
-                    
-                    parameters["properties"][prop_name] = param_def
-                
-                if "required" in schema:
-                    parameters["required"] = schema["required"]
-            
-            declaration = types.FunctionDeclaration(
-                name=name,
-                description=tool_info["description"],
-                parameters=parameters
-            )
-            
+            schema: Any = tool_info['schema']
+            parameters: Any = {'type': 'object', 'properties': {}, 'required': []}
+            if 'properties' in schema:
+                for prop_name, prop_info in schema['properties'].items():
+                    param_def: Any = {'type': self._convert_type(prop_info.get('type')), 'description': prop_info.get('description', '')}
+                    if 'enum' in prop_info:
+                        param_def['enum'] = prop_info['enum']
+                    if 'default' in prop_info:
+                        param_def['default'] = prop_info['default']
+                    if 'items' in prop_info:
+                        param_def['items'] = {'type': self._convert_type(prop_info['items'].get('type'))}
+                    parameters['properties'][prop_name] = param_def
+                if 'required' in schema:
+                    parameters['required'] = schema['required']
+            declaration: Any = types.FunctionDeclaration(name=name, description=tool_info['description'], parameters=parameters)
             declarations.append(declaration)
-        
         return declarations
-    
+
     def _convert_type(self, pydantic_type: Optional[str]) -> str:
         """
         Convert Pydantic type to JSON Schema type.
@@ -182,25 +93,11 @@ class ToolRegistry:
             JSON Schema type string
         """
         if not pydantic_type:
-            return "string"
-        
-        type_mapping = {
-            "string": "string",
-            "integer": "integer",
-            "number": "number",
-            "boolean": "boolean",
-            "array": "array",
-            "object": "object",
-        }
-        
-        return type_mapping.get(pydantic_type, "string")
-    
-    def execute_tool(
-        self,
-        name: str,
-        args: Dict[str, Any],
-        **kwargs
-    ) -> Any:
+            return 'string'
+        type_mapping = {'string': 'string', 'integer': 'integer', 'number': 'number', 'boolean': 'boolean', 'array': 'array', 'object': 'object'}
+        return type_mapping.get(pydantic_type, 'string')
+
+    def execute_tool(self, name: str, args: Dict[str, Any], **kwargs) -> Any:
         """
         Execute a registered tool with validated arguments.
         
@@ -217,27 +114,21 @@ class ToolRegistry:
             ValidationError: If arguments are invalid
         """
         if name not in self.tools:
-            raise ValueError(f"Tool not found: {name}")
-        
-        tool_info = self.tools[name]
-        args_model = tool_info["args_model"]
-        function = tool_info["function"]
-        
-        validated_args = args_model(**args)
-        
+            raise ValueError(f'Tool not found: {name}')
+        tool_info: Any = self.tools[name]
+        args_model: Any = tool_info['args_model']
+        function: Any = tool_info['function']
+        validated_args: Any = args_model(**args)
         return function(validated_args, **kwargs)
-    
+
     def get_tool_names(self) -> List[str]:
         """Get list of registered tool names."""
         return list(self.tools.keys())
-    
+
     def get_tool_info(self, name: str) -> Optional[Dict[str, Any]]:
         """Get information about a specific tool."""
         return self.tools.get(name)
-
-
 _global_registry: Optional[ToolRegistry] = None
-
 
 def create_tool_registry() -> ToolRegistry:
     """
@@ -247,12 +138,9 @@ def create_tool_registry() -> ToolRegistry:
         Global ToolRegistry instance
     """
     global _global_registry
-    
     if _global_registry is None:
         _global_registry = ToolRegistry()
-    
     return _global_registry
-
 
 def get_function_declarations() -> List:
     """
@@ -261,15 +149,10 @@ def get_function_declarations() -> List:
     Returns:
         List of FunctionDeclaration objects for Gemini
     """
-    registry = create_tool_registry()
+    registry: Any = create_tool_registry()
     return registry.get_function_declarations()
 
-
-def execute_tool_call(
-    name: str,
-    args: Dict[str, Any],
-    **kwargs
-) -> Any:
+def execute_tool_call(name: str, args: Dict[str, Any], **kwargs) -> Any:
     """
     Execute a tool call from the global registry.
     
@@ -281,5 +164,5 @@ def execute_tool_call(
     Returns:
         Tool execution result
     """
-    registry = create_tool_registry()
+    registry: Any = create_tool_registry()
     return registry.execute_tool(name, args, **kwargs)

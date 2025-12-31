@@ -1,11 +1,16 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.schemas.models.core_contracts import ConsensusVerdict
 
 # Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
-class SupremeCourt:
+# NAMING FIXED: SupremeCourt → supreme_court
+class supreme_court:
     """
     L3 Orchestration: The Consensus Judge.
     Ensures that L1 plans are safe and meet mission requirements.

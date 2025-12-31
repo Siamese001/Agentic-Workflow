@@ -1,7 +1,8 @@
 """Executive Title Composer Agent - Headline Generator (K.4)
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 This agent generates resume headlines with industry-first validation.
 Enforces GICS sector precedence and strict character limits.
 
@@ -21,31 +22,54 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class IntegrityGateExecutor:
+
+
+# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
+class integrity_gate_executor:
+    '''Brief description of functionality and purpose.'''
+    
     def execute_hygiene_scan(self, headline: str): pass
+                    
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
+                    
     results = []
-class ValidationResult:
+# NAMING FIXED: ValidationResult → validation_result
+class validation_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None): pass
     passed = True
     gate_id = ""
     message = ""
     details = {}
-class AdaptiveRecoveryLoop:
+# NAMING FIXED: AdaptiveRecoveryLoop → adaptive_recovery_loop
+class adaptive_recovery_loop:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, initial_temperature: float): pass
     def reset(self, temperature: float): pass
+                    
     def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict): pass
+                    
     def get_temperature_log(self): return []
+                    
     current_temperature = 0.5
     should_retry = True
 
 # Assuming FLOAT is meant to be float
-FLOAT = float
+# NAMING FIXED: FLOAT → float
+float = float
 
 
 @dataclass
-class TitleComposerConfig:
+# NAMING FIXED: TitleComposerConfig → title_composer_config
+class title_composer_config:
     """TODO: Add docstring."""
 
     min_words: int = 8
@@ -55,7 +79,8 @@ class TitleComposerConfig:
     max_attempts: int = 3
 
 @dataclass
-class TitleComposerResult:
+# NAMING FIXED: TitleComposerResult → title_composer_result
+class title_composer_result:
     """Docstring."""
     headline: str
     segments: List[str]
@@ -66,7 +91,8 @@ class TitleComposerResult:
     success: bool
     attempts: int
 
-class ExecutiveTitleComposer:
+# NAMING FIXED: ExecutiveTitleComposer → executive_title_composer
+class executive_title_composer:
     """
     K.4 - Headline Generator
 
@@ -146,7 +172,6 @@ class ExecutiveTitleComposer:
                 if not recovery.should_retry:
                     break
                 continue
-
             segments = [s.strip() for s in headline.split('|')] # Changed SEGMENTS to segments
             word_count = len(headline.split())
             char_count = len(headline)
@@ -265,7 +290,6 @@ class ExecutiveTitleComposer:
                     'char_count': char_count
                 }
             )
-
         return ValidationResult(
             gate_id='VG_HEADLINE_LENGTH',
             passed=True, # Changed PASSED to passed

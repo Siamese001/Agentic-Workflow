@@ -5,13 +5,16 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-class Route(str, Enum):
+# NAMING FIXED: Route → route
+class route(str, Enum):
     """Message delivery routes."""
 
 
-class Archetype(str, Enum):
+# NAMING FIXED: Archetype → archetype
+class archetype(str, Enum):
     """Recipient archetypes for personalization."""
 
 
-class ValidationSeverity(str, Enum):
+# NAMING FIXED: ValidationSeverity → validation_severity
+class validation_severity(str, Enum):
     """Validation result severity levels."""

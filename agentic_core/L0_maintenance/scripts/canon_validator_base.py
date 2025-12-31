@@ -2,83 +2,56 @@
 SubAtomicAgent base class and ImportPatcher mixin.
 All validation agents inherit from SubAtomicAgent.
 """
-
 import ast
 import os
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
-
 if TYPE_CHECKING:
     from agentic_core.types import ValidationContext
 
-
-class SubAtomicAgent:
+# NOT_AN_AGENT — base class for agents, not a true agent itself — excluded from agent discovery
+class sub_atomic_agent:
     """Base class for all validation agents with async support."""
 
-    def __init__(self, context: "ValidationContext"):
+    def __init__(self, context: 'ValidationContext'):
         self.ctx = context
         self.name = self.__class__.__name__
 
     def can_run(self) -> bool:
         """Default: Run unless a critical failure exists."""
-        return "CRITICAL_FAIL" not in self.ctx.signals
+        return 'CRITICAL_FAIL' not in self.ctx.signals
 
-    async def execute(self):
+    async def execute(self) -> Any:
         """Execute agent's validation logic asynchronously."""
         raise NotImplementedError
 
-    async def run_with_broadcast(self):
+    async def run_with_broadcast(self) -> Any:
         """Wrapper that broadcasts agent lifecycle events to the L5 Streamer."""
         self.ctx.set_current_agent(self.name)
-
-        await self.ctx.broadcast({
-            "type": "agent_start",
-            "agent": self.name,
-            "cycle": getattr(self.ctx, 'current_cycle', 1),
-            "timestamp": time.time()
-        })
-
+        await self.ctx.broadcast({'type': 'agent_start', 'agent': self.name, 'cycle': getattr(self.ctx, 'current_cycle', 1), 'timestamp': time.time()})
         try:
             await self.execute()
-
-            await self.ctx.broadcast({
-                "type": "agent_complete",
-                "agent": self.name,
-                "modified": list(self.ctx.modified_files),
-                "signals": list(self.ctx.signals),
-                "timestamp": time.time()
-            })
+            await self.ctx.broadcast({'type': 'agent_complete', 'agent': self.name, 'modified': list(self.ctx.modified_files), 'signals': list(self.ctx.signals), 'timestamp': time.time()})
         except Exception as e:
-            await self.ctx.broadcast({
-                "type": "agent_error",
-                "agent": self.name,
-                "error": str(e)[:200],
-                "timestamp": time.time()
-            })
+            await self.ctx.broadcast({'type': 'agent_error', 'agent': self.name, 'error': str(e)[:200], 'timestamp': time.time()})
             raise
 
-
-class ImportPatcher:
+class import_patcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
-
-    ctx: "ValidationContext"  # Type hint for mixin
+    ctx: 'ValidationContext'
 
     def build_import_dependency_map(self, moved_files: List[str]) -> Dict[str, List[str]]:
         """Build a map of which files import the moved modules."""
         import_map: Dict[str, List[str]] = {}
-
         for moved_file in moved_files:
-            old_module = self.ctx._path_to_module(moved_file)
+            old_module: Any = self.ctx._path_to_module(moved_file)
             import_map[old_module] = []
-
             for file_path in self.ctx.python_files:
                 if file_path == moved_file:
                     continue
-
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        tree = ast.parse(f.read())
-
+                        tree: Any = ast.parse(f.read())
                     for node in ast.walk(tree):
                         if isinstance(node, ast.ImportFrom):
                             if node.module and node.module.startswith(old_module):
@@ -91,14 +64,9 @@ class ImportPatcher:
                                     break
                 except Exception:
                     continue
-
         return {k: v for k, v in import_map.items() if v}
 
-    async def _patch_imports_after_changes(
-        self,
-        change_map: Dict[str, Any],
-        source_agent: str
-    ):
+    async def _patch_imports_after_changes(self, change_map: Dict[str, Any], source_agent: str):
         """
         Unified import patching for file moves and splits.
 
@@ -110,62 +78,35 @@ class ImportPatcher:
         """
         if not change_map:
             return
-
-        print(f"   🔧 Patching imports for {len(change_map)} module changes...")
-
+        print(f'   🔧 Patching imports for {len(change_map)} module changes...')
         import_map = self.build_import_dependency_map(list(change_map.keys()))
-
         affected_files = set()
         for file_list in import_map.values():
             affected_files.update(file_list)
-
         if not affected_files:
-            print("   ✅ No external imports to patch.")
+            print('   ✅ No external imports to patch.')
             return
-
         for file_path in affected_files:
             await self._patch_file_imports(file_path, change_map, source_agent)
 
-    async def _patch_file_imports(
-        self,
-        file_path: str,
-        change_map: Dict[str, Any],
-        source_agent: str
-    ):
+    async def _patch_file_imports(self, file_path: str, change_map: Dict[str, Any], source_agent: str):
         """Patch imports in a single file based on the change map."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-
             patch_instructions = []
             for old_module, new_targets in change_map.items():
                 if isinstance(new_targets, str):
-                    patch_instructions.append(f"{old_module} → {new_targets}")
+                    patch_instructions.append(f'{old_module} → {new_targets}')
                 elif isinstance(new_targets, list):
                     for new_target in new_targets:
-                        patch_instructions.append(f"{old_module} → {new_target}")
-
-            patch_text = "\n".join(patch_instructions)
-
-            patch_task = (
-                f"Update imports in this file to reflect module changes.\n"
-                f"Required changes:\n{patch_text}\n\n"
-                f"File content:\n{content}\n\n"
-                "Rules:\n"
-                "1. Update import statements to use new module paths\n"
-                "2. For split modules, import specific symbols from new modules\n"
-                "3. Preserve relative imports where possible\n"
-                "4. Return ONLY the updated Python code with corrected imports"
-            )
-
-            updated_content = await self.ctx.request_mutation(
-                source_agent, patch_task, content, reasoning_mode=False
-            )
-
+                        patch_instructions.append(f'{old_module} → {new_target}')
+            patch_text = '\n'.join(patch_instructions)
+            patch_task = f'Update imports in this file to reflect module changes.\nRequired changes:\n{patch_text}\n\nFile content:\n{content}\n\nRules:\n1. Update import statements to use new module paths\n2. For split modules, import specific symbols from new modules\n3. Preserve relative imports where possible\n4. Return ONLY the updated Python code with corrected imports'
+            updated_content = await self.ctx.request_mutation(source_agent, patch_task, content, reasoning_mode=False)
             if updated_content and updated_content != content:
                 if self.ctx.write_compliant_file(file_path, updated_content):
-                    print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
-
+                    print(f'   ✅ Imports patched: {os.path.basename(file_path)}')
         except Exception as e:
-            print(f"   ❌ Failed to patch imports in {file_path}: {e}")
-            self.ctx.signals.add("CRITICAL_WARNING")
+            print(f'   ❌ Failed to patch imports in {file_path}: {e}')
+            self.ctx.signals.add('CRITICAL_WARNING')

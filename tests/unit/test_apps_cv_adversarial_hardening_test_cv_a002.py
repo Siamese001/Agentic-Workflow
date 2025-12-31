@@ -12,8 +12,16 @@ from unittest.mock import Mock
 import pytest
 from canon_validator import CanonValidator
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class TestCVA002:
+
+
+# NAMING FIXED: TestCVA002 → test_cva002
+class test_cva002:
     """Test temporal rollback attack defense at L4 layer"""
 
     @pytest.fixture
@@ -42,6 +50,7 @@ class TestCVA002:
         write_attempts = []
 
         def mock_redis_set_with_timestamp(key, value, timestamp=None):
+                                    
             write_attempts.append({
                 "key": key,
                 "value": value,
@@ -79,6 +88,7 @@ class TestCVA002:
         state_history = []
 
         def mock_temporal_state_manager(key, value, timestamp):
+                                    
             # Get last known timestamp for this key
             last_timestamp = None
             for entry in reversed(state_history):
@@ -143,6 +153,7 @@ class TestCVA002:
         server_time = datetime.now(timezone.utc)
 
         def mock_clock_skew_check(timestamp):
+                                    
             client_time = datetime.fromisoformat(
                 timestamp.replace("Z", "+00:00"))
             skew = abs(client_time - server_time)
@@ -180,6 +191,7 @@ class TestCVA002:
         integrity_violations = []
 
         def mock_temporal_write(key, value, timestamp, writer_id):
+                                    
             # Validate timestamp
             datetime.now(timezone.utc)
             write_time = datetime.fromisoformat(
@@ -244,6 +256,7 @@ class TestCVA002:
         audit_log = []
 
         def mock_temporal_operation(operation, key, value, timestamp):
+                                    
             entry = {
                 "operation": operation,
                 "key": key,

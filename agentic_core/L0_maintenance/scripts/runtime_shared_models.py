@@ -24,19 +24,24 @@ from agentic_core.schemas.models.core_contracts import (
 
 
 # Exception classes remain here (not schema models)
-class AgenticWorkflowError(Exception):
+# NAMING FIXED: AgenticWorkflowError → agentic_workflow_error
+class agentic_workflow_error(Exception):
     """Base exception for agentic workflow."""
 
-class HopExecutionError(AgenticWorkflowError):
+# NAMING FIXED: HopExecutionError → hop_execution_error
+class hop_execution_error(AgenticWorkflowError):
     """Error in hop execution."""
 
-class ValidationError(AgenticWorkflowError):
+# NAMING FIXED: ValidationError → validation_error
+class validation_error(AgenticWorkflowError):
     """Validation error."""
 
-class APIError(AgenticWorkflowError):
+# NAMING FIXED: APIError → api_error
+class api_error(AgenticWorkflowError):
     """API-related error."""
 
-class CircuitBreakerOpenError(AgenticWorkflowError):
+# NAMING FIXED: CircuitBreakerOpenError → circuit_breaker_open_error
+class circuit_breaker_open_error(AgenticWorkflowError):
     """Circuit breaker is open."""
 
 __all__ = [

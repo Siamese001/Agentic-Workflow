@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class VectorDocument:
+# NAMING FIXED: VectorDocument → vector_document
+class vector_document:
     """Document stored in vector memory."""
 
     _id: str
@@ -19,7 +20,8 @@ class VectorDocument:
 
 
 @dataclass
-class QueryResult:
+# NAMING FIXED: QueryResult → query_result
+class query_result:
     """Result from a vector memory query."""
 
     _documents: List[VectorDocument]
@@ -29,7 +31,8 @@ class QueryResult:
 
 
 @dataclass
-class MemoryStats:
+# NAMING FIXED: MemoryStats → memory_stats
+class memory_stats:
     """Statistics about the vector memory store."""
 
     _collection_name: str

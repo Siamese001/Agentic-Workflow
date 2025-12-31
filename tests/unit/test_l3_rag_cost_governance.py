@@ -5,6 +5,7 @@ Tests that the Canon Validator prioritizes low-cost Brave Search over Pinecone
 import json
 import logging
 import sys
+import pytest
 from unittest.mock import patch
 
 # Setup logging
@@ -34,6 +35,7 @@ def test_canon_rag_low_cost_priority():
 
     # --- SETUP: Mock Brave Search to return SUCCESS ---
     def mock_brave_success(query, logger):
+                    
         nonlocal brave_called
         brave_called = True
         logger.info(f"MOCK: Brave Search called with query: {query}")
@@ -46,6 +48,7 @@ def test_canon_rag_low_cost_priority():
 
     # --- SETUP: Mock Pinecone Fallback to track if called ---
     def mock_pinecone_failure(description, version, logger):
+                    
         nonlocal pinecone_called
         pinecone_called = True
         logger.error(
@@ -56,6 +59,7 @@ def test_canon_rag_low_cost_priority():
     audit_logs = []
 
     def mock_add_observations(observations):
+                    
         audit_logs.extend(observations)
 
     # --- EXECUTION with mocks ---
@@ -147,6 +151,7 @@ def test_pinecone_fallback_when_brave_fails():
 
     # --- SETUP: Mock Brave Search to return empty (no fix found) ---
     def mock_brave_empty(query, logger):
+                    
         nonlocal brave_called
         brave_called = True
         logger.info("MOCK: Brave Search returned no results")
@@ -154,6 +159,7 @@ def test_pinecone_fallback_when_brave_fails():
 
     # --- SETUP: Mock Pinecone to return success ---
     def mock_pinecone_success(description, version, logger):
+                    
         nonlocal pinecone_called
         pinecone_called = True
         logger.info("MOCK: Pinecone fallback called and succeeded")

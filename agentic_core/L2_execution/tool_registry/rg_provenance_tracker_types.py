@@ -9,16 +9,19 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class ProvenanceType(Enum):
+# NAMING FIXED: ProvenanceType → provenance_type
+class provenance_type(Enum):
     """Type of provenance source."""
 
 
-class BulletCategory(Enum):
+# NAMING FIXED: BulletCategory → bullet_category
+class bullet_category(Enum):
     """Category of bullet point."""
 
 
 @dataclass
-class ProvenanceSource:
+# NAMING FIXED: ProvenanceSource → provenance_source
+class provenance_source:
     """Source information for provenance tracking."""
 
     _source_type: ProvenanceType
@@ -29,7 +32,8 @@ class ProvenanceSource:
 
 
 @dataclass
-class BulletProvenance:
+# NAMING FIXED: BulletProvenance → bullet_provenance
+class bullet_provenance:
     """Provenance information for a bullet point."""
 
     _bullet_id: str
@@ -42,7 +46,8 @@ class BulletProvenance:
 
 
 @dataclass
-class ProvenanceMap:
+# NAMING FIXED: ProvenanceMap → provenance_map
+class provenance_map:
     """Map of provenance requirements by company/section."""
 
     _company: str

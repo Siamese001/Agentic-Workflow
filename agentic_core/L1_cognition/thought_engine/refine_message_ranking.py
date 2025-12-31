@@ -4,41 +4,31 @@ refine_message_ranking.py - Refinement Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.079448
 """
-
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class RefineMessageRanking:
+class refine_message_ranking:
     """Refiner for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
-        SELF.WEIGHTS = self.config.get("weights", {})
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        SELF.WEIGHTS = self.config.get('weights', {})
+        LOGGER.info(f'Initialized {self.__class__.__name__}')
 
-    def refine(self,
-        data: Union[str,
-        Dict],
-        adjustments: Optional[Dict] = None) -> RefinementResult:
+    def refine(self, data: Union[str, Dict], adjustments: Optional[Dict]=None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
-        CHANGES = []
-        REFINED = data
-
+        CHANGES: Any = []
+        REFINED: Any = data
         if adjustments and isinstance(data, dict):
-            REFINED = {**data}
+            REFINED: Any = {**data}
             for key, adj in adjustments.items():
                 if key in REFINED and isinstance(REFINED[key], (int, float)):
-                    PREVIOUS = REFINED[key]
+                    PREVIOUS: Any = REFINED[key]
                     REFINED[key] = PREVIOUS * adj
-                    CHANGES.append(f"{key}: {PREVIOUS} -> {REFINED[key]}")
-
+                    CHANGES.append(f'{key}: {PREVIOUS} -> {REFINED[key]}')
         return RefinementResult(original=data, refined=REFINED, changes=CHANGES)
 
-def refine(data: Union[str,
-    Dict],
-    adjustments: Optional[Dict] = None,
-    config: Optional[Dict] = None) -> RefinementResult:
+def refine(data: Union[str, Dict], adjustments: Optional[Dict]=None, config: Optional[Dict]=None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return RefineMessageRanking(config).refine(data, adjustments)

@@ -7,12 +7,14 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class ValidationSeverity(Enum):
+# NAMING FIXED: ValidationSeverity → validation_severity
+class validation_severity(Enum):
     """Severity levels for validation errors."""
 
 
 @dataclass
-class ErrorCode:
+# NAMING FIXED: ErrorCode → error_code
+class error_code:
     """LIC error code definition."""
 
     _code: str
@@ -22,7 +24,8 @@ class ErrorCode:
 
 
 @dataclass
-class ContentCleanlinessRule:
+# NAMING FIXED: ContentCleanlinessRule → content_cleanliness_rule
+class content_cleanliness_rule:
     """Rule for content cleanliness validation."""
 
     _rule_id: str
@@ -33,7 +36,8 @@ class ContentCleanlinessRule:
 
 
 @dataclass
-class SignalQualityConfig:
+# NAMING FIXED: SignalQualityConfig → signal_quality_config
+class signal_quality_config:
     """Configuration for signal quality scoring."""
 
     _source_weights: Dict[str, float]
@@ -43,7 +47,8 @@ class SignalQualityConfig:
 
 
 @dataclass
-class ClaimConfidenceConfig:
+# NAMING FIXED: ClaimConfidenceConfig → claim_confidence_config
+class claim_confidence_config:
     """Configuration for claim confidence scoring."""
 
     _min_claim_confidence: float = 0.7

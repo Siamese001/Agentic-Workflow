@@ -15,8 +15,6 @@ Author: Agentic Workflow System
 Version: 1.0.0
 Compliance: Subatomic Canon 2026
 """
-
-
 import logging
 import sys
 import time
@@ -24,19 +22,18 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-class ExecutionStatus(Enum):
+class execution_status(Enum):
     """Enumeration for execution status states."""
-    PENDING = "pending"
-    RUNNING = "running"
-    SUCCESS = "success"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
+    PENDING: Any = 'pending'
+    RUNNING: Any = 'running'
+    SUCCESS: Any = 'success'
+    FAILED: Any = 'failed'
+    CANCELLED: Any = 'cancelled'
 
 @dataclass
-class ExecutionContext:
+class execution_context:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
@@ -50,25 +47,20 @@ class ExecutionContext:
         """Mark execution as started."""
         self.status = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        LOGGER.info(f"Execution started for operation: {self.operation_id}")
+        LOGGER.info(f'Execution started for operation: {self.operation_id}')
 
-    def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
+    def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
         self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
-
         if error:
-            self.error_details = {
-                "type": type(error).__name__,
-                "message": str(error),
-                "traceback": traceback.format_exc()
-            }
-            LOGGER.error(f"Execution failed: {error}")
+            self.error_details = {'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
+            LOGGER.error(f'Execution failed: {error}')
         else:
-            LOGGER.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s")
+            LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
-class ProcessingResult:
+class processing_result:
     """Standardized result container for all operations."""
     success: bool
     data: Optional[Any] = None
@@ -76,7 +68,7 @@ class ProcessingResult:
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
 
-class GetInfoUnderstandRequest:
+class get_info_understand_request:
     """
     Main executor class for get info understand request operations.
 
@@ -84,7 +76,7 @@ class GetInfoUnderstandRequest:
     comprehensive error handling and performance monitoring.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, Any]]=None):
         """Initialize with optional configuration."""
         self.config = config or {}
         self._setup_logging()
@@ -92,26 +84,22 @@ class GetInfoUnderstandRequest:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
         if not self.logger.handlers:
             executor = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
             self.logger.addHandler(executor)
             self.logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
-        required_keys = ["enabled", "mode", "timeout"]
+        required_keys = ['enabled', 'mode', 'timeout']
         missing = [key for key in required_keys if key not in self.config]
         if missing:
-            raise ValueError(f"Missing required config keys: {missing}")
+            raise ValueError(f'Missing required config keys: {missing}')
 
-    def process(self,
-                payload: Union[str, int, float, bool, List, Dict],
-                context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
+    def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
 
@@ -122,70 +110,32 @@ class GetInfoUnderstandRequest:
         Returns:
             ProcessingResult with outcome and metadata
         """
-        exec_ctx = ExecutionContext(
-            operation_id=self.config.get("operation_id", "default"),
-            metadata=context or {}
-        )
-
+        exec_ctx: Any = ExecutionContext(operation_id=self.config.get('operation_id', 'default'), metadata=context or {})
         try:
             exec_ctx.start()
-
-            # Validate input
             if payload is None:
-                raise ValueError("Payload cannot be None")
-
-            # Execute main logic
-            result = self._execute_core(payload, context)
-
+                raise ValueError('Payload cannot be None')
+            result: Any = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
-
-            return ProcessingResult(
-                success=True,
-                data=result,
-                execution_context=exec_ctx,
-                additional_info={
-                    "processed_at": time.time(),
-                    "executor": self.__class__.__name__
-                }
-            )
-
+            return ProcessingResult(success=True, data=result, execution_context=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
+            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
-            return ProcessingResult(
-                success=False,
-                error_message=str(e),
-                execution_context=exec_ctx
-            )
-
-    def _execute_core(self,
-                     data: Union[str, int, float, bool, List, Dict],
-                     context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
+    def _execute_core(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""
-        # Default implementation just returns the data
         return data
+__all__ = ['ExecutionStatus', 'ExecutionContext', 'ProcessingResult', 'GetInfoUnderstandRequest', 'create_processor', 'validate_module_config']
 
-# Module-level exports and utilities
-__all__ = [
-    "ExecutionStatus",
-    "ExecutionContext",
-    "ProcessingResult",
-    "GetInfoUnderstandRequest",
-    "create_processor",
-    "validate_module_config"
-]
-
-def create_processor(config: Optional[Dict[str, Any]] = None) -> GetInfoUnderstandRequest:
+def create_processor(config: Optional[Dict[str, Any]]=None) -> GetInfoUnderstandRequest:
     """module function to create configured executor instance."""
     return GetInfoUnderstandRequest(config or {})
 
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        executor = create_processor(config)
+        executor: Any = create_processor(config)
         return True
     except Exception:
         return False
-
-# Module initialization
-LOGGER.info(f"{__name__} module loaded successfully")
+LOGGER.info(f'{__name__} module loaded successfully')

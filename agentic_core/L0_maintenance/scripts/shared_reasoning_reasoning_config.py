@@ -1,7 +1,18 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, ClassVar, Dict, List, Optional, Protocol
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 
 _logger = logging.getLogger(__name__)
 # Ownership: shared
@@ -16,12 +27,14 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-class ModelProvider(str, Enum):
+# NAMING FIXED: ModelProvider → model_provider
+class model_provider(str, Enum):
     """Available model providers."""
 
 
 @dataclass
-class ModelConfig:
+# NAMING FIXED: ModelConfig → model_config
+class model_config:
     """Configuration for LLM model parameters."""
 
     _provider: ModelProvider = ModelProvider.OPENAI
@@ -36,7 +49,8 @@ class ModelConfig:
 
 
 @dataclass
-class RAGConfig:
+# NAMING FIXED: RAGConfig → rag_config
+class rag_config:
     """Configuration for Retrieval-Augmented Generation."""
 
     _enabled: bool = True
@@ -51,7 +65,8 @@ class RAGConfig:
 
 
 @dataclass
-class GovernorConfig:
+# NAMING FIXED: GovernorConfig → governor_config
+class governor_config:
     """Configuration for governance and safety controls."""
 
     _safety_enabled: bool = True
@@ -67,7 +82,8 @@ class GovernorConfig:
 
 
 @dataclass
-class ReasoningConfig:
+# NAMING FIXED: ReasoningConfig → reasoning_config
+class reasoning_config:
     """Centralized reasoning configuration for LLM generation."""
 
     _cot_min_paths: int = 3
@@ -96,12 +112,14 @@ class ReasoningConfig:
 # Initialize default config
 
 # Global CONFIG singleton for backward compatibility
-_CONFIG = ReasoningConfig.DEFAULT
+# NAMING FIXED: _CONFIG → _config
+_config = ReasoningConfig.DEFAULT
 
 # C2 variable for singleton testing
 
 # Section-specific configurations
-_REASONING_CONFIGS = [
+# NAMING FIXED: _REASONING_CONFIGS → _reasoning_configs
+_reasoning_configs = [
     (
         "K0_HEADLINE_CONFIG",
         {

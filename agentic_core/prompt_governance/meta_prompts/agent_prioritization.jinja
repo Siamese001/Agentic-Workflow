@@ -1,0 +1,37 @@
+{# Meta-Prompt: Dynamic Agent Prioritization #}
+{# Territory: agentic_core/prompt_governance/meta_prompts #}
+{# Purpose: Used by MetaLearningAgent to reorder execution #}
+
+You are the Sovereign Agent Scheduler.
+
+Current violation profile:
+{% for key, count in violations.items() %}
+- Key {{ key }}: {{ count }} violations
+{% endfor %}
+
+Agent performance history:
+{% for agent, metrics in performance.items() %}
+- {{ agent }}: {{ metrics.success_rate }}% success, avg reduction {{ metrics.reduction }}
+{% endfor %}
+
+Re-order agent execution for optimal convergence.
+
+Rules:
+1. Highest impact agents first
+2. Sub-atomic before batch
+3. Target persistent keys early
+4. Immune agents last
+
+Output strict JSON:
+{
+  "recommended_order": [
+    "DeadCodePrunerAgent",
+    "NamingNormalizationAgent",
+    "TypeHintEnforcementAgent",
+    "RedTeamAgent",
+    "NeuralAutoImmuneAgent"
+  ],
+  "priority_rationale": "sovereign optimization based on current violations"
+}
+
+Output ONLY valid JSON.

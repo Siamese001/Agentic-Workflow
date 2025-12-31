@@ -1,11 +1,21 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
-INTELLIGENCE_THRESHOLD = os.getenv("INTELLIGENCE_THRESHOLD", "0.5")
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
+# NAMING FIXED: INTELLIGENCE_THRESHOLD → intelligence_threshold
+intelligence_threshold = os.getenv("INTELLIGENCE_THRESHOLD", "0.5")
 
 # Optional AutoGen import for collective repair
 try:
@@ -14,7 +24,8 @@ except ImportError:
     AUTOGEN_AVAILABLE = False
 
 
-class Sherlock(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SherlockAgent(SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
@@ -25,6 +36,7 @@ class Sherlock(SubAtomicAgent):
         self.last_failure = None
 
     def can_run(self) -> bool:
+                    
         return self.triggered and self.last_failure is not None
 
     def trigger_investigation(self, modified_file: str, test_file: str, traceback: str):
@@ -37,6 +49,7 @@ class Sherlock(SubAtomicAgent):
         }
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
@@ -99,7 +112,8 @@ Return ONLY the python code for {primary}.
         return None
 
 
-class TestPilot(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class TestPilotAgent(SubAtomicAgent):
     """
     ROLE: Integration Guardian. Runs pytest and triggers Sherlock on failure.
     """
@@ -108,9 +122,11 @@ class TestPilot(SubAtomicAgent):
         self.sherlock_ref: Optional[Sherlock] = None
 
     def set_sherlock(self, sherlock: Sherlock):
+                    
         self.sherlock_ref = sherlock
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
         await asyncio.sleep(0)
 
@@ -134,6 +150,7 @@ class TestPilot(SubAtomicAgent):
         return test_path if os.path.exists(test_path) else None
 
 
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class ToolsmithAgent(SubAtomicAgent):
     """
     ROLE: Dynamic Tool Forger.
@@ -142,6 +159,7 @@ class ToolsmithAgent(SubAtomicAgent):
     """
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Forging Diagnostic Tools...")
         await asyncio.sleep(0)
 

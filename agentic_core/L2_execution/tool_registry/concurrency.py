@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import asyncio
 import datetime
 import os
@@ -7,7 +9,9 @@ import time
 from collections import defaultdict
 
 
-class MemoryLeakDetector:
+# NAMING FIXED: MemoryLeakDetector → memory_leak_detector
+# NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
+class memory_leak_detector:
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
 
     def __init__(self, ctx):
@@ -39,6 +43,7 @@ class MemoryLeakDetector:
     }
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
         await asyncio.sleep(0)
 
@@ -308,7 +313,6 @@ class MemoryLeakDetector:
             f"Code:\n{content}\n\n"
             "Return ONLY the complete leak-free Python code."
         )
-
         return await self.ctx.request_mutation(
             self.name, prompt, content, reasoning_mode=True
         )
@@ -355,7 +359,8 @@ class MemoryLeakDetector:
         self.ctx.write_compliant_file(report_path, report_content)
 
 
-class DeadlockAnalyzer(ast.NodeVisitor):
+# NAMING FIXED: DeadlockAnalyzer → deadlock_analyzer
+class deadlock_analyzer(ast.NodeVisitor):
     """AST visitor to build lock acquisition graph and detect potential deadlocks."""
 
     def __init__(self):
@@ -462,6 +467,7 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         rec_stack = set()
 
         def dfs(node, parent_path):
+                                    
             if node in rec_stack:
                 # Found a cycle
                 cycle_start = parent_path.index(node)
@@ -489,7 +495,8 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         return cycles
 
 
-class DeadlockDetector:
+# NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
+class deadlock_detector:
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 
     def __init__(self, ctx):
@@ -497,6 +504,7 @@ class DeadlockDetector:
         self.name = self.__class__.__name__
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
         await asyncio.sleep(0)
 
@@ -596,6 +604,7 @@ class DeadlockDetector:
         rec_stack = set()
 
         def dfs(node, parent_path):
+                                    
             if node in rec_stack:
                 # Found a cycle
                 cycle_start = parent_path.index(node)
@@ -705,7 +714,8 @@ class DeadlockDetector:
         self.ctx.write_compliant_file(report_path, report_content)
 
 
-class RaceAnalyzer(ast.NodeVisitor):
+# NAMING FIXED: RaceAnalyzer → race_analyzer
+class race_analyzer(ast.NodeVisitor):
     """AST visitor to analyze potential race conditions."""
 
     def __init__(self):
@@ -717,6 +727,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.shared_state = []
 
     def visit(self, node):
+                    
         # Add parent info to nodes for context tracking
         for child in ast.walk(node):
             for field, value in ast.iter_fields(child):
@@ -729,6 +740,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         return super().visit(node)
 
     def visit_Module(self, node):
+                    
         # Track module-level assignments (global state)
         for stmt in node.body:
             if isinstance(stmt, ast.Assign):
@@ -738,6 +750,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
+                    
         old_class = self.current_class
         self.current_class = node.name
 
@@ -758,6 +771,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.current_class = old_class
 
     def visit_FunctionDef(self, node):
+                    
         old_function = self.current_function
         self.current_function = node.name
 
@@ -770,9 +784,11 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.current_function = old_function
 
     def visit_AsyncFunctionDef(self, node):
+                    
         self.visit_FunctionDef(node)
 
     def visit_With(self, node):
+                    
         # Check if this 'with' statement uses a lock
         is_lock_context = False
         for item in node.items:
@@ -788,9 +804,11 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.in_with_context.pop()
 
     def visit_AsyncWith(self, node):
+                    
         self.visit_With(node)
 
     def visit_Assign(self, node):
+                    
         # Check for assignments to shared mutable state
         for target in node.targets:
             if isinstance(target, ast.Name):
@@ -830,6 +848,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_AugAssign(self, node):
+                    
         # Check for compound operations (+=, -=, *=, /=)
         # These are always non-atomic
         if isinstance(node.target, ast.Name):
@@ -859,6 +878,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node):
+                    
         # Check for method calls on shared objects without locks
         if isinstance(node.func, ast.Attribute):
             # Check if it's a mutable method on shared state

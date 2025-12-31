@@ -7,7 +7,8 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-class OrchestratorConfig:
+# NAMING FIXED: OrchestratorConfig → orchestrator_config
+class orchestrator_config:
     """Configuration for the orchestrator (Nervous System).
 
     Attributes:
@@ -53,9 +54,9 @@ class OrchestratorConfig:
 
 
 @dataclass
-class CognitiveConfig:
+# NAMING FIXED: CognitiveConfig → cognitive_config
+class cognitive_config:
     """Configuration for the cognitive plane.
-
     Attributes:
         model: LLM model to use for reasoning
         temperature: Sampling temperature
@@ -81,7 +82,8 @@ class CognitiveConfig:
 
 
 @dataclass
-class ActionConfig:
+# NAMING FIXED: ActionConfig → action_config
+class action_config:
     """Configuration for the action plane.
 
     Attributes:

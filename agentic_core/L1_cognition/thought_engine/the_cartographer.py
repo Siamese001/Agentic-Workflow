@@ -1,12 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-
-class TheCartographer:
+class the_cartographer:
     """
     Maps codebases into semantic context for architectural queries.
 
@@ -17,7 +18,7 @@ class TheCartographer:
     - Excludes patterns: .git, __pycache__, node_modules, etc.
     """
 
-    def __init__(self, llm_client: Any = None):
+    def __init__(self, llm_client: Any=None):
         """
         Initialize TheCartographer.
 
@@ -25,21 +26,11 @@ class TheCartographer:
             llm_client: LLM client for generating summaries
         """
         self.llm_client = llm_client
-        self.api_key = os.getenv("GOOGLE_API_KEY")
-
-        # Repository roots
+        self.api_key = os.getenv('GOOGLE_API_KEY')
         self.primary_root = Path.cwd()
         self.additional_roots = self._get_additional_roots()
-
-        # File summaries cache
         self.file_summaries: Dict[str, str] = {}
-
-        # Exclusion patterns
-        self.exclude_patterns = {
-            ".git", "__pycache__", ".pytest_cache", ".tox", "venv", ".venv",
-            "node_modules", ".idea", ".vscode", "dist", "build", "coverage",
-            ".mypy_cache", ".coverage", "*.egg-info", ".DS_Store"
-        }
+        self.exclude_patterns = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.mypy_cache', '.coverage', '*.egg-info', '.DS_Store'}
 
     def _get_additional_roots(self) -> List[Path]:
         """
@@ -49,18 +40,15 @@ class TheCartographer:
             List of additional repository root paths
         """
         roots: List[Path] = []
-
-        # Check ADDITIONAL_REPO_ROOTS (comma-separated)
-        env_roots = os.getenv("ADDITIONAL_REPO_ROOTS", "")
+        env_roots = os.getenv('ADDITIONAL_REPO_ROOTS', '')
         if env_roots:
-            for root_path in env_roots.split(","):
+            for root_path in env_roots.split(','):
                 root_path = root_path.strip()
                 if root_path:
                     path_obj = Path(root_path)
                     if path_obj.exists():
                         roots.append(path_obj.resolve())
-                        LOGGER.info(f"📍 Scanning additional root: {root_path}")
-
+                        LOGGER.info(f'📍 Scanning additional root: {root_path}')
         return roots
 
     async def map_all_repositories(self) -> Dict[str, Any]:
@@ -70,32 +58,19 @@ class TheCartographer:
         Returns:
             Dictionary with mapping results
         """
-        LOGGER.info("🗺️  TheCartographer: Beginning semantic mapping")
-
-        results: Dict[str, Any] = {
-            "primary_root": str(self.primary_root),
-            "additional_roots": [str(r) for r in self.additional_roots],
-            "files_mapped": 0,
-            "summaries_generated": 0,
-            "repositories": {}
-        }
-
-        # Map primary repository
-        primary_result = await self._map_repository(self.primary_root, "primary")
-        results["repositories"]["primary"] = primary_result
-        results["files_mapped"] += primary_result.get("files_mapped", 0)
-        results["summaries_generated"] += primary_result.get("summaries_generated", 0)
-
-        # Map additional repositories
+        LOGGER.info('🗺️  TheCartographer: Beginning semantic mapping')
+        results: Dict[str, Any] = {'primary_root': str(self.primary_root), 'additional_roots': [str(r) for r in self.additional_roots], 'files_mapped': 0, 'summaries_generated': 0, 'repositories': {}}
+        primary_result: Any = await self._map_repository(self.primary_root, 'primary')
+        results['repositories']['primary'] = primary_result
+        results['files_mapped'] += primary_result.get('files_mapped', 0)
+        results['summaries_generated'] += primary_result.get('summaries_generated', 0)
         for i, root in enumerate(self.additional_roots):
-            repo_name = f"additional_{i+1}"
-            repo_result = await self._map_repository(root, repo_name)
-            results["repositories"][repo_name] = repo_result
-            results["files_mapped"] += repo_result.get("files_mapped", 0)
-            results["summaries_generated"] += repo_result.get("summaries_generated", 0)
-
+            repo_name: Any = f'additional_{i + 1}'
+            repo_result: Any = await self._map_repository(root, repo_name)
+            results['repositories'][repo_name] = repo_result
+            results['files_mapped'] += repo_result.get('files_mapped', 0)
+            results['summaries_generated'] += repo_result.get('summaries_generated', 0)
         LOGGER.info(f"[OK] TheCartographer: Mapped {results['files_mapped']} files")
-
         return results
 
     async def _map_repository(self, root_path: Path, repo_name: str) -> Dict[str, Any]:
@@ -109,12 +84,5 @@ class TheCartographer:
         Returns:
             Mapping result for this repository
         """
-        result: Dict[str, Any] = {
-            "repo_name": repo_name,
-            "root_path": str(root_path),
-            "files_mapped": 0,
-            "summaries_generated": 0,
-            "files": []
-        }
-        # Implementation logic for async file scanning and LLM summarization follows
+        result: Dict[str, Any] = {'repo_name': repo_name, 'root_path': str(root_path), 'files_mapped': 0, 'summaries_generated': 0, 'files': []}
         return result

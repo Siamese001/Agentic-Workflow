@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
@@ -18,12 +22,14 @@ from typing import Any
 
 
 # Mock exceptions since they're zombie file dependencies
-class OrchestrationError(Exception):
+# NAMING FIXED: OrchestrationError → orchestration_error
+class orchestration_error(Exception):
     """Orchestration error for tool routing."""
 
 
 # Mock PlanObject since it's a zombie file dependency
-class PlanObject:
+# NAMING FIXED: PlanObject → plan_object
+class plan_object:
     """TODO: Add docstring."""
 
 

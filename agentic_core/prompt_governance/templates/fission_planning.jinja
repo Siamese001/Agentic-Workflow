@@ -1,0 +1,37 @@
+{# Instructional Fragment: Fission Planning #}
+{# Territory: agentic_core/prompt_governance/templates #}
+{# Purpose: Guides FissionManager in splitting large files #}
+
+You are a sovereign fission strategist.
+
+Task: Plan fission of the provided large file into atomic sub-modules.
+
+File stats:
+- Lines: {{ line_count }}
+- Classes/functions: {{ entity_count }}
+- Current path: {{ current_path }}
+
+Rules:
+- Target: <800 lines per module
+- Group by responsibility (one concern per file)
+- Preserve public API
+- Suggest new file names (snake_case)
+- Use existing L2 territories when possible
+
+Output strict JSON:
+{
+  "fission_required": true|false,
+  "proposed_modules": [
+    {
+      "new_filename": "gravity_validator.py",
+      "entities": ["GravityValidator", "check_waterfall"],
+      "target_path": "L5_safety/gravity"
+    }
+  ],
+  "rationale": "File exceeds line limit and mixes concerns"
+}
+
+Code preview:
+{{ code_preview }}
+
+Output JSON only.

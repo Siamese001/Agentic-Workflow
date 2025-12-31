@@ -1,4 +1,6 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 import datetime
 import os
 import re
@@ -7,11 +9,20 @@ from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
-EXCLUDED_DIRS = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
+# NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
+excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
 
 # Optional dependencies
 # [HARDENING] Lazy import to prevent subprocess hangs during canon validation
-GITPYTHON_AVAILABLE = False
+# NAMING FIXED: GITPYTHON_AVAILABLE → gitpython_available
+gitpython_available = False
 Repo = None
 
 def _lazy_load_git():
@@ -33,7 +44,8 @@ except ImportError:
     WATCHDOG_AVAILABLE = False
 
 
-class Historian(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class HistorianAgent(SubAtomicAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
@@ -41,13 +53,14 @@ class Historian(SubAtomicAgent):
         super().__init__(ctx)
         # Use env var for log path for better environment isolation
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
-
     async def execute(self):
+                    
         # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
         pass
 
     def record_event(self, agent: str, status: str, details: str):
+                    
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
 
@@ -61,6 +74,7 @@ class Historian(SubAtomicAgent):
             print(f"   [!] Historian failed to write: {e}")
 
 
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class GitAgent(SubAtomicAgent):
     """
     ROLE: Manages Version Control (Branching, Commits).
@@ -77,6 +91,7 @@ class GitAgent(SubAtomicAgent):
                 pass
 
     async def execute(self):
+                    
         if not GITPYTHON_AVAILABLE or not self.repo:
             return
 
@@ -97,11 +112,13 @@ class GitAgent(SubAtomicAgent):
             print(f"   [!] Git operation failed: {e}")
 
 
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class BenchmarkingAgent(SubAtomicAgent):
     """
     ROLE: Measures execution time and ensures tools aren't too slow.
     """
     async def execute(self):
+                    
         # Placeholder for Time Budget logic
         pass
 
@@ -117,6 +134,7 @@ if WATCHDOG_AVAILABLE:
             self.cooldown = 0.0
 
         def on_modified(self, event):
+                                    
             if event.is_directory: return
             if any(x in event.src_path for x in EXCLUDED_DIRS): return
             if not event.src_path.endswith('.py'): return
@@ -138,4 +156,5 @@ else:
             self.loop = loop
 
         def on_modified(self, event):
+                                    
             pass

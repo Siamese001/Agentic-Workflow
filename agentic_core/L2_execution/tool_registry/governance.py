@@ -17,8 +17,16 @@ from agentic_core.L0_maintenance.scripts.canon_validator_config import (
 )
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class ArchitectureGovernor(SubAtomicAgent):
+
+
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ArchitectureGovernorAgent(SubAtomicAgent):
     """
     Unified Architecture Governor.
     Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Keys 17, 19), System (Keys 40, 41).
@@ -70,7 +78,6 @@ class ArchitectureGovernor(SubAtomicAgent):
         self.ctx.report(self.name, 19, not violations['complexity'], violations['complexity'])
         self.ctx.report(self.name, 40, not violations['system'], violations['system'])
         self.ctx.report(self.name, 41, True, ["Root hygiene maintained"])
-
     def _check_depth(self, file_path: str) -> List[str]:
         """Check if file violates the Law of Depth (Key 49)."""
         # FIX: Use pathlib.Path to handle Windows drive letters correctly
@@ -86,7 +93,6 @@ class ArchitectureGovernor(SubAtomicAgent):
         except Exception as e:
             return [f"{file_path}: Cannot analyze depth: {e}"]
         return []
-
     async def _check_atomicity(self, file_path: str) -> List[str]:
         """
         Check if file violates the Law of Atomicity (Key 50).
@@ -106,7 +112,7 @@ class ArchitectureGovernor(SubAtomicAgent):
                 blueprint = await self._generate_fission_blueprint(file_path, content, loc)
                 
                 if blueprint:
-                    # Store blueprint in context for FissionManager to execute
+                    # Store blueprint in context for fission_manager to execute
                     if not hasattr(self.ctx, 'fission_blueprints'):
                         self.ctx.fission_blueprints = {}
                     self.ctx.fission_blueprints[file_path] = blueprint
@@ -201,7 +207,6 @@ Generate the blueprint now:"""
                         return blueprint
             
             return None
-            
         except Exception as e:
             print(f"   [!] Fission blueprint generation error: {e}")
             return None
@@ -249,7 +254,8 @@ Generate the blueprint now:"""
             return f.read()
 
 
-class DependencySentinel(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class DependencySentinelAgent(SubAtomicAgent):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
           14 (Duplicate Imports), 44 (Circular Imports)
@@ -257,6 +263,7 @@ class DependencySentinel(SubAtomicAgent):
     """
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
         await asyncio.sleep(0)
 
@@ -311,11 +318,9 @@ class DependencySentinel(SubAtomicAgent):
                 self.ctx.report(self.name, 14, False, ["isort failed"])
         else:
             self.ctx.report(self.name, 14, False, ["isort not installed"])
-
         # Key 7: Star imports
         passed, details = self.check_key_07_no_star_imports()
         self.ctx.report(self.name, 7, passed, details)
-
         # Key 8: Relative imports
         passed, details = self.check_key_08_no_relative_imports()
         self.ctx.report(self.name, 8, passed, details)
@@ -363,7 +368,6 @@ class DependencySentinel(SubAtomicAgent):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-
                 imported_modules = set()
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -372,7 +376,6 @@ class DependencySentinel(SubAtomicAgent):
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             imported_modules.add(node.module.split('.')[0])
-
                 import_map[file_path] = imported_modules
             except Exception:
                 continue

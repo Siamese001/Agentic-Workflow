@@ -1,0 +1,143 @@
+"""
+Sovereign Report Agent – Phase 13+ (Dec 30, 2025)
+Pure canonical audit report structure and builder.
+Zero side effects. Import-safe for L6 consumption and all orchestration agents.
+"""
+
+from datetime import datetime
+from typing import List, Dict
+import logging
+import re
+
+
+class SovereignReport:
+    """
+    The canonical audit result object for L6 consumption and healing orchestration.
+    Immutable after build.
+    """
+
+    def __init__(self):
+        self.scores: Dict[str, float] = {}
+        self.issues: Dict[str, List[str]] = {}
+        self.report_id: str = ""
+        self.timestamp = None
+
+    def get_overall_score(self) -> float:
+        """Calculate overall health score across all dimensions."""
+        if not self.scores:
+            return 0.0
+        return sum(self.scores.values()) / len(self.scores)
+
+    class Builder:
+        """
+        Sovereign Builder pattern – enforces known dimensions and valid scores.
+        Phase 13 (Dec 29, 2025) compliant.
+        """
+
+        # Enforce SSOT for known dimensions – prevents drift
+        KNOWN_DIMENSIONS = [
+            "Structural SSOT",
+            "Schema SSOT",
+            "Prompt SSOT",
+            "Config SSOT",
+            "DDD Alignment",
+            "Atomic Fission",
+            "Zero-Trust Membrane",
+            "Observability Footprint",
+            "Healing Resilience",
+        ]
+
+        def __init__(self):
+            self._dimensions = {
+                name: {"score": 0.0, "issues": []} for name in self.KNOWN_DIMENSIONS
+            }
+            self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
+
+        def with_dimension(
+            self, name: str, score: float, issues: List[str] = None
+        ) -> 'SovereignReport.Builder':
+            """Sets a validated dimension score."""
+            if name not in self._dimensions:
+                raise ValueError(f"Sovereignty Violation: Unknown dimension: {name}")
+            if not 0 <= score <= 100:
+                raise ValueError(f"Constitutional Violation: Score {score} out of bounds.")
+            self._dimensions[name]["score"] = score
+            self._dimensions[name]["issues"] = issues or []
+            return self
+
+        def build(self) -> 'SovereignReport':
+            """Constructs the sealed report and emits L6 observability event."""
+            logger = logging.getLogger(__name__)
+
+            overall = sum(d["score"] for d in self._dimensions.values()) / len(self._dimensions)
+            status = "SOVEREIGN" if overall >= 95 else "VULNERABLE"
+            logger.info(
+                f"[L6_AUDIT] Report Sealed: {self._report_id} | Health: {overall:.1f}% | {status}"
+            )
+
+            report = SovereignReport()
+            report.scores = {name: d["score"] for name, d in self._dimensions.items()}
+            report.issues = {name: d["issues"] for name, d in self._dimensions.items()}
+            report.report_id = self._report_id
+            report.timestamp = datetime.utcnow()
+            return report
+
+    def get_all_issues(self) -> List[Dict]:
+        """
+        Parse raw guardian issues into structured format expected by Healing Strategies (Phase 10+).
+        Input format example: "path/to/file.py: message text (line XX if present)"
+        """
+        all_issues = []
+        for dimension, raw_issues in self.issues.items():
+            for raw in raw_issues:
+                file_path = str(raw)
+                message = str(raw)
+                line_num = None
+
+                # Prefer ": " split for Windows drive safety
+                if ": " in raw:
+                    parts = raw.split(": ", 1)
+                    file_path = parts[0].strip()
+                    message = parts[1].strip()
+                elif ":" in raw and raw.count(":") >= 2:
+                    parts = raw.split(":", 2)
+                    file_path = parts[0].strip()
+                    message = parts[2].strip() if len(parts) > 2 else parts[1].strip()
+
+                # Extract line number if mentioned
+                match = re.search(r"(?:line|Line)\s+(\d+)", message)
+                if match:
+                    line_num = int(match.group(1))
+
+                all_issues.append({
+                    "dimension": dimension,
+                    "description": message,
+                    "file": file_path,
+                    "line": line_num,
+                })
+        return all_issues
+
+    def print_summary(self) -> float:
+        """
+        Human-readable sovereignty verdict.
+        Returns overall score for programmatic use.
+        """
+        print("\n" + "="*60)
+        print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
+        print("="*60)
+
+        overall = self.get_overall_score()
+
+        for dim, score in self.scores.items():
+            status = "[OK]" if score > 95 else "[WARN]" if score > 80 else "[FAIL]"
+            print(f"{status} {dim:<20} : {score:.1f}%")
+            if score < 100:
+                preview = ', '.join(str(i) for i in self.issues[dim][:3])
+                preview += "..." if len(self.issues[dim]) > 3 else ""
+                print(f"   Violations: {preview}")
+
+        print("-" * 60)
+        status = "SOVEREIGN" if overall > 95 else "VULNERABLE"
+        print(f"OVERALL HEALTH: {overall:.1f}% -> {status}")
+        print("="*60)
+        return overall

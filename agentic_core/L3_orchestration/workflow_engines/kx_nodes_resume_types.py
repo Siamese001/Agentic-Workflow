@@ -7,16 +7,19 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class ResumeKNodeType(str, Enum):
+# NAMING FIXED: ResumeKNodeType → resume_k_node_type
+class resume_k_node_type(str, Enum):
     """Resume K.X node type classification."""
 
 
-class ReasoningStrategy(str, Enum):
+# NAMING FIXED: ReasoningStrategy → reasoning_strategy
+class reasoning_strategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
 
 @dataclass
-class RAGConfig:
+# NAMING FIXED: RAGConfig → rag_config
+class rag_config:
     """RAG configuration for K.X node."""
 
     _enabled: bool = True
@@ -27,7 +30,8 @@ class RAGConfig:
 
 
 @dataclass
-class DecodingParams:
+# NAMING FIXED: DecodingParams → decoding_params
+class decoding_params:
     """Decoding parameters for LLM generation."""
 
     _temperature: float = 0.7
@@ -38,7 +42,8 @@ class DecodingParams:
 
 
 @dataclass
-class ResumeKNode:
+# NAMING FIXED: ResumeKNode → resume_k_node
+class resume_k_node:
     """Resume K.X node configuration for DAG execution."""
 
     _node_id: str

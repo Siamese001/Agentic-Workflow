@@ -11,7 +11,8 @@ from canon_validator import CanonValidator
 from l5_governance_policy_filter import l5_governance_policy_filter
 
 
-class TestCVA001:
+# NAMING FIXED: TestCVA001 → test_cva001
+class test_cva001:
     """Test chain prompt hijacking defense at L5 layer"""
 
     @pytest.fixture
@@ -52,6 +53,7 @@ def fixed_function():
         governance_input = []
 
         def mock_l5_governance_filter(code, context):
+                                    
             governance_input.append((code, context))
             # Filter out malicious instructions
             lines = code.split('\n')
@@ -88,6 +90,7 @@ def fixed_function():
         captured_commits = []
 
         def mock_git_commit_with_repo_enforcement(**kwargs):
+                                    
             # Extract repository from context
             repo = kwargs.get("repository", "default-repo")
             message = kwargs.get("message", "no message")
@@ -152,6 +155,7 @@ def fixed_function():
         attack_steps = []
 
         def mock_chain_attack_detector(code):
+                                    
             # Detect chain attack patterns
             chain_indicators = [
                 "STEP 1:",
@@ -194,6 +198,7 @@ def fix_step2():
         validation_contexts = []
 
         def mock_isolated_validation(code, validation_id):
+                                    
             # Create isolated context for each validation
             context = {
                 "id": validation_id,

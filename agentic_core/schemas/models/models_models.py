@@ -10,7 +10,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ValidationResult:
+# NAMING FIXED: ValidationResult → validation_result
+class validation_result:
     """Result of a validation rule execution."""
 
     _rule_id: str
@@ -22,7 +23,8 @@ class ValidationResult:
 
 
 @dataclass
-class ThematicAnalysis:
+# NAMING FIXED: ThematicAnalysis → thematic_analysis
+class thematic_analysis:
     """Analysis of thematic content in text."""
 
     _themes: List[str] = field(default_factory=list)
@@ -32,7 +34,8 @@ class ThematicAnalysis:
 
 
 @dataclass
-class RAGState:
+# NAMING FIXED: RAGState → rag_state
+class rag_state:
     """State of RAG (Retrieval-Augmented Generation) process."""
 
     _query: str = ""
@@ -45,7 +48,8 @@ class RAGState:
 
 
 @dataclass
-class ImmutableStagingBuffer:
+# NAMING FIXED: ImmutableStagingBuffer → immutable_staging_buffer
+class immutable_staging_buffer:
     """Immutable buffer for staging data transformations."""
 
     _data: Dict[str, Any] = field(default_factory=dict)

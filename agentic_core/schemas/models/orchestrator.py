@@ -11,11 +11,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-
-LOGGER = logging.getLogger(__name__)
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class OrchestratorConfig:
+class orchestrator_config:
     """Configuration for the orchestrator."""
     max_iterations: int = 10
     enable_reflection: bool = True
@@ -25,16 +24,10 @@ class OrchestratorConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "max_iterations": self.max_iterations,
-            "enable_reflection": self.enable_reflection,
-            "enable_tracing": self.enable_tracing,
-            "enable_safety_checks": self.enable_safety_checks,
-            "timeout_seconds": self.timeout_seconds,
-        }
+        return {'max_iterations': self.max_iterations, 'enable_reflection': self.enable_reflection, 'enable_tracing': self.enable_tracing, 'enable_safety_checks': self.enable_safety_checks, 'timeout_seconds': self.timeout_seconds}
 
 @dataclass
-class ExecutionContext:
+class execution_context:
     """Context for orchestrated execution."""
     mission: str
     scene: Dict[str, Any] = field(default_factory=dict)
@@ -44,16 +37,10 @@ class ExecutionContext:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "mission": self.mission,
-            "scene": self.scene,
-            "state": self.state,
-            "history": self.history,
-            "metadata": self.metadata,
-        }
+        return {'mission': self.mission, 'scene': self.scene, 'state': self.state, 'history': self.history, 'metadata': self.metadata}
 
 @dataclass
-class ExecutionResult:
+class execution_result:
     """Result from orchestrated execution."""
     success: bool
     output: Any = None
@@ -65,17 +52,10 @@ class ExecutionResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "success": self.success,
-            "output": self.output,
-            "final_state": self.final_state,
-            "execution_trace": self.execution_trace,
-            "iterations": self.iterations,
-            "errors": self.errors,
-            "metadata": self.metadata,
-        }
+        return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
 
-class IOrchestrator(ABC):
+# NOT_AN_AGENT — Abstract interface/protocol, not a true agent — excluded from agent discovery
+class i_orchestrator(ABC):
     """Interface for the Orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes:
@@ -91,12 +71,7 @@ class IOrchestrator(ABC):
     """
 
     @abstractmethod
-    def __init__(
-        self,
-        cognitive_plane: ICognitivePlane,
-        action_plane: IActionPlane,
-        config: Optional[OrchestratorConfig] = None,
-    ):
+    def __init__(self, cognitive_plane: ICognitivePlane, action_plane: IActionPlane, config: Optional[OrchestratorConfig]=None):
         """Initialize orchestrator with planes.
 
         Args:
@@ -117,11 +92,7 @@ class IOrchestrator(ABC):
         """
 
     @abstractmethod
-    async def execute_step(
-        self,
-        phase: ExecutionPhase,
-        context: ExecutionContext,
-    ) -> Dict[str, Any]:
+    async def execute_step(self, phase: ExecutionPhase, context: ExecutionContext) -> Dict[str, Any]:
         """Execute a single phase of the cycle.
 
         Args:
@@ -144,11 +115,7 @@ class IOrchestrator(ABC):
         """
 
     @abstractmethod
-    async def act(
-        self,
-        actions: List[Any],
-        context: ExecutionContext,
-    ) -> List[Dict[str, Any]]:
+    async def act(self, actions: List[Any], context: ExecutionContext) -> List[Dict[str, Any]]:
         """Execute the ACT phase (action execution).
 
         Args:
@@ -160,11 +127,7 @@ class IOrchestrator(ABC):
         """
 
     @abstractmethod
-    async def observe(
-        self,
-        action_results: List[Dict[str, Any]],
-        context: ExecutionContext,
-    ) -> Dict[str, Any]:
+    async def observe(self, action_results: List[Dict[str, Any]], context: ExecutionContext) -> Dict[str, Any]:
         """Execute the OBSERVE phase (result interpretation).
 
         Args:

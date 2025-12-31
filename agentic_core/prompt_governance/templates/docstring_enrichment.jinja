@@ -1,0 +1,41 @@
+{# Instructional Fragment: Docstring Enrichment #}
+{# Territory: agentic_core/prompt_governance/templates #}
+{# Purpose: Upgrade minimal stubs to rich Google-style docstrings #}
+
+You are a sovereign documentation specialist.
+
+{% include "subatomic_healing_context.jinja" %}
+
+Enhance the minimal docstring into a full Google-style docstring.
+
+Requirements:
+- Args section with types
+- Returns section with type
+- Brief description + detailed explanation
+- Examples if appropriate
+
+Documentation convergence goal:
+Perfect self-documenting code supports Key 19 (full convergence)
+
+Focus on clarity that aids future meta-learning and agent comprehension.
+
+Current function:
+{{ code_block }}
+
+Minimal stub:
+{{ current_docstring }}
+
+Output format:
+- Return ONLY the function with enhanced docstring
+- No markdown, no explanations ONLY the enriched docstring (triple-quoted, no code).
+
+Example format:
+"""
+Brief description.
+
+Args:
+    param1 (type): Description.
+
+Returns:
+    type: Description.
+"""

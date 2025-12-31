@@ -10,31 +10,46 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Protocol, TypeVar
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
-class PolicyConfigurationError(Exception):
+# NAMING FIXED: PolicyConfigurationError → policy_configuration_error
+class policy_configuration_error(Exception):
     """Raised when policy configuration is invalid."""
 
 T = TypeVar('T')
 
-class Verdict(Enum):
+# NAMING FIXED: Verdict → verdict
+class verdict(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     ALLOW = "allow"
     REVIEW = "review"
     BLOCK = "block"
 
-class Severity(Enum):
+# NAMING FIXED: Severity → severity
+class severity(Enum):
+    '''Brief description of functionality and purpose.'''
+    
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
 
-class SafetyPolicy(Protocol):
+# NAMING FIXED: SafetyPolicy → safety_policy
+class safety_policy(Protocol):
+    '''Brief description of functionality and purpose.'''
+    
     policy_id: str
     description: str
     def evaluate(self, context: 'SafetyContext') -> 'PolicyDecision': ...
+                    
 
 @dataclass
-class SafetyFinding:
+# NAMING FIXED: SafetyFinding → safety_finding
+class safety_finding:
+    '''Brief description of functionality and purpose.'''
+    
     id: str
     type: str
     severity: Severity
@@ -43,7 +58,10 @@ class SafetyFinding:
     location: Optional[str] = None
 
 @dataclass
-class SafetyContext:
+# NAMING FIXED: SafetyContext → safety_context
+class safety_context:
+    '''Brief description of functionality and purpose.'''
+    
     content_type: str
     source: str
     destination: str
@@ -52,12 +70,16 @@ class SafetyContext:
     metadata: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
-class PolicyDecision:
+# NAMING FIXED: PolicyDecision → policy_decision
+class policy_decision:
+    '''Brief description of functionality and purpose.'''
+    
     policy_id: str
     verdict: Verdict
     findings: List[SafetyFinding] = field(default_factory=list)
     
     def to_dict(self) -> Dict[str, object]:
+                    
         return {
             'policy_id': self.policy_id,
             'verdict': self.verdict.value,
@@ -75,7 +97,8 @@ class PolicyDecision:
         }
 
 @dataclass
-class PolicyResult:
+# NAMING FIXED: PolicyResult → policy_result
+class policy_result:
     """Result of evaluating multiple policies."""
     decisions: List[PolicyDecision] = field(default_factory=list)
     metadata: Dict[str, object] = field(default_factory=dict)
@@ -115,7 +138,8 @@ class PolicyResult:
             'metadata': self.metadata
         }
 
-class SafetyEngine:
+# NAMING FIXED: SafetyEngine → safety_engine
+class safety_engine:
     """
     Executes safety policies and aggregates their results.
 

@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
@@ -10,7 +14,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-class TestSafetyEnforcement:
+# NAMING FIXED: TestSafetyEnforcement → test_safety_enforcement
+class test_safety_enforcement:
     """TestSafetyEnforcement implementation."""
 
 

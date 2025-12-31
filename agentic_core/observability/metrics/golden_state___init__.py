@@ -1,7 +1,8 @@
 """Golden State Testing Infrastructure.
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 12: Testing (Golden State)
 Validation foundation with golden datasets and evaluators.
 """

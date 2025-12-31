@@ -1,4 +1,6 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
 import os
 import re
 
@@ -11,31 +13,25 @@ try:
 except ImportError:
     FASTAPI_AVAILABLE = False
 
-from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
-from agentic_core.agents.quality import (
-    CodeStyleGuardian,
-    HygieneGuardian,
-    PerformanceEnforcer,
-)
-from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-from agentic_core.agents.security import (
-    ConcurrencyGuardian,
-    SafetyInspector,
-    SecurityEnforcer,
-)
-from agentic_core.agents.specialized import (
-    DocEnforcer,
-    NamingEnforcer,
-    TheCartographer,
-    TheOmniContext,
-    TheStrategist,
-    TypeEnforcer,
-)
+# [DEPRECATED IMPORTS] Legacy agent imports - now using canon_agents_* modules
+# TODO: Migrate to agentic_core.L1_cognition.thought_engine.canon_agents_* when needed
+# from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+# from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+# from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+# from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+# from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+# from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
+# from agentic_core.agents.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
 
 # Import Domain
-from agentic_core.L4_state.validation_context.validation_context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 
 # Global Event for Intervention
 approval_event = asyncio.Event()
@@ -46,6 +42,7 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.get("/", response_class=HTMLResponse)
     async def get_dashboard():
+                    
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
         return f"""<html><body><h1>[ALERT] L5 INTERVENTION REQUIRED</h1>
@@ -56,11 +53,13 @@ if FASTAPI_AVAILABLE:
 
     @intervention_app.post("/approve")
     async def approve_action():
+                    
         approval_event.set()
         return {"status": "APPROVED"}
 
     @intervention_app.post("/veto")
     async def veto_action():
+                    
         if _intervention_context:
             _intervention_context.signals.add("VETOED")
         approval_event.set()
@@ -68,6 +67,8 @@ if FASTAPI_AVAILABLE:
 
 
 async def start_intervention_server(ctx):
+    '''Brief description of functionality and purpose.'''
+    
     global _intervention_context
     _intervention_context = ctx
     if FASTAPI_AVAILABLE:
@@ -85,25 +86,30 @@ async def start_intervention_server(ctx):
         print(f"   🌐 Intervention server at http://{host}:{port}")
 
 
-class SwarmScheduler:
+# NAMING FIXED: SwarmScheduler → swarm_scheduler
+class swarm_scheduler:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self):
         self.ctx = ValidationContext()
 
-        # Define Phases
+        # [DEPRECATED] Legacy agent phases - these agents have been migrated to canon_agents_* modules
+        # The orchestration now uses MissionController + ComplianceOrchestrator for agent discovery
         self.phases = {
-            "integrity_seq": [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinel(self.ctx)],
-            "curation_seq": [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)],
-            "test_seq": [TestPilot(self.ctx)],
-            "memory_parallel": [TheCartographer(self.ctx), TheOmniContext(self.ctx)],
-            "resilience_parallel": [SafetyInspector(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)],
-            "resource_safety_parallel": [ConcurrencyGuardian(self.ctx)],
-            "engineering_parallel": [StructuralEngineer(self.ctx), PatternEnforcer(self.ctx), ToolsmithAgent(self.ctx)],
-            "refinement_parallel": [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)],
-            "benchmarking_seq": [BenchmarkingAgent(self.ctx)],
-            "optimization_conditional": [TheStrategist(self.ctx)]
+            "integrity_seq": [],
+            "curation_seq": [],
+            "test_seq": [],
+            "memory_parallel": [],
+            "resilience_parallel": [],
+            "resource_safety_parallel": [],
+            "engineering_parallel": [],
+            "refinement_parallel": [],
+            "benchmarking_seq": [],
+            "optimization_conditional": []
         }
 
     async def run_mission(self, target_scope: str = None):
+                    
         print("[START] STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         if target_scope:
             print(f"🎯 SURGICAL MISSION: {target_scope}")

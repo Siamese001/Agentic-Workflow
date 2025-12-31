@@ -12,17 +12,26 @@ from pathlib import Path
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class StrategicPlanner(SubAtomicAgent):
+
+
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class StrategicPlannerAgent(SubAtomicAgent):
     """
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.
     """
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.name = "StrategicPlanner"
+        self.name = "StrategicPlannerAgent"
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
             return
@@ -101,6 +110,7 @@ Output ONLY the plan in Markdown.
             print("   [OK] Strategy: Maintain current trajectory.")
 
 
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 class ReflectionAgent(SubAtomicAgent):
     """
     ROLE: Consolidation and self-critique.
@@ -111,6 +121,7 @@ class ReflectionAgent(SubAtomicAgent):
         self.name = "ReflectionAgent"
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Performing Self-Critique...")
         if not self.ctx.successful_traces:
             return

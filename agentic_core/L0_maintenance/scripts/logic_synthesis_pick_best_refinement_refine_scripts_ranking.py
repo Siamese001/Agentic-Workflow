@@ -1,4 +1,6 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
@@ -19,10 +21,13 @@ def bm25(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
+                                    
         @staticmethod
         def dense_rank(items): return items
+                                    
         @staticmethod
         def hybrid_rank(items): return items
+                                    
     return _Ranking.bm25_rank(items)
 
 
@@ -33,10 +38,13 @@ def dense(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
+                                    
         @staticmethod
         def dense_rank(items): return items
+                                    
         @staticmethod
         def hybrid_rank(items): return items
+                                    
     return _Ranking.dense_rank(items)
 
 
@@ -47,10 +55,13 @@ def hybrid(items: List[Dict[str, object]]) -> List[Dict[str, object]]:
     class _Ranking:
         @staticmethod
         def bm25_rank(items): return items
+                                    
         @staticmethod
         def dense_rank(items): return items
+                                    
         @staticmethod
         def hybrid_rank(items): return items
+                                    
     return _Ranking.hybrid_rank(items)
 
 

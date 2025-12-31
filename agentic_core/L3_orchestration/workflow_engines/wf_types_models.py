@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Artifact:
+# NAMING FIXED: Artifact → artifact
+class artifact:
     """A workflow artifact (file)."""
 
     _id: str
@@ -19,7 +20,8 @@ class Artifact:
 
 
 @dataclass
-class HopCheckpoint:
+# NAMING FIXED: HopCheckpoint → hop_checkpoint
+class hop_checkpoint:
     """Checkpoint for a completed hop."""
 
     _hop_id: str
@@ -31,7 +33,8 @@ class HopCheckpoint:
 
 
 @dataclass
-class ValidationResult:
+# NAMING FIXED: ValidationResult → validation_result
+class validation_result:
     """Result from a validation gate."""
 
     _gate_id: str

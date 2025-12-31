@@ -7,12 +7,14 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 _logger = logging.getLogger(__name__)
 
 
-class WorkflowType(Enum):
+# NAMING FIXED: WorkflowType → workflow_type
+class workflow_type(Enum):
     """Types of predefined workflows."""
 
 
 @dataclass
-class WorkflowBlueprint:
+# NAMING FIXED: WorkflowBlueprint → workflow_blueprint
+class workflow_blueprint:
     """Blueprint for a workflow graph."""
 
     _name: str

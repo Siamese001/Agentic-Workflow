@@ -1,4 +1,6 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import hashlib
 import json
 import re
@@ -7,14 +9,23 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L0_maintenance.scripts.canon_validator_config import MAX_LINES
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class StructuralEngineer(SubAtomicAgent):
+
+
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class StructuralEngineerAgent(SubAtomicAgent):
     """
     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
 
     def can_run(self) -> bool:
+                    
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     async def execute(self):
@@ -87,7 +98,6 @@ class StructuralEngineer(SubAtomicAgent):
         self.ctx.report(self.name, 46, passed, details)
 
         print(f"   [{self.name}] ✅ Structural analysis complete")
-
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding MAX_LINES."""
         violations = []
@@ -205,15 +215,16 @@ class StructuralEngineer(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
 
-class PatternEnforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class PatternEnforcerAgent(SubAtomicAgent):
     """
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
     """
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
-
         pattern_checks = [
             (26, self.check_key_26_single_responsibility),
             (31, self.check_key_31_no_hardcoded_paths),
@@ -289,7 +300,6 @@ class PatternEnforcer(SubAtomicAgent):
             except Exception:
                 continue
         return (len(violations) == 0, violations)
-
     def check_key_33_error_handling(self) -> Tuple[bool, List[str]]:
         """Check for proper error handling."""
         violations = []

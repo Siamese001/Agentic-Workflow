@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
@@ -7,6 +11,13 @@ _logger = logging.getLogger(__name__)
 """Filter Inappropriate Content - atomic execution layer."""
 
 from typing import Dict
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 
 
 def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:

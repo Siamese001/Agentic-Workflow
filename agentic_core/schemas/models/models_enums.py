@@ -5,13 +5,16 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-class ValidationSeverity(Enum):
+# NAMING FIXED: ValidationSeverity → validation_severity
+class validation_severity(Enum):
     """Severity levels for validation results."""
 
 
-class Provider(str, Enum):
+# NAMING FIXED: Provider → provider
+class provider(str, Enum):
     """Available LLM providers."""
 
 
-class APICallStatus(Enum):
+# NAMING FIXED: APICallStatus → api_call_status
+class api_call_status(Enum):
     """Status of API calls."""

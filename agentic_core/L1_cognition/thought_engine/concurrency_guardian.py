@@ -1,38 +1,36 @@
 import asyncio
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 import os
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-
-# --- Start of Refactor Changes for Dependency Inversion ---
-
-class LockStorageProtocol(Protocol):
+class lock_storage_protocol(Protocol):
     """
     Protocol defining the interface for distributed lock storage operations.
     This allows ConcurrencyGuardian to depend on an abstraction, not a concrete implementation.
     """
+
     async def acquire_lock(self, key: str, timeout: float) -> bool:
         """
         Acquire a distributed lock for a given key with a specified timeout.
         Returns True if the lock was acquired, False otherwise.
         """
         ...
+
     async def release_lock(self, key: str) -> bool:
         """
         Release a previously acquired distributed lock for a given key.
         Returns True if the lock was successfully released, False otherwise.
         """
         ...
-
-# Global variable to hold the injected lock implementation.
-# This allows the module-level acquire_lock and release_lock functions
-# to delegate to a concrete implementation provided at runtime.
 _global_lock_implementation: Optional[LockStorageProtocol] = None
 
-def configure_distributed_locks(lock_impl: LockStorageProtocol):
+def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     """
     Configures the distributed lock implementation for the ConcurrencyGuardian module.
     This function should be called once at application startup or in the composition root
@@ -43,9 +41,9 @@ def configure_distributed_locks(lock_impl: LockStorageProtocol):
     """
     global _global_lock_implementation
     if not isinstance(lock_impl, LockStorageProtocol):
-        raise TypeError("Provided lock_impl must implement LockStorageProtocol.")
+        raise TypeError('Provided lock_impl must implement LockStorageProtocol.')
     _global_lock_implementation = lock_impl
-    LOGGER.info("Distributed lock implementation configured for ConcurrencyGuardian module.")
+    LOGGER.info('Distributed lock implementation configured for ConcurrencyGuardian module.')
 
 def _get_lock_implementation() -> LockStorageProtocol:
     """
@@ -53,15 +51,9 @@ def _get_lock_implementation() -> LockStorageProtocol:
     Raises a RuntimeError if the implementation has not been configured.
     """
     if _global_lock_implementation is None:
-        raise RuntimeError(
-            "Distributed lock implementation not configured. "
-            "Call configure_distributed_locks() before using ConcurrencyGuardian "
-            "or any function that relies on distributed locks."
-        )
+        raise RuntimeError('Distributed lock implementation not configured. Call configure_distributed_locks() before using ConcurrencyGuardian or any function that relies on distributed locks.')
     return _global_lock_implementation
 
-# These module-level functions replace the direct import from L4_state.
-# They delegate calls to the globally configured lock implementation.
 async def acquire_lock(key: str, timeout: float) -> bool:
     """
     Acquire a distributed lock using the configured implementation.
@@ -79,33 +71,12 @@ async def release_lock(key: str) -> bool:
     distributed lock system.
     """
     return await _get_lock_implementation().release_lock(key)
+default_lock_timeout: Any = int(os.getenv('DEFAULT_LOCK_TIMEOUT', '30'))
+max_retry_attempts: Any = int(os.getenv('MAX_RETRY_ATTEMPTS', '3'))
+retry_delay: Any = float(os.getenv('RETRY_DELAY', '0.5'))
+few_shot_concurrency: Any = '\nYou are the ConcurrencyGuardian, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
 
-# --- End of Refactor Changes ---
-
-
-# Constants - Using env vars for security and flexibility
-DEFAULT_LOCK_TIMEOUT = int(os.getenv("DEFAULT_LOCK_TIMEOUT", "30"))
-MAX_RETRY_ATTEMPTS = int(os.getenv("MAX_RETRY_ATTEMPTS", "3"))
-RETRY_DELAY = float(os.getenv("RETRY_DELAY", "0.5"))
-
-# Configuration
-FEW_SHOT_CONCURRENCY = """
-You are the ConcurrencyGuardian, an expert in managing concurrent operations.
-
-Your role is to:
-1. Prevent race conditions in multi-agent execution
-2. Manage resource locks efficiently
-3. Detect and resolve deadlocks
-4. Ensure thread-safe operations
-
-Rules:
-- Always acquire locks before accessing shared resources
-- Release locks promptly after use
-- Use timeouts to prevent deadlocks
-- Prefer async operations when possible
-"""
-
-class LockInfo:
+class lock_info:
     """Information about an active lock."""
 
     def __init__(self, key: str, owner: str, timeout: float):
@@ -121,16 +92,9 @@ class LockInfo:
 
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
-        return {
-            "key": self.key,
-            "owner": self.owner,
-            "timeout": self.timeout,
-            "acquired_at": self.acquired_at.isoformat(),
-            "expires_at": self.expires_at.isoformat()
-        }
+        return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
-
-class ConcurrencyGuardian:
+class concurrency_guardian:
     """
     Manages concurrent operations and prevents conflicts.
 
@@ -146,19 +110,10 @@ class ConcurrencyGuardian:
         self.active_locks: Dict[str, LockInfo] = {}
         self.lock_history: List[Dict] = []
         self.enabled = True
+        self.stats = {'locks_acquired': 0, 'locks_released': 0, 'timeouts': 0, 'conflicts': 0}
+        LOGGER.info('ConcurrencyGuardian initialized')
 
-        # Statistics
-        self.stats = {
-            "locks_acquired": 0,
-            "locks_released": 0,
-            "timeouts": 0,
-            "conflicts": 0
-        }
-
-        LOGGER.info("ConcurrencyGuardian initialized")
-
-    async def acquire_lock(self, key: str, owner: str = None,
-                          timeout: float = None) -> bool:
+    async def acquire_lock(self, key: str, owner: str=None, timeout: float=None) -> bool:
         """
         Acquire a distributed lock with async retry logic.
 
@@ -172,45 +127,34 @@ class ConcurrencyGuardian:
         """
         if not self.enabled:
             return True
-
         try:
-            current_task = asyncio.current_task()
-            task_id = id(current_task) if current_task else "main"
+            current_task: Any = asyncio.current_task()
+            task_id: Any = id(current_task) if current_task else 'main'
         except RuntimeError:
-            task_id = "no-loop"
-
-        owner = owner or f"process-{task_id}"
-        timeout = timeout or DEFAULT_LOCK_TIMEOUT
-
+            task_id: Any = 'no-loop'
+        owner: Any = owner or f'process-{task_id}'
+        timeout: Any = timeout or DEFAULT_LOCK_TIMEOUT
         for attempt in range(MAX_RETRY_ATTEMPTS):
-            # Check if lock already exists locally
             if key in self.active_locks:
-                existing = self.active_locks[key]
+                existing: Any = self.active_locks[key]
                 if not existing.is_expired():
-                    self.stats["conflicts"] += 1
-                    LOGGER.warning(f"Lock conflict for {key} (held by {existing.owner}) - Attempt {attempt + 1}")
+                    self.stats['conflicts'] += 1
+                    LOGGER.warning(f'Lock conflict for {key} (held by {existing.owner}) - Attempt {attempt + 1}')
                     if attempt < MAX_RETRY_ATTEMPTS - 1:
                         await asyncio.sleep(RETRY_DELAY)
                         continue
                     return False
                 else:
-                    # Clean up expired lock
                     self.active_locks.pop(key, None)
-
-            # Try to acquire distributed lock using the module-level function
-            acquired = await acquire_lock(key, timeout)
-
+            acquired: Any = await acquire_lock(key, timeout)
             if acquired:
-                # Record lock
-                lock_info = LockInfo(key, owner, timeout)
+                lock_info: Any = LockInfo(key, owner, timeout)
                 self.active_locks[key] = lock_info
-                self.stats["locks_acquired"] += 1
-                LOGGER.info(f"Lock acquired: {key} by {owner}")
+                self.stats['locks_acquired'] += 1
+                LOGGER.info(f'Lock acquired: {key} by {owner}')
                 return True
-
             if attempt < MAX_RETRY_ATTEMPTS - 1:
                 await asyncio.sleep(RETRY_DELAY)
-
         return False
 
     async def release_lock(self, key: str) -> bool:
@@ -224,30 +168,25 @@ class ConcurrencyGuardian:
             True if lock released successfully
         """
         if key not in self.active_locks:
-            LOGGER.debug(f"Release requested for inactive lock: {key}")
+            LOGGER.debug(f'Release requested for inactive lock: {key}')
             return False
-
-        # Release distributed lock using the module-level function
-        success = await release_lock(key)
+        success: Any = await release_lock(key)
         if success:
-            lock_info = self.active_locks.pop(key, None)
+            lock_info: Any = self.active_locks.pop(key, None)
             if lock_info:
                 self.lock_history.append(lock_info.to_dict())
-                # Maintain history limit
                 if len(self.lock_history) > 100:
                     self.lock_history.pop(0)
-
-            self.stats["locks_released"] += 1
-            LOGGER.info(f"Lock released: {key}")
+            self.stats['locks_released'] += 1
+            LOGGER.info(f'Lock released: {key}')
             return True
-
-        LOGGER.error(f"Failed to release distributed lock: {key}")
+        LOGGER.error(f'Failed to release distributed lock: {key}')
         return False
 
-    async def cleanup_expired_locks(self):
+    async def cleanup_expired_locks(self) -> Any:
         """Periodically clean up expired local lock records."""
-        expired_keys = [k for k, v in self.active_locks.items() if v.is_expired()]
+        expired_keys: Any = [k for k, v in self.active_locks.items() if v.is_expired()]
         for key in expired_keys:
             self.active_locks.pop(key, None)
-            self.stats["timeouts"] += 1
-            LOGGER.debug(f"Cleaned up expired lock record: {key}")
+            self.stats['timeouts'] += 1
+            LOGGER.debug(f'Cleaned up expired lock record: {key}')

@@ -7,16 +7,19 @@ from typing import Any, Callable, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class GateDecision(Enum):
+# NAMING FIXED: GateDecision → gate_decision
+class gate_decision(Enum):
     """Decision from a validation gate."""
 
 
-class GateSeverity(Enum):
+# NAMING FIXED: GateSeverity → gate_severity
+class gate_severity(Enum):
     """Severity level for gate violations."""
 
 
 @dataclass
-class GateResult:
+# NAMING FIXED: GateResult → gate_result
+class gate_result:
     """Result from a validation gate."""
 
     _gate_id: str
@@ -28,7 +31,8 @@ class GateResult:
 
 
 @dataclass
-class ValidationGate:
+# NAMING FIXED: ValidationGate → validation_gate
+class validation_gate:
     """Definition of a validation gate."""
 
     gate_id: str

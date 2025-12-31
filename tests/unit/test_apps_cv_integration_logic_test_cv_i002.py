@@ -13,7 +13,8 @@ import pytest
 from canon_validator import CanonValidator
 
 
-class TestCVI002:
+# NAMING FIXED: TestCVI002 → test_cvi002
+class test_cvi002:
     """Test design-first correction flow with L2/L4 interaction"""
 
     @pytest.fixture
@@ -53,15 +54,18 @@ class TestCVI002:
         cache_updates = []
 
         def mock_cache_check(key):
+                                    
             call_sequence.append("cache_check")
             return initial_cache_data
 
         def mock_cache_store(key, value):
+                                    
             call_sequence.append("cache_store")
             cache_updates.append(value)
             return True
 
         def mock_get_figma_versions():
+                                    
             call_sequence.append("live_figma_check")
             return live_figma_versions
 
@@ -122,6 +126,7 @@ class TestCVI002:
         audit_runs = []
 
         def mock_audit_run(version):
+                                    
             audit_runs.append(version)
             if version == "v1.0.0":
                 return {"status": "stale", "issues": ["Hardcoded colors"]}
@@ -150,10 +155,12 @@ class TestCVI002:
         version_check_results = []
 
         def mock_concurrent_version_check():
+                                    
             # Simulate multiple concurrent checks
             import threading
 
             def check_version(thread_id):
+                                                    
                 # Simulate different threads getting different versions
                 if thread_id % 2 == 0:
                     version = "v1.0.0"
@@ -215,6 +222,7 @@ class TestCVI002:
         cache_state = {}
 
         def mock_cache_with_invalidation(key, value=None):
+                                    
             if value is None:  # Get operation
                 return cache_state.get(key)
             else:  # Set operation

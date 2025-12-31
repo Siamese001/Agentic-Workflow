@@ -9,17 +9,10 @@ Legacy API preserved for backward compatibility.
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 
-logger = logging.getLogger(__name__)
-
-# Phase 5: Import from consolidated orchestrator
-from agentic_core.core.orchestrator_main import (
-    OrchestratorConfig,
-    create_orchestrator,
-)
-
-
-class HardenedWorkflowOrchestrator:
+class hardened_workflow_orchestrator:
     """
     Thin wrapper for Hardened Workflow Orchestrator.
     Delegates to ConsolidatedOrchestrator.
@@ -27,12 +20,7 @@ class HardenedWorkflowOrchestrator:
     Legacy API preserved for backward compatibility.
     """
 
-    def __init__(
-        self,
-        workflow_spec: Optional[Any] = None,
-        run_base_dir: str = "./pipeline_runs",
-        storage_path: Optional[str] = None,
-    ) -> None:
+    def __init__(self, workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> None:
         """Initialize the hardened orchestrator wrapper.
 
         Args:
@@ -40,50 +28,24 @@ class HardenedWorkflowOrchestrator:
             run_base_dir: Base directory for run outputs
             storage_path: Path for atomic state storage (legacy, not used)
         """
-        # Create config for consolidated orchestrator
-        config = OrchestratorConfig(
-            checkpoint_dir=run_base_dir,
-            enable_checkpointing=True,
-        )
-        
-        # Delegate to consolidated orchestrator
+        config = OrchestratorConfig(checkpoint_dir=run_base_dir, enable_checkpointing=True)
         self.orchestrator = create_orchestrator(config=config)
         self.workflow_spec = workflow_spec
         self.run_base_dir = run_base_dir
-        
-        logger.info("🔗 HardenedWorkflowOrchestrator wrapper initialized (delegates to orchestrator_main)")
+        logger.info('🔗 HardenedWorkflowOrchestrator wrapper initialized (delegates to orchestrator_main)')
 
-    async def initialize_or_resume_workflow(
-        self,
-        workflow_id: str,
-        total_k_nodes: int,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+    async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: Dict[str, Any]) -> Dict[str, Any]:
         """Initialize new workflow or resume from checkpoint (legacy wrapper)."""
-        logger.info(f"🔗 Delegating workflow initialization to orchestrator_main")
+        logger.info(f'🔗 Delegating workflow initialization to orchestrator_main')
         return context
-    
-    async def execute_workflow_with_resilience(
-        self,
-        workflow_id: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+
+    async def execute_workflow_with_resilience(self, workflow_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute workflow with resilience (delegates to orchestrator_main)."""
-        logger.info(f"🚀 Delegating workflow execution to orchestrator_main")
-        
-        results = await self.orchestrator.run_mission(
-            target_path=context.get("target_path"),
-            workflow_id=workflow_id
-        )
-        
+        logger.info(f'🚀 Delegating workflow execution to orchestrator_main')
+        results: Any = await self.orchestrator.run_mission(target_path=context.get('target_path'), workflow_id=workflow_id)
         return results
 
-
-def create_hardened_orchestrator(
-    workflow_spec: Optional[Any] = None,
-    run_base_dir: str = "./pipeline_runs",
-    storage_path: Optional[str] = None,
-) -> HardenedWorkflowOrchestrator:
+def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> HardenedWorkflowOrchestrator:
     """Create a hardened orchestrator (thin wrapper to consolidated orchestrator).
 
     Args:
@@ -94,8 +56,4 @@ def create_hardened_orchestrator(
     Returns:
         HardenedWorkflowOrchestrator instance
     """
-    return HardenedWorkflowOrchestrator(
-        workflow_spec=workflow_spec,
-        run_base_dir=run_base_dir,
-        storage_path=storage_path,
-    )
+    return HardenedWorkflowOrchestrator(workflow_spec=workflow_spec, run_base_dir=run_base_dir, storage_path=storage_path)
