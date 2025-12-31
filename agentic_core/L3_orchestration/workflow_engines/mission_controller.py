@@ -4,14 +4,19 @@
 # LOCATION: agentic_core/L3_orchestration/workflow_engines/ (SSOT-compliant)
 
 import asyncio
+import hashlib
 import inspect
+import logging
 import os
 import re
 import shutil
 import time
 import uuid
+from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
@@ -127,6 +132,9 @@ class MissionController:
         await self._run_batch_sweeps(ctx)
         await self._run_monitors(ctx)
         
+        # [HARDENING 5] Post-healing invariant enforcement
+        await self._run_postflight_validation(ctx, preflight, target_scope)
+        
         # Print final report
         self._print_mission_report(ctx)
         
@@ -165,6 +173,12 @@ class MissionController:
         ctx.run_hierarchy_healing = self.run_hierarchy_healing
         ctx.run_sprawl_surgery = self.run_sprawl_surgery
         ctx.project_root = self.project_root
+        
+        # [HARDENING] Initialize cycle detection and heal limit tracking
+        ctx.file_heal_history = defaultdict(list)  # file_path -> list of (timestamp, code_hash)
+        ctx.max_heals_per_file = HEALING_CONFIG.get("max_per_file", 8)
+        ctx.max_consecutive_heals = 3
+        ctx.heal_attempts = defaultdict(int)  # file_path -> attempt count
         
         # Initialize report as callable list
         ctx.report = self._create_callable_report()
@@ -423,6 +437,8 @@ class MissionController:
         total_files = len(ctx.python_files)
         completed_files = 0
         healed_files = 0
+        skipped_cycle_detection = 0
+        skipped_heal_limit = 0
         
         # Get atomic validators from orchestrator
         atomic_validators = []
@@ -434,6 +450,7 @@ class MissionController:
         
         for idx, file_path in enumerate(ctx.python_files, 1):
             file_name = Path(file_path).name
+            file_path_obj = Path(file_path)
             
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -443,6 +460,39 @@ class MissionController:
                 loc_count = 0
             
             print(f"[{idx}/{total_files}] Processing: {file_name} ({loc_count} LOC)")
+            
+            # [HARDENING] Check cycle detection and heal limits BEFORE healing
+            if file_path_obj.exists():
+                try:
+                    current_code = file_path_obj.read_text(encoding='utf-8')
+                    current_hash = hashlib.sha256(current_code.encode('utf-8')).hexdigest()
+                    
+                    # Cycle detection: check if current hash appeared recently
+                    history = ctx.file_heal_history[file_path]
+                    recent_hashes = [h[1] for h in history[-5:]]
+                    
+                    if current_hash in recent_hashes and len(history) >= 3:
+                        print(f"      [CYCLE] Infinite loop detected - skipping healing")
+                        skipped_cycle_detection += 1
+                        completed_files += 1
+                        continue
+                    
+                    # Consecutive heal limit
+                    if len(history) >= ctx.max_consecutive_heals:
+                        print(f"      [LIMIT] Max consecutive heals ({ctx.max_consecutive_heals}) reached - skipping")
+                        skipped_heal_limit += 1
+                        completed_files += 1
+                        continue
+                    
+                    # Global heal limit per file
+                    if ctx.heal_attempts[file_path] >= ctx.max_heals_per_file:
+                        print(f"      [LIMIT] Max heals per file ({ctx.max_heals_per_file}) reached - skipping")
+                        skipped_heal_limit += 1
+                        completed_files += 1
+                        continue
+                        
+                except Exception as e:
+                    print(f"      [!] Cycle detection failed: {e}")
             
             # [FULL HEALING CASCADE] Execute atomic validators with multiple rounds
             if atomic_validators:
@@ -455,13 +505,26 @@ class MissionController:
                             continue
                         
                         try:
-                            # [CRITICAL] Call heal_violation on each atomic healer
-                            result = await agent.heal_violation(file_path)
+                            # [HARDENING 6] Wrap agent call with timeout and error handling
+                            result = await self._heal_with_guards(agent, file_path, file_name)
+                            
                             if result and isinstance(result, dict) and result.get("healed"):
                                 mutated_this_round = True
                                 file_healed = True
                                 ctx.results[file_path] = result
                                 print(f"      [MUTATED] {agent.__class__.__name__}: {file_name}")
+                                
+                                # [HARDENING] Track heal attempt and code hash
+                                try:
+                                    new_code = file_path_obj.read_text(encoding='utf-8')
+                                    new_hash = hashlib.sha256(new_code.encode('utf-8')).hexdigest()
+                                    ctx.file_heal_history[file_path].append((time.time(), new_hash))
+                                    ctx.heal_attempts[file_path] += 1
+                                except Exception:
+                                    pass
+                            elif result and result.get("error"):
+                                print(f"      [!] {agent.__class__.__name__}: {result['error']}")
+                                    
                         except Exception as e:
                             print(f"      [!] {agent.__class__.__name__} failed: {str(e)[:50]}")
                     
@@ -474,6 +537,10 @@ class MissionController:
             completed_files += 1
         
         print(f"[PHASE 1] Complete — {completed_files} files processed, {healed_files} healed")
+        if skipped_cycle_detection > 0:
+            print(f"   [PROTECTED] {skipped_cycle_detection} files skipped due to cycle detection")
+        if skipped_heal_limit > 0:
+            print(f"   [PROTECTED] {skipped_heal_limit} files skipped due to heal limits")
 
     async def _run_batch_sweeps(self, ctx: Any) -> None:
         """Run batch agent sweeps."""
@@ -534,6 +601,78 @@ class MissionController:
                 print(f"   [OK] {monitor.__class__.__name__} completed")
             except Exception:
                 pass
+    
+    async def _heal_with_guards(self, agent: Any, file_path: str, file_name: str) -> Dict[str, Any]:
+        """
+        [HARDENING 6] Execute agent healing with timeout and resource guards.
+        
+        Args:
+            agent: Agent instance to execute
+            file_path: Path to file being healed
+            file_name: Name of file for logging
+            
+        Returns:
+            Dict with healing result or error
+        """
+        agent_name = agent.__class__.__name__
+        
+        try:
+            # 30-second timeout per heal attempt to prevent hanging
+            result = await asyncio.wait_for(
+                agent.heal_violation(file_path),
+                timeout=30.0
+            )
+            return result
+            
+        except asyncio.TimeoutError:
+            logger.warning(f"[TIMEOUT] {agent_name} exceeded 30s limit on {file_name}")
+            return {"applied": False, "healed": False, "error": "timeout"}
+            
+        except Exception as e:
+            logger.error(f"[ERROR] {agent_name} failed on {file_name}: {str(e)[:100]}")
+            return {"applied": False, "healed": False, "error": str(e)[:100]}
+    
+    async def _run_postflight_validation(self, ctx: Any, preflight: Any, target_scope: str) -> None:
+        """
+        [HARDENING 5] Re-run critical preflight checks after healing to detect drift.
+        
+        Args:
+            ctx: Mission validation context
+            preflight: MissionPreflight instance
+            target_scope: Target scope for validation
+        """
+        print(f"\n[POSTFLIGHT] Re-validating structural invariants after healing...")
+        
+        try:
+            postflight_results = preflight.run_preflight(target_scope)
+            
+            # Check for critical violations that indicate architectural regression
+            critical_violations = []
+            
+            if postflight_results.get("hierarchy", 0) > 0:
+                critical_violations.append(f"hierarchy: {postflight_results['hierarchy']} violations")
+            
+            if postflight_results.get("gravity", 0) > 0:
+                critical_violations.append(f"gravity: {postflight_results['gravity']} violations")
+            
+            if postflight_results.get("span", 0) > 0:
+                critical_violations.append(f"span: {postflight_results['span']} violations")
+            
+            if critical_violations:
+                print(f"\n[!] [POSTFLIGHT FAILURE] Healing introduced architectural regression:")
+                for violation in critical_violations:
+                    print(f"   - {violation}")
+                print(f"\n[ACTION REQUIRED] Manual review required - heals may have violated invariants")
+                
+                # Store postflight results in context for reporting
+                ctx.postflight_violations = critical_violations
+            else:
+                print(f"   [OK] All structural invariants preserved after healing")
+                ctx.postflight_violations = []
+                
+        except Exception as e:
+            logger.error(f"[POSTFLIGHT] Validation failed: {e}")
+            print(f"   [!] Postflight validation error: {e}")
 
     def _print_mission_report(self, ctx: Any) -> None:
         """Print the final mission report."""
@@ -553,12 +692,21 @@ class MissionController:
         print("    Structure matches SSOT exactly — depth, hierarchy, naming")
         print("="*80)
         
-        if fail_count == 0:
+        # [HARDENING 5] Report postflight violations if any
+        postflight_violations = getattr(ctx, 'postflight_violations', [])
+        if postflight_violations:
+            print(f"\n[!] [POSTFLIGHT ALERT] {len(postflight_violations)} critical invariant violations after healing")
+            for violation in postflight_violations:
+                print(f"   - {violation}")
+        
+        if fail_count == 0 and not postflight_violations:
             print("\n[SOVEREIGN VERDICT] ZERO violations detected across all keys")
             print("    Canon structure: EXACT SSOT match")
+            print("    Postflight validation: PASSED")
             print("\n[ETERNAL SOVEREIGNTY CONFIRMED — PERFECTION ABSOLUTE]")
         else:
-            print(f"\n[PROGRESS] {fail_count} violations remain - continuing iteration toward zero")
+            total_issues = fail_count + len(postflight_violations)
+            print(f"\n[PROGRESS] {total_issues} total issues ({fail_count} violations + {len(postflight_violations)} postflight) - continuing iteration toward zero")
 
     async def _run_sovereign_audit_hook(self, ctx: Any) -> None:
         """

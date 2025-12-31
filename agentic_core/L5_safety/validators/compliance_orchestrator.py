@@ -26,6 +26,8 @@ import logging
 import pkgutil
 import traceback
 import ast
+import hashlib
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from collections import defaultdict
@@ -70,6 +72,12 @@ class ComplianceOrchestrator:
         self._rejected_count = 0
         self._abstract_skipped_count = 0
         self._duplicate_skipped_count = 0
+        
+        # [HARDENING 4] Agent discovery whitelisting and hash verification
+        self.allowed_agents: Set[str] = set()
+        self.agent_hash_allowlist: Dict[str, str] = {}
+        self._build_agent_allowlist()
+        self._load_agent_hashes()
 
         # [ULTRA SOVEREIGN CANON - FINAL PASCALCASE ENFORCEMENT]
         # All agent classes MUST be named XxxAgent (PascalCase) with matching filename XxxAgent.py
@@ -92,10 +100,18 @@ class ComplianceOrchestrator:
         # Optional external components
         self.tracing = None
         self.metrics = None
+        
+        # Security counters
+        self._blocked_unregistered = 0
+        self._blocked_tampered = 0
 
         # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in agentic_core
         self._discover_all_agents()
         self._enforce_mandatory_agent_compliance()
+        
+        # Report security metrics
+        if self._blocked_unregistered > 0 or self._blocked_tampered > 0:
+            print(f"\n[SECURITY] Blocked agents: {self._blocked_unregistered} unregistered, {self._blocked_tampered} tampered")
 
     def _discover_all_agents(self) -> None:
         """
@@ -258,6 +274,10 @@ class ComplianceOrchestrator:
     def _discover_agents_in_file(self, agent_file: Path) -> int:
         """Discover and instantiate agents from a single file."""
         discovered = 0
+        
+        # [HARDENING 4] Security verification before discovery
+        if not self._verify_agent_file_security(agent_file):
+            return 0
         
         # Build module name from file path using pathlib parts
         try:
@@ -748,6 +768,84 @@ class ComplianceOrchestrator:
         """Placeholder for Prometheus metrics agent integration."""
         # Future: load MetricsAgent and expose
         pass
+    
+    # ===================================================================
+    # [HARDENING 4] Agent Discovery Security Methods
+    # ===================================================================
+    
+    def _build_agent_allowlist(self) -> None:
+        """
+        Build allowlist of agent files from SSOT blueprint.
+        Only agents in recognized sovereign territories can be discovered.
+        """
+        # Build from SOVEREIGN_REGISTRY structure
+        for root_folder, config in SOVEREIGN_REGISTRY.items():
+            if root_folder == 'agentic_core':
+                for layer in config.get('subfolders', []):
+                    layer_path = self.project_root / root_folder / layer
+                    if layer_path.exists():
+                        for py_file in layer_path.rglob('*.py'):
+                            try:
+                                rel = py_file.relative_to(self.project_root)
+                                self.allowed_agents.add(str(rel))
+                            except ValueError:
+                                pass
+        
+        logger.info(f"[SECURITY] Agent allowlist built: {len(self.allowed_agents)} registered paths")
+    
+    def _load_agent_hashes(self) -> None:
+        """
+        Load precomputed agent file hashes for tamper detection.
+        Hashes are stored in .agent_hashes.json (git-tracked).
+        """
+        hash_file = self.project_root / '.agent_hashes.json'
+        if hash_file.exists():
+            try:
+                with open(hash_file, 'r', encoding='utf-8') as f:
+                    self.agent_hash_allowlist = json.load(f)
+                logger.info(f"[SECURITY] Loaded {len(self.agent_hash_allowlist)} agent hash signatures")
+            except Exception as e:
+                logger.warning(f"[SECURITY] Failed to load agent hashes: {e}")
+        else:
+            logger.info("[SECURITY] No agent hash allowlist found - hash verification disabled")
+    
+    def _verify_agent_file_security(self, agent_file: Path) -> bool:
+        """
+        Verify agent file passes security checks before discovery.
+        
+        Returns:
+            True if agent file is safe to discover, False if blocked
+        """
+        try:
+            rel_path = str(agent_file.relative_to(self.project_root))
+        except ValueError:
+            logger.error(f"[SECURITY] Agent file outside project root: {agent_file}")
+            return False
+        
+        # Check 1: Whitelist verification
+        if rel_path not in self.allowed_agents:
+            logger.warning(f"[SECURITY] Blocking unregistered agent: {rel_path}")
+            self._blocked_unregistered += 1
+            return False
+        
+        # Check 2: Hash verification (if allowlist exists)
+        if self.agent_hash_allowlist:
+            if rel_path in self.agent_hash_allowlist:
+                try:
+                    file_hash = hashlib.sha256(agent_file.read_bytes()).hexdigest()
+                    expected_hash = self.agent_hash_allowlist[rel_path]
+                    
+                    if file_hash != expected_hash:
+                        logger.error(f"[SECURITY] Agent file tampered: {rel_path}")
+                        logger.error(f"  Expected: {expected_hash[:16]}...")
+                        logger.error(f"  Got:      {file_hash[:16]}...")
+                        self._blocked_tampered += 1
+                        return False
+                except Exception as e:
+                    logger.error(f"[SECURITY] Hash verification failed for {rel_path}: {e}")
+                    return False
+        
+        return True
 
 
 # =======================================================================

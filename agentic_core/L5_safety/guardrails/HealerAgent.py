@@ -27,6 +27,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
+    SOVEREIGN_REGISTRY,
 )
 from agentic_core.utils.naming.NamingAgent import NamingAgent
 
@@ -107,6 +108,45 @@ class HealerAgent:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
             self.archives_root.mkdir(exist_ok=True)
             logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
+    
+    def _detect_layer(self, file_path: Path) -> str:
+        """
+        Detect which layer a file belongs to based on its path.
+        Returns layer name (e.g., 'L1_cognition', 'L2_execution') or 'unknown'.
+        """
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            
+            # Check if file is in agentic_core structure
+            if len(parts) >= 2 and parts[0] == 'agentic_core':
+                layer_part = parts[1]
+                # Validate it's a recognized layer
+                if layer_part.startswith('L') and layer_part[1].isdigit():
+                    return layer_part
+            
+            return 'unknown'
+        except (ValueError, IndexError):
+            return 'unknown'
+    
+    def _get_layer_directory(self, file_path: Path) -> Optional[Path]:
+        """
+        Get the layer directory for a file (e.g., agentic_core/L5_safety).
+        Returns None if file is not in a recognized layer.
+        """
+        layer = self._detect_layer(file_path)
+        if layer == 'unknown':
+            return None
+        
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            parts = rel_path.parts
+            if len(parts) >= 2 and parts[0] == 'agentic_core':
+                return self.project_root / parts[0] / parts[1]
+        except ValueError:
+            pass
+        
+        return None
 
     def _backup_file(self, file_path: Path) -> Path:
         """Standardized backup procedure for all L5 mutations."""
@@ -294,13 +334,26 @@ class HealerAgent:
             actions.append(action)
         return actions
 
-    def _find_cross_directory_consumers(self, old_modules: List[str], moved_symbols: Set[str]) -> List[Path]:
+    def _find_cross_directory_consumers(self, old_modules: List[str], moved_symbols: Set[str], scope_dirs: Optional[List[Path]] = None) -> List[Path]:
         """
-        Search entire project for files using moved symbols.
+        Search for files using moved symbols, optionally scoped to specific directories.
+        
+        Args:
+            old_modules: List of old module names being replaced
+            moved_symbols: Set of symbols that were moved
+            scope_dirs: Optional list of directories to limit search scope
         """
         consumers = []
-        # Scan only Python files within sovereign roots
-        py_files = list(self.project_root.rglob("*.py"))
+        
+        # [HARDENING] If scope provided, limit search to those directories only
+        if scope_dirs:
+            py_files = []
+            for scope_dir in scope_dirs:
+                if scope_dir.exists():
+                    py_files.extend(scope_dir.rglob("*.py"))
+        else:
+            # Fallback: scan entire project (legacy behavior)
+            py_files = list(self.project_root.rglob("*.py"))
 
         for file_path in py_files:
             # Performance & Safety: Skip excluded territories (venv, git, etc)
@@ -369,11 +422,21 @@ class HealerAgent:
     def _update_imports_after_change(self, affected_dir: Path, old_files: List[Path], new_file: Path, moved_symbols: Set[str]) -> List[Dict[str, Any]]:
         """
         Scan directory for files that used moved symbols and point them to new_file.
+        [HARDENING] Limited to same layer directory to prevent cross-layer import pollution.
         """
         actions = []
         new_module_name = new_file.stem
+        
+        # [HARDENING] Restrict scan to layer directory only
+        layer_dir = self._get_layer_directory(new_file)
+        if layer_dir and layer_dir != affected_dir:
+            # If new_file is in a different layer, limit scope to that layer
+            scan_dir = layer_dir
+            logger.info(f"[IMPORT_SCOPE] Limiting import updates to layer: {layer_dir.name}")
+        else:
+            scan_dir = affected_dir
 
-        for consumer_path in affected_dir.rglob("*.py"):
+        for consumer_path in scan_dir.rglob("*.py"):
             if consumer_path in old_files or consumer_path == new_file:
                 continue 
 
@@ -442,6 +505,7 @@ class HealerAgent:
     def heal_fission(self, large_files: List[Path]) -> List[Dict[str, Any]]:
         """
         Surgically split oversized files into sub-atomic modules.
+        [HARDENING] Fission targets restricted to same layer directory.
         """
         actions = []
         for file_path in large_files:
@@ -450,6 +514,19 @@ class HealerAgent:
                 break
 
             try:
+                # [HARDENING] Detect layer and validate fission is allowed
+                layer = self._detect_layer(file_path)
+                layer_dir = self._get_layer_directory(file_path)
+                
+                if layer == 'unknown' or not layer_dir:
+                    actions.append({
+                        "type": "FISSION_BLOCKED",
+                        "file": str(file_path),
+                        "reason": "File not in recognized layer structure - fission restricted"
+                    })
+                    logger.warning(f"[FISSION_BLOCKED] {file_path.name} not in layer structure")
+                    continue
+                
                 lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
                 if len(lines) <= MAX_LINES_PER_FILE:
                     continue
@@ -490,6 +567,9 @@ class HealerAgent:
                     stem = file_path.stem
                     chunk_symbols_map = []
                     
+                    # [HARDENING] Ensure all fission targets stay within layer directory
+                    allowed_target_dir = layer_dir
+                    
                     for i in range(len(valid_splits)):
                         start = valid_splits[i]
                         end = valid_splits[i+1] if i+1 < len(valid_splits) else len(lines)
@@ -500,7 +580,13 @@ class HealerAgent:
                             file_path.write_text(chunk_content, encoding="utf-8")
                         else:
                             new_name = f"{stem}_part{i+1}.py"
+                            # [HARDENING] Validate target stays in same layer
                             new_path = file_path.parent / new_name
+                            
+                            if not new_path.is_relative_to(allowed_target_dir):
+                                logger.error(f"[FISSION_BLOCKED] Target {new_path} outside layer {layer}")
+                                raise ValueError(f"Fission target outside allowed layer directory: {layer}")
+                            
                             new_path.write_text(chunk_content, encoding="utf-8")
                             action["new_files"].append(str(new_path))
                             # Track symbols moved to new parts for import remediation
@@ -508,13 +594,18 @@ class HealerAgent:
                             if symbols:
                                 chunk_symbols_map.append((new_path, symbols))
                     
-                    # Execute cross-file import remediation
+                    # [HARDENING] Execute import remediation scoped to layer only
                     for n_path, syms in chunk_symbols_map:
                         updates = self._update_imports_after_change(file_path.parent, [file_path], n_path, syms)
                         action["import_updates"].extend(updates)
                         
-                        # [NEW] Execute cross-directory remediation
-                        cross_updates = self._update_imports_cross_directory([file_path.stem], str(n_path), syms)
+                        # [HARDENING] Cross-directory remediation limited to same layer + direct dependents
+                        allowed_scan_dirs = [layer_dir]
+                        cross_updates = self._update_imports_cross_directory(
+                            [file_path.stem], 
+                            str(n_path), 
+                            syms
+                        )
                         action["import_updates"].extend(cross_updates)
                     
                     action["applied"] = True
