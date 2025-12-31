@@ -21,6 +21,8 @@ Placed in utils/naming per semantic_l2_registry:
 """
 from pathlib import Path
 from typing import Tuple, Dict, List, Set, Any
+from dataclasses import dataclass
+from typing import Optional
 import re
 import ast
 import json
@@ -32,6 +34,26 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,  # Files permitted to exist in multiple directories
     validate_no_duplicate_prefix,  # Safeguard against name sprawl
 )
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    semantic_l2_registry, core_subfolder_map, sovereign_registry,
+    AST_PLACEMENT_SIGNALS, PLACEMENT_CONFIDENCE, L2_TO_L1_MAP
+)
+
+# Global agent registry for tracking moved agents
+AGENT_REGISTRY: Dict[str, List[Dict[str, Any]]] = {
+    l1: [] for l1 in sovereign_registry.get('agentic_core', {}).get('subfolders', [])
+}
+
+@dataclass
+class PlacementResult:
+    full_path: str
+    l1_folder: str
+    l2_subfolder: Optional[str]
+    confidence: float
+    confidence_level: str
+    signals_matched: List[str]
+    reasoning: str
+    alternative_paths: List[str]
 
 
 class NamingAgent:
@@ -61,6 +83,7 @@ class NamingAgent:
         # ULTRA: Cache all existing agent filenames for uniqueness enforcement
         self._existing_agent_stems: Set[str] = self._build_agent_stem_cache()
         self._hierarchy_agent = None  # Lazy load for semantic context
+        self.FORBIDDEN_FOLDER_PATTERN = re.compile(r'^\d+_')  # Import from structure_blueprint
 
     def _build_agent_stem_cache(self) -> Set[str]:
         """Build set of all PascalCase agent filenames (without .py)"""
@@ -101,54 +124,181 @@ class NamingAgent:
         
         return classes, functions, imports
 
-    def get_placement_guidance(self, content_preview: str) -> str:
+    def get_placement_guidance(self, content_preview: str) -> PlacementResult:
         """
         Enhanced LLM-aware placement guidance with AST analysis.
         Helps suggest correct L-layer placement based on content structure.
         SSOT for Key 40/49 migration hints.
+        
+        Now delegates to get_placement_guidance_v2 for enhanced AST-based placement.
         """
-        # Extract AST symbols for stronger signal
-        classes, functions, imports = self._extract_ast_symbols(content_preview)
+        return self.get_placement_guidance_v2(content_preview)
+
+    def get_placement_guidance_v2(self, content: str, file_path: Path = None) -> PlacementResult:
+        classes, functions, imports = self._extract_ast_symbols(content)
+        decorators = self._extract_decorators(content)
+        base_classes = self._extract_base_classes(content)
+        
+        placement_scores: Dict[str, Dict[str, Any]] = {}
+        
+        for path, signals in AST_PLACEMENT_SIGNALS.items():
+            score = 0.0
+            matched_signals = []
+            
+            for cls in classes:
+                for pattern in signals.get("class_patterns", []):
+                    if re.match(pattern, cls, re.IGNORECASE):
+                        score += 3.0 * signals.get("weight", 5) / 10
+                        matched_signals.append(f"class:{cls}~{pattern}")
+            
+            for base in base_classes:
+                if base in signals.get("base_classes", []):
+                    score += 4.0 * signals.get("weight", 5) / 10
+                    matched_signals.append(f"inherits:{base}")
+            
+            for func in functions:
+                for pattern in signals.get("function_patterns", []):
+                    if re.match(pattern, func, re.IGNORECASE):
+                        score += 2.0 * signals.get("weight", 5) / 10
+                        matched_signals.append(f"func:{func}~{pattern}")
+            
+            for imp in imports:
+                if imp in signals.get("import_signals", []):
+                    score += 2.5 * signals.get("weight", 5) / 10
+                    matched_signals.append(f"import:{imp}")
+            
+            for dec in decorators:
+                if dec in signals.get("decorator_signals", []):
+                    score += 3.0 * signals.get("weight", 5) / 10
+                    matched_signals.append(f"decorator:{dec}")
+            
+            content_lower = content.lower()
+            keyword_hits = sum(1 for kw in signals.get("keyword_signals", []) if kw in content_lower)
+            if keyword_hits > 0:
+                score += min(keyword_hits * 0.5, 2.0) * signals.get("weight", 5) / 10
+                matched_signals.append(f"keywords:{keyword_hits}")
+            
+            if score > 0:
+                placement_scores[path] = {
+                    "score": score,
+                    "signals": matched_signals,
+                    "weight": signals.get("weight", 5)
+                }
+        
+        sorted_placements = sorted(
+            placement_scores.items(),
+            key=lambda x: x[1]["score"],
+            reverse=True
+        )
+        
+        if not sorted_placements:
+            legacy_path = self._legacy_placement_fallback(content)
+            return PlacementResult(
+                full_path=legacy_path,
+                l1_folder=legacy_path.split("/")[1] if "/" in legacy_path else "",
+                l2_subfolder=legacy_path.split("/")[2] if legacy_path.count("/") >= 2 else None,
+                confidence=0.2,
+                confidence_level="LOW",
+                signals_matched=["fallback:keyword_heuristic"],
+                reasoning="No strong AST signals found, using keyword fallback",
+                alternative_paths=[]
+            )
+        
+        top_path, top_data = sorted_placements[0]
+        max_possible_score = 15.0
+        raw_confidence = min(top_data["score"] / max_possible_score, 1.0)
+        
+        signal_types = set(s.split(":")[0] for s in top_data["signals"])
+        diversity_bonus = len(signal_types) * 0.05
+        confidence = min(raw_confidence + diversity_bonus, 1.0)
+        
+        if confidence >= PLACEMENT_CONFIDENCE["HIGH"]:
+            confidence_level = "HIGH"
+        elif confidence >= PLACEMENT_CONFIDENCE["MEDIUM"]:
+            confidence_level = "MEDIUM"
+        elif confidence >= PLACEMENT_CONFIDENCE["LOW"]:
+            confidence_level = "LOW"
+        else:
+            confidence_level = "REJECT"
+        
+        path_parts = top_path.split("/")
+        l1_folder = path_parts[1] if len(path_parts) > 1 else ""
+        l2_subfolder = path_parts[2] if len(path_parts) > 2 else None
+        
+        alternatives = [p for p, _ in sorted_placements[1:4]]
+        
+        reasoning = f"Matched {len(top_data['signals'])} signals: {', '.join(top_data['signals'][:5])}"
+        if len(top_data['signals']) > 5:
+            reasoning += f" (+{len(top_data['signals']) - 5} more)"
+        
+        return PlacementResult(
+            full_path=top_path,
+            l1_folder=l1_folder,
+            l2_subfolder=l2_subfolder,
+            confidence=confidence,
+            confidence_level=confidence_level,
+            signals_matched=top_data["signals"],
+            reasoning=reasoning,
+            alternative_paths=alternatives
+        )
+
+    def _extract_decorators(self, content: str) -> List[str]:
+        try:
+            tree = ast.parse(content)
+        except Exception:
+            return []
+        
+        decorators = []
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                for dec in node.decorator_list:
+                    if isinstance(dec, ast.Name):
+                        decorators.append(f"@{dec.id}")
+                    elif isinstance(dec, ast.Call) and isinstance(dec.func, ast.Name):
+                        decorators.append(f"@{dec.func.id}")
+                    elif isinstance(dec, ast.Attribute):
+                        decorators.append(f"@{dec.attr}")
+        return decorators
+
+    def _extract_base_classes(self, content: str) -> List[str]:
+        try:
+            tree = ast.parse(content)
+        except Exception:
+            return []
+        
+        bases = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                for base in node.bases:
+                    if isinstance(base, ast.Name):
+                        bases.append(base.id)
+                    elif isinstance(base, ast.Attribute):
+                        bases.append(base.attr)
+        return bases
+
+    def _legacy_placement_fallback(self, content_preview: str) -> str:
         lower_preview = content_preview.lower()
         
-        # Priority 1: Strong class/function names
-        for name in classes + functions:
-            lower_name = name.lower()
-            if any(k in lower_name for k in ["engine", "orchestrator", "workflow"]):
-                return 'agentic_core/L3_orchestration'
-            if "strategy" in lower_name or "reason" in lower_name or "planner" in lower_name:
-                return 'agentic_core/L1_cognition'
-            if "memory" in lower_name or "state" in lower_name or "cache" in lower_name:
-                return 'agentic_core/L4_state'
-            if "guardian" in lower_name or "validator" in lower_name or "healer" in lower_name:
-                return 'agentic_core/L5_safety'
-        
-        # Priority 2: Import-based detection
-        if any(imp in imports for imp in ["pinecone", "redis", "vector"]):
-            return 'agentic_core/L4_state'
-        if any(imp in imports for imp in ["guardrail", "safety"]):
-            return 'agentic_core/L5_safety'
-        if "pydantic" in imports or "basemodel" in lower_preview:
-            return 'agentic_core/schemas'
-        
-        # Priority 3: Keyword fallback (existing logic)
-        if any(k in lower_preview for k in ['planner', 'strategy', 'reasoning', 'mission', 'intent', 'decompose']):
-            return 'agentic_core/L1_cognition'
-        if any(k in lower_preview for k in ['thought', 'node', 'execute', 'react', 'chain']):
+        if any(k in lower_preview for k in ['planner', 'strategy', 'reasoning', 'mission']):
+            return 'agentic_core/L1_cognition/planning'
+        if any(k in lower_preview for k in ['thought', 'node', 'react', 'chain']):
             return 'agentic_core/L1_cognition/thought_engine'
-        if any(k in lower_preview for k in ['router', 'orchestrator', 'fission', 'hop', 'workflow', 'coordinate']):
-            return 'agentic_core/L3_orchestration'
-        if any(k in lower_preview for k in ['pinecone', 'redis', 'vector', 'embedding', 'storage', 'cache', 'ledger']):
-            return 'agentic_core/L4_state'
-        if any(k in lower_preview for k in ['guardrail', 'safety', 'redteam', 'gravity', 'validator']):
-            return 'agentic_core/L5_safety'
-        if 'prompt' in lower_preview or 'template' in lower_preview or 'persona' in lower_preview:
-            return 'agentic_core/prompt_governance'
-        if 'schema' in lower_preview or 'model' in lower_preview or 'pydantic' in lower_preview:
-            return 'agentic_core/schemas'
-
-        # Default fallback
-        return 'agentic_core/L1_cognition'
+        if any(k in lower_preview for k in ['router', 'orchestrator', 'workflow', 'coordinate']):
+            return 'agentic_core/L3_orchestration/workflow_engines'
+        if any(k in lower_preview for k in ['fission', 'split', 'parallel']):
+            return 'agentic_core/L3_orchestration/fission_logic'
+        if any(k in lower_preview for k in ['pinecone', 'redis', 'vector', 'embedding']):
+            return 'agentic_core/L4_state/memory'
+        if any(k in lower_preview for k in ['guardrail', 'safety', 'heal']):
+            return 'agentic_core/L5_safety/guardrails'
+        if any(k in lower_preview for k in ['validator', 'enforce', 'compliance']):
+            return 'agentic_core/L5_safety/validators'
+        if 'prompt' in lower_preview or 'template' in lower_preview:
+            return 'agentic_core/prompt_governance/templates'
+        if 'schema' in lower_preview or 'pydantic' in lower_preview:
+            return 'agentic_core/schemas/models'
+        
+        return 'agentic_core/L1_cognition/thought_engine'
 
     def validate_file_naming(self, file_path: Path) -> Tuple[bool, str]:
         """
@@ -892,6 +1042,133 @@ class NamingAgent:
             result['reason'] = f'Resolution failed: {e}'
         
         return result
+
+
+    def validate_current_placement(self, file_path: Path) -> Tuple[bool, PlacementResult]:
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')
+        except Exception:
+            return True, None
+        
+        suggested = self.get_placement_guidance_v2(content, file_path)
+        
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            current_parts = rel_path.parts
+            
+            if len(current_parts) < 3:
+                return True, suggested
+            
+            current_l1 = current_parts[1] if len(current_parts) > 1 else ""
+            current_l2 = current_parts[2] if len(current_parts) > 2 else ""
+            current_path = f"agentic_core/{current_l1}/{current_l2}"
+            
+        except ValueError:
+            return True, suggested
+        
+        if suggested.confidence_level in ["HIGH", "MEDIUM"]:
+            if current_path != suggested.full_path:
+                return False, suggested
+        
+        return True, suggested
+
+    def move_to_canonical_location(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+        result = {
+            'old_path': str(file_path),
+            'new_path': None,
+            'moved': False,
+            'updated_imports': [],
+            'error': None
+        }
+        
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            placement = self.get_placement_guidance_v2(content)
+            if placement.confidence_level in ["LOW", "REJECT"]:
+                result['error'] = f"Low confidence ({placement.confidence:.2f}) - skipping move"
+                return result
+            
+            target_dir = placement.full_path
+            
+            root, *subs = target_dir.split('/')
+            if root in sovereign_registry and subs:
+                sub_map = core_subfolder_map.get(subs[0], {})
+                if sub_map:
+                    target_dir = '/'.join([root, subs[0], next(iter(sub_map))])
+            
+            new_dir = self.project_root / target_dir
+            new_path = new_dir / file_path.name
+            result['new_path'] = str(new_path)
+            
+            if self.FORBIDDEN_FOLDER_PATTERN.match(new_dir.name):
+                raise ValueError(f"Invalid target: {new_dir.name}")
+            
+            if not dry_run:
+                import shutil
+                new_dir.mkdir(parents=True, exist_ok=True)
+                backup_path = self.project_root / '.sovereign_healing_backup' / file_path.name
+                shutil.copy(file_path, backup_path)
+                shutil.move(file_path, new_path)
+                result['moved'] = True
+                
+                if file_path.name.endswith('Agent.py'):
+                    new_content = new_path.read_text()
+                    classes, funcs, _ = self._extract_ast_symbols(new_content)
+                    fingerprint = hash(''.join(classes + funcs))
+                    AGENT_REGISTRY[placement.l1_folder].append({'name': new_path.stem, 'file': str(new_path.relative_to(self.project_root)), 'methods': len(funcs), 'fingerprint': hex(fingerprint)})
+                
+                old_module = file_path.stem
+                new_module = new_path.stem
+                result['updated_imports'] = self._update_imports_rglob(old_module, new_module)
+                
+        except Exception as e:
+            result['error'] = str(e)
+        
+        return result
+
+    def _update_imports_rglob(self, old_module: str, new_module: str) -> List[str]:
+        """
+        Update imports across the repository after a file move/rename.
+        
+        Args:
+            old_module: Original module name (without .py)
+            new_module: New module name (without .py)
+            
+        Returns:
+            List of files that were updated
+        """
+        updated_files = []
+        
+        for py_file in self.project_root.rglob("*.py"):
+            if any(ex in str(py_file) for ex in {"__pycache__", ".git", "archives"}):
+                continue
+                
+            try:
+                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                original = content
+                
+                # Update import statements
+                content = re.sub(
+                    rf'from\s+([^.]+)\s+import\s+{old_module}',
+                    rf'from \1 import {new_module}',
+                    content
+                )
+                
+                content = re.sub(
+                    rf'import\s+{old_module}',
+                    f'import {new_module}',
+                    content
+                )
+                
+                # Write back if changed
+                if content != original:
+                    py_file.write_text(content, encoding='utf-8')
+                    updated_files.append(str(py_file.relative_to(self.project_root)))
+                    
+            except Exception:
+                continue
+        
+        return updated_files
 
 
 # Singleton instance for centralized access

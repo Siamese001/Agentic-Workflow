@@ -147,6 +147,279 @@ gravity_surgery_enabled: Any = gravity_config['enabled']
 upstream_sovereign_roots: Any = frozenset(gravity_config['upstream_sovereign_roots'])
 downstream_roots: Any = frozenset(gravity_config['downstream_domains'])
 _semantic_templates = {'node_pattern': {'entity_types': ['Class'], 'examples_suffix': ['Node', 'ExtractNode', 'DraftNode']}, 'flow_pattern': {'entity_types': ['Class'], 'bases': ['BaseFlow'], 'examples_suffix': ['Flow', 'Pipeline', 'Campaign']}, 'engine_pattern': {'entity_types': ['Class'], 'bases': ['BaseEngine'], 'examples_suffix': ['Engine', 'Builder', 'Driver']}, 'template_pattern': {'entity_types': ['Class', 'Dict'], 'bases': ['BaseTemplate'], 'examples_suffix': ['Template', 'Layout', 'Format']}}
+# === AST PLACEMENT SIGNAL REGISTRY ===
+# Maps AST patterns to exact L1/L2 paths for file placement
+# This is the SSOT for AST-based file placement decisions
+AST_PLACEMENT_SIGNALS: Dict[str, Dict[str, Any]] = {
+    # L1_cognition placements
+    "agentic_core/L1_cognition/thought_engine": {
+        "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*", ".*Chain.*"],
+        "base_classes": ["BaseNode", "ThoughtNode", "ReActNode"],
+        "function_patterns": ["think_.*", "reason_.*", "decompose_.*"],
+        "import_signals": ["langchain", "langgraph", "thought_engine"],
+        "keyword_signals": ["thought", "reasoning", "decomposition", "chain_of_thought", "react"],
+        "decorator_signals": ["@thought_node", "@reasoning_step"],
+        "weight": 10,  # High confidence signal
+    },
+    "agentic_core/L1_cognition/intent_analysis": {
+        "class_patterns": [".*Intent.*", ".*Parser.*", ".*Classifier.*"],
+        "base_classes": ["IntentClassifier", "QueryParser"],
+        "function_patterns": ["parse_intent.*", "classify_.*", "extract_intent.*"],
+        "import_signals": ["intent", "classification"],
+        "keyword_signals": ["intent", "classify", "parse", "extract", "query"],
+        "weight": 8,
+    },
+    "agentic_core/L1_cognition/planning": {
+        "class_patterns": [".*Planner.*", ".*Strategy.*", ".*Plan.*"],
+        "base_classes": ["BasePlanner", "StrategyPlanner"],
+        "function_patterns": ["plan_.*", "strategize_.*", "decompose_task.*"],
+        "import_signals": ["planning", "strategy"],
+        "keyword_signals": ["planner", "strategy", "plan", "goal", "objective"],
+        "weight": 8,
+    },
+   
+    # L2_execution placements
+    "agentic_core/L2_execution/tool_registry": {
+        "class_patterns": [".*Agent$", ".*Tool$", ".*Handler$"],
+        "base_classes": ["SubAtomicAgent", "BaseTool", "ToolHandler"],
+        "function_patterns": ["execute_.*", "run_tool.*", "invoke_.*"],
+        "import_signals": ["tool_registry", "SubAtomicAgent"],
+        "keyword_signals": ["tool", "execute", "invoke", "action", "handler"],
+        "decorator_signals": ["@tool", "@action"],
+        "weight": 9,
+    },
+    "agentic_core/L2_execution/action_handlers": {
+        "class_patterns": [".*ActionHandler$", ".*Executor$"],
+        "base_classes": ["ActionHandler", "BaseExecutor"],
+        "function_patterns": ["handle_action.*", "execute_action.*"],
+        "import_signals": ["action_handlers"],
+        "keyword_signals": ["action", "handler", "execute", "perform"],
+        "weight": 7,
+    },
+    "agentic_core/L2_execution/mcp": {
+        "class_patterns": [".*MCP.*", ".*Client$", ".*Server$"],
+        "base_classes": ["MCPClient", "MCPServer"],
+        "function_patterns": ["mcp_.*", "fetch_.*", "connect_.*"],
+        "import_signals": ["mcp", "model_context_protocol"],
+        "keyword_signals": ["mcp", "model_context_protocol", "fetch", "client", "server"],
+        "weight": 9,
+    },
+   
+    # L3_orchestration placements
+    "agentic_core/L3_orchestration/workflow_engines": {
+        "class_patterns": [".*Engine$", ".*Orchestrator$", ".*Controller$", ".*Coordinator$"],
+        "base_classes": ["BaseEngine", "WorkflowEngine", "Orchestrator"],
+        "function_patterns": ["orchestrate_.*", "coordinate_.*", "run_workflow.*"],
+        "import_signals": ["workflow_engines", "orchestration"],
+        "keyword_signals": ["orchestrator", "workflow", "engine", "coordinate", "mission", "controller"],
+        "decorator_signals": ["@workflow", "@orchestrate"],
+        "weight": 10,
+    },
+    "agentic_core/L3_orchestration/fission_logic": {
+        "class_patterns": [".*Fission.*", ".*Split.*", ".*Decompose.*"],
+        "base_classes": ["FissionEngine", "TaskSplitter"],
+        "function_patterns": ["fission_.*", "split_.*", "decompose_.*"],
+        "import_signals": ["fission_logic"],
+        "keyword_signals": ["fission", "split", "decompose", "parallel", "distribute"],
+        "weight": 8,
+    },
+    "agentic_core/L3_orchestration/meta_learning": {
+        "class_patterns": [".*MetaLearn.*", ".*Adaptive.*", ".*SelfImprove.*"],
+        "base_classes": ["MetaLearner", "AdaptiveAgent"],
+        "function_patterns": ["meta_learn.*", "adapt_.*", "self_improve.*"],
+        "import_signals": ["meta_learning"],
+        "keyword_signals": ["meta", "learning", "adaptive", "self_improve", "evolve"],
+        "weight": 7,
+    },
+   
+    # L4_state placements
+    "agentic_core/L4_state/validation_context": {
+        "class_patterns": [".*Context.*", ".*State.*", ".*Session.*"],
+        "base_classes": ["ValidationContext", "StateManager"],
+        "function_patterns": ["get_context.*", "set_state.*", "validate_context.*"],
+        "import_signals": ["validation_context"],
+        "keyword_signals": ["context", "state", "session", "validation"],
+        "weight": 8,
+    },
+    "agentic_core/L4_state/ledger": {
+        "class_patterns": [".*Ledger.*", ".*Audit.*", ".*Log.*", ".*Historian.*"],
+        "base_classes": ["BaseLedger", "AuditLog"],
+        "function_patterns": ["log_.*", "record_.*", "audit_.*"],
+        "import_signals": ["ledger"],
+        "keyword_signals": ["ledger", "audit", "log", "record", "historian", "trail"],
+        "weight": 8,
+    },
+    "agentic_core/L4_state/memory": {
+        "class_patterns": [".*Memory.*", ".*Cache.*", ".*Store.*"],
+        "base_classes": ["MemoryStore", "CacheManager"],
+        "function_patterns": ["store_.*", "retrieve_.*", "cache_.*"],
+        "import_signals": ["pinecone", "redis", "memory"],
+        "keyword_signals": ["memory", "cache", "store", "retrieve", "embedding", "vector"],
+        "weight": 9,
+    },
+   
+    # L5_safety placements
+    "agentic_core/L5_safety/guardrails": {
+        "class_patterns": [".*Guardrail.*", ".*Limit.*", ".*Throttle.*", ".*Healer.*"],
+        "base_classes": ["BaseGuardrail", "RateLimiter", "CircuitBreaker"],
+        "function_patterns": ["guard_.*", "limit_.*", "throttle_.*", "heal_.*"],
+        "import_signals": ["guardrails", "safety"],
+        "keyword_signals": ["guardrail", "safety", "limit", "throttle", "heal", "circuit", "breaker"],
+        "decorator_signals": ["@guardrail", "@rate_limit"],
+        "weight": 10,
+    },
+    "agentic_core/L5_safety/validators": {
+        "class_patterns": [".*Validator.*", ".*Enforcer.*", ".*Checker.*", ".*Agent$"],
+        "base_classes": ["BaseValidator", "Enforcer"],
+        "function_patterns": ["validate_.*", "enforce_.*", "check_.*"],
+        "import_signals": ["validators", "compliance"],
+        "keyword_signals": ["validator", "enforce", "compliance", "check", "verify", "audit"],
+        "weight": 9,
+    },
+    "agentic_core/L5_safety/gravity": {
+        "class_patterns": [".*Gravity.*", ".*Import.*", ".*Waterfall.*"],
+        "base_classes": ["GravityEnforcer", "ImportValidator"],
+        "function_patterns": ["check_gravity.*", "validate_import.*"],
+        "import_signals": ["gravity"],
+        "keyword_signals": ["gravity", "import", "waterfall", "upstream", "downstream"],
+        "weight": 8,
+    },
+    "agentic_core/L5_safety/red_teaming": {
+        "class_patterns": [".*RedTeam.*", ".*Adversarial.*", ".*Attack.*"],
+        "base_classes": ["RedTeamAgent", "AdversarialTester"],
+        "function_patterns": ["attack_.*", "probe_.*", "fuzz_.*"],
+        "import_signals": ["red_teaming"],
+        "keyword_signals": ["redteam", "adversarial", "attack", "probe", "jailbreak", "exploit"],
+        "weight": 8,
+    },
+   
+    # Utils placements
+    "agentic_core/utils/core_extensions": {
+        "class_patterns": [".*Extension.*", ".*Mixin.*", ".*Helper.*"],
+        "base_classes": ["ExtensionMixin"],
+        "function_patterns": ["extend_.*", "enhance_.*"],
+        "import_signals": ["core_extensions"],
+        "keyword_signals": ["extension", "mixin", "enhance", "utility"],
+        "weight": 6,
+    },
+    "agentic_core/utils/naming": {
+        "class_patterns": [".*Naming.*", ".*Case.*"],
+        "base_classes": [],
+        "function_patterns": ["to_snake_case.*", "to_pascal_case.*", "validate_name.*"],
+        "import_signals": ["naming"],
+        "keyword_signals": ["naming", "snake_case", "pascal_case", "case", "convention"],
+        "weight": 7,
+    },
+   
+    # Observability placements
+    "agentic_core/observability/metrics": {
+        "class_patterns": [".*Metric.*", ".*Counter.*", ".*Gauge.*"],
+        "base_classes": ["MetricCollector"],
+        "function_patterns": ["collect_metric.*", "record_.*", "measure_.*"],
+        "import_signals": ["prometheus", "metrics"],
+        "keyword_signals": ["metric", "counter", "gauge", "measure", "telemetry"],
+        "weight": 7,
+    },
+    "agentic_core/observability/tracing": {
+        "class_patterns": [".*Tracer.*", ".*Span.*"],
+        "base_classes": ["Tracer", "SpanContext"],
+        "function_patterns": ["trace_.*", "start_span.*"],
+        "import_signals": ["opentelemetry", "tracing"],
+        "keyword_signals": ["trace", "span", "opentelemetry", "jaeger"],
+        "weight": 7,
+    },
+    "agentic_core/observability/compliance": {
+        "class_patterns": [".*Compliance.*", ".*Report.*"],
+        "base_classes": ["ComplianceReporter"],
+        "function_patterns": ["report_.*", "generate_compliance.*"],
+        "import_signals": ["compliance"],
+        "keyword_signals": ["compliance", "report", "audit", "coverage"],
+        "weight": 7,
+    },
+   
+    # Schemas placements
+    "agentic_core/schemas/models": {
+        "class_patterns": [".*Model$", ".*Schema$", ".*DTO$"],
+        "base_classes": ["BaseModel", "pydantic.BaseModel"],
+        "function_patterns": [],
+        "import_signals": ["pydantic", "dataclasses"],
+        "keyword_signals": ["model", "schema", "dto", "dataclass"],
+        "decorator_signals": ["@dataclass"],
+        "weight": 9,
+    },
+   
+    # Prompt governance placements
+    "agentic_core/prompt_governance/templates": {
+        "class_patterns": [".*Template.*", ".*Prompt.*"],
+        "base_classes": ["PromptTemplate"],
+        "function_patterns": ["render_prompt.*", "format_template.*"],
+        "import_signals": ["jinja2", "prompt_governance"],
+        "keyword_signals": ["prompt", "template", "jinja", "render"],
+        "decorator_signals": ["@registers_prompt"],
+        "weight": 8,
+    },
+    "agentic_core/prompt_governance/meta_prompts": {
+        "class_patterns": [".*MetaPrompt.*", ".*SystemPrompt.*"],
+        "base_classes": ["MetaPrompt"],
+        "function_patterns": ["generate_meta_prompt.*"],
+        "import_signals": ["meta_prompts"],
+        "keyword_signals": ["meta_prompt", "system_prompt", "persona"],
+        "weight": 7,
+    },
+}
+
+# === PLACEMENT CONFIDENCE THRESHOLDS ===
+PLACEMENT_CONFIDENCE = {
+    "HIGH": 0.8,      # Auto-move without confirmation
+    "MEDIUM": 0.5,    # Suggest move, require confirmation
+    "LOW": 0.3,       # Log suggestion only
+    "REJECT": 0.0,    # Cannot determine placement
+}
+
+# === REVERSE LOOKUP: L2 -> L1 MAPPING ===
+# For quick parent resolution
+L2_TO_L1_MAP: Dict[str, str] = {
+    "thought_engine": "L1_cognition",
+    "intent_analysis": "L1_cognition",
+    "planning": "L1_cognition",
+    "tool_registry": "L2_execution",
+    "action_handlers": "L2_execution",
+    "mcp": "L2_execution",
+    "workflow_engines": "L3_orchestration",
+    "fission_logic": "L3_orchestration",
+    "meta_learning": "L3_orchestration",
+    "S3_vitality": "L3_orchestration",
+    "validation_context": "L4_state",
+    "ledger": "L4_state",
+    "memory": "L4_state",
+    "filesystem": "L4_state",
+    "guardrails": "L5_safety",
+    "validators": "L5_safety",
+    "gravity": "L5_safety",
+    "red_teaming": "L5_safety",
+    "core_extensions": "utils",
+    "naming": "utils",
+    "wrappers": "utils",
+    "general_helpers": "utils",
+    "metrics": "observability",
+    "tracing": "observability",
+    "telemetry": "observability",
+    "compliance": "observability",
+    "models": "schemas",
+    "messages": "schemas",
+    "types": "schemas",
+    "templates": "prompt_governance",
+    "meta_prompts": "prompt_governance",
+    "rendering": "prompt_governance",
+    "version_registry": "prompt_governance",
+    "blueprint_sovereign": "config",
+    "environments": "config",
+    "feature_flags": "config",
+    "scripts": "L0_maintenance",
+    "logs": "L0_maintenance",
+    "benchmarks": "L0_maintenance",
+}
+
 # === UPPERCASE ALIASES FOR BACKWARD COMPATIBILITY ===
 SOVEREIGN_REGISTRY = sovereign_registry
 CORE_SUBFOLDER_MAP = core_subfolder_map
