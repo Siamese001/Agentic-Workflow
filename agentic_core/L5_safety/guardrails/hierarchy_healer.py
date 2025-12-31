@@ -317,6 +317,15 @@ class HierarchyHealer:
                 if len(parts) == 1 and file_path.name in ROOT_PROTECTED_FILES:
                     continue
 
+                # [BUG FIX 2025-12-31] Skip files that are already archived
+                # Prevents infinite loop: file.json → file.json.archived → file.json.archived.archived...
+                archive_markers = ('.archived', '.backup', '.old', '.copy')
+                if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
+                    continue
+                if any(marker in file_path.name.lower() for marker in archive_markers):
+                    # Also catch files with markers in the middle (e.g., file.archived.json)
+                    continue
+
                 # Skip if in protected_folders
                 if parts and parts[0] in self.protected_folders:
                     if parts[0] in {"data", "archives"}:

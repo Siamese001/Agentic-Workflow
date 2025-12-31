@@ -235,6 +235,16 @@ class LocationAgent:
             if i >= max_actions:
                 logger.warning(f"[LocationAgent] Cleanup budget exhausted ({max_actions} actions).")
                 break
+            
+            # [BUG FIX 2025-12-31] Skip files that are already archived
+            # Prevents infinite loop: file.py → file.py.archived → file.py.archived.archived...
+            archive_markers = ('.archived', '.backup', '.old', '.copy')
+            if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
+                logger.debug(f"[LocationAgent] Skipping already-archived file: {file_path.name}")
+                continue
+            if any(marker in file_path.name.lower() for marker in archive_markers):
+                logger.debug(f"[LocationAgent] Skipping file with archive marker: {file_path.name}")
+                continue
                 
             action = {
                 "type": "LOCATION_CLEANUP",
