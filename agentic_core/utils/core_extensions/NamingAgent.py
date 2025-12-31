@@ -26,6 +26,17 @@ from typing import Optional
 import re
 import ast
 import json
+import os
+
+# Tree-sitter imports (optional, with graceful fallback)
+try:
+    from tree_sitter import Language, Parser
+    from tree_sitter_languages import get_language, get_parser
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
+    Language = None
+    Parser = None
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,              # High-signal keywords SSOT
@@ -89,6 +100,10 @@ class NamingAgent:
         self._existing_agent_stems: Set[str] = self._build_agent_stem_cache()
         self._hierarchy_agent = None  # Lazy load for semantic context
         self.FORBIDDEN_FOLDER_PATTERN = re.compile(r'^\d+_')  # Import from structure_blueprint
+        
+        # Tree-sitter parsers cache (lazy initialization)
+        self.parsers = {}  # language_name -> Parser
+        self.languages = {}  # language_name -> Language
 
     def _build_agent_stem_cache(self) -> Set[str]:
         """Build set of all PascalCase agent filenames (without .py)"""
@@ -108,8 +123,25 @@ class NamingAgent:
             self._hierarchy_agent = HierarchyAgent(self.project_root)
         return self._hierarchy_agent
 
+    def _get_parser(self, language_name: str) -> Optional[Parser]:
+        """Get or create tree-sitter parser for language."""
+        if not TREE_SITTER_AVAILABLE:
+            return None
+            
+        if language_name not in self.parsers:
+            try:
+                lang = get_language(language_name)
+                parser = Parser()
+                parser.set_language(lang)
+                self.parsers[language_name] = parser
+                self.languages[language_name] = lang
+            except Exception as e:
+                # Silently fail - will use fallback
+                return None
+        return self.parsers.get(language_name)
+
     def _extract_ast_symbols(self, content: str) -> Tuple[List[str], List[str], Set[str]]:
-        """Extract classes, functions, and imports from content."""
+        """Extract classes, functions, and imports from Python content (legacy fallback)."""
         try:
             tree = ast.parse(content)
         except Exception:
@@ -128,6 +160,90 @@ class NamingAgent:
                     imports.add(node.module.split('.')[0])
         
         return classes, functions, imports
+
+    def _extract_symbols_tree_sitter(self, content: str, language_name: str = 'python') -> Tuple[List[str], List[str], Set[str]]:
+        """Extract symbols using tree-sitter with multi-language support."""
+        parser = self._get_parser(language_name)
+        if not parser:
+            # Fallback to legacy ast for Python
+            if language_name == 'python':
+                return self._extract_ast_symbols(content)
+            return [], [], set()
+
+        try:
+            tree = parser.parse(bytes(content, "utf8"))
+            root_node = tree.root_node
+        except Exception:
+            return self._extract_ast_symbols(content) if language_name == 'python' else ([], [], set())
+
+        classes = []
+        functions = []
+        imports = set()
+
+        # Language-specific queries
+        try:
+            if language_name == 'python':
+                class_query = self.languages[language_name].query("""
+                    (class_definition name: (identifier) @class.name)
+                """)
+                func_query = self.languages[language_name].query("""
+                    (function_definition name: (identifier) @function.name)
+                """)
+                import_query = self.languages[language_name].query("""
+                    (import_statement) @import
+                    (import_from_statement) @import
+                """)
+            elif language_name in ['javascript', 'typescript']:
+                class_query = self.languages[language_name].query("""
+                    (class_declaration name: (identifier) @class.name)
+                """)
+                func_query = self.languages[language_name].query("""
+                    (function_declaration name: (identifier) @function.name)
+                    (method_definition name: (property_identifier) @function.name)
+                """)
+                import_query = self.languages[language_name].query("""
+                    (import_statement) @import
+                """)
+            else:
+                return self._extract_ast_symbols(content) if language_name == 'python' else ([], [], set())
+
+            # Execute queries
+            for capture in class_query.captures(root_node):
+                node_text = capture[0].text.decode('utf8')
+                classes.append(node_text)
+            
+            for capture in func_query.captures(root_node):
+                node_text = capture[0].text.decode('utf8')
+                functions.append(node_text)
+            
+            for capture in import_query.captures(root_node):
+                node_text = capture[0].text.decode('utf8')
+                # Extract module name from import statement
+                import_parts = node_text.split()
+                if len(import_parts) > 1:
+                    imports.add(import_parts[1].split('.')[0])
+
+        except Exception:
+            # Query failed, use fallback
+            return self._extract_ast_symbols(content) if language_name == 'python' else ([], [], set())
+
+        return classes, functions, imports
+
+    def _extract_symbols(self, content: str, file_path: str = None) -> Tuple[List[str], List[str], Set[str]]:
+        """Extract symbols with language detection from file extension."""
+        language = 'python'
+        if file_path:
+            ext = os.path.splitext(file_path)[1].lower()
+            if ext in ['.js', '.jsx']:
+                language = 'javascript'
+            elif ext in ['.ts', '.tsx']:
+                language = 'typescript'
+        
+        # Use tree-sitter if available, otherwise fallback to ast
+        if TREE_SITTER_AVAILABLE:
+            return self._extract_symbols_tree_sitter(content, language_name=language)
+        else:
+            return self._extract_ast_symbols(content)
 
     def get_placement_guidance(self, content_preview: str) -> PlacementResult:
         """

@@ -1,6 +1,28 @@
 """Verify Sovereign Patches Applied Successfully"""
+import ast
 from pathlib import Path
+from typing import Any, Tuple
 from . import ALLOWED_CORE_STAGES, CANONICAL_DEPTH_MAP, validate_file_location
+
+
+def validate_ast_integrity(file_path: Path) -> Tuple[bool, str]:
+    """Validate that a Python file has valid AST structure."""
+    if not file_path.exists():
+        return False, "File does not exist"
+    
+    if file_path.suffix != '.py':
+        return True, "Non-Python file - skipping AST validation"
+    
+    try:
+        content = file_path.read_text(encoding='utf-8')
+        ast.parse(content)
+        return True, "AST valid"
+    except SyntaxError as e:
+        return False, f"AST invalid: {e}"
+    except Exception as e:
+        return False, f"Failed to read file: {e}"
+
+
 root: Any = Path('C:/Git/Agentic-Workflow')
 print('=' * 70)
 print('SOVEREIGN PATCH VERIFICATION')
@@ -21,11 +43,9 @@ for file_path, stage in tests:
             print(f'      Reason: {msg}')
 print('\n✓ Patch 2: canon_validator_agentic_v2.py - Unified Async/Sync Wrapper')
 print('  Checking telemetry wrapper implementation...')
-import ast
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

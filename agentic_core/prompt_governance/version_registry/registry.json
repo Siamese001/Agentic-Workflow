@@ -1,6 +1,6 @@
 {
   "sovereign_version": "1.0",
-  "generated_date": "2025-12-29",
+  "generated_date": "2025-12-31",
   "prompts": {
     "reasoning_chain.jinja": [
       {
@@ -367,9 +367,17 @@
         "version": "v1",
         "purpose": "Relocation guidance",
         "territory": "templates",
-        "active": true,
+        "active": false,
         "author": "SovereignOrchestrator",
         "registered_date": "2025-12-29"
+      },
+      {
+        "version": "v1",
+        "purpose": "Enforces territory/file placement rules",
+        "territory": "templates",
+        "active": true,
+        "author": "LocationAgent",
+        "registered_date": "2025-12-31"
       }
     ],
     "sovereign_convergence_orchestrator.jinja": [
