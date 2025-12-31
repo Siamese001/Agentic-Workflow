@@ -645,6 +645,8 @@ class NamingAgent:
         """
         CENTRALIZED: Generate a compliant filename from an original name.
         
+        [P1 CONSOLIDATION] Absorbs logic from NamingNormalizationAgent._to_snake_case()
+        
         Args:
             original_name: Original filename
             target_type: "agent" for PascalCase, "file" for snake_case, "auto" to detect
@@ -652,34 +654,118 @@ class NamingAgent:
         Returns:
             Compliant filename
         """
-        stem = original_name.replace('.py', '')
+        if not original_name or not isinstance(original_name, str):
+            raise ValueError("Invalid original_name provided.")
+        
+        # Preserve extension
+        if '.' in original_name:
+            stem = original_name.rsplit('.', 1)[0]
+            ext = '.' + original_name.rsplit('.', 1)[1]
+        else:
+            stem = original_name
+            ext = '.py'
         
         # Auto-detect type
         if target_type == "auto":
-            target_type = "agent" if original_name.endswith('Agent.py') or stem.endswith('Agent') else "file"
+            target_type = "agent" if stem.endswith('Agent') or original_name.endswith('Agent.py') else "file"
         
         if target_type == "agent":
             # Convert to PascalCase
-            # Handle snake_case input
-            if '_' in stem:
-                parts = stem.split('_')
-                pascal = ''.join(p.capitalize() for p in parts)
+            # Handle snake_case input (e.g., "my_cool_agent" -> "MyCoolAgent")
+            if '_' in stem or '-' in stem:
+                parts = re.split(r'[_-]', stem)
+                pascal = ''.join(p.capitalize() for p in parts if p)
             else:
+                # Handle already PascalCase or lowercase
                 pascal = stem[0].upper() + stem[1:] if stem else stem
             
             # Ensure ends with Agent
             if not pascal.endswith('Agent'):
                 pascal = f"{pascal}Agent"
             
-            return f"{pascal}.py"
+            return f"{pascal}{ext}"
         else:
-            # Convert to snake_case
-            # Handle PascalCase input
-            snake = re.sub(r'(?<!^)(?=[A-Z])', '_', stem).lower()
-            # Remove Agent suffix for non-agent files
-            if snake.endswith('_agent') and target_type == "file":
-                snake = snake[:-6]  # Remove '_agent'
-            return f"{snake}.py"
+            # [ABSORBED FROM NamingNormalizationAgent] Convert to snake_case
+            # Step 1: Handle CamelCase/PascalCase -> snake_case
+            s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', stem)
+            s2 = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1)
+            # Step 2: Replace hyphens and spaces with underscores
+            s3 = s2.replace('-', '_').replace(' ', '_')
+            # Step 3: Lowercase and collapse multiple underscores
+            snake = re.sub(r'_+', '_', s3.lower())
+            # Step 4: Strip leading/trailing underscores
+            snake = snake.strip('_')
+            
+            return f"{snake}{ext}"
+    
+    def normalize_filename(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        [P1 CONSOLIDATION] Absorbed from NamingNormalizationAgent.heal_violation()
+        
+        Normalize a filename to comply with naming conventions:
+        - *Agent.py files: PascalCase
+        - All other .py files: snake_case
+        
+        Args:
+            file_path: Path to file to normalize
+            dry_run: If True, only propose changes without executing
+            
+        Returns:
+            Dict with normalization results
+        """
+        result = {
+            'file_path': str(file_path),
+            'original_name': file_path.name,
+            'new_name': None,
+            'applied': False,
+            'reason': None
+        }
+        
+        # Skip files in ALLOWED_DUPLICATE_FILENAMES
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+        if file_path.name in ALLOWED_DUPLICATE_FILENAMES:
+            result['reason'] = 'File in ALLOWED_DUPLICATE_FILENAMES - exempt'
+            return result
+        
+        # Determine target type based on content
+        is_agent = self.should_be_agent_file(file_path)
+        target_type = "agent" if is_agent else "file"
+        
+        # Generate compliant name
+        compliant_name = self.generate_compliant_name(file_path.name, target_type)
+        
+        # Check if already compliant
+        if compliant_name == file_path.name:
+            result['reason'] = 'Already compliant'
+            return result
+        
+        result['new_name'] = compliant_name
+        new_path = file_path.parent / compliant_name
+        
+        # Check for collision
+        if new_path.exists() and new_path != file_path:
+            result['reason'] = f'Collision: {compliant_name} already exists'
+            return result
+        
+        # Execute rename if not dry_run
+        if not dry_run:
+            try:
+                import shutil
+                shutil.move(str(file_path), str(new_path))
+                result['applied'] = True
+                result['reason'] = f'Renamed: {file_path.name} -> {compliant_name}'
+                
+                # Update agent stem cache if this is an agent
+                if is_agent:
+                    self._existing_agent_stems.discard(file_path.stem)
+                    self._existing_agent_stems.add(new_path.stem)
+                    
+            except Exception as e:
+                result['reason'] = f'Rename failed: {e}'
+        else:
+            result['reason'] = f'Would rename: {file_path.name} -> {compliant_name}'
+        
+        return result
     
     def should_be_agent_file(self, file_path: Path) -> bool:
         """
@@ -702,6 +788,110 @@ class NamingAgent:
             return any(c.endswith('Agent') for c in classes)
         except Exception:
             return False
+
+
+    def scan_for_duplicate_filenames(self, python_files: List[Path] = None) -> Dict[str, List[Path]]:
+        """
+        [P3 CONSOLIDATION] Absorbed from FilenameUniquenessGuardianAgent.scan_repository()
+        
+        Scan for duplicate filenames across the repository.
+        
+        Args:
+            python_files: List of Python file paths to scan. If None, scans project_root.
+            
+        Returns:
+            Dict mapping duplicate filenames to list of paths where they exist
+        """
+        from collections import defaultdict
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+        
+        if python_files is None:
+            python_files = list(self.project_root.rglob("*.py"))
+        
+        basename_to_paths: Dict[str, List[Path]] = defaultdict(list)
+        
+        for file_path in python_files:
+            if isinstance(file_path, str):
+                file_path = Path(file_path)
+            if not file_path.exists():
+                continue
+            
+            basename = file_path.name
+            
+            # Skip files allowed to have duplicates (from SSOT)
+            if basename in ALLOWED_DUPLICATE_FILENAMES:
+                continue
+            
+            # Skip __pycache__ and hidden directories
+            if any(part.startswith('.') or part == '__pycache__' for part in file_path.parts):
+                continue
+                
+            basename_to_paths[basename].append(file_path)
+        
+        # Filter to only duplicates (>1 occurrence)
+        duplicates = {
+            basename: paths 
+            for basename, paths in basename_to_paths.items() 
+            if len(paths) > 1
+        }
+        
+        return duplicates
+    
+    def resolve_duplicate_filename(self, file_path: Path, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        [P3 CONSOLIDATION] Absorbed from FilenameUniquenessGuardianAgent._suggest_sovereign_name()
+        
+        Resolve a duplicate filename by suggesting a unique name with placement guidance.
+        
+        Args:
+            file_path: Path to the duplicate file
+            dry_run: If True, only propose changes without executing
+            
+        Returns:
+            Dict with resolution details
+        """
+        result = {
+            'file_path': str(file_path),
+            'original_name': file_path.name,
+            'new_name': None,
+            'new_path': None,
+            'applied': False,
+            'reason': None
+        }
+        
+        try:
+            # Get placement guidance based on content
+            content = file_path.read_text(encoding='utf-8', errors='ignore')[:2048]
+            suggested_dir = self.get_placement_guidance(content)
+            
+            # Generate unique name with counter suffix
+            stem = file_path.stem
+            suffix = file_path.suffix
+            target_dir = self.project_root / suggested_dir
+            
+            new_path = target_dir / file_path.name
+            counter = 1
+            while new_path.exists():
+                new_name = f"{stem}_v{counter}{suffix}"
+                new_path = target_dir / new_name
+                counter += 1
+            
+            result['new_name'] = new_path.name
+            result['new_path'] = str(new_path)
+            
+            if not dry_run:
+                import shutil
+                new_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(file_path), str(new_path))
+                result['applied'] = True
+                result['reason'] = f'Resolved duplicate: {file_path.name} -> {new_path.relative_to(self.project_root)}'
+            else:
+                result['reason'] = f'Would resolve: {file_path.name} -> {new_path.relative_to(self.project_root)}'
+                
+        except Exception as e:
+            result['reason'] = f'Resolution failed: {e}'
+        
+        return result
 
 
 # Singleton instance for centralized access

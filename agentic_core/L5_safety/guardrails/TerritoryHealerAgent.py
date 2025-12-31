@@ -1,17 +1,34 @@
 """
-Territory Healer Agent - Exhaustive Territory Enforcement
+[DEPRECATED] TerritoryHealerAgent - ABSORBED INTO HealerAgent
 
-Detects files that are stray WITHIN their current key territory and suggests
-better placements based on semantic content and key-specific stray signals.
+As of 2025-12-31 (P2 Consolidation), territory healing logic has been
+centralized into HealerAgent.heal_file_moves(). This file is kept for
+backward compatibility only.
 
-Examples:
-- Operational scripts in L1_cognition (belongs in scripts/)
-- Test files in L3_orchestration (belongs in tests/)
-- Healing agents in L4_state (belongs in L3_orchestration/healing/)
+Use instead:
+    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    healer = HealerAgent(project_root)
+    healer.heal_file_moves(move_violations)
+
+Territory decisions should be delegated to LocationAgent:
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+    location = LocationAgent(project_root)
+    guidance = location.validate_file_location(file_path)
+
+This file will be removed in a future release.
 """
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Emit deprecation warning on import
+warnings.warn(
+    "TerritoryHealerAgent is deprecated. Use HealerAgent.heal_file_moves() instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# DEPRECATED — Logic absorbed into HealerAgent — 2025-12-31
 class TerritoryHealerAgent:
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.

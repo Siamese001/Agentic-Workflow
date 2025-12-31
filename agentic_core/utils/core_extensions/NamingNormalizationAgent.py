@@ -1,7 +1,18 @@
-import re
-'''Brief description of functionality and purpose.'''
+"""
+[DEPRECATED] NamingNormalizationAgent - ABSORBED INTO NamingAgent
 
-'Brief description of functionality and purpose.'
+As of 2025-12-31 (P1 Consolidation), all naming normalization logic has been
+centralized into NamingAgent. This file is kept for backward compatibility only.
+
+Use instead:
+    from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+    naming = get_naming_agent(project_root)
+    result = naming.normalize_filename(file_path, dry_run=False)
+
+This file will be removed in a future release.
+"""
+import warnings
+import re
 import shutil
 from pathlib import Path
 from typing import Dict, Any
@@ -10,7 +21,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
 )
 
-# NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
+# Emit deprecation warning on import
+warnings.warn(
+    "NamingNormalizationAgent is deprecated. Use NamingAgent.normalize_filename() instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class NamingNormalizationAgent:
     """
     Normalizes filenames and public symbols to snake_case.

@@ -1,14 +1,25 @@
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
 
-Enforces naming laws on all files (not just .py):
-- No repeated suffixes (.archived.archived...)
-- No generic/versioned names
-- High-signal where applicable
-- Move clutter to archives/ with multi-priority AST-based categorization
-- Automatic cleanup (rename/archive) with guardrails
+[P5 CONSOLIDATION] 2025-12-31:
+This agent is transitioning to READ-ONLY mode. File operations (moves, archives)
+should be delegated to HealerAgent for centralized execution.
 
-Integrates with HealerAgent safety system (backup, budget, dry-run) per Phase 10.
+Current responsibilities (READ-ONLY):
+- Scan for repeated suffixes (.archived.archived...)
+- Detect generic/versioned names
+- Identify low-signal files
+- Report violations for HealerAgent to process
+
+DEPRECATED operations (use HealerAgent instead):
+- cleanup_violations() -> Use HealerAgent.heal_file_moves()
+- run_with_cleanup() -> Use FilesystemAgent.run() + HealerAgent
+
+For file operations, use:
+    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    violations = FilesystemAgent(project_root).run()  # Detection only
+    healer = HealerAgent(project_root)
+    healer.heal_file_moves(violations)  # Execution
 
 Placed in L5_safety/validators per SSOT extension:
   "Hard safety limits, mutation controls, deletion guards"
@@ -271,9 +282,23 @@ class FilesystemAgent:
 
     def run_with_cleanup(self, dry_run: bool = False) -> Dict[str, Any]:
         """
+        [DEPRECATED - P5 CONSOLIDATION] Use run() + HealerAgent instead.
+        
         Standard entry point for Orchestrator integration.
         Performs full scan followed by immediate autonomous healing.
+        
+        Prefer:
+            violations = FilesystemAgent(project_root).run()
+            healer = HealerAgent(project_root)
+            healer.heal_file_moves(violations)
         """
+        import warnings
+        warnings.warn(
+            "FilesystemAgent.run_with_cleanup() is deprecated. "
+            "Use run() for detection, then HealerAgent for execution.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         original_dry_mode = self.dry_run
         self.dry_run = dry_run
 
