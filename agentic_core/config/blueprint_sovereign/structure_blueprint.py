@@ -20,6 +20,150 @@ tests_l2_subfolder_map: Any = {'unit': ['test_definitions', 'test_helpers'], 'in
 agentic_core_registry: Any = core_subfolder_map
 tests_subfolder_map: Any = tests_l2_subfolder_map
 CANON_SIGNALS: set[str] = {'agent', 'manager', 'engine', 'validator', 'healer', 'auditor', 'enforcer', 'detector', 'orchestrator', 'coordinator', 'pruner', 'mapper', 'handler', 'guardian', 'governor', 'sentinel', 'strategy', 'reasoning', 'fission', 'workflow', 'state', 'memory', 'cache', 'safety', 'guardrail', 'prompt', 'persona', 'schema', 'blueprint', 'template', 'context', 'ledger', 'historian', 'audit', 'coverage', 'vector', 'embedding', 'pinecone', 'redis', 'compliance', 'drift', 'hierarchy', 'span', 'depth', 'naming', 'rescue', 'integrity', 'gravity', 'subatomic', 'gemini'}
+
+# === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
+# All naming rules for all file types in the repository
+
+NAMING_CONVENTIONS: Dict[str, Dict[str, Any]] = {
+    # Python Agent files - PascalCase, must end with Agent
+    "agent": {
+        "pattern": r"^[A-Z][a-zA-Z0-9]*Agent\.py$",
+        "description": "PascalCase ending with 'Agent'",
+        "examples": ["HealerAgent.py", "NamingAgent.py", "CodeDeduplicationAgent.py"],
+        "anti_examples": ["healer_agent.py", "naming_agent.py", "Healer.py"],
+        "extensions": [".py"],
+        "min_words": 2,  # At least 2 words (e.g., HealerAgent = Healer + Agent)
+        "max_words": 4,  # Max 4 words (e.g., CodeDeduplicationAgent)
+    },
+    
+    # Python scripts - snake_case, high-signal, 2-3 words
+    "script": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
+        "description": "snake_case with 2-3 words containing high-signal keyword",
+        "examples": ["sovereign_ingestion.py", "canon_validator.py", "healing_strategies.py"],
+        "anti_examples": ["utils.py", "helper.py", "main.py", "my_super_long_script_name.py"],
+        "extensions": [".py"],
+        "min_words": 2,
+        "max_words": 3,
+        "require_signal": True,  # Must contain CANON_SIGNALS keyword
+    },
+    
+    # Python core modules - snake_case, high-signal, 2-3 words
+    "core_module": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.py$",
+        "description": "snake_case with 2-3 words containing high-signal keyword",
+        "examples": ["inference_engine.py", "hybrid_retriever.py", "semantic_cache.py"],
+        "anti_examples": ["utils.py", "base.py", "core.py", "a_very_long_module_name_here.py"],
+        "extensions": [".py"],
+        "min_words": 2,
+        "max_words": 3,
+        "require_signal": True,
+    },
+    
+    # Python base classes - snake_case ending with _base
+    "base_class": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+)*_base\.py$",
+        "description": "snake_case ending with '_base'",
+        "examples": ["outreach_base.py", "resume_base.py", "canon_base.py"],
+        "anti_examples": ["base_agent.py", "BaseAgent.py", "base.py"],
+        "extensions": [".py"],
+        "min_words": 2,
+        "max_words": 3,
+    },
+    
+    # Jinja templates - snake_case, descriptive, 2-3 words
+    "jinja_template": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){1,2}\.(jinja|jinja2|j2)$",
+        "description": "snake_case with 2-3 words",
+        "examples": ["resume_template.jinja", "email_outreach.jinja2", "prompt_system.j2"],
+        "anti_examples": ["template.jinja", "t.jinja", "my_super_long_template_name.jinja"],
+        "extensions": [".jinja", ".jinja2", ".j2"],
+        "min_words": 2,
+        "max_words": 3,
+    },
+    
+    # JSON config files - snake_case, descriptive, 2-3 words
+    "json_config": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.json$",
+        "description": "snake_case with 1-3 words",
+        "examples": ["registry.json", "agent_config.json", "prompt_templates.json"],
+        "anti_examples": ["data.json", "config.json", "a_very_long_config_name_here.json"],
+        "extensions": [".json"],
+        "min_words": 1,
+        "max_words": 3,
+    },
+    
+    # YAML config files - snake_case, descriptive, 2-3 words
+    "yaml_config": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.(yaml|yml)$",
+        "description": "snake_case with 1-3 words",
+        "examples": ["config.yaml", "agent_registry.yml", "prompt_config.yaml"],
+        "anti_examples": ["c.yaml", "a_very_long_config_name_here.yml"],
+        "extensions": [".yaml", ".yml"],
+        "min_words": 1,
+        "max_words": 3,
+    },
+    
+    # Markdown documentation - snake_case or SCREAMING_SNAKE for special files
+    "markdown_doc": {
+        "pattern": r"^([a-z][a-z0-9]*(_[a-z0-9]+){0,3}|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)\.md$",
+        "description": "snake_case or SCREAMING_SNAKE_CASE",
+        "examples": ["README.md", "CHANGELOG.md", "api_reference.md", "getting_started.md"],
+        "anti_examples": ["doc.md", "a.md"],
+        "extensions": [".md"],
+        "min_words": 1,
+        "max_words": 4,
+    },
+    
+    # Text files - snake_case, descriptive
+    "text_file": {
+        "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+){0,2}\.txt$",
+        "description": "snake_case with 1-3 words",
+        "examples": ["requirements.txt", "test_results.txt", "mission_audit.txt"],
+        "anti_examples": ["t.txt", "a_very_long_text_file_name.txt"],
+        "extensions": [".txt"],
+        "min_words": 1,
+        "max_words": 3,
+    },
+}
+
+# File extensions that NamingAgent should validate
+VALIDATED_FILE_EXTENSIONS: frozenset[str] = frozenset({
+    # Python
+    '.py',
+    # Templates
+    '.jinja', '.jinja2', '.j2',
+    # Config
+    '.json', '.yaml', '.yml', '.toml',
+    # Documentation
+    '.md', '.txt', '.rst',
+    # Web
+    '.html', '.css', '.js', '.ts',
+})
+
+# Files exempt from naming validation (infrastructure files)
+NAMING_EXEMPT_FILES: frozenset[str] = frozenset({
+    # Python infrastructure
+    '__init__.py', '__main__.py', 'conftest.py', 'setup.py',
+    # Config files
+    'pyproject.toml', '.env', '.gitignore', '.dockerignore',
+    'Dockerfile', 'Makefile', 'requirements.txt',
+    # Documentation
+    'README.md', 'CHANGELOG.md', 'LICENSE', 'LICENSE.md',
+    'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md',
+    # IDE/Editor
+    '.editorconfig', '.prettierrc', '.eslintrc',
+    # Git
+    '.gitattributes',
+})
+
+# Directories exempt from naming validation
+NAMING_EXEMPT_DIRS: frozenset[str] = frozenset({
+    'archives', 'data', 'legacy_code', 'legacy_engines',
+    '__pycache__', '.git', '.venv', 'venv', 'node_modules',
+    '.pytest_cache', '.mypy_cache', 'coverage_html',
+    'dist', 'build', '.tox', 'logs',
+})
 forbidden_patterns: Any = [re.compile('^utils\\.py$'), re.compile('^helper\\.py$'), re.compile('^temp\\.py$'), re.compile('.*_v\\d+\\.py$'), re.compile('^main\\.py$'), re.compile('^test\\.py$'), re.compile('.*_final\\.py$'), re.compile('.*_new\\.py$'), re.compile('.*_old\\.py$'), re.compile('.*_copy\\.py$'), re.compile('.*_backup\\.py$'), re.compile('^legacy_.*\\.py$'), re.compile('^.+_\\d+\\.py$'), re.compile('^draft_.*\\.py$')]
 root_protected_files: Any = {'canon_validator_agentic_v2.py', 'canon_validator_agentic_v2_thin.py', 'pyproject.toml', 'README.md', 'langgraph.json', '.env', 'windsurfrules.md', '.gitignore'}
 SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset({'.git', '.venv', 'venv', 'venv_stable', '__pycache__', '.pytest_cache', '.ruff_cache', 'node_modules', '.mypy_cache', '.tox', 'archives', 'legacy_code', 'legacy_engines', 'legacy_resume_gen', 'data', 'docs', 'env', 'build', 'dist', '_build', 'Lib', 'site-packages', 'google', 'gapic', 'logging', 'licenses', 'src', 'pip', 'dist-info', 'raw', 'golden_state', 'logs', 'processed', 'shared', 'refs', 'remotes', 'v', 'stubs', '.sovereign_healing_backup', '.idea', '.vscode', '.DS_Store', 'Thumbs.db'})
