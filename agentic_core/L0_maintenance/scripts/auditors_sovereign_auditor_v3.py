@@ -16,6 +16,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+# [NEW] Import the pure report agent
+from agentic_core.L0_maintenance.P1_core.sovereign_report_agent import SovereignReport
+
 
 # Add repo root to path for imports
 repo_root = Path(__file__).resolve().parents[3]
@@ -60,143 +63,8 @@ except ImportError:
     HealingTransaction = None
     log_healing_action = None
 
-# [FIX] Corrected class naming to match Builder instantiation and L6 expectations
-class SovereignReport:
-    """The canonical audit result object for L6 consumption."""
-    
-    def __init__(self):
-        self.scores = {}
-        self.issues = {}
-        self.report_id = ""
-        self.timestamp = None
-    
-    def get_overall_score(self) -> float:
-        """Calculate overall health score."""
-        if not self.scores:
-            return 0.0
-        return sum(self.scores.values()) / len(self.scores)
-    
-    class Builder:
-        """Sovereign Builder for SovereignReport – Phase 13 (Dec 29, 2025)"""
-        
-        def __init__(self):
-            from datetime import datetime
-            self._dimensions = {
-                "Structural SSOT": {"score": 0.0, "issues": []},
-                "Schema SSOT": {"score": 0.0, "issues": []},
-                "Prompt SSOT": {"score": 0.0, "issues": []},
-                "Config SSOT": {"score": 0.0, "issues": []},
-                "DDD Alignment": {"score": 0.0, "issues": []},
-                "Atomic Fission": {"score": 0.0, "issues": []},
-                "Zero-Trust Membrane": {"score": 0.0, "issues": []},
-                "Observability Footprint": {"score": 0.0, "issues": []},
-                "Healing Resilience": {"score": 0.0, "issues": []},
-            }
-            self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
-
-        def with_dimension(self, name: str, score: float, issues: List[str] = None) -> 'SovereignReport.Builder':
-            """Sets a validated dimension score."""
-            if name not in self._dimensions:
-                raise ValueError(f"Sovereignty Violation: Unknown dimension: {name}")
-            if not 0 <= score <= 100:
-                raise ValueError(f"Constitutional Violation: Score {score} out of bounds.")
-            self._dimensions[name]["score"] = score
-            self._dimensions[name]["issues"] = issues or []
-            return self
-
-        def build(self) -> 'SovereignReport':
-            """Constructs the report and derived metrics."""
-            from datetime import datetime
-            import logging
-            logger = logging.getLogger(__name__)
-            
-            scores = [d["score"] for d in self._dimensions.values()]
-            overall = sum(scores) / len(scores)
-            
-            # L6 Observability: Witnessing the Final Audit
-            status = "SOVEREIGN" if overall >= 95 else "VULNERABLE"
-            logger.info(f"[L6_AUDIT] Report Sealed: {self._report_id} | Health: {overall:.1f}% | {status}")
-            
-            report = SovereignReport()
-            report.scores = {name: d["score"] for name, d in self._dimensions.items()}
-            report.issues = {name: d["issues"] for name, d in self._dimensions.items()}
-            report.report_id = self._report_id
-            report.timestamp = datetime.utcnow()
-            return report
-    
-    def get_all_issues(self) -> List[Dict]:
-        """
-        Parse guardian issues into structured format expected by Phase 10+ Healing Strategies.
-        Guardian format: "path/to/file.py: message text (line XX if present)"
-        """
-        all_issues = []
-        import re
-        for dimension, raw_issues in self.issues.items():
-            for raw in raw_issues:
-                # Default values
-                file_path = str(raw)
-                message = str(raw)
-                line_num = None
-
-                # Robust splitting on first colon (Windows drive letter safeish, or simple split)
-                # Ideally, we split on ": " to avoid splitting "C:\path"
-                if ": " in raw:
-                    parts = raw.split(": ", 1)
-                    file_path = parts[0].strip()
-                    message = parts[1].strip()
-                elif ":" in raw and raw.count(":") >= 2:
-                     # Fallback for "file:message" without space
-                    parts = raw.split(":", 2)
-                    file_path = parts[0].strip()
-                    message = parts[2].strip() if len(parts) > 2 else parts[1].strip()
-
-                # Extract line number if present
-                match = re.search(r"(?:line|Line)\s+(\d+)", message)
-                if match:
-                    line_num = int(match.group(1))
-
-                all_issues.append({
-                    "dimension": dimension,
-                    "description": message,
-                    "file": file_path,
-                    "line": line_num
-                })
-        return all_issues
-
-    def run_check(self, name, check_func, files):
-                    
-        failures = 0
-        self.issues[name] = []
-        for f in files:
-            # Guardians return False on failure
-            if not check_func(f):
-                failures += 1
-                self.issues[name].append(f.name)
-        
-        # Calculate score
-        if len(files) == 0: self.scores[name] = 100.0
-        else: self.scores[name] = 100.0 * (1 - (failures / len(files)))
-
-    def print_summary(self):
-                    
-        print("\n" + "="*60)
-        print("SOVEREIGN MULTI-DIMENSIONAL AUDIT REPORT")
-        print("="*60)
-        
-        overall = self.get_overall_score()
-        
-        for dim, score in self.scores.items():
-            # Use ASCII characters for Windows console compatibility
-            status = "[OK]" if score > 95 else "[WARN]" if score > 80 else "[FAIL]"
-            print(f"{status} {dim:<20} : {score:.1f}%")
-            if score < 100:
-                print(f"   Violations: {', '.join(str(i) for i in self.issues[dim][:3])}" + ("..." if len(self.issues[dim]) > 3 else ""))
-
-        print("-" * 60)
-        status = "SOVEREIGN" if overall > 95 else "VULNERABLE"
-        print(f"OVERALL HEALTH: {overall:.1f}% -> {status}")
-        print("="*60)
-        return overall
+# NOTE: SovereignReport class now imported from L0_maintenance/P1_core/sovereign_report_agent.py
+# This eliminates the monolithic class definition and enables pure L6 consumption
 
 async def main():
     """
