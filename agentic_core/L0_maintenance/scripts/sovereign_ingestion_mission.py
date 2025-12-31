@@ -1,5 +1,5 @@
 """
-Sovereign Ingestion Mission - Index all sovereign territories into vector store
+Sovereign Ingestion Mission - Index all sovereign territories into vector store.
 """
 import argparse
 import asyncio
@@ -8,41 +8,181 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# AST-aware imports
+import ast
+from dataclasses import dataclass
+from enum import Enum
+
 async def load_text_file(file_path: Path) -> str:
-    """Load text from supported files with encoding fallback"""
+    """Load text from supported files with encoding fallback."""
     try:
         try:
             return file_path.read_text(encoding='utf-8')
         except UnicodeDecodeError:
             return file_path.read_text(encoding='latin-1')
     except Exception as e:
-        print(f'   [!] Failed to read {file_path}: {e}')
+        print(f' [!] Failed to read {file_path}: {e}')
         return ''
+
+class ChunkType(Enum):
+    """Semantic chunk types for metadata."""
+    MODULE = "module"
+    CLASS = "class"
+    FUNCTION = "function"
+    METHOD = "method"
+    DOCSTRING = "docstring"
+    IMPORT_BLOCK = "imports"
+    TEXT_BLOCK = "text"  # Fallback
+
+@dataclass
+class SemanticChunk:
+    """Structured semantic chunk with metadata."""
+    chunk_type: ChunkType
+    name: str
+    text: str
+    start_line: int
+    end_line: int
+    parent: Optional[str] = None
+    docstring: Optional[str] = None
+
+def _extract_docstring(node: ast.AST) -> Optional[str]:
+    """Extract docstring from AST node if present."""
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Module)):
+        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+            if isinstance(node.body[0].value.value, str):
+                return node.body[0].value.value.strip()
+    return None
+
+def _get_source_segment(lines: List[str], start: int, end: int) -> str:
+    """Extract line segment from source lines (1-indexed)."""
+    return '\n'.join(lines[start-1:end])
+
+def chunk_python_ast(text: str, file_path: Path) -> List[SemanticChunk]:
+    """Parse Python file to semantic chunks using ast."""
+    chunks = []
+    lines = text.splitlines()
+    try:
+        tree = ast.parse(text)
+    except SyntaxError as e:
+        print(f' [!] AST parse failed for {file_path}: {e}. Falling back to line-based.')
+        return chunk_text_fallback(text, file_path)
+
+    # Module-level docstring
+    module_doc = _extract_docstring(tree)
+    if module_doc:
+        doc_lines = module_doc.count('\n') + 1
+        chunks.append(SemanticChunk(
+            chunk_type=ChunkType.DOCSTRING,
+            name=f"{file_path.stem}.__doc__",
+            text=module_doc,
+            start_line=1,
+            end_line=doc_lines
+        ))
+
+    # Import block as single chunk
+    import_nodes = [n for n in ast.iter_child_nodes(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
+    if import_nodes:
+        start = min(n.lineno for n in import_nodes)
+        end = max(n.end_lineno or n.lineno for n in import_nodes)
+        chunks.append(SemanticChunk(
+            chunk_type=ChunkType.IMPORT_BLOCK,
+            name=f"{file_path.stem}.__imports__",
+            text=_get_source_segment(lines, start, end),
+            start_line=start,
+            end_line=end
+        ))
+
+    # Classes, functions, methods
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            end_line = node.end_lineno or node.lineno
+            chunks.append(SemanticChunk(
+                chunk_type=ChunkType.CLASS,
+                name=node.name,
+                text=_get_source_segment(lines, node.lineno, end_line),
+                start_line=node.lineno,
+                end_line=end_line,
+                docstring=_extract_docstring(node)
+            ))
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            # Check if method (inside class)
+            parent_class = None
+            # Traverse up to find enclosing class
+            parent = node
+            while hasattr(parent, 'parent'):
+                parent = parent.parent
+                if isinstance(parent, ast.ClassDef):
+                    parent_class = parent.name
+                    break
+            end_line = node.end_lineno or node.lineno
+            chunks.append(SemanticChunk(
+                chunk_type=ChunkType.METHOD if parent_class else ChunkType.FUNCTION,
+                name=f"{parent_class}.{node.name}" if parent_class else node.name,
+                text=_get_source_segment(lines, node.lineno, end_line),
+                start_line=node.lineno,
+                end_line=end_line,
+                parent=parent_class,
+                docstring=_extract_docstring(node)
+            ))
+
+    return chunks
+
+def chunk_text_fallback(text: str, file_path: Path) -> List[SemanticChunk]:
+    """Fallback to line-based chunking for non-Python or parse failures."""
+    chunks = []
+    lines = text.splitlines()
+    chunk_size = 50  # Configurable
+    for i in range(0, len(lines), chunk_size):
+        chunk_lines = lines[i:i + chunk_size]
+        chunk_text = '\n'.join(chunk_lines).strip()
+        if chunk_text:
+            chunks.append(SemanticChunk(
+                chunk_type=ChunkType.TEXT_BLOCK,
+                name=f"{file_path.stem}:lines_{i+1}-{min(i+chunk_size, len(lines))}",
+                text=chunk_text,
+                start_line=i + 1,
+                end_line=min(i + chunk_size, len(lines))
+            ))
+    return chunks
 
 def chunk_text(text: str, file_path: Path) -> List[Dict]:
     """
-    Chunk text into manageable pieces with metadata
+    Smart semantic chunking: AST for Python, fallback for others.
+    Returns dicts ready for vector store with enriched metadata.
     """
-    chunks: Any = []
-    lines: Any = text.split('\n')
-    current_chunk: Any = ''
-    start_line: Any = 0
-    for i, line in enumerate(lines, 1):
-        current_chunk += line + '\n'
-        if i % 50 == 0 or i == len(lines):
-            if current_chunk.strip():
-                chunk_hash: Any = hashlib.sha256(f'{file_path}:{start_line}-{i}'.encode()).hexdigest()[:16]
-                chunks.append({'hash': chunk_hash, 'text': current_chunk.strip(), 'metadata': {'source': str(file_path), 'start_line': start_line, 'end_line': i - 1, 'file_type': file_path.suffix}})
-                current_chunk: Any = ''
-                start_line: Any = i
-    return chunks
+    if file_path.suffix.lower() == '.py':
+        semantic_chunks = chunk_python_ast(text, file_path)
+    else:
+        semantic_chunks = chunk_text_fallback(text, file_path)
+
+    # Optional: Merge small chunks (e.g., <10 lines) with previous if adjacent
+    # ... (implement if needed for optimization)
+
+    # Convert to vector-store friendly dicts
+    return [
+        {
+            'hash': hashlib.sha256(f'{file_path}:{c.start_line}-{c.end_line}'.encode()).hexdigest()[:16],
+            'text': c.text,
+            'metadata': {
+                'source': str(file_path),
+                'start_line': c.start_line,
+                'end_line': c.end_line,
+                'file_type': file_path.suffix,
+                'chunk_type': c.chunk_type.value,
+                'name': c.name,
+                'parent': c.parent,
+                'docstring': c.docstring[:500] if c.docstring else None  # Truncate long docstrings
+            }
+        }
+        for c in semantic_chunks if c.text.strip()
+    ]
 
 async def process_file(file_path: Path, embedder: Any, vector_store: Any) -> int:
     """Process a single file and add to vector store"""
     text: Any = await load_text_file(file_path)
     if not text or len(text.strip()) < 10:
         return 0
-    chunks: Any = chunk_text(text, file_path)
+    chunks: Any = chunk_text(text, file_path)  # Now semantic-aware
     if not chunks:
         return 0
     batch_size: Any = 10
