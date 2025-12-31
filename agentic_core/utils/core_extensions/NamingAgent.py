@@ -33,6 +33,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     ALLOWED_DUPLICATE_FILENAMES,  # Files permitted to exist in multiple directories
     validate_no_duplicate_prefix,  # Safeguard against name sprawl
+    # New comprehensive naming conventions
+    NAMING_CONVENTIONS,
+    VALIDATED_FILE_EXTENSIONS,
+    NAMING_EXEMPT_FILES,
+    NAMING_EXEMPT_DIRS,
 )
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     semantic_l2_registry, core_subfolder_map, sovereign_registry,
@@ -300,21 +305,156 @@ class NamingAgent:
         
         return 'agentic_core/L1_cognition/thought_engine'
 
+    def _count_words_in_name(self, name: str) -> int:
+        """
+        Count words in a filename (handles PascalCase and snake_case).
+        
+        Examples:
+            'HealerAgent' -> 2 (Healer, Agent)
+            'CodeDeduplicationAgent' -> 3 (Code, Deduplication, Agent)
+            'sovereign_ingestion' -> 2
+            'canon_validator_base' -> 3
+        """
+        # Remove extension
+        stem = Path(name).stem
+        
+        # Handle PascalCase
+        if re.match(r'^[A-Z]', stem):
+            # Split on uppercase letters
+            words = re.findall(r'[A-Z][a-z0-9]*', stem)
+            return len(words) if words else 1
+        
+        # Handle snake_case
+        words = stem.split('_')
+        return len([w for w in words if w])  # Filter empty strings
+
+    def _get_file_type(self, file_path: Path) -> str:
+        """
+        Determine the file type category for naming validation.
+        
+        Returns one of: 'agent', 'base_class', 'script', 'core_module', 
+                       'jinja_template', 'json_config', 'yaml_config', 
+                       'markdown_doc', 'text_file', 'unknown'
+        """
+        file_name = file_path.name
+        suffix = file_path.suffix.lower()
+        
+        # Python files
+        if suffix == '.py':
+            if file_name.endswith('Agent.py'):
+                return 'agent'
+            if file_name.endswith('_base.py'):
+                return 'base_class'
+            # Check if in scripts folder
+            if 'scripts' in file_path.parts:
+                return 'script'
+            return 'core_module'
+        
+        # Templates
+        if suffix in {'.jinja', '.jinja2', '.j2'}:
+            return 'jinja_template'
+        
+        # Config files
+        if suffix == '.json':
+            return 'json_config'
+        if suffix in {'.yaml', '.yml'}:
+            return 'yaml_config'
+        
+        # Documentation
+        if suffix == '.md':
+            return 'markdown_doc'
+        if suffix == '.txt':
+            return 'text_file'
+        
+        return 'unknown'
+
     def validate_file_naming(self, file_path: Path) -> Tuple[bool, str]:
         """
-        Core naming law validation.
+        Core naming law validation for ALL file types.
         Returns (is_compliant, reason_or_guidance)
         
         Enhanced 2025-12-31:
-        - PascalCase enforcement for *Agent.py files
-        - snake_case enforcement for all other files
-        - Class name must match filename for agents
+        - PascalCase enforcement for *Agent.py files (2-4 words)
+        - snake_case enforcement for scripts/modules (2-3 words, high-signal)
+        - Validates .jinja, .json, .yaml, .yml, .md, .txt files
+        - Word count validation (min/max per file type)
         """
         file_name = file_path.name
+        suffix = file_path.suffix.lower()
+        
+        # Skip exempt files
+        if file_name in NAMING_EXEMPT_FILES:
+            return True, f"Exempt infrastructure file: {file_name}"
+        
+        # Skip exempt directories
+        if any(exempt_dir in file_path.parts for exempt_dir in NAMING_EXEMPT_DIRS):
+            return True, f"File in exempt directory"
+        
+        # Skip files with extensions we don't validate
+        if suffix not in VALIDATED_FILE_EXTENSIONS:
+            return True, f"Extension {suffix} not in validation scope"
+        
+        # Determine file type
+        file_type = self._get_file_type(file_path)
+        
+        # Get naming convention for this file type
+        convention = NAMING_CONVENTIONS.get(file_type)
+        if not convention:
+            # Fall back to basic validation for unknown types
+            return self._validate_basic_naming(file_path)
+        
+        # Validate pattern
+        pattern = convention.get('pattern')
+        if pattern and not re.match(pattern, file_name):
+            return False, (
+                f"NAMING VIOLATION [{file_type}]: '{file_name}' does not match pattern. "
+                f"Expected: {convention['description']}. "
+                f"Examples: {', '.join(convention.get('examples', []))}"
+            )
+        
+        # Validate word count
+        word_count = self._count_words_in_name(file_name)
+        min_words = convention.get('min_words', 1)
+        max_words = convention.get('max_words', 5)
+        
+        if word_count < min_words:
+            return False, (
+                f"NAMING VIOLATION [{file_type}]: '{file_name}' has {word_count} word(s), "
+                f"minimum is {min_words}. Add more descriptive words."
+            )
+        if word_count > max_words:
+            return False, (
+                f"NAMING VIOLATION [{file_type}]: '{file_name}' has {word_count} word(s), "
+                f"maximum is {max_words}. Simplify the name."
+            )
+        
+        # For Python files, do additional validation
+        if suffix == '.py':
+            return self._validate_python_file(file_path, file_type, convention)
+        
+        return True, f"Valid {file_type} naming: {file_name}"
 
-        if not file_name.endswith('.py'):
-            return True, "Non-Python file - naming exempt"
+    def _validate_basic_naming(self, file_path: Path) -> Tuple[bool, str]:
+        """Basic naming validation for unknown file types."""
+        file_name = file_path.name
+        stem = file_path.stem
+        
+        # No hyphens in filenames
+        if '-' in stem:
+            return False, f"NAMING VIOLATION: '{file_name}' contains hyphens (use underscores)"
+        
+        # No spaces
+        if ' ' in file_name:
+            return False, f"NAMING VIOLATION: '{file_name}' contains spaces"
+        
+        return True, f"Basic naming compliant: {file_name}"
 
+    def _validate_python_file(self, file_path: Path, file_type: str, convention: Dict) -> Tuple[bool, str]:
+        """
+        Extended validation for Python files.
+        Handles Agent files, scripts, and core modules.
+        """
+        file_name = file_path.name
         stem = file_path.stem
         lower_stem = stem.lower()
 
@@ -441,18 +581,29 @@ class NamingAgent:
 
         return True, f"Naming compliant with high-signal requirement [Score {score}/20]"
 
-    def run(self, files: List[Path] = None) -> List[Tuple[Path, str]]:
+    def run(self, files: List[Path] = None, extensions: Set[str] = None) -> List[Tuple[Path, str]]:
         """
         Full naming compliance scan on provided files.
         Returns list of violations as (file_path, reason).
+        
+        Args:
+            files: List of files to validate. If None, scans all validated extensions.
+            extensions: Set of extensions to scan. If None, uses VALIDATED_FILE_EXTENSIONS.
         """
         violations: List[Tuple[Path, str]] = []
 
         if files is None:
-            # If no files provided, scan project root for Python files
-            files = list(self.project_root.rglob("*.py"))
+            # Scan all validated file extensions (not just .py)
+            target_extensions = extensions or VALIDATED_FILE_EXTENSIONS
+            files = []
+            for ext in target_extensions:
+                files.extend(self.project_root.rglob(f"*{ext}"))
 
         for file_path in files:
+            # Skip exempt directories
+            if any(exempt_dir in file_path.parts for exempt_dir in NAMING_EXEMPT_DIRS):
+                continue
+            
             is_valid, reason = self.validate_file_naming(file_path)
             if not is_valid:
                 violations.append((file_path, reason))
