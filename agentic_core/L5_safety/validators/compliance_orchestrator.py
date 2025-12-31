@@ -22,6 +22,7 @@
 
 import importlib
 import inspect
+import logging
 import pkgutil
 import traceback
 import ast
@@ -29,6 +30,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from collections import defaultdict
 import sys
+
+logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth for folder structure
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -182,6 +185,54 @@ class ComplianceOrchestrator:
         
         if missing_mandatory:
             print(f"   [!] Missing mandatory agents: {', '.join(sorted(missing_mandatory)[:5])}")
+        
+        # [PROMPT REGISTRY SYNC] Auto-register agent prompt dependencies
+        self._sync_agent_prompts_to_registry()
+
+    def _sync_agent_prompts_to_registry(self) -> None:
+        """
+        Runtime fallback: Sync discovered agents' prompt templates to registry.
+        
+        Scans all discovered agents for prompt_template or _registered_prompt attributes
+        and ensures they're registered in the prompt registry. This catches agents that:
+        - Don't use the @registers_prompt decorator
+        - Have dynamic prompt template assignment
+        - Were added without updating hardcoded registry lists
+        
+        Safe to call multiple times due to deduplication in register_prompt().
+        """
+        try:
+            from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry
+            registry = get_prompt_registry()
+            
+            synced_count = 0
+            for agent in self._all_agents:
+                # Check for prompt template attributes (multiple patterns)
+                template = (
+                    getattr(agent, "prompt_template", None) or 
+                    getattr(agent.__class__, "_registered_prompt", None)
+                )
+                
+                if template and isinstance(template, str):
+                    agent_name = agent.__class__.__name__
+                    
+                    # Register with agent as author (deduplication handles repeats)
+                    registry.register_prompt(
+                        template_name=template,
+                        purpose=f"Runtime sync for {agent_name}",
+                        author=agent_name,
+                        active=True,
+                    )
+                    synced_count += 1
+            
+            if synced_count > 0:
+                logger.info(f"Registered {synced_count} agent prompt dependencies")
+                print(f"   [PROMPT SYNC] Registered {synced_count} agent prompt dependencies")
+            
+        except ImportError:
+            print("   [INFO] Prompt registry unavailable - skipping sync")
+        except Exception as e:
+            print(f"   [!] Prompt registry sync failed: {e}")
 
     def _enforce_mandatory_agent_compliance(self) -> None:
         """[ULTRA HARDENING] Final sovereign verdict on mandatory agent presence"""

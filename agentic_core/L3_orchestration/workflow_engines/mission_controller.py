@@ -130,6 +130,12 @@ class MissionController:
         # Print final report
         self._print_mission_report(ctx)
         
+        # [OPTION A] Post-mission sovereign audit hook
+        await self._run_sovereign_audit_hook(ctx)
+        
+        # [OPTION A] Post-mission blueprint reconciliation hook
+        await self._run_blueprint_reconciliation_hook(ctx)
+        
         return {
             "files_processed": len(ctx.python_files),
             "violations": len([r for r in ctx.report if r.get('status') == 'FAIL']),
@@ -553,6 +559,161 @@ class MissionController:
             print("\n[ETERNAL SOVEREIGNTY CONFIRMED — PERFECTION ABSOLUTE]")
         else:
             print(f"\n[PROGRESS] {fail_count} violations remain - continuing iteration toward zero")
+
+    async def _run_sovereign_audit_hook(self, ctx: Any) -> None:
+        """
+        [OPTION A] Post-Mission Sovereign Audit Hook
+        
+        Optionally runs the L0 Supreme Court sovereign auditor after mission completion.
+        Controlled by RUN_SOVEREIGN_AUDIT environment variable.
+        
+        This provides system-wide sovereignty analysis with:
+        - Multi-dimensional guardian aggregation
+        - Healing resilience scoring
+        - Strategic self-correction triggers
+        
+        Args:
+            ctx: Mission validation context (unused, for future integration)
+        """
+        import os
+        
+        # Check if sovereign audit is enabled
+        run_audit = os.getenv("RUN_SOVEREIGN_AUDIT", "false").lower() in ("true", "1", "yes")
+        
+        if not run_audit:
+            print("\n[INFO] Sovereign audit hook disabled (set RUN_SOVEREIGN_AUDIT=true to enable)")
+            return
+        
+        print("\n" + "="*80)
+        print("[L0 SUPREME COURT] Initiating Post-Mission Sovereign Audit")
+        print("="*80)
+        
+        try:
+            # Import and run the sovereign auditor
+            from agentic_core.L0_maintenance.scripts.auditors_sovereign_auditor_v3 import main as sovereign_main
+            
+            print("\n[>] Executing multi-dimensional sovereignty analysis...")
+            audit_report = await sovereign_main()
+            
+            if audit_report:
+                print("\n[OK] Sovereign audit completed successfully")
+                print(f"   Final sovereignty score: {audit_report.overall_score:.1f}%")
+            else:
+                print("\n[!] Sovereign audit completed with no report returned")
+                
+        except ImportError as e:
+            print(f"\n[!] Sovereign auditor unavailable: {e}")
+            print("   [INFO] Ensure auditors_sovereign_auditor_v3.py exists in L0_maintenance/scripts/")
+        except Exception as e:
+            print(f"\n[!] Sovereign audit failed: {e}")
+            print("   [INFO] Mission results are still valid - audit is supplementary")
+        
+        print("="*80)
+
+    async def _run_blueprint_reconciliation_hook(self, ctx: Any) -> None:
+        """
+        [OPTION A] Post-Mission Blueprint Reconciliation Hook
+        
+        Optionally reconciles structure_blueprint.py after mission completion.
+        Controlled by RECONCILE_BLUEPRINT environment variable.
+        
+        This provides SSOT drift detection with:
+        - Filesystem structure scanning (L1/L2 depth)
+        - Agent canonical signal discovery
+        - Drift detection vs current blueprint
+        - Reconciliation proposals (dry-run by default)
+        
+        Args:
+            ctx: Mission validation context (unused, for future integration)
+        """
+        import os
+        
+        # Check if blueprint reconciliation is enabled
+        run_reconcile = os.getenv("RECONCILE_BLUEPRINT", "false").lower() in ("true", "1", "yes")
+        
+        if not run_reconcile:
+            print("\n[INFO] Blueprint reconciliation disabled (set RECONCILE_BLUEPRINT=true to enable)")
+            return
+        
+        print("\n" + "="*80)
+        print("[BLUEPRINT RECONCILIATION] Checking for SSOT drift")
+        print("="*80)
+        
+        try:
+            # Import and run the blueprint reconciler
+            from agentic_core.L0_maintenance.scripts.BlueprintReconcilerAgent import BlueprintReconcilerAgent
+            
+            # Determine reconciliation mode
+            auto_apply = os.getenv("RECONCILE_BLUEPRINT_AUTO_APPLY", "false").lower() in ("true", "1", "yes")
+            interactive = not auto_apply  # If not auto-applying, enable interactive approval
+            
+            # Display mode
+            mode = "AUTONOMOUS" if auto_apply else "INTERACTIVE" if interactive else "DRY-RUN"
+            print(f"\n[MODE] {mode}")
+            if auto_apply:
+                print("   - Changes will be applied automatically with backup + validation")
+            elif interactive:
+                print("   - User approval required before applying changes")
+            else:
+                print("   - Proposals will be generated but not applied")
+            
+            print("\n[>] Scanning filesystem and agents for drift...")
+            reconciler = BlueprintReconcilerAgent(self.project_root)
+            
+            result = await reconciler.reconcile_blueprint(
+                auto_apply=auto_apply,
+                interactive=interactive
+            )
+            
+            if result["drift_detected"]:
+                print(f"\n[!] DRIFT DETECTED: {len(result['proposals'])} discrepancies found")
+                print("\n   Proposals:")
+                for i, proposal in enumerate(result["proposals"], 1):
+                    action = proposal.get("action", "unknown")
+                    if action == "add_to_sovereign_registry":
+                        print(f"   {i}. Add to sovereign_registry['{proposal['root']}']: {proposal['subfolders']}")
+                    elif action == "add_to_core_subfolder_map":
+                        print(f"   {i}. Add to core_subfolder_map['{proposal['l1_folder']}']: {proposal['subfolders']}")
+                    elif action == "add_to_canon_signals":
+                        print(f"   {i}. Add to CANON_SIGNALS: {proposal['signals']}")
+                
+                # Enhanced reporting based on result
+                if result.get("applied"):
+                    print(f"\n[OK] Blueprint updated successfully")
+                    print(f"   Backup: {result['backup_path']}")
+                    print(f"   Changes: {len(result['proposals'])} proposal(s) applied")
+                elif result.get("rollback_performed"):
+                    print(f"\n[!] Update failed - rolled back automatically")
+                    print(f"   Backup restored: {result.get('backup_path')}")
+                    print(f"   Error: {result.get('error', 'Unknown error')}")
+                elif result["drift_detected"]:
+                    message = result.get("message", "")
+                    if "rejected" in message.lower():
+                        print(f"\n[INFO] Changes rejected by user")
+                    elif "aborted" in message.lower():
+                        print(f"\n[INFO] Reconciliation aborted by user")
+                    else:
+                        print(f"\n[!] Drift detected but not applied")
+                        if interactive:
+                            print("   Run again to review and approve changes")
+                        else:
+                            print("   Enable RECONCILE_BLUEPRINT_AUTO_APPLY=true for autonomous fix")
+            else:
+                print("\n[OK] Blueprint synchronized with system state - no drift detected")
+                
+        except ImportError as e:
+            print(f"\n[!] Blueprint reconciler unavailable: {e}")
+            print("   [INFO] Ensure BlueprintReconcilerAgent.py exists in L0_maintenance/scripts/")
+        except KeyboardInterrupt:
+            print(f"\n[INFO] Blueprint reconciliation interrupted by user")
+        except Exception as e:
+            print(f"\n[!] Blueprint reconciliation failed: {e}")
+            print("   [INFO] Mission results are still valid - reconciliation is supplementary")
+            import traceback
+            logger.debug(f"Blueprint reconciliation error details: {traceback.format_exc()}")
+        
+        print("="*80)
+        print("")
 
 
 async def retry_agent_execution_async(agent: Any, file_path: str, ctx: Any) -> Optional[Any]:
