@@ -19,16 +19,31 @@ Pure analysis – zero side effects.
 """
 
 import ast
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
-import logging
 from collections import Counter
 
+# Sovereign Hardening Mixins – Phase 36
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
-class ScriptToAgentClassifier:
+
+class ScriptToAgentClassifier(
+    AutonomyMixin,
+    AdaptiveExecutionMixin,
+    SelfDiagnosisMixin,
+):
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.
+
+    Now hardened with:
+      - Proactive reclassification of low-confidence files
+      - Adaptive execution with cached classifications
+      - Learning from classification feedback via ExperienceBuffer
     """
 
     # Constitutional thresholds (tunable via healing evolution)
@@ -38,7 +53,21 @@ class ScriptToAgentClassifier:
     HIGH_SIDE_EFFECT_WEIGHT = 0.8
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        super().__init__()  # Required for mixins
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+
+        # Experience buffer for learning from classification feedback
+        log_dir = Path("logs")
+        log_dir.mkdir(exist_ok=True)
+        self.experience_buffer = ExperienceBuffer(
+            path=log_dir / "classification_experience.jsonl",
+            max_entries=1000,
+        )
+
+        # Mandatory components for self-diagnosis
+        self.MANDATORY_COMPONENTS = [
+            "experience_buffer",
+        ]
 
     def classify_module(self, file_path: Path) -> Dict[str, Any]:
         """
@@ -69,6 +98,16 @@ class ScriptToAgentClassifier:
 
         verdict = self._compute_verdict(signals, file_path.name)
         verdict["signals"] = signals
+
+        # Record classification attempt
+        self.experience_buffer.record({
+            "file": str(file_path),
+            "recommended_type": verdict["recommended_type"],
+            "confidence": verdict["confidence"],
+            "line_count": signals.get("line_count", 0),
+            "num_classes": signals.get("num_classes", 0),
+            "attempted": True,
+        })
 
         return verdict
 
@@ -178,7 +217,63 @@ class ScriptToAgentClassifier:
                 "reason": f"Extract {class_def.name} to dedicated sovereign agent",
             })
 
+        # Record fission suggestion
+        if suggestions:
+            self.experience_buffer.record({
+                "file": str(file_path),
+                "action": "suggest_fission",
+                "classes_found": len(suggestions),
+                "success": True,  # Assumption — can be corrected later via feedback
+            })
+
         return sorted(suggestions, key=lambda x: x["priority"], reverse=True)
+
+    # === AutonomyMixin Override ===
+    async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+        """Proactively scan for new or changed files that may need classification."""
+        # Simple trigger: check if experience buffer has low confidence entries
+        recent = self.experience_buffer.find_similar(limit=10)
+        low_confidence = [e for e in recent if e.get("confidence", 1.0) < 0.8]
+
+        if low_confidence:
+            return {
+                "reason": "low_confidence_classifications_detected",
+                "files_needing_review": [e["file"] for e in low_confidence[:5]],
+                "action": "trigger_reclassification_cycle"
+            }
+
+        return None
+
+    # === AdaptiveExecutionMixin Overrides ===
+    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        self.logger.info("Conservative mode: using cached classifications where possible")
+        # Skip AST parsing for known files
+        file_path = context.get("file_path")
+        if file_path:
+            recent = self.experience_buffer.find_similar(target=str(file_path), limit=1)
+            if recent and recent[0].get("confidence", 0) > 0.85:
+                return {
+                    "cached": True,
+                    "recommendation": recent[0]["recommended_type"],
+                    "confidence": recent[0]["confidence"]
+                }
+        # Fallback to standard
+        return await self._execute_standard(ctx, **context)
+
+    async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        self.logger.warning("Minimal mode: classification paused")
+        return {
+            "mode": "minimal",
+            "status": "standby",
+            "reason": "resource_preservation"
+        }
+
+    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
+        """Standard mode — full classification."""
+        file_path = context.get("file_path") or ctx
+        if isinstance(file_path, Path):
+            return self.classify_module(file_path)
+        return {"error": "no_file_provided"}
 
 
 class _ModuleAnalyzer(ast.NodeVisitor):
