@@ -1,0 +1,528 @@
+{
+  "total_agents": 64,
+  "exact_duplicate_groups": 0,
+  "near_duplicate_pairs": 1,
+  "unique_fingerprints": 64,
+  "agents": [
+    {
+      "name": "BootstrapAgent",
+      "file": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
+      "layer": "L0",
+      "line": 33,
+      "methods": 6,
+      "fingerprint": "fcfd5e27416abb4c"
+    },
+    {
+      "name": "CanonBaseAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\CognitionCanonBaseAgent.py",
+      "layer": "L1",
+      "line": 20,
+      "methods": 8,
+      "fingerprint": "ea8e7e56381918dc"
+    },
+    {
+      "name": "DependencySentinelAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\DependencySentinelAgent.py",
+      "layer": "L1",
+      "line": 65,
+      "methods": 9,
+      "fingerprint": "3773a3e6e7e65f7d"
+    },
+    {
+      "name": "GovernanceAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+      "layer": "L1",
+      "line": 206,
+      "methods": 12,
+      "fingerprint": "3bab1afa3cbc06ee"
+    },
+    {
+      "name": "MetaLearningAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\MetaLearningAgent.py",
+      "layer": "L1",
+      "line": 18,
+      "methods": 6,
+      "fingerprint": "da27f331da4c5e37"
+    },
+    {
+      "name": "ReflectionAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py",
+      "layer": "L1",
+      "line": 9,
+      "methods": 9,
+      "fingerprint": "c58961965bf91d5c"
+    },
+    {
+      "name": "CanonBaseAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\ExecutionCanonBaseAgent.py",
+      "layer": "L2",
+      "line": 80,
+      "methods": 13,
+      "fingerprint": "00b4b4376214468b"
+    },
+    {
+      "name": "CodeDeduplicationAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\CodeDeduplicationAgent.py",
+      "layer": "L2",
+      "line": 13,
+      "methods": 11,
+      "fingerprint": "1c26bf7b92ef3fb8"
+    },
+    {
+      "name": "CodeJanitorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\CodeJanitorAgent.py",
+      "layer": "L2",
+      "line": 18,
+      "methods": 12,
+      "fingerprint": "ae825674e1abeb55"
+    },
+    {
+      "name": "ContextCuratorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\ContextCuratorAgent.py",
+      "layer": "L2",
+      "line": 52,
+      "methods": 13,
+      "fingerprint": "b55bbeb3cc150054"
+    },
+    {
+      "name": "DependencyDiplomatAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\DependencyDiplomatAgent.py",
+      "layer": "L2",
+      "line": 50,
+      "methods": 11,
+      "fingerprint": "15bc567d77279e31"
+    },
+    {
+      "name": "DynamicModelRouterAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\DynamicModelRouterAgent.py",
+      "layer": "L2",
+      "line": 71,
+      "methods": 11,
+      "fingerprint": "e6532e4040366631"
+    },
+    {
+      "name": "GitAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\GitAgent.py",
+      "layer": "L2",
+      "line": 16,
+      "methods": 12,
+      "fingerprint": "82c9b049e6fd5597"
+    },
+    {
+      "name": "IntegrityGateExecutorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\IntegrityGateExecutorAgent.py",
+      "layer": "L2",
+      "line": 118,
+      "methods": 8,
+      "fingerprint": "cc6465bde4266c9f"
+    },
+    {
+      "name": "MemoryArchitectAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
+      "layer": "L2",
+      "line": 133,
+      "methods": 13,
+      "fingerprint": "b07bc5ecfbb20791"
+    },
+    {
+      "name": "SovereignActionPlaneAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
+      "layer": "L2",
+      "line": 94,
+      "methods": 11,
+      "fingerprint": "91faa15364d0a1a5"
+    },
+    {
+      "name": "StructuralEngineerAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\StructuralEngineerAgent.py",
+      "layer": "L2",
+      "line": 23,
+      "methods": 8,
+      "fingerprint": "37d55e1531ee303e"
+    },
+    {
+      "name": "SystemArchitectAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\SystemArchitectAgent.py",
+      "layer": "L2",
+      "line": 17,
+      "methods": 8,
+      "fingerprint": "e340d23c73eb4451"
+    },
+    {
+      "name": "ToolsmithAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\ToolsmithAgent.py",
+      "layer": "L2",
+      "line": 49,
+      "methods": 17,
+      "fingerprint": "920d8dc7ea2d38d4"
+    },
+    {
+      "name": "DagEngineAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
+      "layer": "L3",
+      "line": 74,
+      "methods": 14,
+      "fingerprint": "e58f4699d9aa84e5"
+    },
+    {
+      "name": "MockAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "line": 376,
+      "methods": 2,
+      "fingerprint": "b644392cf05e5442"
+    },
+    {
+      "name": "NervousSystemAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "line": 1027,
+      "methods": 12,
+      "fingerprint": "c3a187f4f4fd9eeb"
+    },
+    {
+      "name": "SemanticGatekeeperAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
+      "layer": "L3",
+      "line": 15,
+      "methods": 6,
+      "fingerprint": "40da7e8727c03cdc"
+    },
+    {
+      "name": "SubatomicHopAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py",
+      "layer": "L3",
+      "line": 18,
+      "methods": 14,
+      "fingerprint": "7c2a442208c79cd7"
+    },
+    {
+      "name": "TestPilotAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\TestPilotAgent.py",
+      "layer": "L3",
+      "line": 18,
+      "methods": 15,
+      "fingerprint": "5948ee871695c65f"
+    },
+    {
+      "name": "AutonomousCheckpointManagerAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\AutonomousCheckpointManagerAgent.py",
+      "layer": "L4",
+      "line": 50,
+      "methods": 13,
+      "fingerprint": "41e505612b995ed9"
+    },
+    {
+      "name": "AutonomousStateGuardianAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\AutonomousStateGuardianAgent.py",
+      "layer": "L4",
+      "line": 24,
+      "methods": 10,
+      "fingerprint": "5ebb94cbbdf1aa58"
+    },
+    {
+      "name": "PineconeSovereignAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
+      "layer": "L4",
+      "line": 19,
+      "methods": 12,
+      "fingerprint": "4dd0d1e4b0e3e220"
+    },
+    {
+      "name": "RedisSovereignAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\RedisSovereignAgent.py",
+      "layer": "L4",
+      "line": 17,
+      "methods": 6,
+      "fingerprint": "b040e351f725cddb"
+    },
+    {
+      "name": "SchemaEvolverAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SchemaEvolverAgent.py",
+      "layer": "L4",
+      "line": 67,
+      "methods": 14,
+      "fingerprint": "895c1f48e33df32e"
+    },
+    {
+      "name": "SovereignPineconeStoreAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SovereignPineconeStoreAgent.py",
+      "layer": "L4",
+      "line": 21,
+      "methods": 10,
+      "fingerprint": "f441583d3a2a4cd2"
+    },
+    {
+      "name": "SubAtomicRegistryAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
+      "layer": "L4",
+      "line": 26,
+      "methods": 7,
+      "fingerprint": "78801bbc67f74db4"
+    },
+    {
+      "name": "AdversarialRedTeamerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py",
+      "layer": "L5",
+      "line": 52,
+      "methods": 24,
+      "fingerprint": "f7b28e4a681e38f8"
+    },
+    {
+      "name": "AutonomousThreatEvolutionAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\AutonomousThreatEvolutionAgent.py",
+      "layer": "L5",
+      "line": 18,
+      "methods": 11,
+      "fingerprint": "c181817ddf232911"
+    },
+    {
+      "name": "DocstringComplianceAgent",
+      "file": "agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py",
+      "layer": "L5",
+      "line": 9,
+      "methods": 3,
+      "fingerprint": "667c2361a762cd69"
+    },
+    {
+      "name": "FilenameUniquenessGuardianAgent",
+      "file": "agentic_core\\L5_safety\\validators\\FilenameUniquenessGuardianAgent.py",
+      "layer": "L5",
+      "line": 23,
+      "methods": 5,
+      "fingerprint": "823711cf0f58b0ff"
+    },
+    {
+      "name": "FilesystemAgent",
+      "file": "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+      "layer": "L5",
+      "line": 36,
+      "methods": 6,
+      "fingerprint": "404bc60482eb1646"
+    },
+    {
+      "name": "GravityLeakRepairAgent",
+      "file": "agentic_core\\L5_safety\\gravity\\GravityLeakRepairAgent.py",
+      "layer": "L5",
+      "line": 9,
+      "methods": 3,
+      "fingerprint": "51dbad0a31ea9c72"
+    },
+    {
+      "name": "HallucinationHunterAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\HallucinationHunterAgent.py",
+      "layer": "L5",
+      "line": 169,
+      "methods": 9,
+      "fingerprint": "88a8355c3b923aa1"
+    },
+    {
+      "name": "HealerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
+      "layer": "L5",
+      "line": 76,
+      "methods": 14,
+      "fingerprint": "f7be54e968a04313"
+    },
+    {
+      "name": "HierarchyAgent",
+      "file": "agentic_core\\L5_safety\\validators\\HierarchyAgent.py",
+      "layer": "L5",
+      "line": 34,
+      "methods": 14,
+      "fingerprint": "c4ba74a74c6e27d2"
+    },
+    {
+      "name": "HygieneGuardianAgent",
+      "file": "agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py",
+      "layer": "L5",
+      "line": 14,
+      "methods": 4,
+      "fingerprint": "3aa2327dde094b31"
+    },
+    {
+      "name": "ImportAgent",
+      "file": "agentic_core\\L5_safety\\gravity\\ImportAgent.py",
+      "layer": "L5",
+      "line": 89,
+      "methods": 7,
+      "fingerprint": "f1dad62889a51085"
+    },
+    {
+      "name": "InferenceTypeHintAgent",
+      "file": "agentic_core\\L5_safety\\validators\\InferenceTypeHintAgent.py",
+      "layer": "L5",
+      "line": 9,
+      "methods": 3,
+      "fingerprint": "0fd4fbfb4402be61"
+    },
+    {
+      "name": "L5IntegrityGateExecutorAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py",
+      "layer": "L5",
+      "line": 156,
+      "methods": 17,
+      "fingerprint": "790a1b648be58757"
+    },
+    {
+      "name": "LocationAgent",
+      "file": "agentic_core\\L5_safety\\validators\\LocationAgent.py",
+      "layer": "L5",
+      "line": 62,
+      "methods": 9,
+      "fingerprint": "5e49cfc8aebe839e"
+    },
+    {
+      "name": "NeuralAutoImmuneAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
+      "layer": "L5",
+      "line": 12,
+      "methods": 3,
+      "fingerprint": "78dc1bb327996dcf"
+    },
+    {
+      "name": "RedTeamAgent",
+      "file": "agentic_core\\L5_safety\\red_teaming\\RedTeamAgent.py",
+      "layer": "L5",
+      "line": 16,
+      "methods": 3,
+      "fingerprint": "d76f6932c53b7a77"
+    },
+    {
+      "name": "RegressionOracleAgent",
+      "file": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+      "layer": "L5",
+      "line": 302,
+      "methods": 4,
+      "fingerprint": "65c42eea1de011b7"
+    },
+    {
+      "name": "SSOTRefactorAgent",
+      "file": "agentic_core\\L5_safety\\validators\\SSOTRefactorAgent.py",
+      "layer": "L5",
+      "line": 26,
+      "methods": 4,
+      "fingerprint": "29f31ace7a8982fb"
+    },
+    {
+      "name": "SelfUpdatingSafetyEngineAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\SelfUpdatingSafetyEngineAgent.py",
+      "layer": "L5",
+      "line": 93,
+      "methods": 14,
+      "fingerprint": "ce122c5e1c1fe306"
+    },
+    {
+      "name": "TerritoryHealerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\TerritoryHealerAgent.py",
+      "layer": "L5",
+      "line": 15,
+      "methods": 7,
+      "fingerprint": "6fdffa7306e70169"
+    },
+    {
+      "name": "TypeHintEnforcementAgent",
+      "file": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+      "layer": "L5",
+      "line": 21,
+      "methods": 3,
+      "fingerprint": "9bf27471e887b95c"
+    },
+    {
+      "name": "BenchmarkingAgent",
+      "file": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+      "layer": "L6-OBS",
+      "line": 124,
+      "methods": 14,
+      "fingerprint": "aaccf245087d7b9a"
+    },
+    {
+      "name": "CoordinateObservabilityOperationsAgent",
+      "file": "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
+      "layer": "L6-OBS",
+      "line": 36,
+      "methods": 3,
+      "fingerprint": "b79b37e264d36fb5"
+    },
+    {
+      "name": "MetricsAgent",
+      "file": "agentic_core\\observability\\metrics\\MetricsAgent.py",
+      "layer": "L6-OBS",
+      "line": 33,
+      "methods": 14,
+      "fingerprint": "c857ceb2e36799b9"
+    },
+    {
+      "name": "PredictiveCostAuditorAgent",
+      "file": "agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py",
+      "layer": "L6-OBS",
+      "line": 69,
+      "methods": 12,
+      "fingerprint": "8ef66dd746dd7e50"
+    },
+    {
+      "name": "ReportingAgent",
+      "file": "agentic_core\\observability\\compliance\\ReportingAgent.py",
+      "layer": "L6-OBS",
+      "line": 43,
+      "methods": 5,
+      "fingerprint": "2c9e248f2f70804b"
+    },
+    {
+      "name": "SignatureVerifierAgent",
+      "file": "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
+      "layer": "L6-OBS",
+      "line": 20,
+      "methods": 3,
+      "fingerprint": "60824e83630f2650"
+    },
+    {
+      "name": "TelemetryAgent",
+      "file": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
+      "layer": "L6-OBS",
+      "line": 35,
+      "methods": 11,
+      "fingerprint": "d026b54bad957126"
+    },
+    {
+      "name": "TracingAgent",
+      "file": "agentic_core\\observability\\tracing\\TracingAgent.py",
+      "layer": "L6-OBS",
+      "line": 108,
+      "methods": 15,
+      "fingerprint": "8c951c49ffa5b5ed"
+    },
+    {
+      "name": "TrackObservabilityCostAgent",
+      "file": "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
+      "layer": "L6-OBS",
+      "line": 18,
+      "methods": 3,
+      "fingerprint": "15b577bc8c1d7075"
+    },
+    {
+      "name": "NamingAgent",
+      "file": "agentic_core\\utils\\naming\\NamingAgent.py",
+      "layer": "UTILS",
+      "line": 35,
+      "methods": 13,
+      "fingerprint": "27645aed97c3aa01"
+    },
+    {
+      "name": "NamingNormalizationAgent",
+      "file": "agentic_core\\utils\\naming\\NamingNormalizationAgent.py",
+      "layer": "UTILS",
+      "line": 10,
+      "methods": 4,
+      "fingerprint": "e09b6daa7f5988eb"
+    }
+  ],
+  "exact_duplicates": {},
+  "near_duplicates": [
+    {
+      "agent1": "SignatureVerifierAgent",
+      "agent2": "TrackObservabilityCostAgent",
+      "similarity": 0.9668
+    }
+  ]
+}
