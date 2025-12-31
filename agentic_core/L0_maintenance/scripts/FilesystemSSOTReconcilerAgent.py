@@ -1,6 +1,14 @@
 """
-BlueprintReconcilerAgent - Sovereign SSOT Reconciler
+FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_maintenance/scripts/
+
+VERSION 2.0 — 2025-12-31
+Updates SSOT blueprint when filesystem structure changes.
+
+Direction: Filesystem → Blueprint (reconciliation)
+Scans: Actual folder structure on disk (L1/L2 depth)
+Detects: When structure_blueprint.py is outdated (missing new folders)
+Action: Auto-updates blueprint with backup/rollback safety
 
 Responsibilities:
 - Scan filesystem for actual folder structure (L1/L2 depth)
@@ -23,6 +31,9 @@ Invoked by:
 Phase 1: Read-only drift detection (auto_apply=False by default)
 Phase 2: Manual approval workflow
 Phase 3: Autonomous updates (auto_apply=True with safety checks)
+
+Complementary to CodeSSOTEnforcerAgent which validates that code uses
+SSOT imports instead of hard-coded paths.
 """
 
 import ast
@@ -42,19 +53,21 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 logger = logging.getLogger(__name__)
 
 
-class BlueprintReconcilerAgent(
+class FilesystemSSOTReconcilerAgent(
     AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
 ):
     """
-    Sovereign agent responsible for auto-reconciling structure_blueprint.py
-    with actual system state.
+    Filesystem-level SSOT reconciler - updates blueprint when folders change.
     
-    Ensures the SSOT blueprint always reflects reality:
+    Ensures the SSOT blueprint always reflects filesystem reality:
     - Folder structure (sovereign_registry, core_subfolder_map)
     - Agent canonical signals (CANON_SIGNALS)
     - Configuration drift detection
+    
+    Direction: Filesystem → Blueprint
+    Complements: CodeSSOTEnforcerAgent (Code → Blueprint enforcement)
     
     Safety mechanisms:
     - Timestamped backups before modifications
@@ -75,7 +88,7 @@ class BlueprintReconcilerAgent(
         self.actual_signals: Set[str] = set()
         self.drift_detected: List[Dict[str, Any]] = []
         
-        logger.info(f"BlueprintReconcilerAgent initialized for {self.project_root}")
+        logger.info(f"FilesystemSSOTReconcilerAgent initialized for {self.project_root}")
     
     # ===================================================================
     # Core Reconciliation Methods
@@ -504,14 +517,14 @@ class BlueprintReconcilerAgent(
             if marker in line and "'subfolders'" in line:
                 # Insert extend call after this line
                 indent = "    "  # Match dict indentation
-                insert_line = f"{indent}# Auto-added by BlueprintReconcilerAgent\n"
+                insert_line = f"{indent}# Auto-added by FilesystemSSOTReconcilerAgent\n"
                 insert_line += f"{indent}sovereign_registry['{root}']['subfolders'].extend({folders})\n"
                 lines.insert(i + 1, insert_line)
                 return "".join(lines)
         
         # Fallback: append at end of file
         logger.warning(f"Could not find exact insertion point for {root}, appending at end")
-        return content + f"\n# Auto-added by BlueprintReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
+        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
     
     def _apply_core_map_update(self, content: str, l1_folder: str, folders: List[str]) -> str:
         """
@@ -529,14 +542,14 @@ class BlueprintReconcilerAgent(
             if "core_subfolder_map" in line and marker in line:
                 # Insert extend call after this line
                 indent = "    "
-                insert_line = f"{indent}# Auto-added by BlueprintReconcilerAgent\n"
+                insert_line = f"{indent}# Auto-added by FilesystemSSOTReconcilerAgent\n"
                 insert_line += f"{indent}core_subfolder_map['{l1_folder}'].extend({folders})\n"
                 lines.insert(i + 1, insert_line)
                 return "".join(lines)
         
         # Fallback: append at end
         logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
-        return content + f"\n# Auto-added by BlueprintReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
+        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
     
     def _apply_signals_update(self, content: str, signals: List[str]) -> str:
         """
@@ -555,14 +568,14 @@ class BlueprintReconcilerAgent(
                 # Look for the closing brace
                 for j in range(i, min(i + 50, len(lines))):
                     if "}" in lines[j]:
-                        insert_line = f"# Auto-added by BlueprintReconcilerAgent\n"
+                        insert_line = f"# Auto-added by FilesystemSSOTReconcilerAgent\n"
                         insert_line += f"CANON_SIGNALS.update({set(signals)})\n"
                         lines.insert(j + 1, insert_line)
                         return "".join(lines)
         
         # Fallback: append at end
         logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
-        return content + f"\n# Auto-added by BlueprintReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
+        return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
     
     def _request_user_approval(self, proposals: List[Dict[str, Any]]) -> bool:
         """
