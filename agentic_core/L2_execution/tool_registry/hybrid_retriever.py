@@ -1,10 +1,12 @@
 """
 HybridRetriever - Dense + Sparse Retrieval with Reranking
 """
+import ast
 import asyncio
 import hashlib
 import json
 import os
+import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,8 +20,80 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
+class ASTAwareTokenizer:
+    """AST-aware tokenizer optimised for code retrieval with configurable boosting."""
+
+    STOP_WORDS = frozenset({
+        'self', 'cls', 'none', 'true', 'false', 'return', 'if', 'else', 'elif',
+        'for', 'while', 'try', 'except', 'finally', 'with', 'as', 'import',
+        'from', 'def', 'class', 'pass', 'break', 'continue', 'and', 'or',
+        'not', 'in', 'is', 'lambda', 'yield', 'raise', 'assert', 'del',
+        'global', 'nonlocal', 'async', 'await', 'the', 'a', 'an', 'of', 'to'
+    })
+
+    # Configurable boost multipliers
+    BOOST_FUNCTION_CLASS = 5
+    BOOST_ARG = 2
+    BOOST_IDENTIFIER = 3
+
+    @staticmethod
+    def split_identifier(name: str) -> List[str]:
+        """Split CamelCase and snake_case identifiers into sub-tokens."""
+        # First split on underscores
+        parts = name.split('_')
+        result = []
+        for part in parts:
+            # Then split CamelCase
+            camel_parts = re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', part).split()
+            result.extend([p.lower() for p in camel_parts if len(p) > 1])
+        return result
+
+    @classmethod
+    def tokenize_code(cls, text: str, boost_symbols: bool = True) -> List[str]:
+        """Tokenize code chunk with AST awareness and optional boosting."""
+        tokens = []
+
+        # Primary AST-based extraction for Python
+        try:
+            tree = ast.parse(text)
+
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
+                    tokens.extend(cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1))
+                elif isinstance(node, ast.ClassDef):
+                    tokens.extend(cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1))
+                elif isinstance(node, ast.Name):
+                    tokens.extend(cls.split_identifier(node.id) * (cls.BOOST_IDENTIFIER if boost_symbols else 1))
+                elif isinstance(node, ast.arg):
+                    tokens.extend(cls.split_identifier(node.arg) * (cls.BOOST_ARG if boost_symbols else 1))
+                elif isinstance(node, ast.Attribute):
+                    tokens.extend(cls.split_identifier(node.attr) * (cls.BOOST_IDENTIFIER if boost_symbols else 1))
+                elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                    # Docstrings and string literals
+                    doc_tokens = [t.lower() for t in node.value.split() if t.lower() not in cls.STOP_WORDS and len(t) > 2]
+                    tokens.extend(doc_tokens)
+
+        except SyntaxError:
+            # Fallback to regex-based tokenization
+            pass
+
+        # Common fallback/additional regex for identifiers (runs always for robustness)
+        words = re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', text.lower())
+        for word in words:
+            if word not in cls.STOP_WORDS and len(word) > 2:
+                split_tokens = cls.split_identifier(word)
+                tokens.extend(split_tokens * (cls.BOOST_IDENTIFIER if boost_symbols else 1))
+
+        return tokens
+
+    @classmethod
+    def tokenize_query(cls, query: str) -> List[str]:
+        """Tokenize natural-language or code query without boosting."""
+        return cls.tokenize_code(query, boost_symbols=False)
+
+
 @dataclass
-class retrieval_result:
+class RetrievalResult:
     """Brief description of functionality and purpose."""
     text: str
     score: float
@@ -37,6 +111,7 @@ class hybrid_retriever:
         self.bm25_index: Optional[BM25Okapi] = None
         self.local_chunks: List[Dict] = []
         self.index_ready = asyncio.Event()
+        self.tokenizer = ASTAwareTokenizer()
         self._init_task = asyncio.create_task(self._load_or_rebuild_local_index())
 
     async def _load_or_rebuild_local_index(self):
@@ -48,7 +123,7 @@ class hybrid_retriever:
                 self.local_chunks = data['chunks']
 
                 def _build_bm25():
-                    tokenized = [c['text'].lower().split() for c in self.local_chunks]
+                    tokenized = [self.tokenizer.tokenize_code(c['text']) for c in self.local_chunks]
                     return BM25Okapi(tokenized)
                 self.bm25_index = await asyncio.to_thread(_build_bm25)
                 self.index_ready.set()
@@ -67,7 +142,7 @@ class hybrid_retriever:
             if chunks:
 
                 def _sync():
-                    tokenized = [c['text'].lower().split() for c in chunks]
+                    tokenized = [self.tokenizer.tokenize_code(c['text']) for c in chunks]
                     idx = BM25Okapi(tokenized)
                     cache_path = Path('agentic_core/L4_state/validation_context/.sovereign_local_index.json')
                     cache_path.parent.mkdir(parents=True, exist_ok=True)
@@ -96,7 +171,7 @@ class hybrid_retriever:
         if not self.index_ready.is_set():
             print('   [!] BM25 search skipped: Index not ready')
             return []
-        tokenized_query: Any = query.lower().split()
+        tokenized_query: Any = self.tokenizer.tokenize_query(query)
         doc_scores: Any = self.bm25_index.get_scores(tokenized_query)
         top_indices: Any = doc_scores.argsort()[-top_k:][::-1]
         results: Any = []
