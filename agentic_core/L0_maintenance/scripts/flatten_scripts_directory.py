@@ -5,7 +5,11 @@ Flatten scripts directory to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    safe_prefixed_filename,
+    validate_no_duplicate_prefix,
+)
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
@@ -24,11 +28,19 @@ def flatten_scripts() -> Any:
         parts: Any = rel_path.parts
         if len(parts) > REQUIRED_DEPTH - 1:
             path_prefix: Any = '_'.join(parts[2:-1])
-            new_name: Any = f'{path_prefix}_{py_file.name}'
+            # [SAFEGUARD] Use SSOT function to prevent duplicate prefix sprawl
+            new_name: Any = safe_prefixed_filename(path_prefix, py_file.name)
+            
+            # Validate no duplicate prefix was created
+            has_dup, dup_msg = validate_no_duplicate_prefix(new_name)
+            if has_dup:
+                print(f'  [!] BLOCKED: {dup_msg}')
+                continue
+                
             target: Any = SCRIPTS_DIR / new_name
             counter: Any = 1
             while target.exists():
-                target: Any = SCRIPTS_DIR / f'{path_prefix}_{counter}_{py_file.name}'
+                target: Any = SCRIPTS_DIR / f'{path_prefix}_{counter}_{py_file.stem}{py_file.suffix}'
                 counter += 1
             try:
                 shutil.move(str(py_file), str(target))

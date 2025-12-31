@@ -81,6 +81,64 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset({
     'prompts.py',
     'templates.py',
 })
+
+
+def safe_prefixed_filename(prefix: str, filename: str) -> str:
+    """
+    SSOT safeguard: Generate a prefixed filename WITHOUT duplicate prefixes.
+    
+    Prevents name sprawl like:
+        healing_strategies.py -> healing_healing_strategies.py (BAD)
+        
+    Instead produces:
+        healing_strategies.py -> healing_strategies.py (already has prefix)
+        strategies.py -> healing_strategies.py (prefix added)
+    
+    Args:
+        prefix: The prefix to add (e.g., 'healing', 'auditors')
+        filename: The original filename
+        
+    Returns:
+        Filename with prefix added only if not already present
+    """
+    if not prefix:
+        return filename
+    
+    # Normalize prefix (remove trailing underscore if present)
+    prefix = prefix.rstrip('_')
+    
+    # Check if filename already starts with the prefix
+    stem = filename.rsplit('.', 1)[0] if '.' in filename else filename
+    suffix = '.' + filename.rsplit('.', 1)[1] if '.' in filename else ''
+    
+    # If already has prefix, return unchanged
+    if stem.startswith(prefix + '_') or stem == prefix:
+        return filename
+    
+    # Add prefix
+    return f"{prefix}_{filename}"
+
+
+def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
+    """
+    SSOT safeguard: Detect if a filename has duplicate prefixes.
+    
+    Examples of violations:
+        healing_healing_strategies.py -> True, "Duplicate prefix: healing_"
+        auditors_auditors_report.py -> True, "Duplicate prefix: auditors_"
+        
+    Returns:
+        (has_violation, message)
+    """
+    stem = filename.rsplit('.', 1)[0] if '.' in filename else filename
+    parts = stem.split('_')
+    
+    # Check for consecutive duplicate parts
+    for i in range(len(parts) - 1):
+        if parts[i] == parts[i + 1] and parts[i]:  # Non-empty consecutive duplicates
+            return True, f"Duplicate prefix detected: '{parts[i]}_' repeated in '{filename}'"
+    
+    return False, ""
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({'runtime_shared', 'legacy_code', 'legacy_engines', 'archives', 'stubs', 'examples'})
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset({'os', 'sys', 'pathlib', 'logging', 'asyncio', 'typing', 'dataclasses', 'collections', 'json', 're', 'datetime', 'functools', 'itertools', 'abc', 'enum', 'contextlib', 'threading', 'time', 'random', 'math', 'urllib', 'http', 'socket', 'subprocess', 'shutil', 'hashlib', 'uuid', 'copy', 'io', 'traceback', 'inspect', 'importlib', 'warnings', 'pickle'})
 ROOT_WHITELIST: set[str] = set(sovereign_registry.keys())
