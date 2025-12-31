@@ -4,6 +4,10 @@ import shutil
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Any
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    safe_prefixed_filename,
+    validate_no_duplicate_prefix,
+)
 root: Any = Path('C:/Git/Agentic-Workflow')
 core: Any = ROOT / 'agentic_core'
 obs_runtime: Any = CORE / 'observability/P1_core/runtime'
@@ -21,11 +25,19 @@ def flatten_observability_runtime() -> Any:
         rel_path: Any = py_file.relative_to(OBS_RUNTIME)
         parts: Any = rel_path.parts[:-1]
         prefix: Any = '_'.join(parts)
-        new_name: Any = f'{prefix}_{py_file.name}'
+        # [SAFEGUARD] Use SSOT function to prevent duplicate prefix sprawl
+        new_name: Any = safe_prefixed_filename(prefix, py_file.name)
+        
+        # Validate no duplicate prefix was created
+        has_dup, dup_msg = validate_no_duplicate_prefix(new_name)
+        if has_dup:
+            print(f'  [!] BLOCKED: {dup_msg}')
+            continue
+            
         target: Any = OBS_RUNTIME / new_name
         counter: Any = 1
         while target.exists():
-            target: Any = OBS_RUNTIME / f'{prefix}_{counter}_{py_file.name}'
+            target: Any = OBS_RUNTIME / f'{prefix}_{counter}_{py_file.stem}{py_file.suffix}'
             counter += 1
         try:
             shutil.move(str(py_file), str(target))

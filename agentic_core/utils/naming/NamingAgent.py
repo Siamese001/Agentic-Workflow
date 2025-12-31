@@ -30,6 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_PATTERNS,         # Compiled regex list of banned names
     ROOT_PROTECTED_FILES,
     ALLOWED_DUPLICATE_FILENAMES,  # Files permitted to exist in multiple directories
+    validate_no_duplicate_prefix,  # Safeguard against name sprawl
 )
 
 
@@ -480,6 +481,13 @@ class NamingAgent:
             
         new_path = file_path.parent / new_name
         result['new_path'] = str(new_path)
+        
+        # [SAFEGUARD] Check for duplicate prefix sprawl
+        has_dup, dup_msg = validate_no_duplicate_prefix(new_name)
+        if has_dup:
+            result['status'] = 'blocked'
+            result['error'] = f'Name sprawl prevented: {dup_msg}'
+            return result
         
         # Check for collision
         if new_path.exists():
