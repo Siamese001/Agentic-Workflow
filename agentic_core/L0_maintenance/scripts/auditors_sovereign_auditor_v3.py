@@ -18,6 +18,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 # [NEW] Import the pure report agent
 from agentic_core.L0_maintenance.P1_core.sovereign_report_agent import SovereignReport
+# [NEW] Import Metrics Witness (PascalCase, canonical naming)
+from agentic_core.L0_maintenance.P1_core.metrics_witness import MetricsWitness
 
 
 # Add repo root to path for imports
@@ -76,7 +78,7 @@ async def main():
     project_root_path = repo_root
     
     # [NEW] Initialize Metrics Witness
-    metrics = MetricsAgent(project_root_path) if MetricsAgent else None
+    metrics_witness = MetricsWitness(project_root_path)
     
     builder = SovereignReport.Builder()
     
@@ -93,16 +95,8 @@ async def main():
     
     # 3. Structural SSOT (Location & Hierarchy)
     # [WITNESS]: Cross-references L6 metrics with independent L0 validation
-    loc_score = 100.0
-    loc_issues = []
-    if metrics:
-        total_vio = metrics.get_counter("compliance.total_violations")
-        type_vio = metrics.get_labeled_counter("compliance.violations_by_type")
-        loc_vio = type_vio.get("location", 0) + type_vio.get("hierarchy", 0)
-        if loc_vio > 0:
-            loc_score = max(0.0, 100.0 - (loc_vio * 5))
-            loc_issues.append(f"Metrics record {loc_vio} physical structural violations.")
-    builder.with_dimension("Structural SSOT", loc_score, loc_issues)
+    structural_score, structural_issues = metrics_witness.calculate_structural_ssot_score()
+    builder.with_dimension("Structural SSOT", structural_score, structural_issues)
     
     # 4. Prompt & Schema SSOT (Consolidated)
     # RATIONALE: Audits presence of instruction templates vs. runtime reality.
@@ -117,22 +111,8 @@ async def main():
     
     # 7. Healing Resilience (Success Ratio)
     # [NEW]: Quantitative measure of the system's self-correction capacity.
-    heal_score = 100.0
-    heal_issues = []
-    if metrics:
-        total_violations = metrics.get_counter("compliance.total_violations")
-        applied_heals = metrics.get_counter("healing.actions_total")
-        
-        if total_violations > 0:
-            # Success Ratio = (Remediated / Total)
-            # RATIONALE: High remediation = High resilience even if drift exists.
-            ratio = min(1.0, applied_heals / total_violations)
-            heal_score = ratio * 100.0
-            if ratio < 0.9:
-                heal_issues.append(f"Healing Success Ratio ({ratio:.1%}) below sovereign target (90%).")
-        else:
-            heal_issues.append("Zero violations detected: Healing logic in standby.")
-    builder.with_dimension("Healing Resilience", heal_score, heal_issues)
+    healing_score, healing_issues = metrics_witness.calculate_healing_resilience_score()
+    builder.with_dimension("Healing Resilience", healing_score, healing_issues)
 
     # 8. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
     if validate_observability_footprint:
