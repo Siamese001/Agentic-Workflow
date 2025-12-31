@@ -42,6 +42,45 @@ agent_resilience_config: Any = {'retry_count': int(os.getenv('AGENT_RETRY_COUNT'
 mission_config: Any = {'gravity_surgery_enabled': True, 'hierarchy_healing_enabled': True, 'span_surgery_enabled': True, 'fission_enabled': True, 'run_full_mission': True, 'run_hierarchy_healing': True, 'run_gravity_refactor': True, 'run_sprawl_surgery': True, 'structural_only_mode': False, 'timeout_seconds': int(os.getenv('MISSION_TIMEOUT_SECONDS', '1800'))}
 mcp_capabilities: Any = {'router': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'}, 'marketplace_filter': {'enabled': True, 'path': 'agentic_core.L3_orchestration.mcp'}, 'filesystem': {'enabled': True, 'path': 'agentic_core.L4_state.filesystem'}, 'figma': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}, 'fetch': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}, 'semantic_cache': {'enabled': True, 'path': 'agentic_core.L2_execution.mcp'}}
 SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset({'stubs', '.sovereign_healing_backup', '__pycache__'})
+
+# === ALLOWED DUPLICATE FILENAMES ===
+# These files are permitted to exist with the same name across multiple directories.
+# This is the SSOT for filename uniqueness exceptions - all agents must respect this list.
+ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset({
+    # Python package infrastructure (MUST exist in every package)
+    '__init__.py',
+    '__main__.py',
+    
+    # Testing infrastructure (pytest requires these in test directories)
+    'conftest.py',
+    
+    # Common module patterns (legitimate per-package definitions)
+    'context.py',
+    'config.py',
+    'constants.py',
+    'exceptions.py',
+    'types.py',
+    'models.py',
+    'base.py',
+    'utils.py',
+    'helpers.py',
+    'common.py',
+    
+    # Observability patterns (per-engine instrumentation)
+    'observability.py',
+    'metrics.py',
+    'logging.py',
+    'tracing.py',
+    
+    # Autonomous agent patterns (per-engine autonomy)
+    'proactive.py',
+    'autonomous.py',
+    'self_healing.py',
+    
+    # Prompt patterns (per-domain prompts)
+    'prompts.py',
+    'templates.py',
+})
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset({'runtime_shared', 'legacy_code', 'legacy_engines', 'archives', 'stubs', 'examples'})
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset({'os', 'sys', 'pathlib', 'logging', 'asyncio', 'typing', 'dataclasses', 'collections', 'json', 're', 'datetime', 'functools', 'itertools', 'abc', 'enum', 'contextlib', 'threading', 'time', 'random', 'math', 'urllib', 'http', 'socket', 'subprocess', 'shutil', 'hashlib', 'uuid', 'copy', 'io', 'traceback', 'inspect', 'importlib', 'warnings', 'pickle'})
 ROOT_WHITELIST: set[str] = set(sovereign_registry.keys())

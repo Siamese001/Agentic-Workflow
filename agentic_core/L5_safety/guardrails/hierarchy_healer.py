@@ -13,6 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_PROTECTED_FILES,
+    ALLOWED_DUPLICATE_FILENAMES,
 )
 from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
@@ -81,7 +82,8 @@ class HierarchyHealer:
             
             # Relocate all files from non-approved folder
             for py_file in bad_path.rglob("*.py"):
-                if py_file.name == "__init__.py":
+                # Skip files allowed to exist in multiple directories (from SSOT)
+                if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                     continue
                 try:
                     # Determine target L2 folder
@@ -135,7 +137,8 @@ class HierarchyHealer:
                 
                 # Relocate all files
                 for py_file in bad_path.rglob("*.py"):
-                    if py_file.name == "__init__.py":
+                    # Skip files allowed to exist in multiple directories (from SSOT)
+                    if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                         continue
                     try:
                         dest = target_path / py_file.name

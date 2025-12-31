@@ -29,6 +29,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,              # High-signal keywords SSOT
     FORBIDDEN_PATTERNS,         # Compiled regex list of banned names
     ROOT_PROTECTED_FILES,
+    ALLOWED_DUPLICATE_FILENAMES,  # Files permitted to exist in multiple directories
 )
 
 
@@ -184,7 +185,10 @@ class NamingAgent:
             return True, "Valid sovereign root file"
 
         # === ULTRA GLOBAL UNIQUENESS ENFORCEMENT ===
-        if file_name.endswith("Agent.py"):
+        # Skip uniqueness check for files explicitly allowed to have duplicates (SSOT)
+        if file_name in ALLOWED_DUPLICATE_FILENAMES:
+            pass  # Allowed to exist in multiple directories
+        elif file_name.endswith("Agent.py"):
             stem_check = file_path.stem
             if stem_check in self._existing_agent_stems:
                 # Check if this is the actual file in cache (not a duplicate)

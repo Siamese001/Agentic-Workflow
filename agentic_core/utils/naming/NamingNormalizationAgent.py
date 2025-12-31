@@ -6,6 +6,10 @@ import shutil
 from pathlib import Path
 from typing import Dict, Any
 
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    ALLOWED_DUPLICATE_FILENAMES,
+)
+
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class NamingNormalizationAgent:
     """
@@ -42,6 +46,9 @@ class NamingNormalizationAgent:
         ctx: Any = ctx or self.ctx
         changes: Any = {'filename': False, 'symbols': 0}
         try:
+            # Skip files allowed to exist in multiple directories (from SSOT) - don't rename these
+            if file_path.name in ALLOWED_DUPLICATE_FILENAMES:
+                return {'healed': False, 'reason': 'File in ALLOWED_DUPLICATE_FILENAMES - exempt from renaming'}
             if not self.SNAKE_CASE_PATTERN.match(file_path.stem):
                 new_name: Any = self._to_snake_case(file_path.stem) + file_path.suffix
                 new_path: Any = file_path.with_name(new_name)

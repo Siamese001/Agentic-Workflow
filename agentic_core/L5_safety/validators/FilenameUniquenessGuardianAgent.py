@@ -5,7 +5,11 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import shutil
-from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS, CORE_SUBFOLDER_MAP
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    FORBIDDEN_ROOT_FOLDERS,
+    CORE_SUBFOLDER_MAP,
+    ALLOWED_DUPLICATE_FILENAMES,
+)
 # [PHASE 20] DEPRECATION: void_compliance.py removed
 def get_placement_guidance(content_preview):
     """Bridge function for placement heuristics."""
@@ -45,6 +49,9 @@ class FilenameUniquenessGuardianAgent:
             if not file_path.exists():
                 continue
             basename: Any = file_path.name
+            # Skip files that are allowed to have duplicates (from SSOT)
+            if basename in ALLOWED_DUPLICATE_FILENAMES:
+                continue
             basename_to_paths[basename].append(file_path)
         for basename, paths in basename_to_paths.items():
             if len(paths) > 1:
