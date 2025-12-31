@@ -31,6 +31,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.naming.NamingAgent import NamingAgent
 
+# [HARDENING 9] Import audit logger for comprehensive action tracking
+try:
+    from agentic_core.observability.audit.audit_logger import AuditLogger
+    AUDIT_LOGGER_AVAILABLE = True
+except ImportError:
+    AUDIT_LOGGER_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 # Canon structural constants
@@ -103,6 +110,14 @@ class HealerAgent:
             self.metrics = MetricsAgent(project_root)
         except ImportError:
             self.tracing = self.telemetry = self.metrics = None
+        
+        # [HARDENING 9] Initialize audit logger
+        if AUDIT_LOGGER_AVAILABLE:
+            self.audit = AuditLogger(project_root)
+            logger.info("[HealerAgent] Audit logging enabled")
+        else:
+            self.audit = None
+            logger.warning("[HealerAgent] Audit logging unavailable")
 
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
@@ -208,6 +223,17 @@ class HealerAgent:
                     action["applied"] = True
                     self.moves_applied += 1
                     logger.info(f"[HEALED] Moved {file_path.name} -> {target_str}/")
+                    
+                    # [HARDENING 9] Log structural change
+                    if self.audit:
+                        self.audit.log_structural_change(
+                            agent_name=self.__class__.__name__,
+                            operation="move",
+                            source_files=[str(file_path)],
+                            target_files=[str(target_path)],
+                            reason=msg,
+                            applied=True
+                        )
                 except Exception as e:
                     action["reason"] += f" [FAILED: {e}]"
 
@@ -566,6 +592,7 @@ class HealerAgent:
                     self._backup_file(file_path)
                     stem = file_path.stem
                     chunk_symbols_map = []
+                    new_files_created = []
                     
                     # [HARDENING] Ensure all fission targets stay within layer directory
                     allowed_target_dir = layer_dir
@@ -589,6 +616,7 @@ class HealerAgent:
                             
                             new_path.write_text(chunk_content, encoding="utf-8")
                             action["new_files"].append(str(new_path))
+                            new_files_created.append(str(new_path))
                             # Track symbols moved to new parts for import remediation
                             symbols = self._extract_symbols(chunk_content)
                             if symbols:
@@ -611,6 +639,22 @@ class HealerAgent:
                     action["applied"] = True
                     self.fissions_applied += 1
                     logger.info(f"[FISSION] Split {file_path.name} into {len(valid_splits)} modules")
+                    
+                    # [HARDENING 9] Log structural change
+                    if self.audit:
+                        self.audit.log_structural_change(
+                            agent_name=self.__class__.__name__,
+                            operation="fission",
+                            source_files=[str(file_path)],
+                            target_files=new_files_created,
+                            reason=f"File exceeded {MAX_LINES_PER_FILE} LOC limit",
+                            applied=True,
+                            metadata={
+                                "original_lines": len(lines),
+                                "split_count": len(valid_splits),
+                                "layer": layer
+                            }
+                        )
                 else:
                     action["applied"] = True
                     action["note"] = "DRY-RUN"
