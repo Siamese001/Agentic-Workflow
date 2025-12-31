@@ -1,0 +1,23 @@
+{
+  "purpose": "Pre-defined agent personas, role templates, and behavioral archetypes",
+  "entity_types": [
+    "Class",
+    "Dict"
+  ],
+  "keywords": [
+    "role",
+    "persona",
+    "agent_type",
+    "archetype",
+    "behavior"
+  ],
+  "imports": [],
+  "bases": [
+    "CanonBaseAgent"
+  ],
+  "examples": [
+    "SocraticPersona",
+    "CriticRole",
+    "ArchitectArchetype"
+  ]
+}
