@@ -1,38 +1,183 @@
 """
-ExperienceBuffer – Persistent learning from outcomes
+ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
+
+Purpose:
+  Persistent, file-backed learning from execution outcomes.
+  Enables agents to predict success probability of actions based on historical data.
+  Critical for HealingOrchestrator and all validators to avoid repeating failed strategies.
+
+Constitutional Alignment:
+  - Turns reactive healing into predictive intelligence
+  - Enables cumulative sovereignty improvement
+  - Fully observable via JSONL logs
 """
-from pathlib import Path
-from typing import List, Dict, Any
+
 import json
+import time
 from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Any, Optional
+import logging
+from collections import deque
 
 
 class ExperienceBuffer:
-    def __init__(self, path: Path, max_entries: int = 1000):
-        self.path = path
+    """
+    Lightweight, append-only experience replay buffer with JSONL persistence.
+    Designed for sovereign agents to learn from healing/validation outcomes.
+    """
+
+    def __init__(
+        self,
+        path: Path,
+        max_entries: int = 1000,
+        similarity_keys: Optional[List[str]] = None,
+    ):
+        """
+        Initialize buffer with persistent storage.
+
+        Args:
+            path: File path for JSONL storage (e.g., logs/healer_experience.jsonl)
+            max_entries: Maximum historical entries to retain
+            similarity_keys: Keys used for similarity matching (default: all keys)
+        """
+        self.path = Path(path)
         self.max_entries = max_entries
+        self.similarity_keys = similarity_keys or []
+        self.logger = logging.getLogger(f"{__name__}.{self.path.stem}")
+
+        # Ensure directory exists
         self.path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Initialize file if missing
         if not self.path.exists():
-            self.path.write_text("[]")
+            self.path.write_text("")  # Empty JSONL file
+            self.logger.info(f"Created new experience buffer at {self.path}")
 
-    def record(self, entry: Dict[str, Any]):
-        entries = self.load()
-        entry["timestamp"] = datetime.utcnow().isoformat()
-        entries.append(entry)
-        if len(entries) > self.max_entries:
-            entries = entries[-self.max_entries:]
-        self.path.write_text(json.dumps(entries, indent=2))
+    def record(self, entry: Dict[str, Any]) -> None:
+        """
+        Record a new experience outcome.
+        Appends to file and enforces size limit.
+        """
+        entry["timestamp"] = datetime.utcnow().isoformat() + "Z"
+        entry["entry_id"] = int(time.time() * 1000000)  # Rough unique ID
 
-    def load(self) -> List[Dict]:
+        # Append to file
+        with self.path.open("a", encoding="utf-8") as f:
+            json.dump(entry, f)
+            f.write("\n")
+
+        # Enforce max entries (trim oldest)
+        self._enforce_size_limit()
+
+        outcome = "success" if entry.get("success", False) else "failure"
+        self.logger.debug(f"Recorded {outcome}: {entry.get('action')} on {entry.get('target')}")
+
+    def _enforce_size_limit(self) -> None:
+        """Trim file to max_entries by keeping newest lines."""
+        if self.max_entries <= 0:
+            return
+
+        lines = []
         try:
-            return json.loads(self.path.read_text())
-        except:
+            with self.path.open("r", encoding="utf-8") as f:
+                lines = f.readlines()
+        except Exception as e:
+            self.logger.error(f"Failed to read experience buffer: {e}")
+            return
+
+        if len(lines) > self.max_entries:
+            kept = lines[-self.max_entries:]
+            try:
+                self.path.write_text("".join(kept), encoding="utf-8")
+                self.logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
+            except Exception as e:
+                self.logger.error(f"Failed to trim buffer: {e}")
+
+    def load_all(self) -> List[Dict[str, Any]]:
+        """Load all entries (newest first)."""
+        entries = []
+        try:
+            with self.path.open("r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        entries.append(json.loads(line))
+            # Return newest first
+            return list(reversed(entries))
+        except Exception as e:
+            self.logger.error(f"Failed to load experience buffer: {e}")
             return []
 
-    def find_similar(self, **filters) -> List[Dict]:
-        entries = self.load()
-        results = []
-        for e in entries:
-            if all(e.get(k) == v for k, v in filters.items()):
-                results.append(e)
-        return results[-50:]  # Most recent
+    def find_similar(
+        self,
+        action: Optional[str] = None,
+        target: Optional[str] = None,
+        context_hash: Optional[str] = None,
+        limit: int = 20,
+        **extra_filters,
+    ) -> List[Dict[str, Any]]:
+        """
+        Find historically similar experiences for success prediction.
+        Matches on provided filters.
+        """
+        all_entries = self.load_all()
+        matches = []
+
+        for entry in all_entries:
+            if action and entry.get("action") != action:
+                continue
+            if target and entry.get("target") != target:
+                continue
+            if context_hash and entry.get("context_hash") != context_hash:
+                continue
+
+            # Extra keyword filters
+            if all(entry.get(k) == v for k, v in extra_filters.items()):
+                matches.append(entry)
+
+            if len(matches) >= limit:
+                break
+
+        return matches
+
+    def predict_success_probability(
+        self,
+        action: str,
+        target: Optional[str] = None,
+        context_hash: Optional[str] = None,
+        **extra_context,
+    ) -> float:
+        """
+        Predict success probability based on historical outcomes.
+        Returns 0.5 if no relevant history.
+        """
+        similar = self.find_similar(
+            action=action,
+            target=target,
+            context_hash=context_hash,
+            **extra_context,
+        )
+
+        if not similar:
+            return 0.5  # Neutral prior
+
+        successes = sum(1 for e in similar if e.get("success", False))
+        return successes / len(similar)
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Return buffer statistics for monitoring."""
+        entries = self.load_all()
+        if not entries:
+            return {"total_entries": 0, "success_rate": None}
+
+        successes = sum(1 for e in entries if e.get("success", False))
+        return {
+            "total_entries": len(entries),
+            "success_rate": successes / len(entries),
+            "most_common_action": max(
+                (e.get("action") for e in entries if e.get("action")),
+                key=lambda a: sum(1 for e in entries if e.get("action") == a),
+                default=None,
+            ),
+        }
