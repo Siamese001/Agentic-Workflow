@@ -16,10 +16,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
-# [NEW] Import the pure report agent
-from agentic_core.L0_maintenance.P1_core.sovereign_report_agent import SovereignReport
-# [NEW] Import Metrics Witness (PascalCase, canonical naming)
-from agentic_core.L0_maintenance.P1_core.metrics_witness import MetricsWitness
+# [SSOT] Import sovereign report and metrics witness from scripts/ (constitutional location)
+from agentic_core.L0_maintenance.scripts.sovereign_report import SovereignReport
+from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
 
 # [PHASE 15] SSOT-compliant Guardian Orchestrator
 from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
@@ -48,6 +47,7 @@ except ImportError:
     NamingAgent = None
     MetricsAgent = None
 
+# Healing infrastructure (P1_core files not yet relocated - will gracefully degrade)
 try:
     from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES, get_strategies_by_priority
 except ImportError:
@@ -60,9 +60,6 @@ try:
 except ImportError:
     HealingTransaction = None
     log_healing_action = None
-
-# NOTE: SovereignReport class now imported from L0_maintenance/P1_core/sovereign_report_agent.py
-# This eliminates the monolithic class definition and enables pure L6 consumption
 
 async def main():
     """
