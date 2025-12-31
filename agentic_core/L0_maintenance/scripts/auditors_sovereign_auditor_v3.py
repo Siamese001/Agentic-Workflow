@@ -21,6 +21,9 @@ from agentic_core.L0_maintenance.P1_core.sovereign_report_agent import Sovereign
 # [NEW] Import Metrics Witness (PascalCase, canonical naming)
 from agentic_core.L0_maintenance.P1_core.metrics_witness import MetricsWitness
 
+# [PHASE 15] SSOT-compliant Guardian Orchestrator
+from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
+
 
 # Add repo root to path for imports
 repo_root = Path(__file__).resolve().parents[3]
@@ -32,10 +35,8 @@ try:
 except ImportError:
     check_underscore_fields = None
 
-try:
-    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
-except ImportError:
-    validate_ddd_alignment = None
+# All guardians now loaded internally by GuardianOrchestrator
+# Direct imports removed – reduces coupling and enables extensibility
 
 try:
     # [NEW] Import L5 Validators for Supreme Court Cross-Examination
@@ -46,11 +47,6 @@ except ImportError:
     LocationAgent = None
     NamingAgent = None
     MetricsAgent = None
-
-try:
-    from agentic_core.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint
-except ImportError:
-    validate_observability_footprint = None
 
 try:
     from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES, get_strategies_by_priority
@@ -80,14 +76,17 @@ async def main():
     # [NEW] Initialize Metrics Witness
     metrics_witness = MetricsWitness(project_root_path)
     
+    # Initialize Guardian Orchestrator (SSOT location)
+    guardian_orchestrator = GuardianOrchestrator(target)
+    
     builder = SovereignReport.Builder()
     
-    # 1. DDD Alignment (Available)
-    if validate_ddd_alignment:
-        ddd_score, ddd_issues = validate_ddd_alignment(str(target))
-        builder.with_dimension("DDD Alignment", ddd_score, ddd_issues)
-    else:
-        print("⚠ DDD Alignment guardian not available")
+    # Execute all guardians via single orchestration point
+    guardian_results = guardian_orchestrator.get_all_guardian_results()
+    
+    # Register guardian results into sovereign report
+    for dimension, (score, issues) in guardian_results.items():
+        builder.with_dimension(dimension, score, issues)
     
     # 2. Underscore Fields (Available)
     # RATIONALE: Enforces Key 0 naming law at the SSOT level.
@@ -113,19 +112,6 @@ async def main():
     # [NEW]: Quantitative measure of the system's self-correction capacity.
     healing_score, healing_issues = metrics_witness.calculate_healing_resilience_score()
     builder.with_dimension("Healing Resilience", healing_score, healing_issues)
-
-    # 8. Observability Footprint (Dark Reasoning Guardian - Refined Scoring)
-    if validate_observability_footprint:
-        obs_score, obs_issues = validate_observability_footprint(str(target))
-        # Refined scoring: multiplier of 3 ensures moderate violations trigger warnings
-        # while catastrophic darkness triggers system block (score < 50)
-        if obs_issues:
-            obs_score = max(50, 100 - (len(obs_issues) * 3))
-        else:
-            obs_score = 100.0
-        builder.with_dimension("Observability Footprint", obs_score, obs_issues)
-    else:
-        print("⚠ Observability Footprint guardian not available")
 
     # Finalize Report
     report = builder.build()
