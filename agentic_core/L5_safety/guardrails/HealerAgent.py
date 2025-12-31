@@ -25,7 +25,8 @@ from contextlib import nullcontext
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    CANON_KEY_TO_FOLDER_MAP
+    CANON_KEY_TO_FOLDER_MAP,
+    ALLOWED_DUPLICATE_FILENAMES,
 )
 from agentic_core.utils.naming.NamingAgent import NamingAgent
 
@@ -126,6 +127,10 @@ class HealerAgent:
             if self.moves_applied >= self.max_moves:
                 logger.warning("[HealerAgent] Max moves reached")
                 break
+
+            # Skip files allowed to exist in multiple directories (from SSOT)
+            if file_path.name in ALLOWED_DUPLICATE_FILENAMES:
+                continue
 
             if "Suggested placement:" not in msg and "Invalid depth" not in msg:
                 continue  # Skip if no clear target
