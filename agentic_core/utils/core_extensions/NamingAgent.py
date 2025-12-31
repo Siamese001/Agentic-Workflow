@@ -154,6 +154,11 @@ class NamingAgent:
         """
         Core naming law validation.
         Returns (is_compliant, reason_or_guidance)
+        
+        Enhanced 2025-12-31:
+        - PascalCase enforcement for *Agent.py files
+        - snake_case enforcement for all other files
+        - Class name must match filename for agents
         """
         file_name = file_path.name
 
@@ -163,9 +168,48 @@ class NamingAgent:
         stem = file_path.stem
         lower_stem = stem.lower()
 
-        # === SNAKE_CASE ENFORCEMENT ===
+        # === PASCALCASE ENFORCEMENT FOR AGENT FILES ===
+        if file_name.endswith('Agent.py'):
+            # Validate PascalCase format
+            if not re.match(r'^[A-Z][a-zA-Z0-9]*Agent$', stem):
+                return False, (
+                    f"AGENT NAMING VIOLATION: '{file_name}' must be PascalCase ending with 'Agent' "
+                    f"(e.g., 'CodeSSOTEnforcerAgent.py', 'NamingAgent.py')"
+                )
+            
+            # Extract agent class from file content
+            try:
+                content = file_path.read_text(encoding="utf-8", errors='ignore')
+                classes, _, _ = self._extract_ast_symbols(content)
+                agent_classes = [c for c in classes if c.endswith('Agent')]
+                
+                if not agent_classes:
+                    return False, (
+                        f"AGENT CLASS VIOLATION: '{file_name}' must contain at least one class ending with 'Agent'"
+                    )
+                
+                # Primary agent class should match filename
+                primary_agent = agent_classes[0]  # First agent class is primary
+                expected_filename = f"{primary_agent}.py"
+                
+                if file_name != expected_filename:
+                    return False, (
+                        f"AGENT NAMING MISMATCH: File '{file_name}' should be '{expected_filename}' "
+                        f"to match primary class '{primary_agent}'"
+                    )
+                
+                # PascalCase agent file is valid - skip further checks
+                return True, f"Valid PascalCase agent file (class: {primary_agent})"
+                
+            except Exception as e:
+                return False, f"AGENT VALIDATION ERROR: Unable to parse '{file_name}': {e}"
+        
+        # === SNAKE_CASE ENFORCEMENT FOR NON-AGENT FILES ===
         if re.search(r'[A-Z]', stem):  # Any uppercase letter
-            return False, f"NAMING VIOLATION: '{file_name}' contains uppercase letters (must be snake_case)"
+            return False, (
+                f"NAMING VIOLATION: '{file_name}' contains uppercase letters "
+                f"(must be snake_case, or rename to *Agent.py for PascalCase)"
+            )
         if '-' in stem:
             return False, f"NAMING VIOLATION: '{file_name}' contains hyphens (use underscores)"
 

@@ -86,18 +86,29 @@ class MissionController:
         self._fission_manager = None
         self._orchestrator = None
 
-    async def run_mission(self, target_scope: str = "agentic_core") -> Dict[str, Any]:
+    async def run_mission(self, target_scope: str = "agentic_core", mode: str = "heal") -> Dict[str, Any]:
         """
-        Execute the full Agentic Validation Mission.
+        [HARDENING 10] Execute the Agentic Validation Mission with explicit phases.
+        
+        Phases:
+        1. Detection (read-only validation)
+        2. Healing (optional, requires mode='heal')
+        3. Re-validation (post-healing verification)
         
         Args:
             target_scope: Target folder for validation
+            mode: Mission mode - 'validate_only' or 'heal'
             
         Returns:
             Dict with mission results and statistics
         """
-        print(f"\n[*] MISSION START: Validating {target_scope}")
-        print(f"DEBUG: VERSION 2.9 - SOVEREIGN HARDENING")
+        # [HARDENING 10] Validate mode parameter
+        valid_modes = ["validate_only", "heal"]
+        if mode not in valid_modes:
+            raise ValueError(f"Invalid mode '{mode}'; choose from {valid_modes}")
+        
+        print(f"\n[*] MISSION START: Validating {target_scope} (mode={mode})")
+        print(f"DEBUG: VERSION 3.0 - SOVEREIGN HARDENING + PHASE SEPARATION")
         print(f"   [OK] Mission Root Anchored: {self.project_root}")
         
         # Initialize context
@@ -124,13 +135,35 @@ class MissionController:
         # Run Sovereign Dashboard (ReportingAgent diagnostic)
         await self._run_sovereign_dashboard(ctx)
         
-        # Run validation phases
-        await self._run_syntax_healing(ctx)
-        if self.run_gravity_refactor:
-            await self._run_gravity_refactor(ctx)
-        await self._run_per_file_validation(ctx)
-        await self._run_batch_sweeps(ctx)
-        await self._run_monitors(ctx)
+        # [HARDENING 10] PHASE 1: Detection (read-only validation)
+        print(f"\n[PHASE 1] DETECTION - Read-only validation (no mutations)")
+        detection_results = await self._run_detection_phase(ctx)
+        
+        self._print_detection_report(detection_results, ctx)
+        
+        # If validate-only mode, stop here
+        if mode == "validate_only":
+            print(f"\n[VALIDATE_ONLY] Mission complete - no healing performed")
+            return {
+                "phase": "validation_complete",
+                "mode": mode,
+                "files_processed": len(ctx.python_files),
+                "violations": detection_results.get("total_violations", 0),
+                "results": detection_results
+            }
+        
+        # [HARDENING 10] PHASE 2: Healing (explicit approval required)
+        print(f"\n[PHASE 2] HEALING - Applying mutations (all changes backed up)")
+        healing_results = await self._run_healing_phase(ctx, detection_results)
+        
+        # [HARDENING 10] PHASE 3: Re-validation
+        print(f"\n[PHASE 3] RE-VALIDATION - Verifying healing results")
+        post_detection = await self._run_detection_phase(ctx)
+        
+        # Check if healing introduced new violations
+        if post_detection.get("total_violations", 0) > 0:
+            remaining = post_detection.get("total_violations", 0)
+            print(f"\n[!] [POST-HEALING] {remaining} violations remain after healing")
         
         # [HARDENING 5] Post-healing invariant enforcement
         await self._run_postflight_validation(ctx, preflight, target_scope)
@@ -145,9 +178,12 @@ class MissionController:
         await self._run_blueprint_reconciliation_hook(ctx)
         
         return {
+            "phase": "full_mission_complete",
+            "mode": mode,
             "files_processed": len(ctx.python_files),
             "violations": len([r for r in ctx.report if r.get('status') == 'FAIL']),
             "healed": len([r for r in ctx.report if r.get('status') == 'PASS']),
+            "healing_results": healing_results if mode == "heal" else None
         }
 
     async def _initialize_context(self, target_scope: str) -> Any:
@@ -430,8 +466,183 @@ class MissionController:
         print(f"   [GRAVITY] Found {gravity_violations_total} total violations")
         print("-" * 50)
 
-    async def _run_per_file_validation(self, ctx: Any) -> None:
-        """Run per-file validation with healing rounds using atomic validators."""
+    async def _run_detection_phase(self, ctx: Any) -> Dict[str, Any]:
+        """
+        [HARDENING 10] Phase 1: Read-only detection of violations.
+        
+        No healing is performed - only detection and reporting.
+        
+        Args:
+            ctx: Mission validation context
+            
+        Returns:
+            Dict with detection results
+        """
+        print(f"\n[DETECTION] Scanning {len(ctx.python_files)} files for violations...")
+        
+        detection_results = {
+            "files_scanned": 0,
+            "files_with_violations": 0,
+            "total_violations": 0,
+            "violations_by_file": {},
+            "violations_by_type": defaultdict(int)
+        }
+        
+        # Get atomic validators for detection
+        atomic_validators = []
+        if self._orchestrator:
+            atomic_validators = self._orchestrator.get_atomic_validators()
+            print(f"   [OK] Using {len(atomic_validators)} validators for detection")
+        
+        for idx, file_path in enumerate(ctx.python_files, 1):
+            file_name = Path(file_path).name
+            detection_results["files_scanned"] += 1
+            
+            file_violations = []
+            
+            # Run validators in detection-only mode
+            for validator in atomic_validators:
+                if not hasattr(validator, 'detect_violations'):
+                    continue
+                
+                try:
+                    violations = await validator.detect_violations(file_path)
+                    if violations:
+                        file_violations.extend(violations)
+                except AttributeError:
+                    # Validator doesn't support detection-only mode
+                    pass
+                except Exception as e:
+                    logger.error(f"Detection failed for {file_name}: {e}")
+            
+            if file_violations:
+                detection_results["files_with_violations"] += 1
+                detection_results["total_violations"] += len(file_violations)
+                detection_results["violations_by_file"][file_path] = file_violations
+                
+                # Categorize violations
+                for violation in file_violations:
+                    v_type = violation.get("type", "unknown")
+                    detection_results["violations_by_type"][v_type] += 1
+            
+            if (idx % 50) == 0:
+                print(f"   [PROGRESS] {idx}/{len(ctx.python_files)} files scanned")
+        
+        print(f"\n[DETECTION] Complete: {detection_results['files_with_violations']} files with violations")
+        return detection_results
+    
+    async def _run_healing_phase(self, ctx: Any, detection_results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        [HARDENING 10] Phase 2: Apply healing to detected violations.
+        
+        Args:
+            ctx: Mission validation context
+            detection_results: Results from detection phase
+            
+        Returns:
+            Dict with healing results
+        """
+        print(f"\n[HEALING] Applying fixes to {detection_results['files_with_violations']} files...")
+        
+        healing_results = {
+            "files_attempted": 0,
+            "files_healed": 0,
+            "heals_applied": 0,
+            "heals_rejected": 0
+        }
+        
+        # Get atomic validators (now used for healing)
+        atomic_validators = []
+        if self._orchestrator:
+            atomic_validators = self._orchestrator.get_atomic_validators()
+        
+        violations_by_file = detection_results.get("violations_by_file", {})
+        
+        for file_path, violations in violations_by_file.items():
+            file_name = Path(file_path).name
+            file_path_obj = Path(file_path)
+            healing_results["files_attempted"] += 1
+            
+            # [HARDENING 2] Check cycle detection and heal limits
+            if file_path_obj.exists():
+                try:
+                    current_code = file_path_obj.read_text(encoding='utf-8')
+                    current_hash = hashlib.sha256(current_code.encode('utf-8')).hexdigest()
+                    
+                    history = ctx.file_heal_history[file_path]
+                    recent_hashes = [h[1] for h in history[-5:]]
+                    
+                    if current_hash in recent_hashes and len(history) >= 3:
+                        print(f"      [CYCLE] Skipping {file_name} - infinite loop detected")
+                        continue
+                    
+                    if len(history) >= ctx.max_consecutive_heals:
+                        print(f"      [LIMIT] Skipping {file_name} - max consecutive heals reached")
+                        continue
+                    
+                    if ctx.heal_attempts[file_path] >= ctx.max_heals_per_file:
+                        print(f"      [LIMIT] Skipping {file_name} - max heals per file reached")
+                        continue
+                except Exception as e:
+                    logger.error(f"Cycle detection failed for {file_name}: {e}")
+            
+            # Apply healing
+            file_healed = False
+            for agent in atomic_validators:
+                if not hasattr(agent, 'heal_violation'):
+                    continue
+                
+                try:
+                    result = await self._heal_with_guards(agent, file_path, file_name)
+                    
+                    if result and result.get("healed"):
+                        file_healed = True
+                        healing_results["heals_applied"] += 1
+                        
+                        # Track heal attempt
+                        try:
+                            new_code = file_path_obj.read_text(encoding='utf-8')
+                            new_hash = hashlib.sha256(new_code.encode('utf-8')).hexdigest()
+                            ctx.file_heal_history[file_path].append((time.time(), new_hash))
+                            ctx.heal_attempts[file_path] += 1
+                        except Exception:
+                            pass
+                    elif result and result.get("error"):
+                        healing_results["heals_rejected"] += 1
+                except Exception as e:
+                    logger.error(f"Healing failed for {file_name}: {e}")
+                    healing_results["heals_rejected"] += 1
+            
+            if file_healed:
+                healing_results["files_healed"] += 1
+        
+        print(f"\n[HEALING] Complete: {healing_results['files_healed']} files healed, {healing_results['heals_applied']} heals applied")
+        return healing_results
+    
+    def _print_detection_report(self, detection_results: Dict[str, Any], ctx: Any) -> None:
+        """
+        Print detection phase results.
+        
+        Args:
+            detection_results: Results from detection phase
+            ctx: Mission validation context
+        """
+        print("\n" + "="*70)
+        print("DETECTION PHASE COMPLETE")
+        print("="*70)
+        print(f"Files scanned: {detection_results['files_scanned']}")
+        print(f"Files with violations: {detection_results['files_with_violations']}")
+        print(f"Total violations: {detection_results['total_violations']}")
+        
+        if detection_results.get("violations_by_type"):
+            print("\nViolations by type:")
+            for v_type, count in sorted(detection_results["violations_by_type"].items()):
+                print(f"  - {v_type}: {count}")
+        
+        print("="*70)
+    
+    async def _run_per_file_validation_legacy(self, ctx: Any) -> None:
+        """[DEPRECATED] Legacy combined validation+healing method."""
         print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
         
         total_files = len(ctx.python_files)
@@ -788,8 +999,8 @@ class MissionController:
         print("="*80)
         
         try:
-            # Import and run the blueprint reconciler
-            from agentic_core.L0_maintenance.scripts.BlueprintReconcilerAgent import BlueprintReconcilerAgent
+            # Import and run the filesystem SSOT reconciler
+            from agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
             
             # Determine reconciliation mode
             auto_apply = os.getenv("RECONCILE_BLUEPRINT_AUTO_APPLY", "false").lower() in ("true", "1", "yes")
@@ -806,7 +1017,7 @@ class MissionController:
                 print("   - Proposals will be generated but not applied")
             
             print("\n[>] Scanning filesystem and agents for drift...")
-            reconciler = BlueprintReconcilerAgent(self.project_root)
+            reconciler = FilesystemSSOTReconcilerAgent(self.project_root)
             
             result = await reconciler.reconcile_blueprint(
                 auto_apply=auto_apply,
@@ -850,8 +1061,8 @@ class MissionController:
                 print("\n[OK] Blueprint synchronized with system state - no drift detected")
                 
         except ImportError as e:
-            print(f"\n[!] Blueprint reconciler unavailable: {e}")
-            print("   [INFO] Ensure BlueprintReconcilerAgent.py exists in L0_maintenance/scripts/")
+            print(f"\n[!] Filesystem SSOT reconciler unavailable: {e}")
+            print("   [INFO] Ensure FilesystemSSOTReconcilerAgent.py exists in L0_maintenance/scripts/")
         except KeyboardInterrupt:
             print(f"\n[INFO] Blueprint reconciliation interrupted by user")
         except Exception as e:

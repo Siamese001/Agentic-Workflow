@@ -14,11 +14,16 @@ Placed in L5_safety/guardrails per SSOT semantic registry:
 Depth: agentic_core/L5_safety/guardrails/healer_agent.py -> 4 parts -> compliant
 """
 import ast
-import shutil
 import logging
+import os
+import re
+import shutil
+import time
 from collections import defaultdict
+from difflib import unified_diff
 from pathlib import Path
-from typing import List, Dict, Set, Tuple, Any, Optional
+from tempfile import mkdtemp
+from typing import Any, Dict, List, Optional, Set, Tuple, Any, Optional
 from datetime import datetime
 from contextlib import nullcontext
 
@@ -87,10 +92,15 @@ class HealerAgent:
     Autonomous Conductor for structural healing.
     """
     def __init__(self, project_root: Path, dry_run: bool = False):
-        self.project_root = project_root.resolve()
+        self.project_root = Path(project_root).resolve()
         self.dry_run = dry_run
-        self.backup_dir = self.project_root / ".sovereign_healing_backup" / datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.archives_root = self.project_root / "archives"
+        self.backup_dir = self.project_root / "runtime" / "backups"
+        self.archives_root = self.project_root / "runtime" / "archives"
+        
+        # [HARDENING 12] Staging directory for atomic healing operations
+        self.staging_dir: Optional[Path] = None
+        self.staging_active = False
+        self.staged_changes: List[Dict[str, Any]] = []
         
         self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
         self.naming_agent = NamingAgent(self.project_root)
@@ -123,6 +133,186 @@ class HealerAgent:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
             self.archives_root.mkdir(exist_ok=True)
             logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
+    
+    def enable_staging(self) -> None:
+        """
+        [HARDENING 12] Enable staging mode for atomic healing operations.
+        
+        Creates a temporary staging directory where all heals are applied.
+        Changes are only committed to the actual project on explicit commit.
+        """
+        if self.staging_active:
+            logger.warning("[HealerAgent] Staging already active")
+            return
+        
+        try:
+            # Create staging directory
+            self.staging_dir = Path(mkdtemp(prefix='sovereign_heal_staging_'))
+            
+            # Copy project structure (not full content, just directories)
+            for root, dirs, files in os.walk(self.project_root):
+                root_path = Path(root)
+                
+                # Skip excluded directories
+                dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
+                
+                # Create corresponding directory in staging
+                rel_path = root_path.relative_to(self.project_root)
+                staging_path = self.staging_dir / rel_path
+                staging_path.mkdir(parents=True, exist_ok=True)
+            
+            self.staging_active = True
+            self.staged_changes = []
+            logger.info(f"[HealerAgent] Staging enabled: {self.staging_dir}")
+            print(f"   [STAGING] Enabled at {self.staging_dir}")
+            
+        except Exception as e:
+            logger.error(f"[HealerAgent] Failed to enable staging: {e}")
+            self.staging_dir = None
+            self.staging_active = False
+    
+    def commit_heals(self) -> Dict[str, Any]:
+        """
+        [HARDENING 12] Commit staged heals to the actual project.
+        
+        Atomically applies all staged changes with full backup.
+        
+        Returns:
+            Dict with commit results
+        """
+        if not self.staging_active or not self.staging_dir:
+            logger.warning("[HealerAgent] No staging to commit")
+            return {"committed": False, "reason": "No staging active"}
+        
+        try:
+            # Create timestamped backup of entire project
+            timestamp = int(time.time())
+            backup_path = self.project_root.parent / f"{self.project_root.name}.bak.{timestamp}"
+            
+            print(f"\n[STAGING] Committing {len(self.staged_changes)} changes...")
+            print(f"   [BACKUP] Creating full backup at {backup_path.name}")
+            
+            # Backup current state
+            shutil.copytree(self.project_root, backup_path, dirs_exist_ok=True)
+            
+            # Apply staged changes
+            applied_count = 0
+            for change in self.staged_changes:
+                try:
+                    source = Path(change['staged_path'])
+                    target = Path(change['original_path'])
+                    
+                    if source.exists():
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(source, target)
+                        applied_count += 1
+                except Exception as e:
+                    logger.error(f"Failed to apply change to {change['original_path']}: {e}")
+            
+            print(f"   [OK] Applied {applied_count}/{len(self.staged_changes)} changes")
+            print(f"   [BACKUP] Backup preserved at {backup_path}")
+            
+            # Clean up staging
+            self._cleanup_staging()
+            
+            return {
+                "committed": True,
+                "changes_applied": applied_count,
+                "backup_path": str(backup_path)
+            }
+            
+        except Exception as e:
+            logger.error(f"[HealerAgent] Commit failed: {e}")
+            return {"committed": False, "reason": str(e)}
+    
+    def rollback(self) -> Dict[str, Any]:
+        """
+        [HARDENING 12] Discard all staged heals without applying.
+        
+        Returns:
+            Dict with rollback results
+        """
+        if not self.staging_active or not self.staging_dir:
+            logger.warning("[HealerAgent] No staging to rollback")
+            return {"rolled_back": False, "reason": "No staging active"}
+        
+        try:
+            changes_count = len(self.staged_changes)
+            
+            print(f"\n[STAGING] Rolling back {changes_count} staged changes...")
+            
+            # Clean up staging
+            self._cleanup_staging()
+            
+            print(f"   [OK] Rollback complete - no changes applied to project")
+            
+            return {
+                "rolled_back": True,
+                "changes_discarded": changes_count
+            }
+            
+        except Exception as e:
+            logger.error(f"[HealerAgent] Rollback failed: {e}")
+            return {"rolled_back": False, "reason": str(e)}
+    
+    def _cleanup_staging(self) -> None:
+        """
+        Clean up staging directory and reset state.
+        """
+        if self.staging_dir and self.staging_dir.exists():
+            try:
+                shutil.rmtree(self.staging_dir)
+            except Exception as e:
+                logger.error(f"Failed to clean up staging directory: {e}")
+        
+        self.staging_dir = None
+        self.staging_active = False
+        self.staged_changes = []
+    
+    def _get_working_path(self, file_path: Path) -> Path:
+        """
+        [HARDENING 12] Get the working path for a file (staged or actual).
+        
+        Args:
+            file_path: Original file path
+            
+        Returns:
+            Path to work on (staged if staging active, otherwise original)
+        """
+        if not self.staging_active or not self.staging_dir:
+            return file_path
+        
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            staged_path = self.staging_dir / rel_path
+            
+            # Copy original file to staging if not already there
+            if not staged_path.exists() and file_path.exists():
+                staged_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(file_path, staged_path)
+            
+            return staged_path
+            
+        except ValueError:
+            # File outside project root
+            return file_path
+    
+    def _track_staged_change(self, original_path: Path, staged_path: Path) -> None:
+        """
+        Track a staged change for later commit.
+        
+        Args:
+            original_path: Original file path in project
+            staged_path: Staged file path
+        """
+        if not self.staging_active:
+            return
+        
+        self.staged_changes.append({
+            "original_path": str(original_path),
+            "staged_path": str(staged_path),
+            "timestamp": time.time()
+        })
     
     def _detect_layer(self, file_path: Path) -> str:
         """
