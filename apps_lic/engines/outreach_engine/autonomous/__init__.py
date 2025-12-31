@@ -19,7 +19,7 @@ from .agents import (
     OutreachTestPilot,
     TemplateOptimizer,
 )
-from .base_agent import OutreachAgent
+from .outreach_base import OutreachAgent
 from .context import OutreachBudgetManager, OutreachEngineContext
 from .healing import (
     OutreachAgentFactory,

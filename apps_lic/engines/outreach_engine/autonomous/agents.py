@@ -15,7 +15,7 @@ Provides domain-specific agents for outreach campaigns:
 
 import re
 
-from .base_agent import OutreachAgent
+from .outreach_base import OutreachAgent
 
 
 class LeadQualityAgent(OutreachAgent):

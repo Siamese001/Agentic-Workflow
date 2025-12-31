@@ -27,7 +27,7 @@ from .agents import (
     TemplateOptimizer,
     TestPilot,
 )
-from .base_agent import ResumeAgent
+from .resume_base import ResumeAgent
 from .context import ResumeEngineContext
 
 

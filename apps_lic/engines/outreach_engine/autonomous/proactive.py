@@ -16,7 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from .base_agent import OutreachAgent
+from .outreach_base import OutreachAgent
 from .context import OutreachEngineContext
 
 
