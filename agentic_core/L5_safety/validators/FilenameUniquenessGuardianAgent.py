@@ -1,7 +1,22 @@
-from collections import defaultdict
-'''Brief description of functionality and purpose.'''
+"""
+[DEPRECATED] FilenameUniquenessGuardianAgent - ABSORBED INTO NamingAgent
 
-'Brief description of functionality and purpose.'
+As of 2025-12-31 (P3 Consolidation), filename uniqueness logic has been
+centralized into NamingAgent.validate_proposed_name(). This file is kept for
+backward compatibility only.
+
+Use instead:
+    from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+    naming = get_naming_agent(project_root)
+    is_valid, reason = naming.validate_proposed_name("my_file.py")
+    
+    # For batch uniqueness scanning:
+    naming.scan_for_duplicate_filenames(python_files)
+
+This file will be removed in a future release.
+"""
+import warnings
+from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import shutil
@@ -10,6 +25,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
 )
+
+# Emit deprecation warning on import
+warnings.warn(
+    "FilenameUniquenessGuardianAgent is deprecated. Use NamingAgent.validate_proposed_name() instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed
 def get_placement_guidance(content_preview):
     """Bridge function for placement heuristics."""
@@ -23,7 +46,7 @@ def get_placement_guidance(content_preview):
         return 'agentic_core/L4_state'
     return 'agentic_core/L1_cognition'
 
-# NAMING CANON COMPLIANCE — renamed to FilenameUniquenessGuardianAgent for discovery and sovereignty — 2025-12-30
+# DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class FilenameUniquenessGuardianAgent:
     """
     Batch agent that enforces unique filenames across the entire repository.

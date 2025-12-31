@@ -7,8 +7,20 @@ for calculating blast radius of file modifications.
 Features:
 - AST-based dependency extraction
 - Impact radius calculation
-- Architecture governance laws enforcement
+- Architecture governance laws enforcement (DECISION-ONLY as of P4 consolidation)
 - Blast radius visualization
+
+[P4 CONSOLIDATION] 2025-12-31:
+File move operations have been centralized into HealerAgent.
+GovernanceAgent now provides DECISION-ONLY functions:
+- check_depth_law() -> Returns violation info, does NOT move files
+- check_atomicity_law() -> Returns violation info, does NOT split files
+
+For file operations, use:
+    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    healer = HealerAgent(project_root)
+    healer.heal_file_moves(violations)  # For depth violations
+    healer.heal_fission(large_files)    # For atomicity violations
 """
 import ast
 import glob
@@ -357,14 +369,25 @@ class GovernanceAgent:
 
     def enforce_depth_law(self, file_path: str) -> Optional[str]:
         """
-        Enforce Law of Depth by moving file to correct location.
+        [DEPRECATED - P4 CONSOLIDATION] Use HealerAgent.heal_file_moves() instead.
+        
+        This method now only returns the SUGGESTED target path without moving.
+        Actual file moves should be performed by HealerAgent.
 
         Args:
-            file_path: Path to enforce
+            file_path: Path to check
 
         Returns:
-            New path if moved, None if already compliant
+            Suggested target path if violation detected, None if compliant
         """
+        import warnings
+        warnings.warn(
+            "GovernanceAgent.enforce_depth_law() is deprecated. "
+            "Use HealerAgent.heal_file_moves() for actual moves.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        
         path: Any = Path(file_path)
         violation: Any = self.check_depth_law(str(path))
         if not violation:
@@ -372,27 +395,17 @@ class GovernanceAgent:
         for part in path.parts:
             if part in self.sovereign_dirs:
                 return None
-        if 'too shallow' in violation.lower():
+        
+        # [P4] Return suggested path only - no actual move
+        if 'shallow' in violation.lower():
             target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
-            target_dir.mkdir(parents=True, exist_ok=True)
             target: Any = target_dir / path.name
         else:
             target_dir: Any = self.root_dir / 'scripts'
-            target_dir.mkdir(exist_ok=True)
             target: Any = target_dir / path.name
-        try:
-            counter: Any = 1
-            while target.exists():
-                stem: Any = path.stem
-                suffix: Any = path.suffix
-                target: Any = target_dir / f'{stem}_{counter}{suffix}'
-                counter += 1
-            shutil.move(str(path), str(target))
-            LOGGER.info(f'Moved {file_path} to {target} (depth enforcement)')
-            return str(target)
-        except Exception as e:
-            LOGGER.error(f'Failed to move {file_path}: {e}')
-            return None
+        
+        # Return suggestion without executing move
+        return str(target)
 
     def _calculate_mccabe(self, node: ast.AST) -> int:
         """
