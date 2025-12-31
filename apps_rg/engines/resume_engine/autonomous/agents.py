@@ -19,7 +19,7 @@ import json
 import re
 from typing import Any, Dict
 
-from .base_agent import ResumeAgent
+from .resume_base import ResumeAgent
 
 
 class ContentQualityAgent(ResumeAgent):
