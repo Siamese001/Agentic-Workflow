@@ -15,6 +15,7 @@ try:
     from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
     from agentic_core.knowledge.research_cache.cache_store import ResearchCache
+    from agentic_core.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
@@ -39,6 +40,15 @@ class SovereignRAGManager:
         self.cache_dir = project_root / "agentic_core" / "knowledge" / "research_cache"
         self.cache = ResearchCache(self.cache_dir)
         self.static_knowledge = self._load_static_index()
+        
+        # Optional: Expose embedding cache stats
+        try:
+            self.embedding_cache_stats = lambda: {
+                "size": len(_embedding_cache),
+                "maxsize": _embedding_cache.maxsize
+            }
+        except:
+            self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
         
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:

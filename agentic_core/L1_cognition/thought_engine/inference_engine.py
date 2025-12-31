@@ -15,6 +15,8 @@ from groq import Groq
 from mistralai.async_client import MistralAsyncClient
 from together import Together
 
+from agentic_core.runtime.shared_runtime.semantic_cache import SemanticCache, create_semantic_cache, SemanticCacheHit, CacheMiss
+
 
 # NAMING FIXED: HardStateProtocol → hard_state_protocol
 class hard_state_protocol(Protocol):
@@ -221,39 +223,39 @@ class generic_open_ai_compatible_client_wrapper:
         return self._client.chat # Assume client has a .chat attribute with .completions.create
 
 # --- Local Client Factory ---
-_local_client_cache: Dict[Provider, Any] = {}
+_local_client_cache: Dict[provider, Any] = {}
 
-def _get_llm_client_instance(provider: Provider) -> Any:
+def _get_llm_client_instance(prov: provider) -> Any:
     """
     Instantiates and returns an LLM client for the given provider,
     wrapped to be OpenAI-compatible if necessary.
     """
-    if provider not in _local_client_cache:
+    if prov not in _local_client_cache:
         client_instance = None
-        if provider == Provider.OPENAI:
+        if prov == provider.OPENAI:
             client_instance = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            _local_client_cache[provider] = OpenAIClientWrapper(client_instance)
-        elif provider == Provider.ANTHROPIC:
+            _local_client_cache[prov] = open_ai_client_wrapper(client_instance)
+        elif prov == provider.ANTHROPIC:
             client_instance = anthropic.AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-            _local_client_cache[provider] = AnthropicClientWrapper(client_instance)
-        elif provider == Provider.GOOGLE:
+            _local_client_cache[prov] = anthropic_client_wrapper(client_instance)
+        elif prov == provider.GOOGLE:
             # Google client wrapper handles model instantiation at `create` time
-            _local_client_cache[provider] = GoogleClientWrapper()
-        elif provider == Provider.MISTRAL:
+            _local_client_cache[prov] = google_client_wrapper()
+        elif prov == provider.MISTRAL:
             client_instance = MistralAsyncClient(api_key=os.getenv("MISTRAL_API_KEY"))
-            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
-        elif provider == Provider.GROQ:
+            _local_client_cache[prov] = generic_open_ai_compatible_client_wrapper(client_instance)
+        elif prov == provider.GROQ:
             client_instance = Groq(api_key=os.getenv("GROQ_API_KEY"))
-            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
-        elif provider == Provider.TOGETHER:
+            _local_client_cache[prov] = generic_open_ai_compatible_client_wrapper(client_instance)
+        elif prov == provider.TOGETHER:
             client_instance = Together(api_key=os.getenv("TOGETHER_API_KEY"))
-            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
-        elif provider == Provider.FIREWORKS:
+            _local_client_cache[prov] = generic_open_ai_compatible_client_wrapper(client_instance)
+        elif prov == provider.FIREWORKS:
             client_instance = Fireworks(api_key=os.getenv("FIREWORKS_API_KEY"))
-            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
+            _local_client_cache[prov] = generic_open_ai_compatible_client_wrapper(client_instance)
         else:
-            raise ValueError(f"Unsupported provider: {provider}")
-    return _local_client_cache[provider]
+            raise ValueError(f"Unsupported provider: {prov}")
+    return _local_client_cache[prov]
 
 # NAMING FIXED: InferenceMode → inference_mode
 class inference_mode(str, Enum):
@@ -268,9 +270,9 @@ class inference_mode(str, Enum):
 class inference_request:
     """Request structure for inference engine."""
     prompt: str
-    context: SignalContextProtocol  # Changed to use Protocol for dependency injection
-    mode: InferenceMode = InferenceMode.ANALYTICAL
-    provider: Provider = Provider.OPENAI
+    context: signal_context_protocol  # Changed to use Protocol for dependency injection
+    mode: inference_mode = inference_mode.ANALYTICAL
+    provider: provider = provider.OPENAI
     model: Optional[str] = None
     max_tokens: Optional[int] = None
     STREAM: bool = False
@@ -287,7 +289,7 @@ class inference_result:
     usage: Dict[str, Any]
     thermal_params_used: Dict[str, float]
     execution_time_ms: float
-    provider: Provider
+    provider: provider
     model: str
     context_updated: bool = False
 
@@ -310,7 +312,7 @@ class thermostat_middleware:
         self.enable_logging = enable_logging
         self._thermal_history: List[Dict[str, Any]] = []
 
-    def get_thermal_params(self, request: InferenceRequest) -> Dict[str, float]:
+    def get_thermal_params(self, request: inference_request) -> Dict[str, float]:
         """Get thermal parameters for the inference request.
 
         Args:
@@ -333,10 +335,10 @@ class thermostat_middleware:
 
             # Adjust based on inference mode
             mode_adjustments = {
-                InferenceMode.CREATIVE: {"temperature": 0.9, "top_p": 0.95},
-                InferenceMode.ANALYTICAL: {"temperature": 0.7, "top_p": 0.85},
-                InferenceMode.VALIDATION: {"temperature": 0.1, "top_p": 0.50},
-                InferenceMode.FORMATTING: {"temperature": 0.3, "top_p": 0.70}
+                inference_mode.CREATIVE: {"temperature": 0.9, "top_p": 0.95},
+                inference_mode.ANALYTICAL: {"temperature": 0.7, "top_p": 0.85},
+                inference_mode.VALIDATION: {"temperature": 0.1, "top_p": 0.50},
+                inference_mode.FORMATTING: {"temperature": 0.3, "top_p": 0.70}
             }
 
             if request.mode in mode_adjustments:
@@ -353,7 +355,7 @@ class thermostat_middleware:
 
         return params
 
-    def _log_thermal_usage(self, request: InferenceRequest, params: Dict[str, float]) -> None:
+    def _log_thermal_usage(self, request: inference_request, params: Dict[str, float]) -> None:
         """Log thermal parameter usage for analysis.
 
         Args:
@@ -374,9 +376,9 @@ class thermostat_middleware:
         if len(self._thermal_history) > 1000:
             self._thermal_history = self._thermal_history[-1000:]
 
-        LOGGER.info(
+        logger.info(
             "thermal_params_applied",
-            EXTRA={
+            extra={
                 "execution_id": log_entry["execution_id"],
                 "node_id": log_entry["node_id"],
                 "mode": log_entry["mode"],
@@ -409,8 +411,8 @@ class inference_engine:
 
     def __init__(
         self,
-        thermostat: Optional[ThermostatMiddleware] = None,
-        default_provider: Provider = Provider.OPENAI,
+        thermostat: Optional[thermostat_middleware] = None,
+        default_provider: provider = provider.OPENAI,
         enable_logging: bool = True
     ):
         """Initialize inference engine.
@@ -420,22 +422,29 @@ class inference_engine:
             default_provider: Default LLM provider
             enable_logging: Enable inference logging
         """
-        self.thermostat = thermostat or ThermostatMiddleware(enable_logging)
+        self.thermostat = thermostat or thermostat_middleware(enable_logging)
         self.default_provider = default_provider
         self.enable_logging = enable_logging
-        self._client_cache: Dict[Provider, Any] = {}
+        self._client_cache: Dict[provider, Any] = {}
+        
+        # Initialize semantic cache for response caching
+        self.cache: SemanticCache = create_semantic_cache(
+            ttl=3600,
+            max_entries=10000,
+            enable_semantic_matching=True,
+            similarity_threshold=0.92
+        )
 
-        LOGGER.info(
+        logger.info(
             "inference_engine_initialized",
-            EXTRA={
+            extra={
                 "default_provider": default_provider.value,
                 "thermostat_enabled": thermostat is not None
             }
         )
 
-    async def infer(self, request: InferenceRequest) -> InferenceResult:
-        """
-        Perform inference with dynamic thermal adjustment.
+    async def infer(self, request: inference_request) -> inference_result:
+        """Perform inference with dynamic thermal adjustment.
 
         Args:
             request: Inference request with context
@@ -443,10 +452,43 @@ class inference_engine:
         Returns:
             Inference result with content and metadata
         """
-        start_time = time.time()
-
-        # Get thermal parameters
+        # Get thermal parameters first (needed for cache key)
         thermal_params = self.thermostat.get_thermal_params(request)
+        
+        # Build cache lookup context: prompt + mode + thermal + model for intent
+        cache_context = {
+            "mode": request.mode.value if request.mode else "default",
+            "model": request.model or self._get_default_model(request.provider),
+            "thermal": thermal_params
+        }
+        cache_prompt = request.prompt
+
+        # Cache get - check for exact or semantic match
+        cache_result = self.cache.get(cache_prompt, context=cache_context)
+        if isinstance(cache_result, SemanticCacheHit):
+            cached_entry = cache_result.entry
+            cached_result = cached_entry.response  # Stored as InferenceResult
+            if self.enable_logging:
+                logger.info(
+                    "cache_hit",
+                    extra={
+                        "match_type": cache_result.match_type,
+                        "similarity": cache_result.similarity_score,
+                        "age_s": cache_result.age_seconds
+                    }
+                )
+            # Reconstruct result with cached data
+            return inference_result(
+                content=cached_result.content,
+                usage=cached_result.usage,
+                thermal_params_used=cached_result.thermal_params_used,
+                execution_time_ms=0.1,  # Near-zero for cache
+                provider=request.provider,
+                model=cached_result.model,
+                context_updated=False  # No new trace
+            )
+        
+        start_time = time.time()
 
         # Get client for provider
         client = self._get_client(request.provider)
@@ -490,7 +532,7 @@ class inference_engine:
             request.context.update_timestamp()
 
             # Create result
-            result = InferenceResult(
+            result = inference_result(
                 content=content,
                 usage=usage,
                 thermal_params_used=thermal_params,
@@ -499,11 +541,19 @@ class inference_engine:
                 model=api_params["model"],
                 context_updated=True
             )
+            
+            # Cache set (store full result)
+            self.cache.set(
+                prompt=cache_prompt,
+                response=result,
+                context=cache_context,
+                metadata={"mode": request.mode.value if request.mode else "default"}
+            )
 
             if self.enable_logging:
-                LOGGER.info(
+                logger.info(
                     "inference_completed",
-                    EXTRA={
+                    extra={
                         "execution_id": request.context.hard_state.execution_id,
                         "provider": request.provider.value,
                         "model": api_params["model"],
@@ -516,9 +566,9 @@ class inference_engine:
             return result
 
         except Exception as e:
-            LOGGER.error(
+            logger.error(
                 "inference_failed",
-                EXTRA={
+                extra={
                     "execution_id": request.context.hard_state.execution_id,
                     "provider": request.provider.value,
                     "error": str(e)
@@ -527,7 +577,7 @@ class inference_engine:
             )
             raise
 
-    def _prepare_prompt(self, request: InferenceRequest) -> str:
+    def _prepare_prompt(self, request: inference_request) -> str:
         """Prepare the prompt with context anchoring.
 
         Args:
@@ -545,38 +595,38 @@ class inference_engine:
 
         return request.prompt
 
-    def _get_client(self, provider: Provider) -> Any:
+    def _get_client(self, prov: provider) -> Any:
         """Get cached client for provider.
 
         Args:
-            provider: LLM provider
+            prov: LLM provider
 
         Returns:
             Client instance
         """
-        if provider not in self._client_cache:
-            self._client_cache[provider] = _get_llm_client_instance(provider)
-        return self._client_cache[provider]
+        if prov not in self._client_cache:
+            self._client_cache[prov] = _get_llm_client_instance(prov)
+        return self._client_cache[prov]
 
-    def _get_default_model(self, provider: Provider) -> str:
+    def _get_default_model(self, prov: provider) -> str:
         """Get default model for provider.
 
         Args:
-            provider: LLM provider
+            prov: LLM provider
 
         Returns:
             Default model name
         """
         defaults = {
-            Provider.OPENAI: "gpt-4",
-            Provider.ANTHROPIC: "claude-3-sonnet-20240229",
-            Provider.GOOGLE: "gemini-pro",
-            Provider.MISTRAL: "mistral-large",
-            Provider.GROQ: "llama2-70b-4096",
-            Provider.TOGETHER: "meta-llama/Llama-2-70b-chat-hf",
-            Provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat"
+            provider.OPENAI: "gpt-4",
+            provider.ANTHROPIC: "claude-3-sonnet-20240229",
+            provider.GOOGLE: "gemini-pro",
+            provider.MISTRAL: "mistral-large",
+            provider.GROQ: "llama2-70b-4096",
+            provider.TOGETHER: "meta-llama/Llama-2-70b-chat-hf",
+            provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat"
         }
-        return defaults.get(provider, "gpt-4")
+        return defaults.get(prov.value, "gpt-4") # Fix: Use prov.value consistently
 
     def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get thermal parameter usage history.
@@ -593,9 +643,9 @@ class inference_engine:
 
 async def creative_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    provider: Provider = Provider.OPENAI
-) -> InferenceResult:
+    context: signal_context_protocol, # Changed to use Protocol
+    prov: provider = provider.OPENAI
+) -> inference_result:
     """
     Perform creative inference with maximum temperature.
 
@@ -607,20 +657,20 @@ async def creative_inference(
     Returns:
         Inference result
     """
-    engine = InferenceEngine()
-    request = InferenceRequest(
+    engine = inference_engine()
+    request = inference_request(
         prompt=prompt,
         context=context,
-        mode=InferenceMode.CREATIVE,
-        provider=provider
+        mode=inference_mode.CREATIVE,
+        provider=prov
     )
     return await engine.infer(request)
 
 async def validation_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    provider: Provider = Provider.OPENAI
-) -> InferenceResult:
+    context: signal_context_protocol, # Changed to use Protocol
+    prov: provider = provider.OPENAI
+) -> inference_result:
     """
     Perform validation inference with minimum temperature.
 
@@ -632,20 +682,20 @@ async def validation_inference(
     Returns:
         Inference result
     """
-    engine = InferenceEngine()
-    request = InferenceRequest(
+    engine = inference_engine()
+    request = inference_request(
         prompt=prompt,
         context=context,
-        mode=InferenceMode.VALIDATION,
-        provider=provider
+        mode=inference_mode.VALIDATION,
+        provider=prov
     )
     return await engine.infer(request)
 
 async def analytical_inference(
     prompt: str,
-    context: SignalContextProtocol, # Changed to use Protocol
-    provider: Provider = Provider.OPENAI
-) -> InferenceResult:
+    context: signal_context_protocol, # Changed to use Protocol
+    prov: provider = provider.OPENAI
+) -> inference_result:
     """
     Perform analytical inference with balanced temperature.
 
@@ -657,11 +707,11 @@ async def analytical_inference(
     Returns:
         Inference result
     """
-    engine = InferenceEngine()
-    request = InferenceRequest(
+    engine = inference_engine()
+    request = inference_request(
         prompt=prompt,
         context=context,
-        mode=InferenceMode.ANALYTICAL,
-        provider=provider
+        mode=inference_mode.ANALYTICAL,
+        provider=prov
     )
     return await engine.infer(request)

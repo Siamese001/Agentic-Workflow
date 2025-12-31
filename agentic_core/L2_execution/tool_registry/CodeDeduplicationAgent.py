@@ -5,10 +5,20 @@ import ast
 import hashlib
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 import textwrap
 import shutil
 from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS
+
+# Tree-sitter for AST fingerprinting
+try:
+    from tree_sitter import Language, Parser
+    from tree_sitter_python import language
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
+    Parser = None
+    Language = None
 
 class CodeDeduplicationAgent:
     """
@@ -27,6 +37,16 @@ class CodeDeduplicationAgent:
         self.duplicate_groups: Dict[str, List[Tuple[Path, str, int]]] = defaultdict(list)
         self.extracted_count = 0
         self.errors: List[str] = []
+        
+        # Initialize tree-sitter parser if available
+        self.ts_parser: Optional[Parser] = None
+        if TREE_SITTER_AVAILABLE:
+            try:
+                self.ts_parser = Parser()
+                self.ts_parser.language = language()
+            except Exception as e:
+                self.errors.append(f'Tree-sitter initialization failed: {e}')
+                self.ts_parser = None
 
     @staticmethod
     def _normalize_code(code: str) -> str:
@@ -40,11 +60,46 @@ class CodeDeduplicationAgent:
             if stripped:
                 lines.append(' '.join(stripped.split()))
         return '\n'.join(lines)
+    
+    def _normalize_ast_tree(self, node: ast.AST) -> str:
+        """Anonymize variables and constants in AST for structural comparison."""
+        if isinstance(node, ast.Name):
+            return 'VAR'
+        elif isinstance(node, ast.Constant):
+            return f'CONST_{type(node.value).__name__}'
+        elif isinstance(node, (ast.Num, ast.Str)):
+            # Backward compatibility for older Python versions
+            return 'CONST'
+        children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
+        return f'{type(node).__name__}({"|".join(children)})'
+    
+    def _normalize_ts_tree(self, node: Any) -> str:
+        """Normalize tree-sitter node for structural comparison."""
+        if node.type == 'identifier':
+            return 'VAR'
+        elif node.type in ['string', 'integer', 'float', 'true', 'false', 'none']:
+            return f'CONST_{node.type}'
+        children = [self._normalize_ts_tree(child) for child in node.children]
+        return f'{node.type}({"|".join(children)})'
 
-    @staticmethod
-    def _hash_block(code: str) -> str:
-        normalized = CodeDeduplicationAgent._normalize_code(code)
-        return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+    def _hash_block(self, code: str) -> str:
+        """Generate AST fingerprint for code block."""
+        # Try AST fingerprinting first
+        try:
+            if self.ts_parser:
+                # Tree-sitter based fingerprint
+                tree = self.ts_parser.parse(bytes(code, 'utf8'))
+                norm_tree = self._normalize_ts_tree(tree.root_node)
+                return hashlib.sha256(str(norm_tree).encode()).hexdigest()
+            else:
+                # Python AST based fingerprint
+                tree = ast.parse(code)
+                norm_tree = self._normalize_ast_tree(tree)
+                return hashlib.sha256(str(norm_tree).encode()).hexdigest()
+        except Exception:
+            # Fallback to text-based normalization
+            normalized = self._normalize_code(code)
+            return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
 
     def _extract_functions_classes(self, file_path: Path) -> List[Tuple[str, str, int]]:
         """Parse file and extract function/class bodies."""
