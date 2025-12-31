@@ -33,6 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.prompt_governance.version_registry.prompt_registry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str):
     """Extract imports using AST, ignoring comments/docstrings."""
@@ -86,6 +87,11 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+@registers_prompt(
+    template_name="gravity_repair.jinja",
+    purpose="Fixes import violations and gravity conventions",
+    territory="templates"
+)
 class ImportAgent:
     """
     Autonomous agent for import convention and gravity compliance.

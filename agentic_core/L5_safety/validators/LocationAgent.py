@@ -34,6 +34,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     TESTS_ROOT_FILE_WHITELIST,
 )
+from agentic_core.prompt_governance.version_registry.prompt_registry import registers_prompt
+
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool:
     """Check if file/line is excepted from key validation."""
@@ -59,6 +61,11 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
+@registers_prompt(
+    template_name="file_placement.jinja",
+    purpose="Enforces territory/file placement rules",
+    territory="templates"
+)
 class LocationAgent:
     """
     Autonomous agent responsible for territorial integrity.

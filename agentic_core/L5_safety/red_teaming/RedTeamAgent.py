@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer import get_sovereign_prompt_renderer
+from agentic_core.prompt_governance.version_registry.prompt_registry import registers_prompt
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -12,7 +13,27 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+# Template content loading for registry
+TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
+red_team_gov_path = TEMPLATE_ROOT / "red_team_governance.jinja"
+red_team_gov_content = red_team_gov_path.read_text(encoding="utf-8") if red_team_gov_path.exists() else None
 
+jailbreak_path = TEMPLATE_ROOT / "jailbreak_classic.jinja"
+jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path.exists() else None
+
+
+@registers_prompt(
+    template_name="red_team_governance.jinja",
+    purpose="Red team evaluation and governance enforcement for adversarial testing",
+    territory="templates",
+    content=red_team_gov_content,
+)
+@registers_prompt(
+    template_name="jailbreak_classic.jinja",
+    purpose="Classic jailbreak prompt testing and hardening for safety validation",
+    territory="templates",
+    content=jailbreak_content,
+)
 class RedTeamAgent:
     """
     Sovereign red-teaming agent for guardrail penetration testing.
@@ -23,6 +44,10 @@ class RedTeamAgent:
     - All payloads sourced from prompt_governance/templates/
     - Full audit logging on every attempt
     - Automatic escalation on successful bypass
+    
+    Registered templates:
+    - red_team_governance.jinja: Governance and authorization
+    - jailbreak_classic.jinja: Classic jailbreak testing (used in ADVERSARIAL_FRAGMENTS)
     """
     ADVERSARIAL_FRAGMENTS: Any = ['jailbreak_classic.jinja', 'prompt_injection_payload.jinja', 'indirect_attack.jinja', 'token_smuggling.jinja']
 

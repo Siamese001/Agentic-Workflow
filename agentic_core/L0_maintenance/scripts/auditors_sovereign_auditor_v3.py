@@ -132,6 +132,24 @@ async def main():
         print("\n[WARN] SOVEREIGNTY COMPROMISED - Initiating Autonomous Self-Correction")
         issues = report.get_all_issues()
         await healing_orchestrator.execute_self_correction(issues)
+        
+        # Check if blueprint drift is contributing to sovereignty degradation
+        try:
+            from agentic_core.L0_maintenance.scripts.BlueprintReconcilerAgent import BlueprintReconcilerAgent
+            
+            print("\n[BLUEPRINT CHECK] Scanning for SSOT drift...")
+            reconciler = BlueprintReconcilerAgent(project_root_path)
+            result = await reconciler.reconcile_blueprint(auto_apply=False)
+            
+            if result["drift_detected"]:
+                print(f"   [!] BLUEPRINT DRIFT DETECTED: {len(result['proposals'])} discrepancies")
+                print("   [RECOMMENDATION] Run with RECONCILE_BLUEPRINT_AUTO_APPLY=true to fix")
+                for proposal in result["proposals"][:3]:  # Show first 3
+                    print(f"      - {proposal.get('action', 'unknown')}")
+            else:
+                print("   [OK] Blueprint synchronized with system state")
+        except Exception as e:
+            print(f"   [INFO] Blueprint check skipped: {e}")
 
     # === Final Sovereignty Self-Assessment ===
     print("\n[SOVEREIGN STATUS] All hardened agents operational")
