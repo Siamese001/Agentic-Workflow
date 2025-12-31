@@ -575,5 +575,148 @@ class NamingAgent:
             
         return min(score, 1.0)
 
+    # =========================================================================
+    # CENTRALIZED NAMING INTERFACE - For use by other agents
+    # =========================================================================
+    
+    def validate_proposed_name(self, proposed_name: str, is_agent: bool = None) -> Tuple[bool, str]:
+        """
+        CENTRALIZED: Validate a proposed filename before any agent uses it.
+        
+        All agents that rename/move files should call this method to ensure
+        consistent naming conventions across the codebase.
+        
+        Args:
+            proposed_name: The proposed filename (e.g., "MyAgent.py" or "my_file.py")
+            is_agent: If None, auto-detect from name. If True/False, force agent/non-agent rules.
+            
+        Returns:
+            (is_valid, reason_or_error)
+        """
+        if not proposed_name.endswith('.py'):
+            return True, "Non-Python file - naming exempt"
+        
+        stem = proposed_name.replace('.py', '')
+        
+        # Auto-detect if this should be an agent file
+        if is_agent is None:
+            is_agent = proposed_name.endswith('Agent.py')
+        
+        # === PASCALCASE FOR AGENTS ===
+        if is_agent:
+            if not proposed_name.endswith('Agent.py'):
+                return False, (
+                    f"AGENT NAMING: '{proposed_name}' must end with 'Agent.py' for PascalCase agents"
+                )
+            
+            if not re.match(r'^[A-Z][a-zA-Z0-9]*Agent$', stem):
+                return False, (
+                    f"AGENT NAMING: '{proposed_name}' must be PascalCase "
+                    f"(e.g., 'CodeSSOTEnforcerAgent.py', 'NamingAgent.py')"
+                )
+            
+            # Check global uniqueness
+            if stem in self._existing_agent_stems:
+                return False, (
+                    f"AGENT UNIQUENESS: '{stem}' already exists. "
+                    f"All PascalCase agents must have globally unique names."
+                )
+            
+            return True, f"Valid PascalCase agent name: {proposed_name}"
+        
+        # === SNAKE_CASE FOR NON-AGENTS ===
+        if re.search(r'[A-Z]', stem):
+            return False, (
+                f"NAMING: '{proposed_name}' must be snake_case "
+                f"(no uppercase letters, or rename to *Agent.py for PascalCase)"
+            )
+        
+        if '-' in stem:
+            return False, f"NAMING: '{proposed_name}' must use underscores, not hyphens"
+        
+        # Check forbidden patterns
+        for pattern in self.forbidden_patterns:
+            if pattern.match(proposed_name):
+                return False, f"NAMING: '{proposed_name}' matches forbidden pattern {pattern.pattern}"
+        
+        return True, f"Valid snake_case name: {proposed_name}"
+    
+    def generate_compliant_name(self, original_name: str, target_type: str = "auto") -> str:
+        """
+        CENTRALIZED: Generate a compliant filename from an original name.
+        
+        Args:
+            original_name: Original filename
+            target_type: "agent" for PascalCase, "file" for snake_case, "auto" to detect
+            
+        Returns:
+            Compliant filename
+        """
+        stem = original_name.replace('.py', '')
+        
+        # Auto-detect type
+        if target_type == "auto":
+            target_type = "agent" if original_name.endswith('Agent.py') or stem.endswith('Agent') else "file"
+        
+        if target_type == "agent":
+            # Convert to PascalCase
+            # Handle snake_case input
+            if '_' in stem:
+                parts = stem.split('_')
+                pascal = ''.join(p.capitalize() for p in parts)
+            else:
+                pascal = stem[0].upper() + stem[1:] if stem else stem
+            
+            # Ensure ends with Agent
+            if not pascal.endswith('Agent'):
+                pascal = f"{pascal}Agent"
+            
+            return f"{pascal}.py"
+        else:
+            # Convert to snake_case
+            # Handle PascalCase input
+            snake = re.sub(r'(?<!^)(?=[A-Z])', '_', stem).lower()
+            # Remove Agent suffix for non-agent files
+            if snake.endswith('_agent') and target_type == "file":
+                snake = snake[:-6]  # Remove '_agent'
+            return f"{snake}.py"
+    
+    def should_be_agent_file(self, file_path: Path) -> bool:
+        """
+        CENTRALIZED: Determine if a file should follow agent naming conventions.
+        
+        Args:
+            file_path: Path to file
+            
+        Returns:
+            True if file should be PascalCase *Agent.py
+        """
+        # Check filename
+        if file_path.name.endswith('Agent.py'):
+            return True
+        
+        # Check content for agent class
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            classes, _, _ = self._extract_ast_symbols(content)
+            return any(c.endswith('Agent') for c in classes)
+        except Exception:
+            return False
 
-# PascalCase is now the canonical name
+
+# Singleton instance for centralized access
+_naming_agent_instance = None
+
+def get_naming_agent(project_root: Path = None) -> NamingAgent:
+    """
+    Get singleton NamingAgent instance for centralized naming validation.
+    
+    Usage by other agents:
+        from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+        naming = get_naming_agent(self.project_root)
+        is_valid, reason = naming.validate_proposed_name("MyNewAgent.py")
+    """
+    global _naming_agent_instance
+    if _naming_agent_instance is None and project_root:
+        _naming_agent_instance = NamingAgent(project_root)
+    return _naming_agent_instance
