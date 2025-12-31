@@ -1,17 +1,25 @@
 import logging
+'''Brief description of functionality and purpose.'''
 
+'Brief description of functionality and purpose.'
 _logger = logging.getLogger(__name__)
-# scripts/enforce_verb_noun.py
 import shutil
 import sys
 from pathlib import Path
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 for f in sys.argv[1:]:
-    p = Path(f)
-    if re.match(r"^[a-z]+_[a-z_]+\.py$", p.name):
+    p: Any = Path(f)
+    if re.match('^[a-z]+_[a-z_]+\\.py$', p.name):
         continue
-    if p.parent.name.startswith("L2_"):
-        NEW = p.parent / f"invoke_{p.stem}.py"
+    if p.parent.name.startswith('L2_'):
+        NEW: Any = p.parent / f'invoke_{p.stem}.py'
     else:
-        NEW = p.parent / f"retrieve_{p.stem}.py"
+        NEW: Any = p.parent / f'retrieve_{p.stem}.py'
     shutil.move(p, new)

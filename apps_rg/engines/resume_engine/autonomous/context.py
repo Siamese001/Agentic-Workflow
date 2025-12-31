@@ -22,22 +22,17 @@ class BudgetManager:
     """Manages token budget and cost tracking for LLM calls."""
 
     def __init__(self, max_cost_usd: float = 2.0):
+        from agentic_core.config.P1_core.sovereign_config import config
+        
         self.max_cost = max_cost_usd
         self.current_cost = 0.0
         self.total_input_tokens = 0
         self.total_output_tokens = 0
         self.call_count = 0
 
-        # Pricing per million tokens (approximate)
-        self.pricing = {
-            "gemini-3-flash-preview": {"input": 0.075, "output": 0.30},
-            "gemini-2.0-flash-exp": {"input": 0.075, "output": 0.30},
-            "gemini-2.5-flash": {"input": 0.075, "output": 0.30},
-            "gpt-4": {"input": 30.0, "output": 60.0},
-            "gpt-4o": {"input": 2.50, "output": 10.0},
-            "gpt-4o-mini": {"input": 0.15, "output": 0.60},
-            "claude-3-5-sonnet": {"input": 3.0, "output": 15.0},
-        }
+        # Pricing flows from Sovereign Constitution (Phase 8A)
+        self.pricing = config.MODEL_PRICING
+        self.default_model = config.DEFAULT_COST_MODEL
 
     def check_budget(self) -> bool:
         """Returns True if budget is available."""

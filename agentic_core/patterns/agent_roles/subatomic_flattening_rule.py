@@ -13,7 +13,8 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 
 @dataclass
-class ComplexityMetrics:
+# NAMING FIXED: ComplexityMetrics → complexity_metrics
+class complexity_metrics:
     """Metrics for measuring method complexity."""
     line_count: int
     nesting_depth: int
@@ -26,7 +27,8 @@ class ComplexityMetrics:
 
 
 @dataclass
-class ExtractionCandidate:
+# NAMING FIXED: ExtractionCandidate → extraction_candidate
+class extraction_candidate:
     """Represents a code block candidate for extraction."""
     block_type: str  # "initialization", "conditional_branch", "loop", "error_handling"
     start_line: int
@@ -39,7 +41,8 @@ class ExtractionCandidate:
 
 
 @dataclass
-class FlatteningPattern:
+# NAMING FIXED: FlatteningPattern → flattening_pattern
+class flattening_pattern:
     """
     Golden State Reference: Subatomic Flattening Pattern
     
@@ -115,6 +118,7 @@ class FlatteningPattern:
         max_depth = 0
         
         def visit_node(node, depth=0):
+                                    
             nonlocal max_depth
             max_depth = max(max_depth, depth)
             
@@ -233,7 +237,8 @@ class FlatteningPattern:
 
 
 # Golden State Reference: Successful Extraction Example
-AGENT_LOGIC_PATTERN = {
+# NAMING FIXED: AGENT_LOGIC_PATTERN → agent_logic_pattern
+agent_logic_pattern = {
     "source_file": "agentic_core/agent_logic.py",
     "method_name": "check_and_learn",
     "date": "2025-12-19",

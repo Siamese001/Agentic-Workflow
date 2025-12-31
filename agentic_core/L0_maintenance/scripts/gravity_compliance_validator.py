@@ -8,24 +8,17 @@ SSOT-aligned with structure_blueprint.py layer ordering.
 import re
 from pathlib import Path
 
-# [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
-# Matches structure_blueprint.py subfolders order for agentic_core
-GRAVITY_LAYERS = [
-    "L0_maintenance",     # Bedrock
-    "config",             # Blueprints
-    "utils",              # Core helpers
-    "runtime",            # Infrastructure
-    "schemas",            # Contracts (if present)
-    "L1_cognition",       # Thought
-    "L2_execution",       # Action
-    "L3_orchestration",   # Management
-    "L4_state",           # Persistence
-    "L5_safety",          # Shield
-    "semantic_memory",    # Long-term context
-    "knowledge"           # RAG assets
-]
+# [SSOT IMPORT] Layer authority from structure_blueprint.py
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
-class GravityComplianceValidator:
+# [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
+# Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
+gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
+
+# NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
+class gravity_compliance_validator:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, project_root: Path):
         self.root = project_root.resolve()
         self.violations = []
@@ -38,6 +31,7 @@ class GravityComplianceValidator:
         return -1  # Unknown = no restriction
 
     def scan_file(self, file_path: Path):
+                    
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -64,6 +58,7 @@ class GravityComplianceValidator:
                 })
 
     def run(self):
+                    
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
             if "agentic_core" in py_file.parts:

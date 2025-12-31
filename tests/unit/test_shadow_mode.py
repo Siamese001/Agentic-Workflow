@@ -1,4 +1,6 @@
 import re
+'''Brief description of functionality and purpose.'''
+
 
 import os
 from unittest.mock import MagicMock
@@ -7,7 +9,8 @@ import core_utils
 import pytest
 
 # Define the global mode for testing
-SHADOW_MODE_KEY = "AGENT_MODE"
+# NAMING FIXED: SHADOW_MODE_KEY → shadow_mode_key
+shadow_mode_key = "AGENT_MODE"
 
 # --- MOCKING MODULES ---
 # We mock the external side effects to ensure they are NOT called in shadow mode.
@@ -38,8 +41,10 @@ def test_canon_validator_blocks_commit_in_shadow(mock_canon_deps, monkeypatch):
 
     # Mocking the execution result data for testing logic flow
     class MockEngine:
+                    
         SHADOW_MODE_ACTIVE = True # Simulated environment check
         def execute_dependency_refactor(self):
+                                    
             if self.SHADOW_MODE_ACTIVE:
                 return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED"}
             else:
@@ -59,6 +64,7 @@ def test_outreach_engine_blocks_email_in_shadow(mock_outreach_deps, monkeypatch)
 
     # Mock the send_email function call in outreach_engine
     def mock_send_email(recipient, subject, body):
+                    
         if os.environ.get(SHADOW_MODE_KEY) == "SHADOW":
             return {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
         else:
@@ -79,8 +85,10 @@ def test_production_mode_executes_side_effects(mock_canon_deps, monkeypatch):
 
     # Simulate production execution
     class MockEngine:
+                    
         SHADOW_MODE_ACTIVE = False # Simulated environment check
         def execute_dependency_refactor(self):
+                                    
             if self.SHADOW_MODE_ACTIVE:
                 return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED"}
             else:

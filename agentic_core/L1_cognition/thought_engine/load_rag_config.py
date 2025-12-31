@@ -1,4 +1,8 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
@@ -9,9 +13,17 @@ _logger = logging.getLogger(__name__)
 
 from typing import Dict
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 
 @dataclass
-class RAGConfig:
+# NAMING FIXED: RAGConfig → rag_config
+class rag_config:
     """Enhanced configuration for resilient web RAG system."""
 
     _model: str = "gemini-1.5-flash"

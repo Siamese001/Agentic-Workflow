@@ -1,1 +1,2 @@
-"""Airlock: planning"""
+'''Brief description of functionality and purpose.'''
+

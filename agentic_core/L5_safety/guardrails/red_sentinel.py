@@ -12,10 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
-LOGGER = logging.getLogger(__name__)
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
+logger: Any = logging.getLogger(__name__)
 
-class RedSentinel:
+class red_sentinel:
     """
     Active defense system that generates hostile inputs for testing.
 
@@ -29,20 +34,17 @@ class RedSentinel:
     def __init__(self, llm_client=None):
         """
         Initialize the RedSentinel agent.
+        Phase 16B: Uses LLM Router MCP for hostile input generation.
 
         Args:
-            llm_client: LLM client for generating hostile inputs
+            llm_client: LLM client for generating hostile inputs (deprecated, uses MCP)
         """
         self.llm_client = llm_client
-        self.api_key = os.getenv("GOOGLE_API_KEY")
-        self.enabled = os.getenv("ENABLE_FUZZ", "false").lower() == "true"
-
-        # Audit log path
-        self.audit_path = Path("observability/audit/fuzz_results.json")
+        self.enabled = os.getenv('ENABLE_FUZZ', 'false').lower() == 'true'
+        self.audit_path = Path('observability/audit/fuzz_results.json')
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
 
-    async def fuzz_function(self, func_name: str, func_code: str,
-                           file_path: str) -> Dict[str, Any]:
+    async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
         """
         Generate hostile inputs for a function and test robustness.
 
@@ -55,61 +57,24 @@ class RedSentinel:
             Dictionary with fuzz results and vulnerabilities
         """
         if not self.enabled:
-            return {"enabled": False, "reason": "ENABLE_FUZZ not set"}
-
-        LOGGER.info(f"🛡️  RedSentinel: Generating hostile inputs for {func_name}")
-
-        # Generate hostile inputs
-        hostile_inputs = await self._generate_hostile_inputs(func_name, func_code)
-
-        # Test each input
-        results = {
-            "function": func_name,
-            "file": file_path,
-            "timestamp": datetime.utcnow().isoformat(),
-            "hostile_inputs": hostile_inputs,
-            "vulnerabilities": [],
-            "crashes": []
-        }
-
-        # Simulate execution with hostile inputs
+            return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
+        LOGGER.info(f'🛡️  RedSentinel: Generating hostile inputs for {func_name}')
+        hostile_inputs: Any = await self._generate_hostile_inputs(func_name, func_code)
+        results: Any = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
         for input_data in hostile_inputs:
-            result = await self._test_with_input(func_name, input_data)
-
-            if result["crashed"]:
-                results["crashes"].append({
-                    "input": input_data,
-                    "error": result["error"],
-                    "traceback": result["traceback"]
-                })
-                results["vulnerabilities"].append({
-                    "type": "crash",
-                    "input": input_data,
-                    "severity": "HIGH"
-                })
-            elif result["unexpected_behavior"]:
-                results["vulnerabilities"].append({
-                    "type": "unexpected_behavior",
-                    "input": input_data,
-                    "behavior": result["behavior"],
-                    "severity": "MEDIUM"
-                })
-
-        # Log results
+            result: Any = await self._test_with_input(func_name, input_data)
+            if result['crashed']:
+                results['crashes'].append({'input': input_data, 'error': result['error'], 'traceback': result['traceback']})
+                results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'severity': 'HIGH'})
+            elif result['unexpected_behavior']:
+                results['vulnerabilities'].append({'type': 'unexpected_behavior', 'input': input_data, 'behavior': result['behavior'], 'severity': 'MEDIUM'})
         await self._log_fuzz_results(results)
-
-        # Return summary
-        return {
-            "enabled": True,
-            "inputs_generated": len(hostile_inputs),
-            "vulnerabilities_found": len(results["vulnerabilities"]),
-            "crashes": len(results["crashes"]),
-            "details": results
-        }
+        return {'enabled': True, 'inputs_generated': len(hostile_inputs), 'vulnerabilities_found': len(results['vulnerabilities']), 'crashes': len(results['crashes']), 'details': results}
 
     async def _generate_hostile_inputs(self, func_name: str, func_code: str) -> List[Dict[str, Any]]:
         """
         Generate 5 hostile inputs for a function.
+        Phase 16B: Uses LLM Router MCP instead of direct google.generativeai.
 
         Args:
             func_name: Name of the function
@@ -118,70 +83,28 @@ class RedSentinel:
         Returns:
             List of hostile input dictionaries
         """
-        if not self.api_key:
-            # Return basic hostile inputs without LLM
-            return [
-                {"type": "null_input", "value": None},
-                {"type": "empty_string", "value": ""},
-                {"type": "buffer_overflow", "value": "A" * 10000},
-                {"type": "special_chars", "value": "\x00\x01\x02\x03"},
-                {"type": "negative_number", "value": -999999999}
-            ]
-
         try:
-            import google.generativeai as genai
-
-            genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel('gemini-pro')
-
-            prompt = f"""
-Generate 5 hostile test inputs for this function to test robustness:
-
-Function: {func_name}
-
-Implementation:
-{func_code}
-```
-
-Generate inputs that could cause:
-1. Type errors (wrong types)
-2. Boundary conditions (empty, None, extreme values)
-3. Buffer overflows (very long strings)
-4. Malformed data (invalid JSON, special characters)
-5. Edge cases (negative numbers, zeros)
-
-Return as JSON array:
-[
-  {{"type": "description", "value": "actual_value"}},
-  {{"type": "description", "value": "actual_value"}},
-  ...
-]
-"""
-
-            response = model.generate_content(prompt)
-
-            # Parse JSON response
+            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            llm_router = get_llm_router_client()
+            prompt = f'\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
+            result_dict = await llm_router.validate_content(prompt, validation_type='red_team')
+            if isinstance(result_dict, dict):
+                response_text = result_dict.get('response', result_dict.get('reason', ''))
+            else:
+                response_text = str(result_dict)
             try:
-                inputs = json.loads(response.text)
-                return inputs[:5]  # Ensure only 5 inputs
+                inputs = json.loads(response_text)
+                return inputs[:5]
             except json.JSONDecodeError:
-                # Fallback to manual parsing
-                LOGGER.warning("Failed to parse LLM response, using defaults")
+                LOGGER.warning('Failed to parse LLM MCP response, using defaults')
                 return self._get_default_hostile_inputs()
-
         except Exception as e:
-            LOGGER.error(f"Failed to generate hostile inputs: {e}")
+            LOGGER.error(f'Failed to generate hostile inputs via MCP: {e}')
             return self._get_default_hostile_inputs()
 
     def _get_default_hostile_inputs(self) -> List[Dict[str, Any]]:
         """Get default hostile inputs when LLM fails."""
-        return [
-            {"type": "null_input", "value": None},
-            {"type": "empty_string", "value": ""},
-            {"type": "buffer_overflow", "value": "A" * 10000},
-            {"type": "special_chars", "value": "\x00\x01\x02\x03\x04\x05"},
-            {"type": "extreme_number", "value": 999999999999999999}
-        ]
+        return [{'type': 'null_input', 'value': None}, {'type': 'empty_string', 'value': ''}, {'type': 'buffer_overflow', 'value': 'A' * 10000}, {'type': 'special_chars', 'value': '\x00\x01\x02\x03\x04\x05'}, {'type': 'extreme_number', 'value': 999999999999999999}]
 
     async def _test_with_input(self, func_name: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -194,39 +117,21 @@ Return as JSON array:
         Returns:
             Test result
         """
-        # This is a mental simulation - we analyze what would happen
-        result = {
-            "crashed": False,
-            "error": None,
-            "traceback": None,
-            "unexpected_behavior": False,
-            "behavior": None
-        }
-
-        # Check for obvious crash scenarios
-        value = input_data.get("value")
-
+        result = {'crashed': False, 'error': None, 'traceback': None, 'unexpected_behavior': False, 'behavior': None}
+        value = input_data.get('value')
         if value is None:
-            # Might cause AttributeError
-            result["unexpected_behavior"] = True
-            result["behavior"] = "Potential None dereference"
-
+            result['unexpected_behavior'] = True
+            result['behavior'] = 'Potential None dereference'
         elif isinstance(value, str) and len(value) > 1000:
-            # Buffer overflow attempt
-            result["crashed"] = True
-            result["error"] = "MemoryError: possible buffer overflow"
-            result["traceback"] = f"Simulated crash with {len(value)} character string"
-
-        elif isinstance(value, str) and any(ord(c) < 32 for c in value):
-            # Special characters might cause issues
-            result["unexpected_behavior"] = True
-            result["behavior"] = "Special characters may cause encoding issues"
-
+            result['crashed'] = True
+            result['error'] = 'MemoryError: possible buffer overflow'
+            result['traceback'] = f'Simulated crash with {len(value)} character string'
+        elif isinstance(value, str) and any((ord(c) < 32 for c in value)):
+            result['unexpected_behavior'] = True
+            result['behavior'] = 'Special characters may cause encoding issues'
         elif isinstance(value, (int, float)) and abs(value) > 1000000:
-            # Extreme numbers
-            result["unexpected_behavior"] = True
-            result["behavior"] = "Extreme number may cause overflow"
-
+            result['unexpected_behavior'] = True
+            result['behavior'] = 'Extreme number may cause overflow'
         return result
 
     async def _log_fuzz_results(self, results: Dict[str, Any]):
@@ -237,28 +142,19 @@ Return as JSON array:
             results: Fuzz test results
         """
         try:
-            # Read existing log
             if self.audit_path.exists():
                 with open(self.audit_path, 'r') as f:
                     log_data = json.load(f)
             else:
-                log_data = {"fuzz_tests": []}
-
-            # Add new results
-            log_data["fuzz_tests"].append(results)
-
-            # Keep only last 1000 entries
-            if len(log_data["fuzz_tests"]) > 1000:
-                log_data["fuzz_tests"] = log_data["fuzz_tests"][-1000:]
-
-            # Write back
+                log_data = {'fuzz_tests': []}
+            log_data['fuzz_tests'].append(results)
+            if len(log_data['fuzz_tests']) > 1000:
+                log_data['fuzz_tests'] = log_data['fuzz_tests'][-1000:]
             with open(self.audit_path, 'w') as f:
                 json.dump(log_data, f, indent=2)
-
-            LOGGER.info(f"RedSentinel: Logged fuzz results to {self.audit_path}")
-
+            LOGGER.info(f'RedSentinel: Logged fuzz results to {self.audit_path}')
         except Exception as e:
-            LOGGER.error(f"Failed to log fuzz results: {e}")
+            LOGGER.error(f'Failed to log fuzz results: {e}')
 
     async def scan_file(self, file_path: str) -> Dict[str, Any]:
         """
@@ -271,48 +167,26 @@ Return as JSON array:
             Scan results with all fuzz tests
         """
         import ast
-
         if not self.enabled:
-            return {"enabled": False, "reason": "ENABLE_FUZZ not set"}
-
-        results = {
-            "file": file_path,
-            "timestamp": datetime.utcnow().isoformat(),
-            "functions_tested": 0,
-            "vulnerabilities_found": 0,
-            "details": []
-        }
-
+            return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
+        results: Any = {'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'functions_tested': 0, 'vulnerabilities_found': 0, 'details': []}
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-
-            tree = ast.parse(content)
-
-            # Find all public functions
+                content: Any = f.read()
+            tree: Any = ast.parse(content)
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
-                    # Get function code
-                    func_lines = content.split('\n')[node.lineno-1:node.end_lineno]
-                    func_code = '\n'.join(func_lines)
-
-                    # Fuzz the function
-                    fuzz_result = await self.fuzz_function(node.name, func_code, file_path)
-
-                    results["functions_tested"] += 1
-                    results["vulnerabilities_found"] += fuzz_result.get("vulnerabilities_found", 0)
-                    results["details"].append(fuzz_result)
-
+                if isinstance(node, ast.FunctionDef) and (not node.name.startswith('_')):
+                    func_lines: Any = content.split('\n')[node.lineno - 1:node.end_lineno]
+                    func_code: Any = '\n'.join(func_lines)
+                    fuzz_result: Any = await self.fuzz_function(node.name, func_code, file_path)
+                    results['functions_tested'] += 1
+                    results['vulnerabilities_found'] += fuzz_result.get('vulnerabilities_found', 0)
+                    results['details'].append(fuzz_result)
         except Exception as e:
-            LOGGER.error(f"Error scanning {file_path}: {e}")
-            results["error"] = str(e)
-
+            LOGGER.error(f'Error scanning {file_path}: {e}')
+            results['error'] = str(e)
         return results
-
-
-# Global instance
 _red_sentinel: Optional[RedSentinel] = None
-
 
 def get_red_sentinel() -> RedSentinel:
     """Get or create the global RedSentinel instance."""
@@ -321,8 +195,7 @@ def get_red_sentinel() -> RedSentinel:
         _red_sentinel = RedSentinel()
     return _red_sentinel
 
-
-async def initialize_red_sentinel(llm_client=None):
+async def initialize_red_sentinel(llm_client: Any=None) -> Any:
     """
     Initialize the RedSentinel system.
 
@@ -331,14 +204,11 @@ async def initialize_red_sentinel(llm_client=None):
     """
     global _red_sentinel
     _red_sentinel = RedSentinel(llm_client)
-
     if _red_sentinel.enabled:
-        LOGGER.info("RedSentinel initialized - Active defense enabled")
+        LOGGER.info('RedSentinel initialized - Active defense enabled')
     else:
-        LOGGER.info("RedSentinel initialized - Set ENABLE_FUZZ=true to enable")
+        LOGGER.info('RedSentinel initialized - Set ENABLE_FUZZ=true to enable')
 
-
-# Convenience functions
 async def fuzz_function(func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
     """
     Generate hostile inputs for a function.
@@ -351,9 +221,8 @@ async def fuzz_function(func_name: str, func_code: str, file_path: str) -> Dict[
     Returns:
         Fuzz test results
     """
-    sentinel = get_red_sentinel()
+    sentinel: Any = get_red_sentinel()
     return await sentinel.fuzz_function(func_name, func_code, file_path)
-
 
 async def scan_file_for_vulnerabilities(file_path: str) -> Dict[str, Any]:
     """
@@ -365,5 +234,5 @@ async def scan_file_for_vulnerabilities(file_path: str) -> Dict[str, Any]:
     Returns:
         Scan results
     """
-    sentinel = get_red_sentinel()
+    sentinel: Any = get_red_sentinel()
     return await sentinel.scan_file(file_path)

@@ -13,8 +13,16 @@ from unittest.mock import Mock
 import pytest
 from canon_validator import CanonValidator
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class TestCVU003:
+
+
+# NAMING FIXED: TestCVU003 → test_cvu003
+class test_cvu003:
     """Test Figma version parity check at L2 layer"""
 
     @pytest.fixture
@@ -61,6 +69,7 @@ class TestCVU003:
 
         # Simulate the version check logic
         def check_versions_stale(versions, current_time):
+                                    
             for version in versions:
                 version_time = datetime.fromisoformat(
                     version["created_at"].replace("Z", "+00:00"))
@@ -119,6 +128,7 @@ class TestCVU003:
 
         # Simulate the version check logic
         def check_versions_fresh(versions, current_time):
+                                    
             for version in versions:
                 version_time = datetime.fromisoformat(
                     version["created_at"].replace("Z", "+00:00"))

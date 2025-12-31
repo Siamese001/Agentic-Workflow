@@ -1,4 +1,8 @@
-"""Dataclass models for outreach_orchestration_config."""
+"""Dataclass models for outreach_orchestration_config.
+
+Local Runtime DTOs (Allowed) - App-specific outreach configuration models.
+Phase 7: Underscore fields eliminated for SSOT alignment.
+"""
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
@@ -12,10 +16,10 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class CharLimitConstraint:
+class CharLimitConstraint:  # Local Runtime DTO (Allowed)
     """Character limit constraint for a route."""
-    _min: Optional[int] = None
-    _max: Optional[int] = None
+    min: Optional[int] = None
+    max: Optional[int] = None
 
 
 def validate(self: Any, count: int) -> bool:
@@ -28,7 +32,7 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-class WordLimitConstraint:
+class WordLimitConstraint:  # Local Runtime DTO (Allowed)
     """Word limit constraint for a route."""
     min: Optional[int] = None
     max: Optional[int] = None
@@ -44,44 +48,44 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-class RouteConfig:
+class RouteConfig:  # Local Runtime DTO (Allowed)
     """Configuration for a message route."""
-    _route: Route
-    _char_limit: Optional[CharLimitConstraint] = None
-    _word_limit: Optional[WordLimitConstraint] = None
-    _k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
-    _k_nodes_format: Dict[str, str] = field(default_factory=dict)
-    _constraints: List[str] = field(default_factory=list)
-    _cta_word_limit: Optional[int] = None
-    _signature_format: str = 'standard'
-    _subject_line: bool = True
-    _attachments_allowed: bool = True
+    route: Route
+    char_limit: Optional[CharLimitConstraint] = None
+    word_limit: Optional[WordLimitConstraint] = None
+    k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
+    k_nodes_format: Dict[str, str] = field(default_factory=dict)
+    constraints: List[str] = field(default_factory=list)
+    cta_word_limit: Optional[int] = None
+    signature_format: str = 'standard'
+    subject_line: bool = True
+    attachments_allowed: bool = True
 
 
 @dataclass
-class ArchetypeConfig:
+class ArchetypeConfig:  # Local Runtime DTO (Allowed)
     """Configuration for recipient archetype."""
-    _archetype: Archetype
-    _temperature: float = 0.7
-    _rag_enabled: bool = True
-    _rag_hops: int = 2
-    _rag_total_calls: int = 5
-    _self_consistency_runs: int = 3
-    _tot_branches: int = 3
-    _message_format_template: str = 'standard'
-    _tone: str = 'professional'
-    _formality_level: str = 'moderate'
+    archetype: Archetype
+    temperature: float = 0.7
+    rag_enabled: bool = True
+    rag_hops: int = 2
+    rag_total_calls: int = 5
+    self_consistency_runs: int = 3
+    tot_branches: int = 3
+    message_format_template: str = 'standard'
+    tone: str = 'professional'
+    formality_level: str = 'moderate'
 
 
 @dataclass
-class ValidationRule:
+class ValidationRule:  # Local Runtime DTO (Allowed)
     """Validation rule configuration."""
-    _rule_id: str
-    _name: str
-    _phase: str
-    _severity: ValidationSeverity
-    _description: str
-    _enforcement: str
-    _validation_method: str
-    _threshold: Optional[float] = None
+    rule_id: str
+    name: str
+    phase: str
+    severity: ValidationSeverity
+    description: str
+    enforcement: str
+    validation_method: str
+    threshold: Optional[float] = None
 

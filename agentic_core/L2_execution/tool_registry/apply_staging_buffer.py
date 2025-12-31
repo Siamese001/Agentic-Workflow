@@ -1,23 +1,22 @@
 import copy
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
+'Immutable staging buffer for HOP-4.'
 
-LOGGER = logging.getLogger(__name__)
-# Ownership: apps_rg / L2_execution
-# -*- coding: utf-8 -*-
-"""Immutable staging buffer for HOP-4."""
-
-# Define StagingBufferError locally to eliminate downstream dependency
-class StagingBufferError(Exception):
+class staging_buffer_error(Exception):
     """Custom exception for staging buffer operations."""
     pass
 
-class ImmutableStagingBuffer:
+class immutable_staging_buffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""
 
-    def __init__(self: Any) -> None: # Corrected from __initialize__ to __init__
+    def __init__(self: Any) -> None:
         """Initialize the staging buffer."""
         self._data: Dict[str, object] = {}
         self._locked: bool = False

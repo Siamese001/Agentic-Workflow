@@ -19,7 +19,8 @@ import pytest
 test_approval_event = asyncio.Event()
 
 
-class MockValidationContext:
+# NAMING FIXED: MockValidationContext → mock_validation_context
+class mock_validation_context:
     """Lightweight mock of ValidationContext for intervention testing."""
 
     def __init__(self):
@@ -51,7 +52,8 @@ def reset_event():
 # L5 INTERVENTION TESTS - Approval Event Logic
 # ==============================================================================
 
-class TestApprovalEventLogic:
+# NAMING FIXED: TestApprovalEventLogic → test_approval_event_logic
+class test_approval_event_logic:
     """Tests the approval event mechanism."""
 
     def test_approval_event_initially_not_set(self):
@@ -97,7 +99,8 @@ class TestApprovalEventLogic:
 # L5 INTERVENTION TESTS - Intervention Trigger Logic
 # ==============================================================================
 
-class TestInterventionTriggerLogic:
+# NAMING FIXED: TestInterventionTriggerLogic → test_intervention_trigger_logic
+class test_intervention_trigger_logic:
     """Tests the logic that determines when intervention is required."""
 
     def test_high_risk_signal_triggers_intervention(self):
@@ -145,7 +148,8 @@ class TestInterventionTriggerLogic:
 # L5 INTERVENTION TESTS - Scheduler Pause Logic
 # ==============================================================================
 
-class TestSchedulerPauseLogic:
+# NAMING FIXED: TestSchedulerPauseLogic → test_scheduler_pause_logic
+class test_scheduler_pause_logic:
     """Tests the scheduler pause and resume mechanism."""
 
     @pytest.mark.asyncio
@@ -155,6 +159,7 @@ class TestSchedulerPauseLogic:
         waited = False
 
         async def simulate_wait():
+                                    
             nonlocal waited
             await event.wait()
             waited = True
@@ -189,6 +194,7 @@ class TestSchedulerPauseLogic:
         resumed = False
 
         async def simulate_mission():
+                                    
             nonlocal resumed
             await event.wait()
             resumed = True
@@ -217,6 +223,7 @@ class TestSchedulerPauseLogic:
         aborted = False
 
         async def simulate_mission_with_veto():
+                                    
             nonlocal aborted
             # Simulate intervention check
             await event.wait()
@@ -247,7 +254,8 @@ class TestSchedulerPauseLogic:
 # L5 INTERVENTION TESTS - Server Endpoints (Mocked)
 # ==============================================================================
 
-class TestServerEndpointsMocked:
+# NAMING FIXED: TestServerEndpointsMocked → test_server_endpoints_mocked
+class test_server_endpoints_mocked:
     """Tests server endpoint logic without actually starting a server."""
 
     def test_approve_endpoint_sets_event(self):
@@ -294,7 +302,8 @@ class TestServerEndpointsMocked:
 # L5 INTERVENTION TESTS - Integration Scenarios
 # ==============================================================================
 
-class TestInterventionIntegration:
+# NAMING FIXED: TestInterventionIntegration → test_intervention_integration
+class test_intervention_integration:
     """Tests integration scenarios for the intervention system."""
 
     @pytest.mark.asyncio
@@ -308,6 +317,7 @@ class TestInterventionIntegration:
         flow_completed = False
 
         async def simulate_full_flow():
+                                    
             nonlocal flow_completed
 
             # Check if intervention required
@@ -347,6 +357,7 @@ class TestInterventionIntegration:
         was_vetoed = False
 
         async def simulate_veto_flow():
+                                    
             nonlocal was_vetoed
 
             if "HIGH_RISK" in ctx.signals:
@@ -382,6 +393,7 @@ class TestInterventionIntegration:
         cycles_completed = 0
 
         async def simulate_cycles():
+                                    
             nonlocal cycles_completed
 
             for cycle in range(3):
@@ -423,7 +435,8 @@ class TestInterventionIntegration:
 # L5 INTERVENTION TESTS - Edge Cases
 # ==============================================================================
 
-class TestInterventionEdgeCases:
+# NAMING FIXED: TestInterventionEdgeCases → test_intervention_edge_cases
+class test_intervention_edge_cases:
     """Tests edge cases in the intervention system."""
 
     def test_intervention_with_empty_context(self):
@@ -455,6 +468,7 @@ class TestInterventionEdgeCases:
         started = False
 
         def start_server():
+                                    
             nonlocal started
             if not started:
                 started = True

@@ -1,11 +1,21 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import shutil
 from pathlib import Path
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class HierarchyHealer:
+
+
+# NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
+class hierarchy_healer:
     """
     [L3 AGENT] The Structural Surgeon.
     Directive: Physically relocate files to satisfy Depth-4 Canon.
@@ -15,6 +25,7 @@ class HierarchyHealer:
         self.blueprint = CORE_SUBFOLDER_MAP #
 
     async def execute(self, file_path: str):
+                    
         path_obj = Path(file_path)
         # Identify L1 (e.g., L5_safety) from path
         parts = path_obj.parts

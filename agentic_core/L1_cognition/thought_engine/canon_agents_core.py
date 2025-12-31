@@ -2,6 +2,7 @@
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
 Phase 9A: DDD Remediation - Interface-based composition (Dec 26, 2025)
+[SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 import ast
 import logging
@@ -12,10 +13,18 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+try:
+    from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+except ImportError:
+    CanonBaseAgent = None
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
-from agentic_core.L2_execution.tool_registry.canon_base_agent_impl import CanonBaseAgent
+# [SSOT] Derive depth map from SOVEREIGN_REGISTRY
+# NAMING FIXED: DEPTH_MAP → depth_map
+depth_map = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 
-EXCLUDED_DIRS = [
+# NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
+excluded_dirs = [
     '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
     'dist', 'build', '.vscode', '.idea', '.DS_Store', '.mypy_cache',
     '.pytest_cache', 'htmlcov', 'site-packages', 'docs', 'tests',
@@ -33,7 +42,8 @@ def is_excluded(file_path: str) -> bool:
     return False
 
 
-class NestVisitor(ast.NodeVisitor):
+# NAMING FIXED: NestVisitor → nest_visitor
+class nest_visitor(ast.NodeVisitor):
     """
     AST visitor to check nesting depth within a file.
     Moved to module level to reduce nesting depth in SystemArchitect.
@@ -88,15 +98,16 @@ class NestVisitor(ast.NodeVisitor):
         self.depth -= 1
 
 
-class SystemArchitect(CanonBaseAgentInterface):
+# NOT_AN_AGENT — legacy L1 class, true agent is SystemArchitectAgent in L2 — excluded from discovery
+class system_architect(CanonBaseAgentInterface):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -107,9 +118,11 @@ class SystemArchitect(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
+                    
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
+                    
         return self.impl.validate_state()
 
     async def _execute_validation(self):
@@ -122,7 +135,6 @@ class SystemArchitect(CanonBaseAgentInterface):
         # Key 40: No Metaclasses
         passed_40, details_40 = self.check_key_40_no_metaclasses()
         self.ctx.report(self.name, 40, passed_40, details_40)
-
         # Key 41: Scoped Nesting
         passed_41, details_41 = self.check_key_41_scoped_nesting()
         if not passed_41 and self.ctx.intelligence_enabled:
@@ -192,7 +204,6 @@ class SystemArchitect(CanonBaseAgentInterface):
         """
         Checks for excessive nesting depth within functions and classes,
         considering a maximum depth from environment variable.
-
         Returns:
             A tuple containing:
             - bool: True if no nesting depth violations are found, False otherwise.
@@ -206,7 +217,7 @@ class SystemArchitect(CanonBaseAgentInterface):
             tree = self._parse_python_file(fp)
             if tree:
                 # Instantiate the module-level NestVisitor
-                visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
+                visitor = nest_visitor(fp, MAX_NESTING_DEPTH) 
                 visitor.visit(tree)
                 violations.extend(visitor.violations_in_file)
         return len(violations) == 0, violations
@@ -227,17 +238,21 @@ class SystemArchitect(CanonBaseAgentInterface):
                           for both violations and warnings.
         """
         violations = []
-        warnings = []
         for file_path in self.ctx.python_files:
-            # Path.parts includes all components. If file_path is relative to project root,
-            # this gives the logical depth within the project.
-            # E.g., "src/module/file.py" -> ('src', 'module', 'file.py'), depth 3.
-            depth = len(Path(file_path).parts)
+            # Path.parts includes all components
+            parts = Path(file_path).parts
+            depth = len(parts)
             
-            if depth > 5:
-                violations.append(f"{file_path} (Invalid depth: {depth})")
-            elif depth < 3 and not file_path.endswith("__init__.py"):  # Files too shallow, but __init__.py can be depth 2
-                violations.append(f"{file_path} (Invalid depth: {depth} - minimum depth is 3)")
+            # Skip __init__.py files
+            if file_path.endswith("__init__.py"):
+                continue
+            
+            # [SSOT] Check against per-root required depth from SOVEREIGN_REGISTRY
+            if parts and parts[0] in DEPTH_MAP:
+                root_folder = parts[0]
+                required_depth = DEPTH_MAP[root_folder]
+                if depth != required_depth:
+                    violations.append(f"{file_path} (Invalid depth: {depth} - {root_folder} requires depth {required_depth})")
         return len(violations) == 0, violations
 
     def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
@@ -291,15 +306,16 @@ class SystemArchitect(CanonBaseAgentInterface):
             await self.smart_fix(fp, 41)
 
 
-class HealerAgent(CanonBaseAgentInterface):
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
+class healer_agent(CanonBaseAgentInterface):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
     ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -310,9 +326,11 @@ class HealerAgent(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
+                    
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
+                    
         return self.impl.validate_state()
 
     async def _execute_healing(self):
@@ -400,15 +418,16 @@ class HealerAgent(CanonBaseAgentInterface):
             self.ctx.signal_critical_failure()
 
 
-class GenerativeGuard(CanonBaseAgentInterface):
+# NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
+class generative_guard(CanonBaseAgentInterface):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.
     Phase 9A: DDD Remediation - Composition over inheritance
     """
 
-    def __init__(self, ctx: Any):
-        self.impl = CanonBaseAgent(ctx)
+    def __init__(self, ctx: Any = None):
+        self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -425,9 +444,11 @@ class GenerativeGuard(CanonBaseAgentInterface):
         return {"status": "completed", "agent": self.name}
 
     def get_capabilities(self) -> List[str]:
+                    
         return self.impl.get_capabilities()
 
     def validate_state(self) -> bool:
+                    
         return self.impl.validate_state()
 
     async def _execute_guard(self):

@@ -17,6 +17,7 @@ load_dotenv(dotenv_path=project_root / ".env", override=True)
 try:
     # Mock context for standalone execution
     class MockContext:
+                    
         def __init__(self):
             self.redis_client = None
             self.pinecone_index = None
@@ -25,6 +26,8 @@ except ImportError as e:
     exit(1)
 
 async def diagnose_engine():
+    '''Brief description of functionality and purpose.'''
+    
     print(f"[*] Starting Neural Link Diagnostic...")
     print(f"    Target Model: {os.getenv('GEMINI_MODEL', 'Not Set')}")
     

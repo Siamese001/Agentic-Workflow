@@ -1,5 +1,7 @@
 # Standard library imports
 import hashlib
+'''Brief description of functionality and purpose.'''
+
 import logging
 import re
 from dataclasses import dataclass, field
@@ -9,26 +11,32 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-class SignedClaim:
+# NAMING FIXED: SignedClaim → signed_claim
+class signed_claim:
     """A claim that has been extracted and attributed to a source."""
     claim: str
     source: str
     confidence: float
     evidence: Optional[str] = None
 
-class HardState(Protocol):
+# NAMING FIXED: HardState → hard_state
+class hard_state(Protocol):
     """Protocol for the hard_state attribute of SignalContext."""
     execution_id: str
 
-class SignalContext(Protocol):
+# NAMING FIXED: SignalContext → signal_context
+class signal_context(Protocol):
     """Protocol for the SignalContext object, defining the interface expected by SignalAnchor."""
     hard_state: HardState
     signed_claims: List[SignedClaim]
     def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None: ...
+                    
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
-class ClaimType(str, Enum):
+# NAMING FIXED: ClaimType → claim_type
+class claim_type(str, Enum):
     """Types of claims that can be extracted from content."""
     SKILL = "skill"
     EXPERIENCE = "experience"
@@ -39,7 +47,8 @@ class ClaimType(str, Enum):
     FACT = "fact"
     PREFERENCE = "preference"
 
-class SourceType(str, Enum):
+# NAMING FIXED: SourceType → source_type
+class source_type(str, Enum):
     """Types of sources for claims."""
     RESUME = "resume"
     JOB_DESCRIPTION = "job_description"
@@ -50,7 +59,8 @@ class SourceType(str, Enum):
     SELF_REPORTED = "self_reported"
 
 @dataclass
-class SourceMetadata:
+# NAMING FIXED: SourceMetadata → source_metadata
+class source_metadata:
     """Metadata about a claim source."""
     source_type: SourceType
     source_id: str
@@ -61,7 +71,8 @@ class SourceMetadata:
     verification_status: str = "unverified"  # unverified, verified, disputed
 
 @dataclass
-class ExtractedClaim:
+# NAMING FIXED: ExtractedClaim → extracted_claim
+class extracted_claim:
     """A claim extracted from source content."""
     claim_text: str
     claim_type: ClaimType
@@ -71,7 +82,8 @@ class ExtractedClaim:
     extraction_method: str = "pattern_match"
     context_window: str = ""  # Text around the claim for context
 
-class ClaimExtractor:
+# NAMING FIXED: ClaimExtractor → claim_extractor
+class claim_extractor:
     """
     Extracts structured claims from unstructured source content.
 
@@ -294,7 +306,8 @@ class ClaimExtractor:
         NORMALIZED = re.sub(r'[^a-z0-9]', '', text.lower())
         return NORMALIZED
 
-class SignalAnchor:
+# NAMING FIXED: SignalAnchor → signal_anchor
+class signal_anchor:
     """
     Anchors RAG signals with signed claims to prevent hallucinations.
 

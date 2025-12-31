@@ -14,16 +14,29 @@ import redis
 
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
+
 logger = logging.getLogger(__name__)
 
 # Sovereign limits enforced at L5
-MAX_THOUGHT_LENGTH = 4000      # Prevent reasoning overflow
-MAX_SCRATCHPAD_SIZE = 16000    # 16k chars max
-MAX_HISTORY_PER_FILE = 50      # Prevent unbounded growth
-REDIS_TIMEOUT = 5
-REDIS_CACHE_TTL = 60 * 60 * 24 * 7  # 7-day mission persistence
+# NAMING FIXED: MAX_THOUGHT_LENGTH → max_thought_length
+max_thought_length = 4000      # Prevent reasoning overflow
+# NAMING FIXED: MAX_SCRATCHPAD_SIZE → max_scratchpad_size
+max_scratchpad_size = 16000    # 16k chars max
+# NAMING FIXED: MAX_HISTORY_PER_FILE → max_history_per_file
+max_history_per_file = 50      # Prevent unbounded growth
+# NAMING FIXED: REDIS_TIMEOUT → redis_timeout
+redis_timeout = 5
+# NAMING FIXED: REDIS_CACHE_TTL → redis_cache_ttl
+redis_cache_ttl = 60 * 60 * 24 * 7  # 7-day mission persistence
 
-class SovereignReasoningMemory:
+# NAMING FIXED: SovereignReasoningMemory → sovereign_reasoning_memory
+class sovereign_reasoning_memory:
     """Ultra-hardened sovereign manager for cognitive artifacts."""
     
     _instances = {}
@@ -115,11 +128,13 @@ class SovereignReasoningMemory:
             mcp_authority.record_breach(f"Redis Reasoning Failure: {str(e)}")
 
     def update_scratchpad(self, file_path: str, content: str):
+                    
         if len(content) > MAX_SCRATCHPAD_SIZE:
             raise ValueError("Scratchpad overflow.")
         self.scratchpad[file_path] = content
 
     def get_scratchpad(self, file_path: str) -> str:
+                    
         return self.scratchpad.get(file_path, "")
 
     def _get_redis(self):
@@ -154,6 +169,7 @@ class SovereignReasoningMemory:
             return [dict(t) for t in self.thought_history]
 
     def export_history(self) -> str:
+                    
         return json.dumps({
             "mission_id": self.mission_id,
             "exported_at": datetime.utcnow().isoformat(),

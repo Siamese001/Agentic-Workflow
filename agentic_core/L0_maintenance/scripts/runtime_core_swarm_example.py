@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 # Mock SubatomicHop for demonstration
-class MockSubatomicHop:
+# NOT_AN_AGENT — mock/example class, not a true agent — excluded from agent discovery
+class mock_subatomic_hop:
     """Mock SubatomicHop for testing swarm execution."""
 
     def __init__(self, hop_id: str, simulate_delay: float = 1.0):
@@ -115,6 +116,7 @@ async def example_batch_execution():
 
     # Factory function to create fresh HOPs
     def create_resume_hop():
+                    
         return MockSubatomicHop("resume_hop", simulate_delay=1.5)
 
     # Simulate 20 resume generation tasks
@@ -147,6 +149,7 @@ async def example_resume_generation_swarm():
 
     # Simulate resume generation HOPs
     def create_resume_generator():
+                    
         return MockSubatomicHop("resume_generator", simulate_delay=2.0)
 
     # Sample job descriptions
@@ -243,7 +246,9 @@ async def example_with_real_subatomic_hop():
 
         # Create real HOPs (example - adjust based on your actual implementation)
         def create_hop():
+                                    
             def sample_hop_function(**kwargs):
+                                                    
                 return {"result": f"Processed {kwargs.get('input', 'no input')}"}
 
             config = SubatomicHopConfig(

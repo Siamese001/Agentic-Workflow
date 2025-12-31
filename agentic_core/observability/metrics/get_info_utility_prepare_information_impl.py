@@ -1,22 +1,33 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import sys
 import time
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 
-class ProcessingResult:
+# NAMING FIXED: ProcessingResult → processing_result
+class processing_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         pass
 
-class ExecutionContext:
+# NAMING FIXED: ExecutionContext → execution_context
+class execution_context:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
         pass
     def start(self):
+                    
         pass
     def complete(self, success: bool, error: Optional[Exception] = None):
+                    
         pass
 
-class GetInfoUtilityPrepareInformation:
+# NAMING FIXED: GetInfoUtilityPrepareInformation → get_info_utility_prepare_information
+class get_info_utility_prepare_information:
     """
     Main executor class for get info helper prepare information operations.
 

@@ -1,10 +1,18 @@
 """
-Naming Law Healer Module
+Naming utilities module.
 
-This module provides the NamingLawHealerAgent that standardizes file identities
-by renaming forbidden or low-signal files to comply with naming laws.
+Provides naming agents for file naming compliance and drift detection.
 """
 
-from .naming_law_healer_agent import NamingLawHealerAgent
+# [GUARDED IMPORTS] Prevent cascading failures during agent discovery
+try:
+    from .NamingAgent import NamingAgent
+except ImportError:
+    NamingAgent = None
 
-__all__ = ["NamingLawHealerAgent"]
+try:
+    from .DriftDetectorAgent import DriftDetectorAgent
+except ImportError:
+    DriftDetectorAgent = None
+
+__all__ = ["NamingAgent", "DriftDetectorAgent"]

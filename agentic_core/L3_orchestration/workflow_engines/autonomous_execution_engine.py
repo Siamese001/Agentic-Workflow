@@ -16,16 +16,25 @@ logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
 from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
     create_proactive_resource_manager,
 )
 
 # L4 Checkpoint integration
-from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import (
-    create_autonomous_checkpoint_manager,
-)
+# GRAVITY FIXED: Dynamic import for checkpoint manager
+try:
+    from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+except ImportError:
+    create_autonomous_checkpoint_manager = None
 
-
-class AutonomousExecutionEngine:
+# NAMING FIXED: AutonomousExecutionEngine → autonomous_execution_engine
+class autonomous_execution_engine:
     """
     L3 Execution Engine that continuously validates and heals the Canon.
     

@@ -1,16 +1,24 @@
 """
-MCP Tool Stubs - Atomic Module
-Extracted from action_registry.py via Atomic Fission Protocol
-Includes: FigmaTools, PineconeTools, MemoryTools
-Tool ID Prefix: ACT-012+
+MCP Tool Stubs - Planned Feature Integration
+
+PURPOSE:
+    Stub implementations for MCP-powered tool integrations.
+    Provides Figma, Pinecone, and Memory MCP tool stubs for testing.
+
+STATUS: Stub - Planned for Phase 2 MCP Integration
+PLANNED FEATURES:
+    - FigmaTools: Design token extraction, screenshots, design context
+    - PineconeTools: Vector search and RAG operations
+    - MemoryTools: Knowledge graph entity and node operations
+
+EXTRACTED: From action_registry.py via Atomic Fission Protocol
+TOOL ID PREFIX: ACT-012+
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger('ActionRegistry.MCPStubs')
 
-logger = logging.getLogger("ActionRegistry.MCPStubs")
-
-
-class FigmaTools:
+class figma_tools:
     """
     Stubs for Figma MCP tools (L2 Design).
     Tool ID Prefix: ACT-012
@@ -19,7 +27,7 @@ class FigmaTools:
     def __init__(self):
         """Initializes FigmaTools. No specific state needed."""
 
-    def get_variable_defs(self, node_id: str, file_key: Optional[str] = None) -> str:
+    def get_variable_defs(self, node_id: str, file_key: Optional[str]=None) -> str:
         """
         Gets Figma variable definitions.
         Tool ID: ACT-012
@@ -32,9 +40,9 @@ class FigmaTools:
             str: A message indicating the tool is not implemented.
         """
         logger.info(f"🎨 Figma: get_variable_defs for node '{node_id}' (file: {file_key})")
-        return "Figma MCP not implemented in Phase 1"
+        return 'Figma MCP not implemented in Phase 1'
 
-    def get_screenshot(self, node_id: str, file_key: Optional[str] = None) -> str:
+    def get_screenshot(self, node_id: str, file_key: Optional[str]=None) -> str:
         """
         Gets a screenshot of a Figma node.
         Tool ID: ACT-013
@@ -47,9 +55,9 @@ class FigmaTools:
             str: A message indicating the tool is not implemented.
         """
         logger.info(f"🎨 Figma: get_screenshot for node '{node_id}' (file: {file_key})")
-        return "Figma MCP not implemented in Phase 1"
+        return 'Figma MCP not implemented in Phase 1'
 
-    def get_design_context(self, node_id: str, file_key: Optional[str] = None) -> str:
+    def get_design_context(self, node_id: str, file_key: Optional[str]=None) -> str:
         """
         Gets design context for a Figma node.
         Tool ID: ACT-014
@@ -62,10 +70,9 @@ class FigmaTools:
             str: A message indicating the tool is not implemented.
         """
         logger.info(f"🎨 Figma: get_design_context for node '{node_id}' (file: {file_key})")
-        return "Figma MCP not implemented in Phase 1"
+        return 'Figma MCP not implemented in Phase 1'
 
-
-class PineconeTools:
+class pinecone_tools:
     """
     Stub for Pinecone MCP tools (L3 RAG).
     Tool ID Prefix: ACT-015
@@ -74,7 +81,7 @@ class PineconeTools:
     def __init__(self):
         """Initializes PineconeTools. No specific state needed."""
 
-    def search_records(self, query: str, index_name: str = "default") -> str:
+    def search_records(self, query: str, index_name: str='default') -> str:
         """
         Searches Pinecone index for records.
         Tool ID: ACT-015
@@ -87,10 +94,9 @@ class PineconeTools:
             str: A message indicating the tool is not implemented.
         """
         logger.info(f"🔍 Pinecone: search_records for query '{query}' in index '{index_name}'")
-        return "Pinecone MCP not implemented in Phase 1"
+        return 'Pinecone MCP not implemented in Phase 1'
 
-
-class MemoryTools:
+class memory_tools:
     """
     Stubs for Memory MCP tools (L5 Memory).
     Tool ID Prefix: ACT-016
@@ -110,8 +116,8 @@ class MemoryTools:
         Returns:
             str: A message indicating the tool is not implemented.
         """
-        logger.info(f"🧠 Memory: create_entities for {len(entities)} entities")
-        return "Memory MCP not implemented in Phase 1"
+        logger.info(f'🧠 Memory: create_entities for {len(entities)} entities')
+        return 'Memory MCP not implemented in Phase 1'
 
     def search_nodes(self, query: str) -> str:
         """
@@ -125,7 +131,5 @@ class MemoryTools:
             str: A message indicating the tool is not implemented.
         """
         logger.info(f"🧠 Memory: search_nodes for query '{query}'")
-        return "Memory MCP not implemented in Phase 1"
-
-
+        return 'Memory MCP not implemented in Phase 1'
 __all__ = ['FigmaTools', 'PineconeTools', 'MemoryTools']

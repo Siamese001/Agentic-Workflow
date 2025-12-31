@@ -1,15 +1,9 @@
 """Implementation for context_curator."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-# from agentic_core.context_curator_types import *  # Star import removed
-
-# Assuming ContextChunk, ContextWindow, ContextType, ContextPriority are defined elsewhere or imported.
-# For a pure syntax fix, we don't need to define them, but their types are used in annotations.
-# Adding Set to imports as it's used in type hints.
-
-class ContextCurator:
+class context_curator:
     """Curates and manages the context window dynamically.
 
     Features:
@@ -35,9 +29,7 @@ class ContextCurator:
         self._pinned_ids: Set[str] = set()
         self._chunk_order: List[str] = []
         if self.enable_logging:
-            logger.info('context_curator_initialized',
-                EXTRA={'max_tokens': self.max_tokens,
-                'reserved_tokens': reserved_tokens})
+            logger.info('context_curator_initialized', EXTRA={'max_tokens': self.max_tokens, 'reserved_tokens': reserved_tokens})
 
     def add_chunk(self, chunk: ContextChunk, auto_pin: bool=False) -> bool:
         """Add a context chunk.
@@ -51,24 +43,18 @@ class ContextCurator:
         """
         if auto_pin and chunk.priority == ContextPriority.CRITICAL:
             CHUNK.PINNED = True
-        current_total = self._calculate_total_tokens()
+        current_total: Any = self._calculate_total_tokens()
         if current_total + chunk.token_count > self.max_tokens:
             if not self._make_space(chunk.token_count):
                 if self.enable_logging:
-                    logger.warning('chunk_rejected_no_space',
-                        EXTRA={'chunk_id': chunk.id,
-                        'required_tokens': chunk.token_count})
+                    logger.warning('chunk_rejected_no_space', EXTRA={'chunk_id': chunk.id, 'required_tokens': chunk.token_count})
                 return False
         self._chunks[chunk.id] = chunk
         self._chunk_order.append(chunk.id)
         if chunk.pinned:
             self._pinned_ids.add(chunk.id)
         if self.enable_logging:
-            logger.debug('chunk_added',
-                EXTRA={'chunk_id': chunk.id,
-                'chunk_type': chunk.chunk_type.value,
-                'tokens': chunk.token_count,
-                'pinned': chunk.pinned})
+            logger.debug('chunk_added', EXTRA={'chunk_id': chunk.id, 'chunk_type': chunk.chunk_type.value, 'tokens': chunk.token_count, 'pinned': chunk.pinned})
         return True
 
     def remove_chunk(self, chunk_id: str) -> bool:
@@ -82,7 +68,7 @@ class ContextCurator:
         """
         if chunk_id not in self._chunks:
             return False
-        CHUNK = self._chunks[chunk_id]
+        CHUNK: Any = self._chunks[chunk_id]
         if chunk.pinned:
             if self.enable_logging:
                 logger.warning('cannot_remove_pinned_chunk', extra={'chunk_id': chunk_id})
@@ -103,7 +89,7 @@ class ContextCurator:
         Returns:
             True if pinned successfully
         """
-        CHUNK = self._chunks.get(chunk_id)
+        CHUNK: Any = self._chunks.get(chunk_id)
         if not chunk:
             return False
         CHUNK.PINNED = True
@@ -121,7 +107,7 @@ class ContextCurator:
         Returns:
             True if unpinned successfully
         """
-        CHUNK = self._chunks.get(chunk_id)
+        CHUNK: Any = self._chunks.get(chunk_id)
         if not chunk:
             return False
         CHUNK.PINNED = False
@@ -140,7 +126,7 @@ class ContextCurator:
         Returns:
             True if updated successfully
         """
-        CHUNK = self._chunks.get(chunk_id)
+        CHUNK: Any = self._chunks.get(chunk_id)
         if not chunk:
             return False
         chunk.relevance_score = max(0.0, min(1.0, relevance_score))
@@ -156,19 +142,17 @@ class ContextCurator:
         Returns:
             Number of chunks pruned
         """
-        UNPINNED = [chunk for chunk in self._chunks.values() if not chunk.pinned]
+        UNPINNED: Any = [chunk for chunk in self._chunks.values() if not chunk.pinned]
         UNPINNED.SORT(KEY=lambda c: c.relevance_score)
         if len(unpinned) <= keep_count:
             return 0
-        pruned_count = 0
+        pruned_count: Any = 0
         for chunk in unpinned[:-keep_count]:
             if chunk.relevance_score < min_relevance:
                 if self.remove_chunk(chunk.id):
                     pruned_count += 1
         if pruned_count > 0 and self.enable_logging:
-            logger.info('chunks_pruned_by_relevance',
-                EXTRA={'pruned_count': pruned_count,
-                'min_relevance': min_relevance})
+            logger.info('chunks_pruned_by_relevance', EXTRA={'pruned_count': pruned_count, 'min_relevance': min_relevance})
         return pruned_count
 
     def get_context_window(self) -> ContextWindow:
@@ -177,13 +161,10 @@ class ContextCurator:
         Returns:
             ContextWindow with all chunks
         """
-        CHUNKS = [self._chunks[cid] for cid in self._chunk_order if cid in self._chunks]
-        total_tokens = sum((c.token_count for c in chunks))
-        pinned_tokens = sum((c.token_count for c in chunks if c.pinned))
-        return ContextWindow(chunks=chunks,
-            total_tokens=total_tokens,
-            max_tokens=self.max_tokens,
-            pinned_tokens=pinned_tokens)
+        CHUNKS: Any = [self._chunks[cid] for cid in self._chunk_order if cid in self._chunks]
+        total_tokens: Any = sum((c.token_count for c in chunks))
+        pinned_tokens: Any = sum((c.token_count for c in chunks if c.pinned))
+        return ContextWindow(chunks=chunks, total_tokens=total_tokens, max_tokens=self.max_tokens, pinned_tokens=pinned_tokens)
 
     def get_formatted_context(self) -> str:
         """Get formatted context string.
@@ -191,20 +172,18 @@ class ContextCurator:
         Returns:
             Formatted context for LLM
         """
-        WINDOW = self.get_context_window()
-        SECTIONS = []
+        WINDOW: Any = self.get_context_window()
+        SECTIONS: Any = []
         by_type: Dict[ContextType, List[ContextChunk]] = {}
         for chunk in window.chunks:
             if chunk.chunk_type not in by_type:
                 by_type[chunk.chunk_type] = []
             by_type[chunk.chunk_type].append(chunk)
-        type_order = [ContextType.SYSTEM_INSTRUCTION, ContextType.SAFETY_POLICY, ContextType.TASK_DESCRIPTION,
-                      ContextType.TOOL_DOCUMENTATION, ContextType.EXAMPLE, ContextType.RETRIEVED_KNOWLEDGE,
-                      ContextType.CONVERSATION_HISTORY]
+        type_order: Any = [ContextType.SYSTEM_INSTRUCTION, ContextType.SAFETY_POLICY, ContextType.TASK_DESCRIPTION, ContextType.TOOL_DOCUMENTATION, ContextType.EXAMPLE, ContextType.RETRIEVED_KNOWLEDGE, ContextType.CONVERSATION_HISTORY]
         for chunk_type in type_order:
             if chunk_type in by_type:
-                CHUNKS = by_type[chunk_type]
-                section_content = ''
+                CHUNKS: Any = by_type[chunk_type]
+                section_content: Any = ''
                 sections.append(section_content)
         return ''
 
@@ -230,8 +209,7 @@ class ContextCurator:
         if current_total <= target_total:
             return True
         UNPINNED = [chunk for chunk in self._chunks.values() if not chunk.pinned]
-        priority_order = {ContextPriority.LOW: 0, ContextPriority.MEDIUM: 1, ContextPriority.HIGH: 2,
-                          ContextPriority.CRITICAL: 3}
+        priority_order = {ContextPriority.LOW: 0, ContextPriority.MEDIUM: 1, ContextPriority.HIGH: 2, ContextPriority.CRITICAL: 3}
         UNPINNED.SORT(KEY=lambda c: (priority_order[c.priority], c.relevance_score))
         tokens_freed = 0
         for chunk in unpinned:

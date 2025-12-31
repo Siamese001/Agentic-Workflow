@@ -1,19 +1,34 @@
 import ast
+'''Brief description of functionality and purpose.'''
+
 import json
 import logging
 import re
 import time
+try:
+    from core.semantic_gatekeeper import get_gatekeeper
+except ImportError:
+    get_gatekeeper = lambda: None
+try:
+    from db_manager import HybridDatabaseManager
+except ImportError:
+    HybridDatabaseManager = type('HybridDatabaseManager', (), {})
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-from core.semantic_gatekeeper import get_gatekeeper
-from db_manager import HybridDatabaseManager
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
+
 
 
 @dataclass
-class CanonEntry:
+# NAMING FIXED: canon_entry → canon_entry
+class canon_entry:
     """Local Canon Entry type - moved from schemas to fix gravity violation."""
     id: str
     code_snippet: str
@@ -25,16 +40,19 @@ class CanonEntry:
     last_used: Optional[str] = None
 
     def get_success_rate(self) -> float:
+                    
         total_count = self.success_count + self.failure_count
         if total_count == 0:
             return 0.0
         return self.success_count / total_count
 
     def update_failure(self) -> None:
+                    
         self.failure_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
     def update_success(self) -> None:
+                    
         self.success_count += 1
         self.last_used = datetime.now(timezone.utc).isoformat()
 
@@ -42,7 +60,8 @@ class CanonEntry:
 logger = logging.getLogger(__name__)
 
 
-class CanonValidator:
+# NAMING FIXED: CanonValidator → canon_validator
+class canon_validator:
     """
     The L5 Meta-Learner that validates code against the Canon.
 
@@ -89,10 +108,10 @@ class CanonValidator:
             # Catching a broader exception for unexpected issues during parsing
             return None, f"Unexpected AST parsing error: {e}"
 
-    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> CanonEntry:
+    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> "canon_entry":
         """
-        Generates a CanonEntry from code and metadata.
-        This helper method encapsulates the logic for creating a CanonEntry,
+        Generates a canon_entry from code and metadata.
+        This helper method encapsulates the logic for creating a canon_entry,
         including AST parsing and embedding generation.
         """
         ast_representation: str
@@ -100,7 +119,7 @@ class CanonValidator:
         if ast_error:
             # Store error message in AST representation if parsing failed
             ast_representation = json.dumps({"error": ast_error})
-            logger.error(f"Error parsing code for CanonEntry: {ast_error}")
+            logger.error(f"Error parsing code for canon_entry: {ast_error}")
         else:
             ast_representation = ast_dump_str
 
@@ -109,7 +128,7 @@ class CanonValidator:
             embedding = self.gatekeeper.embed_text(code)
         except Exception as e:
             embedding = []  # Fallback to empty list if embedding fails
-            logger.error(f"Error generating embedding for CanonEntry: {e}")
+            logger.error(f"Error generating embedding for canon_entry: {e}")
 
         entry_metadata = metadata or {}
         entry_metadata.update({
@@ -120,14 +139,13 @@ class CanonValidator:
         # This ensures uniqueness and consistency across runs/processes.
         entry_id = str(uuid.uuid4())
 
-        return CanonEntry(
+        return canon_entry(
             id=entry_id,
             code_snippet=code,
             embedding=embedding,
             ast_structure=ast_representation,
             metadata=entry_metadata
         )
-
     def check_and_learn(self, new_code: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Check code against the Canon and learn from results.
@@ -209,7 +227,6 @@ class CanonValidator:
 
         if error_dict and isinstance(error_dict, dict) and "error" in error_dict:
             return error_dict["error"]
-
         return None
 
     def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> Optional[Dict[str, Any]]:
@@ -235,11 +252,10 @@ class CanonValidator:
                 "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
             }
         return None
-
     def _validate_ast_match(
         self,
-        new_entry: CanonEntry,
-        existing_entry: CanonEntry
+        new_entry: canon_entry,
+        existing_entry: canon_entry
     ) -> Dict[str, Any]:
         """
         Validate AST structures between two entries.
@@ -348,7 +364,7 @@ class CanonValidator:
             "recommendation": "Code appears to be new and valid"
         }
 
-    def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+    def _process_l1_match(self, new_entry: canon_entry, best_match: canon_entry) -> Dict[str, Any]:
         """Process L1 Redis match and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -364,7 +380,7 @@ class CanonValidator:
         logger.info(f"L1 match found: {best_match.id}. Is valid: {validation['is_valid']}")
         return result
 
-    def _process_l2_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+    def _process_l2_match(self, new_entry: canon_entry, best_match: canon_entry) -> Dict[str, Any]:
         """Process L2 Qdrant match, promote if valid, and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -390,7 +406,7 @@ class CanonValidator:
 
         return result
 
-    def _handle_failure_outcome(self, entry: CanonEntry) -> None:
+    def _handle_failure_outcome(self, entry: canon_entry) -> None:
         """Helper to handle failure outcome for an entry."""
         entry.update_failure()
         logger.info(f"Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}")
@@ -399,7 +415,7 @@ class CanonValidator:
         if entry.failure_count >= self.failure_threshold:
             logger.warning(f"Pattern {entry.id} exceeded failure threshold ({self.failure_threshold}).")
 
-    def _handle_success_outcome(self, entry: CanonEntry) -> None:
+    def _handle_success_outcome(self, entry: canon_entry) -> None:
         """Helper to handle success outcome for an entry."""
         entry.update_success()
         logger.info(f"Recorded success for pattern {entry.id}. Success count: {entry.success_count}")
@@ -455,9 +471,9 @@ class CanonValidator:
 
         return stats
 
-    def _format_search_result(self, result: CanonEntry) -> Dict[str, Any]:
+    def _format_search_result(self, result: canon_entry) -> Dict[str, Any]:
         """
-        Helper method to format a single CanonEntry into a dictionary
+        Helper method to format a single canon_entry into a dictionary
         for search results, reducing nesting in search_similar_patterns.
         """
         return {

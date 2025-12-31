@@ -3,21 +3,19 @@
 Detects and blocks prompt injection attempts in user inputs.
 Part of the safety guardrail system for agentic workflows.
 """
-
 import logging
-from dataclasses import dataclass, field  # Added missing import for dataclass and field
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-
-LOGGER = logging.getLogger(__name__)
+logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class InjectionResult:
+class injection_result:
     """Result of prompt injection detection."""
     is_injection: bool
-    severity: str  # "low" | "med" | "high"
+    severity: str
     confidence: float
     detected_patterns: List[str]
-    rationale: str = "" # Changed RATIONALE to rationale for consistency and PEP8
+    rationale: str = ''
     metadata: Dict[str, object] = field(default_factory=dict)
 
 def _score_prompt(prompt: str) -> Tuple[int, str]:
@@ -29,43 +27,28 @@ def _score_prompt(prompt: str) -> Tuple[int, str]:
     Returns:
         Tuple of (score: int, rationale: str)
     """
-    score = 0 # Changed SCORE to score for consistency and PEP8
+    score = 0
     rationale_parts = []
-
-    # Check for critical keywords first (highest priority)
-    critical_keywords = [
-        "exfiltrate", "secrets", "policies", "credentials", "password"
-    ]
-
+    critical_keywords = ['exfiltrate', 'secrets', 'policies', 'credentials', 'password']
     for keyword in critical_keywords:
         if keyword.lower() in prompt.lower():
             score += 1
             rationale_parts.append(f"Detected '{keyword}'")
-
-    # If no critical keywords, check for high severity keywords
     if score == 0:
-        high_keywords = [
-            "ignore", "disregard", "override", "bypass", "forget",
-            "skip", "admin", "system", "root"
-        ]
-
+        high_keywords = ['ignore', 'disregard', 'override', 'bypass', 'forget', 'skip', 'admin', 'system', 'root']
         for keyword in high_keywords:
             if keyword.lower() in prompt.lower():
                 score += 1
                 rationale_parts.append(f"Detected '{keyword}'")
-                break  # Only count one high-severity keyword
-
-    # Special case: "instructions" only counts if no other keywords found
-    if score == 0 and "instructions" in prompt.lower():
+                break
+    if score == 0 and 'instructions' in prompt.lower():
         score += 1
         rationale_parts.append("Detected 'instructions'")
-
     if score > 0:
-        rationale = f"Injection risk: {', '.join(rationale_parts)}" # Changed RATIONALE to rationale
+        rationale = f"Injection risk: {', '.join(rationale_parts)}"
     else:
-        rationale = "No injection patterns detected" # Changed RATIONALE to rationale
-
-    return score, rationale
+        rationale = 'No injection patterns detected'
+    return (score, rationale)
 
 def detect_injection(prompt: str) -> InjectionResult:
     """Detect prompt injection attempts in user input.
@@ -76,50 +59,31 @@ def detect_injection(prompt: str) -> InjectionResult:
     Returns:
         InjectionResult with detection details and severity assessment
     """
-    LOGGER.debug(f"Analyzing prompt for injection: length={len(prompt)}") # Changed logger to LOGGER
-
-    # Score the prompt
-    score, rationale = _score_prompt(prompt) # Changed SCORE, RATIONALE to score, rationale
-
-    # Determine severity based on score and content
-    if score >= 3 or any(word in prompt.lower() for word in ["exfiltrate", "secrets", "policies"]):
-        severity = "high" # Changed SEVERITY to severity
-        confidence = 0.9 # Changed CONFIDENCE to confidence
-        is_injection = True
-    elif score >= 2 or any(word in prompt.lower() for word in ["bypass", "workflow"]):
-        severity = "med" # Changed SEVERITY to severity
-        confidence = 0.7 # Changed CONFIDENCE to confidence
-        is_injection = True
+    LOGGER.debug(f'Analyzing prompt for injection: length={len(prompt)}')
+    score, rationale = _score_prompt(prompt)
+    if score >= 3 or any((word in prompt.lower() for word in ['exfiltrate', 'secrets', 'policies'])):
+        severity: Any = 'high'
+        confidence: Any = 0.9
+        is_injection: Any = True
+    elif score >= 2 or any((word in prompt.lower() for word in ['bypass', 'workflow'])):
+        severity: Any = 'med'
+        confidence: Any = 0.7
+        is_injection: Any = True
     elif score >= 1:
-        severity = "low" # Changed SEVERITY to severity
-        confidence = 0.5 # Changed CONFIDENCE to confidence
-        is_injection = True
+        severity: Any = 'low'
+        confidence: Any = 0.5
+        is_injection: Any = True
     else:
-        severity = "low" # Changed SEVERITY to severity
-        confidence = 0.1 # Changed CONFIDENCE to confidence
-        is_injection = False
-
-    # Extract detected patterns
-    detected_patterns = []
+        severity: Any = 'low'
+        confidence: Any = 0.1
+        is_injection: Any = False
+    detected_patterns: Any = []
     if score > 0:
-        detected_patterns = [f"DETECTED: {pattern}" for pattern in rationale.split(": ")[1].split(", ")] # Fixed unterminated string literal
+        detected_patterns: Any = [f'DETECTED: {pattern}' for pattern in rationale.split(': ')[1].split(', ')]
+    LOGGER.debug(f'Injection detection result: is_injection={is_injection}, severity={severity}')
+    return InjectionResult(is_injection=is_injection, severity=severity, confidence=confidence, detected_patterns=detected_patterns, rationale=rationale, metadata={'prompt_length': len(prompt), 'score': score, 'analysis_timestamp': '2025-12-11T09:00:00Z'})
 
-    LOGGER.debug(f"Injection detection result: is_injection={is_injection}, severity={severity}") # Changed logger to LOGGER
-
-    return InjectionResult(
-        is_injection=is_injection,
-        severity=severity, # Changed SEVERITY to severity
-        confidence=confidence, # Changed CONFIDENCE to confidence
-        detected_patterns=detected_patterns,
-        rationale=rationale, # Changed RATIONALE to rationale
-        metadata={ # Changed METADATA to metadata
-            "prompt_length": len(prompt),
-            "score": score,
-            "analysis_timestamp": "2025-12-11T09:00:00Z"
-        }
-    )
-
-def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -> bool:
+def validate_safety_threshold(result: InjectionResult, threshold: float=0.8) -> bool:
     """Validate injection result against safety threshold.
 
     Args:
@@ -130,6 +94,6 @@ def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -
         True if safe (below threshold), False if unsafe
     """
     if result.is_injection and result.confidence >= threshold:
-        LOGGER.warning(f"Prompt injection detected above threshold: {result.confidence}") # Changed logger to LOGGER
+        LOGGER.warning(f'Prompt injection detected above threshold: {result.confidence}')
         return False
     return True

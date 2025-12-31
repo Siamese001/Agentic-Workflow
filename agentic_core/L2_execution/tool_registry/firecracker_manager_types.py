@@ -4,25 +4,25 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class VMStatus(Enum):
+class vm_status(Enum):
     """VM operational status."""
-    CREATING = 'creating'
-    RUNNING = 'running'
-    STOPPED = 'stopped'
-    FAILED = 'failed'
-    TERMINATED = 'terminated'
+    CREATING: Any = 'creating'
+    RUNNING: Any = 'running'
+    STOPPED: Any = 'stopped'
+    FAILED: Any = 'failed'
+    TERMINATED: Any = 'terminated'
 
-class VMProvider(Enum):
+class vm_provider(Enum):
     """VM provider types."""
-    FIRECRACKER = 'firecracker'
-    E2B = 'e2b'
-    DOCKER = 'docker'
-    LOCAL = 'local'
+    FIRECRACKER: Any = 'firecracker'
+    E2B: Any = 'e2b'
+    DOCKER: Any = 'docker'
+    LOCAL: Any = 'local'
 
 @dataclass
-class VMConfig:
+class vm_config:
     """Configuration for micro-VM."""
     vm_id: str
     provider: VMProvider = VMProvider.FIRECRACKER
@@ -36,20 +36,10 @@ class VMConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            'vm_id': self.vm_id,
-            'provider': self.provider.value,
-            'cpu_count': self.cpu_count,
-            'memory_mb': self.memory_mb,
-            'disk_mb': self.disk_mb,
-            'network_enabled': self.network_enabled,
-            'timeout_seconds': self.timeout_seconds,
-            'auto_teardown': self.auto_teardown,
-            'metadata': self.metadata
-        }
+        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, 'memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 'timeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown, 'metadata': self.metadata}
 
 @dataclass
-class VMInstance:
+class vm_instance:
     """Running VM instance."""
     vm_id: str
     config: VMConfig
@@ -76,16 +66,10 @@ class VMInstance:
         Returns:
             True if expired
         """
-        current_time = current_time or time.time()
-        elapsed = current_time - self.created_at
+        current_time: Any = current_time or time.time()
+        elapsed: Any = current_time - self.created_at
         return elapsed > self.config.timeout_seconds
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'vm_id': self.vm_id,
-            'config': self.config.to_dict(),
-            'status': self.status.value,
-            'created_at': self.created_at,
-            'process_id': self.process_id,
-            'endpoint': self.endpoint,
-            'metadata': self.metadata}
+        return {'vm_id': self.vm_id, 'config': self.config.to_dict(), 'status': self.status.value, 'created_at': self.created_at, 'process_id': self.process_id, 'endpoint': self.endpoint, 'metadata': self.metadata}

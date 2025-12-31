@@ -22,8 +22,33 @@ Future Curation Roadmap:
     - Register with relevant L4/L5 systems
 """
 
-# Public API surface — expose only what's intended
-__all__ = []
+# Exports from structure_blueprint
+from .structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+    APPS_RG_SUBFOLDER_MAP,
+    APPS_LIC_SUBFOLDER_MAP,
+    APPS_SHARED_SUBFOLDER_MAP,
+    TESTS_L2_SUBFOLDER_MAP,
+    FORBIDDEN_ROOT_FOLDERS,
+    FORBIDDEN_FOLDER_PATTERN,
+    ACTIVE_CANON_KEYS,
+    ROOT_PROTECTED_FILES,
+    CANON_KEY_TO_FOLDER_MAP,
+    CANON_SIGNALS,
+)
 
-# Example placeholder (replace when populated)
-# from .core_module import CoreImplementation
+__all__ = [
+    "SOVEREIGN_REGISTRY",
+    "CORE_SUBFOLDER_MAP", 
+    "APPS_RG_SUBFOLDER_MAP",
+    "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_SHARED_SUBFOLDER_MAP",
+    "TESTS_L2_SUBFOLDER_MAP",
+    "FORBIDDEN_ROOT_FOLDERS",
+    "FORBIDDEN_FOLDER_PATTERN",
+    "ACTIVE_CANON_KEYS",
+    "ROOT_PROTECTED_FILES",
+    "CANON_KEY_TO_FOLDER_MAP",
+    "CANON_SIGNALS",
+]

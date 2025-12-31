@@ -1,19 +1,22 @@
 import hashlib
+'''Brief description of functionality and purpose.'''
+
+'Brief description of functionality and purpose.'
 import logging
 import secrets
 import time
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType, IdentityVerificationResult, TrustDomain
 
-from agentic_core.L1_cognition.identity.spiffe_manager_types import (
-    AgentIdentity,
-    IdentityType,
-    IdentityVerificationResult,
-    TrustDomain,
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
 )
 
-LOGGER = logging.getLogger(__name__)
+logger: Any = logging.getLogger(__name__)
 
-class SPIFFEManager:
+class spiffe_manager:
     """Manager for SPIFFE-based agent identities.
 
     Provides:
@@ -26,10 +29,7 @@ class SPIFFEManager:
     Production systems should use full SPIFFE/SPIRE infrastructure.
     """
 
-    def __init__(self,
-                 trust_domain: TrustDomain = TrustDomain.LOCAL,
-                 default_ttl_seconds: int = 3600,
-                 enable_logging: bool = True):
+    def __init__(self, trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600, enable_logging: bool=True):
         """Initialize SPIFFE manager.
 
         Args:
@@ -43,18 +43,9 @@ class SPIFFEManager:
         self._identities: Dict[str, AgentIdentity] = {}
         self._revoked_ids: set = set()
         if self.enable_logging:
-            LOGGER.info('spiffe_manager_initialized',
-                        extra={'trust_domain': trust_domain.value,
-                               'default_ttl': default_ttl_seconds})
+            LOGGER.info('spiffe_manager_initialized', extra={'trust_domain': trust_domain.value, 'default_ttl': default_ttl_seconds})
 
-    def create_identity(self,
-                        agent_name: str,
-                        agent_type: IdentityType,
-                        namespace: str = 'default',
-                        capabilities: Optional[List[str]] = None,
-                        ttl_seconds: Optional[int] = None,
-                        metadata: Optional[Dict[str,
-                                                Any]] = None) -> AgentIdentity:
+    def create_identity(self, agent_name: str, agent_type: IdentityType, namespace: str='default', capabilities: Optional[List[str]]=None, ttl_seconds: Optional[int]=None, metadata: Optional[Dict[str, Any]]=None) -> AgentIdentity:
         """Create a new agent identity.
 
         Args:
@@ -68,28 +59,14 @@ class SPIFFEManager:
         Returns:
             AgentIdentity with cryptographic credentials
         """
-        ttl = ttl_seconds or self.default_ttl_seconds
-        now = time.time()
-        spiffe_id = self._generate_spiffe_id(trust_domain=self.trust_domain,
-                                             namespace=namespace,
-                                             agent_name=agent_name)
+        ttl: Any = ttl_seconds or self.default_ttl_seconds
+        now: Any = time.time()
+        spiffe_id: Any = self._generate_spiffe_id(trust_domain=self.trust_domain, namespace=namespace, agent_name=agent_name)
         public_key, private_key = self._generate_key_pair()
-        identity = AgentIdentity(spiffe_id=spiffe_id,
-                                 agent_type=agent_type,
-                                 trust_domain=self.trust_domain,
-                                 public_key=public_key,
-                                 private_key=private_key,
-                                 issued_at=now,
-                                 expires_at=now + ttl,
-                                 capabilities=capabilities or [],
-                                 metadata=metadata or {})
+        identity: Any = AgentIdentity(spiffe_id=spiffe_id, agent_type=agent_type, trust_domain=self.trust_domain, public_key=public_key, private_key=private_key, issued_at=now, expires_at=now + ttl, capabilities=capabilities or [], metadata=metadata or {})
         self._identities[spiffe_id] = identity
         if self.enable_logging:
-            LOGGER.info('identity_created',
-                        extra={'spiffe_id': spiffe_id,
-                               'agent_type': agent_type.value,
-                               'namespace': namespace,
-                               'expires_in': ttl})
+            LOGGER.info('identity_created', extra={'spiffe_id': spiffe_id, 'agent_type': agent_type.value, 'namespace': namespace, 'expires_in': ttl})
         return identity
 
     def verify_identity(self, spiffe_id: str, public_key: str) -> IdentityVerificationResult:
@@ -104,26 +81,18 @@ class SPIFFEManager:
         """
         if spiffe_id in self._revoked_ids:
             return IdentityVerificationResult(valid=False, reason='Identity has been revoked')
-        identity = self._identities.get(spiffe_id)
+        identity: Any = self._identities.get(spiffe_id)
         if not identity:
             return IdentityVerificationResult(valid=False, reason='Identity not found')
         if identity.is_expired():
-            return IdentityVerificationResult(valid=False,
-                                              identity=identity,
-                                              reason='Identity has expired')
+            return IdentityVerificationResult(valid=False, identity=identity, reason='Identity has expired')
         if identity.public_key != public_key:
-            return IdentityVerificationResult(valid=False,
-                                              identity=identity,
-                                              reason='Public key mismatch')
+            return IdentityVerificationResult(valid=False, identity=identity, reason='Public key mismatch')
         if self.enable_logging:
             LOGGER.debug('identity_verified', extra={'spiffe_id': spiffe_id})
-        return IdentityVerificationResult(valid=True,
-                                          identity=identity,
-                                          reason='Identity verified successfully')
+        return IdentityVerificationResult(valid=True, identity=identity, reason='Identity verified successfully')
 
-    def rotate_credentials(self,
-                           spiffe_id: str,
-                           ttl_seconds: Optional[int] = None) -> Optional[AgentIdentity]:
+    def rotate_credentials(self, spiffe_id: str, ttl_seconds: Optional[int]=None) -> Optional[AgentIdentity]:
         """Rotate credentials for an existing identity.
 
         Args:
@@ -133,20 +102,18 @@ class SPIFFEManager:
         Returns:
             Updated AgentIdentity or None if not found
         """
-        identity = self._identities.get(spiffe_id)
+        identity: Any = self._identities.get(spiffe_id)
         if not identity:
             return None
-        ttl = ttl_seconds or self.default_ttl_seconds
-        now = time.time()
+        ttl: Any = ttl_seconds or self.default_ttl_seconds
+        now: Any = time.time()
         public_key, private_key = self._generate_key_pair()
         identity.public_key = public_key
         identity.private_key = private_key
         identity.issued_at = now
         identity.expires_at = now + ttl
         if self.enable_logging:
-            LOGGER.info('credentials_rotated',
-                        extra={'spiffe_id': spiffe_id,
-                               'new_expires_at': identity.expires_at})
+            LOGGER.info('credentials_rotated', extra={'spiffe_id': spiffe_id, 'new_expires_at': identity.expires_at})
         return identity
 
     def revoke_identity(self, spiffe_id: str) -> bool:
@@ -176,9 +143,7 @@ class SPIFFEManager:
         """
         return self._identities.get(spiffe_id)
 
-    def list_identities(self,
-                        agent_type: Optional[IdentityType] = None,
-                        namespace: Optional[str] = None) -> List[AgentIdentity]:
+    def list_identities(self, agent_type: Optional[IdentityType]=None, namespace: Optional[str]=None) -> List[AgentIdentity]:
         """List all identities.
 
         Args:
@@ -188,11 +153,11 @@ class SPIFFEManager:
         Returns:
             List of AgentIdentity objects
         """
-        identities = list(self._identities.values())
+        identities: Any = list(self._identities.values())
         if agent_type:
-            identities = [i for i in identities if i.agent_type == agent_type]
+            identities: Any = [i for i in identities if i.agent_type == agent_type]
         if namespace:
-            identities = [i for i in identities if i.get_namespace() == namespace]
+            identities: Any = [i for i in identities if i.get_namespace() == namespace]
         return identities
 
     def cleanup_expired(self) -> int:
@@ -201,18 +166,14 @@ class SPIFFEManager:
         Returns:
             Number of identities removed
         """
-        expired = [spiffe_id for spiffe_id,
-                   identity in self._identities.items() if identity.is_expired()]
+        expired: Any = [spiffe_id for spiffe_id, identity in self._identities.items() if identity.is_expired()]
         for spiffe_id in expired:
             del self._identities[spiffe_id]
         if self.enable_logging and expired:
             LOGGER.info('expired_identities_cleaned', extra={'count': len(expired)})
         return len(expired)
 
-    def _generate_spiffe_id(self,
-                            trust_domain: TrustDomain,
-                            namespace: str,
-                            agent_name: str) -> str:
+    def _generate_spiffe_id(self, trust_domain: TrustDomain, namespace: str, agent_name: str) -> str:
         """Generate a SPIFFE ID.
 
         Args:
@@ -239,9 +200,7 @@ class SPIFFEManager:
         public_key = hashlib.sha256(private_key.encode()).hexdigest()
         return (public_key, private_key)
 
-
-def create_spiffe_manager(trust_domain: TrustDomain = TrustDomain.LOCAL,
-                          default_ttl_seconds: int = 3600) -> SPIFFEManager:
+def create_spiffe_manager(trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600) -> SPIFFEManager:
     """Factory function to create SPIFFE manager.
 
     Args:

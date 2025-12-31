@@ -1,44 +1,14 @@
 """
 Sovereign domain constants - Re-exported from canonical location.
 This module provides waterfall-compliant access to shared constants.
+[SSOT] All structural constants derived from structure_blueprint.py
 """
-
-import sys
-from pathlib import Path
-
-# Path insert no longer needed - using absolute import
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    MAX_DEPTH,
-    MAX_LINES,
-    MIN_DEPTH,
-    MIN_LINES,
-    ROOT_WHITELIST,
-    SOVEREIGN_REGISTRY,
-)
-
-# Exclusion Zones
-EXCLUDED_DIRS = {
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.tox', 'dist', 'build', '.mypy_cache', '.coverage',
-    '.vscode', '.idea', '*.swp', '*.swo', '.DS_Store',
-    'logs', 'tmp', 'temp', '.tmp',
-    '.cache', 'cache', 'data', 'archives',
-    'htmlcov', 'coverage.xml', '_build', 'site', '.doctrees',
-}
-
-EXCLUDED_FILES = {
-    'canon_validator_v2_agentic.py',
-    'test_*.py', '*_test.py', 'conftest.py',
-    '*.pyc', '*.pyo', '*.pyd', '.DS_Store',
-    '*.egg-info', '*.whl', '*.zip', '*.tar.gz',
-    '.vscode/settings.json', '.idea/*.xml',
-    'Thumbs.db', '*.tmp',
-}
-
-# [SSOT] Import from structure_blueprint.py instead of hardcoding
-ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
-
-ALLOWED_ROOT_FILES = {
-    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
-    '.env', 'canon_validator_agentic.py', 'pytest.ini'
-}
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+from typing import Any
+depth_map: Any = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
+max_lines: Any = 200
+min_lines: Any = 10
+excluded_dirs: Any = {'.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache', 'node_modules', '.tox', 'dist', 'build', '.mypy_cache', '.coverage', '.vscode', '.idea', '.DS_Store', 'logs', 'tmp', 'temp', '.tmp', '.cache', 'cache', 'data', 'archives', 'htmlcov', '_build', 'site', '.doctrees'}
+excluded_files: Any = {'canon_validator_v2_agentic.py', 'conftest.py', '.DS_Store', 'Thumbs.db'}
+allowed_root_folders: Any = set(ROOT_WHITELIST)
+allowed_root_files: Any = ROOT_PROTECTED_FILES

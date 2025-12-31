@@ -7,20 +7,23 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-class RouteType(Enum):
+# NAMING FIXED: RouteType → route_type
+class route_type(Enum):
     """TODO: Add docstring."""
 
     """TODO: Add docstring."""
 
 
-class ArchetypeType(Enum):
+# NAMING FIXED: ArchetypeType → archetype_type
+class archetype_type(Enum):
     """TODO: Add docstring."""
 
     """TODO: Add docstring."""
 
 
 @dataclass
-class RouteClassifierConfig:
+# NAMING FIXED: RouteClassifierConfig → route_classifier_config
+class route_classifier_config:
     """TODO: Add docstring."""
 
     _temperature: float = 0.3
@@ -29,7 +32,8 @@ class RouteClassifierConfig:
 
 
 @dataclass
-class ClassificationResult:
+# NAMING FIXED: ClassificationResult → classification_result
+class classification_result:
     """TODO: Add docstring."""
 
     _route: RouteType

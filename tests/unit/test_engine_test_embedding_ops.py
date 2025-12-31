@@ -1,69 +1,66 @@
 """Test file - regenerated due to syntax errors."""
-
 import pytest
 
-
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_embedding_dimension():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_embedding_dimension() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_embedding_normalization():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_embedding_normalization() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_embedding_determinism():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_embedding_determinism() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_different_text_different_embedding():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_different_text_different_embedding() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_cosine_similarity_identical():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_cosine_similarity_identical() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_cosine_similarity_orthogonal():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_cosine_similarity_orthogonal() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_cosine_similarity_opposite():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_cosine_similarity_opposite() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_similarity_range():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_similarity_range() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_search_returns_top_k():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_search_returns_top_k() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_search_with_threshold():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_search_with_threshold() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_search_empty_index():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_search_empty_index() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_normalize_to_unit_length():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_normalize_to_unit_length() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_normalize_preserves_direction():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_normalize_preserves_direction() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_normalize_zero_vector():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_normalize_zero_vector() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_match_relevant_context():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_match_relevant_context() -> Any:
     """Test from original file."""
 
-@pytest.mark.skip(reason="Original file had syntax errors")
-def test_match_multiple_contexts():
+@pytest.mark.skip(reason='Original file had syntax errors')
+def test_match_multiple_contexts() -> Any:
     """Test from original file."""
-

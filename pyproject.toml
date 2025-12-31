@@ -1,0 +1,135 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-workflow"
+version = "1.0.0"
+description = "Sovereign Agentic Architecture with Zero-Loss Merge"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Agentic Team", email = "team@agentic.dev"}
+]
+dependencies = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pydantic>=2.0.0",
+    "google-generativeai>=0.3.0",
+    "pinecone-client>=3.0.0",
+    "redis>=5.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+# Pointing to 'agentic_core' based on actual repo structure.
+# Enforcing 100% coverage, branch checking, and detailed html reports.
+addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:coverage_html --cov-fail-under=100 -ra -v"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Individual component tests",
+    "integration: Zero-loss merge and transactional tests",
+    "e2e: End-to-end workflow tests",
+    "slow: Long-running tests",
+]
+
+[tool.coverage.run]
+branch = true
+# Explicitly set the source to avoid ambiguity
+source = ["agentic_core"]
+omit = [
+    "*/tests/*",
+    "*/stubs/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/archives/*"
+]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "@abstractmethod",
+    "@abc.abstractmethod"
+]
+
+[tool.coverage.html]
+directory = "coverage_html"
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | archives
+  | stubs
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "archives",
+    "stubs",
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    "archives/",
+    "stubs/",
+    "tests/"
+]

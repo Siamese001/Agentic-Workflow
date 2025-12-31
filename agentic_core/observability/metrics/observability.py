@@ -2,7 +2,8 @@
 
 
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 This module provides observability compatibility shim.
 
 Layer: Runtime/Infrastructure

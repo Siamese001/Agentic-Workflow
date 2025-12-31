@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass
-class CharLimitConstraint:
+# NAMING FIXED: CharLimitConstraint → char_limit_constraint
+class char_limit_constraint:
     """Character limit constraint for a route."""
 
     _min: Optional[int] = None
@@ -25,12 +26,12 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-class WordLimitConstraint:
+# NAMING FIXED: WordLimitConstraint → word_limit_constraint
+class word_limit_constraint:
     """Word limit constraint for a route."""
 
     min: Optional[int] = None
     max: Optional[int] = None
-
 
 def validate(self: Any, count: int) -> bool:
     """Validate word count against constraints."""
@@ -42,7 +43,8 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-class RouteConfig:
+# NAMING FIXED: RouteConfig → route_config
+class route_config:
     """Configuration for a message route."""
 
     _route: Route
@@ -58,7 +60,8 @@ class RouteConfig:
 
 
 @dataclass
-class ArchetypeConfig:
+# NAMING FIXED: ArchetypeConfig → archetype_config
+class archetype_config:
     """Configuration for recipient archetype."""
 
     _archetype: Archetype
@@ -74,7 +77,8 @@ class ArchetypeConfig:
 
 
 @dataclass
-class ValidationRule:
+# NAMING FIXED: ValidationRule → validation_rule
+class validation_rule:
     """Validation rule configuration."""
 
     _rule_id: str

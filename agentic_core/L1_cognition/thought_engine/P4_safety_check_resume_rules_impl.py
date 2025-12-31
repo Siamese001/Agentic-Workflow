@@ -5,19 +5,28 @@ import sys  # Added missing import
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 
-class ProcessingResult:
+# NAMING FIXED: ProcessingResult → processing_result
+class processing_result:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, success: bool, data=None, error_message: Optional[str]=None, execution_context=None, additional_info: Optional[Dict[str, Any]]=None):
         pass
 
-class ExecutionContext:
+# NAMING FIXED: ExecutionContext → execution_context
+class execution_context:
+    '''Brief description of functionality and purpose.'''
+    
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]]=None):
         pass
     def start(self):
+                    
         pass
     def complete(self, success: bool, error=None):
+                    
         pass
 
-class CheckResumeRules:
+# NAMING FIXED: CheckResumeRules → check_resume_rules
+class check_resume_rules:
     """
     Main executor class for check resume rules operations.
 

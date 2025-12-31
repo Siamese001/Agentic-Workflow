@@ -4,17 +4,15 @@ Auto-generated stub for test_agentic_behaviors.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
-
 import pytest
 
-
-# Mock classes for testing
-class HardenedOrchestrator:
+class hardened_orchestrator:
+    """Brief description of functionality and purpose."""
     pass
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_validation_max_retries_exceeded():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_validation_max_retries_exceeded() -> Any:
     """
     Test that the orchestrator stops asking for corrections after N failed attempts.
 
@@ -22,8 +20,8 @@ def test_validation_max_retries_exceeded():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_token_budget_preflight_check():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_token_budget_preflight_check() -> Any:
     """
     Test that HardenedExecutor blocks a payload that exceeds token limits before API call.
 
@@ -31,8 +29,8 @@ def test_token_budget_preflight_check():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_json_repair_workflow():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_json_repair_workflow() -> Any:
     """
     Test that the agent attempts to fix broken JSON when the Integrity Gate fails.
 
@@ -40,8 +38,8 @@ def test_json_repair_workflow():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_validation_with_fallback_strategies():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_validation_with_fallback_strategies() -> Any:
     """
     Test that validation uses multiple strategies before failing.
 
@@ -49,8 +47,8 @@ def test_validation_with_fallback_strategies():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_context_aware_prompt_truncation():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_context_aware_prompt_truncation() -> Any:
     """
     Test that the system intelligently truncates prompts when approaching limits.
 
@@ -58,8 +56,8 @@ def test_context_aware_prompt_truncation():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_agentic_error_recovery_with_state_preservation():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_agentic_error_recovery_with_state_preservation() -> Any:
     """
     Test that the agent preserves state when recovering from errors.
 
@@ -67,8 +65,8 @@ def test_agentic_error_recovery_with_state_preservation():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_multi_step_validation_pipeline():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_multi_step_validation_pipeline() -> Any:
     """
     Test complex validation pipelines with multiple gates.
 
@@ -76,8 +74,8 @@ def test_multi_step_validation_pipeline():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_adaptive_retry_with_exponential_backoff():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_adaptive_retry_with_exponential_backoff() -> Any:
     """
     Test that retry logic uses exponential backoff for transient failures.
 
@@ -85,11 +83,10 @@ def test_adaptive_retry_with_exponential_backoff():
     """
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
-def test_context_window_optimization():
+@pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
+def test_context_window_optimization() -> Any:
     """
     Test that the system optimizes context usage by removing redundant content.
 
     Ensures efficient use of available token budget.
     """
-

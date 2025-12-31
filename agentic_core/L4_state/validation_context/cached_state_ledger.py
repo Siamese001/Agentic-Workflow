@@ -12,7 +12,8 @@ from typing import Any, Dict, List, Optional, Protocol
 import redis
 
 
-class CachedStateLedger:
+# NAMING FIXED: CachedStateLedger → cached_state_ledger
+class cached_state_ledger:
     """
     Sovereign L4 state base — Redis cache for context, audit, historian.
     All L4 components inherit from this.
@@ -80,6 +81,7 @@ class CachedStateLedger:
         })
 
     def get_cached_validation_context(self, key: str) -> Optional[Dict]:
+                    
         full_key = f"{self.prefix_context}:{key}"
         try:
             if self.redis:

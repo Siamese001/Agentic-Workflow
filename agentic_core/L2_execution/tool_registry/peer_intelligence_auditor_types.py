@@ -3,26 +3,24 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Set
+logger: Any = logging.getLogger(__name__)
 
-LOGGER = logging.getLogger(__name__)
-class KeywordClassification(Enum):
+class keyword_classification(Enum):
     """TODO: Add docstring."""
-
-    TABLE_STAKES = 'TABLE_STAKES'
-    DIFFERENTIATOR = 'DIFFERENTIATOR'
-    UNKNOWN = 'UNKNOWN'
+    TABLE_STAKES: Any = 'TABLE_STAKES'
+    DIFFERENTIATOR: Any = 'DIFFERENTIATOR'
+    UNKNOWN: Any = 'UNKNOWN'
 
 @dataclass
-class RAGHop:
+class rag_hop:
     """Docstring."""
     hop_number: int
     search_queries: List[str]
     results: List[Dict[str, Any]]
     keywords_found: Set[str]
 
-
 @dataclass
-class KeywordAnalysis:
+class keyword_analysis:
     """Docstring."""
     keyword: str
     classification: KeywordClassification
@@ -30,18 +28,16 @@ class KeywordAnalysis:
     competitive_density: float
     reasoning: str
 
-
 @dataclass
-class PeerIntelligenceConfig:
+class peer_intelligence_config:
     """Docstring."""
     total_searches: int = 24
     total_hops: int = 3
     searches_per_hop: int = 8
-
     differentiator_threshold: float = 0.3
 
 @dataclass
-class PeerIntelligenceResult:
+class peer_intelligence_result:
     """Docstring."""
     hops: List[RAGHop]
     keyword_analyses: List[KeywordAnalysis]

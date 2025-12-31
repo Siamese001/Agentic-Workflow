@@ -11,8 +11,16 @@ import httpx
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-class SafetyInspector(SubAtomicAgent):
+
+
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SafetyInspectorAgent(SubAtomicAgent):
     """
     Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
@@ -20,6 +28,7 @@ class SafetyInspector(SubAtomicAgent):
     """
 
     async def execute(self):
+                    
         # Key 2: Removed print statements in favor of context reporting
         await asyncio.sleep(0)
 
@@ -30,7 +39,6 @@ class SafetyInspector(SubAtomicAgent):
         # Key 1: No TODO/FIXME
         passed, details = await self.check_key_01_no_todo_fixme()
         self.ctx.report(self.name, 1, passed, details)
-
         # Key 2: No print statements
         passed, details = await self.check_key_02_no_print_statements()
         self.ctx.report(self.name, 2, passed, details)
@@ -42,7 +50,6 @@ class SafetyInspector(SubAtomicAgent):
         # Key 4: No empty except blocks
         passed, details = await self.check_key_04_no_empty_except_blocks()
         self.ctx.report(self.name, 4, passed, details)
-
         # Key 5: No bare except
         passed, details = await self.check_key_05_no_bare_except()
         self.ctx.report(self.name, 5, passed, details)
@@ -94,7 +101,6 @@ class SafetyInspector(SubAtomicAgent):
         """Synchronous file helper for use in to_thread."""
         with open(file_path, "r", encoding="utf-8") as f:
             return f.read()
-
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
         """Ask LLM to verify if an issue is actually a violation using async httpx."""
         try:
@@ -107,15 +113,23 @@ class SafetyInspector(SubAtomicAgent):
             return "NO"
 
     async def check_key_01_no_todo_fixme(self): return True, []
+                    
     async def check_key_02_no_print_statements(self): return True, []
+                    
     async def check_key_03_no_debugger_statements(self): return True, []
+                    
     async def check_key_04_no_empty_except_blocks(self): return True, []
+                    
     async def check_key_05_no_bare_except(self): return True, []
+                    
     async def check_key_06_no_eval_exec(self): return True, []
+                    
     async def check_async_blocking_issues(self): return True, []
+                    
 
 
-class ConcurrencyGuardian(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class ConcurrencyGuardianAgent(SubAtomicAgent):
     """
     Unified concurrency safety agent.
     Covers: Data races (Key 61), Livelock (Key 63), Starvation (Key 64)
@@ -134,11 +148,13 @@ class ConcurrencyGuardian(SubAtomicAgent):
     }
 
     def can_run(self) -> bool:
+                    
         return ("AST_VALID" in self.ctx.signals and
                 "DEPS_VALID" in self.ctx.signals and
                 "SECURE" in self.ctx.signals)
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Concurrency Safety...")
         await asyncio.sleep(0)
 
@@ -206,19 +222,23 @@ class ConcurrencyGuardian(SubAtomicAgent):
         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
 
-class SecurityEnforcer(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class SecurityEnforcerAgent(SubAtomicAgent):
     """Security enforcement agent for additional security checks."""
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Policies...")
         await asyncio.sleep(0)
         print("   [OK] Security policies enforced")
 
 
-class RedSentinel(SubAtomicAgent):
+# NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
+class RedSentinelAgent(SubAtomicAgent):
     """Red team sentinel for adversarial security testing."""
 
     async def execute(self):
+                    
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)
         print("   [OK] Red team analysis complete")

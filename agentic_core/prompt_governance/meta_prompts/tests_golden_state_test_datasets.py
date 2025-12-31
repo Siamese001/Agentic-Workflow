@@ -2,7 +2,7 @@
 
 
 def test_load_golden_inputs_minimum_cases() -> None:
-    """TODO: Add docstring."""
+    """Test that golden inputs load with minimum required cases."""
 
     cases = load_golden_inputs()
     assert len(cases) >= 2

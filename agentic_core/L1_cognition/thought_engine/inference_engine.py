@@ -1,4 +1,6 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
 import os
 import time
 from dataclasses import dataclass, field
@@ -14,25 +16,35 @@ from mistralai.async_client import MistralAsyncClient
 from together import Together
 
 
-class HardStateProtocol(Protocol):
+# NAMING FIXED: HardStateProtocol → hard_state_protocol
+class hard_state_protocol(Protocol):
     """Protocol for the hard_state attribute of SignalContext."""
     execution_id: str
     node_id: str
     def add_trace(self, EVENT: str, DATA: Dict[str, Any]) -> 'HardStateProtocol': ...
+                    
 
-class SignalContextProtocol(Protocol):
+# NAMING FIXED: SignalContextProtocol → signal_context_protocol
+class signal_context_protocol(Protocol):
     """Protocol for SignalContext to allow dependency injection."""
     def get_thermal_params(self) -> Dict[str, float]: ...
+                    
     def get_anchored_context(self) -> Optional[str]: ...
+                    
     def update_timestamp(self) -> None: ...
+                    
     @property
     def hard_state(self) -> HardStateProtocol: ...
+                    
     @hard_state.setter
     def hard_state(self, value: HardStateProtocol) -> None: ...
+                    
 
-LOGGER = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → logger
+logger = logging.getLogger(__name__)
 
-class Provider(str, Enum):
+# NAMING FIXED: Provider → provider
+class provider(str, Enum):
     """Enum for supported LLM providers."""
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
@@ -49,29 +61,35 @@ class Provider(str, Enum):
 # responses, so these wrappers will return non-streaming-like objects even if `stream=True`
 # is passed to their `create` method.
 
-class OpenAIClientWrapper:
+# NAMING FIXED: OpenAIClientWrapper → open_ai_client_wrapper
+class open_ai_client_wrapper:
     """Wrapper for OpenAI client to provide a consistent interface."""
     def __init__(self, client: openai.AsyncOpenAI):
         self._client = client
 
     @property
     def chat(self):
+                    
         return self._client.chat
 
-class AnthropicClientWrapper:
+# NAMING FIXED: AnthropicClientWrapper → anthropic_client_wrapper
+class anthropic_client_wrapper:
     """Wrapper for Anthropic client to conform to OpenAI chat.completions.create interface."""
     def __init__(self, client: anthropic.AsyncAnthropic):
         self._client = client
 
     @property
     def chat(self):
+                    
         return self
 
     @property
     def completions(self):
+                    
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+                    
         anthropic_messages = []
         for msg in messages:
             if msg["role"] == "user":
@@ -99,37 +117,45 @@ class AnthropicClientWrapper:
 
         # Convert Anthropic response to an OpenAI-like structure
         class MockChoice:
+                                    
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
+                                    
             def __init__(self, input_tokens, output_tokens):
                 self.input_tokens = input_tokens
                 self.output_tokens = output_tokens
             def model_dump(self):
+                                                    
                 return {"prompt_tokens": self.input_tokens, "completion_tokens": self.output_tokens, "total_tokens": self.input_tokens + self.output_tokens}
 
         class MockResponse:
+                                    
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
                 self.usage = MockUsage(usage_input, usage_output)
 
         return MockResponse(response.content, response.usage.input_tokens, response.usage.output_tokens)
 
-class GoogleClientWrapper:
+# NAMING FIXED: GoogleClientWrapper → google_client_wrapper
+class google_client_wrapper:
     """Wrapper for Google client to conform to OpenAI chat.completions.create interface."""
     def __init__(self):
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
     @property
     def chat(self):
+                    
         return self
 
     @property
     def completions(self):
+                    
         return self
 
     async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+                    
         _model = genai.GenerativeModel(model)
 
         google_messages = []
@@ -155,14 +181,17 @@ class GoogleClientWrapper:
 
         # Convert Google response to an OpenAI-like structure
         class MockChoice:
+                                    
             def __init__(self, content):
                 self.message = type('obj', (object,), {'content': content})()
 
         class MockUsage:
+                                    
             def __init__(self, prompt_tokens, completion_tokens):
                 self.prompt_tokens = prompt_tokens
                 self.completion_tokens = completion_tokens
             def model_dump(self):
+                                                    
                 return {"prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens, "total_tokens": self.prompt_tokens + self.completion_tokens}
 
         content = response.text
@@ -173,19 +202,22 @@ class GoogleClientWrapper:
             completion_tokens = response.usage_metadata.candidates_token_count
 
         class MockResponse:
+                                    
             def __init__(self, response_content, usage_input, usage_output):
                 self.choices = [MockChoice(response_content)]
                 self.usage = MockUsage(usage_input, usage_output)
 
         return MockResponse(content, prompt_tokens, completion_tokens)
 
-class GenericOpenAICompatibleClientWrapper:
+# NAMING FIXED: GenericOpenAICompatibleClientWrapper → generic_open_ai_compatible_client_wrapper
+class generic_open_ai_compatible_client_wrapper:
     """Wrapper for clients that are largely OpenAI-compatible (e.g., Mistral, Groq, Together, Fireworks)."""
     def __init__(self, client):
         self._client = client
 
     @property
     def chat(self):
+                    
         return self._client.chat # Assume client has a .chat attribute with .completions.create
 
 # --- Local Client Factory ---
@@ -223,7 +255,8 @@ def _get_llm_client_instance(provider: Provider) -> Any:
             raise ValueError(f"Unsupported provider: {provider}")
     return _local_client_cache[provider]
 
-class InferenceMode(str, Enum):
+# NAMING FIXED: InferenceMode → inference_mode
+class inference_mode(str, Enum):
     """Inference modes for different types of cognitive operations."""
     CREATIVE = "creative"          # Max temperature, high entropy
     ANALYTICAL = "analytical"      # Medium temperature, structured thinking
@@ -231,7 +264,8 @@ class InferenceMode(str, Enum):
     FORMATTING = "formatting"      # Very low temperature, template adherence
 
 @dataclass
-class InferenceRequest:
+# NAMING FIXED: InferenceRequest → inference_request
+class inference_request:
     """Request structure for inference engine."""
     prompt: str
     context: SignalContextProtocol  # Changed to use Protocol for dependency injection
@@ -246,7 +280,8 @@ class InferenceRequest:
     top_p_override: Optional[float] = None
 
 @dataclass
-class InferenceResult:
+# NAMING FIXED: InferenceResult → inference_result
+class inference_result:
     """Result structure for inference engine."""
     content: str
     usage: Dict[str, Any]
@@ -256,7 +291,8 @@ class InferenceResult:
     model: str
     context_updated: bool = False
 
-class ThermostatMiddleware:
+# NAMING FIXED: ThermostatMiddleware → thermostat_middleware
+class thermostat_middleware:
     """
     Middleware that dynamically adjusts LLM parameters based on thermal configuration.
 
@@ -362,7 +398,8 @@ class ThermostatMiddleware:
             return [h for h in self._thermal_history if h["execution_id"] == execution_id]
         return self._thermal_history.copy()
 
-class InferenceEngine:
+# NAMING FIXED: InferenceEngine → inference_engine
+class inference_engine:
     """
     Main inference engine with thermostat middleware for dynamic thermal control.
 

@@ -9,30 +9,52 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
+# DDD Compliance Phase 9A: L1 depends on interface only (SharedContracts, rank=-1)
+from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
 
-class CodeJanitor(SubAtomicAgent):
+
+# NOT_AN_AGENT — legacy L1 class, true agent is CodeJanitorAgent in L2 — excluded from discovery
+class code_janitor:
     """
     KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
     ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
+    
+    DDD Compliance Phase 9A:
+    - Uses composition with CanonBaseAgentInterface
+    - Implementation injected via dependency injection
+    - No direct dependency on L2_Execution layer
     """
+    
+    def __init__(self, agent_impl: CanonBaseAgentInterface):
+        """Initialize with injected agent implementation."""
+        self.agent = agent_impl
+    
+    def __getattr__(self, name):
+        """Delegate all agent methods to injected implementation - backward compatible."""
+        return getattr(self.agent, name)
 
     async def execute(self):
         """
         Executes the CodeJanitor agent's checks and auto-fixes for syntax and style violations.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
 
         # Check and fix trailing whitespace (Key 11)
         passed, details = self.check_key_11_no_trailing_whitespace()
-        self.ctx.report(self.name, 11, passed, details)
+        self.agent.ctx.report(self.agent.name, 11, passed, details)
         if not passed:
             print("      [+] Auto-fixing trailing whitespace...")
             self._fix_trailing_whitespace()
             # Re-check after fix
             passed, details = self.check_key_11_no_trailing_whitespace()
-            self.ctx.report(self.name, 11, passed, details)
+            self.agent.ctx.report(self.agent.name, 11, passed, details)
             if not passed:
                 print("      [X] Trailing whitespace fix failed or new violations appeared.")
             else:
@@ -51,31 +73,31 @@ class CodeJanitor(SubAtomicAgent):
                     print(f"      [X] Failed to fix newline in {file_path}: {e}")
             # Re-check after fix
             passed, details = self.check_key_12_no_missing_newline()
-            self.ctx.report(self.name, 12, passed, details)
+            self.agent.ctx.report(self.agent.name, 12, passed, details)
             if not passed:
                 print("      [X] Missing final newline fix failed or new violations appeared.")
             else:
                 print("      [OK] Missing final newlines fixed successfully.")
         else:
-            self.ctx.report(self.name, 12, passed, details)
+            self.agent.ctx.report(self.agent.name, 12, passed, details)
 
         # Check and fix tabs (Key 13)
         passed, details = self.check_key_13_no_tabs()
-        if not passed and self.ctx.intelligence_enabled:
-            print("      🧠 Converting tabs to spaces using smart_fix...")
+        if not passed and self.agent.ctx.intelligence_enabled:
+            print("      Converting tabs to spaces using smart_fix...")
             # Smart fix is applied per file, so we need unique file paths
             files_with_tabs = set(d.split(":")[0] for d in details)
             for file_path in list(files_with_tabs)[:3]:  # Limit to first 3 files for smart_fix
                 await self.smart_fix(file_path, 13)
             # Re-check after fix
             passed, details = self.check_key_13_no_tabs()
-            self.ctx.report(self.name, 13, passed, details)
+            self.agent.ctx.report(self.agent.name, 13, passed, details)
             if not passed:
                 print("      [X] Tab conversion fix failed or new violations appeared.")
             else:
                 print("      [OK] Tabs converted to spaces successfully.")
         else:
-            self.ctx.report(self.name, 13, passed, details)
+            self.agent.ctx.report(self.agent.name, 13, passed, details)
 
         # Generic checks for keys that might benefit from smart_fix
         keys_to_check = {
@@ -86,8 +108,8 @@ class CodeJanitor(SubAtomicAgent):
 
         for key, check_func in keys_to_check.items():
             passed, details = check_func()
-            if not passed and self.ctx.intelligence_enabled:
-                print(f"      🧠 Attempting smart fix for Key {key}...")
+            if not passed and self.agent.ctx.intelligence_enabled:
+                print(f"      Attempting smart fix for Key {key}...")
                 # Extract unique file paths from details, ensuring they contain a colon for line info
                 files_with_violations = set(d.split(":")[0].strip() for d in details if ":" in d)
                 for fp in list(files_with_violations)[:3]:  # Limit to first 3 files for smart_fix
@@ -98,18 +120,17 @@ class CodeJanitor(SubAtomicAgent):
                     print(f"      [X] Smart fix for Key {key} failed or new violations appeared.")
                 else:
                     print(f"      [OK] Smart fix for Key {key} applied successfully.")
-            self.ctx.report(self.name, key, passed, details)
+            self.agent.ctx.report(self.agent.name, key, passed, details)
 
-        self.ctx.signal_ast_valid()
-        print(f"[<<<] {self.name} FINISHED.")
-
+        self.agent.ctx.signal_ast_valid()
+        print(f"[<<<] {self.agent.name} FINISHED.")
     def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """
         Checks for trailing whitespace on lines (excluding the final newline character).
         Reports file paths and line numbers.
         """
         violations = []
-        for file_path in self.ctx.python_files:
+        for file_path in self.agent.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -129,7 +150,7 @@ class CodeJanitor(SubAtomicAgent):
         Reports file paths.
         """
         violations = []
-        for file_path in self.ctx.python_files:
+        for file_path in self.agent.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -146,7 +167,7 @@ class CodeJanitor(SubAtomicAgent):
         Reports file paths and line numbers.
         """
         violations = []
-        for file_path in self.ctx.python_files:
+        for file_path in self.agent.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
@@ -165,7 +186,7 @@ class CodeJanitor(SubAtomicAgent):
         """
         violations = []
         max_line_length = int(os.getenv('MAX_LINE_LENGTH', '100'))
-        for file_path in self.ctx.python_files:
+        for file_path in self.agent.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     for i, line in enumerate(f, 1):
@@ -185,7 +206,7 @@ class CodeJanitor(SubAtomicAgent):
         """
         violations = []
         ALLOWED_MAGIC_NUMBERS = {0, 1, -1, 2}  # Constants that are generally acceptable
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
@@ -218,6 +239,7 @@ class CodeJanitor(SubAtomicAgent):
         violations = []
 
         class NestingVisitor(ast.NodeVisitor):
+                                    
             def __init__(self, filepath: str, max_depth: int):
                 self.filepath = filepath
                 self.max_depth = max_depth
@@ -225,6 +247,7 @@ class CodeJanitor(SubAtomicAgent):
                 self.violations = []
 
             def visit(self, node):
+                                                    
                 # Nodes that increase nesting depth
                 is_nesting_node = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With,
                                                     ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
@@ -236,7 +259,7 @@ class CodeJanitor(SubAtomicAgent):
                 if is_nesting_node:
                     self.depth -= 1  # Decrease depth after visiting children
 
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
@@ -274,17 +297,31 @@ class CodeJanitor(SubAtomicAgent):
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
-class DependencySentinel(SubAtomicAgent):
+# NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
+class dependency_sentinel:
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
+    
+    DDD Compliance Phase 9A:
+    - Uses composition with CanonBaseAgentInterface
+    - Implementation injected via dependency injection
+    - No direct dependency on L2_Execution layer
     """
+    
+    def __init__(self, agent_impl: CanonBaseAgentInterface):
+        """Initialize with injected agent implementation."""
+        self.agent = agent_impl
+    
+    def __getattr__(self, name):
+        """Delegate all agent methods to injected implementation - backward compatible."""
+        return getattr(self.agent, name)
 
     def execute(self):
         """
         Executes the DependencySentinel agent's checks and auto-fixes for imports.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
+        print(f"\n[>>>] {self.agent.name} ACTIVATED: Enforcing Import Hygiene...")
 
         has_isort = False
         try:
@@ -337,24 +374,23 @@ class DependencySentinel(SubAtomicAgent):
 
         # Perform checks after auto-fixes
         passed, details = self.check_key_07_no_star_imports()
-        self.ctx.report(self.name, 7, passed, details)
+        self.agent.ctx.report(self.agent.name, 7, passed, details)
 
         passed, details = self.check_key_08_no_relative_imports()
-        self.ctx.report(self.name, 8, passed, details)
-
+        self.agent.ctx.report(self.agent.name, 8, passed, details)
         # Key 9 (Unused Imports) is largely handled by autoflake.
         # The AST check below is a fallback/verification, but less robust.
         passed, details = self.check_key_09_no_unused_imports()
-        self.ctx.report(self.name, 9, passed, details)  # Report only for Key 9
+        self.agent.ctx.report(self.agent.name, 9, passed, details)  # Report only for Key 9
 
         passed, details = self.check_key_14_no_duplicate_imports()
-        self.ctx.report(self.name, 14, passed, details)
+        self.agent.ctx.report(self.agent.name, 14, passed, details)
 
         passed, details = self.check_key_44_no_circular_imports()
-        self.ctx.report(self.name, 44, passed, details)
+        self.agent.ctx.report(self.agent.name, 44, passed, details)
 
-        self.ctx.signal_deps_valid()
-        print(f"[<<<] {self.name} FINISHED.")
+        self.agent.ctx.signal_deps_valid()
+        print(f"[<<<] {self.agent.name} FINISHED.")
 
     def check_key_07_no_star_imports(self) -> Tuple[bool, List[str]]:
         """
@@ -362,7 +398,7 @@ class DependencySentinel(SubAtomicAgent):
         Reports file paths and line numbers.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
@@ -384,7 +420,7 @@ class DependencySentinel(SubAtomicAgent):
         Reports file paths and line numbers.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
@@ -409,7 +445,7 @@ class DependencySentinel(SubAtomicAgent):
         Reports file paths, line numbers, and the unused import name.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -423,9 +459,10 @@ class DependencySentinel(SubAtomicAgent):
                             name = alias.asname if alias.asname else alias.name
                             imported_names_with_lines[name] = node.lineno
                     elif isinstance(node, ast.ImportFrom):
-                        # Skip star imports as they are handled by Key 7 and hard to track usage
+                        # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
+                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             name = alias.asname if alias.asname else alias.name
                             imported_names_with_lines[name] = node.lineno
@@ -461,7 +498,7 @@ class DependencySentinel(SubAtomicAgent):
         Reports file paths, line numbers, and the duplicate import.
         """
         violations = []
-        for fp in self.ctx.python_files:
+        for fp in self.agent.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)

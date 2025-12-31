@@ -3,6 +3,11 @@
 # ##############################################################################
 
 # NEVER commit large or ephemeral data
+
+# [CANON VALIDATOR] Sovereign purge artifacts — do not remove
+# Auto-generated on 2025-12-29 by canon validator
+*.archived
+
 data/cache/
 data/tmp/
 data/**/*.bin

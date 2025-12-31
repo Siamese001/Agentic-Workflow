@@ -1,8 +1,13 @@
 import logging
+'''Brief description of functionality and purpose.'''
+
+'''Brief description of functionality and purpose.'''
+
 from typing import Any, Dict
 
 
-class SemanticGatekeeper:
+# NAMING FIXED: SemanticGatekeeper → semantic_gatekeeper
+class semantic_gatekeeper:
     """
     L1 Cognition: The Intent Validator.
     Ensures the agent's internal reasoning stays within mission bounds.

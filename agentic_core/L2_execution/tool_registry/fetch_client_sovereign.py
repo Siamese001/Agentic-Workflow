@@ -7,68 +7,48 @@ import hashlib
 import logging
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
-
-from agentic_core.L4_state.semantic.semantic_cache_sovereign import (
-    SovereignSemanticCache,
-)
+from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
-logger = logging.getLogger(__name__)
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
+    CORE_SUBFOLDER_MAP,
+)
 
-# Sovereign allowlist — only trusted documentation and pattern sources
-ALLOWED_DOMAINS = {
-    "python.org", "docs.python.org",
-    "github.com", "raw.githubusercontent.com",
-    "readthedocs.io", "developer.mozilla.org",
-    "stackoverflow.com", "pypi.org"
-}
-CHUNK_SIZE = 8000  # Keep chunks within sovereign L1 reasoning bounds
+logger: Any = logging.getLogger(__name__)
+allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.githubusercontent.com', 'readthedocs.io', 'developer.mozilla.org', 'stackoverflow.com', 'pypi.org'}
+chunk_size: Any = 8000
 
-class SovereignFetchClient:
+class sovereign_fetch_client:
     """Ultra-hardened Fetch MCP client — enforcing external knowledge purity."""
-    
-    def __init__(self, manager, cache: Optional[SovereignSemanticCache] = None):
+
+    def __init__(self, manager, cache: Optional[SovereignSemanticCache]=None):
         self.manager = manager
         self.cache = cache
-        logger.info("[L2 FETCH] Sovereign gateway armed.")
+        logger.info('[L2 FETCH] Sovereign gateway armed.')
 
     def _validate_url(self, url: str) -> str:
         """L5 sovereignty check: block internal IPs and unapproved domains."""
         parsed = urlparse(url)
-        # 1. Block SSRF/Internal Exfiltration
-        host = (parsed.hostname or "").lower()
-        if host in {"localhost", "127.0.0.1"} or host.startswith("192.168.") or host.endswith(".local"):
-            raise PermissionError(f"Sovereignty Breach: Fetch blocked internal/local IP: {url}")
-        
-        # 2. Enforce the Sovereign Allowlist
-        if not any(host == d or host.endswith("." + d) for d in ALLOWED_DOMAINS):
+        host = (parsed.hostname or '').lower()
+        if host in {'localhost', '127.0.0.1'} or host.startswith('192.168.') or host.endswith('.local'):
+            raise PermissionError(f'Sovereignty Breach: Fetch blocked internal/local IP: {url}')
+        if not any((host == d or host.endswith('.' + d) for d in ALLOWED_DOMAINS)):
             raise PermissionError(f"Sovereignty Breach: URL '{url}' is not in the approved documentation allowlist.")
-        
         return url
 
-    async def fetch_once(self, url: str, max_length: int = 10000) -> str:
+    async def fetch_once(self, url: str, max_length: int=10000) -> str:
         """Single-shot fetch with L5 shielding and L4 caching."""
         self._validate_url(url)
         try:
-            # We use the standard 'fetch' tool but wrap it in our safety logic
-            result = await self.manager.call_tool("fetch", {
-                "url": url,
-                "max_length": max_length,
-                "raw": False
-            })
-            content = result.get("content", "")
-            
-            # [L4 CACHE] Store the truth eternally so we don't fetch it again
+            result: Any = await self.manager.call_tool('fetch', {'url': url, 'max_length': max_length, 'raw': False})
+            content: Any = result.get('content', '')
             if self.cache and content:
-                cache_id = hashlib.sha256(url.encode()).hexdigest()[:12]
-                await self.cache.cache_file(
-                    f"external_doc_{cache_id}.md", 
-                    content, 
-                    metadata={"tool": "fetch", "url": url, "type": "documentation"}
-                )
-            
+                cache_id: Any = hashlib.sha256(url.encode()).hexdigest()[:12]
+                await self.cache.cache_file(f'external_doc_{cache_id}.md', content, metadata={'tool': 'fetch', 'url': url, 'type': 'documentation'})
             return content
         except Exception as e:
-            logger.error(f"[L2 FETCH] Retrieval failed for {url}: {e}")
-            mcp_authority.record_breach(f"Fetch failure: {url}")
-            return ""
+            logger.error(f'[L2 FETCH] Retrieval failed for {url}: {e}')
+            mcp_authority.record_breach(f'Fetch failure: {url}')
+            return ''
