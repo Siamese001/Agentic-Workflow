@@ -19,6 +19,7 @@ import os
 import re
 import shutil
 import time
+import hashlib
 from collections import defaultdict
 from difflib import unified_diff
 from pathlib import Path
@@ -27,6 +28,16 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Any, Optional
 from datetime import datetime
 from contextlib import nullcontext
 
+# Tree-sitter imports for robust AST-based diff application
+try:
+    from tree_sitter import Language, Parser
+    from tree_sitter_languages import get_language, get_parser
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
+    Language = None
+    Parser = None
+
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -34,7 +45,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
     SOVEREIGN_REGISTRY,
 )
-from agentic_core.utils.naming.NamingAgent import NamingAgent
+from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
 
 # [HARDENING 9] Import audit logger for comprehensive action tracking
 try:
@@ -104,6 +115,18 @@ class HealerAgent:
         
         self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
         self.naming_agent = NamingAgent(self.project_root)
+        
+        # Tree-sitter setup for AST-based diff application
+        self.ts_parser = None
+        if TREE_SITTER_AVAILABLE:
+            try:
+                self.ts_parser = get_parser('python')
+                logger.info("[HealerAgent] Tree-sitter enabled for structural healing")
+            except Exception as e:
+                logger.warning(f"[HealerAgent] Tree-sitter unavailable: {e}; falling back to ast")
+                self.ts_parser = None
+        else:
+            logger.info("[HealerAgent] Tree-sitter not available; using ast fallback")
 
         # Healing configuration from SSOT
         self.max_moves = HEALING_CONFIG.get("max_moves_per_run", 5)
@@ -490,6 +513,160 @@ class HealerAgent:
                    if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
                    and not node.name.startswith("_")}
         return symbols
+
+    def _compute_ast_fingerprint(self, content: str) -> str:
+        """Compute normalized AST hash ignoring vars/names/whitespace for structural matching."""
+        try:
+            if self.ts_parser:
+                # Use tree-sitter for partial parsing
+                tree = self.ts_parser.parse(bytes(content, 'utf8'))
+                norm_tree = self._normalize_ts_tree(tree.root_node)
+            else:
+                # Fallback to Python ast
+                tree = ast.parse(content)
+                norm_tree = self._normalize_ast_tree(tree)
+            return hashlib.sha256(str(norm_tree).encode()).hexdigest()
+        except Exception as e:
+            logger.debug(f"AST fingerprint failed: {e}")
+            return ''
+
+    def _normalize_ast_tree(self, node: ast.AST) -> str:
+        """Recursive normalize: Replace names with placeholders, ignore lineno/comments."""
+        if isinstance(node, ast.Name):
+            return 'VAR'
+        elif isinstance(node, ast.Constant):
+            return f'CONST_{type(node.value).__name__}'
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            # Preserve function structure but normalize name
+            children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
+            children_str = ','.join(children)
+            return f'FUNC({children_str})'
+        elif isinstance(node, ast.ClassDef):
+            children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
+            children_str = ','.join(children)
+            return f'CLASS({children_str})'
+        # Recurse on other nodes
+        children = [self._normalize_ast_tree(child) for child in ast.iter_child_nodes(node)]
+        children_str = ','.join(children)
+        return f'{type(node).__name__}({children_str})'
+
+    def _normalize_ts_tree(self, node) -> str:
+        """Normalize tree-sitter nodes for structural comparison."""
+        if node.type == 'identifier':
+            return 'VAR'
+        elif node.type in ['string', 'integer', 'float']:
+            return f'CONST_{node.type}'
+        elif node.type == 'function_definition':
+            children = [self._normalize_ts_tree(child) for child in node.children]
+            children_str = ','.join(children)
+            return f'FUNC({children_str})'
+        elif node.type == 'class_definition':
+            children = [self._normalize_ts_tree(child) for child in node.children]
+            children_str = ','.join(children)
+            return f'CLASS({children_str})'
+        # Recurse
+        children = [self._normalize_ts_tree(child) for child in node.children]
+        children_str = ','.join(children)
+        return f'{node.type}({children_str})'
+
+    def _validate_ast_integrity(self, content: str) -> bool:
+        """Check if code is AST-parsable (pre/post validation)."""
+        try:
+            ast.parse(content)
+            return True
+        except SyntaxError:
+            return False
+
+    def _apply_structural_patch(self, original_content: str, patch_content: str, 
+                               mode: str = 'replace', anchor: str = '') -> str:
+        """Apply patch semantically using AST matching.
+        
+        Args:
+            original_content: Original file content
+            patch_content: Patch to apply
+            mode: 'replace', 'insert', or 'move'
+            anchor: Anchor point (e.g., 'def old_func')
+            
+        Returns:
+            Updated content with patch applied
+        """
+        try:
+            # Validate both inputs
+            if not self._validate_ast_integrity(original_content):
+                logger.warning("Original content has syntax errors; using string fallback")
+                return self._string_fallback_patch(original_content, patch_content, mode, anchor)
+            
+            if patch_content and not self._validate_ast_integrity(patch_content):
+                logger.warning("Patch content has syntax errors; using string fallback")
+                return self._string_fallback_patch(original_content, patch_content, mode, anchor)
+            
+            # Parse both trees
+            orig_tree = ast.parse(original_content)
+            patch_tree = ast.parse(patch_content) if patch_content else None
+            
+            # For replace mode: Find and replace matching node
+            if mode == 'replace' and anchor:
+                lines = original_content.splitlines()
+                new_lines = []
+                skip_until = -1
+                
+                for i, line in enumerate(lines):
+                    if i < skip_until:
+                        continue
+                    
+                    # Check if this line matches anchor
+                    if anchor in line:
+                        # Add patch content
+                        new_lines.append(patch_content)
+                        # Skip original function/class definition
+                        skip_until = self._find_block_end(lines, i)
+                    else:
+                        new_lines.append(line)
+                
+                return '\n'.join(new_lines)
+            
+            # For other modes, use string fallback
+            return self._string_fallback_patch(original_content, patch_content, mode, anchor)
+            
+        except Exception as e:
+            logger.warning(f"Structural patch failed: {e}; using string fallback")
+            return self._string_fallback_patch(original_content, patch_content, mode, anchor)
+
+    def _find_block_end(self, lines: List[str], start_idx: int) -> int:
+        """Find the end of a code block (function/class) starting at start_idx."""
+        if start_idx >= len(lines):
+            return start_idx
+        
+        # Get indentation of start line
+        start_line = lines[start_idx]
+        base_indent = len(start_line) - len(start_line.lstrip())
+        
+        # Find next line with same or less indentation
+        for i in range(start_idx + 1, len(lines)):
+            line = lines[i]
+            if line.strip():  # Skip empty lines
+                indent = len(line) - len(line.lstrip())
+                if indent <= base_indent:
+                    return i
+        
+        return len(lines)
+
+    def _string_fallback_patch(self, original: str, patch: str, mode: str, anchor: str) -> str:
+        """Fallback to string-based patching when AST fails."""
+        if mode == 'replace' and anchor:
+            # Simple string replacement
+            if anchor in original:
+                lines = original.splitlines()
+                new_lines = []
+                for line in lines:
+                    if anchor in line:
+                        new_lines.append(patch)
+                    else:
+                        new_lines.append(line)
+                return '\n'.join(new_lines)
+        
+        # Default: return patch or original
+        return patch if patch else original
 
     def _get_intelligent_merged_name(self, files: List[Path], combined_preview: str = None) -> Tuple[str, str, str, str]:
         """

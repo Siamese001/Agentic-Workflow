@@ -11,6 +11,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,24 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+
+# Semantic deduplication imports
+try:
+    from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
+    EMBEDDINGS_AVAILABLE = True
+except ImportError:
+    EMBEDDINGS_AVAILABLE = False
+    get_embedding = None
+
+SIMILARITY_THRESHOLD = 0.9
+EMBEDDING_MODEL = 'text-embedding-3-small'
+
+
+class DuplicatePromptError(Exception):
+    """Raised when a semantically duplicate prompt is detected."""
+    def __init__(self, message, similar_entries):
+        super().__init__(message)
+        self.similar_entries = similar_entries
 
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
@@ -47,6 +66,8 @@ class prompt_registry:
     def __init__(self):
         self.registry: Dict[str, List[Dict[str, Any]]] = {}
         self._content_cache: Dict[str, str] = {}  # Cache for content hashing
+        self.similarity_threshold = SIMILARITY_THRESHOLD
+        self.embedding_model = EMBEDDING_MODEL
         
         # [L6 SOVEREIGNTY] Validate our own placement at initialization
         is_valid, reason = validate_file_location(Path(__file__), Path.cwd())
@@ -107,6 +128,38 @@ class prompt_registry:
             return None
         return hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]
 
+    def _compute_embedding(self, content: Optional[str]) -> Optional[np.ndarray]:
+        """Compute normalized embedding for semantic similarity."""
+        if content is None or not EMBEDDINGS_AVAILABLE:
+            return None
+        try:
+            emb = get_embedding(content, model=self.embedding_model)
+            vec = np.array(emb)
+            norm = np.linalg.norm(vec)
+            return vec / norm if norm != 0 else vec
+        except Exception as e:
+            logger.warning(f"Failed to compute embedding: {e}")
+            return None
+
+    def _find_similar_prompts(self, new_emb: np.ndarray, template_name: str) -> List[Dict]:
+        """Find semantically similar prompts across registry."""
+        similar = []
+        for name, entries in self.registry.items():
+            if name == template_name:
+                continue  # Skip same template family
+            for e in entries:
+                if 'embedding' in e and e['embedding'] is not None:
+                    stored_emb = np.array(e['embedding'])
+                    score = float(np.dot(new_emb, stored_emb))
+                    if score >= self.similarity_threshold:
+                        similar.append({
+                            'name': name,
+                            'version': e.get('version', 'unknown'),
+                            'similarity': score,
+                            'prompt_snippet': e.get('content_hash', '')[:20]
+                        })
+        return sorted(similar, key=lambda x: x['similarity'], reverse=True)
+
     def register_prompt(
         self,
         template_name: str,
@@ -123,7 +176,25 @@ class prompt_registry:
         DEDUPLICATION: Prevents identical entries from accumulating.
         If an entry with same (template_name, version, purpose, author, content_hash, territory) exists,
         skip registration to prevent the 9-duplicate bug.
+        
+        SEMANTIC DEDUPLICATION: Checks for semantically similar prompts across registry
+        using embedding-based similarity (threshold: 0.9). Raises DuplicatePromptError
+        if a similar prompt is found to prevent sprawl.
         """
+        # Compute embedding for semantic deduplication
+        content_emb = self._compute_embedding(content) if content else None
+
+        # Check for semantic duplicates across registry
+        if content_emb is not None:
+            similar = self._find_similar_prompts(content_emb, template_name)
+            if similar:
+                raise DuplicatePromptError(
+                    f"Semantic duplicate detected (threshold {self.similarity_threshold}). "
+                    f"Found {len(similar)} similar prompt(s): {similar[0]['name']} "
+                    f"(similarity: {similar[0]['similarity']:.3f})",
+                    similar
+                )
+
         if template_name not in self.registry:
             self.registry[template_name] = []
 
@@ -171,6 +242,8 @@ class prompt_registry:
         }
         if content_hash:
             entry["content_hash"] = content_hash
+        if content_emb is not None:
+            entry["embedding"] = content_emb.tolist()  # Store as list for JSON
 
         # Deactivate previous versions to ensure SSOT convergence (single active version)
         if active:

@@ -12,6 +12,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+# Import for semantic deduplication awareness
+from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry, DuplicatePromptError
+
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""
