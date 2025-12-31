@@ -87,6 +87,11 @@ class FilesystemAgent:
 
             name = file_path.name
 
+            # [BUG FIX 2025-12-31] Skip files that are already in archives directory
+            # Prevents re-processing archived files
+            if 'archives' in file_path.parts:
+                continue
+
             # 1. Detection: Repeated Suffixes
             if self.repeated_suffix.search(name):
                 violations.append((file_path, f"REPEATED technical suffix: {name}"))
