@@ -24,6 +24,12 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
+try:
+    from agentic_core.prompt_governance.prompt_governor import PromptGovernor
+    PROMPT_GOVERNOR_AVAILABLE: Any = True
+except ImportError:
+    PROMPT_GOVERNOR_AVAILABLE: Any = False
+    
 logger: Any = logging.getLogger(__name__)
 
 class sub_atomic_engine:
@@ -61,6 +67,15 @@ class sub_atomic_engine_impl:
             self._client = genai.Client(api_key=api_key)
         self.chat_sessions: Dict[str, Any] = {}
         self.pinecone = None
+        
+        # [HARDENING 8] Initialize prompt governor for centralized prompt management
+        if PROMPT_GOVERNOR_AVAILABLE:
+            self.prompt_gov = PromptGovernor()
+            print('   [OK] SubAtomicEngine: Prompt governance enabled')
+        else:
+            self.prompt_gov = None
+            print('   [!] SubAtomicEngine: Prompt governance unavailable')
+        
         print('   [OK] SubAtomicEngine: Hybrid routing deferred (lazy init)')
 
     @staticmethod
@@ -164,12 +179,42 @@ class sub_atomic_engine_impl:
             if current_fails and int(current_fails) >= 2:
                 logger.warning(f'   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.')
                 temp_override = 0.8
-        if system_prompt:
-            prompt = f'[INSTRUCTION]\n{system_prompt}\n\n[CONTEXT]\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}'
-        elif fission_active:
-            prompt = f'ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}'
+        # [HARDENING 8] Use PromptGovernor for centralized prompt construction
+        if self.prompt_gov:
+            if fission_active:
+                prompt_dict = self.prompt_gov.build_fission_prompt(code, file_path)
+            else:
+                # Retrieve vector memory context if available
+                context_str = ""
+                if self.pinecone and hasattr(self.pinecone, 'semantic_search'):
+                    try:
+                        context_chunks = await self.pinecone.semantic_search(
+                            query=task,
+                            file_path=Path(file_path),
+                            top_k=3
+                        )
+                        if context_chunks:
+                            context_str = "\n\n".join(context_chunks)
+                    except Exception as e:
+                        logger.warning(f'Vector memory retrieval failed: {e}')
+                
+                prompt_dict = self.prompt_gov.build_healing_prompt(
+                    task=task if not system_prompt else system_prompt,
+                    code=code,
+                    file_path=file_path,
+                    context=context_str
+                )
+            
+            # Use system prompt from governor
+            prompt = f"{prompt_dict['system']}\n\n{prompt_dict['user']}"
         else:
-            prompt = f'HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}'
+            # Fallback to legacy prompt construction
+            if system_prompt:
+                prompt = f'[INSTRUCTION]\n{system_prompt}\n\n[CONTEXT]\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}'
+            elif fission_active:
+                prompt = f'ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}'
+            else:
+                prompt = f'HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}'
         config = self.get_safe_config(is_fission=fission_active)
         config.temperature = temp_override
         chat_key = f'chat_{file_path}'
@@ -200,9 +245,19 @@ class sub_atomic_engine_impl:
                 logger.error(f'   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).')
                 return code
             
-            # Extract code block if fenced (common LLM output format)
-            code_match = re.search(r'```python\n(.*?)\n```', raw_output, re.DOTALL)
-            healed_code = code_match.group(1) if code_match else raw_output
+            # [HARDENING 8] Use PromptGovernor to enforce output format
+            if self.prompt_gov and not fission_active:
+                try:
+                    healed_code = self.prompt_gov.enforce_output_format(raw_output)
+                except ValueError as e:
+                    logger.error(f'   [X] Output format validation failed: {e}')
+                    if self.redis_client:
+                        self.redis_client.incr(f'fail_count:{file_path}')
+                    return code
+            else:
+                # Fallback: Extract code block if fenced (common LLM output format)
+                code_match = re.search(r'```python\n(.*?)\n```', raw_output, re.DOTALL)
+                healed_code = code_match.group(1) if code_match else raw_output
             
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:

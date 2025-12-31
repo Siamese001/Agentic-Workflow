@@ -283,20 +283,93 @@ class PineconeSovereignAgent:
         
         self.index.upsert(vectors=[{"id": file_id, "values": emb, "metadata": metadata}])
     
-    async def semantic_search(self, query: str, top_k: int = 5) -> List[Dict]:
+    async def semantic_search(
+        self, 
+        query: str, 
+        file_path: Optional[Path] = None,
+        top_k: int = 5,
+        relevance_threshold: float = 0.75
+    ) -> List[str]:
         """
-        Runtime retrieval for agents needing to 'find' logic.
+        [HARDENING 7] Layer-scoped semantic search with relevance filtering.
+        
+        Prevents code leakage by:
+        - Restricting retrieval to same architectural layer as file_path
+        - Filtering low-relevance matches (score < threshold)
+        - Capping total context size to prevent token overflow
         
         Args:
             query: Search query text
-            top_k: Number of results to return
+            file_path: Optional file path to derive layer namespace
+            top_k: Number of results to return (before filtering)
+            relevance_threshold: Minimum score for match inclusion (0.0-1.0)
             
         Returns:
-            List of search results with metadata
+            List of code chunk strings (capped at ~10k chars total)
         """
+        # [HARDENING] Derive layer namespace from file_path
+        namespace = "default"
+        if file_path:
+            try:
+                # Extract layer from path (e.g., agentic_core/L5_safety/... -> L5_safety)
+                rel_path = file_path.relative_to(self.project_root / 'agentic_core')
+                if len(rel_path.parts) > 0:
+                    layer = rel_path.parts[0]
+                    namespace = f"layer_{layer}"
+            except (ValueError, IndexError):
+                # File outside agentic_core - use default namespace
+                pass
+        
         q_emb = await self.get_embedding(query)
-        results = self.index.query(vector=q_emb, top_k=top_k, include_metadata=True)
-        return results.to_dict() if hasattr(results, 'to_dict') else results
+        
+        # Query with namespace restriction
+        try:
+            results = self.index.query(
+                vector=q_emb,
+                top_k=top_k,
+                include_metadata=True,
+                namespace=namespace
+            )
+        except Exception as e:
+            # Fallback to default namespace if layer namespace doesn't exist
+            print(f"   [INFO] Layer namespace '{namespace}' not found, using default")
+            results = self.index.query(
+                vector=q_emb,
+                top_k=top_k,
+                include_metadata=True
+            )
+        
+        # [HARDENING] Relevance filtering
+        matches = results.matches if hasattr(results, 'matches') else results.get('matches', [])
+        filtered = [m for m in matches if m.get('score', 0) > relevance_threshold]
+        
+        if len(filtered) < 1:
+            print(f"   [INFO] No relevant vectors (threshold={relevance_threshold}) - proceeding without memory")
+            return []
+        
+        # [HARDENING] Cap total context size to ~10k chars
+        context_chunks = []
+        total_len = 0
+        max_context_size = 10000
+        
+        for match in filtered[:5]:  # Hard cap at 5 chunks
+            metadata = match.get('metadata', {})
+            chunk = metadata.get('text', metadata.get('code_chunk', ''))
+            
+            if not chunk:
+                continue
+            
+            if total_len + len(chunk) > max_context_size:
+                # Truncate last chunk to fit within limit
+                remaining = max_context_size - total_len
+                if remaining > 100:  # Only add if meaningful
+                    context_chunks.append(chunk[:remaining] + "...")
+                break
+            
+            context_chunks.append(chunk)
+            total_len += len(chunk)
+        
+        return context_chunks
     
     def health_check(self) -> Dict:
         """Enhanced health check with sample quality assessment"""
