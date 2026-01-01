@@ -1,6 +1,7 @@
 """E2E test for full canon validation mission with healing."""
 import pytest
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch, MagicMock
 import json
 
