@@ -1,0 +1,23 @@
+building_strategies:
+  caching:
+    cache_duration: 1h
+    cache_size_limit: 100MB
+    enabled: true
+  dynamic:
+    adaptation_criteria:
+    - task_complexity
+    - user_preferences
+    - performance_metrics
+    enabled: true
+  progressive:
+    enabled: true
+    layers:
+    - max_tokens: 1000
+      name: core_context
+      priority: highest
+    - max_tokens: 1500
+      name: supporting_context
+      priority: high
+    - max_tokens: 1000
+      name: auxiliary_context
+      priority: medium

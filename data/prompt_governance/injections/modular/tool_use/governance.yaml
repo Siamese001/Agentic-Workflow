@@ -1,0 +1,26 @@
+governance:
+  access_control:
+    role_based_access:
+      permissions:
+        admin:
+        - all_tools
+        - tool_configuration
+        advanced_user:
+        - standard_tools
+        - advanced_tools
+        basic_user:
+        - standard_tools
+      roles:
+      - basic_user
+      - advanced_user
+      - admin
+  usage_policies:
+    data_privacy:
+      audit_logging: true
+      consent_required: true
+      data_retention: 30_days
+    fair_usage:
+      daily_limits:
+        admin: unlimited
+        advanced_user: 500
+        basic_user: 100

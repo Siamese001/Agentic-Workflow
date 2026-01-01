@@ -1,0 +1,44 @@
+legal_compliance:
+  data_protection:
+    ccpa_compliance:
+      consumer_rights:
+      - right_to_know
+      - right_to_delete
+      - right_to_opt_out
+      - right_to_non_discrimination
+      enabled: true
+    gdpr_compliance:
+      enabled: true
+      principles:
+      - lawfulness_fairness_transparency
+      - purpose_limitation
+      - data_minimization
+      - accuracy
+      - storage_limitation
+      - integrity_confidentiality
+      rights:
+      - right_to_access
+      - right_to_rectification
+      - right_to_erasure
+      - right_to_portability
+  employment_laws:
+    anti_discrimination:
+      enabled: true
+      prohibited_practices:
+      - discriminatory_screening
+      - biased_evaluation_criteria
+      - exclusionary_language
+      protected_classes:
+      - age
+      - disability
+      - gender
+      - race
+      - religion
+      - sexual_orientation
+      - veteran_status
+    equal_opportunity:
+      enabled: true
+      requirements:
+      - fair_evaluation_process
+      - accessible_opportunities
+      - non_discriminatory_practices

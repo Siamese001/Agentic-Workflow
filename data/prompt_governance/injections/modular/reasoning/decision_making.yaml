@@ -1,0 +1,44 @@
+decision_making:
+  cost_benefit_analysis:
+    framework:
+    - identify_all_costs
+    - quantify_all_benefits
+    - compare_alternatives
+    - make_recommendation
+    resume_optimization:
+      skill_development:
+        benefits: increased_market_value
+        costs: learning_time_and_resources
+      time_investment:
+        benefits: improved_interview_rates
+        costs: time_and_effort_required
+  mcda:
+    outreach_decisions:
+      approach_selection:
+        criteria:
+        - personalization_potential
+        - value_proposition_strength
+        - relationship_building
+        - conversion_probability
+        weights:
+          conversion: 0.2
+          personalization: 0.3
+          relationship: 0.2
+          value_proposition: 0.3
+    process:
+    - define_decision_criteria
+    - assign_weight_importance
+    - evaluate_alternatives
+    - calculate_optimal_choice
+    resume_decisions:
+      content_selection:
+        criteria:
+        - relevance_to_target_role
+        - demonstrated_impact
+        - skill_level_advancement
+        - career_progression
+        weights:
+          advancement: 0.2
+          impact: 0.3
+          progression: 0.1
+          relevance: 0.4

@@ -1,0 +1,56 @@
+content_safety:
+  detection_methods:
+    keyword_filtering:
+      adaptive_learning: true
+      enabled: true
+      sensitivity: high
+    machine_learning:
+      continuous_training: true
+      enabled: true
+      model_types:
+      - classification
+      - anomaly_detection
+    semantic_analysis:
+      context_aware: true
+      enabled: true
+      nuance_detection: true
+  harmful_content:
+    categories:
+      hate_speech:
+        enabled: true
+        subcategories:
+        - racial_discrimination
+        - religious_persecution
+        - gender_bias
+        - sexual_orientation_harassment
+        threshold: 0.05
+      illegal_activities:
+        enabled: true
+        subcategories:
+        - drug_manufacture
+        - fraud_schemes
+        - hacking_instructions
+        - terrorism_support
+        threshold: 0.1
+      misinformation:
+        enabled: true
+        subcategories:
+        - false_medical_claims
+        - financial_scams
+        - conspiracy_theories
+        threshold: 0.2
+      sexual_content:
+        enabled: true
+        subcategories:
+        - explicit_sexual_content
+        - sexual_harassment
+        - inappropriate_suggestions
+        threshold: 0.1
+      violence:
+        enabled: true
+        subcategories:
+        - physical_violence
+        - threats_of_harm
+        - weapon_promotion
+        - self_harm_encouragement
+        threshold: 0.05

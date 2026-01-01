@@ -1,0 +1,24 @@
+brand_governance:
+  visual_standards:
+    color_palette:
+      accent: '#E74C3C'
+      primary: '#2C3E50'
+      secondary: '#3498DB'
+    typography:
+      body: Arial Regular
+      emphasis: Arial Italic
+      headings: Arial Bold
+  voice_standards:
+    communication_style:
+      clarity: high
+      conciseness: medium
+      formality: professional
+    professional_tone:
+      avoid:
+      - casual
+      - overly_familiar
+      - aggressive
+      characteristics:
+      - authoritative
+      - helpful
+      - respectful

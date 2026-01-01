@@ -1,0 +1,8 @@
+global_principles:
+  enabled: true
+  optimization_level: maximum
+  tool_areas:
+    integration_coordination: true
+    performance_monitoring: true
+    tool_selection: true
+    usage_optimization: true

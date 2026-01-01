@@ -1,0 +1,85 @@
+tool_selection:
+  outreach_tools:
+    personalization_tools:
+      message_generator:
+        description: Generate personalized outreach messages
+        recommended_tools:
+        - name: contextual_message_generator
+          strengths:
+          - deep_personalization
+          - tone_control
+          use_case: high_value_outreach
+        selection_criteria:
+        - personalization_quality
+        - tone_adaptability
+        - template_flexibility
+    research_tools:
+      company_researcher:
+        description: Gather and analyze company information
+        recommended_tools:
+        - name: web_research_aggregator
+          strengths:
+          - comprehensive_sources
+          - real_time_data
+          use_case: company_intelligence_gathering
+        selection_criteria:
+        - data_source_coverage
+        - information_freshness
+        - relevance_scoring
+      contact_enricher:
+        description: Enrich contact information with professional details
+        recommended_tools:
+        - name: professional_network_enricher
+          strengths:
+          - professional_focus
+          - verified_data
+          use_case: contact_profile_enhancement
+        selection_criteria:
+        - data_accuracy
+        - privacy_compliance
+        - coverage_breadth
+  resume_tools:
+    analysis_tools:
+      experience_classifier:
+        description: Classify work experience by relevance and impact
+        recommended_tools:
+        - name: impact_classifier
+          strengths:
+          - achievement_focused
+          - quantification_support
+          use_case: experience_optimization
+        selection_criteria:
+        - relevance_scoring
+        - achievement_detection
+        - career_progression_analysis
+      skill_analyzer:
+        description: Analyze and categorize skills from resume content
+        recommended_tools:
+        - name: taxonomy_skill_analyzer
+          strengths:
+          - comprehensive_taxonomy
+          - industry_mapping
+          use_case: skill_gap_analysis
+        selection_criteria:
+        - skill_taxonomy_coverage
+        - industry_specific_recognition
+        - proficiency_level_detection
+    parsing_tools:
+      resume_parser:
+        description: Extract structured data from resume documents
+        recommended_tools:
+        - name: nlp_resume_parser
+          strengths:
+          - high_accuracy
+          - format_flexible
+          use_case: complex_resume_formats
+        - name: structured_parser
+          strengths:
+          - fast_processing
+          - standard_formats
+          use_case: high_volume_processing
+        selection_criteria:
+        - format_support
+        - accuracy_rate
+        - processing_speed
+        - field_extraction

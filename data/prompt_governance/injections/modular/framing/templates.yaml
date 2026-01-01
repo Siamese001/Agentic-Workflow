@@ -1,0 +1,27 @@
+templates:
+  problem_templates:
+    career_transition:
+      structure:
+      - acknowledge_transition_challenge
+      - identify_transferable_foundation
+      - highlight_adaptability_evidence
+      - show_future_readiness
+    skill_gap:
+      structure:
+      - recognize_skill_requirements
+      - bridge_with_related_experience
+      - demonstrate_learning_capability
+      - show_growth_potential
+  solution_templates:
+    expertise_demonstration:
+      structure:
+      - establish_credibility
+      - show_depth_of_knowledge
+      - provide_practical_examples
+      - demonstrate_thought_leadership
+    value_proposition:
+      structure:
+      - understand_recipient_needs
+      - identify_competency_match
+      - provide_specific_evidence
+      - offer_mutual_benefit

@@ -1,0 +1,51 @@
+strategic_reasoning:
+  goal_alignment:
+    framework:
+    - define_primary_objectives
+    - identify_supporting_goals
+    - establish_success_metrics
+    - create_action_plan
+    outreach_strategy:
+      networking_objectives:
+        primary_goals:
+        - establish_professional_connections
+        - create_opportunity_conversations
+        - build_relationship_network
+        supporting_goals:
+        - demonstrate_industry_knowledge
+        - show_collaboration_interest
+        - provide_reciprocal_value
+    resume_strategy:
+      career_objectives:
+        primary_goals:
+        - secure_target_role interviews
+        - demonstrate qualifications
+        - differentiate_from_competition
+        supporting_goals:
+        - show_cultural_fit
+        - demonstrate_growth_potential
+        - establish_professional_brand
+  risk_assessment:
+    methodology:
+    - identify_potential_risks
+    - assess_probability_impact
+    - develop_mitigation_strategies
+    - create_contingency_plans
+    outreach_risks:
+      messaging_risks:
+      - spam_filter_triggers
+      - unprofessional_perception
+      - irrelevant_content
+      timing_risks:
+      - inappropriate_contact_times
+      - excessive_followup_frequency
+      - missed_opportunity_windows
+    resume_risks:
+      content_risks:
+      - overqualification_perception
+      - skill_obsolescence_concerns
+      - employment_gaps_questions
+      presentation_risks:
+      - format_inconsistencies
+      - typos_grammar_errors
+      - length_readability_issues

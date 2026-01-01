@@ -1,0 +1,8 @@
+global_principles:
+  enabled: true
+  governance_areas:
+    brand_consistency: true
+    compliance_enforcement: true
+    content_quality: true
+    format_standardization: true
+  governance_level: strict

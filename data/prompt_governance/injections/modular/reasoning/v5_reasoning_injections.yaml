@@ -1,0 +1,136 @@
+v5_reasoning_injections:
+  confidence_uncertainty:
+    description: Provide numeric confidence with clear justification for uncertainty
+    prompt_template: 'Confidence Assessment:
+
+      - Primary Conclusion: {primary_conclusion}
+
+      - Confidence Level: {confidence_level} (0-100%)
+
+      - Uncertainty Factors: {uncertainty_factors}
+
+      - Confidence Justification: {confidence_justification}
+
+
+      If confidence < 80%, identify additional information needed to increase certainty.
+
+      '
+    success_criteria:
+    - Confidence quantified
+    - Uncertainty acknowledged
+    - Justification provided
+    usage_context:
+    - Risk assessment
+    - Decision making
+    - Quality evaluation
+  enabled: true
+  error_simulation:
+    description: Simulate potential failures and correct output before finalizing
+    prompt_template: 'Error Simulation Protocol:
+
+      1. Initial Analysis: {initial_analysis}
+
+      2. Potential Errors: {potential_errors}
+
+      3. Error Impact Assessment: {error_impact}
+
+      4. Corrected Output: {corrected_output}
+
+      5. Final Validation: {final_validation}
+
+
+      Simulate failure scenarios, identify impacts, and apply corrections before finalizing.
+
+      '
+    success_criteria:
+    - Error scenarios simulated
+    - Corrections applied
+    - Output validated
+    usage_context:
+    - Critical decision making
+    - Quality assurance
+    - Risk mitigation
+  failure_anticipation:
+    description: Predict likely mistakes before reasoning and mitigate proactively
+    prompt_template: 'Failure Anticipation Analysis:
+
+      - Potential Failure Modes: {failure_modes}
+
+      - Common Mistakes: {common_mistakes}
+
+      - Mitigation Strategies: {mitigation_strategies}
+
+      - Prevention Measures: {prevention_measures}
+
+
+      Before proceeding, identify and address these potential failure points.
+
+      Apply preventive measures throughout the reasoning process.
+
+      '
+    success_criteria:
+    - Failure modes identified
+    - Preventive measures applied
+    - Error rates reduced
+    usage_context:
+    - Complex problem solving
+    - Risk assessment
+    - Quality assurance
+  injection_count: 5
+  multi_branch_thinking:
+    description: Generate multiple branches and vote for strongest reasoning path
+    prompt_template: 'Multi-Branch Reasoning Protocol:
+
+      Branch A: {branch_a_reasoning}
+
+      Branch B: {branch_b_reasoning}
+
+      Branch C: {branch_c_reasoning}
+
+
+      Evaluation Criteria: {evaluation_criteria}
+
+      Selected Branch: {selected_branch}
+
+      Rationale: {selection_rationale}
+
+
+      Generate multiple reasoning paths, evaluate against criteria, and select strongest.
+
+      '
+    success_criteria:
+    - Multiple perspectives considered
+    - Systematic evaluation applied
+    - Optimal path selected
+    usage_context:
+    - Complex decision making
+    - Strategy development
+    - Problem solving
+  reason_then_answer:
+    description: Think privately first, then output final structured result
+    prompt_template: '[REASONING - PRIVATE]
+
+      {private_reasoning_process}
+
+
+      [ANALYSIS COMPLETE]
+
+
+      [FINAL ANSWER]
+
+      {structured_final_output}
+
+
+      Complete full reasoning process privately before generating final output.
+
+      Do not show reasoning process in final answer unless explicitly requested.
+
+      '
+    success_criteria:
+    - Complete reasoning performed
+    - Private process maintained
+    - Structured output delivered
+    usage_context:
+    - Complex analysis tasks
+    - Sensitive evaluations
+    - Structured reporting

@@ -1,0 +1,8 @@
+global_principles:
+  enabled: true
+  safety_areas:
+    content_safety: true
+    ethical_guidelines: true
+    legal_compliance: true
+    privacy_protection: true
+  safety_level: highest

@@ -1,0 +1,44 @@
+outreach_context:
+  message_context:
+    call_to_action:
+      priority: medium
+      types:
+      - meeting_request
+      - information_exchange
+      - collaboration_discussion
+    personalization_elements:
+      elements:
+      - shared_interests
+      - mutual_connections
+      - company_research
+      - industry_insights
+      priority: high
+    purpose:
+      priority: highest
+      types:
+      - networking_request
+      - job_inquiry
+      - information_request
+      - collaboration_proposal
+  recipient_structure:
+    professional_info:
+      background:
+        fields:
+        - career_history
+        - expertise_areas
+        - interests
+        - mutual_connections
+        priority: high
+      contact_info:
+        fields:
+        - email
+        - linkedin
+        - professional_networks
+        priority: medium
+      fields:
+      - name
+      - job_title
+      - company
+      - industry
+      - experience_level
+      priority: high

@@ -1,0 +1,48 @@
+critical_thinking:
+  evaluation_criteria:
+    accuracy:
+      description: Verify factual accuracy
+      questions:
+      - Is this information verifiable?
+      - Are there supporting evidence?
+      - Are there potential biases?
+    completeness:
+      description: Ensure comprehensive coverage
+      questions:
+      - Are all relevant aspects covered?
+      - What information might be missing?
+      - Are there alternative perspectives?
+    relevance:
+      description: Assess relevance to objectives
+      questions:
+      - Does this directly address the goal?
+      - Is this information essential?
+      - What impact does this have on outcomes?
+  outreach_critical_thinking:
+    message_evaluation:
+      accuracy_verification:
+      - Are claims about recipient accurate?
+      - Is company research current and correct?
+      - Are proposed benefits realistic?
+      completeness_analysis:
+      - What essential information might be missing?
+      - Are there unanswered questions?
+      - What additional context would improve this?
+      relevance_assessment:
+      - How does this message address recipient needs?
+      - What specific value is being offered?
+      - Is this approach appropriate for the context?
+  resume_critical_thinking:
+    experience_evaluation:
+      accuracy_verification:
+      - Can these achievements be quantified?
+      - Are these skills current and applicable?
+      - Is this experience presented truthfully?
+      completeness_analysis:
+      - What critical experiences might be missing?
+      - Are there gaps in the career narrative?
+      - What additional context would strengthen this?
+      relevance_assessment:
+      - How does this experience relate to target role?
+      - What specific skills demonstrate capability?
+      - What achievements show impact?

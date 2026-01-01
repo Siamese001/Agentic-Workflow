@@ -1,0 +1,31 @@
+templates:
+  outreach_template:
+    optimization:
+      max_total_tokens: 2000
+      section_weights:
+        background: 0.25
+        call_to_action: 0.1
+        personalization_elements: 0.25
+        professional_info: 0.2
+        purpose: 0.2
+    structure:
+      action: call_to_action
+      background: background
+      personalization: personalization_elements
+      purpose: purpose
+      recipient: professional_info
+  resume_template:
+    optimization:
+      max_total_tokens: 3500
+      section_weights:
+        education: 0.15
+        personal_info: 0.1
+        professional_summary: 0.2
+        skills: 0.15
+        work_experience: 0.4
+    structure:
+      education: education
+      experience: work_experience
+      header: personal_info
+      skills: skills
+      summary: professional_summary

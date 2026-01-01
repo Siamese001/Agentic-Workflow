@@ -1,0 +1,33 @@
+compliance_governance:
+  industry_compliance:
+    education:
+      academic_ethics: true
+      ferpa_compliant: true
+      student_privacy: true
+    finance:
+      financial_ethics: true
+      regulatory_disclosure: true
+      sec_compliant: true
+    healthcare:
+      hipaa_compliant: true
+      medical_ethics: true
+      patient_privacy: true
+  legal_compliance:
+    data_protection:
+      ccpa_compliant: true
+      data_encryption: true
+      gdpr_compliant: true
+      pii_handling:
+        consent_required: true
+        detection: true
+        redaction: true
+    employment_laws:
+      anti_discrimination: true
+      equal_opportunity: true
+      privacy_protection: true
+      prohibited_questions:
+      - age
+      - marital_status
+      - religion
+      - national_origin
+      - disability

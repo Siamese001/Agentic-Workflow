@@ -1,0 +1,67 @@
+content_governance:
+  outreach_content:
+    content_restrictions:
+      forbidden_content:
+      - spam_indicators
+      - misleading_claims
+      - excessive_urgency
+      - generic_templates
+      required_content:
+      - personalized_greeting
+      - context_reference
+      - value_proposition
+      - clear_next_step
+    quality_standards:
+      call_to_action:
+        actionability: immediate
+        required: true
+        specificity: high
+      personalization:
+        min_elements: 3
+        required: true
+        types:
+        - research_based
+        - connection_based
+        - interest_based
+      value_proposition:
+        clarity_score: 0.8
+        required: true
+        structure: benefit_focused
+  resume_content:
+    content_restrictions:
+      forbidden_content:
+      - personal_identifiers
+      - age_birth_date
+      - marital_status
+      - religious_information
+      - political_affiliations
+      required_content:
+      - professional_contact_info
+      - relevant_experience
+      - key_skills
+      - education_background
+    quality_standards:
+      achievements:
+        min_per_role: 2
+        required: true
+        structure: STAR_method
+      action_verbs:
+        min_count: 15
+        preferred_list:
+        - achieved
+        - implemented
+        - developed
+        - led
+        - managed
+        - created
+        - improved
+        - increased
+        required: true
+      quantification:
+        metric_types:
+        - percentages
+        - dollars
+        - time
+        - quantity
+        min_metrics: 5
+        required: true

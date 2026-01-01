@@ -1,0 +1,38 @@
+usage_optimization:
+  coordination:
+    sequential_workflows:
+      outreach_processing:
+        steps:
+        - input: company_identifier
+          output: company_profile
+          tool: company_researcher
+        - input: contact_information
+          output: enriched_contact_profile
+          tool: contact_enricher
+        - input: company_profile, enriched_contact_profile
+          output: personalized_message
+          tool: message_generator
+      resume_processing:
+        steps:
+        - input: raw_resume_document
+          output: structured_resume_data
+          tool: resume_parser
+        - input: structured_resume_data
+          output: categorized_skills
+          tool: skill_analyzer
+        - input: structured_resume_data
+          output: classified_experience
+          tool: experience_classifier
+        - input: classified_experience, categorized_skills
+          output: resume_quality_score
+          tool: quality_scorer
+  parallel_workflows:
+    resume_optimization:
+      parallel_tasks:
+      - focus: skill_extraction_and_categorization
+        tool: skill_analyzer
+      - focus: experience_relevance_scoring
+        tool: experience_classifier
+      - focus: format_compliance_check
+        tool: format_validator
+      synchronization_point: quality_assessment

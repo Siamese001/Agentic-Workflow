@@ -1,0 +1,39 @@
+solution_framing:
+  outreach_solutions:
+    message_crafting:
+      approach: value_first
+      strategy:
+      - identify_recipient_needs
+      - offer_specific_value
+      - demonstrate_preparation
+    opportunity_seeking:
+      approach: mutual_benefit
+      strategy:
+      - identify_shared_interests
+      - propose_collaboration
+      - demonstrate_complementary_skills
+    relationship_building:
+      approach: long_term
+      strategy:
+      - show_genuine_interest
+      - provide_ongoing_value
+      - maintain_professional_presence
+  resume_solutions:
+    experience_presentation:
+      approach: impact_focused
+      strategy:
+      - quantify_achievements
+      - show_progression_responsibility
+      - demonstrate_business_value
+    narrative_construction:
+      approach: career_story
+      strategy:
+      - create_cohesive_trajectory
+      - highlight_growth_moments
+      - show_future_direction
+    skill_highlighting:
+      approach: relevance_first
+      strategy:
+      - match_to_job_requirements
+      - provide_evidence_examples
+      - show_proficiency_levels

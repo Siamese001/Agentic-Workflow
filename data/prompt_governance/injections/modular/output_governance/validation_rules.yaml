@@ -1,0 +1,19 @@
+validation_rules:
+  post_validation:
+    content_validation:
+      brand_alignment: true
+      compliance_check: true
+      quality_threshold: 0.8
+    format_validation:
+      readability_score: 0.8
+      structure_compliance: true
+      style_consistency: true
+  pre_validation:
+    context_validation:
+      accuracy_check: true
+      completeness_check: true
+      relevance_check: true
+    input_validation:
+      content_safety: true
+      data_format: true
+      required_fields: true

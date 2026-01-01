@@ -1,0 +1,31 @@
+quality_governance:
+  quality_assurance:
+    automated_checks:
+      content_completeness: true
+      format_validation: true
+      spelling_grammar: true
+    manual_review:
+      expert_review: true
+      peer_review: true
+      stakeholder_approval: true
+  quality_metrics:
+    outreach_quality:
+      engagement_score:
+        threshold: 0.7
+        weight: 0.3
+      personalization_score:
+        threshold: 0.8
+        weight: 0.4
+      professional_score:
+        threshold: 0.85
+        weight: 0.3
+    resume_quality:
+      completeness_score:
+        threshold: 0.9
+        weight: 0.3
+      professional_score:
+        threshold: 0.85
+        weight: 0.3
+      relevance_score:
+        threshold: 0.8
+        weight: 0.4

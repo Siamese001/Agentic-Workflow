@@ -1,0 +1,15 @@
+analytics:
+  metrics:
+  - name: context_utilization_rate
+    type: gauge
+  - name: context_relevance_score
+    type: histogram
+  - name: context_processing_time
+    type: histogram
+  quality_metrics:
+  - name: context_completeness
+    type: gauge
+  - name: context_accuracy
+    type: gauge
+  - name: context_freshness
+    type: gauge

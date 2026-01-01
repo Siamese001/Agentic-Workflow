@@ -1,0 +1,73 @@
+problem_framing:
+  outreach_problems:
+    cold_contact:
+      definition: Reaching out to unknown professionals
+      framing_approach:
+      - establish_mutual_connections
+      - demonstrate_research_preparation
+      - offer_value_first
+      key_questions:
+      - What common ground exists?
+      - How to show genuine interest?
+      - What value can be offered?
+    follow_up_strategy:
+      definition: Maintaining engagement without being intrusive
+      framing_approach:
+      - provide_additional_value
+      - reference_previous_conversation
+      - respect_timing_and_preferences
+      key_questions:
+      - What new information adds value?
+      - How to reference prior meaningfully?
+      - What timing shows respect for their schedule?
+    message_personalization:
+      definition: Creating tailored messages at scale
+      framing_approach:
+      - identify_specific_interests
+      - reference_company_initiatives
+      - align_with_professional_goals
+      key_questions:
+      - What specific interests align with recipient?
+      - How to connect to their company's mission?
+      - What professional goals can be supported?
+  resume_problems:
+    achievement_quantification:
+      definition: Difficulty quantifying impact and results
+      framing_approach:
+      - use_metrics_and_kpis
+      - show_before_after_scenarios
+      - demonstrate_business_value
+      key_questions:
+      - What measurable improvements were achieved?
+      - How did actions impact business outcomes?
+      - What efficiency gains were realized?
+    career_transition:
+      definition: Professional changing careers or industries
+      framing_approach:
+      - identify_transferable_skills
+      - highlight_adaptability
+      - emphasize_learning_capability
+      key_questions:
+      - What core skills apply across industries?
+      - How to demonstrate relevant experience?
+      - What learning achievements show adaptability?
+    experience_gap:
+      definition: Limited relevant experience for target role
+      framing_approach:
+      - reframe_related_experience
+      - emphasize_potential_and_growth
+      - show_initiative_and_projects
+      key_questions:
+      - What experiences demonstrate relevant capabilities?
+      - How to show readiness for the role?
+      - What projects demonstrate applicable skills?
+    skill_obsolescence:
+      definition: Skills need updating for modern market
+      framing_approach:
+      - highlight_continuous_learning
+      - show_recent_certifications
+      - emphasize_adaptability_to_new_tech
+      key_questions:
+      - What recent learning demonstrates current knowledge?
+      - How to show commitment to staying current?
+      - What transferable fundamentals apply to new tech?

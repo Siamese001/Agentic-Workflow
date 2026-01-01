@@ -1,0 +1,63 @@
+perspective_framing:
+  recruiter_perspectives:
+    hiring_manager:
+      framing_focus:
+      - show_quantifiable_results
+      - demonstrate_team_contributions
+      - highlight_business_understanding
+      mindset: business_value
+      priorities:
+      - immediate_impact
+      - team_productivity
+      - results_orientation
+    hr_generalist:
+      framing_focus:
+      - show_collaboration_experience
+      - demonstrate_communication_clarity
+      - highlight_learning_initiative
+      mindset: cultural_fit
+      priorities:
+      - team_compatibility
+      - communication_skills
+      - growth_potential
+    technical_recruiter:
+      framing_focus:
+      - show_technical_depth
+      - demonstrate_project_impact
+      - highlight_problem_solving_approach
+      mindset: skills_assessment
+      priorities:
+      - technical_competence
+      - project_experience
+      - problem_solving_ability
+  user_perspectives:
+    career_changer:
+      framing_focus:
+      - bridge_past_to_future
+      - demonstrate_quick_learning
+      - show_relevant_fundamentals
+      mindset: transition_focused
+      priorities:
+      - transferable_skills
+      - adaptability
+      - learning_capability
+    industry_expert:
+      framing_focus:
+      - show_deep_expertise
+      - demonstrate_industry_vision
+      - highlight_innovative_contributions
+      mindset: authority_positioning
+      priorities:
+      - thought_leadership
+      - industry_insights
+      - innovative_thinking
+    job_seeker:
+      framing_focus:
+      - highlight_future_potential
+      - emphasize_readiness_for_challenges
+      - show_commitment_to_growth
+      mindset: opportunity_seeking
+      priorities:
+      - career_advancement
+      - skill_utilization
+      - growth_potential

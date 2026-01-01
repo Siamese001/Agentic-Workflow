@@ -1,0 +1,37 @@
+performance_monitoring:
+  metrics:
+    processing_metrics:
+    - labels:
+      - tool_name
+      - input_type
+      name: tool_processing_time
+      type: histogram
+    - labels:
+      - tool_name
+      name: tool_success_rate
+      type: gauge
+    - labels:
+      - tool_name
+      - task_type
+      name: tool_accuracy_score
+      type: histogram
+    quality_metrics:
+    - labels:
+      - tool_name
+      - output_type
+      name: output_quality_score
+      type: gauge
+    - labels:
+      - tool_name
+      name: user_satisfaction_rating
+      type: histogram
+  thresholds:
+    accuracy:
+      minimum_acceptable: 0.85
+      target_optimal: 0.95
+    processing_time:
+      max_acceptable: 30
+      target_optimal: 10
+    success_rate:
+      minimum_acceptable: 0.9
+      target_optimal: 0.98

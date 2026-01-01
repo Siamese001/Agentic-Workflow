@@ -1,0 +1,57 @@
+logical_reasoning:
+  abductive_reasoning:
+    description: Finding the best explanation for observations
+    outreach_applications:
+      response_analysis:
+        best_explanation: Identify most likely improvement areas
+        hypotheses: Generate potential causes
+        observation: Analyze low response rates
+    resume_applications:
+      gap_analysis:
+        best_explanation: Determine most likely improvement areas
+        hypotheses: Generate possible explanations
+        observation: Identify resume-job description gaps
+    structure:
+    - observe_phenomenon
+    - generate_hypotheses
+    - evaluate_best_explanation
+  deductive_reasoning:
+    description: Deriving specific conclusions from general principles
+    outreach_applications:
+      relevance_assessment:
+        application: Analyze recipient's needs and interests
+        conclusion: Determine optimal value proposition
+        premise: Professional value increases with relevance
+    resume_applications:
+      career_progression:
+        application: Evaluate experience progression
+        conclusion: Assess readiness for next level
+        premise: Career advancement requires demonstrated growth
+      skill_transferability:
+        application: Analyze specific technical skills for new industry
+        conclusion: Identify transfer opportunities and gaps
+        premise: Technical skills are transferable across industries
+    structure:
+    - establish_general_premise
+    - apply_specific_conditions
+    - derive_logical_conclusion
+  inductive_reasoning:
+    description: Forming general principles from specific observations
+    outreach_applications:
+      engagement_patterns:
+        observations: Analyze response patterns
+        patterns: Identify effective approaches
+        principle: Develop outreach optimization strategy
+    resume_applications:
+      skill_patterns:
+        observations: Analyze multiple job descriptions
+        patterns: Identify common skill requirements
+        principle: Determine market-valued skill categories
+      success_indicators:
+        observations: Review successful career transitions
+        patterns: Extract common success factors
+        principle: Establish transition success framework
+    structure:
+    - observe_specific_patterns
+    - identify_common_elements
+    - form_general_principle

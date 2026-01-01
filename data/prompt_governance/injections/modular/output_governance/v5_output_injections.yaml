@@ -1,0 +1,167 @@
+v5_output_injections:
+  enabled: true
+  error_envelope:
+    description: Standardize failures into simple, structured error objects
+    prompt_template: "ERROR ENVELOPE NORMALIZATION\n\nError Response Schema:\n{{\n\
+      \  \"success\": false,\n  \"error\": {{\n    \"code\": \"{error_code}\",\n \
+      \   \"message\": \"{error_message}\",\n    \"details\": \"{error_details}\"\
+      ,\n    \"timestamp\": \"{timestamp}\"\n  }}\n}}\n\nError Handling Rules:\n-\
+      \ Always use standardized error format\n- Include specific error codes\n- Provide\
+      \ clear error messages\n- Add relevant context details\n\nNormalize all failures\
+      \ into the structured error envelope format.\n"
+    success_criteria:
+    - Standardized error format
+    - Clear error codes
+    - Comprehensive error details
+    usage_context:
+    - Error handling
+    - API responses
+    - Failure reporting
+  injection_count: 5
+  minimality_constraints:
+    description: Limit output size to enforce clarity and conciseness
+    prompt_template: 'OUTPUT MINIMALITY CONSTRAINTS
+
+
+      Size Limits:
+
+      - Maximum Characters: {max_characters}
+
+      - Maximum Fields: {max_fields}
+
+      - Maximum Depth: {max_depth}
+
+      - Conciseness Required: {conciseness_level}
+
+
+      Minimality Rules:
+
+      - Include only essential information
+
+      - Avoid redundant content
+
+      - Use efficient data structures
+
+      - Prioritize clarity over verbosity
+
+
+      Generate minimal output that meets all requirements while respecting size constraints.
+
+      '
+    success_criteria:
+    - Size constraints respected
+    - Essential information retained
+    - Output is concise
+    usage_context:
+    - Token optimization
+    - Performance requirements
+    - Clarity optimization
+  schema_enforcement:
+    description: Supply minimal schema and one valid illustrative example
+    prompt_template: 'SCHEMA ENFORCEMENT PROTOCOL
+
+
+      Required Schema:
+
+      {required_schema}
+
+
+      Valid Example:
+
+      {example_output}
+
+
+      Enforcement Rules:
+
+      - Follow exact schema structure
+
+      - Use specified field types
+
+      - Maintain required field order
+
+      - Reference example for format guidance
+
+
+      Generate output that conforms to schema while using example as format reference.
+
+      '
+    success_criteria:
+    - Schema structure followed
+    - Field types correct
+    - Example format referenced
+    usage_context:
+    - Complex data structures
+    - Format standardization
+    - Data validation
+  stability_contracts:
+    description: Preserve field order and naming across repeated outputs
+    prompt_template: 'OUTPUT STABILITY CONTRACT
+
+
+      Contract Requirements:
+
+      - Field Order: {field_order}
+
+      - Field Naming: {field_naming}
+
+      - Consistent Structure: true
+
+      - Stable Identifiers: true
+
+
+      Stability Guarantees:
+
+      - Same fields in same order
+
+      - Consistent naming conventions
+
+      - Stable data types
+
+      - Predictable structure
+
+
+      Maintain output stability across all generations for this task type.
+
+      '
+    success_criteria:
+    - Field order maintained
+    - Naming consistent
+    - Structure stable
+    usage_context:
+    - Repeated operations
+    - API consistency
+    - Data pipeline stability
+  strict_json_output:
+    description: Require deterministic, schema-compliant JSON without extra text
+    prompt_template: 'STRICT JSON OUTPUT MODE ACTIVATED
+
+
+      Output Requirements:
+
+      - Format: Valid JSON only
+
+      - Schema Compliance: {schema_requirements}
+
+      - No Additional Text: true
+
+      - Deterministic Structure: true
+
+
+      JSON Schema:
+
+      {json_schema}
+
+
+      Output must be valid JSON that strictly adheres to the provided schema.
+
+      Do not include any explanatory text, comments, or non-JSON content.
+
+      '
+    success_criteria:
+    - Valid JSON format
+    - Schema compliance
+    - No extra text content
+    usage_context:
+    - API responses
+    - Data exchange
+    - Structured output generation

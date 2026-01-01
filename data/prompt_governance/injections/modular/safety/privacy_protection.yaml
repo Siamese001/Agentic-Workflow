@@ -1,0 +1,48 @@
+privacy_protection:
+  data_minimization:
+    implementation:
+    - identify_required_data_only
+    - remove_unnecessary_information
+    - aggregate_when_possible
+    principle: collect_only_what_is_necessary
+    resume_specific:
+      keep_professional_information:
+      - skills_and_qualifications
+      - professional_experience
+      - educational_background
+      remove_protected_characteristics:
+      - age_birth_date
+      - marital_status
+      - religious_affiliation
+      - political_views
+  pii_protection:
+    detection:
+      enabled: true
+      types:
+        contact_information:
+        - email_address
+        - phone_number
+        - home_address
+        - work_address
+        financial_information:
+        - credit_card_number
+        - bank_account_number
+        - routing_number
+        health_information:
+        - medical_conditions
+        - medications
+        - health_records
+        personal_identifiers:
+        - full_name
+        - social_security_number
+        - driver_license_number
+        - passport_number
+    redaction:
+      enabled: true
+      methods:
+      - complete_removal
+      - partial_masking
+      - token_replacement
+      verification:
+        double_check: true
+        manual_review_for_edge_cases: true

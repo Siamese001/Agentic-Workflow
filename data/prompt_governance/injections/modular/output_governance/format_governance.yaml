@@ -1,0 +1,117 @@
+format_governance:
+  outreach_formats:
+    email_format:
+      formatting_rules:
+        no_html_tags: true
+        professional_tone: true
+        proper_spacing: true
+      structure:
+        body:
+          max_length: 500
+          max_paragraphs: 4
+          style: conversational_professional
+        closing:
+          include_signature: true
+          style: professional
+        greeting:
+          personalization: true
+          style: professional
+        subject_line:
+          max_length: 50
+          style: action_oriented
+    linkedin_format:
+      formatting_rules:
+        emoji_usage: minimal
+        hashtag_usage: relevant_only
+        max_length: 300
+      structure:
+        call_to_action: specific_next_step
+        opening: personalized_connection
+        value_proposition: mutual_benefit
+  resume_formats:
+    classic_format:
+      formatting_rules:
+        font_family:
+        - Times New Roman
+        - Georgia
+        font_size:
+        - 11
+        - 12
+        line_spacing: 2.0
+        margins: 1 inch
+      structure:
+        education:
+        - educational_background
+        experience:
+        - professional_experience
+        header:
+        - name
+        - contact_info
+        objective:
+        - career_objective
+        skills:
+        - technical_skills
+    modern_format:
+      formatting_rules:
+        font_family:
+        - Arial
+        - Calibri
+        - Helvetica
+        font_size:
+        - 10
+        - 11
+        - 12
+        line_spacing: 1.15
+        margins: 1 inch
+      structure:
+        education:
+          max_entries: 5
+          sections:
+          - education
+          style: reverse_chronological
+        experience:
+          max_bullets: 8
+          sections:
+          - work_experience
+          style: achievement_oriented
+        header:
+          max_length: 100
+          sections:
+          - contact_info
+          - professional_title
+        skills:
+          categories:
+          - technical
+          - soft
+          - certifications
+          max_per_category: 10
+          sections:
+          - skills
+        summary:
+          max_length: 300
+          sections:
+          - professional_summary
+          style: paragraph
+    technical_format:
+      formatting_rules:
+        include_github: true
+        include_portfolio: true
+        sections_order:
+        - skills
+        - projects
+        - experience
+      structure:
+        certifications:
+        - certifications
+        education:
+        - education
+        experience:
+        - work_experience
+        header:
+        - contact_info
+        - technical_summary
+        projects:
+        - technical_projects
+        skills:
+        - technical_skills
+        - programming_languages

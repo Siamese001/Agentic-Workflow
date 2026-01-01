@@ -1,0 +1,117 @@
+v5_framing_injections:
+  cost_latency_targets:
+    description: Guide model toward concise, efficient reasoning under resource limits
+    prompt_template: 'Resource Constraints:
+
+      - Maximum Response Time: {max_response_time}
+
+      - Token Limit: {token_limit}
+
+      - Processing Cost Target: {cost_target}
+
+      - Efficiency Requirement: {efficiency_requirement}
+
+
+      Optimize for efficiency while maintaining quality. Prioritize concise, direct
+      responses.
+
+      '
+    success_criteria:
+    - Response within time limits
+    - Efficient token usage
+    - Cost-effective processing
+    usage_context:
+    - Real-time processing
+    - High-volume operations
+    - Cost-sensitive applications
+  enabled: true
+  global_goal_state:
+    description: Anchor all model reasoning to one clear overarching objective
+    prompt_template: "Your primary objective is to {goal_state}. All reasoning, analysis,\
+      \ and output must align with this central goal. \nBefore proceeding, confirm\
+      \ your understanding of the objective and how each step serves this purpose.\n"
+    success_criteria:
+    - Clear goal articulation
+    - Consistent alignment throughout
+    - Objective-driven decision making
+    usage_context:
+    - Resume optimization
+    - Outreach strategy development
+    - Quality assessment
+  injection_count: 5
+  scope_boundaries:
+    description: State exact constraints and forbidden behaviors for the task
+    prompt_template: 'Task Scope and Boundaries:
+
+      - Allowed Operations: {allowed_operations}
+
+      - Forbidden Behaviors: {forbidden_behaviors}
+
+      - Content Constraints: {content_constraints}
+
+      - Output Limitations: {output_limitations}
+
+
+      Strictly adhere to these boundaries. Do not exceed scope or engage in forbidden
+      behaviors.
+
+      '
+    success_criteria:
+    - Strict boundary adherence
+    - No scope violations
+    - Appropriate constraint application
+    usage_context:
+    - Data privacy compliance
+    - Content filtering
+    - Operational constraints
+  success_criteria:
+    description: Define explicit quality thresholds and outcome requirements upfront
+    prompt_template: 'Success Criteria:
+
+      - Quality Threshold: {quality_threshold}
+
+      - Required Outcomes: {required_outcomes}
+
+      - Evaluation Metrics: {evaluation_metrics}
+
+
+      All outputs must meet or exceed these criteria. If any criterion is not met,
+      revise and improve.
+
+      '
+    success_criteria:
+    - Measurable quality standards
+    - Clear outcome definitions
+    - Specific evaluation metrics
+    usage_context:
+    - Resume scoring
+    - Message effectiveness
+    - Content quality assessment
+  task_mode_declaration:
+    description: 'Specify cognitive mode: analytical, synthesis, adversarial, meta,
+      security'
+    prompt_template: 'Task Mode: {cognitive_mode}
+
+
+      Operating Mode Parameters:
+
+      - Cognitive Approach: {cognitive_approach}
+
+      - Analysis Depth: {analysis_depth}
+
+      - Output Style: {output_style}
+
+      - Safety Level: {safety_level}
+
+
+      Maintain this mode throughout the entire task execution.
+
+      '
+    success_criteria:
+    - Consistent mode application
+    - Appropriate cognitive approach
+    - Mode-specific output characteristics
+    usage_context:
+    - Complex analysis tasks
+    - Multi-perspective evaluation
+    - Security-sensitive operations

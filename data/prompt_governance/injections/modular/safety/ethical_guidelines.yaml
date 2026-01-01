@@ -1,0 +1,39 @@
+ethical_guidelines:
+  outreach_ethics:
+    consent:
+      guidelines:
+      - provide_opt_out_options
+      - respect_communication_preferences
+      - honor_request_for_no_contact
+      principle: respect_recipient_autonomy
+    transparency:
+      guidelines:
+      - clearly_state_purpose
+      - avoid_deceptive_practices
+      - be_honest_about_motivations
+      principle: be_clear_about_intent_and_purpose
+    value_exchange:
+      guidelines:
+      - offer_genuine_value
+      - avoid_exploitative_approaches
+      - focus_on_relationship_building
+      principle: ensure_mutual_benefit
+  professional_ethics:
+    fairness:
+      guidelines:
+      - avoid_biased_language
+      - promote_diverse_perspectives
+      - ensure_inclusive_representation
+      principle: ensure_equal_opportunity_representation
+    respect:
+      guidelines:
+      - use_professional_language
+      - respect_privacy_boundaries
+      - acknowledge_expertise_appropriately
+      principle: maintain_professional_respect
+    truthfulness:
+      guidelines:
+      - never_fabricate_experience
+      - avoid_exaggeration_of_qualifications
+      - be_honest_about_capabilities
+      principle: always_present_accurate_information

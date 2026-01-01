@@ -1,0 +1,54 @@
+context_framing:
+  industry_contexts:
+    education:
+      characteristics:
+      - student_outcomes
+      - curriculum_development
+      - stakeholder_communication
+      framing_adaptations:
+      - show_student_impact
+      - demonstrate_curriculum_innovation
+      - highlight_communication_skills
+    finance:
+      characteristics:
+      - risk_management
+      - analytical_rigor
+      - regulatory_oversight
+      framing_adaptations:
+      - show_risk_assessment_skills
+      - demonstrate_analytical_precision
+      - highlight_compliance_knowledge
+    healthcare:
+      characteristics:
+      - regulatory_compliance
+      - patient_focus
+      - interdisciplinary_teams
+      framing_adaptations:
+      - highlight_compliance_experience
+      - show_patient_centered_approach
+      - demonstrate_team_collaboration
+    technology:
+      characteristics:
+      - rapid_innovation
+      - skill_obsolescence
+      - project_based_work
+      framing_adaptations:
+      - emphasize_continuous_learning
+      - show_project_portfolio
+      - demonstrate_adaptability
+  role_contexts:
+    consultant:
+      framing_elements:
+      - client_value
+      - problem_solving
+      - knowledge_transfer
+    individual_contributor:
+      framing_elements:
+      - technical_expertise
+      - project_execution
+      - collaboration_impact
+    leadership:
+      framing_elements:
+      - team_development
+      - strategic_vision
+      - change_management

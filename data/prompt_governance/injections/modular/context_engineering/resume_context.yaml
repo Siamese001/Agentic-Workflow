@@ -1,0 +1,51 @@
+resume_context:
+  data_structure:
+    sections:
+      education:
+        priority: medium
+        structure:
+        - institution_name
+        - degree
+        - graduation_date
+        - relevant_coursework
+      personal_info:
+        fields:
+        - name
+        - professional_title
+        - location
+        - email
+        - phone
+        - linkedin
+        priority: high
+      professional_summary:
+        max_length: 300
+        optimization: impact_focused
+        priority: high
+      skills:
+        categorization:
+        - technical_skills
+        - soft_skills
+        - certifications
+        - languages
+        priority: high
+      work_experience:
+        priority: highest
+        structure:
+        - company_name
+        - job_title
+        - employment_dates
+        - responsibilities
+        - achievements
+  optimization:
+    experience_prioritization:
+      achievement_weight: 1.8
+      recent_experience_weight: 1.5
+      relevant_experience_weight: 2.0
+    relevance_filtering:
+      dynamic_adjustment: true
+      enabled: true
+      threshold: 0.7
+    skills_ranking:
+      market_demand_weight: 1.2
+      relevance_weight: 1.5
+      skill_level_weight: 1.0

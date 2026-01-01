@@ -1,0 +1,41 @@
+analytical_reasoning:
+  pattern_recognition:
+    outreach_patterns:
+      engagement_patterns:
+      - personalization_effectiveness
+      - timing_optimization
+      - value_proposition_impact
+      - follow_up_strategy
+    resume_patterns:
+      success_patterns:
+      - achievement_quantification
+      - skill_progression
+      - industry_transitions
+      - role_advancement
+    techniques:
+    - trend_identification
+    - correlation_analysis
+    - anomaly_detection
+    - pattern_extraction
+  problem_decomposition:
+    methodology:
+    - identify_core_problem
+    - break_into_sub_problems
+    - analyze_relationships
+    - prioritize_components
+    outreach_decomposition:
+      engagement_analysis:
+        core_problem: Increase response rates
+        sub_problems:
+        - analyze target audience
+        - evaluate current approach
+        - identify improvement opportunities
+        - optimize message strategy
+    resume_decomposition:
+      career_analysis:
+        core_problem: Optimize resume for target role
+        sub_problems:
+        - analyze job requirements
+        - evaluate current qualifications
+        - identify skill gaps
+        - optimize experience presentation

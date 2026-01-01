@@ -1,0 +1,8 @@
+global_principles:
+  enabled: true
+  frameworks:
+    analytical_reasoning: true
+    critical_thinking: true
+    logical_reasoning: true
+    strategic_reasoning: true
+  reasoning_level: systematic

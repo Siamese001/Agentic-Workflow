@@ -1,0 +1,8 @@
+global_principles:
+  enabled: true
+  framing_level: comprehensive
+  strategies:
+    context_optimization: true
+    perspective_shifting: true
+    problem_decomposition: true
+    solution_orientation: true

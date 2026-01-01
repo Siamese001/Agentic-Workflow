@@ -1,0 +1,21 @@
+optimization:
+  ab_testing:
+    enabled: true
+    success_metrics:
+    - response_rate
+    - engagement_time
+    - conversion_rate
+    test_variables:
+    - opening_approach
+    - value_proposition
+    - call_to_action
+  dynamic_framing:
+    adaptation_triggers:
+    - recipient_response
+    - engagement_metrics
+    - conversion_rates
+    enabled: true
+    optimization_goals:
+    - response_rate_improvement
+    - engagement_quality
+    - conversion_efficiency

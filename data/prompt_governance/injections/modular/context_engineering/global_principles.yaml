@@ -1,0 +1,11 @@
+global_principles:
+  density_optimization:
+    compression_ratio: 0.7
+    redundancy_elimination: true
+    relevance_threshold: 0.8
+  enabled: true
+  optimization_level: maximum
+  organization:
+    hierarchical_structure: true
+    logical_grouping: true
+    temporal_ordering: true

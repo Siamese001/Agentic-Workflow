@@ -1,0 +1,15 @@
+safety_monitoring:
+  alerting:
+    critical_violation_threshold: 1
+    high_risk_threshold: 0.1
+    medium_risk_threshold: 0.05
+  metrics:
+  - labels:
+    - violation_type
+    - severity
+    name: safety_violations_total
+    type: counter
+  - name: safety_score_average
+    type: histogram
+  - name: privacy_incidents_total
+    type: counter
