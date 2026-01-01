@@ -9,9 +9,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase 35
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class MetricsWitness(
@@ -41,7 +41,7 @@ class MetricsWitness(
         self.MANDATORY_COMPONENTS = ["metrics"]
 
         try:
-            from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
+            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
             self.metrics = MetricsAgentCls(project_root)
         except Exception:  # ImportError or instantiation failure
             self.metrics = None

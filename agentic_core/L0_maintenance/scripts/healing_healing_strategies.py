@@ -9,7 +9,7 @@ from pathlib import Path
 import logging
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -67,11 +67,11 @@ class StructureHealing(HealingStrategy):
                 source = Path(issue.get("file", ""))
                 # Determine target directory based on file type
                 if "legacy" in str(source) or "archive" in str(source):
-                    target_dir = "AgenticCore/L0_maintenance/scripts"
+                    target_dir = "agentic_core/L0_maintenance/scripts"
                 elif "test" in str(source):
                     target_dir = "tests"
                 else:
-                    target_dir = "AgenticCore/L0_maintenance/scripts"
+                    target_dir = "agentic_core/L0_maintenance/scripts"
                 
                 fixes.append({
                     "action": "move",
@@ -413,7 +413,7 @@ class DirectRedisHealing(HealingStrategy):
             content = file_path.read_text(encoding="utf-8")
             
             # 1. Replace Imports
-            new_import = "from AgenticCore.L4_state.caching.redis_mcp_client import get_redis_client"
+            new_import = "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client"
             content = re.sub(r"^\s*import\s+redis.*$", new_import, content, flags=re.MULTILINE)
             content = re.sub(r"^\s*from\s+redis\s+import.*$", new_import, content, flags=re.MULTILINE)
             
@@ -447,7 +447,7 @@ class DirectLlmHealing(HealingStrategy):
                     "file": issue["file"],
                     "sdk": sdk_name,
                     "new_client": "get_llm_router_client()",
-                    "import_path": "from AgenticCore.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
+                    "import_path": "from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
                     "reason": "Direct LLM SDK call — bypasses L5 shield",
                     "priority": self.priority,
                     "strategy": self.name
@@ -498,7 +498,7 @@ class FilesystemBypassHealing(HealingStrategy):
                     "file": issue["file"],
                     "operation": desc,
                     "new_client": "get_filesystem_client()",
-                    "import_path": "from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client",
+                    "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client",
                     "reason": "Direct file I/O — bypasses L5 validation",
                     "priority": self.priority,
                     "strategy": self.name
@@ -540,15 +540,15 @@ class FilesystemBypassHealing(HealingStrategy):
 
 
 # Import Phase 17B Vector Healing Strategy
-from AgenticCore.L0_maintenance.P1_core.VectorHealingStrategy import VectorHealingStrategy
+from agentic_core.L0_maintenance.P1_core.VectorHealingStrategy import VectorHealingStrategy
 # Import Phase 17C Knowledge Graph Healing Strategy
-from AgenticCore.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
+from agentic_core.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
 # Import Phase 17D GitKraken Healing Strategy
-from AgenticCore.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
+from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
 # Import Phase 17E DeepWiki Healing Strategy
-from AgenticCore.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy
+from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy
 # Import Phase 17F L6 Audit Healing Strategy
-from AgenticCore.L0_maintenance.P1_core.L6AuditHealingStrategy import L6AuditHealingStrategy
+from agentic_core.L0_maintenance.P1_core.L6AuditHealingStrategy import L6AuditHealingStrategy
 
 # Registry of all available healing strategies
 # NAMING FIXED: HEALING_STRATEGIES → healing_strategies

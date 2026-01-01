@@ -1,5 +1,5 @@
 # [L6 HARDENING] L2 Execution MCP Package Stub
-# Rationale: Eliminates log error "Fetch client failed: No module named 'AgenticCore.L2_execution.ToolRegistry'"
+# Rationale: Eliminates log error "Fetch client failed: No module named 'agentic_core.L2_execution.tool_registry'"
 # → Restores partial tool routing → agents receive better context → higher healing success rate
 
 try:
@@ -12,4 +12,4 @@ except ImportError:
         def fetch(self, resource_id, **kwargs):
             return {"status": "fallback", "data": None}
 
-print("   [OK] AgenticCore.L2_execution.ToolRegistry package initialized (stub mode)")
+print("   [OK] agentic_core.L2_execution.tool_registry package initialized (stub mode)")

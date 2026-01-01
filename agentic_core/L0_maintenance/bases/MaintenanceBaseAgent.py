@@ -18,7 +18,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 
 
 class L0SovereignSeverity(Enum):
@@ -109,7 +109,7 @@ class L0DelegationMixin:
     async def _delegate_to_specialist(self, operation: str, error: str, context: Dict) -> Dict:
         """Delegate failure analysis to TestSovereigntyAgent."""
         try:
-            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({
@@ -129,7 +129,7 @@ class L0DelegationMixin:
     async def _delegate_healing_to_specialist(self, healed_code: str, context: Dict) -> Dict:
         """Delegate healed code validation to TestSovereigntyAgent."""
         try:
-            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({

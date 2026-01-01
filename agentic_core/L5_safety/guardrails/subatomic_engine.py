@@ -20,12 +20,12 @@ try:
 except ImportError:
     GENAI_AVAILABLE: Any = False
 try:
-    from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
+    from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
 try:
-    from AgenticCore.prompt_governance.prompt_governor import PromptGovernor
+    from agentic_core.prompt_governance.prompt_governor import PromptGovernor
     PROMPT_GOVERNOR_AVAILABLE: Any = True
 except ImportError:
     PROMPT_GOVERNOR_AVAILABLE: Any = False
@@ -163,7 +163,7 @@ class SubAtomicEngineImpl:
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
                 self.pinecone = PineconeSovereignAgent(Path('.'))
                 print('   [OK] SubAtomicEngine: Hybrid routing activated (lazy)')
             except Exception as e:
@@ -262,7 +262,7 @@ class SubAtomicEngineImpl:
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:
                 try:
-                    from AgenticCore.L5_safety.validators.heal_validator import HealValidator
+                    from agentic_core.L5_safety.validators.heal_validator import HealValidator
                     validator = HealValidator(Path('.'))
                     ValidationResult = validator.validate_healed_code(code, healed_code, Path(file_path))
                     
@@ -306,14 +306,14 @@ class SubAtomicEngineImpl:
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
+                from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
                 self.pinecone = PineconeSovereignAgent(Path('.'))
             except Exception as e:
                 print(f'   [!] Routing failed to initialize Pinecone: {e}')
                 self.pinecone = None
         if not self.pinecone:
             return {'Route': 'fallback', 'reason': 'Hybrid routing offline', 'confidence': 0.0}
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         keywords: Any = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
         if hasattr(self.pinecone, 'hybrid_search'):
             try:

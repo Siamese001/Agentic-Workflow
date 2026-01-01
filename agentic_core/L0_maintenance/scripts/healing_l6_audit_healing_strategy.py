@@ -8,11 +8,11 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Any
-from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -36,7 +36,7 @@ class L6AuditHealingStrategy:
         self.priority = 1
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
-        self.audit_log_path = Path('AgenticCore/L6_observability/logs/healing_audit.jsonl')
+        self.audit_log_path = Path('agentic_core/L6_observability/logs/healing_audit.jsonl')
         Logger.info('[L0 L6 AUDIT HEALING] Strategy initialized')
 
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:

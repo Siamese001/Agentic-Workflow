@@ -5,14 +5,14 @@ import os
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 broken_files: Any = ['L1_cognition/P1_core/P2_inspect/rg_validation_gates_impl.py', 'L2_execution/P2_tools/examples.py', 'L2_execution/P4_agents/governance.py', 'L2_execution/P4_agents/HealerAgent.py', 'L2_execution/P4_agents/infrastructure.py', 'L2_execution/P4_agents/planning.py', 'L2_execution/P4_agents/quality.py', 'L2_execution/P4_agents/specialized.py']
 
 def fix_syntax_errors() -> Any:
@@ -38,8 +38,8 @@ def fix_syntax_errors() -> Any:
                         print(f'  [FIX] Line {i + 1}: Added closing quote')
                 fixed_lines.append(line)
             content: Any = '\n'.join(fixed_lines)
-            content: Any = content.replace('from AgenticCore.', '# [INCOMPLETE IMPORT] from AgenticCore.')
-            content: Any = content.replace('from AgenticCore..', '# [INCOMPLETE IMPORT] from AgenticCore..')
+            content: Any = content.replace('from agentic_core.', '# [INCOMPLETE IMPORT] from agentic_core.')
+            content: Any = content.replace('from agentic_core..', '# [INCOMPLETE IMPORT] from agentic_core..')
             content: Any = '\n'.join([line if not line.strip() in ['from .', 'from ..'] else f'# [INCOMPLETE] {line}' for line in content.splitlines()])
             if content != original:
                 file_path.write_text(content, encoding='utf-8')

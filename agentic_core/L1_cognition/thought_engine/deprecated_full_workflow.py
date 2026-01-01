@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -87,8 +87,8 @@ class TestEndToEndWorkflow:
         )
 
         # Mock all external dependencies
-        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
-            with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.invoke_model") as mock_llm:
+        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+            with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.invoke_model") as mock_llm:
 
                 # Mock LLM responses
                 mock_llm.side_effect = [
@@ -161,7 +161,7 @@ class TestEndToEndWorkflow:
         )
 
         # Test with failing L2 execution
-        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
             mock_execute.side_effect = Exception("L2 execution failed")
 
             with pytest.raises(Exception):
@@ -218,7 +218,7 @@ class TestWorkflowPerformance:
             user_id="test_user",
         )
 
-        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
             #             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # I...
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]

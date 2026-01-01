@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dotenv import load_dotenv
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -37,7 +37,7 @@ class _SubatomicEnginePlaceholder:
     """
     Placeholder for the Subatomic Engine.
     In a full refactor, the actual implementation from apps_shared would be moved here
-    or to a new sovereign module within AgenticCore.
+    or to a new sovereign module within agentic_core.
     """
 
     def __init__(self, gemini_client: Any):
@@ -523,7 +523,7 @@ def test_artifact_exists():
     async def _delegate_to_specialist(self, Artifact: str, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced testing."""
         try:
-            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({

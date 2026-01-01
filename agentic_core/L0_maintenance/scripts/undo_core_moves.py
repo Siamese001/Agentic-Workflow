@@ -8,7 +8,7 @@ from typing import Any
 def undo_core_moves() -> Any:
     """Move all files back from */core/ to parent directories"""
     root: Any = Path('.')
-    directories: Any = ['AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'config', 'observability', 'schemas', 'scripts', 'tools', 'validator', 'prompt_governance']
+    directories: Any = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'config', 'observability', 'schemas', 'scripts', 'tools', 'validator', 'prompt_governance']
     moved_count: Any = 0
     for dir_name in directories:
         core_path: Any = root / dir_name / 'core'

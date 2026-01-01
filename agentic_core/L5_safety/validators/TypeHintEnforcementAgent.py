@@ -1,5 +1,5 @@
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
-# Territory: AgenticCore/L2_execution/ToolRegistry
+# Territory: agentic_core/L2_execution/ToolRegistry
 # Canon Alignment: Enforces complete type hints for public functions/methods/variables
 # Surgery Scope: Single file — adds basic Any / inferred hints where Missing
 
@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

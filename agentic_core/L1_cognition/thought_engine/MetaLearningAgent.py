@@ -145,7 +145,7 @@ Keep sovereign tone and structure. Output only the improved template.
 
         evolved_prompt = await self.evolve_prompt_template("primary_healing_prompt", llm_client)
         if evolved_prompt and not dry_run:
-            path = self.project_root / "AgenticCore" / "prompt_governance" / "templates" / "healing_v2.jinja"
+            path = self.project_root / "agentic_core" / "prompt_governance" / "templates" / "healing_v2.jinja"
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(evolved_prompt)
             actions.append(f"Evolved primary healing prompt → {path}")

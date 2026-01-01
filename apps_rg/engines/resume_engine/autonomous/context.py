@@ -22,7 +22,7 @@ class BudgetManager:
     """Manages token budget and cost tracking for LLM calls."""
 
     def __init__(self, max_cost_usd: float = 2.0):
-        from AgenticCore.config.P1_core.sovereign_config import config
+        from agentic_core.config.P1_core.sovereign_config import config
         
         self.max_cost = max_cost_usd
         self.current_cost = 0.0

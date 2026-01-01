@@ -8,10 +8,10 @@ using DeepWiki's codebase intelligence capabilities.
 import asyncio
 import logging
 from typing import List, Dict, Any
-from AgenticCore.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
+from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -27,7 +27,7 @@ class SovereignCanonAuditor:
     def __init__(self):
         """Initialize the canon auditor."""
         self.client = SovereignDeepWikiClient()
-        self.critical_files = ['AgenticCore/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'AgenticCore/L5_safety/guardrails/mcp_sovereign.py', 'AgenticCore/L4_state/semantic_memory/pinecone_mcp_client.py', 'AgenticCore/L4_state/knowledge_graph/SovereignGraphClient.py', 'AgenticCore/L6_observability/deepwiki_client_sovereign.py', 'AgenticCore/L1_cognition/thought_engine/StrategicPlanner.py', 'AgenticCore/L2_execution/ToolRegistry/WebSearchTools.py']
+        self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/StrategicPlanner.py', 'agentic_core/L2_execution/ToolRegistry/WebSearchTools.py']
 
     async def audit_core_components(self) -> Dict[str, Any]:
         """
@@ -147,7 +147,7 @@ async def audit_core_components() -> Any:
     Compatible with the spec example.
     """
     auditor: Any = SovereignCanonAuditor()
-    critical_files: Any = ['AgenticCore/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'AgenticCore/L5_safety/guardrails/mcp_sovereign.py']
+    critical_files: Any = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py']
     print('--- Starting Sovereign Canon Audit ---')
     for f in critical_files:
         exists: Any = await auditor.client.verify_file_exists(f)

@@ -131,7 +131,7 @@ class MCPHardenedMixin:
             data: Event data dictionary
         """
         try:
-            from AgenticCore.observability.telemetry.sovereign_events import (
+            from agentic_core.observability.telemetry.sovereign_events import (
                 emit_event,
             )
 
@@ -149,7 +149,7 @@ class MCPHardenedMixin:
         """
         Logger.critical(f"[CRITIQUE] MCP {operation} exhausted: {error}")
         try:
-            from AgenticCore.observability.telemetry.sovereign_events import (
+            from agentic_core.observability.telemetry.sovereign_events import (
                 emit_event,
             )
 

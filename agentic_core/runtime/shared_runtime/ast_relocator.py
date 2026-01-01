@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SEMANTIC_L2_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SEMANTIC_L2_REGISTRY
 
 # [GRAVITY] Resolve project root for relative path calculation
 try:

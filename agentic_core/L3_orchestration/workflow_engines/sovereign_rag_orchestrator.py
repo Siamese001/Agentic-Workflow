@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -19,7 +19,7 @@ class SovereignRagOrchestrator:
 
     def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None):
         self.query_history = []
-        self.config_path = Path('AgenticCore/L4_state/ValidationContext/.sovereign_config.json')
+        self.config_path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
         self.threshold_adaptation_rate = 0.02
         self.performance_window = 50
@@ -54,7 +54,7 @@ class SovereignRagOrchestrator:
 
         def _parse_critique(raw):
             try:
-                from AgenticCore.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
+                from agentic_core.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
                 planner_helper = QueryPlanner()
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)

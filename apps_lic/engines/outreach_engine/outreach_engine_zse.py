@@ -18,7 +18,7 @@ from mcp_hardening import ensure_brand_compliance, get_brand_style_guide
 from network_utils import NetworkViolationError, strict_egress_filter
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

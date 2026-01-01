@@ -15,40 +15,40 @@ Phase 11: Configurable Implementation Factory
 from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
 MockCanonBaseAgent = None  # Stub
 try:
-    from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+    from agentic_core.config.blueprint_sovereign.sovereign_config import config
 except ImportError:
     config = {}
 
 # Import L1 Agent Classes with fallbacks
 try:
-    from AgenticCore.L1_cognition.thought_engine.canon_agents_core import SystemArchitect as SystemArchitect
+    from agentic_core.L1_cognition.thought_engine.canon_agents_core import SystemArchitect as SystemArchitect
 except ImportError:
     SystemArchitect = None
 HealerAgent = GenerativeGuard = None  # Stubs
 
 try:
-    from AgenticCore.L1_cognition.thought_engine.canon_agents_syntax import CodeJanitor as CodeJanitor
+    from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import CodeJanitor as CodeJanitor
 except ImportError:
     CodeJanitor = None
 DependencySentinel = None  # Stub
 
 try:
-    from AgenticCore.L1_cognition.thought_engine.canon_agents_quality import SafetyInspector as SafetyInspector
+    from agentic_core.L1_cognition.thought_engine.canon_agents_quality import SafetyInspector as SafetyInspector
 except ImportError:
     SafetyInspector = None
 
 try:
-    from AgenticCore.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer as PatternEnforcer
+    from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer as PatternEnforcer
 except ImportError:
     PatternEnforcer = None
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

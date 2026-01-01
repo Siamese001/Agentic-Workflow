@@ -1,6 +1,6 @@
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
-Territory: AgenticCore/L0_maintenance/scripts/
+Territory: agentic_core/L0_maintenance/scripts/
 
 VERSION 2.0 — 2025-12-31
 Updates SSOT blueprint when filesystem structure changes.
@@ -46,9 +46,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class FilesystemSSOTReconcilerAgent(
     - Dry-run mode by default (auto_apply=False)
     """
     
-    BLUEPRINT_PATH = Path("AgenticCore/config/blueprint_sovereign/structure_blueprint.py")
+    BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
     
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
@@ -218,15 +218,15 @@ class FilesystemSSOTReconcilerAgent(
     
     async def _scan_filesystem(self) -> None:
         """
-        Scan actual folder structure in AgenticCore, apps_*, tests.
+        Scan actual folder structure in agentic_core, apps_*, tests.
         
         Discovers:
-        - L1 subfolders (e.g., AgenticCore/L0_maintenance)
-        - L2 subfolders (e.g., AgenticCore/L0_maintenance/scripts)
+        - L1 subfolders (e.g., agentic_core/L0_maintenance)
+        - L2 subfolders (e.g., agentic_core/L0_maintenance/scripts)
         """
         Logger.info("Scanning filesystem structure...")
         
-        roots_to_scan = ["AgenticCore", "apps_shared", "apps_rg", "apps_lic", "tests"]
+        roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
         
         for root in roots_to_scan:
             root_path = self.project_root / root
@@ -240,8 +240,8 @@ class FilesystemSSOTReconcilerAgent(
                 if item.is_dir() and not item.name.startswith(('.', '__')):
                     l1_folders.add(item.name)
                     
-                    # For AgenticCore, scan L2 subfolders
-                    if root == "AgenticCore":
+                    # For agentic_core, scan L2 subfolders
+                    if root == "agentic_core":
                         l2_folders = set()
                         for subitem in item.iterdir():
                             if subitem.is_dir() and not subitem.name.startswith(('.', '__')):
@@ -266,9 +266,9 @@ class FilesystemSSOTReconcilerAgent(
         """
         Logger.info("Scanning agents for canonical signals...")
         
-        AgenticCore = self.project_root / "AgenticCore"
+        agentic_core = self.project_root / "agentic_core"
         
-        for py_file in AgenticCore.rglob("*agent*.py"):
+        for py_file in agentic_core.rglob("*agent*.py"):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
                 continue
             
@@ -328,7 +328,7 @@ class FilesystemSSOTReconcilerAgent(
         
         Checks:
         1. sovereign_registry subfolders (L1 depth)
-        2. core_subfolder_map (L2 depth for AgenticCore)
+        2. core_subfolder_map (L2 depth for agentic_core)
         3. CANON_SIGNALS (agent-derived signals)
         """
         drift = []
@@ -370,7 +370,7 @@ class FilesystemSSOTReconcilerAgent(
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
         
         for key, actual_l2 in self.actual_folders.items():
-            if "/" not in key or not key.startswith("AgenticCore/"):
+            if "/" not in key or not key.startswith("agentic_core/"):
                 continue
             
             l1_folder = key.split("/")[1]

@@ -286,7 +286,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
 # =============================================================================
 # CODE TRANSFORMATION ENGINE (CTE) — Phase 1 Tool
 # =============================================================================
-from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
+from agentic_core.L2_execution.tool_registry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -335,7 +335,7 @@ predefined_tool_categories['code_manipulation'] = 'AST-based code transformation
 # =============================================================================
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
-from AgenticCore.L2_execution.ToolRegistry.tools.DependencyGraph import (
+from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
     DependencyGraphArgs,
     GraphOperation,
     DependencyGraph,
@@ -365,7 +365,7 @@ def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
     Example:
         >>> args = DependencyGraphArgs(
         ...     operation=GraphOperation.DETECT_CYCLES,
-        ...     target_path="AgenticCore/"
+        ...     target_path="agentic_core/"
         ... )
         >>> result = dependency_graph_tool(args)
         >>> result["data"]["has_cycles"]
@@ -381,7 +381,7 @@ predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
 # =============================================================================
 # DIFF/PATCH GENERATOR (DPG) — Phase 2 Tool
 # =============================================================================
-from AgenticCore.L2_execution.ToolRegistry.tools.diff_generator import (
+from agentic_core.L2_execution.tool_registry.tools.diff_generator import (
     DiffGeneratorArgs,
     DiffFormat,
     generate_diff,

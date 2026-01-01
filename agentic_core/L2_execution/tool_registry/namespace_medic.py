@@ -82,7 +82,7 @@ def main() -> Any:
     """Main entry point for namespace healing."""
     import argparse
     parser: Any = argparse.ArgumentParser(description='Namespace Medic - Fix Missing standard library imports')
-    parser.add_argument('--target', default='AgenticCore', help='Target directory to scan')
+    parser.add_argument('--target', default='agentic_core', help='Target directory to scan')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be fixed without modifying files')
     parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed output')
     args: Any = parser.parse_args()

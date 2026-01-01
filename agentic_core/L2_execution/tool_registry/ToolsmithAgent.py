@@ -255,13 +255,13 @@ class ToolsmithAgent:
 
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
     TERRITORY_SEED_CONTENT: Dict[str, Dict[str, str]] = {
-        'AgenticCore/prompt_governance/meta_prompts': {
+        'agentic_core/prompt_governance/meta_prompts': {
             'convergence_planning.jinja': '{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n'
         },
-        'AgenticCore/prompt_governance/rendering': {
+        'agentic_core/prompt_governance/rendering': {
             'SovereignPromptRenderer.py': '# SovereignPromptRenderer - Dynamic Assembly\nclass SovereignPromptRenderer:\n    def render(self, template_name, context=None):\n        pass\n'
         },
-        'AgenticCore/schemas/models': {
+        'agentic_core/schemas/models': {
             'base_models.py': 'from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n'
         },
     }

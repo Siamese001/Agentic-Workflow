@@ -5,7 +5,7 @@ Condenses verbose __all__ lists and removes blank lines.
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 
 def trim_airlock(init_file: Any) -> Any:
     """Trim a single __init__.py file to ≤50 lines."""

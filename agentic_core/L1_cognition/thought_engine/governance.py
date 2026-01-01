@@ -309,7 +309,7 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             MAX_DEPTH,
             MAX_LINES,
             MIN_DEPTH,
@@ -515,7 +515,7 @@ class ArchitectureGovernor:
         # Determine correct depth
         if "too shallow" in Violation.lower():
             # Move deeper (create subdirectories)
-            target_dir = self.root_dir / "AgenticCore" / "L1_cognition"
+            target_dir = self.root_dir / "agentic_core" / "L1_cognition"
             target_dir.mkdir(parents=True, exist_ok=True)
             target = target_dir / path.name
         else:

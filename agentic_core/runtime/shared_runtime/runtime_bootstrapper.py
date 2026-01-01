@@ -3,24 +3,24 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
-from AgenticCore.L1_cognition.boundaries.SemanticGatekeeper import SemanticGatekeeper
-from AgenticCore.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
-from AgenticCore.L2_execution.action_handlers.sandbox import DockerSandbox
-from AgenticCore.L2_execution.ToolRegistry.mcp_manager import MCPConnectionManager
-from AgenticCore.L3_orchestration.fission_logic.FissionManager import FissionManager
-from AgenticCore.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
-from AgenticCore.L4_state.audit_trails.genealogy import GenealogyRegistry
-from AgenticCore.L4_state.session_manager.disk_adapter import LocalDiskAdapter
-from AgenticCore.L5_safety.guardrails.airlock import AirlockProtocol
-from AgenticCore.L5_safety.guardrails.membrane import InputMembrane
-from AgenticCore.L5_safety.guardrails.PiiVault import PIIVault
-from AgenticCore.L5_safety.validators.ConstitutionalOverseer import ConstitutionalOverseer
-from AgenticCore.L5_safety.validators.CostGovernor import CostGovernor
-from AgenticCore.runtime.P1_core.SubatomicHop import SubatomicHop
+from agentic_core.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
+from agentic_core.L1_cognition.boundaries.SemanticGatekeeper import SemanticGatekeeper
+from agentic_core.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
+from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
+from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
+from agentic_core.L3_orchestration.fission_logic.FissionManager import FissionManager
+from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
+from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
+from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
+from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol
+from agentic_core.L5_safety.guardrails.membrane import InputMembrane
+from agentic_core.L5_safety.guardrails.PiiVault import PIIVault
+from agentic_core.L5_safety.validators.ConstitutionalOverseer import ConstitutionalOverseer
+from agentic_core.L5_safety.validators.CostGovernor import CostGovernor
+from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

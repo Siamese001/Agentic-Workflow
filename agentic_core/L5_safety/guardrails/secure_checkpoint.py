@@ -16,7 +16,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 
-from AgenticCore.schemas.models.runtime_models import MicroCheckpoint
+from agentic_core.schemas.models.runtime_models import MicroCheckpoint
 
 Logger = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     CANON_SIGNALS,
     CORE_SUBFOLDER_MAP,
@@ -96,9 +96,9 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 
 # [KEY 40] LLM GUIDANCE: Content Heuristics for File Placement
 GUIDANCE_EXAMPLES: Dict[str, str] = {
-    "AgenticCore/L1_cognition/strategy": "Generic reasoning loops, high-level mission goal planning, and Task decomposition.",
-    "AgenticCore/L3_orchestration/fission": "Logic that splits large files into smaller modules or manages atomic code shifts.",
-    "AgenticCore/L4_state/memory": "Interfaces for persistent vector storage (Pinecone) used for long-term meta-learning.",
+    "agentic_core/L1_cognition/strategy": "Generic reasoning loops, high-level mission goal planning, and Task decomposition.",
+    "agentic_core/L3_orchestration/fission": "Logic that splits large files into smaller modules or manages atomic code shifts.",
+    "agentic_core/L4_state/memory": "Interfaces for persistent vector storage (Pinecone) used for long-term meta-learning.",
     "apps_shared/utils/validation": "Shared Pydantic models or regex patterns used across multiple app domains.",
     "apps_rg/agents/rankers": "Scoring logic specifically for resume-to-JD matching (Domain-specific).",
     "config/agents/prompts": "System instructions and persona definitions used to initialize LLM sessions.",
@@ -112,21 +112,21 @@ def get_placement_guidance(content_preview: str) -> str:
     """
     # L1: Cognition & Strategy
     if any(x in content_preview for x in ["planner", "strategy", "reasoning", "mission"]):
-        return "AgenticCore/L1_cognition"
+        return "agentic_core/L1_cognition"
     
     # L1: Thought Nodes (Execution/Atomic logic) - now under L1_cognition/thought_engine
     if "node" in content_preview.lower() or "execute" in content_preview:
-        return "AgenticCore/L1_cognition/thought_engine"
+        return "agentic_core/L1_cognition/thought_engine"
     
     # L3: Orchestration (Routing/Fission)
     if any(x in content_preview for x in ["router", "orchestrator", "fission", "hop"]):
-        return "AgenticCore/L3_orchestration"
+        return "agentic_core/L3_orchestration"
         
     # L4: State (Memory/Databases)
     if any(x in content_preview for x in ["pinecone", "redis", "storage", "cache"]):
-        return "AgenticCore/L4_state"
+        return "agentic_core/L4_state"
 
-    return "AgenticCore/L1_cognition" # Default safe-haven for generic logic
+    return "agentic_core/L1_cognition" # Default safe-haven for generic logic
 
 def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     """
@@ -268,8 +268,8 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             return True, "Sovereign Structural Component"
         
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
-        if root_folder == "AgenticCore":
-            agentic_core_exact_depth = SOVEREIGN_REGISTRY["AgenticCore"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+        if root_folder == "agentic_core":
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
             if depth != agentic_core_exact_depth:
                 reason = "SHALLOW" if depth < agentic_core_exact_depth else "DEEP"
                 return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {agentic_core_exact_depth}"
@@ -287,7 +287,7 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
                 return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != 3"
             
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
-        if root_folder == "AgenticCore":
+        if root_folder == "agentic_core":
             stage = parts[2]
             # Check against authorized list AND standard P/S/L naming convention
             if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
@@ -470,7 +470,7 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
         if root_files:
             violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
 
-        # 2. Level 1 Validation (e.g., AgenticCore -> L1_cognition)
+        # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
         actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
@@ -484,8 +484,8 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
             violations.append((root_path / bad, f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}"))
 
         # 3. Level 2 Validation + Min Depth Enforcement
-        # For L2 validation, we need to check CORE_SUBFOLDER_MAP for AgenticCore
-        if root_key == "AgenticCore" and isinstance(layers, list):
+        # For L2 validation, we need to check CORE_SUBFOLDER_MAP for agentic_core
+        if root_key == "agentic_core" and isinstance(layers, list):
             for l1_name in layers:
                 l1_path = root_path / l1_name
                 if not l1_path.exists():
@@ -554,7 +554,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     # [PHASE 1] Gravity (Waterfall) Enforcement – FULLY DERIVED FROM structure_blueprint.py SSOT
     # Rationale (windsurfrules.md §2): Upstream sovereign roots MUST NOT import from downstream domains.
     # - Dynamically derive from SOVEREIGN_REGISTRY.keys() → zero drift on blueprint changes
-    # - Upstream sovereign: non-apps_* roots and not 'tests' (currently only 'AgenticCore')
+    # - Upstream sovereign: non-apps_* roots and not 'tests' (currently only 'agentic_core')
     # - Downstream: all apps_* + 'tests'
     # - Regex catches root-level imports including submodules (e.g., 'from apps_shared.utils import X')
     # - No false positives within same root

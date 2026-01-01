@@ -1,6 +1,6 @@
 """Airlock: tools — Code Transformation and Analysis Tools."""
 
-from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
+from agentic_core.L2_execution.tool_registry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     TransformResult,

@@ -239,7 +239,7 @@ class FlatteningPattern:
 # Golden State Reference: Successful Extraction Example
 # NAMING FIXED: AGENT_LOGIC_PATTERN → agent_logic_pattern
 agent_logic_pattern = {
-    "source_file": "AgenticCore/agent_logic.py",
+    "source_file": "agentic_core/agent_logic.py",
     "method_name": "check_and_learn",
     "date": "2025-12-19",
     

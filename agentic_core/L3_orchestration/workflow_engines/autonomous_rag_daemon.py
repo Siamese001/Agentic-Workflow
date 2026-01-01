@@ -59,7 +59,7 @@ class AutonomousRagDaemon:
         print("[DAEMON] Starting Autonomous RAG Daemon...")
         
         # Start file system watcher
-        watch_path = Path("AgenticCore")
+        watch_path = Path("agentic_core")
         self.observer.schedule(self.handler, str(watch_path), recursive=True)
         self.observer.start()
         

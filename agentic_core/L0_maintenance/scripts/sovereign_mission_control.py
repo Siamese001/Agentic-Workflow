@@ -6,18 +6,18 @@ import sys
 from pathlib import Path
 repo_root: Any = Path(__file__).parent.parent
 sys.path.append(str(REPO_ROOT))
-from AgenticCore.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
+from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-async def execute_unified_mission(target: Any='AgenticCore') -> Any:
+async def execute_unified_mission(target: Any='agentic_core') -> Any:
     """
     [L6 MISSION CONTROL]
     Sequences Diagnosis (Auditor) and Surgery (Validator).

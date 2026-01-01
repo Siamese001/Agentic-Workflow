@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
 # MCP Hardening
-from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # PDF parsing
 try:

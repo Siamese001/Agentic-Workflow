@@ -1,7 +1,7 @@
 # mission_metrics.py
 # Prometheus Metrics for Canon Validator Mission
 # PURPOSE: Provides Metric definitions and server initialization for mission observability
-# LOCATION: AgenticCore/observability/metrics/ (SSOT-compliant)
+# LOCATION: agentic_core/observability/metrics/ (SSOT-compliant)
 
 import os
 from typing import Any

@@ -11,7 +11,7 @@ Action: Reports violations to validation pipeline
 
 Drastically reduced false positives through:
 - AST-based string literal detection (not line scanning)
-- Only flags FULL PATH patterns (e.g., "AgenticCore/L5_safety")
+- Only flags FULL PATH patterns (e.g., "agentic_core/L5_safety")
 - Ignores single folder names (too common in legitimate code)
 - Context-aware filtering for imports, docstrings, comments
 - Whitelist for known safe patterns
@@ -31,15 +31,15 @@ Logger = logging.getLogger(__name__)
 # These are the ONLY patterns that indicate true SSOT drift
 DRIFT_PATTERNS = [
     # Full layer paths - these should use SSOT constants
-    r'AgenticCore/L\d+_\w+',
-    r'AgenticCore\\L\d+_\w+',
+    r'agentic_core/L\d+_\w+',
+    r'agentic_core\\L\d+_\w+',
     # App paths with subfolders
     r'apps_rg/\w+',
     r'apps_lic/\w+', 
     r'apps_shared/\w+',
     # Hardcoded root + subfolder combinations
-    r'"AgenticCore".*"L\d+_',
-    r"'AgenticCore'.*'L\d+_",
+    r'"agentic_core".*"L\d+_',
+    r"'agentic_core'.*'L\d+_",
 ]
 
 # Compile patterns for performance
@@ -69,7 +69,7 @@ class CodeSSOTEnforcerAgent:
     instead of hard-coded path strings.
     
     Only detects TRUE violations:
-    - Hard-coded full paths like "AgenticCore/L5_safety/validators"
+    - Hard-coded full paths like "agentic_core/L5_safety/validators"
     - String literals that bypass SSOT imports
     
     Does NOT flag:
@@ -81,7 +81,7 @@ class CodeSSOTEnforcerAgent:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
-        self.ssot_file = self.project_root / "AgenticCore" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
+        self.ssot_file = self.project_root / "agentic_core" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
 
     def _should_skip_file(self, py_file: Path) -> bool:
         """Check if file should be skipped entirely."""
@@ -147,7 +147,7 @@ class CodeSSOTEnforcerAgent:
         ctx_lower = context.lower()
         
         # Allow imports from structure_blueprint
-        if "structure_blueprint" in context or "from AgenticCore.config" in context:
+        if "structure_blueprint" in context or "from agentic_core.config" in context:
             return True
         
         # Allow __file__ based paths

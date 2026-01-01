@@ -35,7 +35,7 @@ class TestPilotAgent:
         self.property_violations = []
         self.enable_conversational_repair = enable_conversational_repair
         if self.enable_conversational_repair:
-            from AgenticCore.ConversationalRepair import get_conversational_repair
+            from agentic_core.ConversationalRepair import get_conversational_repair
             self.ConversationalRepair = get_conversational_repair()
 
     async def execute(self, modified_files: List[str]=None) -> Dict[str, Any]:

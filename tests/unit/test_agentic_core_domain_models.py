@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 from datetime import datetime
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -20,7 +20,7 @@ class test_mission_plan_model:
         WHEN: build() is called
         THEN: Valid MissionPlan instance created
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         plan: Any = MissionPlan(mission_id='test-001', objective='Test sovereignty', phases=['phase1', 'phase2'], status='pending')
         assert plan.mission_id == 'test-001'
         assert plan.objective == 'Test sovereignty'
@@ -33,7 +33,7 @@ class test_mission_plan_model:
         WHEN: execute() is called
         THEN: Returns MissionResult with success status
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         plan: Any = MissionPlan(mission_id='exec-001', objective='Execute test', phases=['init'], status='pending')
         import asyncio
         result: Any = asyncio.run(plan.execute())
@@ -47,7 +47,7 @@ class test_mission_plan_model:
         WHEN: Validation occurs
         THEN: Raises ValueError
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         with pytest.raises((ValueError, TypeError)):
             MissionPlan(mission_id=None, objective='Test', phases=[], status='pending')
 
@@ -58,7 +58,7 @@ class test_mission_plan_model:
         WHEN: Status is set
         THEN: Status persists correctly
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionPlan
+        from agentic_core.L0_maintenance.P1_core.core import MissionPlan
         plan: Any = MissionPlan(mission_id=f'status-{status}', objective='Test status', phases=['phase1'], status=status)
         assert plan.status == status
 
@@ -72,7 +72,7 @@ class test_mission_result_model:
         WHEN: to_dict() is called
         THEN: Returns dictionary representation
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         result: Any = MissionResult(mission_id='result-001', success=True, output={'data': 'test'}, metadata={'timestamp': '2024-12-27'})
         result_dict: Any = result.to_dict()
         assert isinstance(result_dict, dict)
@@ -86,7 +86,7 @@ class test_mission_result_model:
         WHEN: Checked
         THEN: Success flag is True
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         result: Any = MissionResult(mission_id='success-001', success=True, output={}, metadata={})
         assert result.success is True
 
@@ -96,23 +96,23 @@ class test_mission_result_model:
         WHEN: Checked
         THEN: Error information preserved
         """
-        from AgenticCore.L0_maintenance.P1_core.core import MissionResult
+        from agentic_core.L0_maintenance.P1_core.core import MissionResult
         result: Any = MissionResult(mission_id='fail-001', success=False, output={}, metadata={'error': 'Test failure'})
         assert result.success is False
         assert 'error' in result.metadata
 
 @pytest.mark.unit
 class test_agentic_core_model:
-    """Test AgenticCore domain model."""
+    """Test agentic_core domain model."""
 
     def test_agentic_core_initialization(self) -> Any:
         """
-        GIVEN: AgenticCore instantiation
+        GIVEN: agentic_core instantiation
         WHEN: Created
         THEN: Default attributes set correctly
         """
-        from AgenticCore.L0_maintenance.P1_core.core import AgenticCore
-        core: Any = AgenticCore()
+        from agentic_core.L0_maintenance.P1_core.core import agentic_core
+        core: Any = agentic_core()
         assert hasattr(core, 'history')
         assert hasattr(core, 'status')
         assert hasattr(core, 'version')
@@ -121,12 +121,12 @@ class test_agentic_core_model:
 
     def test_agentic_core_run_returns_dict(self) -> Any:
         """
-        GIVEN: AgenticCore instance
+        GIVEN: agentic_core instance
         WHEN: run() is called
         THEN: Returns dict with status and metadata
         """
-        from AgenticCore.L0_maintenance.P1_core.core import AgenticCore
-        core: Any = AgenticCore()
+        from agentic_core.L0_maintenance.P1_core.core import agentic_core
+        core: Any = agentic_core()
         result: Any = core.run(mission={'test': 'data'})
         assert isinstance(result, dict)
         assert 'status' in result
@@ -134,12 +134,12 @@ class test_agentic_core_model:
 
     def test_agentic_core_reflect_logs_to_history(self) -> Any:
         """
-        GIVEN: AgenticCore instance
+        GIVEN: agentic_core instance
         WHEN: reflect() is called
         THEN: Reflection logged to history
         """
-        from AgenticCore.L0_maintenance.P1_core.core import AgenticCore
-        core: Any = AgenticCore()
+        from agentic_core.L0_maintenance.P1_core.core import agentic_core
+        core: Any = agentic_core()
         initial_history_len: Any = len(core.history)
         core.reflect(context='Test reflection')
         assert len(core.history) > initial_history_len
@@ -147,12 +147,12 @@ class test_agentic_core_model:
 
     def test_agentic_core_heal_returns_dict(self) -> Any:
         """
-        GIVEN: AgenticCore instance
+        GIVEN: agentic_core instance
         WHEN: heal() is called
         THEN: Returns dict with healed, recovery, error fields
         """
-        from AgenticCore.L0_maintenance.P1_core.core import AgenticCore
-        core: Any = AgenticCore()
+        from agentic_core.L0_maintenance.P1_core.core import agentic_core
+        core: Any = agentic_core()
         result: Any = core.heal()
         assert isinstance(result, dict)
         assert 'healed' in result
@@ -161,12 +161,12 @@ class test_agentic_core_model:
 
     def test_agentic_core_get_status(self) -> Any:
         """
-        GIVEN: AgenticCore instance
+        GIVEN: agentic_core instance
         WHEN: get_status() is called
         THEN: Returns comprehensive status dict
         """
-        from AgenticCore.L0_maintenance.P1_core.core import AgenticCore
-        core: Any = AgenticCore()
+        from agentic_core.L0_maintenance.P1_core.core import agentic_core
+        core: Any = agentic_core()
         status: Any = core.get_status()
         assert isinstance(status, dict)
         assert 'status' in status
@@ -183,7 +183,7 @@ class test_missing_class:
         WHEN: Created
         THEN: All reference same singleton
         """
-        from AgenticCore.L0_maintenance.P1_core.core import Missing
+        from agentic_core.L0_maintenance.P1_core.core import Missing
         missing1: Any = Missing()
         missing2: Any = Missing()
         assert missing1 is missing2
@@ -194,8 +194,8 @@ class test_missing_class:
         WHEN: repr() called
         THEN: Returns descriptive string
         """
-        from AgenticCore.L0_maintenance.P1_core.core import Missing
-from typing import Any
-        Missing: Any = Missing()
-        representation: Any = repr(Missing)
+        from typing import Any
+        from agentic_core.L0_maintenance.P1_core.core import Missing
+        missing_instance: Any = Missing()
+        representation: Any = repr(missing_instance)
         assert 'Missing' in representation or 'MISSING' in representation

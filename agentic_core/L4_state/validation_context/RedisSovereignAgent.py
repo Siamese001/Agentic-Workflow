@@ -10,7 +10,7 @@ from typing import Dict
 import redis
 from redis.connection import ConnectionPool
 
-from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent

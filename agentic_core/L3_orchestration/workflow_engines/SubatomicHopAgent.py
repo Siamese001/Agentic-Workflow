@@ -5,9 +5,9 @@ import logging
 import time
 import uuid
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.schemas.models.core_contracts import AgentPlan
-from AgenticCore.config.blueprint_sovereign import ConfigurationService
-from AgenticCore.runtime.core.telemetry import TelemetryRecorder, TraceEvent
+from agentic_core.schemas.models.core_contracts import AgentPlan
+from agentic_core.config.blueprint_sovereign import ConfigurationService
+from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
 Logger: Any = logging.getLogger(__name__)
 
 class SovereignDependencyError(Exception):

@@ -5,7 +5,7 @@ Replaces regex/string matching with proper AST analysis to eliminate false posit
 import ast
 from pathlib import Path
 from typing import List, Dict, Any
-from AgenticCore.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
+from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
 
 class PrintStatementValidator(CanonASTValidator):
     """

@@ -22,7 +22,7 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.exceptions_impl_part import *  # Star import removed
-# from AgenticCore.exceptions_impl_part_2 import *  # Star import removed
+# from agentic_core.exceptions_impl_part import *  # Star import removed
+# from agentic_core.exceptions_impl_part_2 import *  # Star import removed
 
 __all__ = ["*"]  # Re-export all imported names

@@ -16,10 +16,10 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -92,7 +92,7 @@ class SchemaEvolverAgent(SubAtomicAgent):
         """
         super().__init__(ctx)
         self.registry = SchemaRegistry()
-        self.schema_dirs = ['AgenticCore/schemas', 'AgenticCore/domain', 'apps_shared/schemas']
+        self.schema_dirs = ['agentic_core/schemas', 'agentic_core/domain', 'apps_shared/schemas']
 
     async def execute(self) -> Any:
         """

@@ -5,13 +5,13 @@ import ast
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-root: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
+root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 broken_files: Any = {'L1_cognition/P1_core/rg_validation_gates_impl.py': 282, 'L2_execution/P2_tools/examples.py': 16, 'L2_execution/P4_agents/pattern_retrieval_agent.py': 23, 'L2_execution/P4_agents/quality.py': 198, 'L3_orchestration/S3_vitality/context.py': 182}
 
 def surgical_fix() -> Any:

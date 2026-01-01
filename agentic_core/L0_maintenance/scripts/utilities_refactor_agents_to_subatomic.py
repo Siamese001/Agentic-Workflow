@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Automated refactoring script to update all agents to use shared Sub-Atomic Engine.
-This script systematically updates all agent files in AgenticCore/agents/.
+This script systematically updates all agent files in agentic_core/agents/.
 """
 
 import logging
@@ -19,7 +19,7 @@ agent_files = [
 ]
 
 # NAMING FIXED: AGENTS_DIR → agents_dir
-agents_dir = Path("c:/Git/Agentic-Workflow/AgenticCore/agents")
+agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
 
 def add_subatomic_imports(content: str) -> str:
     """Add Sub-Atomic Engine imports if not present."""

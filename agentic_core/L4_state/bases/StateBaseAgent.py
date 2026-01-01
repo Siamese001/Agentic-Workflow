@@ -19,7 +19,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 
 
 class L4SovereignSeverity(Enum):
@@ -280,7 +280,7 @@ def test_artifact_exists():
     async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced state testing."""
         try:
-            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             artifact_str = json.dumps(Artifact) if isinstance(Artifact, dict) else str(Artifact)

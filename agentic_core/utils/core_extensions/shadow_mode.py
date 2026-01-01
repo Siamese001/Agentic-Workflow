@@ -5,7 +5,7 @@ Provides pre-flight refinement for outreach pitches
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.PitchGenerator import PitchGenerator, PitchResult
+from agentic_core.PitchGenerator import PitchGenerator, PitchResult
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass

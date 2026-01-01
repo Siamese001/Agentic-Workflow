@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
-# from AgenticCore.models_enums import *  # Star import removed
+# from agentic_core.models_enums import *  # Star import removed
 
 
 @dataclass

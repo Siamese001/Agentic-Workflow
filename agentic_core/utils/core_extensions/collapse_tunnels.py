@@ -5,7 +5,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Any
-root: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
+root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 
 def collapse_tunnels() -> Any:
     """Brief description of functionality and purpose."""

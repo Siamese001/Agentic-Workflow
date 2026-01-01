@@ -4,7 +4,7 @@ import os
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Any
-core: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
+core: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 
 def flush_airlocks() -> Any:
     """Brief description of functionality and purpose."""

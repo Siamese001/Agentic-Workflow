@@ -16,7 +16,7 @@ load_dotenv(dotenv_path=project_root / '.env', override=True)
 from canon_validator_agentic_v2 import run_mission
 from typing import Any
 
-async def execute_sovereign_sweep(target_scope: str='AgenticCore') -> Any:
+async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
     """Brief description of functionality and purpose."""
     print(f"\n{'=' * 70}\n[OBSERVABILITY] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
     try:

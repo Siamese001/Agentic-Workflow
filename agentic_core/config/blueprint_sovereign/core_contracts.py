@@ -1,19 +1,19 @@
 """
 Sovereign Core Contracts Registry – Final SSOT Import Point (Phase 2C Complete)
 
-All schema definitions have been fully migrated to AgenticCore/schemas/.
+All schema definitions have been fully migrated to agentic_core/schemas/.
 This file is now a pure, minimal registry that dynamically imports from the canonical schema modules.
 No model definitions are permitted here.
 """
 
 # 1. Base Models
-from AgenticCore.schemas.models.base import SovereignBaseModel, Territory
+from agentic_core.schemas.models.base import SovereignBaseModel, Territory
 
 # 5. Consensus & Deliberation
-from AgenticCore.schemas.models.consensus import ConsensusVerdict, ModelOpinion
+from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
 
 # 9. Context Passport (Flattened Option A)
-from AgenticCore.schemas.models.context_passport import (
+from agentic_core.schemas.models.context_passport import (
     HardState,
     SignalContext,
     SignedClaim,
@@ -23,10 +23,10 @@ from AgenticCore.schemas.models.context_passport import (
 )
 
 # 14. Legacy Registry from core_contracts.py
-from AgenticCore.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
+from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY
 
 # 12. Golden State & Benchmarking
-from AgenticCore.schemas.models.golden_state import (
+from agentic_core.schemas.models.golden_state import (
     EvalResult,
     GoldenCase,
     GoldenOutput,
@@ -35,25 +35,25 @@ from AgenticCore.schemas.models.golden_state import (
 )
 
 # 8. Governance & Injection
-from AgenticCore.schemas.models.injection import (
+from agentic_core.schemas.models.injection import (
     InjectionPattern,
     InjectionScope,
     InjectionType,
 )
 
 # 2. Messaging & Communication
-from AgenticCore.schemas.models.messaging import (
+from agentic_core.schemas.models.messaging import (
     AgentMessage,
     MessageType,
     ResidualAgentMessage,
 )
-from AgenticCore.schemas.models.metacognition import Hypothesis, MetacognitionReport
+from agentic_core.schemas.models.metacognition import Hypothesis, MetacognitionReport
 
 # 10. System Profiles
-from AgenticCore.schemas.models.profiles import BudgetProfile, SafetyProfile
+from agentic_core.schemas.models.profiles import BudgetProfile, SafetyProfile
 
 # 4. Reasoning & Cognitive Core
-from AgenticCore.schemas.models.reasoning import (
+from agentic_core.schemas.models.reasoning import (
     AgentPlan,
     AgentThoughtProcess,
     CodeGenerationResult,
@@ -61,7 +61,7 @@ from AgenticCore.schemas.models.reasoning import (
 )
 
 # 7. Micro-Runtime & Execution
-from AgenticCore.schemas.models.runtime_micro import (
+from agentic_core.schemas.models.runtime_micro import (
     HopState,
     MicroCheckpoint,
     MicroStage,
@@ -70,7 +70,7 @@ from AgenticCore.schemas.models.runtime_micro import (
 )
 
 # 13. Runtime Shared (Phase 2C Residuals)
-from AgenticCore.schemas.models.runtime_shared import (
+from agentic_core.schemas.models.runtime_shared import (
     AgentResponse,
     CircuitState,
     GateDecision,
@@ -85,17 +85,17 @@ from AgenticCore.schemas.models.runtime_shared import (
 )
 
 # 11. Simulation & Metacognition
-from AgenticCore.schemas.models.simulation import SimOutcome, SimScenario
+from agentic_core.schemas.models.simulation import SimOutcome, SimScenario
 
 # 6. Style & Generation
-from AgenticCore.schemas.models.tone import (
+from agentic_core.schemas.models.tone import (
     GenerationConfig,
     StyleProfile,
     ToneType,
 )
 
 # 3. Tool Arguments
-from AgenticCore.schemas.models.tool_args import (
+from agentic_core.schemas.models.tool_args import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,

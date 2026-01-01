@@ -1,14 +1,14 @@
 # mission_utils.py
 # L0 Utility Functions for Canon Validator Mission
 # PURPOSE: Provides helper functions for dynamic imports, layer ranking, and L2 lookups
-# LOCATION: AgenticCore/utils/general_helpers/ (SSOT-compliant)
+# LOCATION: agentic_core/utils/general_helpers/ (SSOT-compliant)
 
 import importlib
 from pathlib import Path
 from typing import Any, List, Optional
 
 # Import SSOT registries
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
@@ -22,7 +22,7 @@ def dynamic_import(module_path: str, class_name: str) -> Optional[Any]:
     Dynamically import classes to avoid gravity violations.
     
     Args:
-        module_path: Dotted module path (e.g., 'AgenticCore.L5_safety.guardrails.SafetyGuardrail')
+        module_path: Dotted module path (e.g., 'agentic_core.L5_safety.guardrails.SafetyGuardrail')
         class_name: Name of the class to import
         
     Returns:
@@ -46,7 +46,7 @@ def get_layer_rank(path_str: str) -> int:
     Returns:
         Layer rank (0-based index), or -1 if not found
     """
-    gravity_layers = SOVEREIGN_REGISTRY["AgenticCore"]["subfolders"]
+    gravity_layers = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
     for i, layer in enumerate(gravity_layers):
         if layer in path_str:
             return i
@@ -58,13 +58,13 @@ def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
     Pull valid L2 folders directly from imported SSOT maps.
     
     Args:
-        root: Root territory name (AgenticCore, apps_rg, apps_lic, apps_shared)
+        root: Root territory name (agentic_core, apps_rg, apps_lic, apps_shared)
         l1_name: L1 folder name
         
     Returns:
         List of approved L2 subfolder names
     """
-    if root == "AgenticCore":
+    if root == "agentic_core":
         return CORE_SUBFOLDER_MAP.get(l1_name, [])
     elif root == "apps_rg":
         return APPS_RG_SUBFOLDER_MAP.get(l1_name, [])
@@ -83,29 +83,29 @@ def get_placement_guidance(content_preview: str) -> str:
         content_preview: First ~500 chars of file content
         
     Returns:
-        Suggested L1 path (e.g., 'AgenticCore/L1_cognition')
+        Suggested L1 path (e.g., 'agentic_core/L1_cognition')
     """
     content_lower = content_preview.lower()
     
     if any(x in content_lower for x in ['planner', 'strategy', 'reasoning', 'mission']):
-        return 'AgenticCore/L1_cognition'
+        return 'agentic_core/L1_cognition'
     if 'node' in content_lower or 'execute' in content_lower:
-        return 'AgenticCore/L1_cognition/thought_engine'
+        return 'agentic_core/L1_cognition/thought_engine'
     if any(x in content_lower for x in ['router', 'orchestrator', 'fission', 'hop']):
-        return 'AgenticCore/L3_orchestration'
+        return 'agentic_core/L3_orchestration'
     if any(x in content_lower for x in ['pinecone', 'redis', 'storage', 'cache']):
-        return 'AgenticCore/L4_state'
+        return 'agentic_core/L4_state'
     if any(x in content_lower for x in ['safety', 'guardrail', 'guard', 'validator']):
-        return 'AgenticCore/L5_safety'
+        return 'agentic_core/L5_safety'
     if any(x in content_lower for x in ['Metric', 'telemetry', 'trace', 'observ']):
-        return 'AgenticCore/observability'
+        return 'agentic_core/observability'
     if any(x in content_lower for x in ['prompt', 'persona', 'instruct']):
-        return 'AgenticCore/prompt_governance'
+        return 'agentic_core/prompt_governance'
     if any(x in content_lower for x in ['schema', 'model', 'request', 'response']):
-        return 'AgenticCore/schemas'
+        return 'agentic_core/schemas'
     
     # Default fallback
-    return 'AgenticCore/L1_cognition'
+    return 'agentic_core/L1_cognition'
 
 
 def get_best_target_l1(folder_name: str, approved_l1: set) -> str:

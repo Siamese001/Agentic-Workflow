@@ -5,18 +5,18 @@ Coordinates PII Vault, Constitutional Overseer, and Cost Governor.
 import logging
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
-from AgenticCore.L1_cognition.P1_interfaces import ActionRequest
+from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 if TYPE_CHECKING:
-    from AgenticCore.governor import create_cost_governor
-    from AgenticCore.overseer import create_overseer
-    from AgenticCore.PiiVault import create_pii_vault
+    from agentic_core.governor import create_cost_governor
+    from agentic_core.overseer import create_overseer
+    from agentic_core.PiiVault import create_pii_vault
 Logger: Any = logging.getLogger(__name__)
 
 class L5SafetyLayer:

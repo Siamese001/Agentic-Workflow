@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 
 try:
-    from AgenticCore.semantic_memory.embeddings.core_embedder import get_embedding
+    from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
 except ImportError:
     # Fallback: define a stub if embedder not available
     def get_embedding(text: str, model: str = None, dimensions: int = None):

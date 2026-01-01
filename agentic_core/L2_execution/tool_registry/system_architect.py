@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 
 
 class SystemArchitect(CanonBaseAgent):
@@ -95,8 +95,8 @@ class SystemArchitect(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from AgenticCore.runtime.shared_runtime.void_compliance import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.runtime.shared_runtime.void_compliance import (
             validate_canonical_hierarchy,
         )
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
@@ -124,7 +124,7 @@ class SystemArchitect(CanonBaseAgent):
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
                     # Check L2 subfolders if depth is 4
                     if config["depth"] == 4:
-                        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+                        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
                             CORE_SUBFOLDER_MAP,
                         )
                         l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
@@ -161,7 +161,7 @@ class SystemArchitect(CanonBaseAgent):
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
             # [SSOT] Dynamic depth check from structure_blueprint
-            from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+            from agentic_core.config.blueprint_sovereign.structure_blueprint import (
                 SOVEREIGN_REGISTRY,
             )
             
@@ -213,7 +213,7 @@ class SystemArchitect(CanonBaseAgent):
         # Any Violation containing "Missing __init__.py" triggers a physical write.
         structural_fixes = [v for v in violations if "Missing __init__.py" in v]
         for fix in structural_fixes:
-            # Extract path from Violation string (e.g., 'AgenticCore/L1_cognition: Missing __init__.py')
+            # Extract path from Violation string (e.g., 'agentic_core/L1_cognition: Missing __init__.py')
             folder_rel = fix.split(":")[0].strip()
             folder_path = Path(os.getcwd()) / folder_rel
             if folder_path.exists():

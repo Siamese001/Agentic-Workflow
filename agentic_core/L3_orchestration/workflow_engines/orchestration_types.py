@@ -1,5 +1,5 @@
 """
-Orchestration Types for AgenticCore
+Orchestration Types for agentic_core
 
 Core types used across orchestration components to avoid circular dependencies.
 """

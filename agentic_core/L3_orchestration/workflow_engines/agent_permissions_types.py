@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 try:
-    from AgenticCore.L1_cognition.identity.spiffe_manager_types import AgentIdentity
+    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
 except ImportError:
     AgentIdentity = type('AgentIdentity', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

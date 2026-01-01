@@ -1,11 +1,11 @@
 """
 DEPRECATED – Zero-Loss Migration Complete (Phase 2B/Phase 4 – Dec 26, 2025)
 All models have been canonically centralized in:
-AgenticCore/schemas/models/core_contracts.py
+agentic_core/schemas/models/core_contracts.py
 
 Imports below preserve backward compatibility. 
 New code MUST import directly from core_contracts.py
 """
-from AgenticCore.schemas.models.core_contracts import SimOutcome, SimScenario
+from agentic_core.schemas.models.core_contracts import SimOutcome, SimScenario
 
 __all__ = ["SimScenario", "SimOutcome"]

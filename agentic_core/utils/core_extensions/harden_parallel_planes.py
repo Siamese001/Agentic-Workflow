@@ -6,13 +6,13 @@ import shutil
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-root: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
+root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
 thoughts: Any = ROOT / 'L1_cognition' / 'thought_engine'
 knowledge: Any = ROOT / 'knowledge'
 

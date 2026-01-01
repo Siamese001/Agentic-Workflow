@@ -2,16 +2,16 @@
 Canon Validator Prompts Package.
 All few-shot prompting constants re-exported for backward compatibility.
 """
-from AgenticCore.L0_maintenance.P1_core.core import FEW_SHOT_GITOPS, FEW_SHOT_SHERLOCK, POSITIVE_INSTRUCTIONAL_CONTEXT
-from AgenticCore.Historian import FEW_SHOT_HISTORIAN
-from AgenticCore.refactoring import FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_IMPORT_FIXES
-from AgenticCore.reflection import FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_STRATEGIC
-from AgenticCore.safety import FEW_SHOT_CONCURRENCY, FEW_SHOT_SAFETY
-from AgenticCore.style import FEW_SHOT_HYGIENE, FEW_SHOT_STYLE
-from AgenticCore.testing import FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_TESTPILOT
+from agentic_core.L0_maintenance.P1_core.core import FEW_SHOT_GITOPS, FEW_SHOT_SHERLOCK, POSITIVE_INSTRUCTIONAL_CONTEXT
+from agentic_core.Historian import FEW_SHOT_HISTORIAN
+from agentic_core.refactoring import FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_IMPORT_FIXES
+from agentic_core.reflection import FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_STRATEGIC
+from agentic_core.safety import FEW_SHOT_CONCURRENCY, FEW_SHOT_SAFETY
+from agentic_core.style import FEW_SHOT_HYGIENE, FEW_SHOT_STYLE
+from agentic_core.testing import FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_TESTPILOT
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -36,7 +36,7 @@ class AutonomousStateGuardianAgent:
     def __init__(self):
         # GRAVITY FIXED: Dynamic import for Checkpoint manager
         try:
-            from AgenticCore.L4_state.ValidationContext.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
             self.CheckpointManager = create_autonomous_checkpoint_manager()
         except ImportError:
             self.CheckpointManager = None
@@ -152,7 +152,7 @@ class AutonomousStateGuardianAgent:
                     
                     # Trigger reindex as a non-blocking Task
                     try:
-                        from AgenticCore.L2_execution.ToolRegistry.HybridRetriever import (
+                        from agentic_core.L2_execution.tool_registry.HybridRetriever import (
                             HybridRetriever,
                         )
                         asyncio.create_task(HybridRetriever()._rebuild_from_ingestion())

@@ -15,7 +15,7 @@ from groq import Groq
 from mistralai.async_client import MistralAsyncClient
 from together import Together
 
-from AgenticCore.runtime.shared_runtime.SemanticCache import SemanticCache, create_semantic_cache, SemanticCacheHit, CacheMiss
+from agentic_core.runtime.shared_runtime.SemanticCache import SemanticCache, create_semantic_cache, SemanticCacheHit, CacheMiss
 
 
 # NAMING FIXED: HardStateProtocol → HardStateProtocol

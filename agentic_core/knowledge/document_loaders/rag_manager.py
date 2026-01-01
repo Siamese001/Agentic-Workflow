@@ -1,5 +1,5 @@
 # Sovereign RAG Manager
-# Territory: AgenticCore/knowledge (cross-subfolder orchestrator)
+# Territory: agentic_core/knowledge (cross-subfolder orchestrator)
 # Canon Key 9 - Retrieval-Augmented Generation integration
 
 import json
@@ -8,14 +8,14 @@ from typing import List, Dict, Optional
 
 # Internal imports referencing the mandated structure
 try:
-    from AgenticCore.knowledge.document_loaders.text_loader import TextDocumentLoader
-    from AgenticCore.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
-    from AgenticCore.knowledge.document_loaders.html_loader import HTMLDocumentLoader
-    from AgenticCore.knowledge.document_loaders.csv_loader import CSVDocumentLoader
-    from AgenticCore.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
-    from AgenticCore.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
-    from AgenticCore.knowledge.ResearchCache.cache_store import ResearchCache
-    from AgenticCore.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
+    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
+    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
+    from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
+    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
+    from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
+    from agentic_core.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
+    from agentic_core.knowledge.ResearchCache.cache_store import ResearchCache
+    from agentic_core.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
@@ -37,7 +37,7 @@ class SovereignRAGManager:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.cache_dir = project_root / "AgenticCore" / "knowledge" / "ResearchCache"
+        self.cache_dir = project_root / "agentic_core" / "knowledge" / "ResearchCache"
         self.cache = ResearchCache(self.cache_dir)
         self.static_knowledge = self._load_static_index()
         
@@ -52,9 +52,9 @@ class SovereignRAGManager:
         
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:
-            from AgenticCore.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
-            from AgenticCore.semantic_memory.store.pinecone_store import PineconeVectorStore
-            from AgenticCore.semantic_memory.store.Bm25Store import get_bm25_store
+            from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
+            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
+            from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
             self.embedder = GeminiEmbedder()
             self.vector_store = PineconeVectorStore()
             self.Bm25Store = get_bm25_store()

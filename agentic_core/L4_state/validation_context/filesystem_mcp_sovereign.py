@@ -9,12 +9,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from AgenticCore.L3_orchestration.workflow_engines.mcp_manager import (
+from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
     MCPConnectionManager,
 )
-from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
-from AgenticCore.L5_safety.shield.redis_sovereign_shield import redis_shield
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 Logger = logging.getLogger(__name__)
 

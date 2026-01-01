@@ -20,11 +20,11 @@ def clean_prompt_governance() -> Any:
             CONTENT: Any = FILEPATH.read_text(encoding='utf-8')
             LINES: Any = CONTENT.split('\n')
             for i, line in enumerate(LINES):
-                if line.strip().startswith('from AgenticCore.'):
-                    LINES[i] = f'from AgenticCore.{import_from} import *'
+                if line.strip().startswith('from agentic_core.'):
+                    LINES[i] = f'from agentic_core.{import_from} import *'
                     break
             FILEPATH.write_text('\n'.join(LINES), encoding='utf-8')
-            LOGGER.info(f'Updated {filename} to import from AgenticCore.{import_from}')
+            LOGGER.info(f'Updated {filename} to import from agentic_core.{import_from}')
     for filename in to_delete:
         FILEPATH: Any = pg_dir / filename
         if FILEPATH.exists():

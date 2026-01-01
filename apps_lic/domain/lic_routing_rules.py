@@ -11,10 +11,10 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.lic_routing_rules_impl import *  # Star import removed
-# from AgenticCore.lic_routing_rules_models import *  # Star import removed
-# from AgenticCore.route_models_2 import *  # Star import removed
-# from AgenticCore.lic_routing_rules_impl import *  # Star import removed
+# from agentic_core.lic_routing_rules_impl import *  # Star import removed
+# from agentic_core.lic_routing_rules_models import *  # Star import removed
+# from agentic_core.route_models_2 import *  # Star import removed
+# from agentic_core.lic_routing_rules_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

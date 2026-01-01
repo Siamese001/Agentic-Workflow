@@ -2,7 +2,7 @@
 🚀 PHASE 5: THIN WRAPPER - SwarmScheduler for Canon Validator
 
 This is now a thin wrapper that delegates to the consolidated orchestrator_main.py
-All orchestration logic has been moved to AgenticCore/core/orchestrator_main.py
+All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
@@ -10,7 +10,7 @@ import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
-from AgenticCore.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 
 class SwarmScheduler:
     """

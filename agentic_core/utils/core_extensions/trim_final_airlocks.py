@@ -5,14 +5,14 @@ import os
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 heavy_airlocks: Any = ['L1_cognition/P1_core/check_outreach/__init__.py', 'L1_cognition/P1_core/P1_retrieve/get_info/__init__.py', 'L1_cognition/P1_core/P3_aggregate/pick_resume/__init__.py', 'L1_cognition/P1_core/P4_safety/__init__.py', 'L1_cognition/P1_core/P4_safety/check_resume/__init__.py', 'L1_cognition/P1_core/P4_safety/manage_outreach_costs/__init__.py']
 
 def trim_airlock(file_path: Any) -> Any:

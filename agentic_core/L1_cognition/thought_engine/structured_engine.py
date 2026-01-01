@@ -1,11 +1,11 @@
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
-All models centralized in sovereign SSOT: AgenticCore/schemas/models/core_contracts.py
+All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
 
 This file originally contained duplicate AgentPlan model.
 Import from SSOT instead.
 """
-from AgenticCore.schemas.models.core_contracts import AgentPlan
+from agentic_core.schemas.models.core_contracts import AgentPlan
 
 # NAMING FIXED: StructuredEngine → StructuredEngine
 class StructuredEngine:

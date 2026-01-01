@@ -11,7 +11,7 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from openai import AsyncOpenAI
 
-from AgenticCore.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
+from agentic_core.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
 Logger: Any = logging.getLogger(__name__)
 
 class SupremeCourt:

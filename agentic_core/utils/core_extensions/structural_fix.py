@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -19,15 +19,15 @@ root: Any = Path('C:/Git/Agentic-Workflow')
 def fix_structural_violations() -> Any:
     """Properly fix structural violations by moving files and fixing imports."""
     print('[*] STARTING STRUCTURAL FIX...')
-    print('\n[PHASE 1] Fixing AgenticCore -> schemas dependency...')
+    print('\n[PHASE 1] Fixing agentic_core -> schemas dependency...')
     schemas_path: Any = ROOT / 'schemas'
     canon_entry_files: Any = list(schemas_path.rglob('*canon*.py'))
     if canon_entry_files:
         print(f'  Found {len(canon_entry_files)} canon-related schema files')
         for f in canon_entry_files[:5]:
             print(f'    - {f.relative_to(ROOT)}')
-    print('  Creating local types in AgenticCore...')
-    agent_logic_file: Any = ROOT / 'AgenticCore/L1_cognition/agent_logic.py'
+    print('  Creating local types in agentic_core...')
+    agent_logic_file: Any = ROOT / 'agentic_core/L1_cognition/agent_logic.py'
     if agent_logic_file.exists():
         with open(agent_logic_file, 'r', encoding='utf-8') as f:
             content: Any = f.read()
@@ -37,8 +37,8 @@ def fix_structural_violations() -> Any:
             with open(agent_logic_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             print(f'  ✓ Fixed: {agent_logic_file.relative_to(ROOT)}')
-    print('\n[PHASE 2] Fixing AgenticCore -> scripts dependency...')
-    mission_runner: Any = ROOT / 'AgenticCore/L3_orchestration/mission_runner.py'
+    print('\n[PHASE 2] Fixing agentic_core -> scripts dependency...')
+    mission_runner: Any = ROOT / 'agentic_core/L3_orchestration/mission_runner.py'
     if mission_runner.exists():
         with open(mission_runner, 'r', encoding='utf-8') as f:
             lines: Any = f.readlines()
@@ -50,7 +50,7 @@ def fix_structural_violations() -> Any:
                     imports: Any = match.group(1)
                     print(f'  Found import from scripts: {imports}')
                     new_lines.append(f'# STRUCTURAL FIX: Removed Level 1 dependency\n')
-                    new_lines.append(f'# TODO: Move {imports} to AgenticCore or refactor\n')
+                    new_lines.append(f'# TODO: Move {imports} to agentic_core or refactor\n')
                     new_lines.append(f'# {line}')
                 else:
                     new_lines.append(line)
@@ -60,13 +60,13 @@ def fix_structural_violations() -> Any:
             f.writelines(new_lines)
         print(f'  ✓ Fixed: {mission_runner.relative_to(ROOT)}')
     print('\n[PHASE 3] Moving app-specific code from core to apps...')
-    analysis_file: Any = ROOT / 'AgenticCore/L2_execution/P4_agents/analysis.py'
+    analysis_file: Any = ROOT / 'agentic_core/L2_execution/P4_agents/analysis.py'
     if analysis_file.exists():
         target_dir: Any = ROOT / 'apps_rg/agents'
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file: Any = target_dir / 'analysis.py'
         shutil.move(str(analysis_file), str(target_file))
-        print(f'  ✓ Moved: analysis.py from AgenticCore to apps_rg/agents')
+        print(f'  ✓ Moved: analysis.py from agentic_core to apps_rg/agents')
     print('\n[PHASE 4] Fixing apps_shared -> apps_rg dependency...')
     verify_file: Any = ROOT / 'apps_shared/verify_hardening.py'
     if verify_file.exists():

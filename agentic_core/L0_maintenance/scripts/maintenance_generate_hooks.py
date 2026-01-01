@@ -13,7 +13,7 @@ import re
 from typing import Any
 project_root: Any = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 def sync_pre_commit(dry_run: bool=False) -> Any:
     """
@@ -33,7 +33,7 @@ def sync_pre_commit(dry_run: bool=False) -> Any:
     print(f"   [SSOT] Sovereign Roots: {', '.join(sovereign_roots)}")
     print(f'   [PATTERN] Exclude: {exclude_pattern}')
     print(f'   [PATTERN] Files: {files_pattern}')
-    config_path: Any = project_root / 'AgenticCore' / 'L0_maintenance' / 'scripts' / '.pre-commit-config.yaml'
+    config_path: Any = project_root / 'agentic_core' / 'L0_maintenance' / 'scripts' / '.pre-commit-config.yaml'
     if not config_path.exists():
         print(f'   [!] Config not found at: {config_path}')
         print(f'   [!] Checking alternate location...')
@@ -45,7 +45,7 @@ def sync_pre_commit(dry_run: bool=False) -> Any:
     with open(config_path, 'r', encoding='utf-8') as f:
         content: Any = f.read()
     original_content: Any = content
-    replacements: Any = [('exclude: \\^[(]AgenticCore\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config\\|data\\|archives[)]/', f'exclude: ^({all_roots_pattern})/'), ('files: \\^[(]AgenticCore\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config[)]/\\.\\*\\\\\\.py\\$', f'files: ^({roots_pattern})/.*\\.py$')]
+    replacements: Any = [('exclude: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config\\|data\\|archives[)]/', f'exclude: ^({all_roots_pattern})/'), ('files: \\^[(]agentic_core\\|apps_lic\\|apps_rg\\|apps_shared\\|schemas\\|prompt_governance\\|observability\\|config[)]/\\.\\*\\\\\\.py\\$', f'files: ^({roots_pattern})/.*\\.py$')]
     changes_made: Any = 0
     for pattern, replacement in replacements:
         matches: Any = re.findall(pattern, content)

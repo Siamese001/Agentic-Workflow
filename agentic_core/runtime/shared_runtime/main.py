@@ -3,7 +3,7 @@ import asyncio
 
 'Brief description of functionality and purpose.'
 import logging
-from AgenticCore.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
+from agentic_core.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
 from typing import Any
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 

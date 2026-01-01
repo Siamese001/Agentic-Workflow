@@ -11,8 +11,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.message_assembler_impl import *  # Star import removed
-# from AgenticCore.message_assembler_impl import *  # Star import removed
+# from agentic_core.message_assembler_impl import *  # Star import removed
+# from agentic_core.message_assembler_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

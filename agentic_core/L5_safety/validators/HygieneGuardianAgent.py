@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 
 
 # NAMING CANON COMPLIANCE — renamed to HygieneGuardianAgent for discovery and sovereignty — 2025-12-30
@@ -60,7 +60,7 @@ class HygieneGuardianAgent(CanonBaseAgent):
         Ensures 'orphaned' folders from moves are liquidated.
         """
         # [PHASE 20] DEPRECATION: void_compliance.py removed
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST
         ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
         count = 0
         

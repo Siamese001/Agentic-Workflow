@@ -8,7 +8,7 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-exempt: Any = {'AgenticCore/schemas/models/core_contracts.py'}
+exempt: Any = {'agentic_core/schemas/models/core_contracts.py'}
 
 class SovereignModelVisitor(ast.NodeVisitor):
     """AST visitor to detect inline Pydantic BaseModel definitions."""
@@ -45,7 +45,7 @@ def check_file(filepath: Any) -> Any:
             for Violation in visitor.violations:
                 print(f"  Line {Violation['line']}: class {Violation['class']}({Violation['base']})")
             print('\n💡 SOLUTION: Migrate this model to:')
-            print('   AgenticCore/schemas/models/core_contracts.py')
+            print('   agentic_core/schemas/models/core_contracts.py')
             print('=' * 80)
             return False
         return True

@@ -1,6 +1,6 @@
 """
 Hardened Orchestrator - Thin Wrapper
-Delegates to consolidated core orchestrator in AgenticCore/core/orchestrator_main.py
+Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py
 
 This is a stub-and-proxy pattern implementation that eliminates race conditions
 by routing all orchestration through the consolidated AtomicBlackboard-integrated core.
@@ -9,11 +9,11 @@ import asyncio
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from AgenticCore.L1_cognition.P2_domain.context import ValidationContext
+from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

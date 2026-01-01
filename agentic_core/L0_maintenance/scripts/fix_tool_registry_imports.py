@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -19,7 +19,7 @@ def fix_imports_in_file(file_path: Path) -> int:
         with open(file_path, 'r', encoding='utf-8') as f:
             content: Any = f.read()
         original_content: Any = content
-        replacements: Any = [('from AgenticCore\\.L2_execution\\.P4_agents\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L2_execution\\.P4_agents$', 'from AgenticCore.L2_execution.ToolRegistry'), ('from AgenticCore\\.L2_execution\\.P2_tools\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L2_execution\\.P2_tools$', 'from AgenticCore.L2_execution.ToolRegistry'), ('from AgenticCore\\.L2_execution\\.P3_engines\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L2_execution\\.P3_engines$', 'from AgenticCore.L2_execution.ToolRegistry'), ('import AgenticCore\\.L2_execution\\.P4_agents\\.', 'import AgenticCore.L2_execution.ToolRegistry.'), ('import AgenticCore\\.L2_execution\\.P2_tools\\.', 'import AgenticCore.L2_execution.ToolRegistry.'), ('import AgenticCore\\.L2_execution\\.P3_engines\\.', 'import AgenticCore.L2_execution.ToolRegistry.')]
+        replacements: Any = [('from agentic_core\\.L2_execution\\.P4_agents\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P4_agents$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P2_tools\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P2_tools$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P3_engines\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P3_engines$', 'from agentic_core.L2_execution.tool_registry'), ('import agentic_core\\.L2_execution\\.P4_agents\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P2_tools\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P3_engines\\.', 'import agentic_core.L2_execution.tool_registry.')]
         for pattern, replacement in replacements:
             content: Any = re.sub(pattern, replacement, content)
         if content != original_content:
@@ -34,7 +34,7 @@ def fix_imports_in_file(file_path: Path) -> int:
 
 def main() -> Any:
     """Fix all imports in ToolRegistry directory."""
-    ToolRegistry: Any = Path('AgenticCore/L2_execution/ToolRegistry')
+    ToolRegistry: Any = Path('agentic_core/L2_execution/ToolRegistry')
     if not ToolRegistry.exists():
         print(f'Directory not found: {ToolRegistry}')
         return

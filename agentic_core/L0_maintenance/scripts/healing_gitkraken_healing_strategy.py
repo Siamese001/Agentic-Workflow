@@ -5,11 +5,11 @@ Replaces all direct subprocess git calls.
 """
 import logging
 from typing import List, Dict, Any
-from AgenticCore.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

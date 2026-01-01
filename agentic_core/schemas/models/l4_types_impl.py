@@ -3,7 +3,7 @@
 import logging
 
 _logger = logging.getLogger(__name__)
-# from AgenticCore.l4_types_types import *  # Star import removed
+# from agentic_core.l4_types_types import *  # Star import removed
 
 
 # NAMING FIXED: StateError → StateError

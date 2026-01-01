@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from enum import Enum
 
 

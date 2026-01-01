@@ -10,7 +10,7 @@ from typing import List, Optional, Any, Dict
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -28,7 +28,7 @@ class SovereignPineconeStoreAgent:
 
     def __init__(self, index_name: Optional[str]=None, namespace: Optional[str]=None):
         """Initialize the adapter with MCP client."""
-        from AgenticCore.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient
+        from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient
         self.McpClient = SovereignPineconeMCPClient()
         self.namespace = namespace
         self._initialized = False

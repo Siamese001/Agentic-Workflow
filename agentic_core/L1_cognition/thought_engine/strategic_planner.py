@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -98,7 +98,7 @@ class StrategicPlanner:
         self.mission_history: List[Dict] = []
         self.agent_capabilities = self._load_agent_capabilities()
         try:
-            from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+            from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
             self.McpRouter = SovereignMCPRouter(role='cognition_strategic')
         except Exception as e:
             LOGGER.warning(f'MCP Router initialization failed: {e}. Using legacy planning.')
@@ -122,7 +122,7 @@ class StrategicPlanner:
         Returns:
             Generated mission plan
         """
-        from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+        from agentic_core.config.blueprint_sovereign.sovereign_config import config
         if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.McpRouter:
             try:
                 return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
@@ -132,7 +132,7 @@ class StrategicPlanner:
 
     async def _generate_plan_with_mcp(self, objective: str, cycle_id: int, priority: MissionPriority, context: Dict) -> MissionPlan:
         """Generate plan using Sequential Thinking MCP."""
-        from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+        from agentic_core.config.blueprint_sovereign.sovereign_config import config
         mcp_payload = {'Task': f'Generate comprehensive sovereign mission plan for objective: {objective}', 'cycle_id': cycle_id, 'priority': priority.value, 'context': context or {}, 'max_steps': config.SEQ_THINKING_MAX_STEPS, 'temperature': config.SEQ_THINKING_TEMPERATURE, 'enable_hypothesis_branching': config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING, 'enable_self_revision': config.SEQ_THINKING_ENABLE_SELF_REVISION, 'prune_low_confidence': config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE, 'min_confidence_threshold': config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE}
         result = await self.McpRouter.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
         plan = self._extract_mission_plan_from_mcp(result, objective, cycle_id, priority)

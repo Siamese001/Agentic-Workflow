@@ -16,7 +16,7 @@ from scripts.runtime.shared.sdk_registry import (
 )
 
 # Core Models and Exceptions - Temporarily commented out due to Missing imports
-# from AgenticCore.models import (
+# from agentic_core.models import (
 #     ReasoningConfig,
 #     ValidationResult,
 #     HopCheckpoint,
@@ -24,7 +24,7 @@ from scripts.runtime.shared.sdk_registry import (
 # )
 
 # Exceptions - Temporarily commented out
-# from AgenticCore.exceptions import (
+# from agentic_core.exceptions import (
 #     AgenticWorkflowError,
 #     ValidationError,
 #     APIError,
@@ -36,7 +36,7 @@ from scripts.runtime.shared.sdk_registry import (
 # Basic utilities - Temporarily commented out
 
 # OpenAI Client - Temporarily commented out
-# from AgenticCore.openai_client import (
+# from agentic_core.openai_client import (
 #     OpenAIClientManager,
 #     get_openai_client,
 #     configure_openai,

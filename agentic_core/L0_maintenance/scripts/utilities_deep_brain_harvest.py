@@ -20,7 +20,7 @@ try:
 except ImportError:
     PINECONE_AVAILABLE: Any = False
     print('⚠️  Pinecone not available. Install with: pip install pinecone-client')
-from AgenticCore.patterns.subatomic_flattening_rule import get_flattening_pattern
+from agentic_core.patterns.subatomic_flattening_rule import get_flattening_pattern
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 

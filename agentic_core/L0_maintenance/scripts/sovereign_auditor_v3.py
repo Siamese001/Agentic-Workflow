@@ -18,7 +18,7 @@ from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 try:
-    from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
         ACTIVE_CANON_KEYS,
         CANON_KEY_TO_FOLDER_MAP,
     )
@@ -32,12 +32,12 @@ if str(REPO_ROOT) not in sys.path:
 
 # Import available Guardians
 try:
-    from AgenticCore.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
+    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
 except ImportError:
     check_underscore_fields = None
 
 try:
-    from AgenticCore.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
+    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
 
@@ -80,7 +80,7 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     if not env_path.exists(): 
         return 0.0, ["CRITICAL: Neural Link Offline - .env Missing"]
     
-    from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
+    from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
     env = get_env(Path(target_path))
     required = ["GEMINI_API_KEY", "GEMINI_MODEL"]
     Missing = [k for k in required if not getattr(env, k, None)]
@@ -128,7 +128,7 @@ class SovereignReport:
         return overall
 
 def main():
-    target = Path("AgenticCore")
+    target = Path("agentic_core")
     
     report = SovereignReport()
     
@@ -144,11 +144,11 @@ def main():
     report.record_result("Key Coverage", key_score, key_issues)
 
     # 2. Schema SSOT (Key 3 Alignment)
-    score, issues = validate_schema_ssot(str(REPO_ROOT / "AgenticCore"))
+    score, issues = validate_schema_ssot(str(REPO_ROOT / "agentic_core"))
     report.record_result("Schema SSOT", score, issues)
 
     # 3. Prompt SSOT (Key 1 Alignment)
-    score, issues = validate_prompt_ssot(str(REPO_ROOT / "AgenticCore"))
+    score, issues = validate_prompt_ssot(str(REPO_ROOT / "agentic_core"))
     report.record_result("Prompt SSOT", score, issues)
 
     # 4. Config SSOT (Key 2 & .env Physics)

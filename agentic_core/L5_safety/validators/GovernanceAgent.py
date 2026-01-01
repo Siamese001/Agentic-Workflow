@@ -6,9 +6,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase B (High Priority)
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 
 class GovernanceAgent(

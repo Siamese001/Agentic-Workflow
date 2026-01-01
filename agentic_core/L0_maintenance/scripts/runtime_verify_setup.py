@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 def load_env_file() -> Any:
-    """Load environment variables from AgenticCore.env file if it exists"""
+    """Load environment variables from agentic_core.env file if it exists"""
     env_path: Any = Path(__file__).parent.parent / '.env'
     if env_path.exists():
         print(f'📄 Loading environment from: {env_path}')
@@ -23,7 +23,7 @@ def load_env_file() -> Any:
                     value: Any = value.strip()
                     if key and value and (not os.environ.get(key)):
                         os.environ[key] = value
-        print(f'✅ Environment variables loaded from AgenticCore.env\n')
+        print(f'✅ Environment variables loaded from agentic_core.env\n')
     else:
         print(f'⚠️  No .env file found at {env_path}')
         print(f'   Using system environment variables only\n')

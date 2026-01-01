@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -108,7 +108,7 @@ def split_file_by_type(filepath: Path) -> None:
     shim_content += "\n__all__ = ['*']  # Re-export all imported names\n"
     filepath.write_text(shim_content, encoding='utf-8')
     LOGGER.info(f'  Updated {filepath.name} as compatibility shim')
-files_to_fix: Any = ['AgenticCore/L1_cognition/planning/runtime_v5_impl_impl_impl.py', 'prompt_governance/prompts_v7.py', 'prompt_governance/test_v6_impl_impl_impl_impl.py', 'prompt_governance/safety/const_v6.py', 'config/init_v6.py', 'config/policy/init_v5_impl_impl_impl_impl.py', 'config/logic/synthesis/pick_best/refine_v6_impl_impl_impl.py', 'config/logic/synthesis/pick_best/scores_v6_impl_impl_impl_impl.py', 'config/logic/data_access/get_info/query_v6_impl_impl.py', 'config/logic/data_access/get_info/store_v5_impl.py']
+files_to_fix: Any = ['agentic_core/L1_cognition/planning/runtime_v5_impl_impl_impl.py', 'prompt_governance/prompts_v7.py', 'prompt_governance/test_v6_impl_impl_impl_impl.py', 'prompt_governance/safety/const_v6.py', 'config/init_v6.py', 'config/policy/init_v5_impl_impl_impl_impl.py', 'config/logic/synthesis/pick_best/refine_v6_impl_impl_impl.py', 'config/logic/synthesis/pick_best/scores_v6_impl_impl_impl_impl.py', 'config/logic/data_access/get_info/query_v6_impl_impl.py', 'config/logic/data_access/get_info/store_v5_impl.py']
 root: Any = Path('c:/Git/Agentic-Workflow')
 for file_path in files_to_fix:
     full_path: Any = ROOT / file_path

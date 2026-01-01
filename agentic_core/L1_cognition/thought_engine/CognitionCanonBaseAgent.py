@@ -6,10 +6,10 @@ import hashlib
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
+from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -27,11 +27,11 @@ class CanonBaseAgent:
         """Builds the registry once to avoid repetitive agent instantiation."""
         if cls._registry_built:
             return
-        from AgenticCore.canon_agents_core import SystemArchitect
-        from AgenticCore.canon_agents_pattern import PatternEnforcer
-        from AgenticCore.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
-        from AgenticCore.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
-        from AgenticCore.canon_agents_syntax import CodeJanitor, DependencySentinel
+        from agentic_core.canon_agents_core import SystemArchitect
+        from agentic_core.canon_agents_pattern import PatternEnforcer
+        from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
+        from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
+        from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
         arch = SystemArchitect(ctx)
         budget = BudgetAgent(ctx)
         janitor = CodeJanitor(ctx)

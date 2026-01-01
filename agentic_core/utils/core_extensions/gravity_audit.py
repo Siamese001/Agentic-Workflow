@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 
 def audit_gravity() -> Any:
     """Brief description of functionality and purpose."""

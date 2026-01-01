@@ -16,8 +16,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.titanium_integration_impl_impl_impl_impl import *  # Star import removed
-# from AgenticCore.titanium_integration_impl import *  # Star import removed
+# from agentic_core.titanium_integration_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.titanium_integration_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

@@ -19,7 +19,7 @@ def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
     existing: Any = {}
     repo_root: Any = Path('.')
-    sovereign_roots: Any = {'AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives', 'docs'}
+    sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives', 'docs'}
     for root in sovereign_roots:
         root_path: Any = repo_root / root
         if root_path.exists():

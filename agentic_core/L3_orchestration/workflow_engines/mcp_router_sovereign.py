@@ -7,11 +7,11 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from AgenticCore.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
-from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager, load_mcp_config
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -66,7 +66,7 @@ class SovereignMcpRouter:
                 return {'status': 'l3_recovery', 'tool': 'redis_recover', 'restored': redis_result.get('keys_restored', 0)}
             elif key_id in {40, 41, 42, 49}:
                 try:
-                    from AgenticCore.L4_state.P1_core.ValidationContext import ValidationContext
+                    from agentic_core.L4_state.P1_core.ValidationContext import ValidationContext
                     if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
                         ctx: Any = ValidationContext._instance
                         if hasattr(ctx, 'deepwiki_client') and ctx.deepwiki_client:
@@ -79,7 +79,7 @@ class SovereignMcpRouter:
                     pass
             elif key_id in {42, 49} and 'ui' in violation_desc.lower():
                 try:
-                    from AgenticCore.L4_state.P1_core.ValidationContext import ValidationContext
+                    from agentic_core.L4_state.P1_core.ValidationContext import ValidationContext
                     if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
                         ctx: Any = ValidationContext._instance
                         if hasattr(ctx, 'figma_client') and ctx.figma_client:
@@ -94,7 +94,7 @@ class SovereignMcpRouter:
                 try:
                     template_key: Any = f'seq_template:key{key_id}'
                     cached_template: Any = None
-                    from AgenticCore.L5_safety.shield.redis_sovereign_shield import redis_shield
+                    from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
                     try:
                         cached: Any = redis_shield.execute('get', template_key)
                         if cached:

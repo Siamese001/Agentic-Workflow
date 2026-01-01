@@ -3,13 +3,13 @@ import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
 try:
-    from AgenticCore.L3_orchestration.workflow_engines.agent_gym_types import BenchmarkResult as BenchmarkResult, ScenarioType as ScenarioType, TrainingScenario as TrainingScenario, PerformanceLevel as PerformanceLevel
+    from agentic_core.L3_orchestration.workflow_engines.agent_gym_types import BenchmarkResult as BenchmarkResult, ScenarioType as ScenarioType, TrainingScenario as TrainingScenario, PerformanceLevel as PerformanceLevel
     TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type('Stub', (), {})
 except ImportError:
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = ScenarioType = TrainingScenario = TrainingSession = PerformanceLevel = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

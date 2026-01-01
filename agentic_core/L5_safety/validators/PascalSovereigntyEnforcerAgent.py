@@ -18,9 +18,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from enum import Enum
 
-from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
-from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
-from AgenticCore.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
+from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 
 
 class SovereignSeverity(Enum):
@@ -58,7 +58,7 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin):
         self.dry_run = dry_run
         self.strict_mode = strict_mode  # False = basic fast, True = specialist deep
         # Sovereign scope
-        self.target_prefixes = ["AgenticCore", "apps_rg", "apps_lic", "apps_shared"]
+        self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
         # Incremental layer order (from audit priority — schemas first)
         self.purge_order = [
             "schemas", "config", "apps_", "L5_safety", "L4_state",

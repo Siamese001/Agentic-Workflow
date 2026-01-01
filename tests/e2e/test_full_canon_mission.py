@@ -22,7 +22,7 @@ class test_full_canon_mission:
         (tmp_sovereign_workspace / 'agentic_core').mkdir(exist_ok=True)
         (tmp_sovereign_workspace / 'schemas').mkdir(exist_ok=True)
         compliant_file: Any = tmp_sovereign_workspace / 'agentic_core' / 'core.py'
-        compliant_file.write_text('\n"""Core sovereignty module."""\nfrom typing import Dict, Any\n\n# NAMING FIXED: AgenticCore → agentic_core\nclass agentic_core:\n    """Main agentic core."""\n    \n    def run(self, mission: Dict[str, Any]) -> Dict[str, Any]:\n        return {"status": "success"}\n')
+        compliant_file.write_text('\n"""Core sovereignty module."""\nfrom typing import Dict, Any\n\n# NAMING FIXED: agentic_core → agentic_core\nclass agentic_core:\n    """Main agentic core."""\n    \n    def run(self, mission: Dict[str, Any]) -> Dict[str, Any]:\n        return {"status": "success"}\n')
         mission_result: Any = {'mission_id': 'canon-001', 'status': 'completed', 'violations': 0, 'keys_passed': 50, 'healing_triggered': False}
         audit_log_tracker.log('mission_complete', mission_result)
         assert mission_result['violations'] == 0

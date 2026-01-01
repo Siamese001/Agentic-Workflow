@@ -13,13 +13,13 @@ import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 
-from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from AgenticCore.L4_state.ValidationContext.RedisSovereignAgent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

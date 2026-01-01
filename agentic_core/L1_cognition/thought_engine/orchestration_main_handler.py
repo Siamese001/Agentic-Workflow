@@ -15,12 +15,12 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol, Set
-from AgenticCore.tools.filesystem import WriteFileArgs, write_file
-from AgenticCore.L2_execution.ToolRegistry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspector, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
-from AgenticCore.L1_cognition.P2_domain.context import ValidationContext
+from agentic_core.tools.filesystem import WriteFileArgs, write_file
+from agentic_core.L2_execution.tool_registry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspector, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -500,7 +500,7 @@ async def main() -> Any:
     - --max-cycles: Maximum convergence cycles
     """
     import argparse
-    parser: Any = argparse.ArgumentParser(description='[START] Phase 5: Consolidated Orchestrator - Command & Control Center', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='\nExamples:\n  # Full repository scan with healing\n  python orchestrator_main.py --heal\n  \n  # Clean slate and target specific directory\n  python orchestrator_main.py --clean-slate --target apps_rg/\n  \n  # Override preservation for SystemArchitect\n  python orchestrator_main.py --override-preservation --target AgenticCore/\n        ')
+    parser: Any = argparse.ArgumentParser(description='[START] Phase 5: Consolidated Orchestrator - Command & Control Center', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='\nExamples:\n  # Full repository scan with healing\n  python orchestrator_main.py --heal\n  \n  # Clean slate and target specific directory\n  python orchestrator_main.py --clean-slate --target apps_rg/\n  \n  # Override preservation for SystemArchitect\n  python orchestrator_main.py --override-preservation --target agentic_core/\n        ')
     parser.add_argument('--workflow-id', default=None, help='Workflow ID (auto-generated if not provided)')
     parser.add_argument('--max-cycles', type=int, default=5, help='Maximum convergence cycles (default: 5)')
     parser.add_argument('--target', help='Target file or directory for surgical scope')

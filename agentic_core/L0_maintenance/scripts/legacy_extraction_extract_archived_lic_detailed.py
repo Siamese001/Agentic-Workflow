@@ -3,7 +3,7 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-sovereign_roots: Any = {'AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
+sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
 
 def get_existing_filenames() -> Set[str]:
     """Get set of all Python filenames in sovereign codebase."""

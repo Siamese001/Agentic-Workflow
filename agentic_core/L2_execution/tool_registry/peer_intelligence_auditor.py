@@ -16,8 +16,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.peer_intelligence_auditor_impl import *  # Star import removed
-# from AgenticCore.peer_intelligence_auditor_impl import *  # Star import removed
+# from agentic_core.peer_intelligence_auditor_impl import *  # Star import removed
+# from agentic_core.peer_intelligence_auditor_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

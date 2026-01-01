@@ -182,7 +182,7 @@ class MCPGuardianAgent:
             )
         
         try:
-            from AgenticCore.observability.telemetry.sovereign_events import emit_event
+            from agentic_core.observability.telemetry.sovereign_events import emit_event
             emit_event(
                 "MCP_GUARDIAN_CRITIQUE",
                 {
