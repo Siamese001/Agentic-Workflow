@@ -283,6 +283,55 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
     
     return {"error": "invalid_mode", "message": f"Unknown mode: {mode}"}
 
+# =============================================================================
+# CODE TRANSFORMATION ENGINE (CTE) — Phase 1 Tool
+# =============================================================================
+from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+    CodeTransformArgs,
+    TransformOperation,
+    code_transform,
+    rename_symbol,
+    extract_function,
+)
+
+
+def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
+    """
+    Deterministic AST-based code transformation tool.
+    
+    Enables agents to perform safe, syntax-preserving code transformations
+    without LLM overhead. Supports rename, extract, decorator operations.
+    
+    Args:
+        args: CodeTransformArgs with operation details
+            - operation: "rename_symbol", "extract_function", "add_decorator", etc.
+            - code: Source code to transform
+            - target: Symbol name or line range
+            - new_name: New name for rename operations
+            - extract_name: Name for extracted function
+            - line_start/line_end: Line range for extraction
+            
+    Returns:
+        Dict with success status, transformed code, and change details
+        
+    Example:
+        >>> args = CodeTransformArgs(
+        ...     operation=TransformOperation.RENAME_SYMBOL,
+        ...     code="def foo(): pass",
+        ...     target="foo",
+        ...     new_name="bar"
+        ... )
+        >>> result = code_transform_tool(args)
+        >>> result["transformed_code"]
+        'def bar(): pass'
+    """
+    return code_transform(args)
+
+
+# Add CTE to predefined categories
+predefined_tool_categories['code_manipulation'] = 'AST-based code transformation tools'
+
+
 def create_tool_registry(embedder: Any, enable_caching: bool=True) -> ToolRegistry:
     """
     Factory function to create a tool registry.

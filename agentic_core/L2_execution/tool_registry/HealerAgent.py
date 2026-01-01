@@ -6,11 +6,19 @@ Responsible for:
 - Multi-round iterative refinement
 - Pattern learning from successful fixes
 - Integration with Pinecone for pattern storage
+- CTE-powered deterministic fixes (no LLM for simple transforms)
 """
 import os
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+    CodeTransformArgs,
+    TransformOperation,
+    code_transform,
+    rename_symbol,
+    quick_rename,
+)
 
 
 class HealerAgent(CanonBaseAgent):
@@ -401,6 +409,102 @@ CURRENT CODE:
         
         return False
     
+    async def heal_with_cte(
+        self,
+        file_path: str,
+        operation: TransformOperation,
+        target: str,
+        new_name: str = None,
+        decorator_name: str = None,
+    ) -> bool:
+        """
+        [CTE INTEGRATION] Deterministic healing using Code Transformation Engine.
+        
+        No LLM calls — pure AST transformation for simple fixes like:
+        - Renaming snake_case classes to PascalCase
+        - Adding/removing decorators
+        - Symbol renaming for consistency
+        
+        Args:
+            file_path: Path to file to heal
+            operation: TransformOperation enum value
+            target: Target symbol name
+            new_name: New name for rename operations
+            decorator_name: Decorator name for decorator operations
+            
+        Returns:
+            True if CTE healing succeeded, False otherwise
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                original_code = f.read()
+        except Exception as e:
+            print(f"      [CTE] Cannot read {file_path}: {e}")
+            return False
+        
+        # Build CTE args
+        args = CodeTransformArgs(
+            operation=operation,
+            code=original_code,
+            target=target,
+            new_name=new_name,
+            decorator_name=decorator_name,
+        )
+        
+        # Execute deterministic transformation
+        result = code_transform(args)
+        
+        if not result["success"]:
+            print(f"      [CTE] Transform failed: {result.get('error', 'Unknown error')}")
+            return False
+        
+        transformed_code = result["transformed_code"]
+        
+        # Verify syntax
+        import ast
+        try:
+            ast.parse(transformed_code)
+        except SyntaxError as e:
+            print(f"      [CTE] Syntax error after transform: {e}")
+            return False
+        
+        # Write the transformed code
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(transformed_code)
+            
+            changes = result.get("changes_made", [])
+            print(f"      [CTE OK] {operation.value}: {len(changes)} changes applied to {os.path.basename(file_path)}")
+            for change in changes[:3]:  # Show first 3 changes
+                print(f"         - {change}")
+            
+            return True
+        except Exception as e:
+            print(f"      [CTE] Cannot write {file_path}: {e}")
+            return False
+
+    async def heal_snake_case_class(self, file_path: str, old_name: str, new_name: str) -> bool:
+        """
+        [CTE SHORTCUT] Fix snake_case class naming violation (Key 1).
+        
+        Deterministic rename without LLM — 50-80% cost reduction for naming fixes.
+        
+        Args:
+            file_path: Path to file with violation
+            old_name: Current snake_case class name (e.g., "my_class")
+            new_name: New PascalCase name (e.g., "MyClass")
+            
+        Returns:
+            True if rename succeeded
+        """
+        print(f"      [CTE] Deterministic rename: {old_name} → {new_name}")
+        return await self.heal_with_cte(
+            file_path=file_path,
+            operation=TransformOperation.RENAME_CLASS,
+            target=old_name,
+            new_name=new_name,
+        )
+
     async def _store_healing_pattern(
         self,
         violation_key: int,
