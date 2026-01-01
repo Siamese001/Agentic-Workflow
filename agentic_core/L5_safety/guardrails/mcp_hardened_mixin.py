@@ -163,3 +163,90 @@ class MCPHardenedMixin:
             )
         except ImportError:
             pass
+
+    def get_redis_connection(self, url: Optional[str] = None):
+        """
+        Get hardened Redis connection with SSL enforcement and pooling.
+        
+        Args:
+            url: Optional Redis URL (defaults to MCP_REDIS_URL env var)
+            
+        Returns:
+            Redis client with connection pool
+        """
+        import os
+        from redis import ConnectionPool, Redis
+        
+        redis_url = url or os.getenv("MCP_REDIS_URL") or os.getenv("REDIS_URL")
+        if not redis_url:
+            raise ValueError("MCP_REDIS_URL or REDIS_URL must be set")
+        
+        # SSL enforcement
+        ssl_enabled = os.getenv("MCP_REDIS_SSL", "false").lower() == "true"
+        
+        pool_kwargs = {
+            "max_connections": int(os.getenv("MCP_REDIS_MAX_CONNECTIONS", "20")),
+            "socket_connect_timeout": int(os.getenv("MCP_REDIS_TIMEOUT", "5")),
+            "socket_timeout": int(os.getenv("MCP_REDIS_TIMEOUT", "5")),
+            "socket_keepalive": True,
+            "retry_on_timeout": True,
+            "health_check_interval": 30,
+        }
+        
+        if ssl_enabled:
+            import ssl as ssl_module
+            ssl_context = ssl_module.create_default_context()
+            
+            # Load custom certs if provided
+            cert_path = os.getenv("MCP_REDIS_SSL_CERT_PATH")
+            if cert_path:
+                ssl_context.load_verify_locations(cert_path)
+            
+            pool_kwargs.update({
+                "ssl": True,
+                "ssl_cert_reqs": "required",
+                "ssl_check_hostname": True,
+            })
+        
+        pool = ConnectionPool.from_url(redis_url, **pool_kwargs)
+        return Redis(connection_pool=pool)
+
+    def get_neo4j_driver(
+        self,
+        uri: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None
+    ):
+        """
+        Get hardened Neo4j driver with SSL enforcement and connection pooling.
+        
+        Args:
+            uri: Optional Neo4j URI (defaults to NEO4J_URI env var)
+            username: Optional username (defaults to NEO4J_USERNAME env var)
+            password: Optional password (defaults to NEO4J_PASSWORD env var)
+            
+        Returns:
+            Neo4j driver with connection pool
+        """
+        import os
+        from neo4j import GraphDatabase
+        
+        neo4j_uri = uri or os.getenv("NEO4J_URI", "bolt://localhost:7687")
+        neo4j_user = username or os.getenv("NEO4J_USERNAME", "neo4j")
+        neo4j_password = password or os.getenv("NEO4J_PASSWORD")
+        
+        if not neo4j_password:
+            raise ValueError("[MCP HARDENED] NEO4J_PASSWORD must be set - no default allowed")
+        
+        # Force SSL/TLS encryption
+        driver = GraphDatabase.driver(
+            neo4j_uri,
+            auth=(neo4j_user, neo4j_password),
+            encrypted=True,
+            trust="TRUST_SYSTEM_CA_SIGNED_CERTIFICATES",
+            max_connection_lifetime=3600,
+            max_connection_pool_size=int(os.getenv("NEO4J_MAX_POOL_SIZE", "50")),
+            connection_acquisition_timeout=int(os.getenv("NEO4J_TIMEOUT", "60")),
+        )
+        
+        return driver

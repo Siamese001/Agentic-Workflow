@@ -2,11 +2,14 @@
 Sovereign Pinecone MCP Client – Phase 13C (Dec 26, 2025)
 Replaces all custom Pinecone wrappers with official MCP integration.
 L3 routed, L5 shielded vector operations.
+
+[HARDENING] Added MCPHardenedMixin for retry, timeout, and observability (Jan 1, 2026)
 """
 import logging
 from typing import Optional, List, Dict, Any
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -16,7 +19,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 logger: Any = logging.getLogger(__name__)
 
-class sovereign_pinecone_mcp_client:
+class sovereign_pinecone_mcp_client(MCPHardenedMixin):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
     
@@ -24,6 +27,12 @@ class sovereign_pinecone_mcp_client:
     - L5 safety validation
     - L3 orchestration coordination
     - L4 state persistence
+    
+    [HARDENING] Inherits MCPHardenedMixin for:
+    - Exponential backoff retry (3 attempts)
+    - SovereignEvent emission on connect/fail/success
+    - Timeout enforcement
+    - CRITIQUE emission on exhausted retries
     """
 
     def __init__(self):
@@ -61,7 +70,12 @@ class sovereign_pinecone_mcp_client:
         if not self.initialized:
             await self.initialize()
         try:
-            result: Any = await self.router.manager.call_tool(tool_name='pinecone_search', args={'query': query_text, 'top_k': top_k, 'namespace': namespace or config.PINECONE_DEFAULT_NAMESPACE, 'rerank': rerank, 'rerank_model': config.PINECONE_RERANK_MODEL if rerank else None})
+            result: Any = await self._hardened_call(
+                'pinecone_search',
+                self.router.manager.call_tool,
+                tool_name='pinecone_search',
+                args={'query': query_text, 'top_k': top_k, 'namespace': namespace or config.PINECONE_DEFAULT_NAMESPACE, 'rerank': rerank, 'rerank_model': config.PINECONE_RERANK_MODEL if rerank else None}
+            )
             logger.info(f"[L4 PINECONE MCP] Search completed: {len(result.get('matches', []))} results")
             return result
         except Exception as e:
@@ -82,7 +96,12 @@ class sovereign_pinecone_mcp_client:
         if not self.initialized:
             await self.initialize()
         try:
-            result: Any = await self.router.manager.call_tool(tool_name='pinecone_upsert', args={'vectors': vectors, 'namespace': namespace or config.PINECONE_DEFAULT_NAMESPACE})
+            result: Any = await self._hardened_call(
+                'pinecone_upsert',
+                self.router.manager.call_tool,
+                tool_name='pinecone_upsert',
+                args={'vectors': vectors, 'namespace': namespace or config.PINECONE_DEFAULT_NAMESPACE}
+            )
             logger.info(f'[L4 PINECONE MCP] Upserted {len(vectors)} records')
             return result
         except Exception as e:
@@ -102,7 +121,12 @@ class sovereign_pinecone_mcp_client:
         if not self.initialized:
             await self.initialize()
         try:
-            result: Any = await self.router.manager.call_tool(tool_name='pinecone_inference', args={'texts': texts, 'model': config.PINECONE_INFERENCE_MODEL, 'input_type': 'passage'})
+            result: Any = await self._hardened_call(
+                'pinecone_inference',
+                self.router.manager.call_tool,
+                tool_name='pinecone_inference',
+                args={'texts': texts, 'model': config.PINECONE_INFERENCE_MODEL, 'input_type': 'passage'}
+            )
             logger.info(f'[L4 PINECONE MCP] Generated embeddings for {len(texts)} texts')
             return result
         except Exception as e:
@@ -139,7 +163,12 @@ class sovereign_pinecone_mcp_client:
         if not self.initialized:
             await self.initialize()
         try:
-            result: Any = await self.router.manager.call_tool('mcp8_describe-index-stats', {'name': config.PINECONE_INDEX_NAME if hasattr(config, 'PINECONE_INDEX_NAME') else 'default'})
+            result: Any = await self._hardened_call(
+                'pinecone_stats',
+                self.router.manager.call_tool,
+                'mcp8_describe-index-stats',
+                {'name': config.PINECONE_INDEX_NAME if hasattr(config, 'PINECONE_INDEX_NAME') else 'default'}
+            )
             logger.info(f'[L4 PINECONE MCP] Index stats retrieved')
             return result
         except Exception as e:
