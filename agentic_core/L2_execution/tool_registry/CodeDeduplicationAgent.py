@@ -20,7 +20,9 @@ except ImportError:
     Parser = None
     Language = None
 
-class CodeDeduplicationAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class CodeDeduplicationAgent(HealerMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
     

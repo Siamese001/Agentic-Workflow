@@ -91,7 +91,7 @@ class SovereignSandbox:
                         pass
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SovereignActionPlaneAgent(IActionPlane):
+class SovereignActionPlaneAgent(HealerMixin, IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
 
     def __init__(self, safety_layer=None, SignalLedger=None):
