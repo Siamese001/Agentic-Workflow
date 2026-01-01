@@ -37,6 +37,46 @@ class L3SubatomicTestingMixin:
     - Basic Self-Testing: YES (plan validation, cycles, delegation)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
+    
+    # [PHASE 1] Self-testing flag
+    _self_testing_enabled: bool = True
+
+    def _run_self_tests(self) -> bool:
+        """
+        Phase 1: Canonical self-testing for L3 orchestration agents.
+        
+        Tests orchestration capabilities:
+        - Workflow/plan structure validation
+        - Agent registry access if available
+        - Basic routing logic
+        
+        Returns:
+            True if all tests pass
+            
+        Raises:
+            AssertionError: If any test fails
+        """
+        if not self._self_testing_enabled:
+            return True
+            
+        class_name = self.__class__.__name__
+        
+        # Test workflow/plan structure if present
+        if hasattr(self, "workflow") and self.workflow is not None:
+            assert isinstance(self.workflow, (dict, list)), \
+                f"{class_name}: Workflow must be dict or list"
+        
+        # Test agent registry access if available
+        if hasattr(self, "agent_registry") and self.agent_registry is not None:
+            assert isinstance(self.agent_registry, dict), \
+                f"{class_name}: Agent registry must be dict"
+        
+        # Test routing table if present
+        if hasattr(self, "routing_table") and self.routing_table is not None:
+            assert isinstance(self.routing_table, dict), \
+                f"{class_name}: Routing table must be dict"
+        
+        return True
 
     async def run_l3_subatomic_critique(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """L3 CRITIQUE hop: Basic plan testing + delegation on failure.
@@ -92,26 +132,28 @@ class L3SubatomicTestingMixin:
     def _generate_plan_json_tests(self, plan: Dict, context: Dict) -> str:
         """L3 Example 1: Unit tests for plan JSON structure/validity."""
         plan_json = json.dumps(plan) if isinstance(plan, dict) else str(plan)
+        # Escape for embedding in test string
+        escaped_json = plan_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
 def test_plan_structure():
     """Verify plan has required structure."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_json}"""
     plan = json.loads(plan_json)
     assert isinstance(plan, dict), "Plan must be a dictionary"
 
 def test_plan_has_steps():
     """Verify plan contains steps or actions."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_json}"""
     plan = json.loads(plan_json)
     has_steps = "steps" in plan or "actions" in plan or "tasks" in plan
     assert has_steps or len(plan) > 0, "Plan must have steps, actions, or content"
 
 def test_no_cycles_basic():
     """Basic cycle detection (dependency check)."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_json}"""
     plan = json.loads(plan_json)
     # Basic: check no step depends on itself
     if "steps" in plan:
@@ -122,7 +164,7 @@ def test_no_cycles_basic():
 
 def test_valid_references():
     """Verify agent/tool references are strings."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_json}"""
     plan = json.loads(plan_json)
     if "steps" in plan:
         for step in plan["steps"]:
@@ -137,26 +179,27 @@ def test_valid_references():
     def _generate_delegation_tests(self, tree: Dict, context: Dict) -> str:
         """L3 Example 2: Test delegation hierarchy/tree."""
         tree_json = json.dumps(tree) if isinstance(tree, dict) else str(tree)
+        escaped_tree = tree_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
 def test_tree_structure():
     """Verify delegation tree structure."""
-    tree_json = """{tree_json.replace('"', '\\"')}"""
+    tree_json = """{escaped_tree}"""
     tree = json.loads(tree_json)
     assert isinstance(tree, dict), "Tree must be a dictionary"
 
 def test_no_orphan_nodes():
     """Check hierarchy validity."""
-    tree_json = """{tree_json.replace('"', '\\"')}"""
+    tree_json = """{escaped_tree}"""
     tree = json.loads(tree_json)
     # Basic: tree should have root or be flat
     assert len(tree) > 0 or tree == {{}}, "Tree should have content"
 
 def test_agent_capabilities():
     """Verify agents have required fields."""
-    tree_json = """{tree_json.replace('"', '\\"')}"""
+    tree_json = """{escaped_tree}"""
     tree = json.loads(tree_json)
     if "agents" in tree:
         for agent in tree["agents"]:
@@ -168,19 +211,20 @@ def test_agent_capabilities():
     def _generate_routing_tests(self, plan: Dict, context: Dict) -> str:
         """L3 Example 3: Test conditional routing logic."""
         plan_json = json.dumps(plan) if isinstance(plan, dict) else str(plan)
+        escaped_routing = plan_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
 def test_routing_structure():
     """Verify routing plan structure."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_routing}"""
     plan = json.loads(plan_json)
     assert isinstance(plan, dict), "Routing plan must be a dictionary"
 
 def test_conditions_valid():
     """Check conditions are properly formatted."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_routing}"""
     plan = json.loads(plan_json)
     if "conditions" in plan:
         for cond in plan["conditions"]:
@@ -190,7 +234,7 @@ def test_conditions_valid():
 
 def test_default_fallback():
     """Verify default/fallback exists."""
-    plan_json = """{plan_json.replace('"', '\\"')}"""
+    plan_json = """{escaped_routing}"""
     plan = json.loads(plan_json)
     # Routing should have default or else clause
     has_default = "default" in plan or "else" in plan or "fallback" in plan
@@ -201,12 +245,13 @@ def test_default_fallback():
     def _generate_generic_plan_tests(self, Artifact: Dict, context: Dict) -> str:
         """Fallback tests for unknown plan types."""
         artifact_str = json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
+        escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
 def test_artifact_exists():
     """Verify Artifact is not empty."""
-    Artifact = """{artifact_str.replace('"', '\\"')}"""
+    Artifact = """{escaped_artifact}"""
     assert Artifact is not None
     assert len(str(Artifact)) > 0
 '''
