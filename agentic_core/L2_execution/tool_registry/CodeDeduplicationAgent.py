@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 import textwrap
 import shutil
-from agentic_core.config.blueprint_sovereign.structure_blueprint import FORBIDDEN_ROOT_FOLDERS
+from apps_shared.config.operational_config import OPERATIONAL_EXCLUDED_DIRS
 
 # Tree-sitter for AST fingerprinting
 try:
