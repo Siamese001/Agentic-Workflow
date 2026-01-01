@@ -30,10 +30,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "L0DelegationTestingMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "L0DelegationTestingMixin",
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -104,9 +104,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -135,9 +135,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1924,8 +1924,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "IActionPlane"
+      "IActionPlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2736,9 +2736,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4266,9 +4266,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4693,10 +4693,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
