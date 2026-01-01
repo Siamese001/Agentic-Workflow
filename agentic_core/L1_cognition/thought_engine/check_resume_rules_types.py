@@ -5,6 +5,7 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
+from apps_shared.utils.common_patterns import ExecutionContext
 Logger: Any = logging.getLogger(__name__)
 
 class ExecutionStatus(Enum):
