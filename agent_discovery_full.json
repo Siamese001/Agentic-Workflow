@@ -31,9 +31,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -105,8 +105,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -136,8 +136,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1564,7 +1564,7 @@
     "key_methods": [],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
     "loc": 53,
@@ -2167,7 +2167,7 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
     "loc": 299,
@@ -2189,7 +2189,7 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
     "loc": 53,
@@ -2491,7 +2491,9 @@
     "class_name": "DagEngineAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -2506,10 +2508,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 211,
+    "loc": 212,
     "class_count": 5,
     "description": "Lightweight DAG engine for workflow execution.\n\n    Features:\n    - Task dependency management\n    -",
     "pascal_compliant": true,
@@ -2697,7 +2699,7 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
     "loc": 133,
@@ -2737,8 +2739,8 @@
     "layer": "L3",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3655,7 +3657,7 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
     "loc": 147,
@@ -3843,7 +3845,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 111,
@@ -4266,9 +4268,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "HealerMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4693,10 +4695,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "HealerMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",

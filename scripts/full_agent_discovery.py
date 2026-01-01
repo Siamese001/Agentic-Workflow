@@ -15,15 +15,27 @@ OUTPUT_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
 
 EXCLUDED_DIRS = {'__pycache__', '.git', 'archives', '.sovereign_healing_backup', 'node_modules', '.venv'}
 
-# Healing-capable bases (for detection)
+# Healing-capable bases (for detection) - expanded for full MRO coverage
 HEALING_BASES = {
+    # Core mixin
     'HealerMixin',
-    'SubAtomicAgent',
-    'OrchestrationBaseAgent',
-    'StateBaseAgent',
-    'SafetyBaseAgent',
+    # L1 bases
     'CanonBaseAgent',
     'CognitionCanonBaseAgent',
+    # L2 bases (inherit from HealerMixin)
+    'SubAtomicAgent',
+    'ExecutionCanonBaseAgent',
+    'SubatomicTestingMixin',  # Often co-inherited with HealerMixin
+    # L3 bases
+    'OrchestrationBaseAgent',
+    'L3SubatomicTestingMixin',
+    # L4 bases
+    'StateBaseAgent',
+    'L4SubatomicTestingMixin',
+    # L5 bases
+    'SafetyBaseAgent',
+    # Common agent bases that have HealerMixin in their MRO
+    'ASTEnforcementMixin',  # Used by L5 validators
 }
 
 SELF_TESTING_BASES = {
@@ -79,6 +91,45 @@ def extract_bases(class_node: ast.ClassDef) -> Set[str]:
         elif isinstance(base, ast.Attribute):
             bases.add(base.attr)
     return bases
+
+
+# Build inheritance map for MRO-like traversal
+CLASS_INHERITANCE_MAP: Dict[str, Set[str]] = {}
+
+def build_inheritance_map(tree: ast.AST) -> None:
+    """Build map of class -> bases for MRO traversal."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            bases = extract_bases(node)
+            CLASS_INHERITANCE_MAP[node.name] = bases
+
+
+def has_healing_in_chain(class_name: str, bases: Set[str], visited: Set[str] = None) -> bool:
+    """Check if class has healing capability through inheritance chain."""
+    if visited is None:
+        visited = set()
+    
+    # Prevent infinite recursion
+    if class_name in visited:
+        return False
+    visited.add(class_name)
+    
+    # Direct check
+    if class_name in HEALING_BASES:
+        return True
+    if bases & HEALING_BASES:
+        return True
+    
+    # Traverse inheritance chain
+    for base in bases:
+        if base in HEALING_BASES:
+            return True
+        # Check if base's bases have healing
+        if base in CLASS_INHERITANCE_MAP:
+            if has_healing_in_chain(base, CLASS_INHERITANCE_MAP[base], visited):
+                return True
+    
+    return False
 
 
 def extract_methods(class_node: ast.ClassDef) -> List[str]:
@@ -171,21 +222,25 @@ def main():
     all_py_files = list(PROJECT_ROOT.rglob('*.py'))
     print(f"\nScanning {len(all_py_files)} Python files...")
     
+    # First pass: Build inheritance map for MRO-like detection
+    print("[PASS 1] Building inheritance map...")
+    parsed_files = {}  # Cache parsed ASTs
     for py_file in all_py_files:
-        # Skip excluded directories
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
             continue
-        
         try:
             source = py_file.read_text(encoding='utf-8', errors='replace')
+            tree = safe_parse(source, py_file)
+            if tree:
+                build_inheritance_map(tree)
+                parsed_files[py_file] = (source, tree)
         except Exception:
             continue
-        
-        tree = safe_parse(source, py_file)
-        if tree is None:
-            parse_errors.append(str(py_file.name))
-            continue
-        
+    print(f"   Built map with {len(CLASS_INHERITANCE_MAP)} classes")
+    
+    # Second pass: Detect agents with full MRO healing detection
+    print("[PASS 2] Detecting agents with MRO healing...")
+    for py_file, (source, tree) in parsed_files.items():
         rel_path = py_file.relative_to(PROJECT_ROOT)
         layer = infer_layer(py_file)
         loc = count_loc(source)
@@ -226,9 +281,9 @@ def main():
             else:
                 testing = 'None'
             
-            # Determine healing
-            has_heal = has_method(node, 'heal') or has_method(node, 'apply_fix')
-            inherits_healing = bool(bases & HEALING_BASES)
+            # Determine healing (MRO-aware detection)
+            has_heal = has_method(node, 'heal') or has_method(node, 'apply_fix') or has_method(node, 'heal_violation')
+            inherits_healing = has_healing_in_chain(node.name, bases)
             has_healing = has_heal or inherits_healing
             
             # Check for tools/memory markers
