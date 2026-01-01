@@ -1,8 +1,9 @@
-# File: workflow_LIC.py
+# File: workflow_orchestrator.py
 # Description: Complete workflow orchestration v13.0 - Pure Agentic Architecture
 # REFACTOR: All v12.0 agents replaced with HOP-based state architecture
+# HARDENED: 2026-01-01 - PascalCase + MCPHardenedMixin applied
 
-__version__ = "13.0"
+__version__ = "13.1"
 
 import asyncio
 import json
@@ -11,16 +12,17 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 
-# Core infrastructure
-from state_manager_LIC import StateManager, StateValidator
-from memory_LIC import VectorMemoryStore
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
-from utils_LIC import CircuitBreaker
+# MCP Hardening
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+# Core infrastructure (updated imports for new locations)
+from apps_shared.utils.state_manager import StateManager
+from apps_shared.utils.vector_memory import VectorMemoryStore
+from apps_shared.utils.circuit_breaker import CircuitBreaker
+from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpreterTool, ValidationToolkit
 
 # Models
-from models_LIC import (
+from apps_lic.domain.lic_models import (
     OutreachMission, Route, Archetype, FactualGapError,
     FailureClassifier, ValidationSeverity
 )
@@ -30,9 +32,9 @@ from models_LIC import (
 # HOP-2: RESEARCH AGENT (Refactored from S2_SupervisorAgent)
 # ============================================================================
 
-class HOP2_ResearchAgent:
+class HOP2ResearchAgent(MCPHardenedMixin):
     """
-    v13.0: Research Agent - Vector-store-first with fallback RAG
+    v13.1: Research Agent - Vector-store-first with fallback RAG (MCP Hardened)
     
     BREAKING CHANGE from v12.0:
     - OLD: All research at runtime (60-80s)
@@ -48,8 +50,8 @@ class HOP2_ResearchAgent:
         self,
         config: Dict[str, Any],
         memory_store: VectorMemoryStore,
-        search_client: GoogleSearchClient,
-        llm_client: GeminiLLMClient
+        search_client: Any = None,
+        llm_client: Any = None
     ):
         """
         Initialize with externalized config and live API clients
@@ -60,6 +62,7 @@ class HOP2_ResearchAgent:
             search_client: Google Search API client (fallback only)
             llm_client: Gemini LLM client
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["research_agent"]
         self.memory_store = memory_store
         self.search_client = search_client
@@ -329,9 +332,9 @@ class HOP2_ResearchAgent:
 # HOP-5: GENERATION AGENT (Refactored from GenerationOrchestrator)
 # ============================================================================
 
-class HOP5_GenerationAgent:
+class HOP5GenerationAgent(MCPHardenedMixin):
     """
-    v13.0: Generation Agent - N-candidate generation only
+    v13.1: Generation Agent - N-candidate generation only (MCP Hardened)
     
     BREAKING CHANGE from v12.0:
     - OLD: Generation + validation + retry logic all in one
@@ -348,8 +351,8 @@ class HOP5_GenerationAgent:
     def __init__(
         self,
         config: Dict[str, Any],
-        llm_client: GeminiLLMClient,
-        tool: CodeInterpreterTool
+        llm_client: Any = None,
+        tool: CodeInterpreterTool = None
     ):
         """
         Initialize with externalized config
@@ -359,6 +362,7 @@ class HOP5_GenerationAgent:
             llm_client: Gemini LLM client
             tool: Code interpreter for fast scoring
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["generation_agent"]
         self.llm_client = llm_client
         self.tool = tool
@@ -586,9 +590,9 @@ class HOP5_GenerationAgent:
 # HOP-6: VALIDATION AGENT (Refactored from ValidationAgent)
 # ============================================================================
 
-class HOP6_ValidationAgent:
+class HOP6ValidationAgent(MCPHardenedMixin):
     """
-    v13.0: Validation Agent - Rule-based validation from config
+    v13.1: Validation Agent - Rule-based validation from config (MCP Hardened)
     
     BREAKING CHANGE from v12.0:
     - OLD: Hardcoded validation rules in Python
@@ -604,7 +608,7 @@ class HOP6_ValidationAgent:
     def __init__(
         self,
         config: Dict[str, Any],
-        toolkit: ValidationToolkit
+        toolkit: ValidationToolkit = None
     ):
         """
         Initialize with externalized config
@@ -613,6 +617,7 @@ class HOP6_ValidationAgent:
             config: Loaded from config/agent_specs_LIC.json
             toolkit: Validation toolkit for deterministic checks
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["validation_agent"]
         self.toolkit = toolkit
         
@@ -823,9 +828,9 @@ class HOP6_ValidationAgent:
 # HOP-8: QA REPORT AGENT (New - Enhancement 6)
 # ============================================================================
 
-class HOP8_QAReportAgent:
+class HOP8QAReportAgent(MCPHardenedMixin):
     """
-    v13.0: QA Report Agent - Persistent markdown report generation
+    v13.1: QA Report Agent - Persistent markdown report generation (MCP Hardened)
     
     NEW in v13.0:
     - Reads ALL state files from workflow
@@ -845,6 +850,7 @@ class HOP8_QAReportAgent:
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["qa_report_agent"]
         self.sections = self.config["report_sections"]
         self.scoring_weights = self.config["scoring_weights"]
