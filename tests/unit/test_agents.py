@@ -58,6 +58,7 @@ async def test_historian_validates_changed_files(async_context: Any) -> Any:
 @pytest.mark.asyncio
 async def test_cartographer_handles_disabled_intelligence(async_context: Any) -> Any:
     """Cartographer should handle disabled intelligence gracefully."""
+from typing import Any
     agent: Any = TheCartographer(async_context)
     file_path: Any = 'apps_lic/auth/login.py'
     async_context.modified_files = {file_path}

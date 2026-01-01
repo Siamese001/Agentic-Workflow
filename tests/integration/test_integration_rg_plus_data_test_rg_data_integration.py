@@ -83,3 +83,4 @@ def test_aggregate_improvement_suggestions() -> Any:
     """
     Integration: Improvement suggestions are aggregated.
     """
+from typing import Any

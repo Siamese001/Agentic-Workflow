@@ -23,3 +23,4 @@ def test_batch_key_generation() -> Any:
     """
     Batch key generation has no pathological overhead.
     """
+from typing import Any

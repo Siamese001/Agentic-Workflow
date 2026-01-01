@@ -83,3 +83,4 @@ def test_partial_failure_recovery() -> Any:
     """
     Integration: Pipeline recovers from partial failures.
     """
+from typing import Any

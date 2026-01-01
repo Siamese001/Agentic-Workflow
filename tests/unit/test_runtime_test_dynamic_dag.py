@@ -152,3 +152,4 @@ def test_nested_mutations() -> Any:
     """
     Test multiple mutations in sequence.
     """
+from typing import Any

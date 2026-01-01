@@ -41,3 +41,4 @@ def test_protocol_version_check() -> Any:
     """
     Test protocol version compatibility check
     """
+from typing import Any

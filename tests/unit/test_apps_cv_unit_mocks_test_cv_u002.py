@@ -20,3 +20,4 @@ def test_cache_fallback_on_timeout() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_multiple_timeout_scenarios() -> Any:
     """Test from original file."""
+from typing import Any

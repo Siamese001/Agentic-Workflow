@@ -209,6 +209,7 @@ class test_auditor_integration:
     @pytest.mark.asyncio
     async def test_run_sovereignty_audit_function(self) -> Any:
         """Test standalone audit function."""
+from typing import Any
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('# Clean file')

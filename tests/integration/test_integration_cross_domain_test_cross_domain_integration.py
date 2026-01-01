@@ -53,3 +53,4 @@ def test_cross_domain_error_handling() -> Any:
     """
     Integration: Errors are handled across domains.
     """
+from typing import Any

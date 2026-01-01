@@ -157,6 +157,7 @@ def test_config_to_dict() -> Any:
 
 def test_execution_result_creation() -> Any:
     """Verify that ExecutionResult can be created and converted."""
+from typing import Any
     result: Any = ExecutionResult(success=True, output='Test output', final_state={'status': 'SUCCESS'}, iterations=1, errors=[], metadata={'task_id': 'test-001'})
     assert result.success is True
     assert result.output == 'Test output'

@@ -131,3 +131,4 @@ def test_structure_improvement_scenario() -> Any:
     """
     Test structure improvement with injection enhancement.
     """
+from typing import Any

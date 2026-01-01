@@ -210,6 +210,7 @@ class test_sovereignty_protection:
     @pytest.mark.asyncio
     async def test_mcp_tools_used(self) -> Any:
         """Test correct MCP tools are used."""
+from typing import Any
         client: Any = get_fetch_client()
 
 def run_tests() -> Any:

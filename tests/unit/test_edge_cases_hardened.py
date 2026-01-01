@@ -58,3 +58,4 @@ def test_circuit_breaker_metrics_collection() -> Any:
     """
     Test that circuit breaker properly collects and reports metrics.
     """
+from typing import Any

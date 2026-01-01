@@ -59,3 +59,4 @@ def test_fingerprint_isolation() -> Any:
     """
     Different fingerprints always produce different keys.
     """
+from typing import Any

@@ -169,6 +169,7 @@ class test_kg_healing_batch_processing:
 
     def test_batch_size_vs_daily_limit(self) -> Any:
         """Test batch size is smaller than daily limit."""
+from typing import Any
         assert config.KG_HEALING_BATCH_SIZE < config.KG_HEALING_MAX_DAILY
 
 def run_tests() -> Any:

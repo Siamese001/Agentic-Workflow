@@ -162,6 +162,7 @@ def check_environment() -> Any:
 
 def main() -> Any:
     """Run all smoke tests"""
+from typing import Any
     logger.info('=' * 50)
     logger.info('CORE MCP SMOKE TEST')
     logger.info('=' * 50)

@@ -104,6 +104,7 @@ def test_error_handling_on_pinecone_failure(tmp_path: Any) -> Any:
 
 def test_embedding_dimension_validation(agent: Any) -> Any:
     """Brief description of functionality and purpose."""
+from typing import Any
     agent_instance, _ = agent
     long_emb: Any = [0.1] * 2000
     repaired: Any = agent_instance._validate_and_repair_embedding(long_emb, 'test')

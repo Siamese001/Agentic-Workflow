@@ -83,3 +83,4 @@ def test_nested_json_sanitization() -> Any:
     """
     Test sanitization of deeply nested JSON structures.
     """
+from typing import Any

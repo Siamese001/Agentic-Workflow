@@ -115,3 +115,4 @@ def test_checkpoint_overhead() -> Any:
     """
     Test that checkpointing doesn't significantly impact performance.
     """
+from typing import Any

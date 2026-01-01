@@ -92,3 +92,4 @@ def test_critical_injections_are_required() -> Any:
     """
     Verify critical injections are marked as required.
     """
+from typing import Any

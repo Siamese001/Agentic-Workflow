@@ -97,3 +97,4 @@ def test_knowledge_search() -> Any:
     """
     Test knowledge search in vector store.
     """
+from typing import Any

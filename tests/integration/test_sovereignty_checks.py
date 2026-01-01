@@ -196,6 +196,7 @@ class test_mcp_client_features:
         """Test inference_embed method has correct signature."""
         client: Any = get_pinecone_mcp_client()
         import inspect
+from typing import Any
         assert inspect.iscoroutinefunction(client.inference_embed), 'inference_embed should be async'
 
 def run_tests() -> Any:

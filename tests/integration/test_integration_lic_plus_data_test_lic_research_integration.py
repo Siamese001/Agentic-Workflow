@@ -36,3 +36,4 @@ def test_campaign_metrics_aggregation() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_conversion_tracking() -> Any:
     """Test from original file."""
+from typing import Any

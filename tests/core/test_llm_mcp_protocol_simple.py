@@ -5,10 +5,11 @@ Tests the core tool interface without orchestrator complexity
 import json
 import logging
 import sys
+from typing import Any
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger: Any = logging.getLogger('LLM_MC_Protocol_Simple_Test')
 
-def test_tool_interface_compliance() -> Any:
+def test_tool_interface_compliance() -> None:
     """
     Validates that MCP tools return responses compatible with Gemini Flash API
     """

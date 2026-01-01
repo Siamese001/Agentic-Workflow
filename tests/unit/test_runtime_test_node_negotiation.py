@@ -131,3 +131,4 @@ def test_format_negotiation() -> Any:
     """
     Test negotiation over output format.
     """
+from typing import Any

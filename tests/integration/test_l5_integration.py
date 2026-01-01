@@ -143,3 +143,4 @@ def test_mzlo_hygiene_compliance() -> Any:
     """
     Test MZLO Hygiene Scan passes on all agents
     """
+from typing import Any

@@ -35,3 +35,4 @@ def test_returns_bool() -> Any:
     """
     Docstring.
     """
+from typing import Any

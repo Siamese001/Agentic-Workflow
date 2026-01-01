@@ -96,3 +96,4 @@ def test_thread_safety_under_load() -> Any:
     """
     Soak: Operations remain thread-safe under load.
     """
+from typing import Any

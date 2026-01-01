@@ -27,6 +27,7 @@ async def test_no_tool_calling() -> bool:
         bool: True if the test passes (no tool calls detected, text response received),
               False otherwise.
     """
+from typing import Any
     api_key: Any = os.getenv('GOOGLE_API_KEY')
     if not api_key:
         print('❌ FAILED: GOOGLE_API_KEY environment variable not set.')

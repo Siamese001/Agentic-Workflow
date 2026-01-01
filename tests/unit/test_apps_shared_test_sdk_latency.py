@@ -52,6 +52,7 @@ class test_vector_store_init_latency:
     @pytest.mark.skip(reason='Test not implemented')
     def test_vector_store_init_under_500ms(self) -> None:
         """Vector store initialization within 500ms."""
+from typing import Any
         reset_all_clients()
         time.perf_counter()
         get_vector_store('chromadb')

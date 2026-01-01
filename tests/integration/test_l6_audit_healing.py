@@ -198,6 +198,7 @@ class test_l6_audit_healing_daily_limit:
 
     def test_daily_limit_enforcement_logic(self) -> Any:
         """Test daily limit enforcement logic."""
+from typing import Any
         strategy: Any = L6AuditHealingStrategy()
         strategy.processed_today = config.L6_AUDIT_HEALING_MAX_DAILY
         assert strategy.processed_today >= config.L6_AUDIT_HEALING_MAX_DAILY

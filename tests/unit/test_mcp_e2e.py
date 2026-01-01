@@ -27,6 +27,7 @@ def test_terminal_mcp() -> Any:
 
 def test_sequential_thinking_mcp() -> Any:
     """Test sequential thinking MCP integration."""
+from typing import Any
     assert True
 
 def test_executive_orchestrator_integration() -> Any:

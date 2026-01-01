@@ -132,3 +132,4 @@ def test_hybrid_scorer_with_cache() -> Any:
     """
     Test using HybridScorer and EnhancedSemanticCache together.
     """
+from typing import Any

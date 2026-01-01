@@ -54,6 +54,7 @@ def test_safety_stats(gatekeeper: Any) -> Any:
 
 def main() -> Any:
     """Run all tests."""
+from typing import Any
     gatekeeper: Any = test_redis_connection()
     if not gatekeeper:
         sys.exit(1)

@@ -13,6 +13,7 @@ from canary_monitor import CanaryMonitor, run_canary_monitor
 @pytest.fixture(autouse=True)
 def setup_canary_env(tmp_path: Any) -> Any:
     """Brief description of functionality and purpose."""
+from typing import Any
     canary_path: Any = tmp_path / 'config' / 'secrets_canary.txt'
     pid_dir: Any = tmp_path / 'run'
     pid_path: Any = pid_dir / 'agent.pid'

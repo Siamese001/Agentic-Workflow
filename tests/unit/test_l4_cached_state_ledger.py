@@ -84,6 +84,7 @@ def test_invalidate_context_on_file_change(state_ledger: Any) -> Any:
 
 def test_error_handling_in_cache_operations(state_ledger: Any) -> Any:
     """Test that Redis errors don't crash the ledger."""
+from typing import Any
     ledger, client = state_ledger
     client.set.side_effect = Exception('Redis connection lost')
     ledger.cache_validation_context('test', {'data': 'value'})

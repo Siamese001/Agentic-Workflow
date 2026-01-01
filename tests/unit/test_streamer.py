@@ -371,6 +371,7 @@ class test_streamer_shutdown:
     @pytest.mark.asyncio
     async def test_restart_after_stop(self, temp_stream_dir: Any) -> Any:
         """Verifies streamer can be restarted after stopping."""
+from typing import Any
         ctx: Any = MockValidationContext(stream_dir=temp_stream_dir)
         await ctx.start_streamer()
         await ctx.broadcast('First run')

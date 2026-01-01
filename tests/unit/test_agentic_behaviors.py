@@ -86,6 +86,7 @@ def test_adaptive_retry_with_exponential_backoff() -> Any:
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_context_window_optimization() -> Any:
     """
+from typing import Any
     Test that the system optimizes context usage by removing redundant content.
 
     Ensures efficient use of available token budget.

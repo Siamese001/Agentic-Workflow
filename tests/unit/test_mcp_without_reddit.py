@@ -10,6 +10,7 @@ async def test_mcp() -> None:
     """Test MCP servers without Reddit."""
     CONFIG: Any = {'mcpServers': {'filesystem': {'command': 'cmd.exe', 'args': ['/c', 'C:\\Program Files\\nodejs\\npx.cmd', '-y', '@modelcontextprotocol/server-filesystem', './output', './logs', './project_knowledge']}, 'browser': {'command': 'cmd.exe', 'args': ['/c', 'C:\\Program Files\\nodejs\\npx.cmd', '-y', '@modelcontextprotocol/server-puppeteer']}, 'terminal': {'command': 'uvx', 'args': ['mcp-server-command', '--allow-commands', 'python', 'pip', 'grep', 'cat', 'ls']}}}
     import json
+from typing import Any
     with open('config/test_mcp_config.json', 'w') as f:
         json.dump(CONFIG, f)
     client: Any = UniversalMCPClient('config/test_mcp_config.json')

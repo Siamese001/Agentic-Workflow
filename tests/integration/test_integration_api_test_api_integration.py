@@ -107,3 +107,4 @@ def test_deprecated_version_warning() -> Any:
     """
     Integration: Deprecated version includes warning.
     """
+from typing import Any

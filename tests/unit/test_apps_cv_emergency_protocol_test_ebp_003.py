@@ -47,3 +47,4 @@ def test_complete_observability_sequence() -> Any:
     """
     Test complete EBP-3 observability sequence
     """
+from typing import Any

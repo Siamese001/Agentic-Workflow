@@ -4,3 +4,4 @@ import pytest
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_placeholder() -> Any:
     """Placeholder test."""
+from typing import Any

@@ -11,3 +11,4 @@ def test_whitelist_behavior() -> Any:
     """
     Test how whitelist behaves with different code patterns
     """
+from typing import Any

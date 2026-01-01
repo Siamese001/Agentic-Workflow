@@ -17,3 +17,4 @@ def test_multi_provider_fallback_pattern() -> Any:
     """
     Multiple providers can be configured for fallback.
     """
+from typing import Any

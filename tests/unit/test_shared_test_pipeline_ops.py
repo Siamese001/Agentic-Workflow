@@ -108,3 +108,4 @@ def test_error_context_preserved() -> Any:
     """
     Error context is preserved for debugging.
     """
+from typing import Any

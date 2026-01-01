@@ -168,6 +168,7 @@ class test_vector_healing_metadata:
 
 def run_tests() -> Any:
     """Run all vector healing tests."""
+from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()
