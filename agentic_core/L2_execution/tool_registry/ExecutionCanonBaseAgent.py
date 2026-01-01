@@ -321,5 +321,4 @@ class CanonBaseAgent(ABC):
             return (False, f"Banned imports: {', '.join(violations)}")
         return (True, 'Fix verified')
 
-# Set the alias after class definition
-CanonBaseAgent = canon_base_agent
+# Alias already defined - CanonBaseAgent is the class itself
