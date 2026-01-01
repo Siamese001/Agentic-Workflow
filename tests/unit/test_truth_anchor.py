@@ -4,6 +4,7 @@ import json
 'Brief description of functionality and purpose.'
 import pytest
 from fact_checker import FactChecker, HallucinationException
+from typing import Any
 
 @pytest.fixture
 def mock_golden_record(tmp_path: Any) -> Any:
@@ -23,7 +24,6 @@ def test_validates_known_skills(mock_golden_record: Any) -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_detects_hallucination(mock_golden_record: Any) -> Any:
     """Brief description of functionality and purpose."""
-from typing import Any
     checker: Any = FactChecker(mock_golden_record)
     draft: Any = '\n    Summary: Polyglot developer.\n    Skills: Python, Rust, Java\n    '
     with pytest.raises(HallucinationException) as exc:

@@ -185,7 +185,6 @@ class test_l4_time_utility_check(unittest.TestCase):
     @patch('agentic_core.engines.outreach_engine_zse.log_action')
     def test_l4_time_utility_check(self, mock_log: Any, mock_register: Any, mock_network: Any, mock_knowledge: Any, mock_send: Any) -> Any:
         """
-from typing import Any
         Given: Contact context specifies timezone 12 hours ahead.
         When: L4 time conversion is called.
         Then: OPTIMAL_SEND_TIME is correctly calculated.
@@ -204,5 +203,6 @@ from typing import Any
         self.assertTrue(any(('L4_TIME' in call for call in log_calls)))
 if __name__ == '__main__':
     import logging
+from typing import Any
     logging.basicConfig(level=logging.WARNING)
     unittest.main(verbosity=2)

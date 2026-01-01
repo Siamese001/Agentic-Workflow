@@ -5,6 +5,7 @@ Validates autonomous documentation drift correction with DeepWiki MCP integratio
 import asyncio
 import pytest
 from pathlib import Path
+from typing import Any
 from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy, create_deepwiki_healing_strategy
 from agentic_core.config.P1_core.sovereign_config import config
 
@@ -190,7 +191,6 @@ class test_deep_wiki_healing_repo_configuration:
 
     def test_default_repo_format(self) -> Any:
         """Test default repository has expected format."""
-from typing import Any
         assert '/' in config.DEEPWIKI_DEFAULT_REPO or '-' in config.DEEPWIKI_DEFAULT_REPO
 
 def run_tests() -> Any:

@@ -8,6 +8,7 @@ import pytest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -42,4 +43,3 @@ def test_transaction_isolation() -> Any:
     """
     Test that transactions are properly isolated
     """
-from typing import Any

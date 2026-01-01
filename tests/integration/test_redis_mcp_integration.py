@@ -120,13 +120,13 @@ class test_semantic_cache_migration:
     async def test_semantic_cache_uses_mcp(self) -> Any:
         """Verify semantic cache uses Redis MCP client."""
         from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SovereignSemanticCache
+from typing import Any
         cache: Any = SovereignSemanticCache(mission_id='test_mission')
         assert cache.redis is not None, 'Should have Redis MCP client'
         assert isinstance(cache.redis, SovereignRedisMCPClient), 'Should be MCP client instance'
 
 def run_tests() -> Any:
     """Run all Redis MCP integration tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

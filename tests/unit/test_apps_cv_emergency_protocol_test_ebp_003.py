@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_critical_log_emission() -> Any:
@@ -47,4 +48,3 @@ def test_complete_observability_sequence() -> Any:
     """
     Test complete EBP-3 observability sequence
     """
-from typing import Any

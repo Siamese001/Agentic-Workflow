@@ -190,12 +190,12 @@ class test_missing_class:
 
     def test_missing_repr(self) -> Any:
         """
-from typing import Any
         GIVEN: Missing instance
         WHEN: repr() called
         THEN: Returns descriptive string
         """
         from agentic_core.L0_maintenance.P1_core.core import Missing
+from typing import Any
         missing: Any = Missing()
         representation: Any = repr(missing)
         assert 'Missing' in representation or 'MISSING' in representation

@@ -1,14 +1,14 @@
+"""Brief description of functionality and purpose."""
 import logging
-'''Brief description of functionality and purpose.'''
-
-'Brief description of functionality and purpose.'
 import os
 import time
 import uuid
+from typing import Any
 import numpy as np
 from connection_manager import ConnectionFactory
 from dotenv import load_dotenv
 from schemas_connectivity import CanonEntry
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger: Any = logging.getLogger(__name__)
 
@@ -22,7 +22,6 @@ def print_success(message: Any) -> Any:
 
 def print_fail(message: Any) -> Any:
     """Brief description of functionality and purpose."""
-from typing import Any
     pass
 
 def run_integrity_test() -> Any:

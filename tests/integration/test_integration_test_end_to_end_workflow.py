@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import re
 import pytest
+from typing import Any
 
 class hardened_orchestrator:
     """Brief description of functionality and purpose."""
@@ -97,4 +98,3 @@ def test_knowledge_search() -> Any:
     """
     Test knowledge search in vector store.
     """
-from typing import Any

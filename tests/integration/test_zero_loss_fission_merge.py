@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 import ast
 import importlib.util
+from typing import Any
 
 @pytest.mark.integration
 @pytest.mark.slow
@@ -132,7 +133,6 @@ class test_fission_rollback:
 
     def test_fission_failure_restores_original(self, tmp_sovereign_workspace: Any, healing_transaction_mock: Any, file_hash_tracker: Any) -> Any:
         """
-from typing import Any
         GIVEN: Fission operation fails mid-split
         WHEN: Rollback is triggered
         THEN: Original monolith restored

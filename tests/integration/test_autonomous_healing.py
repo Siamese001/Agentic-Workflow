@@ -6,6 +6,7 @@ import asyncio
 import pytest
 import tempfile
 from pathlib import Path
+from typing import Any
 from agentic_core.L0_maintenance.P1_core.healing_engine import SovereignHealingEngine, run_autonomous_healing
 from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
 from agentic_core.config.P1_core.sovereign_config import config
@@ -243,13 +244,12 @@ class test_healing_mcp_integration:
     @pytest.mark.asyncio
     async def test_healing_uses_gitkraken_mcp(self) -> Any:
         """Test healing uses GitKraken MCP for version control."""
-from typing import Any
         engine: Any = SovereignHealingEngine()
         assert engine.git_client is not None
         assert hasattr(engine.git_client, 'add_and_commit')
         assert hasattr(engine.git_client, 'create_pull_request')
 
-def run_tests() -> Any:
+def run_tests() -> None:
     """Run all autonomous healing tests."""
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'scripts'))
 from canon_validator_agentic import Historian, TheCartographer, ValidationContext
+from typing import Any
 
 @pytest.fixture
 def async_context() -> Any:
@@ -58,7 +59,6 @@ async def test_historian_validates_changed_files(async_context: Any) -> Any:
 @pytest.mark.asyncio
 async def test_cartographer_handles_disabled_intelligence(async_context: Any) -> Any:
     """Cartographer should handle disabled intelligence gracefully."""
-from typing import Any
     agent: Any = TheCartographer(async_context)
     file_path: Any = 'apps_lic/auth/login.py'
     async_context.modified_files = {file_path}

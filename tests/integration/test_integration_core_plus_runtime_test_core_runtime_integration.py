@@ -7,6 +7,7 @@ All tests are skipped until the original implementation is fixed.
 import re
 import time
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_runtime_context_flows_through_layers() -> Any:
@@ -91,4 +92,3 @@ def test_rate_limiting_integration() -> Any:
     """
     Integration: Rate limiting integrates with runtime.
     """
-from typing import Any

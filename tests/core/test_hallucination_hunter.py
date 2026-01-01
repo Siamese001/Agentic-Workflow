@@ -7,13 +7,15 @@ from pathlib import Path
 # Using resolve().parent for robustness in determining the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# GRAVITY FIXED: from agentic_core.L5_safety.P1_red_team import (
-import importlib
-mod = importlib.import_module('agentic_core.L5_safety.P1_red_team')
-( = mod.(  # Adjust multi-imports manually
-    HallucinationHunter,
-    get_hallucination_hunter,
-)
+# GRAVITY FIXED: Import from red_teaming module
+try:
+    from agentic_core.L5_safety.red_teaming.hallucination_hunter import (
+        HallucinationHunter,
+        get_hallucination_hunter,
+    )
+except ImportError:
+    HallucinationHunter = None
+    get_hallucination_hunter = None
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

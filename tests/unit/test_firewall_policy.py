@@ -75,12 +75,12 @@ class test_firewall_logging:
 
     def test_firewall_logs_allowed_requests(self) -> Any:
         """
-from typing import Any
         GIVEN: Firewall allowing requests
         WHEN: Request allowed
         THEN: Allow logged to audit trail
         """
         from firewall import Firewall
+from typing import Any
         firewall: Any = Firewall()
         firewall.audit_log = []
         firewall.allow('trusted_source')

@@ -9,6 +9,7 @@ from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyS
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -84,7 +85,6 @@ def test_guardrail_caching(safety_shield: Any) -> Any:
 
 def test_invalidate_on_policy_breach(safety_shield: Any) -> Any:
     """Brief description of functionality and purpose."""
-from typing import Any
     shield, client = safety_shield
     test_prompt: Any = 'breached_prompt'
     client.scan_iter.return_value = ['l5_policy:test_session:abc123', 'l5_policy:test_session:def456']

@@ -125,6 +125,7 @@ def test_time_mcp_connectivity() -> Any:
     logger.info('\n=== Time MCP Smoke Test ===')
     try:
         from action_registry import ActionRegistry
+from typing import Any
         registry: Any = ActionRegistry()
         tools: Any = registry.get_tool_map()
         get_current_time: Any = tools.get('get_current_time')
@@ -162,7 +163,6 @@ def check_environment() -> Any:
 
 def main() -> Any:
     """Run all smoke tests"""
-from typing import Any
     logger.info('=' * 50)
     logger.info('CORE MCP SMOKE TEST')
     logger.info('=' * 50)

@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_missing_src_directory_pre_flight_failure() -> Any:
@@ -41,4 +42,3 @@ def test_container_mount_failure_simulation() -> Any:
     """
     Test simulation of container mount failure
     """
-from typing import Any

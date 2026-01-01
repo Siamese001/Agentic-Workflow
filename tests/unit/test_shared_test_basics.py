@@ -1,10 +1,10 @@
 """Basic tests for apps_shared utilities."""
 from apps_shared.domain.constants import EXCLUDED_DIRS
 from apps_shared.utils.text_processing import clean_llm_code
+from typing import Any
 
 def test_clean_llm_code_strips_markdown() -> Any:
     """Test that clean_llm_code correctly strips markdown code blocks."""
-from typing import Any
     input_text: Any = "```python\nprint('hello world')\n```"
     expected: Any = "print('hello world')"
     assert clean_llm_code(input_text) == expected

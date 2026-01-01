@@ -23,6 +23,7 @@ from agentic_core.L5_safety.P4_security.security_utilities import SecurityResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -210,7 +211,6 @@ class test_shadow_mode_engine(unittest.TestCase):
 
     def test_shadow_mode_fix_skill_claims(self) -> Any:
         """Test fixing exaggerated skill claims."""
-from typing import Any
         engine: Any = ShadowModeEngine()
         draft: Any = 'I am a world-class expert in Python.'
         improved: Any = engine._fix_skill_claims(draft)

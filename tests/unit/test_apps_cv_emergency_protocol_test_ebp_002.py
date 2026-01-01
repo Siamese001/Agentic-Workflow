@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_codebase_reversion() -> Any:
@@ -41,4 +42,3 @@ def test_rollback_completion_logging() -> Any:
     """
     Test that rollback completion is properly logged
     """
-from typing import Any

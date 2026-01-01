@@ -19,6 +19,7 @@ from agentic_core.L3_orchestration.S3_vitality.mcp_router import get_mcp_router
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -257,7 +258,6 @@ class mcp_integration_tests:
 
 async def main() -> Any:
     """Main test runner."""
-from typing import Any
     tests: Any = MCPIntegrationTests()
     success: Any = await tests.run_all_tests()
     sys.exit(0 if success else 1)

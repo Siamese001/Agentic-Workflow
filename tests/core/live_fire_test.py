@@ -18,6 +18,8 @@ logger: Any = logging.getLogger('Orchestrator')
 WATCHDOG_PID: Optional[int] = None
 CANARY_MONITOR_PID: Optional[int] = None
 
+# Global declarations handled by type hints above
+
 def start_canary_trap() -> Any:
     """Starts the P7 Canary Trap monitor in a background process."""
     global CANARY_MONITOR_PID

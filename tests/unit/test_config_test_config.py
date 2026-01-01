@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_max_retries_positive() -> Any:
@@ -101,4 +102,3 @@ def test_creation() -> Any:
     """
     Docstring.
     """
-from typing import Any

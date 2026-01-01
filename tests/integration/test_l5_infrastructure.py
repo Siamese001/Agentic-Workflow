@@ -215,6 +215,7 @@ async def test_nervous_system_integration() -> Any:
     nervous_system._modified_files = {f'file_{i}.py' for i in range(10)}
     nervous_system._signals = {'HIGH_RISK', 'MODIFIED_FILES'}
     from L5_safety.intervention_server import check_intervention_required
+from typing import Any
     required, risk_factors = check_intervention_required(cycle=nervous_system._iteration, modified_count=len(nervous_system._modified_files), signals=list(nervous_system._signals), high_risk_threshold=8, signal_threshold=5)
     if required:
         print('✅ High-risk state detected correctly')
@@ -242,7 +243,6 @@ async def test_nervous_system_integration() -> Any:
 
 async def run_l5_validation() -> Any:
     """Run all L5 validation tests."""
-from typing import Any
     print('\n' + '=' * 80)
     print('L5 INFRASTRUCTURE VALIDATION SUITE')
     print('=' * 80)

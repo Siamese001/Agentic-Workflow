@@ -5,6 +5,7 @@ Unit test for isolated L1 component verification
 from unittest.mock import Mock
 import pytest
 from canon_validator import CanonValidator
+from typing import Any
 
 class test_cvu001:
     """Test GitKraken input sanitization at L1 layer"""
@@ -74,7 +75,6 @@ class test_cvu001:
 
         def mock_commit_mock_change(**kwargs) -> Any:
             """Simulate commit function with empty message handling"""
-from typing import Any
             if 'message' in kwargs:
                 message: Any = kwargs['message']
                 if not message or message.strip() == '':

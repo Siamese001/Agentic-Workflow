@@ -102,7 +102,6 @@ class test_vector_drift_detection:
     @patch('agentic_core.L4_state.vector_store.PineconeSovereignAgent')
     def test_detect_semantic_drift_from_source(self, mock_pinecone: Any, mock_pinecone_index: Any, audit_log_tracker: Any) -> Any:
         """
-from typing import Any
         GIVEN: Source document updated
         WHEN: Vector compared to current source
         THEN: Drift detected if mismatch

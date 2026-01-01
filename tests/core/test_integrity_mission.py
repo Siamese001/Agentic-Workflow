@@ -7,6 +7,7 @@ from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -25,7 +26,6 @@ def test_integrity_mission_placeholder() -> Any:
 
 async def run_integrity_mission() -> None:
     """
-from typing import Any
     Executes an integrity mission using the Agentic Core Nervous System.
 
     This mission performs a Phase 1 integrity check, configures the orchestrator,

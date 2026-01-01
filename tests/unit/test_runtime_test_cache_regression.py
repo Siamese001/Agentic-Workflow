@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_no_collision_different_models() -> Any:
@@ -59,4 +60,3 @@ def test_fingerprint_isolation() -> Any:
     """
     Different fingerprints always produce different keys.
     """
-from typing import Any

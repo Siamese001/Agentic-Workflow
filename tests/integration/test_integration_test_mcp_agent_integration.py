@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_register_agent_via_mcp() -> Any:
@@ -101,4 +102,3 @@ def test_agent_isolation() -> Any:
     """
     Test that agents are properly isolated.
     """
-from typing import Any
