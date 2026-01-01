@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 # Import consensus engine for P6
-from consensus_engine import jury
+from ConsensusEngine import jury
 
 # Import core utilities for P5 compliance
 from core_utils import add_observations, convert_time, log_action, register_process
@@ -18,7 +18,7 @@ from mcp_hardening import ensure_brand_compliance, get_brand_style_guide
 from network_utils import NetworkViolationError, strict_egress_filter
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -108,7 +108,7 @@ def execute_outreach_zse(
     company_url: str,
     contact_info: Dict[str, Any],
     tools: Dict[str, Any],
-    logger: Optional[Any] = None
+    Logger: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Execute Zero-Side Effect (ZSE) Outreach with P6 Vetting and P10 Shadow Mode.
@@ -117,7 +117,7 @@ def execute_outreach_zse(
         company_url: Target company URL
         contact_info: Contact information including email, name, timezone
         tools: Dictionary of MCP tools
-        logger: Optional logger instance
+        Logger: Optional Logger instance
 
     Returns:
         Dict with execution status and details
@@ -126,8 +126,8 @@ def execute_outreach_zse(
     register_process()
     log_action("PROCESS_REGISTRATION_COMPLETE", "OutreachEngineZSE ZSE process started")
 
-    if logger:
-        logger.info(f"🚀 Starting ZSE Outreach for {company_url}")
+    if Logger:
+        Logger.info(f"🚀 Starting ZSE Outreach for {company_url}")
 
     # Extract tools
     fetch_tool = tools.get('fetch')
@@ -145,8 +145,8 @@ def execute_outreach_zse(
     try:
         log_action("L1_FETCH_START", f"Retrieving company context from {company_url}")
         company_context = _fetch_company_content(company_url, fetch_tool, max_length=1000)
-        if logger:
-            logger.info(f"✅ Fetched company context from {company_url}")
+        if Logger:
+            Logger.info(f"✅ Fetched company context from {company_url}")
     except NetworkViolationError as e:
         log_action("P8_VIOLATION", f"Egress filter blocked: {str(e)}")
         return {
@@ -176,8 +176,8 @@ def execute_outreach_zse(
             "timezone": "America/New_York"
         }
 
-        if logger:
-            logger.info(f"✅ Retrieved contact context for {primary_contact['name']}")
+        if Logger:
+            Logger.info(f"✅ Retrieved contact context for {primary_contact['name']}")
     except Exception as e:
         log_action("L5_SEARCH_ERROR", str(e))
         return {
@@ -195,8 +195,8 @@ def execute_outreach_zse(
             time="09:00",  # 9 AM local time
             target_timezone=primary_contact.get("timezone", "America/New_York")
         )
-        if logger:
-            logger.info(f"✅ Optimal send time calculated: {optimal_send_time}")
+        if Logger:
+            Logger.info(f"✅ Optimal send time calculated: {optimal_send_time}")
     except Exception as e:
         log_action("L4_TIME_ERROR", str(e))
         optimal_send_time = "09:00"  # Default fallback
@@ -204,18 +204,18 @@ def execute_outreach_zse(
     # --- Step 4: Initial Pitch Generation ---
     try:
         log_action("PITCH_GENERATE_START", "Generating initial personalized pitch")
-        pitch_result = PitchGenerator.generate_pitch(
+        PitchResult = PitchGenerator.generate_pitch(
             context=company_context,
             relationships=contacts_str or "No prior relationship"
         )
 
         pitch_draft = {
-            "subject": pitch_result["subject"],
-            "content": pitch_result["content"]
+            "subject": PitchResult["subject"],
+            "content": PitchResult["content"]
         }
 
-        if logger:
-            logger.info("✅ Initial pitch generated")
+        if Logger:
+            Logger.info("✅ Initial pitch generated")
     except Exception as e:
         log_action("PITCH_GENERATE_ERROR", str(e))
         return {
@@ -250,12 +250,12 @@ def execute_outreach_zse(
 
             # Use consensus engine to vet the pitch
             p6_result = jury.judge_artifact(
-                artifact=pitch_draft["content"],
+                Artifact=pitch_draft["content"],
                 criteria=brand_guide.get("rules", ["professional", "no_spam", "brand_compliant"])
             )
 
             # Convert consensus result to simple pass/fail
-            if p6_result.get("verdict") == "APPROVED":
+            if p6_result.get("Verdict") == "APPROVED":
                 p6_vet_result = {"status": "SUCCESS"}
             else:
                 p6_vet_result = {
@@ -263,8 +263,8 @@ def execute_outreach_zse(
                     "reason": p6_result.get("reason", "Brand compliance failure")
                 }
 
-            if logger:
-                logger.info(f"✅ P6 vetting complete: {p6_vet_result['status']}")
+            if Logger:
+                Logger.info(f"✅ P6 vetting complete: {p6_vet_result['status']}")
 
         except Exception as e:
             log_action("P6_VET_ERROR", str(e))
@@ -314,8 +314,8 @@ def execute_outreach_zse(
                     ]
                 }])
 
-                if logger:
-                    logger.info(f"✅ P10 shadow refinement applied (attempt {refinement_count})")
+                if Logger:
+                    Logger.info(f"✅ P10 shadow refinement applied (attempt {refinement_count})")
 
             except Exception as e:
                 log_action("P10_SHADOW_ERROR", str(e))
@@ -340,8 +340,8 @@ def execute_outreach_zse(
             log_action("SEND_EMAIL_SHADOW", f"Shadow mode: Email to {primary_contact['email']} blocked")
             send_result = {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
 
-            if logger:
-                logger.warning(f"👻 SHADOW MODE: Email to {primary_contact['email']} blocked")
+            if Logger:
+                Logger.warning(f"👻 SHADOW MODE: Email to {primary_contact['email']} blocked")
         else:
             # Production mode - send the email
             send_result = send_email(
@@ -352,8 +352,8 @@ def execute_outreach_zse(
 
             log_action("SEND_EMAIL_SUCCESS", f"Email sent to {primary_contact['email']}")
 
-            if logger:
-                logger.info(f"✅ Email sent to {primary_contact['email']}")
+            if Logger:
+                Logger.info(f"✅ Email sent to {primary_contact['email']}")
 
     except Exception as e:
         log_action("SEND_EMAIL_ERROR", str(e))

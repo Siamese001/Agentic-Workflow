@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 # from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field  # TODO: Replace with sovereign equivalent
 
-# Stub classes for missing dependencies (TODO: Replace with sovereign equivalents)
+# Stub classes for Missing dependencies (TODO: Replace with sovereign equivalents)
 class BaseAgent:
     """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
     def __init__(self, context, debug_mode=False):
@@ -93,8 +93,8 @@ class PIISanitizerAgent(BaseAgent):
         return sanitized
 
     def _sanitize_text(self, text: str) -> str:
-        for pii_type, pattern in self.PII_PATTERNS.items():
-            text = pattern.sub(f"[{pii_type}_REDACTED]", text)
+        for PiiType, pattern in self.PII_PATTERNS.items():
+            text = pattern.sub(f"[{PiiType}_REDACTED]", text)
         return text
 
 class BiasDetectorAgent(BaseAgent):
@@ -143,14 +143,14 @@ class PromptInjectionDetectorAgent(BaseAgent):
         prompt = await _format_prompt_with_defaults(
             prompt_template,
             {"user_input": user_input},
-            self.budget_manager,
+            self.BudgetManager,
             client.goal_state,
             client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.prompt_injection_model.temperature,
+            temperature=self.config.ModelConfig.prompt_injection_model.temperature,
             response_format="json_object",
         )
 
@@ -202,14 +202,14 @@ class ConstitutionalReviewerAgent(BaseAgent):
         prompt = await _format_prompt_with_defaults(
             prompt_template,
             {"final_draft": final_draft, "constitution": constitution_text},
-            self.budget_manager,
+            self.BudgetManager,
             client.goal_state,
             client.top_failures,
         )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.constitutional_review_model.temperature,
+            temperature=self.config.ModelConfig.constitutional_review_model.temperature,
             response_format="json_object",
         )
 

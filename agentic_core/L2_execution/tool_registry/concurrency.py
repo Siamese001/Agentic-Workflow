@@ -9,9 +9,9 @@ import time
 from collections import defaultdict
 
 
-# NAMING FIXED: MemoryLeakDetector → memory_leak_detector
+# NAMING FIXED: MemoryLeakDetector → MemoryLeakDetector
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class memory_leak_detector:
+class MemoryLeakDetector:
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
 
     def __init__(self, ctx):
@@ -244,7 +244,7 @@ class memory_leak_detector:
         return False
 
     def _prioritize_leaks(self, context):
-        """Prioritize leaks by severity."""
+        """Prioritize leaks by Severity."""
         prioritized = {
             'critical': [],
             'high': [],
@@ -257,7 +257,7 @@ class memory_leak_detector:
                 'type': 'naked_resource',
                 'function': naked['function'],
                 'line': naked['line'],
-                'severity': 'critical'
+                'Severity': 'critical'
             })
 
         # High: Global growing containers
@@ -266,16 +266,16 @@ class memory_leak_detector:
                 'type': 'global_container',
                 'variable': container['variable'],
                 'line': container['line'],
-                'severity': 'high'
+                'Severity': 'high'
             })
 
         # Medium: Missing context managers
-        for missing in context.get('missing_context_managers', []):
+        for Missing in context.get('missing_context_managers', []):
             prioritized['medium'].append({
                 'type': 'missing_context_manager',
-                'function': missing['function'],
-                'line': missing['line'],
-                'severity': 'medium'
+                'function': Missing['function'],
+                'line': Missing['line'],
+                'Severity': 'medium'
             })
 
         # Return only critical and high priority leaks for auto-fix
@@ -288,9 +288,9 @@ class memory_leak_detector:
         """Generate leak-free code using Gemini."""
         # Build leak summary
         leak_summary = []
-        for severity, leak_list in leaks.items():
+        for Severity, leak_list in leaks.items():
             for leak in leak_list:
-                leak_summary.append(f"- {leak['type']} ({severity}): line {leak['line']}")
+                leak_summary.append(f"- {leak['type']} ({Severity}): line {leak['line']}")
 
         prompt = (
             f"RESOURCE SAFETY TASK: Fix memory and resource leaks in Python code.\n\n"
@@ -339,9 +339,9 @@ class memory_leak_detector:
 
                     leaks = entry['leaks']
                     report_content += f"**Leaks Fixed:**\n"
-                    for severity, leak_list in leaks.items():
+                    for Severity, leak_list in leaks.items():
                         for leak in leak_list:
-                            report_content += f"- {leak['type']} ({severity}): line {leak['line']}\n"
+                            report_content += f"- {leak['type']} ({Severity}): line {leak['line']}\n"
 
                     context = entry['context']
                     if context.get('global_containers'):
@@ -359,8 +359,8 @@ class memory_leak_detector:
         self.ctx.write_compliant_file(report_path, report_content)
 
 
-# NAMING FIXED: DeadlockAnalyzer → deadlock_analyzer
-class deadlock_analyzer(ast.NodeVisitor):
+# NAMING FIXED: DeadlockAnalyzer → DeadlockAnalyzer
+class DeadlockAnalyzer(ast.NodeVisitor):
     """AST visitor to build lock acquisition graph and detect potential deadlocks."""
 
     def __init__(self):
@@ -496,7 +496,7 @@ class deadlock_analyzer(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class deadlock_detector:
+class DeadlockDetector:
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 
     def __init__(self, ctx):
@@ -714,8 +714,8 @@ class deadlock_detector:
         self.ctx.write_compliant_file(report_path, report_content)
 
 
-# NAMING FIXED: RaceAnalyzer → race_analyzer
-class race_analyzer(ast.NodeVisitor):
+# NAMING FIXED: RaceAnalyzer → RaceAnalyzer
+class RaceAnalyzer(ast.NodeVisitor):
     """AST visitor to analyze potential race conditions."""
 
     def __init__(self):

@@ -13,16 +13,16 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class cost_alert_level(Enum):
+class CostAlertLevel(Enum):
     """Cost alert levels."""
     INFO: Any = 'info'
     WARNING: Any = 'warning'
     CRITICAL: Any = 'critical'
 
 @dataclass
-class cost_metrics:
+class CostMetrics:
     """Cost metrics for an agent."""
     agent_id: str
     spiffe_id: str
@@ -39,7 +39,7 @@ class cost_metrics:
         return {'agent_id': self.agent_id, 'spiffe_id': self.spiffe_id, 'total_cost': self.total_cost, 'token_count': self.token_count, 'request_count': self.request_count, 'avg_cost_per_request': self.avg_cost_per_request, 'period_start': self.period_start, 'period_end': self.period_end, 'model_breakdown': self.model_breakdown}
 
 @dataclass
-class cost_alert:
+class CostAlert:
     """Cost alert for budget violations."""
     alert_id: str
     agent_id: str
@@ -54,7 +54,7 @@ class cost_alert:
         """Convert to dictionary."""
         return {'alert_id': self.alert_id, 'agent_id': self.agent_id, 'spiffe_id': self.spiffe_id, 'level': self.level.value, 'message': self.message, 'current_cost': self.current_cost, 'budget_limit': self.budget_limit, 'timestamp': self.timestamp}
 
-class cost_tracker:
+class CostTracker:
     """Tracks costs per agent with SPIFFE identity integration.
 
     Features:

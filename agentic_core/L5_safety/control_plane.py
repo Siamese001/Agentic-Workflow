@@ -9,11 +9,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Callable
 
-from .pii_scrubber import PIIScrubber, PIIResult
-from .bias_auditor import BiasAuditor, BiasResult
+from .PiiScrubber import PIIScrubber, PIIResult
+from .BiasAuditor import BiasAuditor, BiasResult
 from .constitutional_ai import ConstitutionalAISystem, ConstitutionalReviewResult
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class PolicyAction(Enum):
@@ -42,8 +42,8 @@ class PolicyDecision:
     """Decision from control plane evaluation."""
     action: PolicyAction
     is_safe: bool
-    pii_result: Optional[PIIResult] = None
-    bias_result: Optional[BiasResult] = None
+    PiiResult: Optional[PIIResult] = None
+    BiasResult: Optional[BiasResult] = None
     constitutional_result: Optional[ConstitutionalReviewResult] = None
     sanitized_content: Optional[str] = None
     warnings: List[str] = None
@@ -84,8 +84,8 @@ class ControlPlane:
         self.policy = policy or SafetyPolicy()
         self.enable_logging = enable_logging
         
-        self.pii_scrubber = PIIScrubber(enable_logging=enable_logging)
-        self.bias_auditor = BiasAuditor(enable_logging=enable_logging)
+        self.PiiScrubber = PIIScrubber(enable_logging=enable_logging)
+        self.BiasAuditor = BiasAuditor(enable_logging=enable_logging)
         self.constitutional_ai = ConstitutionalAISystem(enable_logging=enable_logging)
         
         self._decision_count = 0
@@ -143,47 +143,47 @@ class ControlPlane:
         warnings, errors = [], []
         sanitized_content = content
         
-        pii_result, sanitized_content, pii_blocked = self._check_pii(content, warnings, errors)
+        PiiResult, sanitized_content, pii_blocked = self._check_pii(content, warnings, errors)
         if pii_blocked:
-            return self._create_block_decision(pii_result=pii_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(PiiResult=PiiResult, warnings=warnings, errors=errors)
         
-        bias_result, bias_blocked = self._check_bias(sanitized_content, warnings, errors)
+        BiasResult, bias_blocked = self._check_bias(sanitized_content, warnings, errors)
         if bias_blocked:
-            return self._create_block_decision(pii_result=pii_result, bias_result=bias_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(PiiResult=PiiResult, BiasResult=BiasResult, warnings=warnings, errors=errors)
         
         constitutional_result, const_blocked = self._check_constitutional(sanitized_content, context, warnings, errors)
         if const_blocked:
-            return self._create_block_decision(pii_result=pii_result, bias_result=bias_result, constitutional_result=constitutional_result, warnings=warnings, errors=errors)
+            return self._create_block_decision(PiiResult=PiiResult, BiasResult=BiasResult, constitutional_result=constitutional_result, warnings=warnings, errors=errors)
         
-        return self._create_final_decision(content, sanitized_content, pii_result, bias_result, constitutional_result, warnings, errors, is_input)
+        return self._create_final_decision(content, sanitized_content, PiiResult, BiasResult, constitutional_result, warnings, errors, is_input)
     
     def _check_pii(self, content: str, warnings: List[str], errors: List[str]) -> tuple:
         """Check for PII."""
         if not self.policy.enable_pii_scrubbing:
             return None, content, False
         
-        pii_result = self.pii_scrubber.scrub_text(content)
-        if pii_result.has_pii():
-            warnings.append(f"Detected {len(pii_result.detected_pii)} PII items")
-            sanitized = pii_result.scrubbed_text if self.policy.auto_sanitize else content
+        PiiResult = self.PiiScrubber.scrub_text(content)
+        if PiiResult.has_pii():
+            warnings.append(f"Detected {len(PiiResult.detected_pii)} PII items")
+            sanitized = PiiResult.scrubbed_text if self.policy.auto_sanitize else content
             if self.policy.block_on_pii:
                 errors.append("Content blocked due to PII detection")
-                return pii_result, sanitized, True
-            return pii_result, sanitized, False
-        return pii_result, content, False
+                return PiiResult, sanitized, True
+            return PiiResult, sanitized, False
+        return PiiResult, content, False
     
     def _check_bias(self, content: str, warnings: List[str], errors: List[str]) -> tuple:
         """Check for bias."""
         if not self.policy.enable_bias_detection:
             return None, False
         
-        bias_result = self.bias_auditor.audit_content(content)
-        if bias_result.has_bias:
-            warnings.append(f"Detected {len(bias_result.bias_types)} bias types: {[bt.value for bt in bias_result.bias_types]}")
+        BiasResult = self.BiasAuditor.audit_content(content)
+        if BiasResult.has_bias:
+            warnings.append(f"Detected {len(BiasResult.bias_types)} bias types: {[bt.value for bt in BiasResult.bias_types]}")
             if self.policy.block_on_bias:
                 errors.append("Content blocked due to bias detection")
-                return bias_result, True
-        return bias_result, False
+                return BiasResult, True
+        return BiasResult, False
     
     def _check_constitutional(self, content: str, context: Optional[Dict], warnings: List[str], errors: List[str]) -> tuple:
         """Check constitutional compliance."""
@@ -198,13 +198,13 @@ class ControlPlane:
                 return constitutional_result, True
         return constitutional_result, False
     
-    def _create_final_decision(self, content: str, sanitized_content: str, pii_result: Optional[object], bias_result: Optional[object], constitutional_result: Optional[object], warnings: List[str], errors: List[str], is_input: bool) -> PolicyDecision:
+    def _create_final_decision(self, content: str, sanitized_content: str, PiiResult: Optional[object], BiasResult: Optional[object], constitutional_result: Optional[object], warnings: List[str], errors: List[str], is_input: bool) -> PolicyDecision:
         """Create final policy decision."""
         action = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != content else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
         is_safe = not errors
         
         decision = PolicyDecision(
-            action=action, is_safe=is_safe, pii_result=pii_result, bias_result=bias_result,
+            action=action, is_safe=is_safe, PiiResult=PiiResult, BiasResult=BiasResult,
             constitutional_result=constitutional_result,
             sanitized_content=sanitized_content if action == PolicyAction.SANITIZE else None,
             warnings=warnings, errors=errors,
@@ -212,14 +212,14 @@ class ControlPlane:
         )
         
         if self.enable_logging:
-            logger.info("control_plane_decision", extra={"action": action.value, "is_safe": is_safe, "is_input": is_input, "has_pii": pii_result.has_pii() if pii_result else False, "has_bias": bias_result.has_bias if bias_result else False, "is_compliant": constitutional_result.is_compliant if constitutional_result else True, "warning_count": len(warnings), "error_count": len(errors)})
+            Logger.info("control_plane_decision", extra={"action": action.value, "is_safe": is_safe, "is_input": is_input, "has_pii": PiiResult.has_pii() if PiiResult else False, "has_bias": BiasResult.has_bias if BiasResult else False, "is_compliant": constitutional_result.is_compliant if constitutional_result else True, "warning_count": len(warnings), "error_count": len(errors)})
         
         return decision
     
     def _create_block_decision(
         self,
-        pii_result: Optional[PIIResult] = None,
-        bias_result: Optional[BiasResult] = None,
+        PiiResult: Optional[PIIResult] = None,
+        BiasResult: Optional[BiasResult] = None,
         constitutional_result: Optional[ConstitutionalReviewResult] = None,
         warnings: Optional[List[str]] = None,
         errors: Optional[List[str]] = None,
@@ -227,8 +227,8 @@ class ControlPlane:
         """Create a BLOCK decision.
         
         Args:
-            pii_result: PII detection result
-            bias_result: Bias detection result
+            PiiResult: PII detection result
+            BiasResult: Bias detection result
             constitutional_result: Constitutional review result
             warnings: Warning messages
             errors: Error messages
@@ -241,8 +241,8 @@ class ControlPlane:
         return PolicyDecision(
             action=PolicyAction.BLOCK,
             is_safe=False,
-            pii_result=pii_result,
-            bias_result=bias_result,
+            PiiResult=PiiResult,
+            BiasResult=BiasResult,
             constitutional_result=constitutional_result,
             sanitized_content=None,
             warnings=warnings or [],

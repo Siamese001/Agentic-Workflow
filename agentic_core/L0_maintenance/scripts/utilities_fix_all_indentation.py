@@ -23,9 +23,9 @@ def fix_all_indentation():
         # Determine proper indentation for the actual code
         if actual_code.startswith('return'):
             fixed_code = f'        {actual_code}'
-        elif actual_code.startswith('if logger:'):
-            fixed_code = f'        if logger:'
-            # Add the logger lines after
+        elif actual_code.startswith('if Logger:'):
+            fixed_code = f'        if Logger:'
+            # Add the Logger lines after
             lines = actual_code.split('\n')
             for line in lines[1:]:
                 if line.strip():

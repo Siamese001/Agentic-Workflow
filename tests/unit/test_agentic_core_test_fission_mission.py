@@ -19,7 +19,7 @@ sys.path.insert(0, str(project_root))
 from canon_validator_agentic_v2 import run_mission
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -32,7 +32,7 @@ async def test_key_42_fission_execution():
     """
     # 1. SETUP: Create a temporary 1200-line file
     project_root = Path(__file__).resolve().parent.parent.parent.parent
-    target_dir = project_root / "agentic_core" / "L1_cognition" / "thought_engine" / "extraction"
+    target_dir = project_root / "AgenticCore" / "L1_cognition" / "thought_engine" / "extraction"
     target_dir.mkdir(parents=True, exist_ok=True)
     
     test_file = target_dir / "test_fission_subject.py"
@@ -44,14 +44,14 @@ async def test_key_42_fission_execution():
     try:
         # 2. EXECUTION: Run the mission on the specific folder
         # We target the specific directory containing the oversized file
-        await run_mission(target_scope="agentic_core/L1_cognition/thought_engine")
+        await run_mission(target_scope="AgenticCore/L1_cognition/thought_engine")
 
         # 3. VERIFICATION: Check physical changes
         # The original file should be gone (or transformed into a shim)
         assert not test_file.exists() or len(test_file.read_text().splitlines()) < 1000, \
             "Original file should be removed or reduced after fission"
 
-        # Check for new sub-modules (fission_manager creates these)
+        # Check for new sub-modules (FissionManager creates these)
         new_modules = list(target_dir.glob("test_fission_subject_*.py"))
         assert len(new_modules) >= 2, "Fission should have created at least 2 sub-modules"
 

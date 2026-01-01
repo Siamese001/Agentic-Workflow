@@ -1,6 +1,6 @@
 """RG Planner - Resume Generation L1 Planning Layer.
 
-Incorporated from historical agentic_workflow/l1/rg_planner.py to provide
+Incorporated from historical agentic_workflow/l1/RgPlanner.py to provide
 resume-specific planning capabilities for the 8-node sequential pipeline.
 
 This is the L1 planning layer that coordinates:
@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
-class resultumeanalysisplan:
+class Resultumeanalysisplan:
     """Resume analysis planning configuration."""
     target_role: str
     target_company: str
@@ -38,7 +38,7 @@ class resultumeanalysisplan:
 
 
 @dataclass
-class resultumesectionconfig:
+class Resultumesectionconfig:
     """Configuration for individual resume sections."""
     section_name: str
     required: bool
@@ -52,10 +52,10 @@ class resultumesectionconfig:
 
 
 @dataclass
-class resumeprocessessingplan:
+class Resumeprocessessingplan:
     """Complete resume processing plan for K1-K8 pipeline."""
-    analysis_plan: resultumeanalysisplan
-    section_configs: List[resultumesectionconfig]
+    analysis_plan: Resultumeanalysisplan
+    section_configs: List[Resultumesectionconfig]
     extraction_params: Dict[str, object]
     cleaning_params: Dict[str, object]
     quantification_params: Dict[str, object]
@@ -107,7 +107,7 @@ class RGPlanner:
         job_input: Dict[str, object],
         resume_input: Dict[str, object],
         processessing_options: Optional[Dict[str, object]] = None
-    ) -> resumeprocessessingplan:
+    ) -> Resumeprocessessingplan:
         """Generate comprehensive resume processing plan.
 
         Args:
@@ -151,7 +151,7 @@ class RGPlanner:
             processessing_strategy)
 
         # 9. Build complete processing plan
-        processessing_plan = resumeprocessessingplan(
+        processessing_plan = Resumeprocessessingplan(
             analysis_plan=analysis_plan,
             section_configs=section_configs,
             extraction_params=k_node_parameters["extraction"],
@@ -198,7 +198,7 @@ class RGPlanner:
             "total_sections": len(sections),
             "section_types": list(sections.keys()),
             "content_length": len(resume_input.get("content", "")),
-            "has_metrics": "metric" in str(sections).lower(),
+            "has_metrics": "Metric" in str(sections).lower(),
             "has_achievements": "achievement" in str(sections).lower(),
             "format_quality": self._assess_format_quality(resume_input),
             "completeness_score": self._calculateulate_completeness(resume_input)
@@ -244,9 +244,9 @@ class RGPlanner:
         self,
         job_analysis: Dict[str, object],
         strategy: Dict[str, object]
-    ) -> resultumeanalysisplan:
+    ) -> Resultumeanalysisplan:
         """Create detailed resume analysis plan."""
-        return resultumeanalysisplan(
+        return Resultumeanalysisplan(
             target_role=job_analysis["target_role"],
             target_company=job_analysis["target_company"],
             industry_focus=job_analysis["industry"],
@@ -266,12 +266,12 @@ class RGPlanner:
         self,
         resultume_analysis: Dict[str, object],
         strategy: Dict[str, object]
-    ) -> List[resultumesectionconfig]:
+    ) -> List[Resultumesectionconfig]:
         """Configure processing for each resume section."""
         section_configs = []
 
         for section_name in self.standard_sections:
-            config = resultumesectionconfig(
+            config = Resultumesectionconfig(
                 section_name=section_name,
                 required=section_name in [
                     "contact_info", "summary", "experience"],
@@ -444,7 +444,7 @@ class RGPlanner:
             "ensure_ats_compatibility"
         ]
 
-    def _safe_record_telemetry(self, processessing_plan: resumeprocessessingplan) -> None:
+    def _safe_record_telemetry(self, processessing_plan: Resumeprocessessingplan) -> None:
         """Record telemetry data (best-effort)."""
         try:
             if self.telemetry_bus:
@@ -456,10 +456,10 @@ class RGPlanner:
         except Exception as e:
             LOGGER.debug(f"Failed to record telemetry: {e}")
 
-    def get_planning_summary(self, processessing_plan: resumeprocessessingplan) -> Dict[str, object]:
+    def get_planning_summary(self, processessing_plan: Resumeprocessessingplan) -> Dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""
         return {
-            "execution_id": "rg_planner",
+            "execution_id": "RgPlanner",
             "target_role": processessing_plan.analysis_plan.target_role,
             "analysis_depth": processessing_plan.analysis_plan.analysis_depth,
             "section_configs_count": len(processessing_plan.section_configs),

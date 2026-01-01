@@ -1,22 +1,22 @@
 """
-retry_generation_failures.py - Retry/Fallback Module
+RetryGenerationFailures.py - Retry/Fallback Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.092345
 """
 import logging
 from typing import Any, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class retry_result(Protocol):
+class RetryResult(Protocol):
     """Brief description of functionality and purpose."""
     success: bool
     attempts: int
     result: Optional[Any]
     error: Optional[str]
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class retry_generation_failures:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class RetryGenerationFailures:
     """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

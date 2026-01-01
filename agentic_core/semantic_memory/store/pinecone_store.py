@@ -5,7 +5,7 @@ from pinecone import Pinecone, ServerlessSpec
 from typing import Any, List, Optional
 import os
 
-class pinecone_vector_store:
+class PineconeVectorStore:
     """
     Sovereign wrapper for Pinecone vector database.
     """
@@ -18,7 +18,7 @@ class pinecone_vector_store:
         self.index_name = index_name
         self.dimension = int(os.getenv('EMBEDDING_DIMENSION', '768'))
         if index_name not in self.pc.list_indexes().names():
-            self.pc.create_index(name=index_name, dimension=self.dimension, metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
+            self.pc.create_index(name=index_name, dimension=self.dimension, Metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
         self.index = self.pc.Index(index_name)
 
     def upsert(self, vectors: List[tuple[str, List[float], dict]]) -> None:

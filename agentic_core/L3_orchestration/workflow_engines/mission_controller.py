@@ -1,7 +1,7 @@
 # mission_controller.py
 # L3 Mission Controller - Main Orchestration Engine
 # PURPOSE: Executes the full Agentic Validation Mission
-# LOCATION: agentic_core/L3_orchestration/workflow_engines/ (SSOT-compliant)
+# LOCATION: AgenticCore/L3_orchestration/workflow_engines/ (SSOT-compliant)
 
 import asyncio
 import hashlib
@@ -16,9 +16,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP,
@@ -29,14 +29,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SCOPE_SUMMARY_EXCLUSIONS,
 )
-from agentic_core.utils.general_helpers.mission_utils import (
+from AgenticCore.utils.general_helpers.mission_utils import (
     dynamic_import,
     get_layer_rank,
     get_placement_guidance,
 )
-from agentic_core.L5_safety.validators.mission_preflight import MissionPreflight
-from agentic_core.observability.metrics.mission_metrics import get_metrics
-from agentic_core.observability.telemetry.gemini_spy import GeminiSpy
+from AgenticCore.L5_safety.validators.mission_preflight import MissionPreflight
+from AgenticCore.observability.metrics.mission_metrics import get_metrics
+from AgenticCore.observability.telemetry.gemini_spy import GeminiSpy
 
 
 class MissionController:
@@ -86,7 +86,7 @@ class MissionController:
         self._fission_manager = None
         self._orchestrator = None
 
-    async def run_mission(self, target_scope: str = "agentic_core", mode: str = "heal") -> Dict[str, Any]:
+    async def run_mission(self, target_scope: str = "AgenticCore", mode: str = "heal") -> Dict[str, Any]:
         """
         [HARDENING 10] Execute the Agentic Validation Mission with explicit phases.
         
@@ -122,7 +122,7 @@ class MissionController:
             print("\n[!] [L6 WARNING] Physical structure violations detected.")
             print("    Proceeding with validation, but auto-healing may be restricted.")
         
-        # Increment violation metrics
+        # Increment Violation metrics
         self._record_preflight_metrics(preflight_results)
         
         # Discover files
@@ -189,14 +189,14 @@ class MissionController:
     async def _initialize_context(self, target_scope: str) -> Any:
         """Initialize the validation context with all required components."""
         try:
-            from agentic_core.L4_state.validation_context.validation_context import ValidationContext
+            from AgenticCore.L4_state.ValidationContext.ValidationContext import ValidationContext
             ctx = ValidationContext()
         except ImportError:
             ctx = self._create_fallback_context()
         
         # [FULL AGENT DISCOVERY] Initialize orchestrator with ALL agents from ALL layers
         try:
-            from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator
+            from AgenticCore.L5_safety.validators.compliance_orchestrator import compliance_orchestrator
             self._orchestrator = compliance_orchestrator(self.project_root)
             print(f"   [OK] Orchestrator armed with {len(self._orchestrator.get_all_agents())} agents")
         except Exception as e:
@@ -219,7 +219,7 @@ class MissionController:
         # Initialize report as callable list
         ctx.report = self._create_callable_report()
         
-        # Initialize missing structures
+        # Initialize Missing structures
         if not hasattr(ctx, 'successful_traces'):
             ctx.successful_traces = []
         if not hasattr(ctx, 'failed_traces'):
@@ -311,7 +311,7 @@ class MissionController:
         """Record preflight results to Prometheus metrics."""
         violations_total = self.metrics.get("violations_total")
         if violations_total:
-            violations_total.labels(type="depth_span").inc(results.get("span", 0))
+            violations_total.labels(type="depth_span").inc(results.get("Span", 0))
             violations_total.labels(type="hierarchy").inc(results.get("hierarchy", 0))
             violations_total.labels(type="gravity_import").inc(results.get("gravity", 0))
             violations_total.labels(type="naming_signal").inc(results.get("naming", 0))
@@ -319,7 +319,7 @@ class MissionController:
     async def _run_sovereign_dashboard(self, ctx: Any) -> None:
         """Run Sovereign Dashboard using ReportingAgent."""
         try:
-            from agentic_core.observability.compliance.ReportingAgent import ReportingAgent
+            from AgenticCore.observability.compliance.ReportingAgent import ReportingAgent
             reporter = ReportingAgent(self.project_root)
             report = reporter.run_diagnostic_report()
             
@@ -374,7 +374,7 @@ class MissionController:
         
         # Initialize SubAtomicEngine (LLM-powered code mutation)
         try:
-            from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+            from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
             self._subatomic_engine = SubAtomicEngine(self.project_root)
             ctx.engine = self._subatomic_engine
             print(f"   [OK] SubAtomicEngine armed — LLM healing available")
@@ -387,7 +387,7 @@ class MissionController:
         
         # Initialize SafetyGuardrail (mutation safety checks)
         try:
-            from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail
+            from AgenticCore.L5_safety.guardrails.safety_layer import SafetyGuardrail
             self._safety_guardrail = SafetyGuardrail(self.project_root)
             ctx.safety = self._safety_guardrail
             print(f"   [OK] SafetyGuardrail armed — mutation protection active")
@@ -400,8 +400,8 @@ class MissionController:
         
         # Initialize FissionManager (file splitting)
         try:
-            from agentic_core.L3_orchestration.fission_logic.fission_manager import fission_manager
-            self._fission_manager = fission_manager(self.project_root)
+            from AgenticCore.L3_orchestration.fission_logic.FissionManager import FissionManager
+            self._fission_manager = FissionManager(self.project_root)
             ctx.fission = self._fission_manager
             print(f"   [OK] FissionManager armed — file splitting available")
         except ImportError as e:
@@ -435,7 +435,7 @@ class MissionController:
             
             try:
                 content = file_path_obj.read_text(encoding='utf-8', errors='ignore')
-                imports = re.findall(r'(?:from|import) agentic_core\.(\w+)', content)
+                imports = re.findall(r'(?:from|import) AgenticCore\.(\w+)', content)
                 
                 violations = []
                 for imp in imports:
@@ -451,7 +451,7 @@ class MissionController:
                     if ctx.gravity_attempts[file_path] > 2:
                         continue
                     
-                    print(f"\n   [VIOLATION] {file_path_obj.name}: {len(violations)} gravity violation(s)")
+                    print(f"\n   [VIOLATION] {file_path_obj.name}: {len(violations)} gravity Violation(s)")
                     for v in violations[:3]:
                         print(f"      - {v}")
                     
@@ -513,7 +513,7 @@ class MissionController:
                     # Validator doesn't support detection-only mode
                     pass
                 except Exception as e:
-                    logger.error(f"Detection failed for {file_name}: {e}")
+                    Logger.error(f"Detection failed for {file_name}: {e}")
             
             if file_violations:
                 detection_results["files_with_violations"] += 1
@@ -521,8 +521,8 @@ class MissionController:
                 detection_results["violations_by_file"][file_path] = file_violations
                 
                 # Categorize violations
-                for violation in file_violations:
-                    v_type = violation.get("type", "unknown")
+                for Violation in file_violations:
+                    v_type = Violation.get("type", "unknown")
                     detection_results["violations_by_type"][v_type] += 1
             
             if (idx % 50) == 0:
@@ -584,7 +584,7 @@ class MissionController:
                         print(f"      [LIMIT] Skipping {file_name} - max heals per file reached")
                         continue
                 except Exception as e:
-                    logger.error(f"Cycle detection failed for {file_name}: {e}")
+                    Logger.error(f"Cycle detection failed for {file_name}: {e}")
             
             # Apply healing
             file_healed = False
@@ -610,7 +610,7 @@ class MissionController:
                     elif result and result.get("error"):
                         healing_results["heals_rejected"] += 1
                 except Exception as e:
-                    logger.error(f"Healing failed for {file_name}: {e}")
+                    Logger.error(f"Healing failed for {file_name}: {e}")
                     healing_results["heals_rejected"] += 1
             
             if file_healed:
@@ -836,11 +836,11 @@ class MissionController:
             return result
             
         except asyncio.TimeoutError:
-            logger.warning(f"[TIMEOUT] {agent_name} exceeded 30s limit on {file_name}")
+            Logger.warning(f"[TIMEOUT] {agent_name} exceeded 30s limit on {file_name}")
             return {"applied": False, "healed": False, "error": "timeout"}
             
         except Exception as e:
-            logger.error(f"[ERROR] {agent_name} failed on {file_name}: {str(e)[:100]}")
+            Logger.error(f"[ERROR] {agent_name} failed on {file_name}: {str(e)[:100]}")
             return {"applied": False, "healed": False, "error": str(e)[:100]}
     
     async def _run_postflight_validation(self, ctx: Any, preflight: Any, target_scope: str) -> None:
@@ -866,13 +866,13 @@ class MissionController:
             if postflight_results.get("gravity", 0) > 0:
                 critical_violations.append(f"gravity: {postflight_results['gravity']} violations")
             
-            if postflight_results.get("span", 0) > 0:
-                critical_violations.append(f"span: {postflight_results['span']} violations")
+            if postflight_results.get("Span", 0) > 0:
+                critical_violations.append(f"Span: {postflight_results['Span']} violations")
             
             if critical_violations:
                 print(f"\n[!] [POSTFLIGHT FAILURE] Healing introduced architectural regression:")
-                for violation in critical_violations:
-                    print(f"   - {violation}")
+                for Violation in critical_violations:
+                    print(f"   - {Violation}")
                 print(f"\n[ACTION REQUIRED] Manual review required - heals may have violated invariants")
                 
                 # Store postflight results in context for reporting
@@ -882,7 +882,7 @@ class MissionController:
                 ctx.postflight_violations = []
                 
         except Exception as e:
-            logger.error(f"[POSTFLIGHT] Validation failed: {e}")
+            Logger.error(f"[POSTFLIGHT] Validation failed: {e}")
             print(f"   [!] Postflight validation error: {e}")
 
     def _print_mission_report(self, ctx: Any) -> None:
@@ -907,8 +907,8 @@ class MissionController:
         postflight_violations = getattr(ctx, 'postflight_violations', [])
         if postflight_violations:
             print(f"\n[!] [POSTFLIGHT ALERT] {len(postflight_violations)} critical invariant violations after healing")
-            for violation in postflight_violations:
-                print(f"   - {violation}")
+            for Violation in postflight_violations:
+                print(f"   - {Violation}")
         
         if fail_count == 0 and not postflight_violations:
             print("\n[SOVEREIGN VERDICT] ZERO violations detected across all keys")
@@ -949,7 +949,7 @@ class MissionController:
         
         try:
             # Import and run the sovereign auditor
-            from agentic_core.L0_maintenance.scripts.auditors_sovereign_auditor_v3 import main as sovereign_main
+            from AgenticCore.L0_maintenance.scripts.auditors_sovereign_auditor_v3 import main as sovereign_main
             
             print("\n[>] Executing multi-dimensional sovereignty analysis...")
             audit_report = await sovereign_main()
@@ -1000,7 +1000,7 @@ class MissionController:
         
         try:
             # Import and run the filesystem SSOT reconciler
-            from agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+            from AgenticCore.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
             
             # Determine reconciliation mode
             auto_apply = os.getenv("RECONCILE_BLUEPRINT_AUTO_APPLY", "false").lower() in ("true", "1", "yes")
@@ -1069,7 +1069,7 @@ class MissionController:
             print(f"\n[!] Blueprint reconciliation failed: {e}")
             print("   [INFO] Mission results are still valid - reconciliation is supplementary")
             import traceback
-            logger.debug(f"Blueprint reconciliation error details: {traceback.format_exc()}")
+            Logger.debug(f"Blueprint reconciliation error details: {traceback.format_exc()}")
         
         print("="*80)
         print("")
@@ -1128,7 +1128,7 @@ async def execute_move_instruction(move: dict, project_root: Path, ctx: Any) -> 
     
     target_root = move['target'].split('/')[0] if '/' in move['target'] else move['target']
     
-    APPROVED_DURING_HEALING = {"agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"}
+    APPROVED_DURING_HEALING = {"AgenticCore", "apps_shared", "apps_rg", "apps_lic", "tests"}
     
     if target_root in FORBIDDEN_ROOT_FOLDERS and target_root not in APPROVED_DURING_HEALING:
         print(f"      [!] CRITICAL: Blocked move instruction to forbidden root '{target_root}'.")

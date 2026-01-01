@@ -280,7 +280,7 @@ class TemplateOptimizer(ResumeAgent):
     async def execute(self) -> None:
         self.log("Optimizing template selection...")
 
-        job_desc = self.ctx.job_description
+        job_desc = self.ctx.JobDescription
         if not job_desc:
             self.record_pass("No job description, using default template")
             return
@@ -418,7 +418,7 @@ class ATSCompatibilityAgent(ResumeAgent):
         self.log("Checking ATS compatibility...")
 
         resume = self.ctx.current_resume
-        job_desc = self.ctx.job_description
+        job_desc = self.ctx.JobDescription
 
         if not resume:
             self.record_fail("No resume to check")
@@ -532,10 +532,10 @@ class TestPilot(ResumeAgent):
     def _test_schema(self, resume: Dict) -> Dict:
         """Test basic schema structure."""
         required_fields = ["summary", "experience", "skills"]
-        missing = [f for f in required_fields if f not in resume]
+        Missing = [f for f in required_fields if f not in resume]
         return {
-            "passed": len(missing) == 0,
-            "missing_fields": missing,
+            "passed": len(Missing) == 0,
+            "missing_fields": Missing,
         }
 
     def _test_completeness(self, resume: Dict) -> Dict:

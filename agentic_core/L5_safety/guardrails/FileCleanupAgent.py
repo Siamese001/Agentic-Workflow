@@ -200,7 +200,7 @@ class FileCleanupAgent:
         if not hasattr(self.ctx, 'scan_directories'):
             # Default to project root subdirectories
             scan_dirs = [
-                str(self.project_root / 'agentic_core'),
+                str(self.project_root / 'AgenticCore'),
                 str(self.project_root / 'data')
             ]
         else:

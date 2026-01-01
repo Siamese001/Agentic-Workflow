@@ -1,16 +1,16 @@
 """DAG Engine for Task Dependencies and Workflow Management.
 
 Phase 2 - Pillar 4: Workflow (DAGs)
-Lightweight workflow engine for modeling task dependencies and conditional branching.
+Lightweight workflow engine for modeling Task dependencies and conditional branching.
 """
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class task_status(Enum):
-    """Status of a task in the DAG."""
+class TaskStatus(Enum):
+    """Status of a Task in the DAG."""
     PENDING: Any = 'pending'
     READY: Any = 'ready'
     RUNNING: Any = 'running'
@@ -18,8 +18,8 @@ class task_status(Enum):
     FAILED: Any = 'failed'
     SKIPPED: Any = 'skipped'
 
-class task_type(Enum):
-    """Type of task in the DAG."""
+class TaskType(Enum):
+    """Type of Task in the DAG."""
     ACTION: Any = 'action'
     DECISION: Any = 'decision'
     PARALLEL: Any = 'parallel'
@@ -27,11 +27,11 @@ class task_type(Enum):
     CONDITIONAL: Any = 'conditional'
 
 @dataclass
-class task:
-    """Individual task in the DAG."""
+class Task:
+    """Individual Task in the DAG."""
     id: str
     name: str
-    task_type: TaskType
+    TaskType: TaskType
     dependencies: List[str] = field(default_factory=list)
     parameters: Dict[str, Any] = field(default_factory=dict)
     condition: Optional[str] = None
@@ -41,10 +41,10 @@ class task:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_ready(self, completed_tasks: Set[str]) -> bool:
-        """Check if task is ready to execute.
+        """Check if Task is ready to execute.
 
         Args:
-            completed_tasks: Set of completed task IDs
+            completed_tasks: Set of completed Task IDs
 
         Returns:
             True if all dependencies are met
@@ -53,10 +53,10 @@ class task:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'name': self.name, 'task_type': self.task_type.value, 'dependencies': self.dependencies, 'parameters': self.parameters, 'condition': self.condition, 'status': self.status.value, 'result': self.result, 'error': self.error, 'metadata': self.metadata}
+        return {'id': self.id, 'name': self.name, 'TaskType': self.TaskType.value, 'dependencies': self.dependencies, 'parameters': self.parameters, 'condition': self.condition, 'status': self.status.value, 'result': self.result, 'error': self.error, 'metadata': self.metadata}
 
 @dataclass
-class dag_execution_result:
+class DagExecutionResult:
     """Result from DAG execution."""
     success: bool
     completed_tasks: List[str]
@@ -92,23 +92,23 @@ class DagEngineAgent:
         self.tasks: Dict[str, Task] = {}
         self.execution_order: List[str] = []
 
-    def add_task(self, task: Task) -> None:
-        """Add a task to the DAG.
+    def add_task(self, Task: Task) -> None:
+        """Add a Task to the DAG.
 
         Args:
-            task: Task to add
+            Task: Task to add
         """
-        if task.id in self.tasks:
-            raise ValueError(f'Task {task.id} already exists')
-        self.tasks[task.id] = task
+        if Task.id in self.tasks:
+            raise ValueError(f'Task {Task.id} already exists')
+        self.tasks[Task.id] = Task
         if self.enable_logging:
-            LOGGER.debug('task_added', extra={'task_id': task.id, 'task_type': task.task_type.value, 'dependencies': task.dependencies})
+            LOGGER.debug('task_added', extra={'task_id': Task.id, 'TaskType': Task.TaskType.value, 'dependencies': Task.dependencies})
 
     def remove_task(self, task_id: str) -> None:
-        """Remove a task from the DAG.
+        """Remove a Task from the DAG.
 
         Args:
-            task_id: ID of task to remove
+            task_id: ID of Task to remove
         """
         if task_id not in self.tasks:
             raise ValueError(f'Task {task_id} not found')
@@ -117,16 +117,16 @@ class DagEngineAgent:
             LOGGER.debug('task_removed', extra={'task_id': task_id})
 
     def validate_dag(self) -> List[str]:
-        """Validate the DAG for cycles and missing dependencies.
+        """Validate the DAG for cycles and Missing dependencies.
 
         Returns:
             List of validation errors (empty if valid)
         """
         errors: List[str] = []
-        for task_id, task in self.tasks.items():
-            for dep in task.dependencies:
+        for task_id, Task in self.tasks.items():
+            for dep in Task.dependencies:
                 if dep not in self.tasks:
-                    errors.append(f'Task {task_id} depends on missing task {dep}')
+                    errors.append(f'Task {task_id} depends on Missing Task {dep}')
         visited: Set[str] = set()
         rec_stack: Set[str] = set()
 
@@ -134,9 +134,9 @@ class DagEngineAgent:
             """DFS to detect cycles."""
             visited.add(task_id)
             rec_stack.add(task_id)
-            task: Any = self.tasks.get(task_id)
-            if task:
-                for dep in task.dependencies:
+            Task: Any = self.tasks.get(task_id)
+            if Task:
+                for dep in Task.dependencies:
                     if dep not in visited:
                         if has_cycle(dep):
                             return True
@@ -147,14 +147,14 @@ class DagEngineAgent:
         for task_id in self.tasks:
             if task_id not in visited:
                 if has_cycle(task_id):
-                    errors.append(f'Cycle detected involving task {task_id}')
+                    errors.append(f'Cycle detected involving Task {task_id}')
         return errors
 
     def topological_sort(self) -> List[str]:
         """Perform topological sort to determine execution order.
 
         Returns:
-            List of task IDs in execution order
+            List of Task IDs in execution order
 
         Raises:
             ValueError: If DAG has cycles
@@ -163,8 +163,8 @@ class DagEngineAgent:
         if errors:
             raise ValueError(f"Invalid DAG: {', '.join(errors)}")
         in_degree: Dict[str, int] = {task_id: 0 for task_id in self.tasks}
-        for task in self.tasks.values():
-            for dep in task.dependencies:
+        for Task in self.tasks.values():
+            for dep in Task.dependencies:
                 in_degree[dep] = in_degree.get(dep, 0) + 1
         queue: List[str] = [task_id for task_id, degree in in_degree.items() if degree == 0]
         sorted_order: List[str] = []
@@ -184,7 +184,7 @@ class DagEngineAgent:
         """Execute the DAG.
 
         Args:
-            executor: Async function to execute each task
+            executor: Async function to execute each Task
             context: Optional execution context
 
         Returns:
@@ -198,10 +198,10 @@ class DagEngineAgent:
         task_results: Dict[str, Any] = {}
         self._log_dag_start(execution_order)
         for task_id in execution_order:
-            task: Any = self.tasks[task_id]
-            if not self._should_execute_task(task, task_id, completed_tasks, context, task_results, skipped_tasks):
+            Task: Any = self.tasks[task_id]
+            if not self._should_execute_task(Task, task_id, completed_tasks, context, task_results, skipped_tasks):
                 continue
-            success: Any = await self._execute_single_task(task, task_id, executor, completed_tasks, failed_tasks, task_results)
+            success: Any = await self._execute_single_task(Task, task_id, executor, completed_tasks, failed_tasks, task_results)
             if not success:
                 break
         return self._create_dag_result(completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order)
@@ -211,39 +211,39 @@ class DagEngineAgent:
         if self.enable_logging:
             LOGGER.info('dag_execution_started', extra={'total_tasks': len(self.tasks), 'execution_order': execution_order})
 
-    def _should_execute_task(self, task: Task, task_id: str, completed_tasks: Set[str], context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]) -> bool:
-        """Check if task should be executed."""
-        if not task.is_ready(completed_tasks):
-            task.status = TaskStatus.SKIPPED
+    def _should_execute_task(self, Task: Task, task_id: str, completed_tasks: Set[str], context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]) -> bool:
+        """Check if Task should be executed."""
+        if not Task.is_ready(completed_tasks):
+            Task.status = TaskStatus.SKIPPED
             skipped_tasks.append(task_id)
             return False
-        if task.condition:
-            condition_met = self._evaluate_condition(task.condition, context, task_results)
+        if Task.condition:
+            condition_met = self._evaluate_condition(Task.condition, context, task_results)
             if not condition_met:
-                task.status = TaskStatus.SKIPPED
+                Task.status = TaskStatus.SKIPPED
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
-                    LOGGER.debug('task_skipped_condition', extra={'task_id': task_id, 'condition': task.condition})
+                    LOGGER.debug('task_skipped_condition', extra={'task_id': task_id, 'condition': Task.condition})
                 return False
         return True
 
-    async def _execute_single_task(self, task: Task, task_id: str, executor: Callable, completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]) -> bool:
-        """Execute a single task and return success status."""
-        task.status = TaskStatus.RUNNING
+    async def _execute_single_task(self, Task: Task, task_id: str, executor: Callable, completed_tasks: Set[str], failed_tasks: List[str], task_results: Dict[str, Any]) -> bool:
+        """Execute a single Task and return success status."""
+        Task.status = TaskStatus.RUNNING
         try:
             if self.enable_logging:
                 LOGGER.info('task_started', extra={'task_id': task_id})
-            result = await executor(task)
-            task.status = TaskStatus.COMPLETED
-            task.result = result
+            result = await executor(Task)
+            Task.status = TaskStatus.COMPLETED
+            Task.result = result
             task_results[task_id] = result
             completed_tasks.add(task_id)
             if self.enable_logging:
                 LOGGER.info('task_completed', extra={'task_id': task_id})
             return True
         except Exception as e:
-            task.status = TaskStatus.FAILED
-            task.error = str(e)
+            Task.status = TaskStatus.FAILED
+            Task.error = str(e)
             failed_tasks.append(task_id)
             if self.enable_logging:
                 LOGGER.error('task_failed', extra={'task_id': task_id, 'error': str(e)}, exc_info=True)
@@ -258,7 +258,7 @@ class DagEngineAgent:
         return result
 
     def _evaluate_condition(self, condition: str, context: Dict[str, Any], task_results: Dict[str, Any]) -> bool:
-        """Evaluate a task condition.
+        """Evaluate a Task condition.
 
         Args:
             condition: Condition expression
@@ -299,7 +299,7 @@ class DagEngineAgent:
         return str(value) == right
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
-        """Get status of a task.
+        """Get status of a Task.
 
         Args:
             task_id: Task ID
@@ -307,15 +307,15 @@ class DagEngineAgent:
         Returns:
             Task status or None if not found
         """
-        task: Any = self.tasks.get(task_id)
-        return task.status if task else None
+        Task: Any = self.tasks.get(task_id)
+        return Task.status if Task else None
 
     def reset(self) -> None:
-        """Reset all task statuses."""
-        for task in self.tasks.values():
-            task.status = TaskStatus.PENDING
-            task.result = None
-            task.error = None
+        """Reset all Task statuses."""
+        for Task in self.tasks.values():
+            Task.status = TaskStatus.PENDING
+            Task.result = None
+            Task.error = None
         self.execution_order.clear()
         if self.enable_logging:
             LOGGER.info('dag_reset')

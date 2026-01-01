@@ -17,18 +17,18 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class context_snapshot:
+class ContextSnapshot:
     """Snapshot of context at a point in time."""
     timestamp: str
     stage: str
@@ -38,7 +38,7 @@ class context_snapshot:
     compressed_size: int
 
 @dataclass
-class handoff_summary:
+class HandoffSummary:
     """Compressed summary for stage handoff."""
     previous_stage: str
     next_stage: str
@@ -56,14 +56,14 @@ class ContextCuratorAgent(SubAtomicAgent):
     Runs between pipeline stages (post-convergence).
     Identifies ephemeral logs vs semantic architectural decisions.
     Uses Gemini to compress session into structural facts.
-    Writes handoff_summary.md for next stage.
+    Writes HandoffSummary.md for next stage.
     Archives bloated logs and wipes active memory.
     
     Process:
     1. Read current_context.json
     2. Classify: Ephemeral vs Semantic
     3. Compress with Gemini: "What must persist?"
-    4. Write handoff_summary.md to .canon_memory/
+    4. Write HandoffSummary.md to .canon_memory/
     5. Archive raw logs to archives/logs/
     6. Wipe active memory for fresh context window
     """
@@ -89,18 +89,18 @@ class ContextCuratorAgent(SubAtomicAgent):
         
         Runs post-convergence to compress and handoff context.
         """
-        logger.info('📚 Context Curator: Compressing context for handoff...')
+        Logger.info('📚 Context Curator: Compressing context for handoff...')
         snapshot: Any = self._take_snapshot()
         if snapshot.total_size < self.MAX_CONTEXT_SIZE:
-            logger.info(f'   Context size ({snapshot.total_size}) within limits')
+            Logger.info(f'   Context size ({snapshot.total_size}) within limits')
             return
-        logger.info(f'   Context size ({snapshot.total_size}) exceeds limit, compressing...')
+        Logger.info(f'   Context size ({snapshot.total_size}) exceeds limit, compressing...')
         ephemeral, semantic = self._classify_content()
         handoff: Any = await self._compress_context(semantic)
         self._write_handoff_summary(handoff)
         self._archive_logs(ephemeral)
         self._wipe_active_memory()
-        logger.info(f'   [OK] Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars')
+        Logger.info(f'   [OK] Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars')
 
     def _take_snapshot(self) -> ContextSnapshot:
         """Take snapshot of current context."""
@@ -157,7 +157,7 @@ class ContextCuratorAgent(SubAtomicAgent):
             try:
                 compressed = await self.ctx.generate_with_thinking(prompt=prompt, thinking_budget=8000, temperature=0.1)
             except Exception as e:
-                logger.warning(f'Could not use Gemini for compression: {e}')
+                Logger.warning(f'Could not use Gemini for compression: {e}')
                 compressed = self._simple_compression(semantic_facts)
         else:
             compressed = self._simple_compression(semantic_facts)
@@ -224,11 +224,11 @@ class ContextCuratorAgent(SubAtomicAgent):
 
     def _write_handoff_summary(self, handoff: HandoffSummary):
         """Write handoff summary to .canon_memory/."""
-        summary_file = self.memory_dir / 'handoff_summary.md'
+        summary_file = self.memory_dir / 'HandoffSummary.md'
         content = f"# Context Handoff Summary\n\nGenerated: {datetime.now(timezone.utc).isoformat()}\n\n## Structural Facts\n{chr(10).join((f'- {fact}' for fact in handoff.structural_facts))}\n\n## Critical Decisions\n{chr(10).join((f'- {decision}' for decision in handoff.critical_decisions))}\n\n## Lessons Learned\n{chr(10).join((f'- {lesson}' for lesson in handoff.lessons_learned))}\n\n## Warnings\n{chr(10).join((f'- {warning}' for warning in handoff.warnings))}\n\n---\n\n## Full Compressed Context\n{handoff.compressed_context}\n"
         with open(summary_file, 'w') as f:
             f.write(content)
-        logger.info(f'   Handoff summary written to {summary_file}')
+        Logger.info(f'   Handoff summary written to {summary_file}')
 
     def _archive_logs(self, ephemeral_logs: List[str]):
         """Archive ephemeral logs."""
@@ -238,7 +238,7 @@ class ContextCuratorAgent(SubAtomicAgent):
         archive_file = self.archive_dir / f'ephemeral_logs_{timestamp}.json'
         with open(archive_file, 'w') as f:
             json.dump({'timestamp': datetime.now(timezone.utc).isoformat(), 'count': len(ephemeral_logs), 'logs': ephemeral_logs}, f, indent=2)
-        logger.info(f'   Archived {len(ephemeral_logs)} ephemeral logs to {archive_file}')
+        Logger.info(f'   Archived {len(ephemeral_logs)} ephemeral logs to {archive_file}')
 
     def _wipe_active_memory(self):
         """Wipe active memory to keep context window fresh."""
@@ -246,20 +246,20 @@ class ContextCuratorAgent(SubAtomicAgent):
             self.ctx.instructions = []
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals = set()
-        logger.info('   Active memory wiped for fresh context window')
+        Logger.info('   Active memory wiped for fresh context window')
 
     def load_handoff_summary(self) -> Optional[HandoffSummary]:
         """Load handoff summary from previous stage."""
-        summary_file: Any = self.memory_dir / 'handoff_summary.md'
+        summary_file: Any = self.memory_dir / 'HandoffSummary.md'
         if not summary_file.exists():
             return None
         try:
             with open(summary_file, 'r') as f:
                 content: Any = f.read()
-            logger.info(f'   Loaded handoff summary from {summary_file}')
+            Logger.info(f'   Loaded handoff summary from {summary_file}')
             return HandoffSummary(previous_stage='previous', next_stage='current', structural_facts=[], critical_decisions=[], lessons_learned=[], warnings=[], compressed_context=content)
         except Exception as e:
-            logger.warning(f'Could not load handoff summary: {e}')
+            Logger.warning(f'Could not load handoff summary: {e}')
             return None
 _context_curator = None
 

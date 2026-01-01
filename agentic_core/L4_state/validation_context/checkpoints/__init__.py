@@ -1,5 +1,5 @@
 """
-L4_state/validation_context/checkpoints – Sovereign Territory
+L4_state/ValidationContext/checkpoints – Sovereign Territory
 
 Purpose:
     Checkpointing, session persistence, drift detection.

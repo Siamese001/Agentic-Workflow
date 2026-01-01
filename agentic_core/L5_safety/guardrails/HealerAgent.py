@@ -11,7 +11,7 @@ DELEGATION: Dead code pruning moved to specialized DeadCodeAgent.
 Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
 
-Depth: agentic_core/L5_safety/guardrails/healer_agent.py -> 4 parts -> compliant
+Depth: AgenticCore/L5_safety/guardrails/HealerAgent.py -> 4 parts -> compliant
 """
 import ast
 import logging
@@ -38,23 +38,23 @@ except ImportError:
     Language = None
     Parser = None
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
     SOVEREIGN_REGISTRY,
 )
-from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
+from AgenticCore.utils.core_extensions.NamingAgent import NamingAgent
 
-# [HARDENING 9] Import audit logger for comprehensive action tracking
+# [HARDENING 9] Import audit Logger for comprehensive action tracking
 try:
-    from agentic_core.observability.audit.audit_logger import AuditLogger
+    from AgenticCore.observability.audit.audit_logger import AuditLogger
     AUDIT_LOGGER_AVAILABLE = True
 except ImportError:
     AUDIT_LOGGER_AVAILABLE = False
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Canon structural constants
 MAX_LINES_PER_FILE = 800
@@ -114,19 +114,19 @@ class HealerAgent:
         self.staged_changes: List[Dict[str, Any]] = []
         
         self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
-        self.naming_agent = NamingAgent(self.project_root)
+        self.NamingAgent = NamingAgent(self.project_root)
         
         # Tree-sitter setup for AST-based diff application
         self.ts_parser = None
         if TREE_SITTER_AVAILABLE:
             try:
                 self.ts_parser = get_parser('python')
-                logger.info("[HealerAgent] Tree-sitter enabled for structural healing")
+                Logger.info("[HealerAgent] Tree-sitter enabled for structural healing")
             except Exception as e:
-                logger.warning(f"[HealerAgent] Tree-sitter unavailable: {e}; falling back to ast")
+                Logger.warning(f"[HealerAgent] Tree-sitter unavailable: {e}; falling back to ast")
                 self.ts_parser = None
         else:
-            logger.info("[HealerAgent] Tree-sitter not available; using ast fallback")
+            Logger.info("[HealerAgent] Tree-sitter not available; using ast fallback")
 
         # Healing configuration from SSOT
         self.max_moves = HEALING_CONFIG.get("max_moves_per_run", 5)
@@ -135,27 +135,27 @@ class HealerAgent:
 
         # Observability Linkage
         try:
-            from agentic_core.observability.tracing.TracingAgent import tracing_agent as TracingAgent
-            from agentic_core.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
-            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+            from AgenticCore.observability.tracing.TracingAgent import tracing_agent as TracingAgent
+            from AgenticCore.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
+            from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
             self.tracing = TracingAgent(project_root)
             self.telemetry = TelemetryAgent(project_root)
             self.metrics = MetricsAgent(project_root)
         except ImportError:
             self.tracing = self.telemetry = self.metrics = None
         
-        # [HARDENING 9] Initialize audit logger
+        # [HARDENING 9] Initialize audit Logger
         if AUDIT_LOGGER_AVAILABLE:
             self.audit = AuditLogger(project_root)
-            logger.info("[HealerAgent] Audit logging enabled")
+            Logger.info("[HealerAgent] Audit logging enabled")
         else:
             self.audit = None
-            logger.warning("[HealerAgent] Audit logging unavailable")
+            Logger.warning("[HealerAgent] Audit logging unavailable")
 
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
             self.archives_root.mkdir(exist_ok=True)
-            logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
+            Logger.info(f"[HealerAgent] Backup initialized: {self.backup_dir}")
     
     def enable_staging(self) -> None:
         """
@@ -165,7 +165,7 @@ class HealerAgent:
         Changes are only committed to the actual project on explicit commit.
         """
         if self.staging_active:
-            logger.warning("[HealerAgent] Staging already active")
+            Logger.warning("[HealerAgent] Staging already active")
             return
         
         try:
@@ -186,11 +186,11 @@ class HealerAgent:
             
             self.staging_active = True
             self.staged_changes = []
-            logger.info(f"[HealerAgent] Staging enabled: {self.staging_dir}")
+            Logger.info(f"[HealerAgent] Staging enabled: {self.staging_dir}")
             print(f"   [STAGING] Enabled at {self.staging_dir}")
             
         except Exception as e:
-            logger.error(f"[HealerAgent] Failed to enable staging: {e}")
+            Logger.error(f"[HealerAgent] Failed to enable staging: {e}")
             self.staging_dir = None
             self.staging_active = False
     
@@ -204,7 +204,7 @@ class HealerAgent:
             Dict with commit results
         """
         if not self.staging_active or not self.staging_dir:
-            logger.warning("[HealerAgent] No staging to commit")
+            Logger.warning("[HealerAgent] No staging to commit")
             return {"committed": False, "reason": "No staging active"}
         
         try:
@@ -230,7 +230,7 @@ class HealerAgent:
                         shutil.copy2(source, target)
                         applied_count += 1
                 except Exception as e:
-                    logger.error(f"Failed to apply change to {change['original_path']}: {e}")
+                    Logger.error(f"Failed to apply change to {change['original_path']}: {e}")
             
             print(f"   [OK] Applied {applied_count}/{len(self.staged_changes)} changes")
             print(f"   [BACKUP] Backup preserved at {backup_path}")
@@ -245,7 +245,7 @@ class HealerAgent:
             }
             
         except Exception as e:
-            logger.error(f"[HealerAgent] Commit failed: {e}")
+            Logger.error(f"[HealerAgent] Commit failed: {e}")
             return {"committed": False, "reason": str(e)}
     
     def rollback(self) -> Dict[str, Any]:
@@ -256,7 +256,7 @@ class HealerAgent:
             Dict with rollback results
         """
         if not self.staging_active or not self.staging_dir:
-            logger.warning("[HealerAgent] No staging to rollback")
+            Logger.warning("[HealerAgent] No staging to rollback")
             return {"rolled_back": False, "reason": "No staging active"}
         
         try:
@@ -275,7 +275,7 @@ class HealerAgent:
             }
             
         except Exception as e:
-            logger.error(f"[HealerAgent] Rollback failed: {e}")
+            Logger.error(f"[HealerAgent] Rollback failed: {e}")
             return {"rolled_back": False, "reason": str(e)}
     
     def _cleanup_staging(self) -> None:
@@ -286,7 +286,7 @@ class HealerAgent:
             try:
                 shutil.rmtree(self.staging_dir)
             except Exception as e:
-                logger.error(f"Failed to clean up staging directory: {e}")
+                Logger.error(f"Failed to clean up staging directory: {e}")
         
         self.staging_dir = None
         self.staging_active = False
@@ -346,8 +346,8 @@ class HealerAgent:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
             
-            # Check if file is in agentic_core structure
-            if len(parts) >= 2 and parts[0] == 'agentic_core':
+            # Check if file is in AgenticCore structure
+            if len(parts) >= 2 and parts[0] == 'AgenticCore':
                 layer_part = parts[1]
                 # Validate it's a recognized layer
                 if layer_part.startswith('L') and layer_part[1].isdigit():
@@ -359,7 +359,7 @@ class HealerAgent:
     
     def _get_layer_directory(self, file_path: Path) -> Optional[Path]:
         """
-        Get the layer directory for a file (e.g., agentic_core/L5_safety).
+        Get the layer directory for a file (e.g., AgenticCore/L5_safety).
         Returns None if file is not in a recognized layer.
         """
         layer = self._detect_layer(file_path)
@@ -369,7 +369,7 @@ class HealerAgent:
         try:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
-            if len(parts) >= 2 and parts[0] == 'agentic_core':
+            if len(parts) >= 2 and parts[0] == 'AgenticCore':
                 return self.project_root / parts[0] / parts[1]
         except ValueError:
             pass
@@ -393,7 +393,7 @@ class HealerAgent:
         actions = []
         for file_path, msg in move_violations:
             if self.moves_applied >= self.max_moves:
-                logger.warning("[HealerAgent] Max moves reached")
+                Logger.warning("[HealerAgent] Max moves reached")
                 break
 
             # Skip files allowed to exist in multiple directories (from SSOT)
@@ -435,7 +435,7 @@ class HealerAgent:
                     shutil.move(str(file_path), str(target_path))
                     action["applied"] = True
                     self.moves_applied += 1
-                    logger.info(f"[HEALED] Moved {file_path.name} -> {target_str}/")
+                    Logger.info(f"[HEALED] Moved {file_path.name} -> {target_str}/")
                     
                     # [HARDENING 9] Log structural change
                     if self.audit:
@@ -527,7 +527,7 @@ class HealerAgent:
                 norm_tree = self._normalize_ast_tree(tree)
             return hashlib.sha256(str(norm_tree).encode()).hexdigest()
         except Exception as e:
-            logger.debug(f"AST fingerprint failed: {e}")
+            Logger.debug(f"AST fingerprint failed: {e}")
             return ''
 
     def _normalize_ast_tree(self, node: ast.AST) -> str:
@@ -593,11 +593,11 @@ class HealerAgent:
         try:
             # Validate both inputs
             if not self._validate_ast_integrity(original_content):
-                logger.warning("Original content has syntax errors; using string fallback")
+                Logger.warning("Original content has syntax errors; using string fallback")
                 return self._string_fallback_patch(original_content, patch_content, mode, anchor)
             
             if patch_content and not self._validate_ast_integrity(patch_content):
-                logger.warning("Patch content has syntax errors; using string fallback")
+                Logger.warning("Patch content has syntax errors; using string fallback")
                 return self._string_fallback_patch(original_content, patch_content, mode, anchor)
             
             # Parse both trees
@@ -629,7 +629,7 @@ class HealerAgent:
             return self._string_fallback_patch(original_content, patch_content, mode, anchor)
             
         except Exception as e:
-            logger.warning(f"Structural patch failed: {e}; using string fallback")
+            Logger.warning(f"Structural patch failed: {e}; using string fallback")
             return self._string_fallback_patch(original_content, patch_content, mode, anchor)
 
     def _find_block_end(self, lines: List[str], start_idx: int) -> int:
@@ -684,10 +684,10 @@ class HealerAgent:
                 except Exception:
                     continue
         
-        guidance = "agentic_core/utils"
+        guidance = "AgenticCore/utils"
         if combined_preview.strip():
-            guidance = self.naming_agent.get_placement_guidance(combined_preview)
-            # Extract domain stem (e.g., "agentic_core/L3_orchestration" -> "orchestrator")
+            guidance = self.NamingAgent.get_placement_guidance(combined_preview)
+            # Extract domain stem (e.g., "AgenticCore/L3_orchestration" -> "orchestrator")
             suggested_domain = guidance.split("/")[-1] if "/" in guidance else "component"
         else:
             suggested_domain = "merged"
@@ -720,7 +720,7 @@ class HealerAgent:
                     file_path.unlink()
                     action["applied"] = True
                     self.deletions_applied += 1
-                    logger.info(f"[DELETED] Pruned dead file: {file_path.name}")
+                    Logger.info(f"[DELETED] Pruned dead file: {file_path.name}")
                 except Exception as e:
                     action["reason"] = str(e)
             
@@ -805,11 +805,11 @@ class HealerAgent:
                     consumer_path.write_text("".join(lines), encoding="utf-8")
                     action["applied"] = True
                     action["added_imports"].append(import_stmt.strip())
-                    logger.info(f"[CROSS_IMPORT] Updated {consumer_path.name}")
+                    Logger.info(f"[CROSS_IMPORT] Updated {consumer_path.name}")
                 
                 actions.append(action)
             except Exception as e:
-                logger.error(f"Cross-import update failed for {consumer_path}: {e}")
+                Logger.error(f"Cross-import update failed for {consumer_path}: {e}")
         return actions
 
     def _update_imports_after_change(self, affected_dir: Path, old_files: List[Path], new_file: Path, moved_symbols: Set[str]) -> List[Dict[str, Any]]:
@@ -825,7 +825,7 @@ class HealerAgent:
         if layer_dir and layer_dir != affected_dir:
             # If new_file is in a different layer, limit scope to that layer
             scan_dir = layer_dir
-            logger.info(f"[IMPORT_SCOPE] Limiting import updates to layer: {layer_dir.name}")
+            Logger.info(f"[IMPORT_SCOPE] Limiting import updates to layer: {layer_dir.name}")
         else:
             scan_dir = affected_dir
 
@@ -871,7 +871,7 @@ class HealerAgent:
                     consumer_path.write_text("".join(lines), encoding="utf-8")
                     action["added_imports"].append(import_stmt.strip())
                     action["applied"] = True
-                    logger.info(f"[IMPORT_FIX] Updated {consumer_path.name} -> {new_module_name}")
+                    Logger.info(f"[IMPORT_FIX] Updated {consumer_path.name} -> {new_module_name}")
                 except Exception as e:
                     action["reason"] = f"Update failed: {e}"
 
@@ -903,7 +903,7 @@ class HealerAgent:
         actions = []
         for file_path in large_files:
             if self.fissions_applied >= self.max_fissions:
-                logger.warning("[HealerAgent] Max fissions reached")
+                Logger.warning("[HealerAgent] Max fissions reached")
                 break
 
             try:
@@ -917,7 +917,7 @@ class HealerAgent:
                         "file": str(file_path),
                         "reason": "File not in recognized layer structure - fission restricted"
                     })
-                    logger.warning(f"[FISSION_BLOCKED] {file_path.name} not in layer structure")
+                    Logger.warning(f"[FISSION_BLOCKED] {file_path.name} not in layer structure")
                     continue
                 
                 lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -978,7 +978,7 @@ class HealerAgent:
                             new_path = file_path.parent / new_name
                             
                             if not new_path.is_relative_to(allowed_target_dir):
-                                logger.error(f"[FISSION_BLOCKED] Target {new_path} outside layer {layer}")
+                                Logger.error(f"[FISSION_BLOCKED] Target {new_path} outside layer {layer}")
                                 raise ValueError(f"Fission target outside allowed layer directory: {layer}")
                             
                             new_path.write_text(chunk_content, encoding="utf-8")
@@ -1005,7 +1005,7 @@ class HealerAgent:
                     
                     action["applied"] = True
                     self.fissions_applied += 1
-                    logger.info(f"[FISSION] Split {file_path.name} into {len(valid_splits)} modules")
+                    Logger.info(f"[FISSION] Split {file_path.name} into {len(valid_splits)} modules")
                     
                     # [HARDENING 9] Log structural change
                     if self.audit:
@@ -1028,7 +1028,7 @@ class HealerAgent:
 
                 actions.append(action)
             except Exception as e:
-                logger.error(f"[HealerAgent] Fission failed for {file_path}: {e}")
+                Logger.error(f"[HealerAgent] Fission failed for {file_path}: {e}")
 
         return actions
 
@@ -1036,10 +1036,10 @@ class HealerAgent:
         """Orchestrate all healing actions with tracing and telemetry."""
         trace_ctx = self.tracing.create_span("healing_mission") if self.tracing else nullcontext()
         
-        with trace_ctx as span:
-            if span:
-                span.set_attribute("violations_in", len(violations))
-                span.set_attribute("large_files", len(large_files or []))
+        with trace_ctx as Span:
+            if Span:
+                Span.set_attribute("violations_in", len(violations))
+                Span.set_attribute("large_files", len(large_files or []))
 
             move_violations = [v for v in violations if "VIOLATION" in v[1] and ("depth" in v[1].lower() or "placement" in v[1].lower())]
             import_violations = [] 
@@ -1071,9 +1071,9 @@ class HealerAgent:
                 self.metrics.increment("healing.actions_total", results["total_actions"])
                 self.metrics.increment("healing.fissions", len(results["fissions"]))
 
-            if span:
-                span.set_attribute("actions_applied", results["total_actions"])
-                span.set_status("SUCCESS" if results["total_actions"] > 0 else "OK")
+            if Span:
+                Span.set_attribute("actions_applied", results["total_actions"])
+                Span.set_status("SUCCESS" if results["total_actions"] > 0 else "OK")
 
             return results
 

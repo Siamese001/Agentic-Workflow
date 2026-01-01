@@ -4,11 +4,11 @@ Determine if any review_pending files have MORE content than approved versions.
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 repo: Any = Path('c:/Git/Agentic-Workflow')
 review_pending: Any = REPO / 'config/review_pending'
-approved_folders: Any = ['agentic_core', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
+approved_folders: Any = ['AgenticCore', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
 
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
@@ -126,24 +126,24 @@ def main() -> None:
     pending_same_or_less: Any = categories['same_or_less']
     pending_unique_with_code: Any = categories['unique_with_code']
     pending_unique_stub: Any = categories['unique_stub']
-    logger.info(f'\nFiles with more code than approved versions ({len(pending_has_more_code)}):')
+    Logger.info(f'\nFiles with more code than approved versions ({len(pending_has_more_code)}):')
     for f in pending_has_more_code[:20]:
-        logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
-    logger.info(f'\nStubs replacing real code ({len(pending_is_stub)}):')
+        Logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
+    Logger.info(f'\nStubs replacing real code ({len(pending_is_stub)}):')
     for f in pending_is_stub[:20]:
-        logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
-    logger.info(f'\nUnique files with real code ({len(pending_unique_with_code)}):')
+        Logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
+    Logger.info(f'\nUnique files with real code ({len(pending_unique_with_code)}):')
     for f in pending_unique_with_code[:20]:
-        logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
-    logger.info(f'\nUnique stub files ({len(pending_unique_stub)}):')
+        Logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
+    Logger.info(f'\nUnique stub files ({len(pending_unique_stub)}):')
     for f in pending_unique_stub[:20]:
-        logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
+        Logger.info(f'  - {f.relative_to(REVIEW_PENDING)}')
     len(pending_files)
     len(pending_is_stub) + len(pending_same_or_less) + len(pending_unique_stub)
     needs_review: Any = len(pending_has_more_code) + len(pending_unique_with_code)
     if needs_review == 0:
-        logger.info('\n✓ All files can be safely archived!')
+        Logger.info('\n✓ All files can be safely archived!')
     else:
-        logger.info(f'\n⚠ {needs_review} files need review before archiving')
+        Logger.info(f'\n⚠ {needs_review} files need review before archiving')
 if __name__ == '__main__':
     main()

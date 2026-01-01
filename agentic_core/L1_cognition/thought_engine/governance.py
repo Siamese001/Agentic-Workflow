@@ -290,10 +290,10 @@ class ArchitectureGovernor:
         Initialize the ArchitectureGovernor.
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
-        self.logger = logging.getLogger(__name__)
+        self.Logger = logging.getLogger(__name__)
 
         # Initialize dependency graph
-        self.dependency_graph = DependencyGraph()
+        self.DependencyGraph = DependencyGraph()
 
         # L6 Root Hygiene Configuration
         # Consolidated ALLOWED_ROOT_FILES from original and _MONOLITH versions
@@ -309,7 +309,7 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
             MAX_DEPTH,
             MAX_LINES,
             MIN_DEPTH,
@@ -357,7 +357,7 @@ class ArchitectureGovernor:
         # Filter to unique files
         all_files = list(set(all_files))
 
-        self.dependency_graph.build(all_files, str(self.root_dir))
+        self.DependencyGraph.build(all_files, str(self.root_dir))
 
     def check_root_hygiene(self, auto_sanitize: bool = True) -> List[str]:
         """
@@ -503,8 +503,8 @@ class ArchitectureGovernor:
         path = Path(file_path)
 
         # Check if already compliant
-        violation = self.check_depth_law(str(path))
-        if not violation:
+        Violation = self.check_depth_law(str(path))
+        if not Violation:
             return None
 
         # Check if in sovereign directory (don't move)
@@ -513,9 +513,9 @@ class ArchitectureGovernor:
                 return None
 
         # Determine correct depth
-        if "too shallow" in violation.lower():
+        if "too shallow" in Violation.lower():
             # Move deeper (create subdirectories)
-            target_dir = self.root_dir / "agentic_core" / "L1_cognition"
+            target_dir = self.root_dir / "AgenticCore" / "L1_cognition"
             target_dir.mkdir(parents=True, exist_ok=True)
             target = target_dir / path.name
         else:
@@ -654,9 +654,9 @@ class ArchitectureGovernor:
 
         # Check nesting depth
         nesting_violations = self._check_nesting_depth(file_path)
-        for violation in nesting_violations:
-            violation["type"] = "nesting"
-            violations.append(violation)
+        for Violation in nesting_violations:
+            Violation["type"] = "nesting"
+            violations.append(Violation)
 
         return violations
 
@@ -670,14 +670,14 @@ class ArchitectureGovernor:
         Returns:
             Dictionary with impact analysis
         """
-        if not self.dependency_graph._built:
+        if not self.DependencyGraph._built:
             self.build_graph()
 
         total_impacted = set()
         file_impacts = {}
 
         for file_path in modified_files:
-            impacted = self.dependency_graph.get_impact_radius(file_path)
+            impacted = self.DependencyGraph.get_impact_radius(file_path)
             total_impacted.update(impacted)
             file_impacts[file_path] = {
                 "direct_count": len(impacted),
@@ -687,7 +687,7 @@ class ArchitectureGovernor:
         return {
             "modified_count": len(modified_files),
             "total_impacted": len(total_impacted),
-            "blast_radius": sorted(list(total_impacted)),
+            "BlastRadius": sorted(list(total_impacted)),
             "file_details": file_impacts
         }
 
@@ -708,7 +708,7 @@ class ArchitectureGovernor:
             "atomicity_violations": [],
             "complexity_violations": [],
             "enforced_actions": [],
-            "blast_radius": None,
+            "BlastRadius": None,
             "overall_status": "PASS"
         }
 
@@ -719,9 +719,9 @@ class ArchitectureGovernor:
         if file_paths:
             for file_path in file_paths:
                 # Check depth
-                violation = self.check_depth_law(file_path)
-                if violation:
-                    report["depth_violations"].append(violation)
+                Violation = self.check_depth_law(file_path)
+                if Violation:
+                    report["depth_violations"].append(Violation)
 
                     # Enforce if requested
                     if enforce:
@@ -730,9 +730,9 @@ class ArchitectureGovernor:
                             report["enforced_actions"].append(f"Moved {file_path} to {new_path}")
 
                 # Check atomicity
-                violation = self.check_atomicity_law(file_path)
-                if violation:
-                    report["atomicity_violations"].append(violation)
+                Violation = self.check_atomicity_law(file_path)
+                if Violation:
+                    report["atomicity_violations"].append(Violation)
 
                 # Check complexity
                     complexity_violations = self.check_complexity(file_path)
@@ -741,7 +741,7 @@ class ArchitectureGovernor:
 
         # Calculate blast radius if files provided
         if file_paths:
-            report["blast_radius"] = self.get_blast_radius(file_paths)
+            report["BlastRadius"] = self.get_blast_radius(file_paths)
 
         # Determine overall status
         if (report["root_violations"] or report["depth_violations"] or

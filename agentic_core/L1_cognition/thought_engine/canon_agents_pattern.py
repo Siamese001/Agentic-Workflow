@@ -21,15 +21,15 @@ class SubAtomicAgent:
         self.agent = type('Agent', (), {'name': 'PatternAgent'})()
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
-class pattern_enforcer:
+class PatternEnforcer:
     """
     Enforces coding patterns and best practices across Python files.
 
@@ -66,11 +66,11 @@ class pattern_enforcer:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return ast.parse(f.read(), filename=filepath)
         except FileNotFoundError:
-            logger.warning(f'File not found: {filepath}')
+            Logger.warning(f'File not found: {filepath}')
         except SyntaxError as e:
-            logger.error(f'Syntax error in {filepath}: {e}')
+            Logger.error(f'Syntax error in {filepath}: {e}')
         except Exception as e:
-            logger.error(f'Error parsing AST for {filepath}: {e}')
+            Logger.error(f'Error parsing AST for {filepath}: {e}')
         return None
 
     def _read_file_lines(self, filepath: str) -> List[str] | None:
@@ -79,9 +79,9 @@ class pattern_enforcer:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return f.readlines()
         except FileNotFoundError:
-            logger.warning(f'File not found: {filepath}')
+            Logger.warning(f'File not found: {filepath}')
         except Exception as e:
-            logger.error(f'Error reading lines from {filepath}: {e}')
+            Logger.error(f'Error reading lines from {filepath}: {e}')
         return None
 
     def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
@@ -245,7 +245,7 @@ class pattern_enforcer:
         return (len(violations) == 0, violations)
 
 # NOT_AN_AGENT — legacy L1 class, placeholder for Figma MCP — excluded from discovery
-class ui_validation_agent(SubAtomicAgent):
+class UiValidationAgent(SubAtomicAgent):
     """
     ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.
     """
@@ -267,7 +267,7 @@ class ui_validation_agent(SubAtomicAgent):
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class semantic_mapper:
+class SemanticMapper:
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """

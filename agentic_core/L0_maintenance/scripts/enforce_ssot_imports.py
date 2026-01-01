@@ -8,11 +8,11 @@ import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
+AGENTIC_CORE = PROJECT_ROOT / "AgenticCore"
 
 # The SSOT import block to add
 SSOT_IMPORT = '''# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -22,7 +22,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 LAYER_PATTERN = re.compile(r'L[0-5]_')
 
 # Pattern to detect existing SSOT import
-SSOT_IMPORT_PATTERN = re.compile(r'from agentic_core\.config\.blueprint_sovereign\.structure_blueprint')
+SSOT_IMPORT_PATTERN = re.compile(r'from AgenticCore\.config\.blueprint_sovereign\.structure_blueprint')
 
 def needs_ssot_import(content: str) -> bool:
     """Check if file references layers but doesn't import SSOT."""
@@ -68,7 +68,7 @@ def add_ssot_import(file_path: Path) -> bool:
     return True
 
 def main():
-    """Process all Python files in agentic_core, tests, apps_shared, apps_rg, apps_lic."""
+    """Process all Python files in AgenticCore, tests, apps_shared, apps_rg, apps_lic."""
     updated = 0
     skipped = 0
     

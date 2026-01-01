@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
-# NAMING FIXED: IValidationContext → i_validation_context
-class i_validation_context(Protocol):
+# NAMING FIXED: IValidationContext → IValidationContext
+class IValidationContext(Protocol):
     '''Brief description of functionality and purpose.'''
     
     cycle_id: Optional[int]
@@ -26,8 +26,8 @@ class i_validation_context(Protocol):
     def mark_flapping(self, file_path: str): ...
                     
 
-# NAMING FIXED: IValidationContextManager → i_validation_context_manager
-class i_validation_context_manager(Protocol):
+# NAMING FIXED: IValidationContextManager → IValidationContextManager
+class IValidationContextManager(Protocol):
     '''Brief description of functionality and purpose.'''
     
     current_context: Optional[IValidationContext]
@@ -43,12 +43,12 @@ class i_validation_context_manager(Protocol):
     def load_memory(self) -> bool: ...
                     
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: Historian → historian
-class historian:
+# NAMING FIXED: Historian → Historian
+class Historian:
     """
     Tracks validation history and optimizes file scanning.
 
@@ -364,11 +364,11 @@ def initialize_historian(context_manager: IValidationContextManager, memory_dir:
 # Convenience functions
 def should_skip_file(file_path: Path) -> bool:
     """Check if a file should be skipped."""
-    historian = get_historian()
-    return historian.should_skip_file(file_path)
+    Historian = get_historian()
+    return Historian.should_skip_file(file_path)
 
 
 def record_validation_result(file_path: Path, status: str, violations: List = None):
     """Record validation result for a file."""
-    historian = get_historian()
-    historian.record_file_result(file_path, status, violations)
+    Historian = get_historian()
+    Historian.record_file_result(file_path, status, violations)

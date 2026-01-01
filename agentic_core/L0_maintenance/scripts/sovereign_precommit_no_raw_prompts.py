@@ -8,7 +8,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
-exempt: Any = {'agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py', 'test_', 'tests/'}
+exempt: Any = {'AgenticCore/prompt_governance/meta_prompts/sovereign_prompt_constitution.py', 'test_', 'tests/'}
 prompt_patterns: Any = ['""".*You are.*"""', "'''.*You are.*'''", '{"role":\\s*"system",\\s*"content":\\s*"', 'f""".*You are.*"""', "f\\'\\'\\'.*You are.*\\'\\'\\'"]
 
 def check_file(filepath: Any) -> Any:
@@ -32,10 +32,10 @@ def check_file(filepath: Any) -> Any:
         if violations:
             print(f'\n❌ SOVEREIGN GUARD VIOLATION: {filepath}')
             print('=' * 80)
-            for violation in violations:
-                print(f"  Line {violation['line']}: {violation['content']}...")
+            for Violation in violations:
+                print(f"  Line {Violation['line']}: {Violation['content']}...")
             print('\n💡 SOLUTION: Register this prompt in:')
-            print('   agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py')
+            print('   AgenticCore/prompt_governance/meta_prompts/sovereign_prompt_constitution.py')
             print("   Then use: get_prompt('YOUR_PROMPT_ID')")
             print('=' * 80)
             return False

@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
-class memory_manager:
+class MemoryManager:
     """
     Manages JSON-based persistence for validation state.
     

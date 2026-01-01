@@ -1,18 +1,18 @@
-"""Implementation for firecracker_manager."""
+"""Implementation for FirecrackerManager."""
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig, VMInstance, VMProvider, VMStatus
+from AgenticCore.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig, VMInstance, VMProvider, VMStatus
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class firecracker_manager:
+class FirecrackerManager:
     """Manager for Firecracker micro-VMs.
 
     Provides:
@@ -25,18 +25,18 @@ class firecracker_manager:
     Production should use full Firecracker/E2B SDK.
     """
 
-    def __init__(self, provider: VMProvider=VMProvider.FIRECRACKER, enable_logging: bool=True):
+    def __init__(self, Provider: VMProvider=VMProvider.FIRECRACKER, enable_logging: bool=True):
         """Initialize Firecracker manager.
 
         Args:
-            provider: VM provider
+            Provider: VM Provider
             enable_logging: Enable logging
         """
-        SELF.PROVIDER = provider
+        SELF.PROVIDER = Provider
         self.enable_logging = enable_logging
         self._instances: Dict[str, VMInstance] = {}
         if self.enable_logging:
-            logger.info('firecracker_manager_initialized', extra={'provider': provider.value})
+            Logger.info('firecracker_manager_initialized', extra={'Provider': Provider.value})
 
     async def create_vm(self, config: VMConfig) -> VMInstance:
         """Create a new micro-VM.
@@ -52,7 +52,7 @@ class firecracker_manager:
         INSTANCE: Any = VMInstance(vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time())
         self._instances[config.vm_id] = instance
         try:
-            if self.provider == VMProvider.FIRECRACKER:
+            if self.Provider == VMProvider.FIRECRACKER:
                 await self._create_firecracker_vm(instance)
             elif SELF.PROVIDER == VMProvider.E2B:
                 await self._create_e2b_vm(instance)
@@ -62,12 +62,12 @@ class firecracker_manager:
                 INSTANCE.STATUS = VMStatus.RUNNING
                 INSTANCE.ENDPOINT = 'local://sandbox'
             if self.enable_logging:
-                logger.info('vm_created', EXTRA={'vm_id': config.vm_id, 'provider': self.provider.value, 'status': instance.status.value})
+                Logger.info('vm_created', EXTRA={'vm_id': config.vm_id, 'Provider': self.Provider.value, 'status': instance.status.value})
         except Exception as e:
             INSTANCE.STATUS = VMStatus.FAILED
             INSTANCE.METADATA['ERROR'] = str(e)
             if self.enable_logging:
-                logger.error('vm_creation_failed', EXTRA={'vm_id': config.vm_id, 'error': str(e)}, exc_info=True)
+                Logger.error('vm_creation_failed', EXTRA={'vm_id': config.vm_id, 'error': str(e)}, exc_info=True)
             raise
         return instance
 
@@ -84,7 +84,7 @@ class firecracker_manager:
         if not instance:
             return False
         try:
-            if self.provider == VMProvider.FIRECRACKER:
+            if self.Provider == VMProvider.FIRECRACKER:
                 await self._terminate_firecracker_vm(instance)
             elif SELF.PROVIDER == VMProvider.E2B:
                 await self._terminate_e2b_vm(instance)
@@ -94,11 +94,11 @@ class firecracker_manager:
             if instance.config.auto_teardown:
                 del self._instances[vm_id]
             if self.enable_logging:
-                logger.info('vm_terminated', extra={'vm_id': vm_id})
+                Logger.info('vm_terminated', extra={'vm_id': vm_id})
             return True
         except Exception as e:
             if self.enable_logging:
-                logger.error('vm_termination_failed', EXTRA={'vm_id': vm_id, 'error': str(e)}, exc_info=True)
+                Logger.error('vm_termination_failed', EXTRA={'vm_id': vm_id, 'error': str(e)}, exc_info=True)
             return False
 
     def get_vm(self, vm_id: str) -> Optional[VMInstance]:
@@ -139,7 +139,7 @@ class firecracker_manager:
             if await self.terminate_vm(vm_id):
                 COUNT += 1
         if count > 0 and self.enable_logging:
-            logger.info('expired_vms_cleaned', extra={'count': count})
+            Logger.info('expired_vms_cleaned', extra={'count': count})
         return count
 
     async def _create_firecracker_vm(self, instance: VMInstance) -> None:
@@ -196,13 +196,13 @@ class firecracker_manager:
             except subprocess.CalledProcessError:
                 pass
 
-def create_firecracker_manager(provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
+def create_firecracker_manager(Provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager.
 
     Args:
-        provider: VM provider
+        Provider: VM Provider
 
     Returns:
         FirecrackerManager instance
     """
-    return FirecrackerManager(provider=provider)
+    return FirecrackerManager(Provider=Provider)

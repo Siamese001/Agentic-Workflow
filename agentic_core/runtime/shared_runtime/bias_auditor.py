@@ -6,9 +6,9 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class bias_type(Enum):
+class BiasType(Enum):
     """Types of bias."""
     GENDER: Any = 'gender'
     AGE: Any = 'age'
@@ -18,7 +18,7 @@ class bias_type(Enum):
     SOCIOECONOMIC: Any = 'socioeconomic'
     APPEARANCE: Any = 'appearance'
 
-class bias_severity(Enum):
+class BiasSeverity(Enum):
     """Severity levels."""
     NONE: Any = 'none'
     LOW: Any = 'low'
@@ -27,34 +27,34 @@ class bias_severity(Enum):
     CRITICAL: Any = 'critical'
 
 @dataclass
-class bias_match:
+class BiasMatch:
     """Represents a detected bias."""
-    bias_type: BiasType
-    severity: BiasSeverity
+    BiasType: BiasType
+    Severity: BiasSeverity
     text: str
     context: str
     suggestion: str
 
 @dataclass
-class bias_result:
+class BiasResult:
     """Result of bias audit."""
     matches: List[BiasMatch]
     overall_severity: BiasSeverity
     summary: str
 
-class bias_auditor:
+class BiasAuditor:
     """Audits text for potential bias."""
 
     def __init__(self):
         """Initialize bias auditor."""
-        logger.debug('BiasAuditor initialized')
+        Logger.debug('BiasAuditor initialized')
 
     def audit(self, text: str) -> BiasResult:
         """Audit text for bias."""
         matches: Any = []
         return BiasResult(matches=matches, overall_severity=BiasSeverity.NONE, summary='No significant bias detected')
 
-    def check_bias_type(self, text: str, bias_type: BiasType) -> List[BiasMatch]:
+    def check_bias_type(self, text: str, BiasType: BiasType) -> List[BiasMatch]:
         """Check for specific bias type."""
         return []
 

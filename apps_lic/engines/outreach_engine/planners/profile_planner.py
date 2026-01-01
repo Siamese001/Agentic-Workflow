@@ -1,4 +1,4 @@
-"""Profile Planner - L1 planning for profile analysis and archetype inference.
+"""Profile Planner - L1 planning for profile analysis and Archetype inference.
 
 Incorporated from L1 lic_profile_planner.py to provide deterministic profile
 planning that maps LinkedIn/CRM profile fields to LIC archetypes, seniority
@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 import logging
 import scripts.validation.check_canonical_structure
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -40,7 +40,7 @@ class ProfilePlan:
 
 
 class ProfilePlanner:
-    """L1 pure planner for profile analysis and archetype inference.
+    """L1 pure planner for profile analysis and Archetype inference.
     
     Generates deterministic profile plans by analyzing LinkedIn/CRM fields
     and mapping them to LIC archetypes and seniority levels.
@@ -106,14 +106,14 @@ class ProfilePlanner:
             outreach_context: Optional context with explicit overrides
             
         Returns:
-            Complete profile plan with archetype, seniority, and signals
+            Complete profile plan with Archetype, seniority, and signals
         """
         outreach_context = outreach_context or {}
         
         # 1. Extract signals from profile
         signals = self._extract_profile_signals(recipient_profile)
         
-        # 2. Infer archetype from signals
+        # 2. Infer Archetype from signals
         inferred_archetype = self._infer_archetype(signals)
         
         # 3. Determine seniority level
@@ -126,7 +126,7 @@ class ProfilePlanner:
         
         # 5. Apply explicit overrides
         overrides = outreach_context.get("overrides", {})
-        final_archetype = overrides.get("archetype", inferred_archetype)
+        final_archetype = overrides.get("Archetype", inferred_archetype)
         final_seniority = overrides.get("seniority", seniority_level)
         
         # 6. Calculate confidence score
@@ -212,11 +212,11 @@ class ProfilePlanner:
             edu_signal = self._analyze_education_level(education)
             signals.append(edu_signal)
         
-        logger.debug(f"Extracted {len(signals)} profile signals")
+        Logger.debug(f"Extracted {len(signals)} profile signals")
         return signals
     
     def _extract_title_keywords(self, title: str) -> List[str]:
-        """Extract archetype-relevant keywords from title."""
+        """Extract Archetype-relevant keywords from title."""
         keywords = []
         title_lower = title.lower()
         
@@ -351,7 +351,7 @@ class ProfilePlanner:
         )
     
     def _score_keyword(self, keyword: str, confidence: float, scores: Dict[str, float]) -> None:
-        """Score a keyword against archetype categories."""
+        """Score a keyword against Archetype categories."""
         if keyword in self.executive_keywords:
             scores["executive"] += confidence
         elif keyword in self.senior_ta_keywords:
@@ -360,7 +360,7 @@ class ProfilePlanner:
             scores["recruiter"] += confidence
     
     def _determine_archetype_from_scores(self, scores: Dict[str, float]) -> str:
-        """Determine archetype from scores."""
+        """Determine Archetype from scores."""
         if scores["executive"] >= scores["senior_ta"] and scores["executive"] >= scores["recruiter"]:
             return "EXECUTIVE"
         elif scores["senior_ta"] >= scores["recruiter"]:
@@ -370,7 +370,7 @@ class ProfilePlanner:
         return "OTHER"
     
     def _infer_archetype(self, signals: List[ProfileSignal]) -> str:
-        """Infer archetype from profile signals."""
+        """Infer Archetype from profile signals."""
         scores = {"executive": 0, "senior_ta": 0, "recruiter": 0}
         
         for signal in signals:
@@ -441,18 +441,18 @@ class ProfilePlanner:
         
         return "other"
     
-    def _assess_decision_authority(self, seniority: str, company_size: str, archetype: str) -> str:
-        """Assess decision authority based on seniority, company size, and archetype."""
+    def _assess_decision_authority(self, seniority: str, company_size: str, Archetype: str) -> str:
+        """Assess decision authority based on seniority, company size, and Archetype."""
         if seniority == "C_LEVEL":
             return "high"
         elif seniority in ["VP", "DIRECTOR"]:
             return "medium"
-        elif archetype == "EXECUTIVE" and company_size in ["startup", "small"]:
+        elif Archetype == "EXECUTIVE" and company_size in ["startup", "small"]:
             return "medium"
         else:
             return "low"
     
-    def _calculate_confidence_score(self, signals: List[ProfileSignal], archetype: str, seniority: str) -> float:
+    def _calculate_confidence_score(self, signals: List[ProfileSignal], Archetype: str, seniority: str) -> float:
         """Calculate overall confidence score."""
         if not signals:
             return 0.0
@@ -460,8 +460,8 @@ class ProfilePlanner:
         # Base confidence from signal count and quality
         avg_signal_confidence = sum(s.confidence for s in signals) / len(signals)
         
-        # Boost for clear archetype match
-        archetype_boost = 0.2 if archetype != "OTHER" else 0.0
+        # Boost for clear Archetype match
+        archetype_boost = 0.2 if Archetype != "OTHER" else 0.0
         
         # Boost for specific seniority
         seniority_boost = 0.1 if seniority != "IC" else 0.0
@@ -485,19 +485,19 @@ class ProfilePlanner:
         try:
             if self.telemetry_bus:
                 self.telemetry_bus.record("profile_plan_created", {
-                    "archetype": plan.inferred_archetype,
+                    "Archetype": plan.inferred_archetype,
                     "seniority": plan.seniority_level,
                     "confidence": plan.confidence_score,
                     "signal_count": len(plan.signals)
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+            Logger.debug(f"Failed to record telemetry: {e}")
     
     def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, object]:
         """Get a summary of the profile plan for debugging/telemetry."""
         return {
             "plan_id": f"profile_{plan.inferred_archetype}_{plan.seniority_level}",
-            "archetype": plan.inferred_archetype,
+            "Archetype": plan.inferred_archetype,
             "seniority": plan.seniority_level,
             "confidence": plan.confidence_score,
             "company_size": plan.company_size,

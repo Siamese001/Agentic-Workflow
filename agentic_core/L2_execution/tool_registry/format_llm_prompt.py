@@ -1,5 +1,5 @@
 """
-format_llm_prompt.py - Formatting Module
+FormatLlmPrompt.py - Formatting Module
 
 Domain: resume
 Generated: 2025-12-07T13:29:00.517863
@@ -7,15 +7,15 @@ Generated: 2025-12-07T13:29:00.517863
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class format_llm_prompt:
+class FormatLlmPrompt:
     """Formatter for resume domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     self.format_type = self.config.get('format', 'default')
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
     """Format input data into the required output structure."""
@@ -29,6 +29,6 @@ def _transform(self: Any, data: Union[str, Dict]) -> object:
         return data.strip()
     return data
 
-def format_data(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
+def FormatData(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
     """Format input data into the required output structure."""
     return FormatLlmPrompt(config).format(data)

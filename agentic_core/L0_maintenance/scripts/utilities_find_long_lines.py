@@ -3,7 +3,7 @@ import logging
 import os
 from services.configuration import ConfigurationService
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def find_long_lines() -> None:
     """Find all lines longer than 100 characters."""
@@ -22,11 +22,11 @@ def find_long_lines() -> None:
                         for line_num, line in enumerate(f, 1):
                             if len(line.rstrip()) > 100:
                                 ConfigurationService().violations.append(f'{file}:{line_num} - {len(line.rstrip())} chars')
-                                ConfigurationService().logger.info(f'{file}:{line_num} - {len(line.rstrip())} chars')
-                                ConfigurationService().logger.info(f'  {line[:150]}...')
-                                ConfigurationService().logger.info('')
+                                ConfigurationService().Logger.info(f'{file}:{line_num} - {len(line.rstrip())} chars')
+                                ConfigurationService().Logger.info(f'  {line[:150]}...')
+                                ConfigurationService().Logger.info('')
                 except Exception:
-                    ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'\nTotal violations: {len(ConfigurationService().violations)}')
+                    ConfigurationService().Logger.warning('Swallowed exception', exc_info=True)
+    ConfigurationService().Logger.info(f'\nTotal violations: {len(ConfigurationService().violations)}')
 if __name__ == '__main__':
     find_long_lines()

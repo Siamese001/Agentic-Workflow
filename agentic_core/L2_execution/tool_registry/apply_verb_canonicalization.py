@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 '\nVerb canonicalization for resume bullet points.\n\nCanonicalizes action verbs to approved list and detects forbidden verbs.\n'
 from typing import Dict, List
 
-class verb_canonicalizer:
+class VerbCanonicalizer:
     """Canonicalize action verbs to approved list."""
     _CANONICAL_VERBS: Dict[str, List[str]] = {'led': ['led', 'lead', 'leading'], 'built': ['built', 'build', 'building'], 'drove': ['drove', 'drive', 'driving'], 'launched': ['launched', 'launch', 'launching'], 'scaled': ['scaled', 'scale', 'scaling'], 'delivered': ['delivered', 'deliver', 'delivering'], 'achieved': ['achieved', 'achieve', 'achieving'], 'established': ['established', 'establish', 'establishing'], 'managed': ['managed', 'manage', 'managing'], 'developed': ['developed', 'develop', 'developing']}
     _FORBIDDEN_VERBS: List[str] = ['pioneered', 'spearheaded', 'orchestrated', 'architected', 'revolutionized', 'transformed']

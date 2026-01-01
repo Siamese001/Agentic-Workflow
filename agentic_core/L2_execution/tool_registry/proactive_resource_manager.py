@@ -11,10 +11,10 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class resource_metrics:
+class ResourceMetrics:
     """Tracks resource usage metrics."""
     timestamp: datetime
     healing_attempts: int
@@ -25,7 +25,7 @@ class resource_metrics:
     budget_utilization: float
 
 @dataclass
-class resource_threshold:
+class ResourceThreshold:
     """Resource usage thresholds."""
     max_healing_per_file: int = 8
     global_healing_budget: int = 50
@@ -34,7 +34,7 @@ class resource_threshold:
     budget_critical_threshold: float = 0.95
     min_success_rate: float = 0.3
 
-class proactive_resource_manager:
+class ProactiveResourceManager:
     """
     Manages healing resources proactively to prevent exhaustion.
     
@@ -63,17 +63,17 @@ class proactive_resource_manager:
         self.mutation_cycle = 180
         self._mutation_task = None
         self.l1_learner = None
-        logger.info('Proactive Resource Manager initialized')
+        Logger.info('Proactive Resource Manager initialized')
 
     def awaken(self, learner_instance: Any=None) -> Any:
         """L2: Wake with injected L1 wisdom"""
         self.l1_learner = learner_instance
         if self.mutation_active and (not self._mutation_task):
             self._mutation_task = asyncio.create_task(self.l1_guided_mutation_cycle())
-            logger.info('L2: Resource-aware mutation engine awakened with L1 guidance')
+            Logger.info('L2: Resource-aware mutation engine awakened with L1 guidance')
 
     def _initialize_priority_weights(self) -> Dict[int, float]:
-        """Initialize priority weights for different violation keys."""
+        """Initialize priority weights for different Violation keys."""
         return {0: 1.0, 6: 1.0, 40: 0.9, 42: 0.8, 49: 0.9, 50: 0.95}
 
     def can_attempt_healing(self, file_path: str, violation_key: int) -> Tuple[bool, str]:
@@ -119,20 +119,20 @@ class proactive_resource_manager:
         self.success_history.append(1 if success else 0)
         self._record_metrics()
         if success:
-            logger.info(f'Healing success: {os.path.basename(file_path)} (Key {violation_key}, {rounds_taken} rounds)')
+            Logger.info(f'Healing success: {os.path.basename(file_path)} (Key {violation_key}, {rounds_taken} rounds)')
         else:
-            logger.warning(f'Healing failed: {os.path.basename(file_path)} (Key {violation_key})')
+            Logger.warning(f'Healing failed: {os.path.basename(file_path)} (Key {violation_key})')
         self._check_and_adjust_thresholds()
 
     def start_healing(self, file_path: str) -> Any:
         """Mark a healing operation as started."""
         self.active_healings += 1
-        logger.debug(f'Active healings: {self.active_healings}')
+        Logger.debug(f'Active healings: {self.active_healings}')
 
     def end_healing(self, file_path: str) -> Any:
         """Mark a healing operation as ended."""
         self.active_healings = max(0, self.active_healings - 1)
-        logger.debug(f'Active healings: {self.active_healings}')
+        Logger.debug(f'Active healings: {self.active_healings}')
 
     def _record_metrics(self):
         """Record current resource metrics."""
@@ -155,17 +155,17 @@ class proactive_resource_manager:
             old_budget = self.thresholds.global_healing_budget
             self.thresholds.global_healing_budget = min(100, int(old_budget * 1.2))
             if self.thresholds.global_healing_budget != old_budget:
-                logger.info(f'Increased global budget: {old_budget} → {self.thresholds.global_healing_budget}')
+                Logger.info(f'Increased global budget: {old_budget} → {self.thresholds.global_healing_budget}')
         elif recent_success_rate < 0.4:
             old_budget = self.thresholds.global_healing_budget
             self.thresholds.global_healing_budget = max(20, int(old_budget * 0.8))
             if self.thresholds.global_healing_budget != old_budget:
-                logger.warning(f'Decreased global budget: {old_budget} → {self.thresholds.global_healing_budget}')
+                Logger.warning(f'Decreased global budget: {old_budget} → {self.thresholds.global_healing_budget}')
         self._last_adjustment = datetime.now()
 
     def get_priority_score(self, file_path: str, violation_key: int) -> float:
         """
-        Calculate priority score for a healing task.
+        Calculate priority score for a healing Task.
         
         Args:
             file_path: Path to file
@@ -185,7 +185,7 @@ class proactive_resource_manager:
 
     def add_to_queue(self, file_path: str, violation_key: int, violation_details: str) -> Any:
         """
-        Add a healing task to the priority queue.
+        Add a healing Task to the priority queue.
         
         Args:
             file_path: Path to file
@@ -193,26 +193,26 @@ class proactive_resource_manager:
             violation_details: Violation description
         """
         priority: Any = self.get_priority_score(file_path, violation_key)
-        task: Any = {'file_path': file_path, 'violation_key': violation_key, 'violation_details': violation_details, 'priority': priority, 'queued_at': datetime.now()}
+        Task: Any = {'file_path': file_path, 'violation_key': violation_key, 'violation_details': violation_details, 'priority': priority, 'queued_at': datetime.now()}
         inserted: Any = False
         for i, existing_task in enumerate(self.healing_queue):
             if priority > existing_task['priority']:
-                self.healing_queue.insert(i, task)
+                self.healing_queue.insert(i, Task)
                 inserted: Any = True
                 break
         if not inserted:
-            self.healing_queue.append(task)
-        logger.debug(f'Added to queue: {os.path.basename(file_path)} (Key {violation_key}, Priority {priority:.2f})')
+            self.healing_queue.append(Task)
+        Logger.debug(f'Added to queue: {os.path.basename(file_path)} (Key {violation_key}, Priority {priority:.2f})')
 
     def get_next_task(self) -> Optional[Dict[str, Any]]:
-        """Get the next healing task from the queue."""
+        """Get the next healing Task from the queue."""
         while self.healing_queue:
-            task: Any = self.healing_queue.popleft()
-            can_heal, reason = self.can_attempt_healing(task['file_path'], task['violation_key'])
+            Task: Any = self.healing_queue.popleft()
+            can_heal, reason = self.can_attempt_healing(Task['file_path'], Task['violation_key'])
             if can_heal:
-                return task
+                return Task
             else:
-                logger.debug(f'Skipping task: {reason}')
+                Logger.debug(f'Skipping Task: {reason}')
         return None
 
     def get_resource_status(self) -> Dict[str, Any]:
@@ -234,11 +234,11 @@ class proactive_resource_manager:
         self.global_healing_count = 0
         self.active_healings = 0
         self.healing_queue.clear()
-        logger.info('Resource counters reset')
+        Logger.info('Resource counters reset')
 
     async def l1_guided_mutation_cycle(self) -> Any:
         """L2: Accept resource recommendations from L1 with confidence-based dampening"""
-        logger.info('L2: L1-guided mutation cycle active')
+        Logger.info('L2: L1-guided mutation cycle active')
         while self.mutation_active:
             try:
                 await asyncio.sleep(300)
@@ -256,7 +256,7 @@ class proactive_resource_manager:
                     if new_budget != old_budget:
                         self.current_global_budget = new_budget
                         self.thresholds.global_healing_budget = new_budget
-                        logger.info(f'L2 MUTATION: Budget adjusted {old_budget} → {new_budget} (success_rate={success_rate:.1%})')
+                        Logger.info(f'L2 MUTATION: Budget adjusted {old_budget} → {new_budget} (success_rate={success_rate:.1%})')
                 if self.l1_learner:
                     try:
                         rec: Any = None
@@ -266,20 +266,20 @@ class proactive_resource_manager:
                                 old_budget: Any = self.current_global_budget
                                 self.current_global_budget += increase
                                 self.thresholds.global_healing_budget = self.current_global_budget
-                                logger.info(f"L2: Applied L1 recommendation: +{increase} budget (confidence={rec['confidence']:.1%})")
+                                Logger.info(f"L2: Applied L1 Recommendation: +{increase} budget (confidence={rec['confidence']:.1%})")
                             elif rec['mutation'] == 'decrease_budget':
                                 decrease: Any = rec.get('suggested_global_decrease', 5)
                                 safety_floor: Any = int(self.base_global_budget * 0.2)
                                 old_budget: Any = self.current_global_budget
                                 self.current_global_budget = max(safety_floor, self.current_global_budget - decrease)
                                 self.thresholds.global_healing_budget = self.current_global_budget
-                                logger.info(f"L2: Applied L1 recommendation: -{decrease} budget (confidence={rec['confidence']:.1%})")
+                                Logger.info(f"L2: Applied L1 Recommendation: -{decrease} budget (confidence={rec['confidence']:.1%})")
                     except Exception as e:
-                        logger.debug(f'L2: L1 guidance unavailable: {e}')
+                        Logger.debug(f'L2: L1 guidance unavailable: {e}')
                 await self.persist_mutation_state()
-                logger.debug('L2: L1-guided mutation cycle completed')
+                Logger.debug('L2: L1-guided mutation cycle completed')
             except Exception as e:
-                logger.error(f'L2 Mutation cycle error: {e}')
+                Logger.error(f'L2 Mutation cycle error: {e}')
                 await asyncio.sleep(60)
 
     async def persist_mutation_state(self) -> Any:
@@ -296,9 +296,9 @@ class proactive_resource_manager:
                 temp_name: Any = tf.name
             import os
             os.replace(temp_name, state_path)
-            logger.debug('L2: Resource state persisted atomically')
+            Logger.debug('L2: Resource state persisted atomically')
         except Exception as e:
-            logger.error(f'L2: Failed to persist resource state: {e}')
+            Logger.error(f'L2: Failed to persist resource state: {e}')
 
     def get_recommendations(self) -> List[str]:
         """Get resource management recommendations."""

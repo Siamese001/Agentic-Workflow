@@ -6,19 +6,19 @@ import time
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 
-# NAMING FIXED: ProcessingResult → processing_result
-class processing_result:
+# NAMING FIXED: ProcessingResult → ProcessingResult
+class ProcessingResult:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, ExecutionContext: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         self.success = success
         self.data = data
         self.error_message = error_message
-        self.execution_context = execution_context
+        self.ExecutionContext = ExecutionContext
         self.additional_info = additional_info
 
-# NAMING FIXED: ExecutionContext → execution_context
-class execution_context:
+# NAMING FIXED: ExecutionContext → ExecutionContext
+class ExecutionContext:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
@@ -42,8 +42,8 @@ class execution_context:
         self.error = error
 
 
-# NAMING FIXED: CheckResumeRules → check_resume_rules
-class check_resume_rules:
+# NAMING FIXED: CheckResumeRules → CheckResumeRules
+class CheckResumeRules:
     """
     Main executor class for check resume rules operations.
 
@@ -60,18 +60,18 @@ class check_resume_rules:
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
         SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
-        if not self.logger.handlers:
+        if not self.Logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             EXECUTOR.setFormatter(FORMATTER) # Corrected executor to EXECUTOR
-            self.logger.addHandler(EXECUTOR) # Corrected executor to EXECUTOR
-            self.logger.setLevel(logging.INFO)
+            self.Logger.addHandler(EXECUTOR) # Corrected executor to EXECUTOR
+            self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
         MISSING = [key for key in required_keys if key not in self.config]
-        if MISSING: # Corrected missing to MISSING
+        if MISSING: # Corrected Missing to MISSING
             raise ValueError(f'Missing required config keys: {MISSING}')
 
     def process(self,
@@ -104,12 +104,12 @@ class check_resume_rules:
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
                 data=RESULT, # Corrected DATA to data, result to RESULT
-                execution_context=exec_ctx,
+                ExecutionContext=exec_ctx,
                 additional_info={'processed_at': time.time(),
                 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
-            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
+            return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(self,
         data: Union[str,

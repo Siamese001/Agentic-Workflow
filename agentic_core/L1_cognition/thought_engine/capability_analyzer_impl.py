@@ -5,17 +5,17 @@ import logging
 import re
 import time
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.planning.capability_analyzer_types import AnalysisReport, CapabilityGap, CapabilityGapType, Recommendation, RecommendationType
+from AgenticCore.L1_cognition.planning.capability_analyzer_types import AnalysisReport, CapabilityGap, CapabilityGapType, Recommendation, RecommendationType
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class capability_analyzer:
+class CapabilityAnalyzer:
     """Analyzes capability gaps and generates improvement recommendations.
 
     Features:
@@ -140,11 +140,11 @@ class capability_analyzer:
         if not failures:
             return None
         gap_type_map = {'missing_tool': CapabilityGapType.MISSING_TOOL, 'insufficient_knowledge': CapabilityGapType.INSUFFICIENT_KNOWLEDGE, 'performance': CapabilityGapType.PERFORMANCE_DEGRADATION, 'reasoning': CapabilityGapType.REASONING_LIMITATION, 'integration': CapabilityGapType.INTEGRATION_FAILURE}
-        gap_type = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)
+        GapType = gap_type_map.get(pattern_type, CapabilityGapType.INTEGRATION_FAILURE)
         scenarios = list(set((f.get('scenario_id', 'unknown') for f in failures)))
-        severity = min(len(failures) / 10.0, 1.0)
+        Severity = min(len(failures) / 10.0, 1.0)
         evidence = [f.get('error_message', '') for f in failures[:5]]
-        gap = CapabilityGap(gap_id=f'gap_{agent_id}_{pattern_type}_{int(time.time())}', gap_type=gap_type, description=f"{pattern_type.replace('_', ' ').title()} detected in {len(failures)} cases", affected_scenarios=scenarios, failure_count=len(failures), severity=severity, evidence=evidence)
+        gap = CapabilityGap(gap_id=f'gap_{agent_id}_{pattern_type}_{int(time.time())}', GapType=GapType, description=f"{pattern_type.replace('_', ' ').title()} detected in {len(failures)} cases", affected_scenarios=scenarios, failure_count=len(failures), Severity=Severity, evidence=evidence)
         return gap
 
     def _generate_recommendations_for_gap(self, gap: CapabilityGap) -> List[Recommendation]:
@@ -157,17 +157,17 @@ class capability_analyzer:
             List of recommendations
         """
         recommendations: List[Recommendation] = []
-        if gap.gap_type == CapabilityGapType.MISSING_TOOL:
-            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_add_tool', recommendation_type=RecommendationType.ADD_TOOL, title='Add Missing Tool', description=f"Add tool to handle scenarios: {', '.join(gap.affected_scenarios[:3])}", addresses_gaps=[gap.gap_id], priority=gap.severity, implementation_steps=['Identify required tool functionality', 'Search tool registry or implement custom tool', 'Integrate tool with action plane', 'Test in Agent Gym'], estimated_impact=0.8)
+        if gap.GapType == CapabilityGapType.MISSING_TOOL:
+            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_add_tool', RecommendationType=RecommendationType.ADD_TOOL, title='Add Missing Tool', description=f"Add tool to handle scenarios: {', '.join(gap.affected_scenarios[:3])}", addresses_gaps=[gap.gap_id], priority=gap.Severity, implementation_steps=['Identify required tool functionality', 'Search tool registry or implement custom tool', 'Integrate tool with action plane', 'Test in Agent Gym'], estimated_impact=0.8)
             recommendations.append(rec)
-        elif gap.gap_type == CapabilityGapType.INSUFFICIENT_KNOWLEDGE:
-            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_update_knowledge', recommendation_type=RecommendationType.UPDATE_KNOWLEDGE, title='# SQL removed: Update Knowledge Base', description='Enhance knowledge base with missing information', addresses_gaps=[gap.gap_id], priority=gap.severity * 0.8, implementation_steps=['Identify knowledge gaps from failures', 'Source authoritative information', '# SQL removed: Update RAG knowledge base', 'Validate with golden datasets'], estimated_impact=0.7)
+        elif gap.GapType == CapabilityGapType.INSUFFICIENT_KNOWLEDGE:
+            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_update_knowledge', RecommendationType=RecommendationType.UPDATE_KNOWLEDGE, title='# SQL removed: Update Knowledge Base', description='Enhance knowledge base with Missing information', addresses_gaps=[gap.gap_id], priority=gap.Severity * 0.8, implementation_steps=['Identify knowledge gaps from failures', 'Source authoritative information', '# SQL removed: Update RAG knowledge base', 'Validate with golden datasets'], estimated_impact=0.7)
             recommendations.append(rec)
-        elif gap.gap_type == CapabilityGapType.PERFORMANCE_DEGRADATION:
-            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_optimize', recommendation_type=RecommendationType.OPTIMIZE_PERFORMANCE, title='Optimize Performance', description='Improve response time and resource usage', addresses_gaps=[gap.gap_id], priority=gap.severity * 0.7, implementation_steps=['Profile execution bottlenecks', 'Optimize slow operations', 'Add caching where appropriate', 'Consider model routing for efficiency'], estimated_impact=0.6)
+        elif gap.GapType == CapabilityGapType.PERFORMANCE_DEGRADATION:
+            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_optimize', RecommendationType=RecommendationType.OPTIMIZE_PERFORMANCE, title='Optimize Performance', description='Improve response time and resource usage', addresses_gaps=[gap.gap_id], priority=gap.Severity * 0.7, implementation_steps=['Profile execution bottlenecks', 'Optimize slow operations', 'Add caching where appropriate', 'Consider model routing for efficiency'], estimated_impact=0.6)
             recommendations.append(rec)
-        elif gap.gap_type == CapabilityGapType.REASONING_LIMITATION:
-            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_retrain', recommendation_type=RecommendationType.RETRAIN_AGENT, title='Retrain Agent in Gym', description='Improve reasoning capabilities through training', addresses_gaps=[gap.gap_id], priority=gap.severity * 0.9, implementation_steps=['Create adversarial scenarios in Agent Gym', 'Run training sessions', 'Analyze performance improvements', 'Deploy if improvements validated'], estimated_impact=0.75)
+        elif gap.GapType == CapabilityGapType.REASONING_LIMITATION:
+            rec = Recommendation(recommendation_id=f'rec_{gap.gap_id}_retrain', RecommendationType=RecommendationType.RETRAIN_AGENT, title='Retrain Agent in Gym', description='Improve reasoning capabilities through training', addresses_gaps=[gap.gap_id], priority=gap.Severity * 0.9, implementation_steps=['Create adversarial scenarios in Agent Gym', 'Run training sessions', 'Analyze performance improvements', 'Deploy if improvements validated'], estimated_impact=0.75)
             recommendations.append(rec)
         return recommendations
 
@@ -182,7 +182,7 @@ class capability_analyzer:
         """
         if not gaps:
             return 1.0
-        total_severity = sum((g.severity for g in gaps))
+        total_severity = sum((g.Severity for g in gaps))
         avg_severity = total_severity / len(gaps)
         health_score = 1.0 - min(avg_severity, 1.0)
         return health_score

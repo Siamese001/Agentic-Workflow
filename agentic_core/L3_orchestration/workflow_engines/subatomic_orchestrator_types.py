@@ -1,4 +1,4 @@
-"""Types and models for subatomic_orchestrator."""
+"""Types and models for SubatomicOrchestrator."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -7,14 +7,14 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: WorkflowType → workflow_type
-class workflow_type(Enum):
+# NAMING FIXED: WorkflowType → WorkflowType
+class WorkflowType(Enum):
     """Types of predefined workflows."""
 
 
 @dataclass
-# NAMING FIXED: WorkflowBlueprint → workflow_blueprint
-class workflow_blueprint:
+# NAMING FIXED: WorkflowBlueprint → WorkflowBlueprint
+class WorkflowBlueprint:
     """Blueprint for a workflow graph."""
 
     _name: str

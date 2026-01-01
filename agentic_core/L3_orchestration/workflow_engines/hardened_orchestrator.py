@@ -2,17 +2,17 @@
 🚀 PHASE 5: THIN WRAPPER - Hardened Workflow Orchestrator
 
 This is now a thin wrapper that delegates to the consolidated orchestrator_main.py
-All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
+All orchestration logic has been moved to AgenticCore/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+Logger: Any = logging.getLogger(__name__)
+from AgenticCore.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 
-class hardened_workflow_orchestrator:
+class HardenedWorkflowOrchestrator:
     """
     Thin wrapper for Hardened Workflow Orchestrator.
     Delegates to ConsolidatedOrchestrator.
@@ -32,16 +32,16 @@ class hardened_workflow_orchestrator:
         self.orchestrator = create_orchestrator(config=config)
         self.workflow_spec = workflow_spec
         self.run_base_dir = run_base_dir
-        logger.info('🔗 HardenedWorkflowOrchestrator wrapper initialized (delegates to orchestrator_main)')
+        Logger.info('🔗 HardenedWorkflowOrchestrator wrapper initialized (delegates to orchestrator_main)')
 
     async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: Dict[str, Any]) -> Dict[str, Any]:
-        """Initialize new workflow or resume from checkpoint (legacy wrapper)."""
-        logger.info(f'🔗 Delegating workflow initialization to orchestrator_main')
+        """Initialize new workflow or resume from Checkpoint (legacy wrapper)."""
+        Logger.info(f'🔗 Delegating workflow initialization to orchestrator_main')
         return context
 
     async def execute_workflow_with_resilience(self, workflow_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute workflow with resilience (delegates to orchestrator_main)."""
-        logger.info(f'🚀 Delegating workflow execution to orchestrator_main')
+        Logger.info(f'🚀 Delegating workflow execution to orchestrator_main')
         results: Any = await self.orchestrator.run_mission(target_path=context.get('target_path'), workflow_id=workflow_id)
         return results
 

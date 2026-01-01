@@ -6,17 +6,17 @@ import logging
 import secrets
 import time
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType, IdentityVerificationResult, TrustDomain
+from AgenticCore.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType, IdentityVerificationResult, TrustDomain
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class spiffe_manager:
+class SpiffeManager:
     """Manager for SPIFFE-based agent identities.
 
     Provides:
@@ -29,21 +29,21 @@ class spiffe_manager:
     Production systems should use full SPIFFE/SPIRE infrastructure.
     """
 
-    def __init__(self, trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600, enable_logging: bool=True):
+    def __init__(self, TrustDomain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600, enable_logging: bool=True):
         """Initialize SPIFFE manager.
 
         Args:
-            trust_domain: Default trust domain
+            TrustDomain: Default trust domain
             default_ttl_seconds: Default identity TTL
             enable_logging: Enable logging
         """
-        self.trust_domain = trust_domain
+        self.TrustDomain = TrustDomain
         self.default_ttl_seconds = default_ttl_seconds
         self.enable_logging = enable_logging
         self._identities: Dict[str, AgentIdentity] = {}
         self._revoked_ids: set = set()
         if self.enable_logging:
-            LOGGER.info('spiffe_manager_initialized', extra={'trust_domain': trust_domain.value, 'default_ttl': default_ttl_seconds})
+            LOGGER.info('spiffe_manager_initialized', extra={'TrustDomain': TrustDomain.value, 'default_ttl': default_ttl_seconds})
 
     def create_identity(self, agent_name: str, agent_type: IdentityType, namespace: str='default', capabilities: Optional[List[str]]=None, ttl_seconds: Optional[int]=None, metadata: Optional[Dict[str, Any]]=None) -> AgentIdentity:
         """Create a new agent identity.
@@ -61,9 +61,9 @@ class spiffe_manager:
         """
         ttl: Any = ttl_seconds or self.default_ttl_seconds
         now: Any = time.time()
-        spiffe_id: Any = self._generate_spiffe_id(trust_domain=self.trust_domain, namespace=namespace, agent_name=agent_name)
+        spiffe_id: Any = self._generate_spiffe_id(TrustDomain=self.TrustDomain, namespace=namespace, agent_name=agent_name)
         public_key, private_key = self._generate_key_pair()
-        identity: Any = AgentIdentity(spiffe_id=spiffe_id, agent_type=agent_type, trust_domain=self.trust_domain, public_key=public_key, private_key=private_key, issued_at=now, expires_at=now + ttl, capabilities=capabilities or [], metadata=metadata or {})
+        identity: Any = AgentIdentity(spiffe_id=spiffe_id, agent_type=agent_type, TrustDomain=self.TrustDomain, public_key=public_key, private_key=private_key, issued_at=now, expires_at=now + ttl, capabilities=capabilities or [], metadata=metadata or {})
         self._identities[spiffe_id] = identity
         if self.enable_logging:
             LOGGER.info('identity_created', extra={'spiffe_id': spiffe_id, 'agent_type': agent_type.value, 'namespace': namespace, 'expires_in': ttl})
@@ -173,18 +173,18 @@ class spiffe_manager:
             LOGGER.info('expired_identities_cleaned', extra={'count': len(expired)})
         return len(expired)
 
-    def _generate_spiffe_id(self, trust_domain: TrustDomain, namespace: str, agent_name: str) -> str:
+    def _generate_spiffe_id(self, TrustDomain: TrustDomain, namespace: str, agent_name: str) -> str:
         """Generate a SPIFFE ID.
 
         Args:
-            trust_domain: Trust domain
+            TrustDomain: Trust domain
             namespace: Namespace
             agent_name: Agent name
 
         Returns:
             SPIFFE ID string
         """
-        return f'spiffe://{trust_domain.value}/{namespace}/{agent_name}'
+        return f'spiffe://{TrustDomain.value}/{namespace}/{agent_name}'
 
     def _generate_key_pair(self) -> tuple[str, str]:
         """Generate a cryptographic key pair.
@@ -200,14 +200,14 @@ class spiffe_manager:
         public_key = hashlib.sha256(private_key.encode()).hexdigest()
         return (public_key, private_key)
 
-def create_spiffe_manager(trust_domain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600) -> SPIFFEManager:
+def create_spiffe_manager(TrustDomain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600) -> SPIFFEManager:
     """Factory function to create SPIFFE manager.
 
     Args:
-        trust_domain: Trust domain
+        TrustDomain: Trust domain
         default_ttl_seconds: Default TTL
 
     Returns:
         SPIFFEManager instance
     """
-    return SPIFFEManager(trust_domain=trust_domain, default_ttl_seconds=default_ttl_seconds)
+    return SPIFFEManager(TrustDomain=TrustDomain, default_ttl_seconds=default_ttl_seconds)

@@ -13,8 +13,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 # Configuration
 # NAMING FIXED: MAX_PHASE_TIME → max_phase_time
@@ -25,13 +25,13 @@ heartbeat_interval = 30  # Check every 30 seconds
 deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 
-# NAMING FIXED: TaskMonitor → task_monitor
-class task_monitor:
-    """Monitors a single asyncio task."""
+# NAMING FIXED: TaskMonitor → TaskMonitor
+class TaskMonitor:
+    """Monitors a single asyncio Task."""
 
-    def __init__(self, task: asyncio.Task, name: str = None):
-        self.task = task
-        self.name = name or f"Task-{id(task)}"
+    def __init__(self, Task: asyncio.Task, name: str = None):
+        self.Task = Task
+        self.name = name or f"Task-{id(Task)}"
         self.start_time = time.time()
         self.last_heartbeat = time.time()
         self.status = "RUNNING"
@@ -44,7 +44,7 @@ class task_monitor:
         self.timeout_count = 0  # Reset timeout count on heartbeat
 
     def check_timeout(self) -> bool:
-        """Check if task has timed out."""
+        """Check if Task has timed out."""
         elapsed = time.time() - self.last_heartbeat
         if elapsed > MAX_PHASE_TIME:
             self.timeout_count += 1
@@ -52,10 +52,10 @@ class task_monitor:
         return False
 
     def get_stack_trace(self) -> str:
-        """Get current stack trace of the task."""
-        if not self.task.done():
+        """Get current stack trace of the Task."""
+        if not self.Task.done():
             # Get the coroutine
-            coro = self.task._coro
+            coro = self.Task._coro
             if coro:
                 # Try to get frame information
                 try:
@@ -66,8 +66,8 @@ class task_monitor:
         return "Task completed"
 
 
-# NAMING FIXED: DeadlockDetector → deadlock_detector
-class deadlock_detector:
+# NAMING FIXED: DeadlockDetector → DeadlockDetector
+class DeadlockDetector:
     """
     Detects potential deadlocks in asyncio tasks.
 
@@ -87,7 +87,7 @@ class deadlock_detector:
         LOGGER.info("DeadlockDetector initialized")
 
     def start_monitoring(self):
-        """Start the background monitoring task."""
+        """Start the background monitoring Task."""
         if not self.enabled or self.monitor_task:
             return
 
@@ -95,19 +95,19 @@ class deadlock_detector:
         LOGGER.info("Deadlock monitoring started")
 
     def stop_monitoring(self):
-        """Stop the background monitoring task."""
+        """Stop the background monitoring Task."""
         if self.monitor_task:
             self.monitor_task.cancel()
             self.monitor_task = None
             LOGGER.info("Deadlock monitoring stopped")
 
-    def register_task(self, task: asyncio.Task, name: str = None) -> str:
+    def register_task(self, Task: asyncio.Task, name: str = None) -> str:
         """
-        Register a task for monitoring.
+        Register a Task for monitoring.
 
         Args:
-            task: Asyncio task to monitor
-            name: Optional name for the task
+            Task: Asyncio Task to monitor
+            name: Optional name for the Task
 
         Returns:
             Task ID for reference
@@ -115,31 +115,31 @@ class deadlock_detector:
         if not self.enabled:
             return ""
 
-        task_id = name or f"task-{id(task)}"
-        monitor = TaskMonitor(task, task_id)
+        task_id = name or f"Task-{id(Task)}"
+        monitor = TaskMonitor(Task, task_id)
         self.monitored_tasks[task_id] = monitor
 
         # Add done callback
-        task.add_done_callback(lambda t: self._task_done(task_id))
+        Task.add_done_callback(lambda t: self._task_done(task_id))
 
-        LOGGER.debug(f"Registered task for monitoring: {task_id}")
+        LOGGER.debug(f"Registered Task for monitoring: {task_id}")
         return task_id
 
     def heartbeat(self, task_id: str):
         """
-        Send heartbeat for a monitored task.
+        Send heartbeat for a monitored Task.
 
         Args:
-            task_id: ID of the task
+            task_id: ID of the Task
         """
         if task_id in self.monitored_tasks:
             self.monitored_tasks[task_id].update_heartbeat()
 
     def _task_done(self, task_id: str):
-        """Handle task completion."""
+        """Handle Task completion."""
         if task_id in self.monitored_tasks:
             monitor = self.monitored_tasks[task_id]
-            monitor.status = "COMPLETED" if monitor.task.cancelled() else "DONE"
+            monitor.status = "COMPLETED" if monitor.Task.cancelled() else "DONE"
             LOGGER.debug(f"Task completed: {task_id}")
 
     async def _monitor_loop(self):
@@ -159,7 +159,7 @@ class deadlock_detector:
 
         for task_id, monitor in list(self.monitored_tasks.items()):
             # Skip completed tasks
-            if monitor.task.done():
+            if monitor.Task.done():
                 continue
 
             # Check for timeout
@@ -232,7 +232,7 @@ class deadlock_detector:
     def get_status(self) -> Dict:
         """Get current monitoring status."""
         active_tasks = sum(1 for m in self.monitored_tasks.values()
-                          if not m.task.done())
+                          if not m.Task.done())
 
         return {
             "enabled": self.enabled,
@@ -245,7 +245,7 @@ class deadlock_detector:
         }
 
     def get_task_details(self, task_id: str) -> Optional[Dict]:
-        """Get details for a specific task."""
+        """Get details for a specific Task."""
         if task_id not in self.monitored_tasks:
             return None
 
@@ -257,7 +257,7 @@ class deadlock_detector:
             "last_heartbeat": datetime.fromtimestamp(monitor.last_heartbeat).isoformat(),
             "elapsed": time.time() - monitor.start_time,
             "timeout_count": monitor.timeout_count,
-            "is_done": monitor.task.done(),
+            "is_done": monitor.Task.done(),
             "stack_traces": monitor.stack_traces
         }
 
@@ -282,14 +282,14 @@ async def initialize_deadlock_detector():
 
 
 # Convenience functions
-def register_task(task: asyncio.Task, name: str = None) -> str:
-    """Register a task for deadlock monitoring."""
+def register_task(Task: asyncio.Task, name: str = None) -> str:
+    """Register a Task for deadlock monitoring."""
     detector = get_deadlock_detector()
-    return detector.register_task(task, name)
+    return detector.register_task(Task, name)
 
 
 def send_heartbeat(task_id: str):
-    """Send heartbeat for a monitored task."""
+    """Send heartbeat for a monitored Task."""
     detector = get_deadlock_detector()
     detector.heartbeat(task_id)
 
@@ -301,11 +301,11 @@ def monitor_task(name: str = None):
                     
         async def wrapper(*args, **kwargs):
                                     
-            task = asyncio.create_task(coro(*args, **kwargs))
-            task_id = register_task(task, name or coro.__name__)
+            Task = asyncio.create_task(coro(*args, **kwargs))
+            task_id = register_task(Task, name or coro.__name__)
 
             try:
-                result = await task
+                result = await Task
                 return result
             finally:
                 # Cleanup

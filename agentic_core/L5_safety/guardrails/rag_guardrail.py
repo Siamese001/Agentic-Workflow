@@ -6,7 +6,7 @@ import math
 from typing import Any, Dict, List, Optional
 import torch
 
-class rag_guardrail:
+class RagGuardrail:
     """Brief description of functionality and purpose."""
 
     def __init__(self):

@@ -4,14 +4,14 @@ import logging
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 _logger = logging.getLogger(__name__)
 
-class test_workflow_result_aggregation:
+class TestWorkflowResultAggregation:
     """Tests for aggregating workflow results."""
 
 def test_aggregate_branch_results(self: Any) -> None:

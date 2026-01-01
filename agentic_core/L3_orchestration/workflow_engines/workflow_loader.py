@@ -7,10 +7,10 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class word_count_constraints:
+class WordCountConstraints:
     """Word count constraints for a section."""
     min_words: int
     max_words: int
@@ -21,15 +21,15 @@ class word_count_constraints:
         return cls(min_words=word_range[0], max_words=word_range[1])
 
 @dataclass
-class k_node_config:
+class KNodeConfig:
     """Configuration for a single K-node."""
     description: str
     input_dependencies: List[str] = None
     TEMP: float = 0.7
-    rag_type: str = 'Hybrid'
+    RagType: str = 'Hybrid'
     rag_total_calls: int = 4
     rag_hops: int = 2
-    claim_verification_mode: str = 'strict'
+    ClaimVerificationMode: str = 'strict'
     hybrid_cot_tot: bool = False
     cot_min_paths: int = 2
     tot_branches: int = 3
@@ -43,7 +43,7 @@ class k_node_config:
             self.input_dependencies = []
 
 @dataclass
-class creative_brief_config:
+class CreativeBriefConfig:
     """Creative brief configuration."""
     headline_word_count: WordCountConstraints
     headline_char_max: int
@@ -57,7 +57,7 @@ class creative_brief_config:
     competency_word_count: WordCountConstraints
     cover_letter_para_word_count: WordCountConstraints
 
-class workflow_loader:
+class WorkflowLoader:
     """Loads and provides access to workflow configuration from JSON."""
 
     def __init__(self, workflow_path: Optional[Union[str, Path]]=None):
@@ -105,7 +105,7 @@ class workflow_loader:
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:
         """Get minimal fallback workflow configuration."""
-        return {'metadata': {'version': 'fallback', 'architecture': '3-phase pipeline: Clerk, Artist, Assembler', 'description': 'Fallback configuration used when JSON file is unavailable'}, 'pre_flight_engine_validation': {'tests': [{'test_id': 'VALIDATE_ITERATION', 'description': 'Basic iteration check'}]}, '1.role': {'description': 'Resume generation assistant'}, '2.task': {'pipeline': [{'phase': 1, 'name': 'The Clerk: Deterministic Data Scaffolding'}, {'phase': 2, 'name': 'The Artist: Grounded Generation'}, {'phase': 3, 'name': 'The Assembler: Final Rendering & Validation'}]}, '3.context': {'pre_flight_file_complexity_gate': {'thresholds': {'total_file_count_max': 5, 'total_file_size_mb_max': 10}}, 'pre_flight_file_manifest_check': {'required_file_manifest': ['App_Schema_v4.json']}}, '4.reasoning': {'description': 'Creative generation phase', 'creative_brief': {'headline': {'word_count': [8, 12], 'char_count_max': 90}, 'executive_summary': {'word_count': [120, 140], 'voice': 'third_person_implied', 'forbidden_patterns': []}, 'experience_bullets': {'unify_bullet_word_count': [28, 33], 'ibm_bullet_word_count': [24, 30]}, 'experience_overview': {'unify_word_count': [25, 33], 'ibm_word_count': [22, 28]}, 'leadership_competencies': {'word_count_per_desc': [24, 30]}, 'cover_letter': {'word_count_per_para': [85, 100]}, 'deduplication_matrix': {'thresholds': {}}}, 'hardcoded_config': {'K.0': {'description': 'Thematic analysis', 'temp': 0.3, 'rag_total_calls': 50, 'rag_hops': 3}, 'K.1': {'description': 'Executive summary', 'temp': 0.9, 'rag_total_calls': 4, 'rag_hops': 2}, 'K.2': {'description': 'Competitive analysis', 'temp': 0.3, 'rag_total_calls': 24, 'rag_hops': 3}}}}
+        return {'metadata': {'version': 'fallback', 'architecture': '3-phase pipeline: Clerk, Artist, Assembler', 'description': 'Fallback configuration used when JSON file is unavailable'}, 'pre_flight_engine_validation': {'tests': [{'test_id': 'VALIDATE_ITERATION', 'description': 'Basic iteration check'}]}, '1.role': {'description': 'Resume generation assistant'}, '2.Task': {'pipeline': [{'phase': 1, 'name': 'The Clerk: Deterministic Data Scaffolding'}, {'phase': 2, 'name': 'The Artist: Grounded Generation'}, {'phase': 3, 'name': 'The Assembler: Final Rendering & Validation'}]}, '3.context': {'pre_flight_file_complexity_gate': {'thresholds': {'total_file_count_max': 5, 'total_file_size_mb_max': 10}}, 'pre_flight_file_manifest_check': {'required_file_manifest': ['App_Schema_v4.json']}}, '4.reasoning': {'description': 'Creative generation phase', 'creative_brief': {'headline': {'word_count': [8, 12], 'char_count_max': 90}, 'executive_summary': {'word_count': [120, 140], 'voice': 'third_person_implied', 'forbidden_patterns': []}, 'experience_bullets': {'unify_bullet_word_count': [28, 33], 'ibm_bullet_word_count': [24, 30]}, 'experience_overview': {'unify_word_count': [25, 33], 'ibm_word_count': [22, 28]}, 'leadership_competencies': {'word_count_per_desc': [24, 30]}, 'cover_letter': {'word_count_per_para': [85, 100]}, 'deduplication_matrix': {'thresholds': {}}}, 'hardcoded_config': {'K.0': {'description': 'Thematic analysis', 'temp': 0.3, 'rag_total_calls': 50, 'rag_hops': 3}, 'K.1': {'description': 'Executive summary', 'temp': 0.9, 'rag_total_calls': 4, 'rag_hops': 2}, 'K.2': {'description': 'Competitive analysis', 'temp': 0.3, 'rag_total_calls': 24, 'rag_hops': 3}}}}
 
     def get_version(self) -> str:
         """Get the workflow version."""
@@ -124,9 +124,9 @@ class workflow_loader:
         return self._cached_role_config
 
     def get_task_pipeline(self) -> List[Dict[str, Any]]:
-        """Get the task pipeline phases."""
+        """Get the Task pipeline phases."""
         if self._cached_task_pipeline is None:
-            self._cached_task_pipeline = self._workflow_data.get('2.task', {}).get('pipeline', [])
+            self._cached_task_pipeline = self._workflow_data.get('2.Task', {}).get('pipeline', [])
         return self._cached_task_pipeline
 
     def get_context_config(self) -> Dict[str, Any]:
@@ -155,7 +155,7 @@ class workflow_loader:
             HARDCODED: Any = self.get_reasoning_config().get('hardcoded_config', {})
             for key, value in HARDCODED.items():
                 if key.startswith('K.') and isinstance(value, dict):
-                    CONFIGS[key] = KNodeConfig(description=value.get('description', ''), input_dependencies=value.get('input_dependencies', []), TEMP=value.get('temp', 0.7), rag_type=value.get('rag_type', 'Hybrid'), rag_total_calls=value.get('rag_total_calls', 4), rag_hops=value.get('rag_hops', 2), claim_verification_mode=value.get('claim_verification_mode', 'strict'), hybrid_cot_tot=value.get('hybrid_cot_tot', False), cot_min_paths=value.get('cot_min_paths', 2), tot_branches=value.get('tot_branches', 3), min_tot_depth=value.get('min_tot_depth', 2), self_consistency=value.get('self_consistency', 8), REFLEXION=value.get('reflexion', False), max_reflexion_loops=value.get('max_reflexion_loops', 3))
+                    CONFIGS[key] = KNodeConfig(description=value.get('description', ''), input_dependencies=value.get('input_dependencies', []), TEMP=value.get('temp', 0.7), RagType=value.get('RagType', 'Hybrid'), rag_total_calls=value.get('rag_total_calls', 4), rag_hops=value.get('rag_hops', 2), ClaimVerificationMode=value.get('ClaimVerificationMode', 'strict'), hybrid_cot_tot=value.get('hybrid_cot_tot', False), cot_min_paths=value.get('cot_min_paths', 2), tot_branches=value.get('tot_branches', 3), min_tot_depth=value.get('min_tot_depth', 2), self_consistency=value.get('self_consistency', 8), REFLEXION=value.get('reflexion', False), max_reflexion_loops=value.get('max_reflexion_loops', 3))
             self._cached_knode_configs = CONFIGS
         return self._cached_knode_configs
 

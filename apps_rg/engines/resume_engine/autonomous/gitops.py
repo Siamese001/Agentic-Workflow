@@ -390,7 +390,7 @@ class ResilientMutator:
     async def mutate(
         self,
         agent_name: str,
-        task: str,
+        Task: str,
         content: str,
         file_path: Optional[str] = None,
         mode: MutationMode = MutationMode.FULL_CODE,
@@ -400,7 +400,7 @@ class ResilientMutator:
 
         Args:
             agent_name: Name of the requesting agent
-            task: Task description for the mutation
+            Task: Task description for the mutation
             content: Original content to mutate
             file_path: Optional file path for context
             mode: Mutation output mode
@@ -415,7 +415,7 @@ class ResilientMutator:
             content = self._preflight_clean(file_path, content)
 
         # Build prompt based on mode
-        prompt = self._build_prompt(task, content, mode)
+        prompt = self._build_prompt(Task, content, mode)
 
         best_result = None
         best_confidence = 0.0
@@ -500,12 +500,12 @@ class ResilientMutator:
 
     def _build_prompt(
         self,
-        task: str,
+        Task: str,
         content: str,
         mode: MutationMode,
     ) -> str:
         """Build the mutation prompt."""
-        prompt = task
+        prompt = Task
 
         if mode == MutationMode.UNIFIED_DIFF:
             prompt += """
@@ -582,7 +582,7 @@ OUTPUT FORMAT: Full Python Code. NO MARKDOWN. NO BACKTICKS."""
             diff_lines = diff_text.strip().splitlines()
             original_lines = original.splitlines(keepends=True)
 
-            # Add headers if missing
+            # Add headers if Missing
             if not diff_lines or not diff_lines[0].startswith("---"):
                 diff_lines.insert(0, "--- a/file")
                 diff_lines.insert(1, "+++ b/file")
@@ -977,12 +977,12 @@ class Phase4Orchestrator:
 
         self.gitops = GitOpsManager(ctx)
         self.mutator = ResilientMutator(ctx)
-        self.import_patcher = ImportPatcher(ctx)
+        self.ImportPatcher = ImportPatcher(ctx)
         self.conversational = ConversationalRepair(ctx)
 
     async def heal_with_gitops(
         self,
-        task: str,
+        Task: str,
         content: str,
         file_path: Optional[str] = None,
         use_diff: bool = False,
@@ -992,7 +992,7 @@ class Phase4Orchestrator:
         Perform healing with full GitOps support.
 
         Args:
-            task: Task description
+            Task: Task description
             content: Content to heal
             file_path: Optional file path
             use_diff: Use diff mode
@@ -1008,7 +1008,7 @@ class Phase4Orchestrator:
         # Try conversational repair for complex issues
         if use_conversational:
             repaired = await self.conversational.repair(
-                issue_description=task,
+                issue_description=Task,
                 affected_content=content,
             )
 
@@ -1027,7 +1027,7 @@ class Phase4Orchestrator:
 
         result = await self.mutator.mutate(
             agent_name="Phase4Orchestrator",
-            task=task,
+            Task=Task,
             content=content,
             file_path=file_path,
             mode=mode,
@@ -1048,6 +1048,6 @@ class Phase4Orchestrator:
         return {
             "gitops": self.gitops.get_stats(),
             "mutator": self.mutator.get_stats(),
-            "import_patcher": self.import_patcher.get_stats(),
+            "ImportPatcher": self.ImportPatcher.get_stats(),
             "conversational": self.conversational.get_stats(),
         }

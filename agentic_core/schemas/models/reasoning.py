@@ -88,7 +88,7 @@ class ResearchResult(BaseModel):
         description="List of sources with 'url' and 'relevance' keys"
     )
     key_findings: List[str] = Field(..., description="Main findings from the research")
-    confidence_level: Literal["high", "medium", "low"] = Field(
+    ConfidenceLevel: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )
@@ -103,7 +103,7 @@ class ResearchResult(BaseModel):
 
 class AgentPlan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
-    reasoning: str = Field(..., description="High-level strategy for the overall task")
+    reasoning: str = Field(..., description="High-level strategy for the overall Task")
     tool_calls: List[Dict[str, Any]] = Field(
         ..., 
         description="Ordered list of tool calls to execute the plan"

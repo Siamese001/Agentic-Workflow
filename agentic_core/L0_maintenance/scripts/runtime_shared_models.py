@@ -1,12 +1,12 @@
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
-All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
+All models centralized in sovereign SSOT: AgenticCore/schemas/models/core_contracts.py
 
 Note: Some models renamed to avoid conflicts:
 - AgentMessage -> ResidualAgentMessage
 - ValidationResult -> ResidualValidationResult
 """
-from agentic_core.schemas.models.core_contracts import (
+from AgenticCore.schemas.models.core_contracts import (
     AgentResponse,
     CircuitState,
     GateDecision,
@@ -24,24 +24,24 @@ from agentic_core.schemas.models.core_contracts import (
 
 
 # Exception classes remain here (not schema models)
-# NAMING FIXED: AgenticWorkflowError → agentic_workflow_error
-class agentic_workflow_error(Exception):
+# NAMING FIXED: AgenticWorkflowError → AgenticWorkflowError
+class AgenticWorkflowError(Exception):
     """Base exception for agentic workflow."""
 
-# NAMING FIXED: HopExecutionError → hop_execution_error
-class hop_execution_error(AgenticWorkflowError):
+# NAMING FIXED: HopExecutionError → HopExecutionError
+class HopExecutionError(AgenticWorkflowError):
     """Error in hop execution."""
 
-# NAMING FIXED: ValidationError → validation_error
-class validation_error(AgenticWorkflowError):
+# NAMING FIXED: ValidationError → ValidationError
+class ValidationError(AgenticWorkflowError):
     """Validation error."""
 
-# NAMING FIXED: APIError → api_error
-class api_error(AgenticWorkflowError):
+# NAMING FIXED: APIError → ApiError
+class ApiError(AgenticWorkflowError):
     """API-related error."""
 
-# NAMING FIXED: CircuitBreakerOpenError → circuit_breaker_open_error
-class circuit_breaker_open_error(AgenticWorkflowError):
+# NAMING FIXED: CircuitBreakerOpenError → CircuitBreakerOpenError
+class CircuitBreakerOpenError(AgenticWorkflowError):
     """Circuit breaker is open."""
 
 __all__ = [

@@ -1,5 +1,5 @@
 """
-prepare_message_payload.py - Formatting Module
+PrepareMessagePayload.py - Formatting Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.125303
@@ -7,15 +7,15 @@ Generated: 2025-12-07T13:28:54.125303
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class prepare_message_payload:
+class PrepareMessagePayload:
     """Formatter for outreach domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, str]]) -> None:
     SELF.CONFIG = config or {}
     self.format_type = self.config.get('format', 'default')
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
     """Format input data into the required output structure."""
@@ -29,6 +29,6 @@ def _transform(self: Any, data: Union[str, Dict]) -> Union[str, Dict]:
         return data.strip()
     return data
 
-def format_data(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
+def FormatData(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
     """Format input data into the required output structure."""
     return PrepareMessagePayload(config).format(data)

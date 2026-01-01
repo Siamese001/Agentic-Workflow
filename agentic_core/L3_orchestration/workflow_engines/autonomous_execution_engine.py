@@ -12,13 +12,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+from AgenticCore.L2_execution.ToolRegistry.ProactiveResourceManager import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -27,9 +27,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # L4 Checkpoint integration
-# GRAVITY FIXED: Dynamic import for checkpoint manager
+# GRAVITY FIXED: Dynamic import for Checkpoint manager
 try:
-    from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+    from AgenticCore.L4_state.ValidationContext.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
 except ImportError:
     create_autonomous_checkpoint_manager = None
 
@@ -53,7 +53,7 @@ class autonomous_execution_engine:
         
         # Initialize dependencies
         self.resource_manager = create_proactive_resource_manager()
-        self.checkpoint_manager = create_autonomous_checkpoint_manager()
+        self.CheckpointManager = create_autonomous_checkpoint_manager()
         
         # Execution state
         self.last_mission_result: Optional[Dict[str, Any]] = None
@@ -67,13 +67,13 @@ class autonomous_execution_engine:
         # Load previous state
         self.load_state()
         
-        logger.info("L3 Autonomous Execution Engine initialized")
+        Logger.info("L3 Autonomous Execution Engine initialized")
     
     def awaken(self):
         """L3: Explicitly wake the execution heart of the Canon"""
         if not self._execution_task:
             self._execution_task = asyncio.create_task(self.eternal_execution_cycle())
-            logger.info("L3 Eternal execution cycle awakened")
+            Logger.info("L3 Eternal execution cycle awakened")
     
     def load_state(self):
         """Load previous execution state"""
@@ -81,9 +81,9 @@ class autonomous_execution_engine:
             try:
                 data = json.loads(self.state_path.read_text(encoding="utf-8"))
                 self.last_mission_result = data.get("last_mission")
-                logger.info("L3: Loaded execution state")
+                Logger.info("L3: Loaded execution state")
             except Exception as e:
-                logger.error(f"Failed to load execution state: {e}")
+                Logger.error(f"Failed to load execution state: {e}")
     
     def save_state(self):
         """L3: Atomic state save to prevent corruption"""
@@ -98,9 +98,9 @@ class autonomous_execution_engine:
                 json.dump(data, tf, indent=2)
                 temp_name = tf.name
             os.replace(temp_name, self.state_path)
-            logger.debug("L3: Execution state saved atomically")
+            Logger.debug("L3: Execution state saved atomically")
         except Exception as e:
-            logger.error(f"Execution state save failed: {e}")
+            Logger.error(f"Execution state save failed: {e}")
     
     async def execute_validation_mission(self):
         """
@@ -115,16 +115,16 @@ class autonomous_execution_engine:
             # Check resource availability
             status = self.resource_manager.get_resource_status()
             if status['global_budget_remaining'] < 10:
-                logger.warning("L3: Low resource budget, skipping mission")
+                Logger.warning("L3: Low resource budget, skipping mission")
                 return
             
-            # Create checkpoint before mission
-            checkpoint_id = await self.checkpoint_manager.auto_checkpoint_if_needed(
+            # Create Checkpoint before mission
+            checkpoint_id = await self.CheckpointManager.auto_checkpoint_if_needed(
                 state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()},
                 files_to_track=[]
             )
             
-            logger.info("L3: Starting validation mission")
+            Logger.info("L3: Starting validation mission")
             
             # Placeholder for actual validation logic
             # In production, this would integrate with:
@@ -143,10 +143,10 @@ class autonomous_execution_engine:
             }
             self.consecutive_failures = 0
             
-            logger.info("L3 MISSION COMPLETE: Canon state verified")
+            Logger.info("L3 MISSION COMPLETE: Canon state verified")
             
         except Exception as e:
-            logger.error(f"L3 MISSION FAILED: {e}")
+            Logger.error(f"L3 MISSION FAILED: {e}")
             self.consecutive_failures += 1
             
             self.last_mission_result = {
@@ -157,18 +157,18 @@ class autonomous_execution_engine:
             
             # Circuit breaker pattern
             if self.consecutive_failures > self.max_consecutive_failures:
-                logger.critical(f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.")
+                Logger.critical(f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.")
                 self.running = False
     
     async def eternal_execution_cycle(self):
         """L3: Continuous validation and healing cycle"""
-        logger.info("L3: Eternal execution cycle active")
+        Logger.info("L3: Eternal execution cycle active")
         
         while self.running:
             try:
                 await asyncio.sleep(self.execution_interval)
                 
-                logger.info("L3: Starting execution cycle")
+                Logger.info("L3: Starting execution cycle")
                 
                 # Execute validation mission
                 await self.execute_validation_mission()
@@ -177,11 +177,11 @@ class autonomous_execution_engine:
                 self.save_state()
                 
             except Exception as e:
-                logger.error(f"L3 Execution cycle error: {e}")
+                Logger.error(f"L3 Execution cycle error: {e}")
                 self.consecutive_failures += 1
                 await asyncio.sleep(60)  # Wait before retry
         
-        logger.warning("L3: Eternal execution cycle stopped (Safe Mode)")
+        Logger.warning("L3: Eternal execution cycle stopped (Safe Mode)")
     
     def get_execution_status(self) -> Dict[str, Any]:
         """Get current execution status"""
@@ -199,7 +199,7 @@ class autonomous_execution_engine:
         self.running = True
         if not self._execution_task or self._execution_task.done():
             self.awaken()
-        logger.info("L3: Circuit breaker reset, execution resumed")
+        Logger.info("L3: Circuit breaker reset, execution resumed")
 
 
 def create_autonomous_execution_engine() -> AutonomousExecutionEngine:

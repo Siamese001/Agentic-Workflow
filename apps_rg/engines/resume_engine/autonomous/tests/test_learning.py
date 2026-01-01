@@ -56,7 +56,7 @@ class TestLearningExample:
         """Test creating a learning example."""
         example = LearningExample(
             id="test_123",
-            task_type="quality_fix",
+            TaskType="quality_fix",
             input_context="Fix the summary section",
             output_result="Fixed summary with metrics",
             success=True,
@@ -64,7 +64,7 @@ class TestLearningExample:
         )
 
         assert example.id == "test_123"
-        assert example.task_type == "quality_fix"
+        assert example.TaskType == "quality_fix"
         assert example.success is True
         assert example.confidence == 0.9
         assert example.timestamp is not None
@@ -161,9 +161,9 @@ class TestLearningLoop:
 
         # Record a success
         await loop.record_success(
-            task_type="quality_fix",
+            TaskType="quality_fix",
             input_context="Fix summary with metrics and quantification",
-            output_result="Added 25% improvement metric",
+            output_result="Added 25% improvement Metric",
             confidence=0.9,
         )
 
@@ -496,7 +496,7 @@ class TestResumeLearningAgent:
         """Test getting few-shot context with no examples."""
         agent = ResumeLearningAgent(ctx)
 
-        context = await agent.get_few_shot_context("test task")
+        context = await agent.get_few_shot_context("test Task")
 
         assert context == ""
 
@@ -506,7 +506,7 @@ class TestResumeLearningAgent:
         agent = ResumeLearningAgent(ctx)
 
         await agent.record_success(
-            task_type="quality_fix",
+            TaskType="quality_fix",
             input_context="Fix summary",
             output_result="Fixed summary",
             confidence=0.9,

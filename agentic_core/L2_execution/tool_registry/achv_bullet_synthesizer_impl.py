@@ -1,9 +1,9 @@
-"""Implementation for achv_bullet_synthesizer."""
+"""Implementation for AchvBulletSynthesizer."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class achv_bullet_synthesizer:
+class AchvBulletSynthesizer:
     """
     K.5A & K.6A - Achievement Bullet Generator with Provenance
 
@@ -78,8 +78,8 @@ class achv_bullet_synthesizer:
         Generate set of bullets using LLM.
         Placeholder for actual LLM integration.
         """
-        PATTERN = self.config.provenance_pattern
-        BULLETS = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructure costs by 40% while improving system reliability', f'Architected microservices platform with Python and Node.js, enabling 3x faster feature deployment through strategic API design', f'Managed cross-functional team of 12 engineers, delivering $2M revenue-generating product using agile methodologies and CI/CD automation', f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime', f'Built ML-powered recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation', f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes', f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership']
+        PATTERN = self.config.ProvenancePattern
+        BULLETS = [f'Led cloud migration initiative using AWS and Kubernetes, reducing infrastructure costs by 40% while improving system reliability', f'Architected microservices platform with Python and Node.js, enabling 3x faster feature deployment through strategic API design', f'Managed cross-functional team of 12 engineers, delivering $2M revenue-generating product using agile methodologies and CI/CD automation', f'Drove data pipeline optimization with Spark and PostgreSQL, processing 10M+ daily transactions with 99.9% uptime', f'Built ML-powered Recommendation engine using TensorFlow, increasing user engagement by 35% through collaborative innovation', f'Implemented DevOps best practices with Docker and Jenkins, reducing deployment time from 4 hours to 15 minutes', f'Established technical mentorship program, developing 8 junior engineers into senior contributors through strategic leadership']
         return bullets[:self.config.bullet_count]
 
     def _validate_bullet_word_count(self, bullet: str, bullet_num: int) -> ValidationResult:
@@ -108,9 +108,9 @@ class achv_bullet_synthesizer:
                 provenance_items[ProvenanceType.TECH].append(word)
             if word in self.SOFT_KEYWORDS:
                 provenance_items[ProvenanceType.SOFT].append(word)
-        expected_pattern = str(self.config.provenance_pattern)
+        expected_pattern = str(self.config.ProvenancePattern)
         actual_pattern = f'{len(provenance_items[ProvenanceType.VERB])}V-{len(provenance_items[ProvenanceType.TECH])}T-{len(provenance_items[ProvenanceType.SOFT])}S'
-        pattern_match = len(provenance_items[ProvenanceType.VERB]) >= self.config.provenance_pattern.verb_count and len(provenance_items[ProvenanceType.TECH]) >= self.config.provenance_pattern.tech_count and (len(provenance_items[ProvenanceType.SOFT]) >= self.config.provenance_pattern.soft_count)
+        pattern_match = len(provenance_items[ProvenanceType.VERB]) >= self.config.ProvenancePattern.verb_count and len(provenance_items[ProvenanceType.TECH]) >= self.config.ProvenancePattern.tech_count and (len(provenance_items[ProvenanceType.SOFT]) >= self.config.ProvenancePattern.soft_count)
         return BulletProvenanceLog(bullet_text=bullet, word_count=len(bullet.split()), provenance_items=provenance_items, pattern_match=pattern_match, expected_pattern=expected_pattern, actual_pattern=actual_pattern)
 
     def _validate_provenance_pattern(self, provenance_log: BulletProvenanceLog, bullet_num: int) -> ValidationResult:
@@ -124,7 +124,7 @@ class achv_bullet_synthesizer:
 
     def _generate_qa_report(self, bullets: List[str], provenance_logs: List[BulletProvenanceLog]) -> Dict[str, Any]:
         """Generate QA Report with provenance tracking"""
-        return {'format_type': self.config.format_type.value, 'bullet_count': len(bullets), 'expected_pattern': str(self.config.provenance_pattern), 'word_count_range': f'{self.config.min_words}-{self.config.max_words}', 'provenance_summary': {'total_bullets': len(provenance_logs), 'pattern_matches': sum((1 for log in provenance_logs if log.pattern_match)), 'pattern_failures': sum((1 for log in provenance_logs if not log.pattern_match))}, 'detailed_provenance': [{'bullet_num': i + 1, 'word_count': log.word_count, 'pattern': log.actual_pattern, 'match': log.pattern_match, 'verbs': log.provenance_items[ProvenanceType.VERB], 'tech': log.provenance_items[ProvenanceType.TECH], 'soft': log.provenance_items[ProvenanceType.SOFT]} for i, log in enumerate(provenance_logs)]}
+        return {'format_type': self.config.format_type.value, 'bullet_count': len(bullets), 'expected_pattern': str(self.config.ProvenancePattern), 'word_count_range': f'{self.config.min_words}-{self.config.max_words}', 'provenance_summary': {'total_bullets': len(provenance_logs), 'pattern_matches': sum((1 for log in provenance_logs if log.pattern_match)), 'pattern_failures': sum((1 for log in provenance_logs if not log.pattern_match))}, 'detailed_provenance': [{'bullet_num': i + 1, 'word_count': log.word_count, 'pattern': log.actual_pattern, 'match': log.pattern_match, 'verbs': log.provenance_items[ProvenanceType.VERB], 'tech': log.provenance_items[ProvenanceType.TECH], 'soft': log.provenance_items[ProvenanceType.SOFT]} for i, log in enumerate(provenance_logs)]}
 
 def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=None) -> AchvBulletSynthesizer:
     """Factory function to create AchvBulletSynthesizer instance"""

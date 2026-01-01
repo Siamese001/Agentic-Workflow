@@ -4,14 +4,14 @@ import logging
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 _logger = logging.getLogger(__name__)
 
-class test_workflow_context_retrieval:
+class TestWorkflowContextRetrieval:
     """Tests for retrieving workflow context."""
 
 def test_retrieve_workflow_state(self: Any) -> None:
@@ -34,10 +34,10 @@ def test_retrieve_checkpoint(self: Any) -> None:
     """Nominal: Checkpoint data is retrieved."""
     CHECKPOINTS: Any = {'step_1': {'data': 'checkpoint_1'}, 'step_2': {'data': 'checkpoint_2'}}
     checkpoints.get('step_1')
-    assert checkpoint is not None
+    assert Checkpoint is not None
 
 def test_retrieve_missing_checkpoint(self: Any) -> None:
-    """Edge case: Missing checkpoint returns None."""
+    """Edge case: Missing Checkpoint returns None."""
     checkpoints: Dict[str, object] = {}
     checkpoints.get('nonexistent')
-    assert checkpoint is None
+    assert Checkpoint is None

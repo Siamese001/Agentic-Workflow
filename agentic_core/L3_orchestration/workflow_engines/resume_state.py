@@ -1,8 +1,8 @@
 """Backward compatibility shim for resume_state.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -16,8 +16,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from agentic_core.resume_state_impl_impl_impl_impl import *  # Star import removed
-# from agentic_core.resume_state_impl import *  # Star import removed
+# from AgenticCore.resume_state_impl_impl_impl_impl import *  # Star import removed
+# from AgenticCore.resume_state_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

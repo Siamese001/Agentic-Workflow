@@ -37,7 +37,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -127,17 +127,17 @@ class TestDashboardGeneration:
     """Tests for dashboard generation."""
 
     @pytest.mark.asyncio
-    async def test_dashboard_after_full_mission(self, valid_resume, job_description, tmp_path):
+    async def test_dashboard_after_full_mission(self, valid_resume, JobDescription, tmp_path):
         """Test dashboard generation after full mission."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase7 = Phase7Orchestrator(ctx)
 
         # Run healing
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -176,11 +176,11 @@ class TestIntegrationWithAllPhases:
     """Tests for integration with all previous phases."""
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_with_all_phases(self, valid_resume, job_description, tmp_path):
+    async def test_full_pipeline_with_all_phases(self, valid_resume, JobDescription, tmp_path):
         """Test complete pipeline with all phases."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Initialize all orchestrators
         phase4 = Phase4Orchestrator(ctx)
@@ -208,13 +208,13 @@ class TestIntegrationWithAllPhases:
 
         # Phase 6: Intelligence
         step_id = phase5.track_agent("Phase6Orchestrator", "analyze")
-        analysis = await phase6.analyze_resume(valid_resume, job_description)
+        analysis = await phase6.analyze_resume(valid_resume, JobDescription)
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -232,7 +232,7 @@ class TestIntegrationWithAllPhases:
 
         # Phase 3: Record learning
         await learning_agent.record_success(
-            task_type="full_pipeline",
+            TaskType="full_pipeline",
             input_context=str(valid_resume),
             output_result="Success",
             confidence=0.9,
@@ -285,14 +285,14 @@ class TestEdgeCases:
         prediction = phase7.predict_mission_cost(100, 10, 5)
 
         assert prediction.will_exceed is True
-        assert "Reduce scope" in prediction.recommendation
+        assert "Reduce scope" in prediction.Recommendation
 
 
 class TestComprehensiveWorkflow:
     """Tests for comprehensive end-to-end workflow."""
 
     @pytest.mark.asyncio
-    async def test_complete_workflow_with_all_components(self, valid_resume, job_description, tmp_path):
+    async def test_complete_workflow_with_all_components(self, valid_resume, JobDescription, tmp_path):
         """Test complete workflow with all Phase 7 components."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
@@ -351,11 +351,11 @@ SYSTEM_PROMPT = "You are helpful."
         assert "budget" in stats
 
     @pytest.mark.asyncio
-    async def test_workflow_with_healing_and_governance(self, valid_resume, job_description, tmp_path):
+    async def test_workflow_with_healing_and_governance(self, valid_resume, JobDescription, tmp_path):
         """Test workflow combining healing and governance."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase5 = Phase5Orchestrator(ctx)
         phase7 = Phase7Orchestrator(ctx)
@@ -370,7 +370,7 @@ SYSTEM_PROMPT = "You are helpful."
         # Run healing
         step_id = phase5.track_agent("run_self_healing_mission", "execute")
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )

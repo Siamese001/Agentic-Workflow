@@ -8,23 +8,23 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-class sovereign_rag_orchestrator:
+class SovereignRagOrchestrator:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, retriever=None, query_planner=None, guardrail=None, engine=None):
+    def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None):
         self.query_history = []
-        self.config_path = Path('agentic_core/L4_state/validation_context/.sovereign_config.json')
+        self.config_path = Path('AgenticCore/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
         self.threshold_adaptation_rate = 0.02
         self.performance_window = 50
         self.retriever = retriever
-        self.query_planner = query_planner
+        self.QueryPlanner = QueryPlanner
         self.guardrail = guardrail
         self.engine = engine
         self.enable_red_team_critique = False
@@ -54,7 +54,7 @@ class sovereign_rag_orchestrator:
 
         def _parse_critique(raw):
             try:
-                from agentic_core.L1_cognition.thought_engine.query_planner import QueryPlanner
+                from AgenticCore.L1_cognition.thought_engine.QueryPlanner import QueryPlanner
                 planner_helper = QueryPlanner()
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)
@@ -71,10 +71,10 @@ class sovereign_rag_orchestrator:
         current_query: Any = query
         all_documents: Any = []
         for hop in range(self.max_hops):
-            base_queries: Any = await self.query_planner.decompose_query(current_query)
+            base_queries: Any = await self.QueryPlanner.decompose_query(current_query)
             all_queries: Any = []
             async with asyncio.TaskGroup() as tg:
-                tasks: Any = [tg.create_task(self.query_planner.multi_query_generation(bq)) for bq in base_queries]
+                tasks: Any = [tg.create_task(self.QueryPlanner.multi_query_generation(bq)) for bq in base_queries]
             for t in tasks:
                 all_queries.extend(t.result())
             all_queries: Any = list(dict.fromkeys(all_queries))

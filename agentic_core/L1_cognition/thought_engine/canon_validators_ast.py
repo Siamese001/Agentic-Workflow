@@ -5,9 +5,9 @@ Replaces regex/string matching with proper AST analysis to eliminate false posit
 import ast
 from pathlib import Path
 from typing import List, Dict, Any
-from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
+from AgenticCore.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
 
-class print_statement_validator(CanonASTValidator):
+class PrintStatementValidator(CanonASTValidator):
     """
     Key 2: Detects print() statements using AST.
     Automatically ignores TYPE_CHECKING blocks via base class.
@@ -20,7 +20,7 @@ class print_statement_validator(CanonASTValidator):
                 self.report('Forbidden print() statement detected', node)
         self.generic_visit(node)
 
-class eval_exec_validator(CanonASTValidator):
+class EvalExecValidator(CanonASTValidator):
     """
     Key 6: Detects eval() and exec() calls using AST.
     """
@@ -32,7 +32,7 @@ class eval_exec_validator(CanonASTValidator):
                 self.report(f'Forbidden {node.func.id}() call detected', node)
         self.generic_visit(node)
 
-class debugger_validator(CanonASTValidator):
+class DebuggerValidator(CanonASTValidator):
     """
     Key 3: Detects breakpoint() and pdb.set_trace() using AST.
     """
@@ -48,7 +48,7 @@ class debugger_validator(CanonASTValidator):
                     self.report('Debugger pdb.set_trace() detected', node)
         self.generic_visit(node)
 
-class empty_except_validator(CanonASTValidator):
+class EmptyExceptValidator(CanonASTValidator):
     """
     Key 4: Detects empty except blocks (except: pass).
     """
@@ -60,7 +60,7 @@ class empty_except_validator(CanonASTValidator):
             self.report('Empty except block detected (except: pass)', node)
         self.generic_visit(node)
 
-class bare_except_validator(CanonASTValidator):
+class BareExceptValidator(CanonASTValidator):
     """
     Key 5: Detects bare except: statements (catching all exceptions).
     """
@@ -71,7 +71,7 @@ class bare_except_validator(CanonASTValidator):
             self.report('Bare except: statement detected (should specify exception type)', node)
         self.generic_visit(node)
 
-class external_http_validator(CanonASTValidator):
+class ExternalHttpValidator(CanonASTValidator):
     """
     Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).
     Automatically handles TYPE_CHECKING blocks and exception ledger.
@@ -95,7 +95,7 @@ class external_http_validator(CanonASTValidator):
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
 
-class async_blocking_validator(CanonASTValidator):
+class AsyncBlockingValidator(CanonASTValidator):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """
@@ -121,7 +121,7 @@ class async_blocking_validator(CanonASTValidator):
                     self.report(f'Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())', node)
         self.generic_visit(node)
 
-class dangerous_builtins_validator(CanonASTValidator):
+class DangerousBuiltinsValidator(CanonASTValidator):
     """
     Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).
     """

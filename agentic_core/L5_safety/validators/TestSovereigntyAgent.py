@@ -14,12 +14,12 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from enum import Enum
 
 
 class SovereignSeverity(Enum):
-    """Sovereign event severity levels."""
+    """Sovereign event Severity levels."""
     INFO = "INFO"
     ERROR = "ERROR"
     WARNING = "WARNING"
@@ -52,13 +52,13 @@ class TestSovereigntyAgent(CanonBaseAgent):
         return [99]  # Testing sovereignty key
 
     async def execute(self, request: Dict = None) -> Dict:
-        """Run advanced tests on artifact or repo."""
+        """Run advanced tests on Artifact or repo."""
         if request is None:
             request = {}
         
         test_type = request.get("type", "basic")
         coverage_target = request.get("coverage_target", 80)
-        artifact = request.get("artifact", "")
+        Artifact = request.get("Artifact", "")
 
         self._emit_event(SovereignSeverity.INFO, "TEST_SOVEREIGNTY_INITIATED", {"type": test_type})
 
@@ -69,11 +69,11 @@ class TestSovereigntyAgent(CanonBaseAgent):
             "output": ""
         }
 
-        # If artifact provided, write to temp for testing
+        # If Artifact provided, write to temp for testing
         temp_path = None
-        if artifact:
+        if Artifact:
             temp_path = self.repo_root / "temp_test_artifact.py"
-            temp_path.write_text(artifact, encoding='utf-8')
+            temp_path.write_text(Artifact, encoding='utf-8')
 
         try:
             if test_type == "full_repo":
@@ -105,7 +105,7 @@ class TestSovereigntyAgent(CanonBaseAgent):
         """Run full pytest with coverage."""
         try:
             result = subprocess.run(
-                ["pytest", "--cov=.", "--cov-report=term-missing", "-q", "--tb=short"],
+                ["pytest", "--cov=.", "--cov-report=term-Missing", "-q", "--tb=short"],
                 capture_output=True,
                 timeout=120,
                 cwd=self.repo_root
@@ -219,8 +219,8 @@ class TestSovereigntyAgent(CanonBaseAgent):
         all_passed = all(t["passed"] for t in tests)
         return {"tests": tests, "all_passed": all_passed}
 
-    def _emit_event(self, severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Telemetry for observability."""
-        print(f"[SOVEREIGN EVENT] {severity.value} | {event_type}")
+        print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")

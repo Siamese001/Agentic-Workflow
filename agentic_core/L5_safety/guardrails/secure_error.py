@@ -12,22 +12,22 @@ from typing import Any, Dict, List, Optional, Type, Union
 from functools import wraps
 import inspect
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
     
-    def __init__(self, message: str, error_code: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, ErrorCode: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
         """Initialize secure error.
         
         Args:
             message: Sanitized error message
-            error_code: Optional error code for tracking
+            ErrorCode: Optional error code for tracking
             context: Optional context dictionary (sanitized)
         """
         super().__init__(message)
-        self.error_code = error_code
+        self.ErrorCode = ErrorCode
         self.context = context or {}
         self.timestamp = None
     
@@ -40,7 +40,7 @@ class SecureError(Exception):
         return {
             "error_type": self.__class__.__name__,
             "message": str(self),
-            "error_code": self.error_code,
+            "ErrorCode": self.ErrorCode,
             "context": self.context,
             "timestamp": self.timestamp
         }
@@ -152,7 +152,7 @@ class ErrorSanitizer:
         cls,
         error_type: Type[SecureError],
         original_error: Exception,
-        error_code: Optional[str] = None,
+        ErrorCode: Optional[str] = None,
         add_context: Optional[Dict[str, Any]] = None
     ) -> SecureError:
         """Create a secure error from an original exception.
@@ -160,7 +160,7 @@ class ErrorSanitizer:
         Args:
             error_type: Type of secure error to create
             original_error: Original exception
-            error_code: Optional error code
+            ErrorCode: Optional error code
             add_context: Additional context to include
             
         Returns:
@@ -185,8 +185,8 @@ class ErrorSanitizer:
         
         # Create secure error
         secure_error = error_type(
-            f"{sanitized_message} (Error: {error_code or 'UNKNOWN'})",
-            error_code=error_code,
+            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})",
+            ErrorCode=ErrorCode,
             context=context
         )
         
@@ -195,14 +195,14 @@ class ErrorSanitizer:
 
 def secure_exception(
     error_type: Type[SecureError] = SecurityError,
-    error_code: Optional[str] = None,
+    ErrorCode: Optional[str] = None,
     sanitize_args: bool = True
 ):
     """Decorator to secure exceptions from functions.
     
     Args:
         error_type: Type of secure error to raise
-        error_code: Optional error code
+        ErrorCode: Optional error code
         sanitize_args: Whether to sanitize function arguments in context
         
     Returns:
@@ -234,7 +234,7 @@ def secure_exception(
                 
                 # Create and raise secure error
                 secure_error = ErrorSanitizer.create_secure_error(
-                    error_type, e, error_code, context
+                    error_type, e, ErrorCode, context
                 )
                 raise secure_error
         
@@ -263,7 +263,7 @@ def secure_exception(
                 
                 # Create and raise secure error
                 secure_error = ErrorSanitizer.create_secure_error(
-                    error_type, e, error_code, context
+                    error_type, e, ErrorCode, context
                 )
                 raise secure_error
         
@@ -283,9 +283,9 @@ class SecureErrorHandler:
         """Initialize the error handler.
         
         Args:
-            logger_name: Name for the secure logger
+            logger_name: Name for the secure Logger
         """
-        self.logger = logging.getLogger(logger_name)
+        self.Logger = logging.getLogger(logger_name)
     
     def handle_error(
         self,
@@ -314,20 +314,20 @@ class SecureErrorHandler:
         # Log the error securely
         log_data = {
             "error_type": secure_error.__class__.__name__,
-            "error_code": secure_error.error_code,
+            "ErrorCode": secure_error.ErrorCode,
             "message": str(secure_error)
         }
         
         if context:
             log_data["context"] = {k: "<sanitized>" for k in context.keys()}
         
-        self.logger.error("Secure error: %s", log_data)
+        self.Logger.error("Secure error: %s", log_data)
         
         # Log stack trace if requested (sanitized)
         if include_stack and not isinstance(error, SecureError):
             tb_str = ''.join(traceback.format_tb(error.__traceback__))
             sanitized_tb = ErrorSanitizer.sanitize_stack_trace(tb_str)
-            self.logger.debug("Sanitized stack trace:\n%s", sanitized_tb)
+            self.Logger.debug("Sanitized stack trace:\n%s", sanitized_tb)
         
         return secure_error
     
@@ -335,7 +335,7 @@ class SecureErrorHandler:
         self,
         error_type: Type[SecureError],
         message: str,
-        error_code: Optional[str] = None,
+        ErrorCode: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None
     ) -> None:
         """Raise a secure error.
@@ -343,12 +343,12 @@ class SecureErrorHandler:
         Args:
             error_type: Type of error to raise
             message: Error message
-            error_code: Optional error code
+            ErrorCode: Optional error code
             context: Optional context
         """
         sanitized_message = ErrorSanitizer.sanitize_message(message)
-        secure_error = error_type(sanitized_message, error_code, context)
-        self.logger.error("Raising secure error: %s", secure_error.to_dict())
+        secure_error = error_type(sanitized_message, ErrorCode, context)
+        self.Logger.error("Raising secure error: %s", secure_error.to_dict())
         raise secure_error
 
 

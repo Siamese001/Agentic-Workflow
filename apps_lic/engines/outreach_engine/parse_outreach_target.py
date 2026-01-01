@@ -1,5 +1,5 @@
 """
-parse_outreach_target.py - Retrieval Module
+ParseOutreachTarget.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.034168
@@ -19,7 +19,7 @@ class ParseOutreachTarget:
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f"Initialized {self.__class__.__name__}")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
                  query: str,

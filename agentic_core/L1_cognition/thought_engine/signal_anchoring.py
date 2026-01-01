@@ -11,47 +11,47 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-# NAMING FIXED: SignedClaim → signed_claim
-class signed_claim:
-    """A claim that has been extracted and attributed to a source."""
-    claim: str
+# NAMING FIXED: SignedClaim → SignedClaim
+class SignedClaim:
+    """A Claim that has been extracted and attributed to a source."""
+    Claim: str
     source: str
     confidence: float
     evidence: Optional[str] = None
 
-# NAMING FIXED: HardState → hard_state
-class hard_state(Protocol):
-    """Protocol for the hard_state attribute of SignalContext."""
+# NAMING FIXED: HardState → HardState
+class HardState(Protocol):
+    """Protocol for the HardState attribute of SignalContext."""
     execution_id: str
 
-# NAMING FIXED: SignalContext → signal_context
-class signal_context(Protocol):
+# NAMING FIXED: SignalContext → SignalContext
+class SignalContext(Protocol):
     """Protocol for the SignalContext object, defining the interface expected by SignalAnchor."""
-    hard_state: HardState
+    HardState: HardState
     signed_claims: List[SignedClaim]
-    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None: ...
+    def add_signed_claim(self, Claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None: ...
                     
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: ClaimType → claim_type
-class claim_type(str, Enum):
+# NAMING FIXED: ClaimType → ClaimType
+class ClaimType(str, Enum):
     """Types of claims that can be extracted from content."""
     SKILL = "skill"
     EXPERIENCE = "experience"
     EDUCATION = "education"
     ACHIEVEMENT = "achievement"
     RESPONSIBILITY = "responsibility"
-    METRIC = "metric"
+    METRIC = "Metric"
     FACT = "fact"
     PREFERENCE = "preference"
 
-# NAMING FIXED: SourceType → source_type
-class source_type(str, Enum):
+# NAMING FIXED: SourceType → SourceType
+class SourceType(str, Enum):
     """Types of sources for claims."""
     RESUME = "resume"
-    JOB_DESCRIPTION = "job_description"
+    JOB_DESCRIPTION = "JobDescription"
     TRANSCRIPT = "transcript"
     CERTIFICATE = "certificate"
     ASSESSMENT = "assessment"
@@ -59,10 +59,10 @@ class source_type(str, Enum):
     SELF_REPORTED = "self_reported"
 
 @dataclass
-# NAMING FIXED: SourceMetadata → source_metadata
-class source_metadata:
-    """Metadata about a claim source."""
-    source_type: SourceType
+# NAMING FIXED: SourceMetadata → SourceMetadata
+class SourceMetadata:
+    """Metadata about a Claim source."""
+    SourceType: SourceType
     source_id: str
     title: Optional[str] = None
     author: Optional[str] = None
@@ -71,19 +71,19 @@ class source_metadata:
     verification_status: str = "unverified"  # unverified, verified, disputed
 
 @dataclass
-# NAMING FIXED: ExtractedClaim → extracted_claim
-class extracted_claim:
-    """A claim extracted from source content."""
+# NAMING FIXED: ExtractedClaim → ExtractedClaim
+class ExtractedClaim:
+    """A Claim extracted from source content."""
     claim_text: str
-    claim_type: ClaimType
-    source_metadata: SourceMetadata
+    ClaimType: ClaimType
+    SourceMetadata: SourceMetadata
     confidence: float
     evidence_snippet: Optional[str] = None
     extraction_method: str = "pattern_match"
-    context_window: str = ""  # Text around the claim for context
+    ContextWindow: str = ""  # Text around the Claim for context
 
-# NAMING FIXED: ClaimExtractor → claim_extractor
-class claim_extractor:
+# NAMING FIXED: ClaimExtractor → ClaimExtractor
+class ClaimExtractor:
     """
     Extracts structured claims from unstructured source content.
 
@@ -92,7 +92,7 @@ class claim_extractor:
     """
 
     def __init__(self, enable_logging: bool = True):
-        """Initialize claim extractor.
+        """Initialize Claim extractor.
 
         Args:
             enable_logging: Enable extraction logging
@@ -114,13 +114,13 @@ class claim_extractor:
     def extract_claims(
         self,
         content: str,
-        source_metadata: SourceMetadata
+        SourceMetadata: SourceMetadata
     ) -> List[ExtractedClaim]:
         """Extract claims from source content.
 
         Args:
             content: Raw source content
-            source_metadata: Metadata about the source
+            SourceMetadata: Metadata about the source
 
         Returns:
             List of extracted claims
@@ -128,7 +128,7 @@ class claim_extractor:
         CLAIMS = []
 
         # Extract claims based on patterns
-        for claim_type, patterns in self._extraction_patterns.items():
+        for ClaimType, patterns in self._extraction_patterns.items():
             for pattern in patterns:
                 MATCHES = re.finditer(pattern, content, re.IGNORECASE | re.MULTILINE)
 
@@ -139,7 +139,7 @@ class claim_extractor:
 
                     # Calculate confidence based on source and pattern
                     base_confidence = self._source_weights.get(
-                        source_metadata.source_type, 0.5
+                        SourceMetadata.SourceType, 0.5
                     )
                     pattern_confidence = self._get_pattern_confidence(pattern)
                     CONFIDENCE = min(base_confidence * pattern_confidence, 1.0)
@@ -147,15 +147,15 @@ class claim_extractor:
                     # Extract context window
                     START = max(0, match.start() - 100)
                     END = min(len(content), match.end() + 100)
-                    context_window = content[START:END].strip()
+                    ContextWindow = content[START:END].strip()
 
                     CLAIM = ExtractedClaim(
                         claim_text=claim_text,
-                        claim_type=ClaimType(claim_type),
-                        source_metadata=source_metadata,
+                        ClaimType=ClaimType(ClaimType),
+                        SourceMetadata=SourceMetadata,
                         confidence=CONFIDENCE,
                         evidence_snippet=match.group(0),
-                        context_window=context_window
+                        ContextWindow=ContextWindow
                     )
                     CLAIMS.append(CLAIM)
 
@@ -166,8 +166,8 @@ class claim_extractor:
             LOGGER.info(
                 "claims_extracted",
                 EXTRA={
-                    "source_id": source_metadata.source_id,
-                    "source_type": source_metadata.source_type.value,
+                    "source_id": SourceMetadata.source_id,
+                    "SourceType": SourceMetadata.SourceType.value,
                     "claim_count": len(CLAIMS)
                 }
             )
@@ -175,10 +175,10 @@ class claim_extractor:
         return CLAIMS
 
     def _load_extraction_patterns(self) -> Dict[str, List[str]]:
-        """Load regex patterns for claim extraction.
+        """Load regex patterns for Claim extraction.
 
         Returns:
-            Dictionary of claim type to pattern list
+            Dictionary of Claim type to pattern list
         """
         return {
             "skill": [
@@ -205,7 +205,7 @@ class claim_extractor:
                 r"(?:increased|decreased|reduced|improved)\s+([^.\n]+)",
                 r"(?:award|recognition|honors?)\s+(?:for|in)\s+([^.\n]+)"
             ],
-            "metric": [
+            "Metric": [
                 r"(\d+%|\d+\s*(?:percent|percentage))"
                 r"\s+(?:increase|decrease|reduction|improvement)",
 
@@ -224,13 +224,13 @@ class claim_extractor:
         }
 
     def _clean_claim_text(self, text: str) -> str:
-        """Clean and normalize claim text.
+        """Clean and normalize Claim text.
 
         Args:
-            text: Raw claim text
+            text: Raw Claim text
 
         Returns:
-            Cleaned claim text
+            Cleaned Claim text
         """
         # Remove extra whitespace
         TEXT = re.sub(r'\s+', ' ', text.strip())
@@ -271,30 +271,30 @@ class claim_extractor:
             claims: List of claims to deduplicate
 
         Returns:
-            Deduplicated claim list
+            Deduplicated Claim list
         """
         SEEN = set()
         DEDUPLICATED = []
 
-        for claim in claims:
+        for Claim in claims:
             # Create a normalized key for comparison
-            KEY = self._normalize_claim_key(claim.claim_text)
+            KEY = self._normalize_claim_key(Claim.claim_text)
 
             if KEY not in SEEN:
                 SEEN.add(KEY)
-                DEDUPLICATED.append(claim)
+                DEDUPLICATED.append(Claim)
             else:
-                # Update existing claim if higher confidence
+                # Update existing Claim if higher confidence
                 for I, existing in enumerate(DEDUPLICATED):
                     if self._normalize_claim_key(existing.claim_text) == KEY:
-                        if claim.confidence > existing.confidence:
-                            DEDUPLICATED[I] = claim
+                        if Claim.confidence > existing.confidence:
+                            DEDUPLICATED[I] = Claim
                         break
 
         return DEDUPLICATED
 
     def _normalize_claim_key(self, text: str) -> str:
-        """Create a normalized key for claim comparison.
+        """Create a normalized key for Claim comparison.
 
         Args:
             text: Claim text
@@ -306,8 +306,8 @@ class claim_extractor:
         NORMALIZED = re.sub(r'[^a-z0-9]', '', text.lower())
         return NORMALIZED
 
-# NAMING FIXED: SignalAnchor → signal_anchor
-class signal_anchor:
+# NAMING FIXED: SignalAnchor → SignalAnchor
+class SignalAnchor:
     """
     Anchors RAG signals with signed claims to prevent hallucinations.
 
@@ -317,18 +317,18 @@ class signal_anchor:
 
     def __init__(
         self,
-        claim_extractor: Optional[ClaimExtractor] = None,
+        ClaimExtractor: Optional[ClaimExtractor] = None,
         min_confidence: float = 0.6,
         max_claims_per_source: int = 50
     ):
         """Initialize signal anchor.
 
         Args:
-            claim_extractor: Optional claim extractor
+            ClaimExtractor: Optional Claim extractor
             min_confidence: Minimum confidence threshold for claims
             max_claims_per_source: Maximum claims to extract per source
         """
-        self.claim_extractor = claim_extractor or ClaimExtractor()
+        self.ClaimExtractor = ClaimExtractor or ClaimExtractor()
         self.min_confidence = min_confidence
         self.max_claims_per_source = max_claims_per_source
 
@@ -359,15 +359,15 @@ class signal_anchor:
 
         for item in rag_content:
             # Extract source metadata
-            source_metadata = self._extract_source_metadata(item)
+            SourceMetadata = self._extract_source_metadata(item)
 
             # Extract claims from content
             CONTENT = item.get("content", item.get("text", ""))
             if not CONTENT:
                 continue
 
-            extracted_claims = self.claim_extractor.extract_claims(
-                CONTENT, source_metadata
+            extracted_claims = self.ClaimExtractor.extract_claims(
+                CONTENT, SourceMetadata
             )
 
             # Filter by confidence and limit
@@ -377,19 +377,19 @@ class signal_anchor:
             ][:self.max_claims_per_source]
 
             # Convert to signed claims and add to context
-            for claim in valid_claims:
+            for Claim in valid_claims:
                 # Instantiate the locally defined SignedClaim
-                signed_claim = SignedClaim(
-                    claim=claim.claim_text,
-                    source=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
-                    confidence=claim.confidence,
-                    evidence=claim.evidence_snippet
+                SignedClaim = SignedClaim(
+                    Claim=Claim.claim_text,
+                    source=f"{SourceMetadata.SourceType.value}:{SourceMetadata.source_id}",
+                    confidence=Claim.confidence,
+                    evidence=Claim.evidence_snippet
                 )
                 context.add_signed_claim(
-                    signed_claim.claim,
-                    signed_claim.source,
-                    signed_claim.confidence,
-                    signed_claim.evidence
+                    SignedClaim.Claim,
+                    SignedClaim.source,
+                    SignedClaim.confidence,
+                    SignedClaim.evidence
                 )
 
             total_claims += len(valid_claims)
@@ -397,7 +397,7 @@ class signal_anchor:
         LOGGER.info(
             "rag_content_anchored",
             EXTRA={
-                "execution_id": context.hard_state.execution_id,
+                "execution_id": context.HardState.execution_id,
                 "content_items": len(rag_content),
                 "claims_added": total_claims
             }
@@ -415,26 +415,26 @@ class signal_anchor:
             Source metadata
         """
         # Determine source type
-        source_type_str = item.get("source_type", "document").lower()
-        source_type = SourceType.RESUME  # Default
+        source_type_str = item.get("SourceType", "document").lower()
+        SourceType = SourceType.RESUME  # Default
 
         if "resume" in source_type_str or "cv" in source_type_str:
-            source_type = SourceType.RESUME
+            SourceType = SourceType.RESUME
         elif "job" in source_type_str and "desc" in source_type_str:
-            source_type = SourceType.JOB_DESCRIPTION
+            SourceType = SourceType.JOB_DESCRIPTION
         elif "cert" in source_type_str:
-            source_type = SourceType.CERTIFICATE
+            SourceType = SourceType.CERTIFICATE
         elif "transcript" in source_type_str:
-            source_type = SourceType.TRANSCRIPT
+            SourceType = SourceType.TRANSCRIPT
         elif "reference" in source_type_str:
-            source_type = SourceType.REFERENCE
+            SourceType = SourceType.REFERENCE
 
         # Create source ID from content hash
         CONTENT = item.get("content", item.get("text", ""))
         source_id = hashlib.md5(CONTENT.encode()).hexdigest()[:8]
 
         return SourceMetadata(
-            source_type=source_type,
+            SourceType=SourceType,
             source_id=source_id,
             title=item.get("title"),
             author=item.get("author"),
@@ -458,10 +458,10 @@ class signal_anchor:
         source_counts = {}
         confidence_sum = 0
 
-        for claim in context.signed_claims:
-            source_type = claim.source.split(":")[0]
-            source_counts[source_type] = source_counts.get(source_type, 0) + 1
-            confidence_sum += claim.confidence
+        for Claim in context.signed_claims:
+            SourceType = Claim.source.split(":")[0]
+            source_counts[SourceType] = source_counts.get(SourceType, 0) + 1
+            confidence_sum += Claim.confidence
 
         return {
             "total_claims": len(context.signed_claims),
@@ -515,7 +515,7 @@ def anchor_resume_content(
 
     rag_content = [{
         "content": resume_text,
-        "source_type": "resume",
+        "SourceType": "resume",
         "title": metadata.get("title") if metadata else "Resume",
         "reliability": 0.9
     }]

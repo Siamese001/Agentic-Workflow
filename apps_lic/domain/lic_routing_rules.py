@@ -1,8 +1,8 @@
 """Backward compatibility shim for lic_routing_rules.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -11,10 +11,10 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from agentic_core.lic_routing_rules_impl import *  # Star import removed
-# from agentic_core.lic_routing_rules_models import *  # Star import removed
-# from agentic_core.route_models_2 import *  # Star import removed
-# from agentic_core.lic_routing_rules_impl import *  # Star import removed
+# from AgenticCore.lic_routing_rules_impl import *  # Star import removed
+# from AgenticCore.lic_routing_rules_models import *  # Star import removed
+# from AgenticCore.route_models_2 import *  # Star import removed
+# from AgenticCore.lic_routing_rules_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

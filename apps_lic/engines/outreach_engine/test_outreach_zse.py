@@ -3,7 +3,7 @@ import os
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-from outreach_engine_zse import (
+from OutreachEngineZse import (
     MAX_PITCH_REFINEMENTS,
     OUTREACH_ALLOWED_HOSTS,
     SHADOW_MODE_ACTIVE,
@@ -35,11 +35,11 @@ def mock_tools():
 
 def mock_logger():
 
-    """Mock logger for testing"""
+    """Mock Logger for testing"""
 
-    logger = MagicMock()
+    Logger = MagicMock()
 
-    return logger
+    return Logger
 
 
 
@@ -67,15 +67,15 @@ class TestOutreachE3TC101:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.convert_time')
+    @patch('OutreachEngineZse.convert_time')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_zse_success_first_attempt(self, mock_brand_guide, mock_convert_time,
 
@@ -99,9 +99,9 @@ class TestOutreachE3TC101:
 
         # Mock P6 consensus to approve
 
-        with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+        with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
-            mock_judge.return_value = {"verdict": "APPROVED"}
+            mock_judge.return_value = {"Verdict": "APPROVED"}
 
 
 
@@ -119,7 +119,7 @@ class TestOutreachE3TC101:
 
                 tools=mock_tools,
 
-                logger=mock_logger
+                Logger=mock_logger
 
             )
 
@@ -143,11 +143,11 @@ class TestOutreachE3TC102:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse._fetch_company_content')
+    @patch('OutreachEngineZse._fetch_company_content')
 
     def test_p8_egress_filter_block(self, mock_fetch, mock_log_action,
 
@@ -171,7 +171,7 @@ class TestOutreachE3TC102:
 
             tools=mock_tools,
 
-            logger=mock_logger
+            Logger=mock_logger
 
         )
 
@@ -193,15 +193,15 @@ class TestOutreachE3TC201:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.convert_time')
+    @patch('OutreachEngineZse.convert_time')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_p6_compliance_failure_triggers_p10(self, mock_brand_guide, mock_convert_time,
 
@@ -225,11 +225,11 @@ class TestOutreachE3TC201:
 
         # Mock P6 consensus to fail initially
 
-        with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+        with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
             mock_judge.return_value = {
 
-                "verdict": "REJECTED",
+                "Verdict": "REJECTED",
 
                 "reason": "Brand compliance failure: unprofessional language"
 
@@ -245,7 +245,7 @@ class TestOutreachE3TC201:
 
                 tools=mock_tools,
 
-                logger=mock_logger
+                Logger=mock_logger
 
             )
 
@@ -275,15 +275,15 @@ class TestOutreachE3TC202:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.convert_time')
+    @patch('OutreachEngineZse.convert_time')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_p10_refinement_success(self, mock_brand_guide, mock_convert_time,
 
@@ -307,13 +307,13 @@ class TestOutreachE3TC202:
 
         # Mock P6 consensus: fail first, pass second
 
-        with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+        with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
             mock_judge.side_effect = [
 
-                {"verdict": "REJECTED", "reason": "unprofessional language"},
+                {"Verdict": "REJECTED", "reason": "unprofessional language"},
 
-                {"verdict": "APPROVED"}
+                {"Verdict": "APPROVED"}
 
             ]
 
@@ -333,7 +333,7 @@ class TestOutreachE3TC202:
 
                 tools=mock_tools,
 
-                logger=mock_logger
+                Logger=mock_logger
 
             )
 
@@ -363,15 +363,15 @@ class TestOutreachE3TC203:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.convert_time')
+    @patch('OutreachEngineZse.convert_time')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_zse_max_attempts_failure(self, mock_brand_guide, mock_convert_time,
 
@@ -395,11 +395,11 @@ class TestOutreachE3TC203:
 
         # Mock P6 consensus to always fail
 
-        with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+        with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
             mock_judge.return_value = {
 
-                "verdict": "REJECTED",
+                "Verdict": "REJECTED",
 
                 "reason": "Persistent brand compliance failure"
 
@@ -415,7 +415,7 @@ class TestOutreachE3TC203:
 
                 tools=mock_tools,
 
-                logger=mock_logger
+                Logger=mock_logger
 
             )
 
@@ -459,7 +459,7 @@ class TestOutreachE3TC301:
 
         """Test P5 process registration is called"""
 
-        with patch('outreach_engine_zse.register_process') as mock_register:
+        with patch('OutreachEngineZse.register_process') as mock_register:
 
             mock_register.return_value = None
 
@@ -485,13 +485,13 @@ class TestOutreachE3TC302:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_l4_time_conversion(self, mock_brand_guide, mock_add_obs,
 
@@ -517,15 +517,15 @@ class TestOutreachE3TC302:
 
 
 
-        with patch('outreach_engine_zse.convert_time') as mock_convert:
+        with patch('OutreachEngineZse.convert_time') as mock_convert:
 
             mock_convert.return_value = "2025-01-16T23:00:00"  # Next day in Tokyo
 
 
 
-            with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+            with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
-                mock_judge.return_value = {"verdict": "APPROVED"}
+                mock_judge.return_value = {"Verdict": "APPROVED"}
 
 
 
@@ -541,7 +541,7 @@ class TestOutreachE3TC302:
 
                     tools=mock_tools,
 
-                    logger=mock_logger
+                    Logger=mock_logger
 
                 )
 
@@ -689,11 +689,11 @@ class TestConfiguration:
 
             import importlib
 
-            import outreach_engine_zse
+            import OutreachEngineZse
 
-            importlib.reload(outreach_engine_zse)
+            importlib.reload(OutreachEngineZse)
 
-            assert outreach_engine_zse.MAX_PITCH_REFINEMENTS == 5
+            assert OutreachEngineZse.MAX_PITCH_REFINEMENTS == 5
 
 
 
@@ -723,11 +723,11 @@ class TestConfiguration:
 
             import importlib
 
-            import outreach_engine_zse
+            import OutreachEngineZse
 
-            importlib.reload(outreach_engine_zse)
+            importlib.reload(OutreachEngineZse)
 
-            assert outreach_engine_zse.SHADOW_MODE_ACTIVE == True
+            assert OutreachEngineZse.SHADOW_MODE_ACTIVE == True
 
 
 
@@ -737,19 +737,19 @@ class TestNetworkIntegration:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
     def test_egress_filter_decorator(self, mock_log_action, mock_register_process):
 
         """Test that egress filter decorator is properly applied"""
 
         # Verify the decorator is applied to _fetch_company_content
-        import outreach_engine_zse
+        import OutreachEngineZse
         from network_utils import strict_egress_filter
 
-        assert hasattr(outreach_engine_zse._fetch_company_content, '__wrapped__')
+        assert hasattr(OutreachEngineZse._fetch_company_content, '__wrapped__')
 
 
 
@@ -765,15 +765,15 @@ class TestShadowModeExecution:
 
 
 
-    @patch('outreach_engine_zse.register_process')
+    @patch('OutreachEngineZse.register_process')
 
-    @patch('outreach_engine_zse.log_action')
+    @patch('OutreachEngineZse.log_action')
 
-    @patch('outreach_engine_zse.add_observations')
+    @patch('OutreachEngineZse.add_observations')
 
-    @patch('outreach_engine_zse.convert_time')
+    @patch('OutreachEngineZse.convert_time')
 
-    @patch('outreach_engine_zse.get_brand_style_guide')
+    @patch('OutreachEngineZse.get_brand_style_guide')
 
     def test_shadow_mode_blocks_email(self, mock_brand_guide, mock_convert_time,
 
@@ -785,9 +785,9 @@ class TestShadowModeExecution:
 
         # Patch SHADOW_MODE_ACTIVE directly
 
-        import outreach_engine_zse
+        import OutreachEngineZse
 
-        outreach_engine_zse.SHADOW_MODE_ACTIVE = True
+        OutreachEngineZse.SHADOW_MODE_ACTIVE = True
 
 
 
@@ -803,13 +803,13 @@ class TestShadowModeExecution:
 
 
 
-        with patch('outreach_engine_zse.jury.judge_artifact') as mock_judge:
+        with patch('OutreachEngineZse.jury.judge_artifact') as mock_judge:
 
-            mock_judge.return_value = {"verdict": "APPROVED"}
+            mock_judge.return_value = {"Verdict": "APPROVED"}
 
 
 
-            result = outreach_engine_zse.execute_outreach_zse(
+            result = OutreachEngineZse.execute_outreach_zse(
 
                 company_url="https://example.com",
 
@@ -817,7 +817,7 @@ class TestShadowModeExecution:
 
                 tools=mock_tools,
 
-                logger=mock_logger
+                Logger=mock_logger
 
             )
 

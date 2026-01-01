@@ -4,7 +4,7 @@ import logging
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
 
-class docker_sandbox:
+class DockerSandbox:
     """
     L2 Execution: The Secure Sandbox.
     Executes generated code in an isolated, temporary environment.

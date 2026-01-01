@@ -22,7 +22,7 @@ class BudgetManager:
     """Manages token budget and cost tracking for LLM calls."""
 
     def __init__(self, max_cost_usd: float = 2.0):
-        from agentic_core.config.P1_core.sovereign_config import config
+        from AgenticCore.config.P1_core.sovereign_config import config
         
         self.max_cost = max_cost_usd
         self.current_cost = 0.0
@@ -148,7 +148,7 @@ class ResumeEngineContext:
     current_resume: Dict[str, Any] = field(default_factory=dict)
 
     # Job description being targeted
-    job_description: str = field(default="")
+    JobDescription: str = field(default="")
 
     # User profile data
     user_profile: Dict[str, Any] = field(default_factory=dict)
@@ -274,7 +274,7 @@ class ResumeEngineContext:
         self.successful_generations.append({
             "resume_sections": list(resume_data.keys()),
             "quality_score": quality_score,
-            "job_description_preview": self.job_description[:200] if self.job_description else "",
+            "job_description_preview": self.JobDescription[:200] if self.JobDescription else "",
             "timestamp": datetime.now().isoformat(),
         })
 

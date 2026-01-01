@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dotenv import load_dotenv
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -37,7 +37,7 @@ class _SubatomicEnginePlaceholder:
     """
     Placeholder for the Subatomic Engine.
     In a full refactor, the actual implementation from apps_shared would be moved here
-    or to a new sovereign module within agentic_core.
+    or to a new sovereign module within AgenticCore.
     """
 
     def __init__(self, gemini_client: Any):
@@ -100,7 +100,7 @@ class CanonBaseAgent(ABC):
     _subatomic_engine: Optional[Any] = field(default=None, init=False)
     _fission_manager: Optional[Any] = field(default=None, init=False)
     _safety_guardrail: Optional[Any] = field(default=None, init=False)
-    BANNED_IMPORTS: List[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'conversational_repair'], init=False)
+    BANNED_IMPORTS: List[str] = field(default_factory=lambda: ['base', 'context', 'L3_orchestration', 'ConversationalRepair'], init=False)
 
     def __post_init__(self):
         """Initialize agent name, role, and external clients."""
@@ -111,7 +111,7 @@ class CanonBaseAgent(ABC):
             self._client = genai.Client(api_key=api_key)
             print(f'[OK] {self.name} connected to Gemini 2.5', flush=True)
         else:
-            print(f"[!] {self.name}: Gemini client not available (API key: {('found' if api_key else 'missing')})", flush=True)
+            print(f"[!] {self.name}: Gemini client not available (API key: {('found' if api_key else 'Missing')})", flush=True)
         if self._client:
             try:
                 self._subatomic_engine = get_subatomic_engine(gemini_client=self._client)
@@ -122,7 +122,7 @@ class CanonBaseAgent(ABC):
                 print(f'   [!]  {self.name}: Failed to initialize Sub-Atomic Engine: {e}', flush=True)
 
     def _get_role_name(self) -> str:
-        """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
+        """Convert class name to role name (e.g., SystemArchitect -> SystemArchitect)."""
         name = self.__class__.__name__
         return re.sub('(?<!^)(?=[A-Z])', '_', name).lower()
 
@@ -245,12 +245,12 @@ class CanonBaseAgent(ABC):
         except SyntaxError:
             return False
 
-    async def resilient_mutation(self, task: str, code: str, file_path: Optional[str]=None, round_num: int=1, previous_failure: Optional[str]=None) -> str:
+    async def resilient_mutation(self, Task: str, code: str, file_path: Optional[str]=None, round_num: int=1, previous_failure: Optional[str]=None) -> str:
         """
         Core healing logic using Gemini 2.5 Flash with dynamic prompt loading.
 
         Args:
-            task: Description of the violation to fix
+            Task: Description of the Violation to fix
             code: Original code to be fixed
             file_path: Path to the file being fixed
             round_num: Current healing round (1-5)
@@ -277,10 +277,10 @@ class CanonBaseAgent(ABC):
                 from archives.legacy_code.prompts.prompt_loader import load_prompt_for_agent
             except ImportError:
                 from prompts.prompt_loader import load_prompt_for_agent
-            prompt: Any = load_prompt_for_agent(agent_role=self.role, task=task, code=code, original_line_count=original_line_count, lesson_learned=lesson_learned)
+            prompt: Any = load_prompt_for_agent(AgentRole=self.role, Task=Task, code=code, original_line_count=original_line_count, lesson_learned=lesson_learned)
         except Exception as e:
             print(f'      [!] Prompt loader failed ({e}), using fallback', flush=True)
-            prompt: Any = self._build_fallback_prompt(task, code, original_line_count, lesson_learned)
+            prompt: Any = self._build_fallback_prompt(Task, code, original_line_count, lesson_learned)
         try:
             config: Any = types.GenerateContentConfig(temperature=0.2, thinking_config=types.ThinkingConfig(thinking_budget=16000), tools=[])
             self._reset_chat_session_if_needed(chat_key, file_path, round_num)
@@ -290,9 +290,9 @@ class CanonBaseAgent(ABC):
             print(f'      [X] Gemini API error: {e}', flush=True)
             return code
 
-    def _build_fallback_prompt(self, task: str, code: str, original_line_count: int, lesson_learned: str) -> str:
+    def _build_fallback_prompt(self, Task: str, code: str, original_line_count: int, lesson_learned: str) -> str:
         """Build fallback prompt if dynamic loading fails."""
-        prompt = f"Task: {task}\nSYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.\n\n[X] ZERO-TOLERANCE DELETION RULE:\n- The original file has {original_line_count} lines of code\n- Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines\n- NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'\n- If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED\n\n[X] PROHIBITED MODULES (HARD-CODED BLACKLIST):\n- 'base' - DOES NOT EXIST\n- 'context' - DOES NOT EXIST\n- 'L3_orchestration' - DOES NOT EXIST\n- 'conversational_repair' - DOES NOT EXIST\n\n⚡ ELITE ENGINEER RULES:\n1. Fix the specific violation ONLY - surgical precision\n2. NEVER hallucinate imports - verify all imports are real\n3. NEVER delete logic, comments, or docstrings\n4. Return ONLY valid Python code. No markdown blocks.\n5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.\n"
+        prompt = f"Task: {Task}\nSYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.\n\n[X] ZERO-TOLERANCE DELETION RULE:\n- The original file has {original_line_count} lines of code\n- Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines\n- NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'\n- If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED\n\n[X] PROHIBITED MODULES (HARD-CODED BLACKLIST):\n- 'base' - DOES NOT EXIST\n- 'context' - DOES NOT EXIST\n- 'L3_orchestration' - DOES NOT EXIST\n- 'ConversationalRepair' - DOES NOT EXIST\n\n⚡ ELITE ENGINEER RULES:\n1. Fix the specific Violation ONLY - surgical precision\n2. NEVER hallucinate imports - verify all imports are real\n3. NEVER delete logic, comments, or docstrings\n4. Return ONLY valid Python code. No markdown blocks.\n5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.\n"
         if lesson_learned:
             prompt += f'\n\n📚 LESSON LEARNED: {lesson_learned}\n'
         prompt += f'\n{code}'
@@ -300,7 +300,7 @@ class CanonBaseAgent(ABC):
 
     async def verify_fix(self, original_code: str, fixed_code: str, violation_key: int) -> Tuple[bool, str]:
         """
-        Verify that the fix resolves the violation without introducing new issues.
+        Verify that the fix resolves the Violation without introducing new issues.
 
         Args:
             original_code: Original code before fix
@@ -336,7 +336,7 @@ class CanonBaseAgent(ABC):
 # =============================================================================
 
 class SovereignSeverity(Enum):
-    """Sovereign event severity levels for subatomic testing."""
+    """Sovereign event Severity levels for subatomic testing."""
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -351,22 +351,22 @@ class SubatomicTestingMixin:
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
 
-    async def run_subatomic_critique(self, artifact: str, artifact_type: str, context: Dict) -> Dict:
+    async def run_subatomic_critique(self, Artifact: str, artifact_type: str, context: Dict) -> Dict:
         """L2 CRITIQUE hop: Basic self-testing + delegation on failure.
         
         Args:
-            artifact: The produced artifact (code, JSON, file content)
-            artifact_type: Type of artifact (python_code, tool_json, file_content)
-            context: Execution context with goal, task info
+            Artifact: The produced Artifact (code, JSON, file content)
+            artifact_type: Type of Artifact (python_code, tool_json, file_content)
+            context: Execution context with goal, Task info
             
         Returns:
             Dict with passed, tests, coverage info
         """
-        # Step 1: Generate basic tests for artifact
-        tests = self._generate_basic_tests(artifact, artifact_type, context)
+        # Step 1: Generate basic tests for Artifact
+        tests = self._generate_basic_tests(Artifact, artifact_type, context)
         
         # Step 2: Run sandboxed tests
-        test_result = self._run_sandbox_tests(tests, artifact)
+        test_result = self._run_sandbox_tests(tests, Artifact)
         
         if test_result["passed"]:
             self._emit_subatomic_event(SovereignSeverity.INFO, "L2_CRITIQUE_PASSED", {
@@ -381,7 +381,7 @@ class SubatomicTestingMixin:
             "reason": test_result.get("error", "unknown")
         })
         
-        advanced_result = await self._delegate_to_specialist(artifact, artifact_type, context)
+        advanced_result = await self._delegate_to_specialist(Artifact, artifact_type, context)
         
         if not advanced_result["passed"]:
             self._emit_subatomic_event(SovereignSeverity.ERROR, "L2_CRITIQUE_FAILED", {
@@ -391,16 +391,16 @@ class SubatomicTestingMixin:
         
         return advanced_result
 
-    def _generate_basic_tests(self, artifact: str, artifact_type: str, context: Dict) -> str:
-        """Generate basic unit tests for L2 artifact."""
+    def _generate_basic_tests(self, Artifact: str, artifact_type: str, context: Dict) -> str:
+        """Generate basic unit tests for L2 Artifact."""
         if artifact_type == "python_code":
-            return self._generate_code_tests(artifact, context)
+            return self._generate_code_tests(Artifact, context)
         elif artifact_type == "tool_json":
-            return self._generate_json_tests(artifact, context)
+            return self._generate_json_tests(Artifact, context)
         elif artifact_type == "file_content":
-            return self._generate_file_tests(artifact, context)
+            return self._generate_file_tests(Artifact, context)
         else:
-            return self._generate_generic_tests(artifact, context)
+            return self._generate_generic_tests(Artifact, context)
 
     def _generate_code_tests(self, code: str, context: Dict) -> str:
         """L2 Example 1: Unit tests for generated Python code."""
@@ -475,21 +475,21 @@ def test_no_corrupted_markers():
         assert marker not in CONTENT_UNDER_TEST
 '''
 
-    def _generate_generic_tests(self, artifact: str, context: Dict) -> str:
-        """Fallback tests for unknown artifact types."""
-        escaped_artifact = str(artifact)[:200].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+    def _generate_generic_tests(self, Artifact: str, context: Dict) -> str:
+        """Fallback tests for unknown Artifact types."""
+        escaped_artifact = str(Artifact)[:200].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
 ARTIFACT_UNDER_TEST = """{escaped_artifact}"""
 
 def test_artifact_exists():
-    """Verify artifact is not empty."""
+    """Verify Artifact is not empty."""
     assert ARTIFACT_UNDER_TEST is not None
     assert len(str(ARTIFACT_UNDER_TEST)) > 0
 '''
 
-    def _run_sandbox_tests(self, tests: str, artifact: str) -> Dict:
+    def _run_sandbox_tests(self, tests: str, Artifact: str) -> Dict:
         """Run tests in sandboxed subprocess."""
         try:
             # Write tests to temp file
@@ -520,14 +520,14 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    async def _delegate_to_specialist(self, artifact: str, artifact_type: str, context: Dict) -> Dict:
+    async def _delegate_to_specialist(self, Artifact: str, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced testing."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
             result = await specialist.execute({
-                "artifact": artifact,
+                "Artifact": Artifact,
                 "type": f"{artifact_type}_integration",
                 "coverage_target": 95
             })
@@ -537,8 +537,8 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    def _emit_subatomic_event(self, severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_subatomic_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit subatomic testing event for observability."""
-        print(f"[SUBATOMIC L2] {severity.value} | {event_type}")
+        print(f"[SUBATOMIC L2] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")

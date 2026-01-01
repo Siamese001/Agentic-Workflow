@@ -16,7 +16,7 @@ DEPRECATED operations (use HealerAgent instead):
 - run_with_cleanup() -> Use FilesystemAgent.run() + HealerAgent
 
 For file operations, use:
-    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    from AgenticCore.L5_safety.guardrails.HealerAgent import HealerAgent
     violations = FilesystemAgent(project_root).run()  # Detection only
     healer = HealerAgent(project_root)
     healer.heal_file_moves(violations)  # Execution
@@ -24,7 +24,7 @@ For file operations, use:
 Placed in L5_safety/validators per SSOT extension:
   "Hard safety limits, mutation controls, deletion guards"
 
-Depth: agentic_core/L5_safety/validators/filesystem_agent.py -> 4 parts -> compliant
+Depth: AgenticCore/L5_safety/validators/filesystem_agent.py -> 4 parts -> compliant
 """
 import re
 import ast
@@ -34,14 +34,14 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any, Set
 from datetime import datetime
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_PATTERNS,
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP
 )
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class FilesystemAgent:
@@ -65,8 +65,8 @@ class FilesystemAgent:
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
             self.archives_root.mkdir(exist_ok=True)
-            logger.info(f"[FileSystemAgent] Backup territory sealed at: {self.backup_dir}")
-            logger.info(f"[FileSystemAgent] Archives root initialized at: {self.archives_root}")
+            Logger.info(f"[FileSystemAgent] Backup territory sealed at: {self.backup_dir}")
+            Logger.info(f"[FileSystemAgent] Archives root initialized at: {self.archives_root}")
 
     def run(self) -> List[Tuple[Path, str]]:
         """
@@ -153,18 +153,18 @@ class FilesystemAgent:
         # PRIORITY 1: Strong class/function symbols
         strong_symbols = all_classes.union(all_functions)
         symbol_signals = {
-            "orchestrator": "agentic_core/L3_orchestration",
-            "engine": "agentic_core/L3_orchestration",
-            "workflow": "agentic_core/L3_orchestration",
-            "strategy": "agentic_core/L1_cognition",
-            "reasoning": "agentic_core/L1_cognition",
-            "memory": "agentic_core/L4_state",
-            "state": "agentic_core/L4_state",
-            "validator": "agentic_core/L5_safety",
-            "guardrail": "agentic_core/L5_safety",
-            "prompt": "agentic_core/prompt_governance",
-            "template": "agentic_core/prompt_governance",
-            "schema": "agentic_core/schemas",
+            "orchestrator": "AgenticCore/L3_orchestration",
+            "engine": "AgenticCore/L3_orchestration",
+            "workflow": "AgenticCore/L3_orchestration",
+            "strategy": "AgenticCore/L1_cognition",
+            "reasoning": "AgenticCore/L1_cognition",
+            "memory": "AgenticCore/L4_state",
+            "state": "AgenticCore/L4_state",
+            "validator": "AgenticCore/L5_safety",
+            "guardrail": "AgenticCore/L5_safety",
+            "prompt": "AgenticCore/prompt_governance",
+            "template": "AgenticCore/prompt_governance",
+            "schema": "AgenticCore/schemas",
         }
 
         for symbol in strong_symbols:
@@ -177,12 +177,12 @@ class FilesystemAgent:
 
         # PRIORITY 2: Import-based territory signals
         import_signals = {
-            "L3_orchestration": "agentic_core/L3_orchestration",
-            "L1_cognition": "agentic_core/L1_cognition",
-            "L4_state": "agentic_core/L4_state",
-            "L5_safety": "agentic_core/L5_safety",
-            "prompt_governance": "agentic_core/prompt_governance",
-            "schemas": "agentic_core/schemas",
+            "L3_orchestration": "AgenticCore/L3_orchestration",
+            "L1_cognition": "AgenticCore/L1_cognition",
+            "L4_state": "AgenticCore/L4_state",
+            "L5_safety": "AgenticCore/L5_safety",
+            "prompt_governance": "AgenticCore/prompt_governance",
+            "schemas": "AgenticCore/schemas",
         }
 
         for imp in all_imports:
@@ -195,7 +195,7 @@ class FilesystemAgent:
         # PRIORITY 3: Keyword fallback using NamingAgent guidance
         if content_preview:
             try:
-                from agentic_core.utils.naming.NamingAgent import NamingAgent
+                from AgenticCore.utils.naming.NamingAgent import NamingAgent
                 naming = NamingAgent(self.project_root)
                 guidance = naming.get_placement_guidance(content_preview)
                 if "/" in guidance:
@@ -203,7 +203,7 @@ class FilesystemAgent:
                     subpath.mkdir(parents=True, exist_ok=True)
                     return subpath
             except Exception as e:
-                logger.debug(f"[FileSystemAgent] NamingAgent guidance failed: {e}")
+                Logger.debug(f"[FileSystemAgent] NamingAgent guidance failed: {e}")
 
         # FINAL FALLBACK: Uncategorized purge
         uncat = self.archives_root / "uncategorized"
@@ -233,13 +233,13 @@ class FilesystemAgent:
 
         for file_path, msg in violations:
             if self.cleanups_applied >= self.max_cleanups:
-                logger.warning(f"[FileSystemAgent] Healing budget exhausted ({self.max_cleanups} actions).")
+                Logger.warning(f"[FileSystemAgent] Healing budget exhausted ({self.max_cleanups} actions).")
                 break
 
             action = {
                 "type": "FILESYSTEM_PURGE",
                 "file": str(file_path),
-                "violation": msg,
+                "Violation": msg,
                 "applied": False,
                 "action_taken": "",
                 "target": ""
@@ -277,7 +277,7 @@ class FilesystemAgent:
                     action["action_taken"] = f"PURGED: Relocated to archives/{target_path.relative_to(self.archives_root)}"
                     action["target"] = str(target_path)
                     self.cleanups_applied += 1
-                    logger.info(f"   [PURGED] {file_path.name} -> archives/{target_path.relative_to(self.archives_root)}")
+                    Logger.info(f"   [PURGED] {file_path.name} -> archives/{target_path.relative_to(self.archives_root)}")
                 except Exception as e:
                     action["reason"] = f"Archival move error: {e}"
 

@@ -1,14 +1,14 @@
 """Golden State Testing Infrastructure.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 Phase 2 - Pillar 12: Testing (Golden State)
 Validation foundation with golden datasets and evaluators.
 """
 import logging
 
-from agentic_core.evaluators import (
+from AgenticCore.evaluators import (
     JudgeEvaluationResult,
     JudgeEvaluator,
     JudgeVerdict,

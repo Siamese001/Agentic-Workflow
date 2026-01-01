@@ -11,10 +11,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class orchestrator_config:
+class OrchestratorConfig:
     """Configuration for the orchestrator."""
     max_iterations: int = 10
     enable_reflection: bool = True
@@ -27,7 +27,7 @@ class orchestrator_config:
         return {'max_iterations': self.max_iterations, 'enable_reflection': self.enable_reflection, 'enable_tracing': self.enable_tracing, 'enable_safety_checks': self.enable_safety_checks, 'timeout_seconds': self.timeout_seconds}
 
 @dataclass
-class execution_context:
+class ExecutionContext:
     """Context for orchestrated execution."""
     mission: str
     scene: Dict[str, Any] = field(default_factory=dict)
@@ -40,7 +40,7 @@ class execution_context:
         return {'mission': self.mission, 'scene': self.scene, 'state': self.state, 'history': self.history, 'metadata': self.metadata}
 
 @dataclass
-class execution_result:
+class ExecutionResult:
     """Result from orchestrated execution."""
     success: bool
     output: Any = None
@@ -55,7 +55,7 @@ class execution_result:
         return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
 
 # NOT_AN_AGENT — Abstract interface/protocol, not a true agent — excluded from agent discovery
-class i_orchestrator(ABC):
+class IOrchestrator(ABC):
     """Interface for the Orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes:

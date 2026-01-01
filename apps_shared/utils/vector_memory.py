@@ -85,7 +85,7 @@ class VectorMemoryStore:
         Args:
             text: Document text content
             embedding: Pre-computed embedding vector
-            metadata: Document metadata (source_type, company, etc.)
+            metadata: Document metadata (SourceType, company, etc.)
             document_id: Optional unique ID (auto-generated if None)
         """
         if document_id is None:
@@ -102,7 +102,7 @@ class VectorMemoryStore:
             ids=[document_id]
         )
         
-        print(f"[VectorMemory] Added document: {metadata.get('source_type', 'UNKNOWN')} - {metadata.get('title', '')[:50]}...")
+        print(f"[VectorMemory] Added document: {metadata.get('SourceType', 'UNKNOWN')} - {metadata.get('title', '')[:50]}...")
     
     def query_memory(
         self,
@@ -215,7 +215,7 @@ class VectorMemoryStore:
             where={
                 "$and": [
                     {"company_name": company_name},
-                    {"source_type": "STRATEGIC_BRIEF"}
+                    {"SourceType": "STRATEGIC_BRIEF"}
                 ]
             }
         )
@@ -250,7 +250,7 @@ class VectorMemoryStore:
             result = genai.embed_content(
                 model=self.embedding_model,
                 content=query_text,
-                task_type="retrieval_query"
+                TaskType="retrieval_query"
             )
             return result["embedding"]
         except Exception as e:
@@ -276,8 +276,8 @@ class VectorMemoryStore:
             sample = self.collection.get(limit=sample_size)
             
             for metadata in sample["metadatas"]:
-                source_type = metadata.get("source_type", "UNKNOWN")
-                source_types[source_type] = source_types.get(source_type, 0) + 1
+                SourceType = metadata.get("SourceType", "UNKNOWN")
+                source_types[SourceType] = source_types.get(SourceType, 0) + 1
         
         return {
             "total_documents": total_count,
@@ -363,7 +363,7 @@ def test_vector_memory():
         {
             "text": "Tech Giants Corp announced new AI platform focused on enterprise scalability",
             "metadata": {
-                "source_type": "NEWS_ARTICLE_COMPANY",
+                "SourceType": "NEWS_ARTICLE_COMPANY",
                 "company_name": "Tech Giants Corp",
                 "title": "Tech Giants Launches Enterprise AI",
                 "age_days": 5,
@@ -373,7 +373,7 @@ def test_vector_memory():
         {
             "text": "Sarah Johnson, VP of Engineering, discusses strategic priorities including cloud migration and team expansion",
             "metadata": {
-                "source_type": "STRATEGIC_BRIEF",
+                "SourceType": "STRATEGIC_BRIEF",
                 "company_name": "Tech Giants Corp",
                 "executive_name": "Sarah Johnson",
                 "title": "VP Engineering Roadmap",
@@ -388,7 +388,7 @@ def test_vector_memory():
         embedding = genai.embed_content(
             model="models/embedding-001",
             content=doc["text"],
-            task_type="retrieval_document"
+            TaskType="retrieval_document"
         )["embedding"]
         
         store.add_document(

@@ -12,10 +12,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
-logger: Any = logging.getLogger(__name__)
+from AgenticCore.shared.architecture_constants import ALLOWED_ROOT_FILES
+Logger: Any = logging.getLogger(__name__)
 
-class deterministic_cleaner:
+class DeterministicCleaner:
     """
     Applies deterministic formatting and cleaning to code
     before it reaches the LLM for processing.
@@ -136,7 +136,7 @@ class deterministic_cleaner:
             result += '\n'
         return result
 
-class compliant_file_writer:
+class CompliantFileWriter:
     """
     Writes files with compliance checks and validation.
     """
@@ -166,7 +166,7 @@ class compliant_file_writer:
         try:
             path: Any = Path(file_path)
             if not self._check_root_hygiene(path):
-                LOGGER.error(f'Root hygiene violation: {file_path}')
+                LOGGER.error(f'Root hygiene Violation: {file_path}')
                 return False
             if pre_clean:
                 content, was_cleaned = self.cleaner.deterministic_clean(content, file_path)

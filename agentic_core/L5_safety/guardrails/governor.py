@@ -6,9 +6,9 @@ import logging
 import re
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class budget_exceeded_error(Exception):
+class BudgetExceededError(Exception):
     """Raised when the cost budget is exceeded."""
 
     def __init__(self, message: str, current_spend: float=None, limit: float=None):
@@ -16,7 +16,7 @@ class budget_exceeded_error(Exception):
         self.current_spend = current_spend
         self.limit = limit
 
-class memory_pressure_error(Exception):
+class MemoryPressureError(Exception):
     """Raised when system memory is too low."""
 
     def __init__(self, message: str, available_gb: float=None, threshold_gb: float=None):
@@ -24,7 +24,7 @@ class memory_pressure_error(Exception):
         self.available_gb = available_gb
         self.threshold_gb = threshold_gb
 
-class cost_governor:
+class CostGovernor:
     """Governor that tracks costs and enforces budget limits."""
 
     def __init__(self, limit_usd: float=5.0, min_memory_gb: float=2.0):

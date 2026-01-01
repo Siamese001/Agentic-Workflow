@@ -46,7 +46,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -68,11 +68,11 @@ class TestFullHealingMissionWithGitOps:
     """Tests for full healing mission with GitOps."""
 
     @pytest.mark.asyncio
-    async def test_mission_with_gitops_backup(self, valid_resume, job_description, temp_dir):
+    async def test_mission_with_gitops_backup(self, valid_resume, JobDescription, temp_dir):
         """Test that healing mission creates GitOps backups."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         orchestrator = Phase4Orchestrator(ctx)
         orchestrator.gitops.enable_git = False
@@ -236,11 +236,11 @@ class TestIntegrationWithPreviousPhases:
         assert str(test_file) in orchestrator.gitops._backups
 
     @pytest.mark.asyncio
-    async def test_phase4_with_healing_orchestrator(self, valid_resume, job_description):
+    async def test_phase4_with_healing_orchestrator(self, valid_resume, JobDescription):
         """Test Phase 4 with Phase 2 healing orchestrator."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase4 = Phase4Orchestrator(ctx)
         phase4.gitops.enable_git = False
@@ -253,11 +253,11 @@ class TestIntegrationWithPreviousPhases:
         assert result.total_cycles <= 2
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_with_all_phases(self, valid_resume, job_description, temp_dir):
+    async def test_full_pipeline_with_all_phases(self, valid_resume, JobDescription, temp_dir):
         """Test complete pipeline with all phases."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Phase 3: Learning
         learning_agent = ResumeLearningAgent(ctx)
@@ -275,7 +275,7 @@ class TestIntegrationWithPreviousPhases:
 
         # Phase 2: Healing
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -358,12 +358,12 @@ class TestComprehensiveWorkflow:
     """Tests for comprehensive end-to-end workflow."""
 
     @pytest.mark.asyncio
-    async def test_complete_phase4_workflow(self, valid_resume, job_description, temp_dir):
+    async def test_complete_phase4_workflow(self, valid_resume, JobDescription, temp_dir):
         """Test complete Phase 4 workflow."""
         # Initialize context
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Initialize all components
         phase4 = Phase4Orchestrator(ctx)
@@ -384,7 +384,7 @@ class TestComprehensiveWorkflow:
             phase4.gitops.backup_file(str(file_path))
 
         # 3. Build import map
-        phase4.import_patcher.build_import_map(list(files.values()))
+        phase4.ImportPatcher.build_import_map(list(files.values()))
 
         # 4. Run healing
         healing = HealingOrchestrator(ctx, max_cycles=2)
@@ -393,7 +393,7 @@ class TestComprehensiveWorkflow:
         # 5. Record learning
         if result.success:
             await learning_agent.record_success(
-                task_type="phase4_healing",
+                TaskType="phase4_healing",
                 input_context=str(valid_resume),
                 output_result=f"Converged in {result.convergence_cycle} cycles",
                 confidence=0.9,
@@ -406,18 +406,18 @@ class TestComprehensiveWorkflow:
         # 7. Verify all components have state
         phase4_stats = phase4.get_comprehensive_stats()
         learning_agent.get_comprehensive_stats()
-        memory_stats = memory.get_stats()
+        MemoryStats = memory.get_stats()
 
         assert result.success is True
         assert phase4_stats["gitops"]["files_backed_up"] == 3
         assert len(ctx.instructions) > 0
-        assert memory_stats["total_tracked"] >= 3
+        assert MemoryStats["total_tracked"] >= 3
 
     @pytest.mark.asyncio
-    async def test_workflow_with_run_self_healing_mission(self, valid_resume, job_description):
+    async def test_workflow_with_run_self_healing_mission(self, valid_resume, JobDescription):
         """Test workflow using the main entry point function."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
             enable_reflection=True,

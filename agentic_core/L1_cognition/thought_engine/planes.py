@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 
 @runtime_checkable
-# NAMING FIXED: ICognitivePlane → i_cognitive_plane
-class i_cognitive_plane(Protocol):
+# NAMING FIXED: ICognitivePlane → ICognitivePlane
+class ICognitivePlane(Protocol):
     """Interface for the cognitive plane (Brain).
 
     The cognitive plane handles planning, reasoning, and decision-making.
@@ -17,10 +17,10 @@ class i_cognitive_plane(Protocol):
     """
 
     async def plan(self, request: Any) -> Any:
-        """Generate a plan for accomplishing a task.
+        """Generate a plan for accomplishing a Task.
 
         Args:
-            request: PlanningRequest with task and context
+            request: PlanningRequest with Task and context
 
         Returns:
             PlanningResult with plan steps and reasoning trace
@@ -72,7 +72,7 @@ class i_cognitive_plane(Protocol):
 
 @runtime_checkable
 # NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
-class i_action_plane(Protocol):
+class IActionPlane(Protocol):
     """Interface for the action plane (Hands).
 
     The action plane handles tool execution and external interactions.
@@ -119,7 +119,7 @@ class i_action_plane(Protocol):
 
 @runtime_checkable
 # NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
-class i_orchestrator(Protocol):
+class IOrchestrator(Protocol):
     """Interface for the orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes,

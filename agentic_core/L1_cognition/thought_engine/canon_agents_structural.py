@@ -38,7 +38,7 @@ class nesting_depth_visitor(ast.NodeVisitor):
 
     def _report_violation_message(self, node, current_depth_val: int) -> str:
         """
-        Constructs the violation message string, flattening expressions to reduce syntactic nesting.
+        Constructs the Violation message string, flattening expressions to reduce syntactic nesting.
         """
         lineno_val = getattr(node, 'lineno', 'N/A')
         node_type_val = type(node).__name__
@@ -52,7 +52,7 @@ class nesting_depth_visitor(ast.NodeVisitor):
     def _generic_visit_with_depth(self, node):
         self.current_depth += 1
         if self.current_depth > self.max_allowed_depth:
-            # Report violation at the start of the block that exceeds the limit
+            # Report Violation at the start of the block that exceeds the limit
             # Refactored message construction to reduce syntactic nesting depth
             message = self._report_violation_message(node, self.current_depth)
             self.violations.append(message)
@@ -146,21 +146,21 @@ class type_mechanic(SubAtomicAgent):
 
     def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
         """
-        Collects formatted violation strings for missing type hints in a given AST tree.
+        Collects formatted Violation strings for Missing type hints in a given AST tree.
         """
         file_violations = []
         for node in ast.walk(tree): # Depth 1
             if isinstance(node, ast.FunctionDef) and \
                not node.returns and node.name not in ("__init__", "__str__", "__repr__"): # Depth 2 (If)
                 file_violations.append( # Depth 3
-                    f"{fp}:{node.lineno}: Function '{node.name}' is missing "
+                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing "
                     "a return type hint."
                 )
         return file_violations
 
     def check_key_22_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
         """
-        Checks for functions with missing type hints (return types).
+        Checks for functions with Missing type hints (return types).
         Excludes __init__, __str__, __repr__ methods.
         Refactored to reduce nesting depth to meet max 4.
         """
@@ -479,7 +479,7 @@ class structural_engineer(SubAtomicAgent):
         The limit is configurable via the 'MAX_NESTING_DEPTH' environment variable.
         """
         violations = []
-        max_nesting_depth = int(os.getenv('MAX_NESTING_DEPTH', '4')) # Default to 4 as per violation
+        max_nesting_depth = int(os.getenv('MAX_NESTING_DEPTH', '4')) # Default to 4 as per Violation
 
         for fp in self.ctx.python_files:
             try:

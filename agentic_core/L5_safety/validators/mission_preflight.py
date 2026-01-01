@@ -1,17 +1,17 @@
 # mission_preflight.py
 # L5 Mission Preflight Validator
 # PURPOSE: Executes pre-mission compliance checks and enforces void compliance
-# LOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)
+# LOCATION: AgenticCore/L5_safety/validators/ (SSOT-compliant)
 
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealer
+from AgenticCore.L5_safety.guardrails.HierarchyHealer import HierarchyHealer
 
 
 class MissionPreflight:
@@ -33,7 +33,7 @@ class MissionPreflight:
         self.project_root = project_root.resolve()
         self.healing_enabled = healing_enabled
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        self.hierarchy_healer = HierarchyHealer(project_root, healing_enabled)
+        self.HierarchyHealer = HierarchyHealer(project_root, healing_enabled)
         
         # Import agents dynamically to avoid circular imports
         self._location_agent = None
@@ -44,7 +44,7 @@ class MissionPreflight:
         """Lazy load LocationAgent."""
         if self._location_agent is None:
             try:
-                from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+                from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
                 self._location_agent = LocationAgent(self.project_root)
             except ImportError:
                 pass
@@ -54,7 +54,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                from AgenticCore.L5_safety.validators.HierarchyAgent import HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
                 pass
@@ -64,7 +64,7 @@ class MissionPreflight:
         """Lazy load ImportAgent."""
         if self._import_agent is None:
             try:
-                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                from AgenticCore.L5_safety.gravity.ImportAgent import ImportAgent
                 self._import_agent = ImportAgent(self.project_root)
             except ImportError:
                 pass
@@ -78,10 +78,10 @@ class MissionPreflight:
             target_sector: Path to the target sector for validation
             
         Returns:
-            Dict with compliance results and violation counts
+            Dict with compliance results and Violation counts
         """
         print(f"\n[*] L6 PRE-FLIGHT: Enforcing Void Compliance on {target_sector}...")
-        results = {"compliant": True, "span": 0, "hierarchy": 0, "naming": 0, "gravity": 0}
+        results = {"compliant": True, "Span": 0, "hierarchy": 0, "naming": 0, "gravity": 0}
         
         # Cross-reference with IDE Rules
         rules_path = self.project_root / "windsurfrules.md"
@@ -91,14 +91,14 @@ class MissionPreflight:
         target_path = Path(target_sector).resolve()
         
         # Check 1: Span-of-Two compliance (Key 13)
-        results["span"] = self._check_span_of_two(target_path)
+        results["Span"] = self._check_span_of_two(target_path)
         
         # Check 2: Hierarchy Alignment
         hierarchy_violations = self._check_hierarchy(target_path)
         results["hierarchy"] = len(hierarchy_violations)
         
         if hierarchy_violations and self.healing_enabled:
-            healing_results = self.hierarchy_healer.heal_hierarchy_violations()
+            healing_results = self.HierarchyHealer.heal_hierarchy_violations()
             results["hierarchy_healed"] = healing_results["files_relocated"]
             
             # Re-check after healing
@@ -109,7 +109,7 @@ class MissionPreflight:
         
         # Check 3: Purge orphaned files
         if self.healing_enabled:
-            purge_results = self.hierarchy_healer.purge_orphaned_files()
+            purge_results = self.HierarchyHealer.purge_orphaned_files()
             results["purged_orphans"] = purge_results["purged"]
             if purge_results["errors"]:
                 results.setdefault("errors", []).extend(purge_results["errors"])
@@ -123,7 +123,7 @@ class MissionPreflight:
         # Print dashboard
         self._print_dashboard(results)
         
-        total_violations = results["span"] + results["hierarchy"] + results["naming"] + results["gravity"]
+        total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]
         results["compliant"] = (total_violations == 0)
         
         return results
@@ -138,7 +138,7 @@ class MissionPreflight:
                 if span_result.get("compliant", True):
                     print(f"   [OK] Span-of-Two compliance verified by HierarchyAgent")
                 else:
-                    print(f"[!] L6 ALERT: Found {violations} span violations:")
+                    print(f"[!] L6 ALERT: Found {violations} Span violations:")
                     for v in span_result.get("details", [])[:3]:
                         print(f"   [X] {v}")
                 return violations
@@ -204,7 +204,7 @@ class MissionPreflight:
                     try:
                         rel_path = py_file.relative_to(self.project_root)
                         root_folder = rel_path.parts[0]
-                        if root_folder == "agentic_core":
+                        if root_folder == "AgenticCore":
                             violations = import_agent.check_waterfall_violations(str(py_file))
                             if violations:
                                 waterfall_violations.extend([(py_file, v) for v in violations])
@@ -275,7 +275,7 @@ class MissionPreflight:
         print("="*70)
         
         metrics = [
-            ("DEPTH / SPAN OF TWO", results["span"]),
+            ("DEPTH / SPAN OF TWO", results["Span"]),
             ("HIERARCHY ALIGNMENT", results["hierarchy"]),
             ("NAMING / SIGNAL", results["naming"]),
             ("GRAVITY / IMPORTS", results["gravity"])

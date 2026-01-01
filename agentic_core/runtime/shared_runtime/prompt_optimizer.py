@@ -6,40 +6,40 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class optimization_strategy(Enum):
+class OptimizationStrategy(Enum):
     """Optimization strategies."""
     CLARITY: Any = 'clarity'
     SPECIFICITY: Any = 'specificity'
     CONTEXT: Any = 'context'
     STRUCTURE: Any = 'structure'
 
-class optimization_level(Enum):
+class OptimizationLevel(Enum):
     """Optimization levels."""
     MINIMAL: Any = 'minimal'
     MODERATE: Any = 'moderate'
     AGGRESSIVE: Any = 'aggressive'
 
 @dataclass
-class optimization_config:
+class OptimizationConfig:
     """Configuration for prompt optimization."""
     strategy: OptimizationStrategy
     level: OptimizationLevel
     preserve_intent: bool = True
     max_length: int = 2000
 
-class prompt_optimizer:
+class PromptOptimizer:
     """Optimizes prompts for better LLM performance."""
 
     def __init__(self, config: OptimizationConfig=None):
         """Initialize prompt optimizer."""
         self.config = config or OptimizationConfig(strategy=OptimizationStrategy.CLARITY, level=OptimizationLevel.MODERATE)
-        logger.debug('PromptOptimizer initialized')
+        Logger.debug('PromptOptimizer initialized')
 
     def optimize(self, prompt: str) -> str:
         """Optimize a prompt."""
-        logger.debug(f'Optimizing prompt with strategy: {self.config.strategy}')
+        Logger.debug(f'Optimizing prompt with strategy: {self.config.strategy}')
         return prompt
 
     def analyze_prompt(self, prompt: str) -> Dict[str, Any]:

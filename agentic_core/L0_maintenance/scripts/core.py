@@ -2,7 +2,7 @@
 from typing import Dict, Any, Optional
 from enum import Enum
 
-class mission_status(Enum):
+class MissionStatus(Enum):
     """Mission status enum."""
     PENDING: Any = 'pending'
     RUNNING: Any = 'running'
@@ -10,7 +10,7 @@ class mission_status(Enum):
     FAILED: Any = 'failed'
 
 # NOT_AN_AGENT — data model class, not a true agent — excluded from agent discovery
-class mission_plan:
+class MissionPlan:
     """Mission plan model."""
 
     def __init__(self, mission_id: str, objective: str=None, phases: list=None, steps: list=None, status: str='pending'):
@@ -25,7 +25,7 @@ class mission_plan:
         self.status = 'running'
         return {'status': 'executed', 'steps_completed': len(self.steps)}
 
-class mission_result:
+class MissionResult:
     """Mission result model."""
 
     def __init__(self, mission_id: str, success: bool, result: Any=None, output: Any=None, error: Optional[str]=None):
@@ -40,7 +40,7 @@ class mission_result:
         return {'mission_id': self.mission_id, 'success': self.success, 'result': self.result, 'output': self.output, 'error': self.error}
 
 # NOT_AN_AGENT — main entry point class, not a true agent — excluded from agent discovery
-class agentic_core:
+class AgenticCore:
     """Main agentic core class."""
 
     def __init__(self):
@@ -65,7 +65,7 @@ class agentic_core:
         """Get current status."""
         return {'status': self.status, 'history_length': len(self.history), 'sovereign': self.sovereign}
 
-class missing:
+class Missing:
     """Singleton Missing class."""
     _instance = None
 

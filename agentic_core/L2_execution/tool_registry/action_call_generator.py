@@ -1,15 +1,15 @@
 """Action Call Generator Agent - CTA Generator (K.5)
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
-This agent generates route-specific CTAs with strict character limits.
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
+This agent generates Route-specific CTAs with strict character limits.
 Enforces CONNECTION_REQ ≤300 chars and SHORT_NEW 360-380 chars post-normalization.
 
 Layer: L2_execution
 Responsibilities:
-- Generate CTA based on route type
-- Enforce route-specific character limits
+- Generate CTA based on Route type
+- Enforce Route-specific character limits
 - Ensure time-bound or specific asks
 - Validate clarity and actionability
 
@@ -24,13 +24,13 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-class route_type(Enum):
+class RouteType(Enum):
     """Docstring."""
     INMAIL: Any = 'INMAIL'
     CONNECTION_REQ: Any = 'CONNECTION_REQ'
@@ -38,16 +38,16 @@ class route_type(Enum):
     FOLLOW_UP: Any = 'FOLLOW_UP'
 
 @dataclass
-class cta_config:
+class CtaConfig:
     """Docstring."""
     TEMPERATURE: float = 0.5
     max_attempts: int = 3
 
 @dataclass
-class cta_result:
+class CtaResult:
     """Docstring."""
     cta: str
-    route_type: RouteType
+    RouteType: RouteType
     char_count: int
     is_time_bound: bool
     is_specific: bool
@@ -56,7 +56,7 @@ class cta_result:
     success: bool
     attempts: int
 
-class action_call_generator:
+class ActionCallGenerator:
     """
     K.5 - CTA Generator
 
@@ -75,14 +75,14 @@ class action_call_generator:
         self.gate_executor = gate_executor or Any()
         self.recovery_loop = recovery_loop or Any(initial_temperature=self.config.TEMPERATURE)
 
-    def generate_cta(self, route_type: RouteType, message_body: str, context: Dict[str, Any]) -> CTAResult:
+    def generate_cta(self, RouteType: RouteType, message_body: str, context: Dict[str, Any]) -> CTAResult:
         """Docstring.
-        Generate CTA with route-specific validation.
+        Generate CTA with Route-specific validation.
 
         Args:
-            route_type: Type of outreach route
+            RouteType: Type of outreach Route
             message_body: Message body (for total char count validation)
-            context: Additional context (archetype, company, etc.)
+            context: Additional context (Archetype, company, etc.)
 
         Returns:
             CTAResult with CTA and validation details
@@ -90,7 +90,7 @@ class action_call_generator:
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results: Any = []
         for attempt in range(1, self.config.max_attempts + 1):
-            cta: Any = self._generate_content(route_type=route_type, context=context, temperature=self.recovery_loop.current_temperature, attempt=attempt)
+            cta: Any = self._generate_content(RouteType=RouteType, context=context, temperature=self.recovery_loop.current_temperature, attempt=attempt)
             hygiene_result: Any = self.gate_executor.execute_hygiene_scan(cta)
             validation_results.append(hygiene_result)
             if not hygiene_result.passed:
@@ -100,7 +100,7 @@ class action_call_generator:
                 continue
             total_message: Any = f'{message_body}\n\n{cta}'
             char_count: Any = len(total_message)
-            char_limit_result: Any = self._validate_character_limit(route_type=route_type, total_message=total_message, char_count=char_count)
+            char_limit_result: Any = self._validate_character_limit(RouteType=RouteType, total_message=total_message, char_count=char_count)
             validation_results.append(char_limit_result)
             if not char_limit_result.passed:
                 recovery: Any = self.recovery_loop.record_failure(gate_id=char_limit_result.gate_id, message=char_limit_result.message, details=char_limit_result.details)
@@ -117,38 +117,38 @@ class action_call_generator:
                     break
                 continue
             self.gate_executor.results = validation_results
-            return CTAResult(cta=cta, route_type=route_type, char_count=char_count, is_time_bound=is_time_bound, is_specific=is_specific, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=True, attempts=attempt)
-        return CTAResult(cta='', route_type=route_type, char_count=0, is_time_bound=False, is_specific=False, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=False, attempts=self.config.max_attempts)
+            return CTAResult(cta=cta, RouteType=RouteType, char_count=char_count, is_time_bound=is_time_bound, is_specific=is_specific, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=True, attempts=attempt)
+        return CTAResult(cta='', RouteType=RouteType, char_count=0, is_time_bound=False, is_specific=False, validation_results=validation_results, temperature_log=self.recovery_loop.get_temperature_log(), success=False, attempts=self.config.max_attempts)
 
-    def _generate_content(self, route_type: RouteType, context: Dict[str, Any], temperature: float, attempt: int) -> str:
+    def _generate_content(self, RouteType: RouteType, context: Dict[str, Any], temperature: float, attempt: int) -> str:
         """
         Generate CTA content using LLM.
         Placeholder for actual LLM integration.
         """
-        if route_type == RouteType.CONNECTION_REQ:
+        if RouteType == RouteType.CONNECTION_REQ:
             return 'Would you be open to connecting to discuss potential synergies?'
-        elif route_type == RouteType.SHORT_NEW:
+        elif RouteType == RouteType.SHORT_NEW:
             return "I'd welcome the opportunity to schedule a brief call next Tuesday or Wednesday to explore how my experience aligns with your team's priorities. Are you available for a 15-minute conversation?"
-        elif route_type == RouteType.INMAIL:
+        elif RouteType == RouteType.INMAIL:
             return "I'd appreciate the opportunity to discuss how my background in scaling technology organizations could support your strategic initiatives. Would you be available for a brief call next week? I'm flexible on timing and happy to work around your schedule."
         else:
             return 'Looking forward to continuing our conversation. Are you available for a quick call this week?'
 
-    def _validate_character_limit(self, route_type: RouteType, total_message: str, char_count: int) -> Any:
+    def _validate_character_limit(self, RouteType: RouteType, total_message: str, char_count: int) -> Any:
         """
-        Validate route-specific character limits.
+        Validate Route-specific character limits.
         BLOCKS if limit exceeded.
         """
-        limit = self.ROUTE_CHAR_LIMITS.get(route_type)
+        limit = self.ROUTE_CHAR_LIMITS.get(RouteType)
         if isinstance(limit, tuple):
             min_chars, max_chars = limit
             if min_chars <= char_count <= max_chars:
-                return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=True, severity='INFO', message=f'Character limit satisfied: {char_count} chars ({min_chars}-{max_chars})', signature=f'CHARLIMIT:OK:{char_count}')
-            return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=False, severity='BLOCK', message=f'BLOCKED: Character count {char_count} outside range ({min_chars}-{max_chars})', details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': route_type.value})
+                return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=True, Severity='INFO', message=f'Character limit satisfied: {char_count} chars ({min_chars}-{max_chars})', signature=f'CHARLIMIT:OK:{char_count}')
+            return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=False, Severity='BLOCK', message=f'BLOCKED: Character count {char_count} outside range ({min_chars}-{max_chars})', details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'Route': RouteType.value})
         else:
             if char_count <= limit:
-                return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=True, severity='INFO', message=f'Character limit satisfied: {char_count} chars (max {limit})', signature=f'CHARLIMIT:OK:{char_count}')
-            return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=False, severity='BLOCK', message=f'BLOCKED: Character count {char_count} exceeds limit {limit}', details={'char_count': char_count, 'limit': limit, 'route': route_type.value})
+                return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=True, Severity='INFO', message=f'Character limit satisfied: {char_count} chars (max {limit})', signature=f'CHARLIMIT:OK:{char_count}')
+            return Any(gate_id='VG_CTA_CHAR_LIMIT', passed=False, Severity='BLOCK', message=f'BLOCKED: Character count {char_count} exceeds limit {limit}', details={'char_count': char_count, 'limit': limit, 'Route': RouteType.value})
 
     def _check_time_bound(self, cta: str) -> bool:
         """Check if CTA contains time-bound language"""
@@ -178,8 +178,8 @@ class action_call_generator:
                 clarity_type.append('time-bound')
             if is_specific:
                 clarity_type.append('specific action')
-            return Any(gate_id='VG_CTA_CLARITY', passed=True, severity='INFO', message=f"CTA clarity satisfied: {' and '.join(clarity_type)}", signature=f'CLARITY:OK', details={'time_bound': is_time_bound, 'specific': is_specific})
-        return Any(gate_id='VG_CTA_CLARITY', passed=False, severity='BLOCK', message='BLOCKED: CTA lacks clarity - must be time-bound or specific', details={'time_bound': is_time_bound, 'specific': is_specific, 'cta_preview': cta[:100]})
+            return Any(gate_id='VG_CTA_CLARITY', passed=True, Severity='INFO', message=f"CTA clarity satisfied: {' and '.join(clarity_type)}", signature=f'CLARITY:OK', details={'time_bound': is_time_bound, 'specific': is_specific})
+        return Any(gate_id='VG_CTA_CLARITY', passed=False, Severity='BLOCK', message='BLOCKED: CTA lacks clarity - must be time-bound or specific', details={'time_bound': is_time_bound, 'specific': is_specific, 'cta_preview': cta[:100]})
 
 def create_action_call_generator(config: Optional[CTAConfig]=None) -> ActionCallGenerator:
     """Docstring.

@@ -14,10 +14,10 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+    from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
@@ -42,8 +42,8 @@ def is_excluded(file_path: str) -> bool:
     return False
 
 
-# NAMING FIXED: NestVisitor → nest_visitor
-class nest_visitor(ast.NodeVisitor):
+# NAMING FIXED: NestVisitor → NestVisitor
+class NestVisitor(ast.NodeVisitor):
     """
     AST visitor to check nesting depth within a file.
     Moved to module level to reduce nesting depth in SystemArchitect.
@@ -75,7 +75,7 @@ class nest_visitor(ast.NodeVisitor):
         self.scope_stack.pop()
     
     def _check_and_report_nesting(self, node: ast.AST):
-        """Helper to check if current depth exceeds max and report violation."""
+        """Helper to check if current depth exceeds max and report Violation."""
         if self.depth > self.MAX_NESTING_DEPTH:
             self.violations_in_file.append(
                 f"{self.fp}:{node.lineno} {self.current_scope} depth {self.depth}"
@@ -99,7 +99,7 @@ class nest_visitor(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — legacy L1 class, true agent is SystemArchitectAgent in L2 — excluded from discovery
-class system_architect(CanonBaseAgentInterface):
+class SystemArchitect(CanonBaseAgentInterface):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.
@@ -110,7 +110,7 @@ class system_architect(CanonBaseAgentInterface):
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
-        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     async def execute(self, goal: str = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Execute validation checks - maintains backward compatibility."""
@@ -208,7 +208,7 @@ class system_architect(CanonBaseAgentInterface):
             A tuple containing:
             - bool: True if no nesting depth violations are found, False otherwise.
             - List[str]: A list of strings, each indicating a file path, line number,
-                          scope, and depth where a violation occurred.
+                          scope, and depth where a Violation occurred.
         """
         MAX_NESTING_DEPTH = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         violations = []
@@ -217,7 +217,7 @@ class system_architect(CanonBaseAgentInterface):
             tree = self._parse_python_file(fp)
             if tree:
                 # Instantiate the module-level NestVisitor
-                visitor = nest_visitor(fp, MAX_NESTING_DEPTH) 
+                visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
                 visitor.visit(tree)
                 violations.extend(visitor.violations_in_file)
         return len(violations) == 0, violations
@@ -267,7 +267,7 @@ class system_architect(CanonBaseAgentInterface):
         tree = self._parse_python_file(file_path)
         if tree:
             return self._has_definitions_in_tree(tree)
-        # Treat unparseable as a violation for safety if parsing failed
+        # Treat unparseable as a Violation for safety if parsing failed
         return True 
 
     def _is_root_file_with_definitions(self, file_path: str) -> bool:
@@ -307,7 +307,7 @@ class system_architect(CanonBaseAgentInterface):
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class healer_agent(CanonBaseAgentInterface):
+class HealerAgent(CanonBaseAgentInterface):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
     ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
@@ -318,7 +318,7 @@ class healer_agent(CanonBaseAgentInterface):
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
-        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     async def execute(self, goal: str = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Execute healing - maintains backward compatibility."""
@@ -419,7 +419,7 @@ class healer_agent(CanonBaseAgentInterface):
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class generative_guard(CanonBaseAgentInterface):
+class GenerativeGuard(CanonBaseAgentInterface):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.
@@ -430,7 +430,7 @@ class generative_guard(CanonBaseAgentInterface):
         self.impl = None  # CanonBaseAgent is abstract, skip instantiation
         self.ctx = ctx
         self.name = self.__class__.__name__
-        self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.GENERATIVE_PATTERNS = [
             r"_copy\d*\.py$",
             r"_backup\d*\.py$",

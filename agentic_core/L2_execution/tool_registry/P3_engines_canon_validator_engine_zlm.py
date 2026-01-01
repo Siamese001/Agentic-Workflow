@@ -2,16 +2,16 @@
 from typing import Dict, Any, List
 from enum import Enum
 
-# NAMING FIXED: PhaseStatus → phase_status
-class phase_status(Enum):
+# NAMING FIXED: PhaseStatus → PhaseStatus
+class PhaseStatus(Enum):
     '''Brief description of functionality and purpose.'''
     
     SUCCESS = "success"
     FAIL = "fail"
     PENDING = "pending"
 
-# NAMING FIXED: ExitReason → exit_reason
-class exit_reason(Enum):
+# NAMING FIXED: ExitReason → ExitReason
+class ExitReason(Enum):
     '''Brief description of functionality and purpose.'''
     
     SUCCESS = "success"
@@ -21,8 +21,8 @@ class exit_reason(Enum):
     P9_SUCCESS = "p9_success"
     P6_LIMIT_REACHED = "p6_limit_reached"
 
-# NAMING FIXED: PhaseResult → phase_result
-class phase_result:
+# NAMING FIXED: PhaseResult → PhaseResult
+class PhaseResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, status=None, phase="", message="", stderr="", violations=None, success=None):
@@ -33,8 +33,8 @@ class phase_result:
         self.violations = violations or []
         self.success = success if success is not None else (status == PhaseStatus.SUCCESS)
 
-# NAMING FIXED: P6FixResult → p6_fix_result
-class p6_fix_result:
+# NAMING FIXED: P6FixResult → P6FixResult
+class P6FixResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, status=None, corrected_code="", confidence=0.0, success=None, message="", fixed_count=0):
@@ -46,7 +46,7 @@ class p6_fix_result:
         self.fixed_count = fixed_count
 
 # NOT_AN_AGENT — engine/validator utility, not a true agent — excluded from agent discovery
-class canon_validator_engine_zlm:
+class CanonValidatorEngineZlm:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, **kwargs):

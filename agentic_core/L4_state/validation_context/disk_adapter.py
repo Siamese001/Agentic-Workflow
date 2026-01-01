@@ -5,7 +5,7 @@ import logging
 import os
 from typing import Any, Dict
 
-class local_disk_adapter:
+class LocalDiskAdapter:
     """
     L4 State: The Sovereign File System.
     Strictly controls I/O within the mission-approved data silos.

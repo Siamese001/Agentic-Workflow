@@ -218,7 +218,7 @@ class TestPhase4OrchestratorIntegration:
 
         # Heal (will fail without LLM but should backup)
         await orchestrator.heal_with_gitops(
-            task="Add docstring",
+            Task="Add docstring",
             content=test_file.read_text(),
             file_path=str(test_file),
         )
@@ -270,7 +270,7 @@ def get_summary():
 
         # Attempt healing
         result = await orchestrator.heal_with_gitops(
-            task="Add metrics to summary",
+            Task="Add metrics to summary",
             content=content,
             file_path=str(test_file),
         )
@@ -336,13 +336,13 @@ class TestCrossComponentIntegration:
             orchestrator.gitops.backup_file(str(file_path))
 
         # 3. Build import map
-        orchestrator.import_patcher.build_import_map(list(files.values()))
+        orchestrator.ImportPatcher.build_import_map(list(files.values()))
 
         # 4. Verify all components have state
         stats = orchestrator.get_comprehensive_stats()
 
         assert stats["gitops"]["files_backed_up"] == 3
-        assert stats["import_patcher"]["modules_tracked"] >= 0
+        assert stats["ImportPatcher"]["modules_tracked"] >= 0
 
         # 5. Rollback all
         count = orchestrator.gitops.rollback_all()

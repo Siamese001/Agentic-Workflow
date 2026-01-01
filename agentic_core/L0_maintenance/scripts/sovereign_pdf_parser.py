@@ -21,7 +21,7 @@ except ImportError:
     OCR_AVAILABLE: Any = False
     print('[!] OCR dependencies not available')
 
-class sovereign_pdf_parser:
+class SovereignPdfParser:
     """L0: Robust PDF parsing with structural awareness and OCR fallback"""
 
     def __init__(self):

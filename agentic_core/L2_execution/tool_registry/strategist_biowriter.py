@@ -1,8 +1,8 @@
 """Strategist BioWriter Agent - Executive Summary Generator (K.1)
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This agent generates executive summaries with zero-tolerance validation.
 Enforces strict word count, voice constraints, and grounding requirements.
 
@@ -24,14 +24,14 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 @dataclass
-class bio_writer_config:
+class BioWriterConfig:
     """TODO: Add docstring."""
     min_words: int = 118
     max_words: int = 135
@@ -39,7 +39,7 @@ class bio_writer_config:
     TEMPERATURE: float = 0.6
     max_attempts: int = 3
 
-class bio_writer_result:
+class BioWriterResult:
     """Docstring."""
     summary: str
     word_count: int
@@ -48,7 +48,7 @@ class bio_writer_result:
     success: bool
     attempts: int
 
-class strategist_bio_writer:
+class StrategistBioWriter:
     """
     K.1 - Executive Summary Generator
 
@@ -122,7 +122,7 @@ class strategist_bio_writer:
     def _build_prompt(self, bullet_pool: List[str], context: Dict[str, Any], attempt: int) -> str:
         """Build prompt for summary generation"""
         evidence_section = '\n'.join((f'- {bullet}' for bullet in bullet_pool[:10]))
-        prompt = f"""Generate an executive summary for a resume.\n\nSTRICT REQUIREMENTS:\n1. Word Count: EXACTLY 118-135 words (count carefully)\n2. Voice: Third-person implied ONLY (NO "I", "my", "we", "our")\n3. Grounding: Every claim must come from the evidence below\n4. Style: Professional, specific, achievement-focused\n\nEVIDENCE POOL:\n{evidence_section}\n\nTARGET INDUSTRY: {context.get('industry', 'Technology')}\nSENIORITY: {context.get('seniority', 'Senior')}\n\nATTEMPT: {attempt}/3\n\nGenerate the executive summary now:"""
+        prompt = f"""Generate an executive summary for a resume.\n\nSTRICT REQUIREMENTS:\n1. Word Count: EXACTLY 118-135 words (count carefully)\n2. Voice: Third-person implied ONLY (NO "I", "my", "we", "our")\n3. Grounding: Every Claim must come from the evidence below\n4. Style: Professional, specific, achievement-focused\n\nEVIDENCE POOL:\n{evidence_section}\n\nTARGET INDUSTRY: {context.get('industry', 'Technology')}\nSENIORITY: {context.get('seniority', 'Senior')}\n\nATTEMPT: {attempt}/3\n\nGenerate the executive summary now:"""
         return prompt
 
     def _validate_voice(self, content: str) -> ValidationResult:
@@ -136,8 +136,8 @@ class strategist_bio_writer:
             for match in matches:
                 violations.append({'pronoun': match.group(), 'position': match.start(), 'context': content[max(0, match.start() - 20):match.end() + 20]})
         if violations:
-            return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=False, severity='BLOCK', message=f'BLOCKED: {len(violations)} first-person pronouns detected', details={'violations': violations[:5]})
-        return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=True, severity='INFO', message='Voice constraint satisfied - third-person only', signature=f'VOICE:OK:{hash(content) % 10000}')
+            return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=False, Severity='BLOCK', message=f'BLOCKED: {len(violations)} first-person pronouns detected', details={'violations': violations[:5]})
+        return ValidationResult(gate_id='VG_THIRD_PERSON_VOICE', passed=True, Severity='INFO', message='Voice constraint satisfied - third-person only', signature=f'VOICE:OK:{hash(content) % 10000}')
 
 def create_strategist_biowriter(config: Optional[BioWriterConfig]=None) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""

@@ -5,6 +5,6 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: RecipientArchetype → recipient_archetype
-class recipient_archetype(Enum):
-    """Recipient archetype classifications."""
+# NAMING FIXED: RecipientArchetype → RecipientArchetype
+class RecipientArchetype(Enum):
+    """Recipient Archetype classifications."""

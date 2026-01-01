@@ -12,10 +12,10 @@ from typing import Any, Dict, List, Optional, Protocol
 import redis
 
 
-# NAMING FIXED: CachedStateLedger → cached_state_ledger
-class cached_state_ledger:
+# NAMING FIXED: CachedStateLedger → CachedStateLedger
+class CachedStateLedger:
     """
-    Sovereign L4 state base — Redis cache for context, audit, historian.
+    Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.
     """
     def __init__(self, project_root: Path, session_id: str):
@@ -23,8 +23,8 @@ class cached_state_ledger:
         self.session_id = session_id
         
         # [L6 HARDENING] Sovereign Redis connection with full URL parsing + fallback
-        # Rationale: validation_context.py falls back to Fallback ValidationContext when ledger init fails
-        # → missing .successful_traces → GeminiSpy rejects mutations → zero file changes
+        # Rationale: ValidationContext.py falls back to Fallback ValidationContext when ledger init fails
+        # → Missing .successful_traces → GeminiSpy rejects mutations → zero file changes
         # Fix: Robust connection + guaranteed attributes even in memory mode
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         try:

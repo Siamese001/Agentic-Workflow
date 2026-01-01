@@ -13,8 +13,8 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 
 @dataclass
-# NAMING FIXED: ComplexityMetrics → complexity_metrics
-class complexity_metrics:
+# NAMING FIXED: ComplexityMetrics → ComplexityMetrics
+class ComplexityMetrics:
     """Metrics for measuring method complexity."""
     line_count: int
     nesting_depth: int
@@ -27,8 +27,8 @@ class complexity_metrics:
 
 
 @dataclass
-# NAMING FIXED: ExtractionCandidate → extraction_candidate
-class extraction_candidate:
+# NAMING FIXED: ExtractionCandidate → ExtractionCandidate
+class ExtractionCandidate:
     """Represents a code block candidate for extraction."""
     block_type: str  # "initialization", "conditional_branch", "loop", "error_handling"
     start_line: int
@@ -41,8 +41,8 @@ class extraction_candidate:
 
 
 @dataclass
-# NAMING FIXED: FlatteningPattern → flattening_pattern
-class flattening_pattern:
+# NAMING FIXED: FlatteningPattern → FlatteningPattern
+class FlatteningPattern:
     """
     Golden State Reference: Subatomic Flattening Pattern
     
@@ -239,7 +239,7 @@ class flattening_pattern:
 # Golden State Reference: Successful Extraction Example
 # NAMING FIXED: AGENT_LOGIC_PATTERN → agent_logic_pattern
 agent_logic_pattern = {
-    "source_file": "agentic_core/agent_logic.py",
+    "source_file": "AgenticCore/agent_logic.py",
     "method_name": "check_and_learn",
     "date": "2025-12-19",
     

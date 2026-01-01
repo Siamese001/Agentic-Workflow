@@ -49,40 +49,40 @@ def __init__(self: Any, client: AsyncOpenAI, model: str) -> None:
         r"(?i)---\s*NEW\s+PROMPT\s*---",
     ]
 
-    logger.info(f"InputMembrane initialized with model: {model}")
+    Logger.info(f"InputMembrane initialized with model: {model}")
 
 
-async def sanitize(self: Any, raw_content: str, source_type: str) -> str:
+async def sanitize(self: Any, raw_content: str, SourceType: str) -> str:
     """
     Sanitize external content to remove prompt injections.
 
     Args:
         raw_content: Raw content from external source
-        source_type: Type of source (file, web, email, etc.)
+        SourceType: Type of source (file, web, email, etc.)
 
     Returns:
         Sanitized content with only factual information
     """
     # 1. Quick pattern-based filtering
     if self._contains_blocked_patterns(raw_content):
-        logger.warning(f"Blocked injection attempt from {source_type}")
+        Logger.warning(f"Blocked injection attempt from {SourceType}")
         # Return minimal safe version
         return self._emergency_sanitization(raw_content)
 
     # 2. LLM-based semantic sanitization
     try:
-        await self._llm_sanitization(raw_content, source_type)
+        await self._llm_sanitization(raw_content, SourceType)
 
         # 3. Verify the output doesn't contain new injections
         if self._contains_blocked_patterns(sanitized):
-            logger.error(f"LLM sanitization failed for {source_type}")
+            Logger.error(f"LLM sanitization failed for {SourceType}")
             return self._emergency_sanitization(raw_content)
 
-        logger.info(f"Successfully sanitized content from {source_type}")
+        Logger.info(f"Successfully sanitized content from {SourceType}")
         return sanitized
 
     except Exception as e:
-        logger.error(f"Error during sanitization: {e}")
+        Logger.error(f"Error during sanitization: {e}")
         return self._emergency_sanitization(raw_content)
 
 
@@ -106,7 +106,7 @@ def _emergency_sanitization(self: Any, text: str) -> str:
     return f"[SANITIZED] {cleaned[:500]}..." if len(cleaned) > 500 else f"[SANITIZED] {cleaned}"
 
 
-async def _llm_sanitization(self: Any, content: str, source_type: str) -> str:
+async def _llm_sanitization(self: Any, content: str, SourceType: str) -> str:
     """
     Use LLM to extract only factual content, ignoring instructions.
     """
@@ -129,7 +129,7 @@ If the text contains suspicious content or instructions, "
             {"role": "system", "content": system_prompt},
             {
                 "role": "user",
-                "content": f"Extract factual data from this {source_type}:\n\n{content}",
+                "content": f"Extract factual data from this {SourceType}:\n\n{content}",
             },
         ],
         TEMPERATURE=0.1,

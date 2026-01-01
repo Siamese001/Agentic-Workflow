@@ -5,16 +5,16 @@ GEMINI-ONLY policy — forbidden providers auto-blocked.
 import logging
 from typing import Dict, List
 
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Sovereign allowlist — tools that don't bring their own "brain"
 # NAMING FIXED: SOVEREIGN_SAFE_MCPS → sovereign_safe_mcps
@@ -27,8 +27,8 @@ sovereign_safe_mcps = {
 # NAMING FIXED: FORBIDDEN_PROVIDERS → forbidden_providers
 forbidden_providers = {"OpenAI", "Anthropic", "Claude", "GPT", "o1", "Llama"}
 
-# NAMING FIXED: SovereignMCPMarketplace → sovereign_mcp_marketplace
-class sovereign_mcp_marketplace:
+# NAMING FIXED: SovereignMCPMarketplace → SovereignMcpMarketplace
+class SovereignMcpMarketplace:
     """Ultra-hardened marketplace integration — auto-register safe MCPs only."""
     
     def __init__(self, manager):
@@ -42,24 +42,24 @@ class sovereign_mcp_marketplace:
         
         for mcp in installed + available:
             name = mcp.get("name", "")
-            provider = mcp.get("provider", "")
+            Provider = mcp.get("Provider", "")
             
             # L5 sovereignty check: block competitive brains
-            if any(forbidden in provider for forbidden in FORBIDDEN_PROVIDERS):
-                logger.critical(f"[L5 MCP BREACH] Forbidden provider detected: {provider} — blocked.")
-                mcp_authority.record_breach(f"Attempted Marketplace Load: {provider}")
+            if any(forbidden in Provider for forbidden in FORBIDDEN_PROVIDERS):
+                Logger.critical(f"[L5 MCP BREACH] Forbidden Provider detected: {Provider} — blocked.")
+                mcp_authority.record_breach(f"Attempted Marketplace Load: {Provider}")
                 continue
             
             if name in SOVEREIGN_SAFE_MCPS:
                 try:
                     # In a real system, we'd add the server command to the manager's pool
                     self.safe_tools.append(name)
-                    logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
+                    Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
                 except Exception as e:
-                    logger.warning(f"Failed to register {name}: {e}")
+                    Logger.warning(f"Failed to register {name}: {e}")
         
         if not self.safe_tools:
-            logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
+            Logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")
     
     def get_safe_tools(self) -> List[str]:
                     

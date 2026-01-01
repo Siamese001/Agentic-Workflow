@@ -29,7 +29,7 @@ def execute_hardened_outreach_sequence(
     lead_profile: Dict[str, Any],  # New: Lead profile for personalization
     recipient_email: str,
     tools: Dict[str, Any],
-    logger: Optional[Any] = None
+    Logger: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Hardened Outreach Engine with L3 RAG, L4 LangCache, Dynamic News RAG, Intent Scoring, and Clarity Filter integration.
@@ -50,13 +50,13 @@ def execute_hardened_outreach_sequence(
         lead_profile: Dict containing lead info (industry, role, company, etc.)
         recipient_email: Target email address
         tools: Dictionary containing MCP tools
-        logger: Optional logger instance
+        Logger: Optional Logger instance
 
     Returns:
         Dictionary containing final status, personalization info, and audit data
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"🛡️ Starting Hardened Outreach Sequence for {recipient_email}")
 
     # Extract required tools
@@ -88,21 +88,21 @@ def execute_hardened_outreach_sequence(
             lead_id=lead_id,
             action_type="outreach_email",
             max_actions_per_hour=2,  # Max 2 emails per hour per lead
-            logger=logger
+            Logger=Logger
         )
 
         if rate_limit_result["status"] == "rate_limited":
             final_status = "RATE_LIMITED"
-            if logger:
-                logger.warning(f"⚠️ Rate limit exceeded for lead {lead_id}")
+            if Logger:
+                Logger.warning(f"⚠️ Rate limit exceeded for lead {lead_id}")
             return {
                 "status": final_status,
                 "message": rate_limit_result["message"],
                 "reset_time": rate_limit_result.get("reset_time")
             }
     except Exception as e:
-        if logger:
-            logger.warning(f"Rate limiting failed: {e}")
+        if Logger:
+            Logger.warning(f"Rate limiting failed: {e}")
 
 
     # --- 2. Intent Scoring (L4 - NEW: Lead priority and reply likelihood) ---
@@ -126,23 +126,23 @@ def execute_hardened_outreach_sequence(
             engagement_data=engagement_data,
             news_context={},  # Will be populated after News RAG
             personalization_data={},  # Will be populated after content retrieval
-            logger=logger
+            Logger=Logger
         )
 
         intent_priority = intent_score.priority
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"🎯 Intent Score: {intent_score.overall_score}/100 ({intent_priority} priority)")
-            logger.info(
+            Logger.info(
                 f"   Reply probability: {intent_score.reply_probability:.0%}")
-            logger.info(f"   Recommended: {intent_score.recommended_action}")
+            Logger.info(f"   Recommended: {intent_score.recommended_action}")
 
         # Cost governance: Skip low-priority leads
         if intent_score.overall_score < 30:
             final_status = "LOW_PRIORITY_SKIPPED"
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     f"⚠️ Skipping low-priority lead (score: {intent_score.overall_score})")
             return {
                 "status": final_status,
@@ -154,8 +154,8 @@ def execute_hardened_outreach_sequence(
             f"Intent scoring: Prioritized {intent_priority} leads")
 
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ Intent scoring failed (non-critical): {e}")
+        if Logger:
+            Logger.warning(f"⚠️ Intent scoring failed (non-critical): {e}")
 
 
     # --- 3. Personalized Content Retrieval (L3 Pinecone + L4 LangCache) ---
@@ -169,11 +169,11 @@ def execute_hardened_outreach_sequence(
             personalized_pitch = cached_template
             personalization_source = "LangCache"
             cost_savings.append("Pinecone query avoided")
-            if logger:
-                logger.info("✅ Template retrieved from LangCache (cost saved)")
+            if Logger:
+                Logger.info("✅ Template retrieved from LangCache (cost saved)")
     except Exception as e:
-        if logger:
-            logger.warning(f"LangCache check failed: {e}")
+        if Logger:
+            Logger.warning(f"LangCache check failed: {e}")
 
 
     # If not in cache, query Pinecone for personalized template
@@ -201,20 +201,20 @@ def execute_hardened_outreach_sequence(
                     # Cache the template for future use (24 hour TTL)
                     string_set(cache_key, personalized_pitch)
 
-                    if logger:
-                        logger.info(
+                    if Logger:
+                        Logger.info(
                             f"✅ Retrieved template from Pinecone: {best_template.get('score', 'N/A')}")
         except Exception as e:
-            if logger:
-                logger.error(f"Pinecone search failed: {e}")
+            if Logger:
+                Logger.error(f"Pinecone search failed: {e}")
 
 
     # Fallback to default pitch if no personalized template found
     if not personalized_pitch:
         personalized_pitch = generate_default_pitch(lead_profile)
         personalization_source = "GENERATED"
-        if logger:
-            logger.info("ℹ️ Using generated default pitch")
+        if Logger:
+            Logger.info("ℹ️ Using generated default pitch")
 
     # --- 3. Dynamic News RAG (L4 - NEW: Real-time context injection) ---
     news_context = None
@@ -231,7 +231,7 @@ def execute_hardened_outreach_sequence(
                 industry=industry,
                 redis_get=string_get,
                 redis_set=string_set,
-                logger=logger
+                Logger=Logger
             )
 
             if news_result.get("news_available"):
@@ -266,23 +266,23 @@ def execute_hardened_outreach_sequence(
                                 [f"• {point}" for point in news_personalization[:2]])
                             personalized_pitch += f"\n\nPersonal notes:\n{points_text}"
 
-                if logger:
-                    logger.info(
+                if Logger:
+                    Logger.info(
                         f"✅ News RAG enhanced: {len(news_personalization)} insights added")
-                    logger.info(
+                    Logger.info(
                         f"   Context: {news_context[:50]}..." if news_context else "")
                     cost_savings.append("News RAG: Real-time context added")
             else:
-                if logger:
-                    logger.info("ℹ️ No recent news found for personalization")
+                if Logger:
+                    Logger.info("ℹ️ No recent news found for personalization")
         else:
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     "ℹ️ No company/industry info provided, skipping News RAG")
 
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ News RAG failed (non-critical): {e}")
+        if Logger:
+            Logger.warning(f"⚠️ News RAG failed (non-critical): {e}")
             # Continue without news context
 
 
@@ -292,11 +292,11 @@ def execute_hardened_outreach_sequence(
         current_utc_time_hm = datetime.fromisoformat(
             time_str.replace('Z', '+00:00')).strftime('%H:%M')
 
-        if logger:
-            logger.info(f"Current UTC time: {current_utc_time_hm}")
+        if Logger:
+            Logger.info(f"Current UTC time: {current_utc_time_hm}")
     except Exception as e:
-        if logger:
-            logger.error(f"Failed to get current time: {e}")
+        if Logger:
+            Logger.error(f"Failed to get current time: {e}")
         return {
             "status": "ERROR_TIME_FETCH",
             "message": "Failed to retrieve current time"
@@ -305,7 +305,7 @@ def execute_hardened_outreach_sequence(
 
     # Temporal vetting
     vetting_result = vet_lead_optimal_time(
-        lead_timezone, current_utc_time_hm, tools, logger)
+        lead_timezone, current_utc_time_hm, tools, Logger)
 
     send_allowed = vetting_result['send_now']
     lead_local_time = vetting_result['lead_local_time']
@@ -320,7 +320,7 @@ def execute_hardened_outreach_sequence(
             text=personalized_pitch,
             aggressive=False,  # Preserve personalization context
             preserve_personalization=True,
-            logger=logger
+            Logger=Logger
         )
 
         # Use the filtered content
@@ -332,19 +332,19 @@ def execute_hardened_outreach_sequence(
         else:
             personalization_source = "Clarity"
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ Content refined: {clarity_result.word_count_reduction} words removed")
-            logger.info(
+            Logger.info(
                 f"   Clarity score: {clarity_result.clarity_score:.2f}")
-            logger.info(
+            Logger.info(
                 f"   Brevity score: {clarity_result.brevity_score:.2f}")
 
         cost_savings.append("Clarity filter: Improved message readability")
 
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ Clarity filter failed (non-critical): {e}")
+        if Logger:
+            Logger.warning(f"⚠️ Clarity filter failed (non-critical): {e}")
             # Continue with original content
 
 
@@ -372,30 +372,30 @@ def execute_hardened_outreach_sequence(
                 try:
                     current_success = int(string_get(success_key) or "0")
                     string_set(success_key, str(current_success + 1))
-                    if logger:
-                        logger.info(
+                    if Logger:
+                        Logger.info(
                             f"✅ Template success cached: {current_success + 1} uses")
                 except Exception as e:
-                    if logger:
-                        logger.warning(f"Success caching failed: {e}")
+                    if Logger:
+                        Logger.warning(f"Success caching failed: {e}")
 
 
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     f"✅ Personalized email sent. Source: {personalization_source}")
 
         except Exception as e:
             final_status = "SENT_FAILED"
-            if logger:
-                logger.error(f"❌ Email dispatch failed: {e}")
+            if Logger:
+                Logger.error(f"❌ Email dispatch failed: {e}")
     else:
         final_status = "TEMPORAL_DELAY"
         next_send_time = calculate_next_business_time(
             lead_local_time, lead_timezone)
 
-        if logger:
-            logger.warning(f"⚠️ Temporal delay. Local time: {lead_local_time}")
-            logger.info(f"💡 Next optimal send: {next_send_time}")
+        if Logger:
+            Logger.warning(f"⚠️ Temporal delay. Local time: {lead_local_time}")
+            Logger.info(f"💡 Next optimal send: {next_send_time}")
 
     # --- 6. Comprehensive Audit Log (L5 MEMemory) ---
     try:
@@ -431,8 +431,8 @@ def execute_hardened_outreach_sequence(
                 "contents": [audit_message]
             }])
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ Audit logging failed: {e}")
+        if Logger:
+            Logger.warning(f"⚠️ Audit logging failed: {e}")
 
 
     # Build comprehensive result
@@ -541,7 +541,7 @@ def test_hardened_outreach():
         lead_profile=lead_profile,
         recipient_email="engineer@techcorp.com",
         tools=mock_tools,
-        logger=None
+        Logger=None
     )
 
     # Display results

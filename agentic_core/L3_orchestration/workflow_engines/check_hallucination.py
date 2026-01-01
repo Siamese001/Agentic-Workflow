@@ -8,16 +8,16 @@ from typing import Any, Dict, List, Optional, Protocol
 """
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 Hallucination checking module for apps_rg.
 
 Provides basic hallucination detection for resume generation.
 """
 
 
-# NAMING FIXED: HallucinationDetector → hallucination_detector
-class hallucination_detector:
+# NAMING FIXED: HallucinationDetector → HallucinationDetector
+class HallucinationDetector:
     """Stub implementation of hallucination detector."""
 
 

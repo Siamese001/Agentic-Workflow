@@ -1,15 +1,15 @@
 """
 Secure Tools - Atomic Module
-Extracted from action_node.py via Atomic Fission Protocol
+Extracted from ActionNode.py via Atomic Fission Protocol
 Implements sandboxed file operations and command execution
 """
 import logging
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger('ActionNode.SecureTools')
+Logger: Any = logging.getLogger('ActionNode.SecureTools')
 
-class secure_tools_impl:
+class SecureToolsImpl:
     """
     Secure tool implementations with path validation and command blacklisting.
     """
@@ -58,7 +58,7 @@ class secure_tools_impl:
         target.parent.mkdir(parents=True, exist_ok=True)
         with open(target, 'w', encoding='utf-8') as f:
             f.write(content)
-        logger.info(f"File '{target.name}' written successfully.")
+        Logger.info(f"File '{target.name}' written successfully.")
         return f'File written successfully: {target.name}'
 
     def tool_read_file(self, filename: str) -> str:
@@ -73,14 +73,14 @@ class secure_tools_impl:
         """
         target: Path = self._safe_path(filename)
         if not target.exists():
-            logger.warning(f'Attempted to read non-existent file: {filename}')
+            Logger.warning(f'Attempted to read non-existent file: {filename}')
             return f"Error: File '{filename}' does not exist."
         if not target.is_file():
-            logger.warning(f'Attempted to read a non-file path: {filename}')
+            Logger.warning(f'Attempted to read a non-file path: {filename}')
             return f"Error: Path '{filename}' is not a file."
         with open(target, 'r', encoding='utf-8') as f:
             content: Any = f.read()
-        logger.info(f"File '{target.name}' read successfully.")
+        Logger.info(f"File '{target.name}' read successfully.")
         return content
 
     def tool_list_files(self, subdir: str='.') -> str:
@@ -96,14 +96,14 @@ class secure_tools_impl:
         """
         target: Path = self._safe_path(subdir)
         if not target.exists():
-            logger.warning(f'Attempted to list non-existent directory: {subdir}')
+            Logger.warning(f'Attempted to list non-existent directory: {subdir}')
             return f"Error: Directory '{subdir}' not found."
         if not target.is_dir():
-            logger.warning(f'Attempted to list a non-directory path: {subdir}')
+            Logger.warning(f'Attempted to list a non-directory path: {subdir}')
             return f"Error: Path '{subdir}' is not a directory."
         files: List[str] = [f.name for f in target.iterdir()]
         output: Any = '\n'.join(files) if files else '(empty directory)'
-        logger.info(f"Listed files in '{subdir}':\n{output}")
+        Logger.info(f"Listed files in '{subdir}':\n{output}")
         return output
 
     def tool_run_command(self, command: str) -> str:
@@ -122,20 +122,20 @@ class secure_tools_impl:
             ValueError: If the command contains blacklisted patterns.
         """
         if any((b in command for b in self.BLACKLIST_COMMANDS)):
-            logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
+            Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
             raise ValueError('SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.')
-        logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
+        Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:
             result: Any = subprocess.run(command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30)
             if result.returncode != 0:
-                logger.error(f'Command failed with return code {result.returncode}: {result.stderr}')
+                Logger.error(f'Command failed with return code {result.returncode}: {result.stderr}')
                 return f'Command Error (Exit {result.returncode}): {result.stderr}'
-            logger.info(f'Command executed successfully: {command}')
+            Logger.info(f'Command executed successfully: {command}')
             return result.stdout
         except subprocess.TimeoutExpired:
-            logger.error(f'Command timed out: {command}')
+            Logger.error(f'Command timed out: {command}')
             return 'Command Error: Execution timed out (30s limit).'
         except Exception as e:
-            logger.error(f'Command execution failed: {e}')
+            Logger.error(f'Command execution failed: {e}')
             return f'Command Error: {str(e)}'
 __all__ = ['SecureToolsImpl']

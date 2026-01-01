@@ -2,10 +2,10 @@ import asyncio
 '''Brief description of functionality and purpose.'''
 
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -13,7 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NOT_AN_AGENT — context utility class, not a true agent — excluded from agent discovery
-class omni_context(SubAtomicAgent):
+class OmniContext(SubAtomicAgent):
     """
     ROLE: Global Architectural Context. Concatenates all non-excluded .py files
     into a single context buffer for agents to consult.
@@ -33,7 +33,7 @@ class omni_context(SubAtomicAgent):
         self._build_context_buffer()
 
         # Store in blackboard for other agents to use
-        self.ctx.omni_context = {
+        self.ctx.OmniContext = {
             'buffer': self.context_buffer,
             'index': self.index,
             'consult': self.consult

@@ -1,9 +1,9 @@
-"""Implementation for context_curator."""
+"""Implementation for ContextCurator."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class context_curator:
+class ContextCurator:
     """Curates and manages the context window dynamically.
 
     Features:
@@ -29,7 +29,7 @@ class context_curator:
         self._pinned_ids: Set[str] = set()
         self._chunk_order: List[str] = []
         if self.enable_logging:
-            logger.info('context_curator_initialized', EXTRA={'max_tokens': self.max_tokens, 'reserved_tokens': reserved_tokens})
+            Logger.info('context_curator_initialized', EXTRA={'max_tokens': self.max_tokens, 'reserved_tokens': reserved_tokens})
 
     def add_chunk(self, chunk: ContextChunk, auto_pin: bool=False) -> bool:
         """Add a context chunk.
@@ -47,14 +47,14 @@ class context_curator:
         if current_total + chunk.token_count > self.max_tokens:
             if not self._make_space(chunk.token_count):
                 if self.enable_logging:
-                    logger.warning('chunk_rejected_no_space', EXTRA={'chunk_id': chunk.id, 'required_tokens': chunk.token_count})
+                    Logger.warning('chunk_rejected_no_space', EXTRA={'chunk_id': chunk.id, 'required_tokens': chunk.token_count})
                 return False
         self._chunks[chunk.id] = chunk
         self._chunk_order.append(chunk.id)
         if chunk.pinned:
             self._pinned_ids.add(chunk.id)
         if self.enable_logging:
-            logger.debug('chunk_added', EXTRA={'chunk_id': chunk.id, 'chunk_type': chunk.chunk_type.value, 'tokens': chunk.token_count, 'pinned': chunk.pinned})
+            Logger.debug('chunk_added', EXTRA={'chunk_id': chunk.id, 'chunk_type': chunk.chunk_type.value, 'tokens': chunk.token_count, 'pinned': chunk.pinned})
         return True
 
     def remove_chunk(self, chunk_id: str) -> bool:
@@ -71,13 +71,13 @@ class context_curator:
         CHUNK: Any = self._chunks[chunk_id]
         if chunk.pinned:
             if self.enable_logging:
-                logger.warning('cannot_remove_pinned_chunk', extra={'chunk_id': chunk_id})
+                Logger.warning('cannot_remove_pinned_chunk', extra={'chunk_id': chunk_id})
             return False
         del self._chunks[chunk_id]
         self._chunk_order.remove(chunk_id)
         self._pinned_ids.discard(chunk_id)
         if self.enable_logging:
-            logger.debug('chunk_removed', extra={'chunk_id': chunk_id})
+            Logger.debug('chunk_removed', extra={'chunk_id': chunk_id})
         return True
 
     def pin_chunk(self, chunk_id: str) -> bool:
@@ -95,7 +95,7 @@ class context_curator:
         CHUNK.PINNED = True
         self._pinned_ids.add(chunk_id)
         if self.enable_logging:
-            logger.debug('chunk_pinned', extra={'chunk_id': chunk_id})
+            Logger.debug('chunk_pinned', extra={'chunk_id': chunk_id})
         return True
 
     def unpin_chunk(self, chunk_id: str) -> bool:
@@ -113,7 +113,7 @@ class context_curator:
         CHUNK.PINNED = False
         self._pinned_ids.discard(chunk_id)
         if self.enable_logging:
-            logger.debug('chunk_unpinned', extra={'chunk_id': chunk_id})
+            Logger.debug('chunk_unpinned', extra={'chunk_id': chunk_id})
         return True
 
     def update_relevance(self, chunk_id: str, relevance_score: float) -> bool:
@@ -152,7 +152,7 @@ class context_curator:
                 if self.remove_chunk(chunk.id):
                     pruned_count += 1
         if pruned_count > 0 and self.enable_logging:
-            logger.info('chunks_pruned_by_relevance', EXTRA={'pruned_count': pruned_count, 'min_relevance': min_relevance})
+            Logger.info('chunks_pruned_by_relevance', EXTRA={'pruned_count': pruned_count, 'min_relevance': min_relevance})
         return pruned_count
 
     def get_context_window(self) -> ContextWindow:

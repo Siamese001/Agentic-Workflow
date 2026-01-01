@@ -4,9 +4,9 @@ import hashlib
 'Brief description of functionality and purpose.'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class genealogy_registry:
+class GenealogyRegistry:
     """Brief description of functionality and purpose."""
 
     def __init__(self, max_depth: int=5):

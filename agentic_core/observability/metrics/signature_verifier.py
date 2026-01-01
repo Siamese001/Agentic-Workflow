@@ -25,7 +25,7 @@ class SignatureVerifier:
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         SELF.CONFIG = config or {}
-        logger.info(f"Initialized {self.__class__.__name__}")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
@@ -35,7 +35,7 @@ class SignatureVerifier:
                 DATA=result,
                 METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            logger.error(f"Operation failed: {e}")
+            Logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:

@@ -7,10 +7,10 @@ from pathlib import Path
 from datetime import datetime
 
 # Sovereign Hardening Mixins – Phase C (Critical Priority)
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class MetaLearningAgent(
@@ -24,7 +24,7 @@ class MetaLearningAgent(
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.Logger = logging.getLogger(__name__)
         super().__init__()
 
         # Experience buffer for cross-agent learning
@@ -44,7 +44,7 @@ class MetaLearningAgent(
         """
         Critical enhancement: evolve an agent's execution strategy based on performance patterns.
         """
-        self.logger.info(f"Initiating strategy evolution for agent: {agent_name}")
+        self.Logger.info(f"Initiating strategy evolution for agent: {agent_name}")
 
         # 1. Retrieve performance history
         performance = await self._get_agent_performance(agent_name)
@@ -53,7 +53,7 @@ class MetaLearningAgent(
 
         # 2. Check if evolution is needed
         if performance["success_rate"] >= 0.92:
-            self.logger.info(f"{agent_name} performing optimally — no evolution needed")
+            self.Logger.info(f"{agent_name} performing optimally — no evolution needed")
             return {"evolution": "none", "reason": "optimal_performance", "success_rate": performance["success_rate"]}
 
         # 3. Analyze failure patterns
@@ -80,7 +80,7 @@ class MetaLearningAgent(
         # 5. Apply mutations if high confidence
         if mutations:
             applied = await self._apply_strategy_mutations(agent_name, mutations)
-            self.logger.info(f"Applied {len(applied)} strategy mutations to {agent_name}")
+            self.Logger.info(f"Applied {len(applied)} strategy mutations to {agent_name}")
 
             # Record evolution event
             self.strategy_buffer.record({
@@ -161,11 +161,11 @@ class MetaLearningAgent(
         return None
 
     async def _execute_conservative(self, ctx: Any, **context: Dict) -> Dict:
-        self.logger.info("Conservative mode: evolution paused")
+        self.Logger.info("Conservative mode: evolution paused")
         return {"evolution": "paused", "mode": "conservative"}
 
     async def _execute_minimal(self, ctx: Any, **context: Dict) -> Dict:
-        self.logger.warning("Minimal mode: meta-learning standby")
+        self.Logger.warning("Minimal mode: meta-learning standby")
         return {"status": "standby", "reason": "resource_preservation"}
 
     async def _execute_standard(self, ctx: Any, **context: Dict) -> Dict:

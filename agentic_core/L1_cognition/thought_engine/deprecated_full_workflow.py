@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -65,12 +65,12 @@ if TYPE_CHECKING:
     # The actual runtime objects will be Mocks or dynamically created,
     # so these Protocols are purely for static type checking.
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: TestEndToEndWorkflow → test_end_to_end_workflow
-class test_end_to_end_workflow:
+# NAMING FIXED: TestEndToEndWorkflow → TestEndToEndWorkflow
+class TestEndToEndWorkflow:
     """Test complete end-to-end workflow execution."""
 
     def test_full_workflow_with_all_components(self: Any) -> None:
@@ -87,8 +87,8 @@ class test_end_to_end_workflow:
         )
 
         # Mock all external dependencies
-        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
-            with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.invoke_model") as mock_llm:
+        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+            with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.invoke_model") as mock_llm:
 
                 # Mock LLM responses
                 mock_llm.side_effect = [
@@ -161,7 +161,7 @@ class test_end_to_end_workflow:
         )
 
         # Test with failing L2 execution
-        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
             mock_execute.side_effect = Exception("L2 execution failed")
 
             with pytest.raises(Exception):
@@ -169,8 +169,8 @@ class test_end_to_end_workflow:
                 run_dag(PLANS, CTX)
 
 
-# NAMING FIXED: TestWorkflowConfiguration → test_workflow_configuration
-class test_workflow_configuration:
+# NAMING FIXED: TestWorkflowConfiguration → TestWorkflowConfiguration
+class TestWorkflowConfiguration:
     """Test workflow configuration and customization."""
 
     def test_workflow_config_customization(self: Any) -> None:
@@ -204,8 +204,8 @@ class test_workflow_configuration:
         assert CTX.CONFIG.max_drafts == 1
 
 
-# NAMING FIXED: TestWorkflowPerformance → test_workflow_performance
-class test_workflow_performance:
+# NAMING FIXED: TestWorkflowPerformance → TestWorkflowPerformance
+class TestWorkflowPerformance:
     """Test workflow performance and optimization."""
 
     def test_workflow_execution_time(self: Any) -> None:
@@ -218,7 +218,7 @@ class test_workflow_performance:
             user_id="test_user",
         )
 
-        with patch("agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
+        with patch("AgenticCore.L1_cognition.planning.deprecated_full_workflow_dependencies.execute_workflow_plans") as mock_execute:
             #             from archives.legacy_resume_gen.Agentic-Workflow-10_9.l2 import L2ResultBundle  # I...
             mock_strategy = Mock()
             mock_strategy.branches = [Mock(description="Test strategy")]

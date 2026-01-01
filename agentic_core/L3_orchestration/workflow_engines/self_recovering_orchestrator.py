@@ -2,7 +2,7 @@
 Self-Recovering Orchestrator - L3 Orchestration Enhancement
 
 Dynamically adapts workflow graphs based on failure patterns.
-Automatically mutates workflows to route around failures and optimize execution.
+Automatically mutates workflows to Route around failures and optimize execution.
 """
 import asyncio
 import logging
@@ -12,9 +12,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
 import networkx as nx
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class recovery_strategy(Enum):
+class RecoveryStrategy(Enum):
     """Recovery strategies for failed nodes."""
     RETRY: Any = 'retry'
     SKIP: Any = 'skip'
@@ -23,7 +23,7 @@ class recovery_strategy(Enum):
     ROLLBACK: Any = 'rollback'
 
 @dataclass
-class node_failure_pattern:
+class NodeFailurePattern:
     """Tracks failure patterns for workflow nodes."""
     node_id: str
     failure_count: int = 0
@@ -45,7 +45,7 @@ class node_failure_pattern:
         return self.failure_rate > 0.5 and self.failure_count >= 3
 
 @dataclass
-class workflow_mutation:
+class WorkflowMutation:
     """Represents a workflow graph mutation."""
     mutation_id: str
     mutation_type: RecoveryStrategy
@@ -55,7 +55,7 @@ class workflow_mutation:
     applied_at: Optional[datetime] = None
     success: bool = False
 
-class self_recovering_orchestrator:
+class SelfRecoveringOrchestrator:
     """
     Orchestrator that automatically recovers from workflow failures.
     
@@ -80,13 +80,13 @@ class self_recovering_orchestrator:
         self.max_mutations_per_node = 3
         self.probation_list: Dict[str, Dict[str, int]] = {}
         self._mutation_task = None
-        logger.info('Self-Recovering Orchestrator initialized')
+        Logger.info('Self-Recovering Orchestrator initialized')
 
     def awaken_mutation_engine(self) -> Any:
         """Explicitly start the L3 evolution cycle"""
         if not self._mutation_task:
             self._mutation_task = asyncio.create_task(self.autonomous_mutation_cycle())
-            logger.info('L3 Autonomous mutation cycle awakened')
+            Logger.info('L3 Autonomous mutation cycle awakened')
 
     async def autonomous_mutation_cycle(self) -> Any:
         """L3: Continuous workflow optimization cycle"""
@@ -97,11 +97,11 @@ class self_recovering_orchestrator:
                     if pattern.failure_rate > self.mutation_threshold and pattern.failure_count >= 3:
                         mutation_count: Any = sum((1 for m in self.mutation_history if m.target_node == node_id))
                         if mutation_count < self.max_mutations_per_node:
-                            logger.info(f'L3: Auto-mutating problematic node {node_id}')
+                            Logger.info(f'L3: Auto-mutating problematic node {node_id}')
                             await self.mutate_node(node_id, pattern.failure_rate)
-                logger.debug('L3: Autonomous mutation cycle completed')
+                Logger.debug('L3: Autonomous mutation cycle completed')
             except Exception as e:
-                logger.error(f'L3 Mutation cycle error: {e}')
+                Logger.error(f'L3 Mutation cycle error: {e}')
                 await asyncio.sleep(60)
 
     async def execute_with_recovery(self, graph: nx.DiGraph, initial_inputs: Dict[str, Any], graph_id: str) -> Dict[str, Any]:
@@ -127,7 +127,7 @@ class self_recovering_orchestrator:
             else:
                 execution_state['status'] = 'completed_with_recovery'
         except Exception as e:
-            logger.error(f'Graph execution failed: {e}')
+            Logger.error(f'Graph execution failed: {e}')
             execution_state['status'] = 'failed'
             execution_state['error'] = str(e)
         finally:
@@ -175,7 +175,7 @@ class self_recovering_orchestrator:
             try:
                 if attempt > 0:
                     backoff = self.retry_backoff_base ** attempt
-                    logger.info(f'Retry {attempt}/{max_retries} for {node_id} after {backoff}s')
+                    Logger.info(f'Retry {attempt}/{max_retries} for {node_id} after {backoff}s')
                     await asyncio.sleep(backoff)
                 start_time = datetime.now()
                 result = await self._execute_single_node(node, initial_inputs, execution_state)
@@ -184,7 +184,7 @@ class self_recovering_orchestrator:
                 self._update_execution_time(node_id, execution_time)
                 return True
             except Exception as e:
-                logger.warning(f'Node {node_id} attempt {attempt + 1} failed: {e}')
+                Logger.warning(f'Node {node_id} attempt {attempt + 1} failed: {e}')
                 if attempt == max_retries - 1:
                     return False
         return False
@@ -216,7 +216,7 @@ class self_recovering_orchestrator:
         strategy = self._select_recovery_strategy(pattern)
         graph = self.active_graphs[graph_id]
         if strategy == RecoveryStrategy.SKIP:
-            logger.info(f'Applying SKIP strategy for {node_id}')
+            Logger.info(f'Applying SKIP strategy for {node_id}')
             execution_state['completed_nodes'].add(failed_node)
             execution_state['results'][failed_node] = {'status': 'skipped', 'reason': 'recovery_skip'}
             mutation = WorkflowMutation(mutation_id=f'mut_{len(self.mutation_history)}', mutation_type=RecoveryStrategy.SKIP, target_node=node_id, reason='Node consistently failing, skipping to continue workflow', applied_at=datetime.now(), success=True)
@@ -224,7 +224,7 @@ class self_recovering_orchestrator:
             execution_state['mutations_applied'].append(mutation)
             return True
         elif strategy == RecoveryStrategy.FORK:
-            logger.info(f'Applying FORK strategy for {node_id}')
+            Logger.info(f'Applying FORK strategy for {node_id}')
             successors = list(graph.successors(failed_node))
             if successors:
                 for successor in successors:
@@ -235,7 +235,7 @@ class self_recovering_orchestrator:
                 execution_state['mutations_applied'].append(mutation)
                 return True
         elif strategy == RecoveryStrategy.REPLACE:
-            logger.info(f'Applying REPLACE strategy for {node_id}')
+            Logger.info(f'Applying REPLACE strategy for {node_id}')
             replacement = self._find_replacement_node(node_id, graph)
             if replacement:
                 graph.add_node(replacement)
@@ -272,7 +272,7 @@ class self_recovering_orchestrator:
 
     async def mutate_node(self, failed_node: str, failure_rate: float) -> str:
         """L3: Sovereign mutation with Probationary Logic"""
-        logger.info(f'L3 SELF-HEALING: Mutating {failed_node} (failure_rate={failure_rate:.2f})')
+        Logger.info(f'L3 SELF-HEALING: Mutating {failed_node} (failure_rate={failure_rate:.2f})')
         if failure_rate > 0.8:
             strategy: Any = 'SKIP'
         elif failure_rate > 0.6:
@@ -285,7 +285,7 @@ class self_recovering_orchestrator:
         if strategy == 'REPLACE':
             self.alternative_routes[failed_node] = [new_node]
             self.probation_list[new_node] = {'test_runs': 0, 'failures': 0}
-            logger.info(f'L3: Replacement node {new_node} under probation')
+            Logger.info(f'L3: Replacement node {new_node} under probation')
         mutation: Any = WorkflowMutation(mutation_id=f'mut_{len(self.mutation_history)}', mutation_type=RecoveryStrategy[strategy], target_node=failed_node, replacement_node=new_node if strategy == 'REPLACE' else None, reason=f'Auto-mutation due to {failure_rate:.1%} failure rate', applied_at=datetime.now(), success=True)
         self.mutation_history.append(mutation)
         return new_node
@@ -328,11 +328,11 @@ class self_recovering_orchestrator:
             if not success:
                 prob['failures'] += 1
             if prob['test_runs'] >= 5 and prob['failures'] / prob['test_runs'] > 0.6:
-                logger.warning(f"PROBATION FAILED: {node_id} is unreliable (failure rate: {prob['failures'] / prob['test_runs']:.1%}). Reverting mutation.")
+                Logger.warning(f"PROBATION FAILED: {node_id} is unreliable (failure rate: {prob['failures'] / prob['test_runs']:.1%}). Reverting mutation.")
                 for mutation in self.mutation_history:
                     if mutation.replacement_node == node_id:
                         mutation.success = False
-                        logger.info(f'L3: Reverted mutation {mutation.mutation_id}')
+                        Logger.info(f'L3: Reverted mutation {mutation.mutation_id}')
                         break
                 del self.probation_list[node_id]
                 for original, alternatives in list(self.alternative_routes.items()):
@@ -341,13 +341,13 @@ class self_recovering_orchestrator:
                         if not alternatives:
                             del self.alternative_routes[original]
             elif prob['test_runs'] >= 5 and prob['failures'] / prob['test_runs'] <= 0.3:
-                logger.info(f"PROBATION PASSED: {node_id} is reliable (failure rate: {prob['failures'] / prob['test_runs']:.1%})")
+                Logger.info(f"PROBATION PASSED: {node_id} is reliable (failure rate: {prob['failures'] / prob['test_runs']:.1%})")
                 del self.probation_list[node_id]
 
     def _record_node_success(self, node_id: str):
         """Record successful node execution."""
         self.record_node_attempt(node_id, success=True)
-        logger.debug(f'Node {node_id} success recorded')
+        Logger.debug(f'Node {node_id} success recorded')
 
     def _record_node_failure(self, node_id: str, reason: str):
         """Record node failure."""
@@ -360,7 +360,7 @@ class self_recovering_orchestrator:
         pattern.failure_reasons.append(reason)
         if len(pattern.failure_reasons) > 10:
             pattern.failure_reasons = pattern.failure_reasons[-10:]
-        logger.warning(f'Node {node_id} failure recorded: {reason}')
+        Logger.warning(f'Node {node_id} failure recorded: {reason}')
 
     def _update_execution_time(self, node_id: str, execution_time: float):
         """Update average execution time for a node."""

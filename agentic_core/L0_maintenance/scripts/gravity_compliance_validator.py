@@ -9,14 +9,14 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Layer authority from structure_blueprint.py
-from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
 # Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
-class gravity_compliance_validator:
+class GravityComplianceValidator:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):
@@ -41,8 +41,8 @@ class gravity_compliance_validator:
         if current_rank == -1:
             return
 
-        # Find all agentic_core intra-imports
-        imports = re.findall(r"(?:from|import)\s+agentic_core\.(\w+)", content)
+        # Find all AgenticCore intra-imports
+        imports = re.findall(r"(?:from|import)\s+AgenticCore\.(\w+)", content)
 
         for imported in imports:
             import_rank = self.get_layer_rank(imported)
@@ -61,7 +61,7 @@ class gravity_compliance_validator:
                     
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
-            if "agentic_core" in py_file.parts:
+            if "AgenticCore" in py_file.parts:
                 self.scan_file(py_file)
 
         if not self.violations:

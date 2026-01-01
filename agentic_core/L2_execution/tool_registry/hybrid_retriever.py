@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 from rank_bm25 import BM25Okapi
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -100,7 +100,7 @@ class RetrievalResult:
     source: str
     metadata: Dict
 
-class hybrid_retriever:
+class HybridRetriever:
     """
     Hybrid retrieval combining semantic search with BM25 sparse retrieval
     """
@@ -116,7 +116,7 @@ class hybrid_retriever:
 
     async def _load_or_rebuild_local_index(self):
         """Thread-safe loading of the sovereign index"""
-        cache_path = Path('agentic_core/L4_state/validation_context/.sovereign_local_index.json')
+        cache_path = Path('AgenticCore/L4_state/ValidationContext/.sovereign_local_index.json')
         if cache_path.exists():
             try:
                 data = await asyncio.to_thread(lambda: json.loads(cache_path.read_text(encoding='utf-8')))
@@ -136,7 +136,7 @@ class hybrid_retriever:
     async def rebuild_from_ingestion(self) -> Any:
         """Rebuild local index from latest ingestion artifacts"""
         try:
-            from agentic_core.L0_maintenance.scripts.sovereign_ingestion_mission import load_latest_ingested_chunks
+            from AgenticCore.L0_maintenance.scripts.sovereign_ingestion_mission import load_latest_ingested_chunks
             chunks: Any = await asyncio.to_thread(load_latest_ingested_chunks)
             self.local_chunks = chunks
             if chunks:
@@ -144,7 +144,7 @@ class hybrid_retriever:
                 def _sync():
                     tokenized = [self.tokenizer.tokenize_code(c['text']) for c in chunks]
                     idx = BM25Okapi(tokenized)
-                    cache_path = Path('agentic_core/L4_state/validation_context/.sovereign_local_index.json')
+                    cache_path = Path('AgenticCore/L4_state/ValidationContext/.sovereign_local_index.json')
                     cache_path.parent.mkdir(parents=True, exist_ok=True)
                     with tempfile.NamedTemporaryFile('w', delete=False, dir=cache_path.parent) as tf:
                         json.dump({'chunks': chunks}, tf, ensure_ascii=False)

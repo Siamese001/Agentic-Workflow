@@ -8,26 +8,26 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class assessment_level(Enum):
+class AssessmentLevel(Enum):
     """TODO: Add docstring."""
 
 @dataclass
-class assessment_result:
+class AssessmentResult:
     """Result of assessment."""
     level: AssessmentLevel
     score: float
     findings: List[str] = field(default_factory=list)
 
-class evaluate_scripts_compliance:
+class EvaluateScriptsCompliance:
     """Assessor for utilities domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the compliance evaluator with optional configuration."""
     SELF.CONFIG = config or {}
     SELF.THRESHOLDS = self.config.get('thresholds', {'low': 0.8, 'medium': 0.6, 'high': 0.4})
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def assess(self: Any, data: object, context: Optional[Dict]) -> AssessmentResult:
     """Perform assessment."""

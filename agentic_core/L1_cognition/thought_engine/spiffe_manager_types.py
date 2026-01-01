@@ -6,9 +6,9 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class identity_type(Enum):
+class IdentityType(Enum):
     """Types of agent identities."""
     ORCHESTRATOR: Any = 'orchestrator'
     COGNITIVE_AGENT: Any = 'cognitive_agent'
@@ -16,21 +16,21 @@ class identity_type(Enum):
     TOOL_AGENT: Any = 'tool_agent'
     HUMAN_OPERATOR: Any = 'human_operator'
 
-class trust_domain(Enum):
+class TrustDomain(Enum):
     """Trust domains for identity verification."""
     LOCAL: Any = 'local'
     CLUSTER: Any = 'cluster'
     FEDERATED: Any = 'federated'
 
 @dataclass
-class agent_identity:
+class AgentIdentity:
     """Cryptographically-verified agent identity.
 
     Based on SPIFFE ID format: spiffe://trust-domain/path
     """
     spiffe_id: str
     agent_type: IdentityType
-    trust_domain: TrustDomain
+    TrustDomain: TrustDomain
     public_key: str
     private_key: str
     issued_at: float
@@ -60,7 +60,7 @@ class agent_identity:
         Returns:
             Dictionary representation
         """
-        return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'trust_domain': self.trust_domain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at': self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
+        return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'TrustDomain': self.TrustDomain.value, 'public_key': self.public_key, 'issued_at': self.issued_at, 'expires_at': self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
 
     def get_namespace(self) -> str:
         """Extract namespace from SPIFFE ID.
@@ -85,7 +85,7 @@ class agent_identity:
         return 'unknown'
 
 @dataclass
-class identity_verification_result:
+class IdentityVerificationResult:
     """Result of identity verification."""
     valid: bool
     identity: Optional[AgentIdentity] = None

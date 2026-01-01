@@ -1,20 +1,20 @@
-"""Types and models for model_router."""
+"""Types and models for ModelRouter."""
 import logging
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
 from enum import auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class model_tier(Enum):
+class ModelTier(Enum):
     """Model capability tiers."""
     PREMIUM: Any = 'premium'
     STANDARD: Any = 'standard'
     FAST: Any = 'fast'
     MICRO: Any = 'micro'
 
-class task_complexity(Enum):
+class TaskComplexity(Enum):
     """Task complexity levels."""
     VERY_HIGH: Any = 'very_high'
     HIGH: Any = 'high'
@@ -23,10 +23,10 @@ class task_complexity(Enum):
     TRIVIAL: Any = 'trivial'
 
 @dataclass
-class model_config:
+class ModelConfig:
     """Configuration for an LLM model."""
     model_id: str
-    provider: str
+    Provider: str
     tier: ModelTier
     cost_per_1k_tokens: float
     max_tokens: int
@@ -35,17 +35,17 @@ class model_config:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'model_id': self.model_id, 'provider': self.provider, 'tier': self.tier.value, 'cost_per_1k_tokens': self.cost_per_1k_tokens, 'max_tokens': self.max_tokens, 'avg_latency_ms': self.avg_latency_ms, 'capabilities': self.capabilities}
+        return {'model_id': self.model_id, 'Provider': self.Provider, 'tier': self.tier.value, 'cost_per_1k_tokens': self.cost_per_1k_tokens, 'max_tokens': self.max_tokens, 'avg_latency_ms': self.avg_latency_ms, 'capabilities': self.capabilities}
 
 @dataclass
-class routing_decision:
+class RoutingDecision:
     """Model routing decision."""
     selected_model: ModelConfig
-    task_complexity: TaskComplexity
+    TaskComplexity: TaskComplexity
     estimated_cost: float
     reasoning: str
     alternatives: List[ModelConfig]
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'selected_model': self.selected_model.to_dict(), 'task_complexity': self.task_complexity.value, 'estimated_cost': self.estimated_cost, 'reasoning': self.reasoning, 'alternatives': [a.to_dict() for a in self.alternatives]}
+        return {'selected_model': self.selected_model.to_dict(), 'TaskComplexity': self.TaskComplexity.value, 'estimated_cost': self.estimated_cost, 'reasoning': self.reasoning, 'alternatives': [a.to_dict() for a in self.alternatives]}

@@ -10,7 +10,7 @@ Placed in L0_maintenance/scripts per SSOT:
   L0_maintenance -> maintenance territory
   scripts -> approved L2 for boot scripts
 
-Depth: agentic_core/L0_maintenance/scripts/bootstrap_agent.py -> 4 parts -> compliant
+Depth: AgenticCore/L0_maintenance/scripts/bootstrap_agent.py -> 4 parts -> compliant
 """
 import os
 import urllib.parse
@@ -21,13 +21,13 @@ import logging
 from typing import Any, Dict, List
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class BootstrapAgent:
@@ -50,7 +50,7 @@ class BootstrapAgent:
         # 1. .env gravity anchor
         env_path = self.project_root / ".env"
         if not env_path.exists():
-            print(f"\n[!] [L6 ERROR] GRAVITY LOSS: .env missing at {env_path}")
+            print(f"\n[!] [L6 ERROR] GRAVITY LOSS: .env Missing at {env_path}")
             success = False
         else:
             load_dotenv(dotenv_path=env_path, override=True)
@@ -81,9 +81,9 @@ class BootstrapAgent:
 
         # 3. Model neural authorization check
         mandatory_keys = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
-        missing = [k for k in mandatory_keys if not os.getenv(k)]
-        if missing:
-            print(f"\n[!] [NEURAL LINK ERROR] Missing mandatory keys: {', '.join(missing)}")
+        Missing = [k for k in mandatory_keys if not os.getenv(k)]
+        if Missing:
+            print(f"\n[!] [NEURAL LINK ERROR] Missing mandatory keys: {', '.join(Missing)}")
             success = False
         else:
             model = os.getenv("GEMINI_MODEL")
@@ -114,7 +114,7 @@ class BootstrapAgent:
         Returns:
             Dict with seeding results
         """
-        from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
+        from AgenticCore.L2_execution.ToolRegistry.ToolsmithAgent import ToolsmithAgent
         
         root = project_root or self.project_root
         toolsmith = ToolsmithAgent()
@@ -122,11 +122,11 @@ class BootstrapAgent:
         result = await toolsmith.seed_territory(root, dry_run=False)
         
         if result.get('seeded'):
-            logger.info(f"Territory seeded: {len(result['seeded'])} files")
+            Logger.info(f"Territory seeded: {len(result['seeded'])} files")
             for f in result['seeded']:
                 print(f"   [SEEDED] {f}")
         if result.get('errors'):
-            logger.warning(f"Seeding errors: {result['errors']}")
+            Logger.warning(f"Seeding errors: {result['errors']}")
             
         return result
 
@@ -137,7 +137,7 @@ class BootstrapAgent:
         Ported from AgentRegistryValidatorAgent.validate_registry().
         
         Returns:
-            List of missing agent names (empty if all present)
+            List of Missing agent names (empty if all present)
         """
         import importlib
         
@@ -152,14 +152,14 @@ class BootstrapAgent:
         
         # Search paths for agents
         SEARCH_PATHS = [
-            'agentic_core.L5_safety.validators',
-            'agentic_core.L5_safety.guardrails',
-            'agentic_core.L5_safety.gravity',
-            'agentic_core.L2_execution.tool_registry',
-            'agentic_core.utils.naming',
+            'AgenticCore.L5_safety.validators',
+            'AgenticCore.L5_safety.guardrails',
+            'AgenticCore.L5_safety.gravity',
+            'AgenticCore.L2_execution.ToolRegistry',
+            'AgenticCore.utils.naming',
         ]
         
-        missing = []
+        Missing = []
         found = []
         
         for agent_name in MANDATORY_AGENTS:
@@ -177,16 +177,16 @@ class BootstrapAgent:
                     continue
                     
             if not agent_found:
-                missing.append(agent_name)
+                Missing.append(agent_name)
         
-        if missing:
-            logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {missing}")
-            print(f"\n[!] [SOVEREIGN BREACH] Missing mandatory agents: {missing}")
+        if Missing:
+            Logger.critical(f"[SOVEREIGN BREACH] Missing mandatory agents: {Missing}")
+            print(f"\n[!] [SOVEREIGN BREACH] Missing mandatory agents: {Missing}")
         else:
-            logger.info("[OK] All mandatory agents present — registry sovereign")
+            Logger.info("[OK] All mandatory agents present — registry sovereign")
             print(f"   [OK] All {len(found)} mandatory agents present — registry sovereign")
         
-        return missing
+        return Missing
 
     async def run_full_bootstrap(self) -> Dict[str, Any]:
         """
@@ -204,9 +204,9 @@ class BootstrapAgent:
         results['neural_link'] = self.verify_neural_link()
         
         # Step 2: Registry validation
-        missing = self.validate_sovereign_registry()
-        results['registry_valid'] = len(missing) == 0
-        results['missing_agents'] = missing
+        Missing = self.validate_sovereign_registry()
+        results['registry_valid'] = len(Missing) == 0
+        results['missing_agents'] = Missing
         
         # Step 3: Territory seeding (async)
         try:
@@ -214,7 +214,7 @@ class BootstrapAgent:
             results['territory_seeded'] = len(seed_result.get('errors', [])) == 0
             results['seeded_files'] = seed_result.get('seeded', [])
         except Exception as e:
-            logger.error(f"Territory seeding failed: {e}")
+            Logger.error(f"Territory seeding failed: {e}")
             results['territory_seeded'] = False
             
         # Summary

@@ -45,7 +45,7 @@ class CodeFormatterAgent:
         except FileNotFoundError as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report(
-                    "CodeFormatterAgent", 0, False, f"Tool missing: {e.filename}"
+                    "CodeFormatterAgent", 0, False, f"Tool Missing: {e.filename}"
                 )
         except Exception as e:
             if hasattr(self.ctx, "report"):

@@ -2,7 +2,7 @@
 One-time cleanup utility to collapse duplicate entries in registry.json.
 
 Usage:
-    python -m agentic_core.prompt_governance.version_registry.cleanup_duplicates
+    python -m AgenticCore.prompt_governance.version_registry.cleanup_duplicates
 
 This script:
 - Loads the current registry via get_prompt_registry() for consistency
@@ -15,9 +15,9 @@ This script:
 import logging
 from typing import Dict, List, Any, Set, Tuple
 
-from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry
+from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
@@ -35,12 +35,12 @@ def collapse_duplicates():
     registry = get_prompt_registry()
     
     print(f"[CLEANUP] Loading registry from {registry.REGISTRY_FILE}")
-    logger.info(f"Starting duplicate cleanup for {registry.REGISTRY_FILE}")
+    Logger.info(f"Starting duplicate cleanup for {registry.REGISTRY_FILE}")
     
     original_count = sum(len(entries) for entries in registry.registry.values())
     
     print(f"[CLEANUP] Original entries: {original_count}")
-    logger.info(f"Original entry count: {original_count}")
+    Logger.info(f"Original entry count: {original_count}")
     
     # Define key fields for deduplication (matches register_prompt() logic)
     DUPLICATE_KEY_FIELDS = {"version", "purpose", "author", "content_hash", "territory"}
@@ -70,7 +70,7 @@ def collapse_duplicates():
         
         if removed > 0:
             print(f"   [{template_name}] Removed {removed} duplicate(s)")
-            logger.info(f"Template '{template_name}': removed {removed} duplicates")
+            Logger.info(f"Template '{template_name}': removed {removed} duplicates")
         
         # Ensure only one active version (keep first active, deactivate rest)
         active_seen = False
@@ -79,7 +79,7 @@ def collapse_duplicates():
                 if active_seen:
                     entry["active"] = False
                     total_removed += 1
-                    logger.debug(f"Deactivated duplicate active entry in {template_name}")
+                    Logger.debug(f"Deactivated duplicate active entry in {template_name}")
                 else:
                     active_seen = True
         
@@ -97,7 +97,7 @@ def collapse_duplicates():
     if original_count > 0:
         print(f"   Reduction: {100 * total_removed / original_count:.1f}%")
     
-    logger.info(f"Cleanup complete: {original_count} → {final_count} entries ({total_removed} removed)")
+    Logger.info(f"Cleanup complete: {original_count} → {final_count} entries ({total_removed} removed)")
 
 
 if __name__ == "__main__":

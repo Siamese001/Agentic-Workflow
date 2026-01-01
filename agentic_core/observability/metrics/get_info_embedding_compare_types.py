@@ -5,9 +5,9 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class execution_status(Enum):
+class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING: Any = 'pending'
     RUNNING: Any = 'running'
@@ -16,7 +16,7 @@ class execution_status(Enum):
     CANCELLED: Any = 'cancelled'
 
 @dataclass
-class execution_context:
+class ExecutionContext:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
@@ -43,10 +43,10 @@ class execution_context:
             LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s\n    ')
 
 @dataclass
-class processing_result:
+class ProcessingResult:
     """Standardized result container for all operations."""
     success: bool
     data: Optional[Any] = None
     error_message: Optional[str] = None
-    execution_context: Optional[ExecutionContext] = None
+    ExecutionContext: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)

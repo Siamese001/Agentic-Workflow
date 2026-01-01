@@ -18,12 +18,12 @@ from typing import Dict, List
 
 # [SSOT] IMPORT PHYSICAL LAW FROM BLUEPRINT
 try:
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
         ACTIVE_CANON_KEYS,
         CANON_KEY_TO_FOLDER_MAP,
     )
 except ImportError:
-    raise RuntimeError("CRITICAL: SSOT Blueprint missing. Physics cannot be established.")
+    raise RuntimeError("CRITICAL: SSOT Blueprint Missing. Physics cannot be established.")
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
@@ -32,12 +32,12 @@ if str(REPO_ROOT) not in sys.path:
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
+    from AgenticCore.L0_maintenance.scripts.guard_no_underscore_fields import check_file as check_underscore_fields
 except ImportError:
     check_underscore_fields = None
 
 try:
-    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
+    from AgenticCore.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
 except ImportError:
     validate_ddd_alignment = None
 
@@ -78,15 +78,15 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     """Checks for .env existence and core neural link keys."""
     env_path = Path(target_path) / ".env"
     if not env_path.exists(): 
-        return 0.0, ["CRITICAL: Neural Link Offline - .env missing"]
+        return 0.0, ["CRITICAL: Neural Link Offline - .env Missing"]
     
-    from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
+    from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
     env = get_env(Path(target_path))
     required = ["GEMINI_API_KEY", "GEMINI_MODEL"]
-    missing = [k for k in required if not getattr(env, k, None)]
+    Missing = [k for k in required if not getattr(env, k, None)]
     
-    score = 100.0 * (1 - (len(missing) / len(required)))
-    return score, [f"Missing {k}" for k in missing]
+    score = 100.0 * (1 - (len(Missing) / len(required)))
+    return score, [f"Missing {k}" for k in Missing]
 
 class AuditStatus(Enum):
     PASSED = "PASSED"
@@ -128,7 +128,7 @@ class SovereignReport:
         return overall
 
 def main():
-    target = Path("agentic_core")
+    target = Path("AgenticCore")
     
     report = SovereignReport()
     
@@ -144,11 +144,11 @@ def main():
     report.record_result("Key Coverage", key_score, key_issues)
 
     # 2. Schema SSOT (Key 3 Alignment)
-    score, issues = validate_schema_ssot(str(REPO_ROOT / "agentic_core"))
+    score, issues = validate_schema_ssot(str(REPO_ROOT / "AgenticCore"))
     report.record_result("Schema SSOT", score, issues)
 
     # 3. Prompt SSOT (Key 1 Alignment)
-    score, issues = validate_prompt_ssot(str(REPO_ROOT / "agentic_core"))
+    score, issues = validate_prompt_ssot(str(REPO_ROOT / "AgenticCore"))
     report.record_result("Prompt SSOT", score, issues)
 
     # 4. Config SSOT (Key 2 & .env Physics)

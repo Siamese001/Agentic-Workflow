@@ -1,5 +1,5 @@
 """
-inspect_resume_quality.py - Diagnostics Module
+InspectResumeQuality.py - Diagnostics Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.215610
@@ -21,7 +21,7 @@ class InspectResumeQuality:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
-    ConfigurationService().logger.info(
+    ConfigurationService().Logger.info(
         f'Initialized {self.__class__.__name__}')
 
 

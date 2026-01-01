@@ -6,9 +6,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase B (High Priority)
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 
 class GovernanceAgent(
@@ -21,7 +21,7 @@ class GovernanceAgent(
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.Logger = logging.getLogger(__name__)
         super().__init__()
 
         # Experience buffer for learning from past decisions
@@ -36,7 +36,7 @@ class GovernanceAgent(
         """
         Make intelligent decision with confidence scoring and autonomous threshold.
         """
-        self.logger.info(f"Initiating decision for context: {context.get('issue_type', 'unknown')}")
+        self.Logger.info(f"Initiating decision for context: {context.get('issue_type', 'unknown')}")
 
         # 1. Generate multiple viable options
         options = await self._generate_options(context)
@@ -99,7 +99,7 @@ class GovernanceAgent(
         # Base options
         options.append({
             "action": "enforce_strict_compliance",
-            "description": "Immediately correct violation per canon",
+            "description": "Immediately correct Violation per canon",
         })
         options.append({
             "action": "grant_temporary_exception",
@@ -164,7 +164,7 @@ class GovernanceAgent(
 
     # === Adaptive Execution ===
     async def _execute_conservative(self, ctx: Any, **context: Dict) -> Dict:
-        self.logger.info("Conservative mode: always escalate")
+        self.Logger.info("Conservative mode: always escalate")
         return {
             "decision": {"action": "escalate_to_human"},
             "autonomous": False,
@@ -173,7 +173,7 @@ class GovernanceAgent(
         }
 
     async def _execute_minimal(self, ctx: Any, **context: Dict) -> Dict:
-        self.logger.warning("Minimal mode: no governance action")
+        self.Logger.warning("Minimal mode: no governance action")
         return {"decision": "standby", "autonomous": True, "reason": "resource_preservation"}
 
     async def _execute_standard(self, ctx: Any, **context: Dict) -> Dict:

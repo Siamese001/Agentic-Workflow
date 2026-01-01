@@ -9,9 +9,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, List, Tuple, Optional
 import logging
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class healing_transaction:
+class HealingTransaction:
     """
     Transaction manager for atomic healing operations with rollback capability.
     
@@ -41,7 +41,7 @@ class healing_transaction:
         """
         try:
             if not file_path.exists():
-                logger.warning(f'Cannot backup non-existent file: {file_path}')
+                Logger.warning(f'Cannot backup non-existent file: {file_path}')
                 return False
             try:
                 relative: Any = file_path.relative_to(Path.cwd())
@@ -51,10 +51,10 @@ class healing_transaction:
             backup_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(file_path, backup_path)
             self.backups.append((file_path, backup_path))
-            logger.info(f'Backed up: {file_path} -> {backup_path}')
+            Logger.info(f'Backed up: {file_path} -> {backup_path}')
             return True
         except Exception as e:
-            logger.error(f'Backup failed for {file_path}: {e}')
+            Logger.error(f'Backup failed for {file_path}: {e}')
             return False
 
     def rollback(self) -> bool:
@@ -65,24 +65,24 @@ class healing_transaction:
             True if rollback successful, False otherwise
         """
         if self.committed:
-            logger.warning('Cannot rollback committed transaction')
+            Logger.warning('Cannot rollback committed transaction')
             return False
         if self.rolled_back:
-            logger.warning('Transaction already rolled back')
+            Logger.warning('Transaction already rolled back')
             return False
         try:
-            logger.info(f'Rolling back {len(self.backups)} file(s)...')
+            Logger.info(f'Rolling back {len(self.backups)} file(s)...')
             for original, backup in self.backups:
                 if backup.exists():
                     shutil.copy2(backup, original)
-                    logger.info(f'Restored: {backup} -> {original}')
+                    Logger.info(f'Restored: {backup} -> {original}')
             if self.backup_dir.exists():
                 shutil.rmtree(self.backup_dir)
-                logger.info(f'Removed backup directory: {self.backup_dir}')
+                Logger.info(f'Removed backup directory: {self.backup_dir}')
             self.rolled_back = True
             return True
         except Exception as e:
-            logger.error(f'Rollback failed: {e}')
+            Logger.error(f'Rollback failed: {e}')
             return False
 
     def commit(self) -> bool:
@@ -93,20 +93,20 @@ class healing_transaction:
             True if commit successful, False otherwise
         """
         if self.rolled_back:
-            logger.warning('Cannot commit rolled back transaction')
+            Logger.warning('Cannot commit rolled back transaction')
             return False
         if self.committed:
-            logger.warning('Transaction already committed')
+            Logger.warning('Transaction already committed')
             return False
         try:
-            logger.info(f'Committing transaction with {len(self.backups)} file(s)...')
+            Logger.info(f'Committing transaction with {len(self.backups)} file(s)...')
             if self.backup_dir.exists():
                 shutil.rmtree(self.backup_dir)
-                logger.info(f'Removed backup directory: {self.backup_dir}')
+                Logger.info(f'Removed backup directory: {self.backup_dir}')
             self.committed = True
             return True
         except Exception as e:
-            logger.error(f'Commit failed: {e}')
+            Logger.error(f'Commit failed: {e}')
             return False
 
     def __enter__(self):
@@ -116,7 +116,7 @@ class healing_transaction:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit with automatic rollback on exception."""
         if exc_type is not None:
-            logger.error(f'Exception in transaction: {exc_val}')
+            Logger.error(f'Exception in transaction: {exc_val}')
             self.rollback()
             return False
         else:

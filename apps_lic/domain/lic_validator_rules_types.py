@@ -7,14 +7,14 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: ValidationSeverity → validation_severity
-class validation_severity(Enum):
+# NAMING FIXED: ValidationSeverity → ValidationSeverity
+class ValidationSeverity(Enum):
     """Severity levels for validation errors."""
 
 
 @dataclass
-# NAMING FIXED: ErrorCode → error_code
-class error_code:
+# NAMING FIXED: ErrorCode → ErrorCode
+class ErrorCode:
     """LIC error code definition."""
 
     _code: str
@@ -24,20 +24,20 @@ class error_code:
 
 
 @dataclass
-# NAMING FIXED: ContentCleanlinessRule → content_cleanliness_rule
-class content_cleanliness_rule:
+# NAMING FIXED: ContentCleanlinessRule → ContentCleanlinessRule
+class ContentCleanlinessRule:
     """Rule for content cleanliness validation."""
 
     _rule_id: str
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     _error_code: str
     _patterns: List[str] = field(default_factory=list)
     _max_violations: int = 0
 
 
 @dataclass
-# NAMING FIXED: SignalQualityConfig → signal_quality_config
-class signal_quality_config:
+# NAMING FIXED: SignalQualityConfig → SignalQualityConfig
+class SignalQualityConfig:
     """Configuration for signal quality scoring."""
 
     _source_weights: Dict[str, float]
@@ -47,9 +47,9 @@ class signal_quality_config:
 
 
 @dataclass
-# NAMING FIXED: ClaimConfidenceConfig → claim_confidence_config
-class claim_confidence_config:
-    """Configuration for claim confidence scoring."""
+# NAMING FIXED: ClaimConfidenceConfig → ClaimConfidenceConfig
+class ClaimConfidenceConfig:
+    """Configuration for Claim confidence scoring."""
 
     _min_claim_confidence: float = 0.7
     _min_overlap_words: int = 2

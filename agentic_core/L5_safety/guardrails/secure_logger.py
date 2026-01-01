@@ -48,23 +48,23 @@ class SecureLogger:
     """Secure logging wrapper that sanitizes sensitive information."""
     
     def __init__(self, name: str, level: int = logging.INFO):
-        """Initialize the secure logger.
+        """Initialize the secure Logger.
         
         Args:
             name: Logger name
             level: Logging level
         """
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(level)
+        self.Logger = logging.getLogger(name)
+        self.Logger.setLevel(level)
         
         # Configure handler if not already configured
-        if not self.logger.handlers:
+        if not self.Logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
             )
             handler.setFormatter(formatter)
-            self.logger.addHandler(handler)
+            self.Logger.addHandler(handler)
     
     def _sanitize_message(self, message: str) -> str:
         """Sanitize a log message to remove sensitive data.
@@ -114,49 +114,49 @@ class SecureLogger:
         """Log debug message with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.debug(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.debug(sanitized_message, *sanitized_args, **kwargs)
     
     def info(self, message: str, *args, **kwargs):
         """Log info message with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.info(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.info(sanitized_message, *sanitized_args, **kwargs)
     
     def warning(self, message: str, *args, **kwargs):
         """Log warning message with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.warning(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.warning(sanitized_message, *sanitized_args, **kwargs)
     
     def error(self, message: str, *args, **kwargs):
         """Log error message with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.error(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.error(sanitized_message, *sanitized_args, **kwargs)
     
     def critical(self, message: str, *args, **kwargs):
         """Log critical message with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.critical(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.critical(sanitized_message, *sanitized_args, **kwargs)
     
     def exception(self, message: str, *args, **kwargs):
         """Log exception with sanitization."""
         sanitized_message = self._sanitize_message(message)
         sanitized_args = self._sanitize_args(*args)
-        self.logger.exception(sanitized_message, *sanitized_args, **kwargs)
+        self.Logger.exception(sanitized_message, *sanitized_args, **kwargs)
 
 
 class SecureLoggerAdapter:
     """Adapter to wrap existing loggers with security."""
     
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, Logger: logging.Logger):
         """Initialize the adapter.
         
         Args:
-            logger: Existing logger to wrap
+            Logger: Existing Logger to wrap
         """
-        self.logger = logger
+        self.Logger = Logger
     
     def _sanitize(self, message: str) -> str:
         """Quick sanitize for common patterns."""
@@ -167,27 +167,27 @@ class SecureLoggerAdapter:
     
     def debug(self, message: str, *args, **kwargs):
         """Debug with sanitization."""
-        self.logger.debug(self._sanitize(message), *args, **kwargs)
+        self.Logger.debug(self._sanitize(message), *args, **kwargs)
     
     def info(self, message: str, *args, **kwargs):
         """Info with sanitization."""
-        self.logger.info(self._sanitize(message), *args, **kwargs)
+        self.Logger.info(self._sanitize(message), *args, **kwargs)
     
     def warning(self, message: str, *args, **kwargs):
         """Warning with sanitization."""
-        self.logger.warning(self._sanitize(message), *args, **kwargs)
+        self.Logger.warning(self._sanitize(message), *args, **kwargs)
     
     def error(self, message: str, *args, **kwargs):
         """Error with sanitization."""
-        self.logger.error(self._sanitize(message), *args, **kwargs)
+        self.Logger.error(self._sanitize(message), *args, **kwargs)
     
     def critical(self, message: str, *args, **kwargs):
         """Critical with sanitization."""
-        self.logger.critical(self._sanitize(message), *args, **kwargs)
+        self.Logger.critical(self._sanitize(message), *args, **kwargs)
 
 
 def get_secure_logger(name: str) -> SecureLogger:
-    """Get a secure logger instance.
+    """Get a secure Logger instance.
     
     Args:
         name: Logger name
@@ -198,16 +198,16 @@ def get_secure_logger(name: str) -> SecureLogger:
     return SecureLogger(name)
 
 
-def secure_existing_logger(logger: logging.Logger) -> SecureLoggerAdapter:
-    """Wrap an existing logger with security.
+def secure_existing_logger(Logger: logging.Logger) -> SecureLoggerAdapter:
+    """Wrap an existing Logger with security.
     
     Args:
-        logger: Existing logger to wrap
+        Logger: Existing Logger to wrap
         
     Returns:
         SecureLoggerAdapter instance
     """
-    return SecureLoggerAdapter(logger)
+    return SecureLoggerAdapter(Logger)
 
 
 # Context manager for temporary secure logging
@@ -218,7 +218,7 @@ class SecureLogContext:
         """Initialize context.
         
         Args:
-            logger_name: Name of logger to secure
+            logger_name: Name of Logger to secure
         """
         self.logger_name = logger_name
         self.original_logger = None

@@ -33,10 +33,10 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from collections import defaultdict
 import sys
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth for folder structure
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     ROOT_WHITELIST,
@@ -57,7 +57,7 @@ class ComplianceOrchestrator:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
-        self.validators_path = self.project_root / "agentic_core" / "L5_safety" / "validators"
+        self.validators_path = self.project_root / "AgenticCore" / "L5_safety" / "validators"
 
         # Discovered and instantiated agents
         self._atomic_validators: List[Any] = []   # Per-file healers with heal_violation()
@@ -91,7 +91,7 @@ class ComplianceOrchestrator:
         }
 
         # [GRAVITY AUTHORITY] Layer rank (lower = higher authority) - derived from SSOT
-        # Layers are ordered by their L-number in agentic_core
+        # Layers are ordered by their L-number in AgenticCore
         self.LAYER_AUTHORITY = {
             subfolder: int(subfolder[1]) if subfolder.startswith("L") and subfolder[1].isdigit() else 99
             for subfolder in CORE_SUBFOLDER_MAP.keys()
@@ -105,7 +105,7 @@ class ComplianceOrchestrator:
         self._blocked_unregistered = 0
         self._blocked_tampered = 0
 
-        # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in agentic_core
+        # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in AgenticCore
         self._discover_all_agents()
         self._enforce_mandatory_agent_compliance()
         
@@ -115,7 +115,7 @@ class ComplianceOrchestrator:
 
     def _discover_all_agents(self) -> None:
         """
-        [COMPREHENSIVE DISCOVERY] Scan ALL agent files in agentic_core.
+        [COMPREHENSIVE DISCOVERY] Scan ALL agent files in AgenticCore.
         
         Finds every *agent*.py file and instantiates all Agent classes.
         
@@ -125,10 +125,10 @@ class ComplianceOrchestrator:
         - HierarchyAgent → L5_safety/validators
         - ImportAgent → L5_safety/gravity
         - NamingAgent → utils/naming
-        - PineconeSovereignAgent → L4_state/validation_context
+        - PineconeSovereignAgent → L4_state/ValidationContext
         - TracingAgent → observability/tracing
         - MetricsAgent → observability/metrics
-        - HealerAgent → L5_safety/guardrails AND L2_execution/tool_registry
+        - HealerAgent → L5_safety/guardrails AND L2_execution/ToolRegistry
         - KeyMappingAgent → L5_safety/validators
         - ReportingAgent → observability/compliance
         - MissionResumeAgent → L3_orchestration/workflow_engines
@@ -136,14 +136,14 @@ class ComplianceOrchestrator:
         - MetaLearningAgent → L3_orchestration/workflow_engines
         - SovereignForensicsAgent → L3_orchestration/workflow_engines
         """
-        print(f"\n[FULL AGENT DISCOVERY] Scanning ENTIRE agentic_core for ALL agents...")
+        print(f"\n[FULL AGENT DISCOVERY] Scanning ENTIRE AgenticCore for ALL agents...")
         print(f"   [MANDATORY COUNT] Expecting {len(self.MANDATORY_AGENTS)} critical agents")
         
         # [COMPREHENSIVE] Scan ALL directories recursively for *agent*.py files
-        agentic_core_path = self.project_root / "agentic_core"
+        agentic_core_path = self.project_root / "AgenticCore"
         SKIP_FOLDERS = {"__pycache__", ".git", "archives", "data"}
         
-        # Find all agent files in entire agentic_core
+        # Find all agent files in entire AgenticCore
         agent_files = []
         for py_file in agentic_core_path.rglob("*agent*.py"):
             if any(skip in py_file.parts for skip in SKIP_FOLDERS):
@@ -218,7 +218,7 @@ class ComplianceOrchestrator:
         Safe to call multiple times due to deduplication in register_prompt().
         """
         try:
-            from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry
+            from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
             registry = get_prompt_registry()
             
             synced_count = 0
@@ -242,7 +242,7 @@ class ComplianceOrchestrator:
                     synced_count += 1
             
             if synced_count > 0:
-                logger.info(f"Registered {synced_count} agent prompt dependencies")
+                Logger.info(f"Registered {synced_count} agent prompt dependencies")
                 print(f"   [PROMPT SYNC] Registered {synced_count} agent prompt dependencies")
             
         except ImportError:
@@ -251,18 +251,18 @@ class ComplianceOrchestrator:
             print(f"   [!] Prompt registry sync failed: {e}")
 
     def _enforce_mandatory_agent_compliance(self) -> None:
-        """[ULTRA HARDENING] Final sovereign verdict on mandatory agent presence"""
+        """[ULTRA HARDENING] Final sovereign Verdict on mandatory agent presence"""
         # Use final healthy agents after validation cleanup
         loaded_names_lower = {type(a).__name__.lower() for a in self._all_agents}
         mandatory_lower = {name.lower() for name in self.MANDATORY_AGENTS}
         missing_lower = mandatory_lower - loaded_names_lower
         # Map back to original names for display
-        missing = {name for name in self.MANDATORY_AGENTS if name.lower() in missing_lower}
+        Missing = {name for name in self.MANDATORY_AGENTS if name.lower() in missing_lower}
         
-        if missing:
+        if Missing:
             print(f"\n[!] [SOVEREIGN BREACH] MANDATORY AGENT VIOLATION")
-            print(f"    {len(missing)} critical agents not discovered:")
-            for agent in sorted(missing):
+            print(f"    {len(Missing)} critical agents not discovered:")
+            for agent in sorted(Missing):
                 print(f"      • {agent} — REQUIRED FOR CANON COMPLIANCE")
             print(f"    [ACTION REQUIRED] All agents must use PascalCase 'XxxAgent' naming")
             print(f"    Legacy snake_case (_agent) is no longer tolerated — rename classes and files")
@@ -369,7 +369,7 @@ class ComplianceOrchestrator:
             # [HARDENING] Skip known non-agent files
             if py_file.name.startswith("_"):
                 continue
-            if py_file.name in {"__init__.py", "base_agent.py", "agent_factory.py"}:
+            if py_file.name in {"__init__.py", "base_agent.py", "AgentFactory.py"}:
                 continue
             
             module_name = f"{module_prefix}.{py_file.stem}"
@@ -454,10 +454,10 @@ class ComplianceOrchestrator:
                 if module_rel.suffix == '.py':
                     module_rel = module_rel.with_suffix('')
                 nested_name = '.'.join((full_path / module_rel).relative_to(self.validators_path).parts).rstrip('.py')
-                module_name = f"agentic_core.L5_safety.validators.{nested_name}"
+                module_name = f"AgenticCore.L5_safety.validators.{nested_name}"
             except Exception:
                 # Fallback to flat assumption (original behaviour)
-                module_name = f"agentic_core.L5_safety.validators.{module_info.name}"
+                module_name = f"AgenticCore.L5_safety.validators.{module_info.name}"
 
             try:
                 module = importlib.import_module(module_name)
@@ -486,7 +486,7 @@ class ComplianceOrchestrator:
                     except TypeError as te:
                         # Common during dev: signature mismatch
                         if "required positional argument" in str(te).lower():
-                            print(f"         [!] {attr_name} missing project_root arg → trying no-arg init")
+                            print(f"         [!] {attr_name} Missing project_root arg → trying no-arg init")
                             try:
                                 instance = agent_class()
                             except Exception as no_arg_e:
@@ -585,13 +585,13 @@ class ComplianceOrchestrator:
         has_heal = hasattr(instance, "heal_violation")
         has_exec = hasattr(instance, "execute") or hasattr(instance, "run")
         if not (has_heal or has_exec):
-            errors.append("No execution method: missing heal_violation() or execute()/run()")
+            errors.append("No execution method: Missing heal_violation() or execute()/run()")
 
         # 2. STRICT: Atomic healers MUST be async (resilience + non-blocking healing loop)
         if has_heal:
             heal_method = getattr(instance, "heal_violation")
             if not inspect.iscoroutinefunction(heal_method):
-                errors.append("Atomic healer violation: heal_violation() MUST be async def (use 'async def')")
+                errors.append("Atomic healer Violation: heal_violation() MUST be async def (use 'async def')")
 
         # 3. Primary method callability + signature
         primary_method = None
@@ -610,7 +610,7 @@ class ComplianceOrchestrator:
                     sig = inspect.signature(primary_method)
                     missing_params = [p for p in expected_params if p not in sig.parameters]
                     if missing_params and has_heal:  # Only strict for atomic healers
-                        errors.append(f"heal_violation missing required param(s): {missing_params}")
+                        errors.append(f"heal_violation Missing required param(s): {missing_params}")
                 except (ValueError, TypeError):
                     # Some built-in methods don't support signature inspection
                     pass
@@ -623,7 +623,7 @@ class ComplianceOrchestrator:
         gravity_violations = self._check_gravity_compliance(module)
         if gravity_violations:
             errors.append(f"CRITICAL GRAVITY BREACH: {len(gravity_violations)} violations")
-            errors.extend([f"Gravity violation: {v}" for v in gravity_violations[:5]])
+            errors.extend([f"Gravity Violation: {v}" for v in gravity_violations[:5]])
             if len(gravity_violations) > 5:
                 errors.append(f"... and {len(gravity_violations)-5} more gravity leaks")
 
@@ -633,7 +633,7 @@ class ComplianceOrchestrator:
             try:
                 loc = sum(1 for line in open(module_path, 'r', encoding='utf-8') if line.strip() and not line.strip().startswith('#'))
                 if loc > 800:
-                    errors.append(f"Sub-atomic size violation: {loc} LOC > 800 limit (module too large)")
+                    errors.append(f"Sub-atomic size Violation: {loc} LOC > 800 limit (module too large)")
             except Exception:
                 errors.append("Failed to count LOC for size policy check")
 
@@ -669,8 +669,8 @@ class ComplianceOrchestrator:
         
         # Final health score - only return errors if there are actual issues
         if errors:
-            severity = "CRITICAL" if any("CRITICAL" in e or "BREACH" in e for e in errors) else "WARNING"
-            errors.insert(0, f"[{severity}] Agent health: FAILED ({len(errors)} issues)")
+            Severity = "CRITICAL" if any("CRITICAL" in e or "BREACH" in e for e in errors) else "WARNING"
+            errors.insert(0, f"[{Severity}] Agent health: FAILED ({len(errors)} issues)")
         # Don't add "[HEALTHY]" to errors - return empty list for healthy agents
 
         return errors
@@ -705,8 +705,8 @@ class ComplianceOrchestrator:
         # [ULTRA] Also block L5 importing from other L5 subpackages in unauthorized way
         # (e.g., validators importing directly from guardrails without mediation)
         RESTRICTED_L5 = [
-            "agentic_core.L5_safety.guardrails",
-            "agentic_core.L5_safety.red_teaming"
+            "AgenticCore.L5_safety.guardrails",
+            "AgenticCore.L5_safety.red_teaming"
         ]
 
         # Also block direct imports from higher sovereign territories if not mediated
@@ -780,7 +780,7 @@ class ComplianceOrchestrator:
         """
         # Build from SOVEREIGN_REGISTRY structure
         for root_folder, config in SOVEREIGN_REGISTRY.items():
-            if root_folder == 'agentic_core':
+            if root_folder == 'AgenticCore':
                 for layer in config.get('subfolders', []):
                     layer_path = self.project_root / root_folder / layer
                     if layer_path.exists():
@@ -791,7 +791,7 @@ class ComplianceOrchestrator:
                             except ValueError:
                                 pass
         
-        logger.info(f"[SECURITY] Agent allowlist built: {len(self.allowed_agents)} registered paths")
+        Logger.info(f"[SECURITY] Agent allowlist built: {len(self.allowed_agents)} registered paths")
     
     def _load_agent_hashes(self) -> None:
         """
@@ -803,11 +803,11 @@ class ComplianceOrchestrator:
             try:
                 with open(hash_file, 'r', encoding='utf-8') as f:
                     self.agent_hash_allowlist = json.load(f)
-                logger.info(f"[SECURITY] Loaded {len(self.agent_hash_allowlist)} agent hash signatures")
+                Logger.info(f"[SECURITY] Loaded {len(self.agent_hash_allowlist)} agent hash signatures")
             except Exception as e:
-                logger.warning(f"[SECURITY] Failed to load agent hashes: {e}")
+                Logger.warning(f"[SECURITY] Failed to load agent hashes: {e}")
         else:
-            logger.info("[SECURITY] No agent hash allowlist found - hash verification disabled")
+            Logger.info("[SECURITY] No agent hash allowlist found - hash verification disabled")
     
     def _verify_agent_file_security(self, agent_file: Path) -> bool:
         """
@@ -819,12 +819,12 @@ class ComplianceOrchestrator:
         try:
             rel_path = str(agent_file.relative_to(self.project_root))
         except ValueError:
-            logger.error(f"[SECURITY] Agent file outside project root: {agent_file}")
+            Logger.error(f"[SECURITY] Agent file outside project root: {agent_file}")
             return False
         
         # Check 1: Whitelist verification
         if rel_path not in self.allowed_agents:
-            logger.warning(f"[SECURITY] Blocking unregistered agent: {rel_path}")
+            Logger.warning(f"[SECURITY] Blocking unregistered agent: {rel_path}")
             self._blocked_unregistered += 1
             return False
         
@@ -836,13 +836,13 @@ class ComplianceOrchestrator:
                     expected_hash = self.agent_hash_allowlist[rel_path]
                     
                     if file_hash != expected_hash:
-                        logger.error(f"[SECURITY] Agent file tampered: {rel_path}")
-                        logger.error(f"  Expected: {expected_hash[:16]}...")
-                        logger.error(f"  Got:      {file_hash[:16]}...")
+                        Logger.error(f"[SECURITY] Agent file tampered: {rel_path}")
+                        Logger.error(f"  Expected: {expected_hash[:16]}...")
+                        Logger.error(f"  Got:      {file_hash[:16]}...")
                         self._blocked_tampered += 1
                         return False
                 except Exception as e:
-                    logger.error(f"[SECURITY] Hash verification failed for {rel_path}: {e}")
+                    Logger.error(f"[SECURITY] Hash verification failed for {rel_path}: {e}")
                     return False
         
         return True

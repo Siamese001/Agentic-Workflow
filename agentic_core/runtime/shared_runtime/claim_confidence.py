@@ -1,21 +1,21 @@
 """
 Claim Confidence Scorer
-Atomic claim extraction and confidence scoring.
+Atomic Claim extraction and confidence scoring.
 """
 import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class claim_type(Enum):
+class ClaimType(Enum):
     """Types of claims."""
     FACTUAL: Any = 'factual'
     OPINION: Any = 'opinion'
     PREDICTION: Any = 'prediction'
     STATISTICAL: Any = 'statistical'
 
-class confidence_level(Enum):
+class ConfidenceLevel(Enum):
     """Confidence levels."""
     HIGH: Any = 'high'
     MEDIUM: Any = 'medium'
@@ -23,34 +23,34 @@ class confidence_level(Enum):
     UNCERTAIN: Any = 'uncertain'
 
 @dataclass
-class claim:
-    """Represents an atomic claim."""
+class Claim:
+    """Represents an atomic Claim."""
     text: str
-    claim_type: ClaimType
+    ClaimType: ClaimType
     confidence: float
     evidence: List[str]
     metadata: Dict[str, Any]
 
 @dataclass
-class claim_analysis_result:
-    """Result of claim analysis."""
+class ClaimAnalysisResult:
+    """Result of Claim analysis."""
     claims: List[Claim]
     overall_confidence: float
     summary: str
 
-class claim_confidence_scorer:
+class ClaimConfidenceScorer:
     """Scores confidence of atomic claims."""
 
     def __init__(self):
-        """Initialize claim confidence scorer."""
-        logger.debug('ClaimConfidenceScorer initialized')
+        """Initialize Claim confidence scorer."""
+        Logger.debug('ClaimConfidenceScorer initialized')
 
     def extract_claims(self, text: str) -> List[Claim]:
         """Extract atomic claims from text."""
         return []
 
-    def score_claim(self, claim: Claim) -> float:
-        """Score confidence of a single claim."""
+    def score_claim(self, Claim: Claim) -> float:
+        """Score confidence of a single Claim."""
         return 0.5
 
     def analyze_claims(self, text: str) -> ClaimAnalysisResult:
@@ -60,6 +60,6 @@ class claim_confidence_scorer:
         return ClaimAnalysisResult(claims=claims, overall_confidence=overall_confidence, summary=f'Analyzed {len(claims)} claims')
 
 def create_claim_scorer() -> ClaimConfidenceScorer:
-    """Factory function to create claim scorer."""
+    """Factory function to create Claim scorer."""
     return ClaimConfidenceScorer()
 __all__ = ['ClaimType', 'ConfidenceLevel', 'Claim', 'ClaimAnalysisResult', 'ClaimConfidenceScorer', 'create_claim_scorer']

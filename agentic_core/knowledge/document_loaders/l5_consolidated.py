@@ -10,16 +10,16 @@ This module provides unified access to:
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class knowledge_result:
+class KnowledgeResult:
     """Result from knowledge retrieval."""
     user_profile: Optional[Dict[str, Any]]
     template: Optional[Dict[str, Any]]
     metadata: Dict[str, Any]
 
-class l5_consolidated_knowledge:
+class L5ConsolidatedKnowledge:
     """Consolidated knowledge access layer."""
 
     def __init__(self, memory_client=None, pinecone_client=None):
@@ -71,11 +71,11 @@ class l5_consolidated_knowledge:
             try:
                 profile = self.memory_client.get_profile(query)
                 if profile:
-                    logger.info('Retrieved profile from MEMemory')
+                    Logger.info('Retrieved profile from MEMemory')
                     return profile
             except Exception as e:
-                logger.warning(f'Failed to retrieve from MEMemory: {e}')
-        logger.info('Using fallback user profile')
+                Logger.warning(f'Failed to retrieve from MEMemory: {e}')
+        Logger.info('Using fallback user profile')
         return self._fallback_profiles.get('default')
 
     def _get_template(self, query: str) -> Optional[Dict[str, Any]]:
@@ -84,12 +84,12 @@ class l5_consolidated_knowledge:
             try:
                 templates = self.pinecone_client.query(vector=self._embed_query(query), top_k=1, include_metadata=True)
                 if templates:
-                    logger.info('Retrieved template from Pinecone')
+                    Logger.info('Retrieved template from Pinecone')
                     return templates[0].metadata
             except Exception as e:
-                logger.warning(f'Failed to retrieve from Pinecone: {e}')
+                Logger.warning(f'Failed to retrieve from Pinecone: {e}')
         template_type = 'professional' if 'professional' in query.lower() else 'modern'
-        logger.info(f'Using fallback template: {template_type}')
+        Logger.info(f'Using fallback template: {template_type}')
         return self._fallback_templates.get(template_type)
 
     def _embed_query(self, query: str) -> List[float]:
@@ -117,13 +117,13 @@ class l5_consolidated_knowledge:
         if self.memory_client:
             try:
                 self.memory_client.save_profile(profile)
-                logger.info('Profile saved to MEMemory')
+                Logger.info('Profile saved to MEMemory')
                 return True
             except Exception as e:
-                logger.error(f'Failed to save profile: {e}')
+                Logger.error(f'Failed to save profile: {e}')
                 return False
         self._fallback_profiles['default'] = profile
-        logger.info('Profile saved to fallback storage')
+        Logger.info('Profile saved to fallback storage')
         return True
 
     def add_template(self, template: Dict[str, Any]) -> bool:
@@ -140,14 +140,14 @@ class l5_consolidated_knowledge:
             try:
                 embedding: Any = self._embed_query(template.get('name', ''))
                 self.pinecone_client.upsert(vectors=[{'id': template.get('id', 'custom'), 'values': embedding, 'metadata': template}])
-                logger.info('Template added to Pinecone')
+                Logger.info('Template added to Pinecone')
                 return True
             except Exception as e:
-                logger.error(f'Failed to add template: {e}')
+                Logger.error(f'Failed to add template: {e}')
                 return False
         template_name: Any = template.get('name', 'custom').lower()
         self._fallback_templates[template_name] = template
-        logger.info('Template added to fallback storage')
+        Logger.info('Template added to fallback storage')
         return True
 
     def query_consensus(self, pitch: str, guidelines: dict) -> dict:
@@ -161,7 +161,7 @@ class l5_consolidated_knowledge:
         Returns:
             Consensus result with status and reasoning
         """
-        logger.info('P6_CONSENSUS_START: Evaluating pitch compliance')
+        Logger.info('P6_CONSENSUS_START: Evaluating pitch compliance')
         evaluations: Any = []
         brand_score: Any = self._check_brand_compliance(pitch, guidelines)
         evaluations.append({'model': 'brand_checker', 'status': 'PASS' if brand_score >= 0.7 else 'FAIL', 'score': brand_score, 'reason': 'Brand tone and style analysis'})
@@ -174,7 +174,7 @@ class l5_consolidated_knowledge:
         consensus_status: Any = 'PASS' if pass_count == total_count else 'FAIL'
         failure_reasons: Any = [e['reason'] for e in evaluations if e['status'] == 'FAIL']
         result: Any = {'status': consensus_status, 'evaluations': evaluations, 'consensus_score': pass_count / total_count, 'reason': '; '.join(failure_reasons) if failure_reasons else 'All checks passed'}
-        logger.info(f"P6_CONSENSUS_COMPLETE: Status={consensus_status}, Score={result['consensus_score']}")
+        Logger.info(f"P6_CONSENSUS_COMPLETE: Status={consensus_status}, Score={result['consensus_score']}")
         return result
 
     def _check_brand_compliance(self, pitch: str, guidelines: dict) -> float:
@@ -222,7 +222,7 @@ class l5_consolidated_knowledge:
                 self.memory_client.add_observations(data)
             return True
         except Exception as e:
-            logger.error(f'Failed to add observations: {e}')
+            Logger.error(f'Failed to add observations: {e}')
             return False
 _consolidated_knowledge = None
 

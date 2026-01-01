@@ -6,23 +6,23 @@ from dataclasses import dataclass, field
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class diagnostic_report:
+class DiagnosticReport:
     """Diagnostic report."""
     _timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     HEALTHY: bool = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
-class diagnose_scripts_issues:
+class DiagnoseScriptsIssues:
     """Diagnostics engine for utilities domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the diagnostics engine with optional configuration."""
     SELF.CONFIG = config or {}
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
     """Run diagnostics."""

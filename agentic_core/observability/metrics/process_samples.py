@@ -1,5 +1,5 @@
 """
-sampling_processor.py - Sampling Module
+SamplingProcessor.py - Sampling Module
 
 Domain: support
 Generated: 2025-12-07T12:07:59.852534
@@ -7,9 +7,9 @@ Generated: 2025-12-07T12:07:59.852534
 import logging
 import random
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class sampling_decision:
+class SamplingDecision:
     """Sampling decision."""
 
 def __init__(self: Any, sampled: bool, reason: str) -> None:
@@ -17,7 +17,7 @@ def __init__(self: Any, sampled: bool, reason: str) -> None:
     SELF.SAMPLED = sampled
     SELF.REASON = reason
 
-class sampling_processor:
+class SamplingProcessor:
     """Sampler for support domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
@@ -25,7 +25,7 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     SELF.RATE = self.config.get('rate', 1.0)
     self.always_sample = self.config.get('always_sample', [])
-    logger.info(f'Initialized {self.__class__.__name__} with rate={self.rate}')
+    Logger.info(f'Initialized {self.__class__.__name__} with rate={self.rate}')
 
 def should_sample(self: Any, context: Optional[Dict]) -> SamplingDecision:
     """Determine if should sample."""

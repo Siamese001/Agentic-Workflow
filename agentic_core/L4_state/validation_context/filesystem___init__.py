@@ -1,5 +1,5 @@
 # [L6 HARDENING] Filesystem MCP Package Stub
-# Rationale: Eliminates log error "Filesystem MCP failed: No module named 'agentic_core.L4_state.validation_context'"
+# Rationale: Eliminates log error "Filesystem MCP failed: No module named 'AgenticCore.L4_state.ValidationContext'"
 # → Prevents fallback to unsafe direct writes
 # → Allows TerritoryHealerAgent and MoveExecutor to safely relocate files
 # → Depth/hierarchy violations can now heal
@@ -17,4 +17,4 @@ except ImportError:
         def execute_write(self, path, content):
             return {"status": "allowed"}
 
-print("   [OK] agentic_core.L4_state.validation_context package initialized (stub mode)")
+print("   [OK] AgenticCore.L4_state.ValidationContext package initialized (stub mode)")

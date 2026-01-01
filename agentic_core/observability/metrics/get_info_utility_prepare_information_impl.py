@@ -6,15 +6,15 @@ import time
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 
-# NAMING FIXED: ProcessingResult → processing_result
-class processing_result:
+# NAMING FIXED: ProcessingResult → ProcessingResult
+class ProcessingResult:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, ExecutionContext: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         pass
 
-# NAMING FIXED: ExecutionContext → execution_context
-class execution_context:
+# NAMING FIXED: ExecutionContext → ExecutionContext
+class ExecutionContext:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
@@ -26,8 +26,8 @@ class execution_context:
                     
         pass
 
-# NAMING FIXED: GetInfoUtilityPrepareInformation → get_info_utility_prepare_information
-class get_info_utility_prepare_information:
+# NAMING FIXED: GetInfoUtilityPrepareInformation → GetInfoUtilityPrepareInformation
+class GetInfoUtilityPrepareInformation:
     """
     Main executor class for get info helper prepare information operations.
 
@@ -44,19 +44,19 @@ class get_info_utility_prepare_information:
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
         SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
-        if not self.logger.handlers:
+        if not self.Logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
-            self.logger.setLevel(logging.INFO)
+            self.Logger.addHandler(executor)
+            self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
         MISSING = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        if Missing:
+            raise ValueError(f'Missing required config keys: {Missing}')
 
     def process(self,
         payload: Union[str,
@@ -88,12 +88,12 @@ class get_info_utility_prepare_information:
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
                 DATA=result,
-                execution_context=exec_ctx,
+                ExecutionContext=exec_ctx,
                 additional_info={'processed_at': time.time(),
                 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
-            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
+            return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(self,
         data: Union[str,

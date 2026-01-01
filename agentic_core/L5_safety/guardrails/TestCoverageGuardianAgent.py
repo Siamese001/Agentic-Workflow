@@ -42,7 +42,7 @@ class TestCoverageGuardianAgent:
         self.mutation_hints = True
         self.property_testing_enabled = True
         # [FIX] distinct scope for coverage vs. root
-        self.target_scope = getattr(ctx, 'target_scope', 'agentic_core')
+        self.target_scope = getattr(ctx, 'target_scope', 'AgenticCore')
 
     def _load_history(self) -> List[Dict]:
         """Load coverage history from JSON file."""
@@ -113,7 +113,7 @@ class TestCoverageGuardianAgent:
     def _discover_property_candidates(self) -> List[Dict]:
         """Scan target scope for functions suitable for property testing."""
         candidates = []
-        # [FIX] Use dynamic target scope instead of hardcoded agentic_core
+        # [FIX] Use dynamic target scope instead of hardcoded AgenticCore
         core_path = self.project_root / self.target_scope
         if not core_path.exists():
             return []
@@ -225,7 +225,7 @@ class TestCoverageGuardianAgent:
         """Find classes with mutable state in core layers (L3, L4)."""
         candidates = []
         target_layers = ["L4_state", "L3_orchestration", "L2_execution"]
-        for py_file in (self.project_root / "agentic_core").rglob("*.py"):
+        for py_file in (self.project_root / "AgenticCore").rglob("*.py"):
             if not any(layer in str(py_file) for layer in target_layers):
                 continue
             rel_path = py_file.relative_to(self.project_root)
@@ -254,7 +254,7 @@ class TestCoverageGuardianAgent:
 
     def _generate_stateful_test(self, candidate: Dict) -> tuple:
         """Generate RuleBasedStateMachine harness for complex objects."""
-        rel = Path(candidate["file"]).relative_to("agentic_core")
+        rel = Path(candidate["file"]).relative_to("AgenticCore")
         test_name = f"test_stateful_{rel.with_suffix('').as_posix().replace('/', '_')}_{candidate['class']}.py"
         test_path = self.test_dir / test_name
 

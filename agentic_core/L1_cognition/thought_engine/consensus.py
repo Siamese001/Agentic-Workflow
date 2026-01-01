@@ -11,10 +11,10 @@ import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from openai import AsyncOpenAI
 
-from agentic_core.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
-logger: Any = logging.getLogger(__name__)
+from AgenticCore.schemas.models.core_contracts import ConsensusVerdict, ModelOpinion
+Logger: Any = logging.getLogger(__name__)
 
-class supreme_court:
+class SupremeCourt:
     """
     Multi-model consensus system for critical decision making.
 
@@ -47,21 +47,21 @@ class supreme_court:
             risk_level: Risk level (low, medium, high, critical)
 
         Returns:
-            Consensus verdict with chosen plan and confidence
+            Consensus Verdict with chosen plan and confidence
 
         Raises:
             ValueError: If consensus cannot be reached
         """
         LOGGER.info(f'Starting deliberation for goal: {goal}')
         opinions: Any = await self._gather_opinions(context, goal, risk_level)
-        verdict: Any = await self._analyze_consensus(opinions, context, goal)
-        if verdict.consensus_score < self.threshold:
-            error_msg: Any = f'Consensus Failure ({verdict.consensus_score:.2f} < {self.threshold})'
-            if verdict.dissenting_opinions:
-                error_msg += f". Dissent: {'; '.join(verdict.dissenting_opinions[:2])}"
+        Verdict: Any = await self._analyze_consensus(opinions, context, goal)
+        if Verdict.consensus_score < self.threshold:
+            error_msg: Any = f'Consensus Failure ({Verdict.consensus_score:.2f} < {self.threshold})'
+            if Verdict.dissenting_opinions:
+                error_msg += f". Dissent: {'; '.join(Verdict.dissenting_opinions[:2])}"
             raise ValueError(error_msg)
-        LOGGER.info(f'Consensus reached with score {verdict.consensus_score:.2f}')
-        return verdict
+        LOGGER.info(f'Consensus reached with score {Verdict.consensus_score:.2f}')
+        return Verdict
 
     async def _gather_opinions(self, context: str, goal: str, risk_level: str) -> List[ModelOpinion]:
         """Get opinions from all models in parallel."""
@@ -82,7 +82,7 @@ class supreme_court:
 
     async def _get_opinion(self, client: AsyncOpenAI, model_name: str, context: str, goal: str, risk_level: str, system_role: str) -> ModelOpinion:
         """Get opinion from a single model."""
-        system_prompt = f'\n{system_role}\n\nYou are evaluating a potential action for an autonomous agent. Consider:\n\n1. The goal: {goal}\n2. The context: {context[:1000]}...\n3. Risk level: {risk_level}\n\nProvide:\n- A specific plan to achieve the goal\n- Your reasoning for this approach\n- Risk assessment (LOW/MEDIUM/HIGH/CRITICAL)\n- Confidence in your recommendation (0.0-1.0)\n\nBe concise but thorough. Focus on safety and reliability.\n'
+        system_prompt = f'\n{system_role}\n\nYou are evaluating a potential action for an autonomous agent. Consider:\n\n1. The goal: {goal}\n2. The context: {context[:1000]}...\n3. Risk level: {risk_level}\n\nProvide:\n- A specific plan to achieve the goal\n- Your reasoning for this approach\n- Risk assessment (LOW/MEDIUM/HIGH/CRITICAL)\n- Confidence in your Recommendation (0.0-1.0)\n\nBe concise but thorough. Focus on safety and reliability.\n'
         response = await client.chat.completions.create(model=model_name, messages=[{'role': 'system', 'content': system_prompt}, {'role': 'user', 'content': f'Evaluate this action: {goal}'}], temperature=0.3, max_tokens=500)
         content = response.choices[0].message.content
         plan = self._extract_section(content, ['Plan:', 'Action:', 'Solution:'])

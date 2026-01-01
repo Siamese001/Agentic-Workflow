@@ -5,10 +5,10 @@ SSOT-aligned integration using SovereignConfig.
 import time
 from typing import List, Optional, Dict, Any
 from pinecone import Pinecone, ServerlessSpec, PineconeApiException
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
-# NAMING FIXED: SovereignPineconeStore → sovereign_pinecone_store
-class sovereign_pinecone_store:
+# NAMING FIXED: SovereignPineconeStore → SovereignPineconeStore
+class SovereignPineconeStore:
     """Sovereign wrapper for Pinecone serverless index."""
     
     DEFAULT_INDEX_NAME = "sovereign-territory-index"
@@ -17,7 +17,7 @@ class sovereign_pinecone_store:
         self,
         index_name: str = DEFAULT_INDEX_NAME,
         dimension: int = config.DEFAULT_EMBEDDING_DIM,
-        metric: str = "cosine",
+        Metric: str = "cosine",
     ):
         # Validate config immediately
         config.validate()
@@ -26,7 +26,7 @@ class sovereign_pinecone_store:
         self.pc = Pinecone(api_key=self.api_key)
         self.index_name = index_name
         self.dimension = dimension
-        self.metric = metric
+        self.Metric = Metric
 
         self._ensure_index()
         self.index = self.pc.Index(self.index_name)
@@ -38,7 +38,7 @@ class sovereign_pinecone_store:
                 self.pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
-                    metric=self.metric,
+                    Metric=self.Metric,
                     spec=ServerlessSpec(cloud=config.PINECONE_CLOUD, region=config.PINECONE_ENV),
                     deletion_protection="disabled",
                 )

@@ -254,7 +254,7 @@ class CodeInterpreterTool:
         descending: bool = True
     ) -> List[Dict[str, Any]]:
         """
-        Rank items by a metric value
+        Rank items by a Metric value
         
         Args:
             items: List of item dictionaries

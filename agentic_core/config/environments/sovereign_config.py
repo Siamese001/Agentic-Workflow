@@ -32,19 +32,19 @@ class SovereignConfig:
     
     # === Phase 4: Critical Path Registry ===
     BASE_GIT_PATH: str = "c:/Git/Agentic-Workflow/"
-    CORE_CONTRACTS_PATH: str = f"{BASE_GIT_PATH}agentic_core/schemas/models/core_contracts.py"
-    PROMPT_CONSTITUTION_PATH: str = f"{BASE_GIT_PATH}agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py"
+    CORE_CONTRACTS_PATH: str = f"{BASE_GIT_PATH}AgenticCore/schemas/models/core_contracts.py"
+    PROMPT_CONSTITUTION_PATH: str = f"{BASE_GIT_PATH}AgenticCore/prompt_governance/meta_prompts/sovereign_prompt_constitution.py"
     
     # System Paths
-    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split("agentic_core")[0]
+    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split("AgenticCore")[0]
     
     def validate(self):
         """Ensure critical secrets are present."""
         errors = []
         if not self.PINECONE_API_KEY:
-            errors.append("CRITICAL: PINECONE_API_KEY is missing.")
+            errors.append("CRITICAL: PINECONE_API_KEY is Missing.")
         if not self.OPENAI_API_KEY:
-            errors.append("CRITICAL: OPENAI_API_KEY is missing.")
+            errors.append("CRITICAL: OPENAI_API_KEY is Missing.")
         
         if errors:
             raise ValueError("\n".join(errors))

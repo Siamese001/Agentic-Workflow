@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 try:
     import dspy
@@ -21,8 +21,8 @@ except ImportError:
 
 
 @dataclass
-# NAMING FIXED: OptimizationExample → optimization_example
-class optimization_example:
+# NAMING FIXED: OptimizationExample → OptimizationExample
+class OptimizationExample:
     """A single training example for DSPy optimization."""
     inputs: Dict[str, Any]
     ideal_output: Dict[str, Any]
@@ -30,8 +30,8 @@ class optimization_example:
 
 
 @dataclass
-# NAMING FIXED: OptimizationResult → optimization_result
-class optimization_result:
+# NAMING FIXED: OptimizationResult → OptimizationResult
+class OptimizationResult:
     """Result of a DSPy optimization run."""
     optimized_prompt: str
     performance_score: float
@@ -40,13 +40,13 @@ class optimization_result:
     optimization_time_seconds: float
 
 
-# NAMING FIXED: DSPyOptimizer → ds_py_optimizer
-class ds_py_optimizer:
+# NAMING FIXED: DSPyOptimizer → DsPyOptimizer
+class DsPyOptimizer:
     """
     Optimizes agent prompts using DSPy's teleprompter system.
 
     Instead of hand-writing prompts, we:
-    1. Define a metric for "good" performance
+    1. Define a Metric for "good" performance
     2. Create training examples
     3. Run DSPy optimization to find the best prompt formulation
     4. Save the optimized prompt for runtime use
@@ -135,7 +135,7 @@ class ds_py_optimizer:
 
             # Create the teleprompter (optimizer)
             teleprompter = dspy.teleprompt.BootstrapFewShot(
-                metric=metric_func,
+                Metric=metric_func,
                 max_bootstrapped_demos=5,
                 max_labeled_demos=3
             )
@@ -307,8 +307,8 @@ class ds_py_optimizer:
         return None
 
 
-# NAMING FIXED: PromptSignatureRegistry → prompt_signature_registry
-class prompt_signature_registry:
+# NAMING FIXED: PromptSignatureRegistry → PromptSignatureRegistry
+class PromptSignatureRegistry:
     """Registry of DSPy signatures for different agent types."""
 
     # Common signatures that can be reused
@@ -327,14 +327,14 @@ class prompt_signature_registry:
     )
 
     TOOL_SELECTION = dspy.Signature(
-        "Select the best tool for a given task.",
+        "Select the best tool for a given Task.",
         task_description=dspy.InputField(),
         available_tools=dspy.InputField(),
         selected_tool=dspy.OutputField(desc="Name of the best tool"),
         REASONING=dspy.OutputField(desc="Why this tool was chosen")
     )
     SUBATOMIC_HOP = dspy.Signature(
-        """You are an intelligent agent responsible for a single atomic task.
+        """You are an intelligent agent responsible for a single atomic Task.
         Analyze the context, plan your action, and execute it using the available tools.
         """,
         role_description=dspy.InputField(desc="Your specific role (e.g., Python Expert)"),
@@ -351,13 +351,13 @@ class prompt_signature_registry:
             "coder": cls.CODE_GENERATION,
             "researcher": cls.RESEARCH_ANALYSIS,
             "tool_selector": cls.TOOL_SELECTION,
-            "subatomic_hop": cls.SUBATOMIC_HOP
+            "SubatomicHop": cls.SUBATOMIC_HOP
         }
         return signatures.get(agent_type.lower())
 
 
-# NAMING FIXED: OptimizedHopModule → optimized_hop_module
-class optimized_hop_module(dspy.Module):
+# NAMING FIXED: OptimizedHopModule → OptimizedHopModule
+class OptimizedHopModule(dspy.Module):
     """The DSPy Module for Subatomic Hop optimization."""
 
     def __init__(self):
@@ -373,7 +373,7 @@ class optimized_hop_module(dspy.Module):
         )
 
 
-# Common metric functions
+# Common Metric functions
 def code_compilation_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
     """Metric for code generation - checks if code would compile."""
     try:

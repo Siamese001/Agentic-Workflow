@@ -1,6 +1,6 @@
 """
 Hardened Orchestrator - Thin Wrapper
-Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py
+Delegates to consolidated core orchestrator in AgenticCore/core/orchestrator_main.py
 
 This is a stub-and-proxy pattern implementation that eliminates race conditions
 by routing all orchestration through the consolidated AtomicBlackboard-integrated core.
@@ -9,18 +9,18 @@ import asyncio
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+from AgenticCore.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from AgenticCore.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-async def run_hardened_orchestrator(workflow_id: str, workflow_type: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:
+async def run_hardened_orchestrator(workflow_id: str, WorkflowType: str='resume_generation', storage_path: Optional[str]=None, run_base_dir: str='./pipeline_runs') -> Any:
     """
     Run hardened workflow orchestrator with atomic state management.
     
@@ -28,20 +28,20 @@ async def run_hardened_orchestrator(workflow_id: str, workflow_type: str='resume
     
     Args:
         workflow_id: Workflow identifier
-        workflow_type: Type of workflow
+        WorkflowType: Type of workflow
         storage_path: Path for atomic state storage
         run_base_dir: Base directory for run outputs
         
     Returns:
         Workflow execution results
     """
-    logger.info(f'🚀 Hardened Orchestrator (Wrapper)')
-    logger.info(f'   Workflow: {workflow_id}')
-    logger.info(f'   Type: {workflow_type}')
+    Logger.info(f'🚀 Hardened Orchestrator (Wrapper)')
+    Logger.info(f'   Workflow: {workflow_id}')
+    Logger.info(f'   Type: {WorkflowType}')
     config: Any = OrchestratorConfig(max_cycles=5, enable_checkpointing=True, checkpoint_dir=storage_path or './checkpoints')
     context: Any = ValidationContext()
     orchestrator: Any = create_orchestrator(config=config, context=context)
-    resume_agent: Any = create_resume_agent(context=context, workflow_id=workflow_id, workflow_type=workflow_type, enable_titanium_rag=True, enable_state_persistence=True, storage_path=storage_path, run_base_dir=run_base_dir)
+    resume_agent: Any = create_resume_agent(context=context, workflow_id=workflow_id, WorkflowType=WorkflowType, enable_titanium_rag=True, enable_state_persistence=True, storage_path=storage_path, run_base_dir=run_base_dir)
     results: Any = await orchestrator.execute_workflow(workflow_id=workflow_id, agents=[resume_agent])
     return results
 if __name__ == '__main__':
@@ -51,4 +51,4 @@ if __name__ == '__main__':
     parser.add_argument('--workflow-type', default='resume_generation', help='Workflow type')
     parser.add_argument('--storage-path', help='Storage path for state')
     args: Any = parser.parse_args()
-    asyncio.run(run_hardened_orchestrator(workflow_id=args.workflow_id, workflow_type=args.workflow_type, storage_path=args.storage_path))
+    asyncio.run(run_hardened_orchestrator(workflow_id=args.workflow_id, WorkflowType=args.WorkflowType, storage_path=args.storage_path))

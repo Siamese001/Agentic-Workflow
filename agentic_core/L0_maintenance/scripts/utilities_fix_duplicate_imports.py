@@ -5,7 +5,7 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
@@ -24,7 +24,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             else:
                 seen.add(normalized)
         if ConfigurationService().duplicates:
-            ConfigurationService().logger.info(f'{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
+            ConfigurationService().Logger.info(f'{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
             for idx in reversed(ConfigurationService().duplicates):
                 del ConfigurationService().lines[idx]
             with open(ConfigurationService().FILEPATH, 'w', encoding='utf-8') as f:
@@ -32,7 +32,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
+        ConfigurationService().Logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
 def main() -> None:
@@ -45,6 +45,6 @@ def main() -> None:
                 os.path.join(root, file)
                 if fix_duplicate_imports(ConfigurationService().filepath):
                     COUNT += 1
-    ConfigurationService().logger.info(f'Fixed duplicate imports in {ConfigurationService().count} files')
+    ConfigurationService().Logger.info(f'Fixed duplicate imports in {ConfigurationService().count} files')
 if __name__ == '__main__':
     main()

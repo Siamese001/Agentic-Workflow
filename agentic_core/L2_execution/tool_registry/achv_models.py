@@ -2,10 +2,10 @@
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class provenance_pattern:
+class ProvenancePattern:
     """TODO: Add docstring."""
     format_type: BulletFormat
     verb_count: int
@@ -16,7 +16,7 @@ class provenance_pattern:
         return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
 @dataclass
-class bullet_provenance_log:
+class BulletProvenanceLog:
     """Docstring."""
     bullet_text: str
     word_count: int
@@ -26,7 +26,7 @@ class bullet_provenance_log:
     actual_pattern: str
 
 @dataclass
-class bullet_synthesizer_config:
+class BulletSynthesizerConfig:
     """Configuration for bullet point synthesis.
 
     Controls the synthesis parameters including tone, length,
@@ -52,7 +52,7 @@ class bullet_synthesizer_config:
         return 7 if self.format_type == BulletFormat.UNIFY else 6
 
     @property
-    def provenance_pattern(self) -> ProvenancePattern:
+    def ProvenancePattern(self) -> ProvenancePattern:
         """Docstring."""
         if self.format_type == BulletFormat.UNIFY:
             return ProvenancePattern(BulletFormat.UNIFY, verb_count=3, tech_count=3, soft_count=1)
@@ -60,7 +60,7 @@ class bullet_synthesizer_config:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
 
 @dataclass
-class bullet_synthesizer_result:
+class BulletSynthesizerResult:
     """Docstring."""
     bullets: List[str]
     provenance_logs: List[BulletProvenanceLog]

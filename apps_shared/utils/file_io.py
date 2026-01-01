@@ -52,11 +52,11 @@ def write_compliant_file(path: str, content: str, dry_run: bool=False) -> bool:
             return False
     parts: Any = path.split(os.sep)
     if len(parts) - 1 < 3 or len(parts) - 1 > 5:
-        print(f'   🛑 BLOCKED WRITE: File depth violation for {path}')
+        print(f'   🛑 BLOCKED WRITE: File depth Violation for {path}')
         return False
     line_count: Any = len(clean_content.splitlines())
     if line_count < 10 or line_count > 200:
-        print(f'   🛑 BLOCKED WRITE: File line count violation for {path} ({line_count} lines)')
+        print(f'   🛑 BLOCKED WRITE: File line count Violation for {path} ({line_count} lines)')
         return False
     if not dry_run:
         try:

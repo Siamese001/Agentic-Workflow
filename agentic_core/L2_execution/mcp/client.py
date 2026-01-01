@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional, Protocol
 
 from .providers import get_default_module, get_default_class
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class MCPClient(Protocol):
@@ -41,7 +41,7 @@ class MCPClientSpec:
     
     Attributes:
         name: Unique client identifier
-        provider: Provider type (redis, chromadb, openai, etc.)
+        Provider: Provider type (redis, chromadb, openai, etc.)
         module: Optional explicit Python module path
         class_name: Optional explicit class name
         parameters: Client initialization parameters
@@ -49,31 +49,31 @@ class MCPClientSpec:
     """
     
     name: str
-    provider: str = "stub"
+    Provider: str = "stub"
     module: Optional[str] = None
     class_name: Optional[str] = None
     parameters: Dict[str, Any] = field(default_factory=dict)
     optional: bool = False
     
     def resolved_module(self) -> Optional[str]:
-        """Return explicit module or provider-mapped default.
+        """Return explicit module or Provider-mapped default.
         
         Returns:
             Module path or None for stub
         """
         if self.module:
             return self.module
-        return get_default_module(self.provider)
+        return get_default_module(self.Provider)
     
     def resolved_class(self) -> Optional[str]:
-        """Return explicit class_name or provider-mapped default.
+        """Return explicit class_name or Provider-mapped default.
         
         Returns:
             Class name or None
         """
         if self.class_name:
             return self.class_name
-        return get_default_class(self.provider)
+        return get_default_class(self.Provider)
     
     def validate(self) -> None:
         """Validate the spec configuration.
@@ -87,17 +87,17 @@ class MCPClientSpec:
         if not isinstance(self.parameters, dict):
             raise ValueError(f"MCPClientSpec '{self.name}' parameters must be a dict")
         
-        if self.provider != "stub":
+        if self.Provider != "stub":
             if not self.resolved_module():
                 raise ValueError(
                     f"MCPClientSpec '{self.name}': no module specified "
-                    f"and no default for provider '{self.provider}'"
+                    f"and no default for Provider '{self.Provider}'"
                 )
             
             if not self.resolved_class():
                 raise ValueError(
                     f"MCPClientSpec '{self.name}': no class_name specified "
-                    f"and no default for provider '{self.provider}'"
+                    f"and no default for Provider '{self.Provider}'"
                 )
 
 
@@ -119,7 +119,7 @@ class MCPClientStub:
         self.name = name
         self.parameters = parameters or {}
         
-        logger.info(
+        Logger.info(
             "mcp_stub_created",
             extra={
                 "client_name": name,
@@ -173,11 +173,11 @@ class MCPClientRegistry:
         self._specs[spec.name] = spec
         self._clients[spec.name] = client
         
-        logger.info(
+        Logger.info(
             "mcp_client_registered",
             extra={
                 "client_name": spec.name,
-                "provider": spec.provider,
+                "Provider": spec.Provider,
                 "is_stub": isinstance(client, MCPClientStub),
             }
         )

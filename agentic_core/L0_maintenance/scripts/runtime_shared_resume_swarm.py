@@ -10,11 +10,11 @@ import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class resume_result:
-    """Result from a single resume generation task."""
+class ResumeResult:
+    """Result from a single resume generation Task."""
     job_id: str
     status: str
     result: Optional[Any] = None
@@ -24,7 +24,7 @@ class resume_result:
     timestamp: float = field(default_factory=time.time)
 
 @dataclass
-class swarm_metrics:
+class SwarmMetrics:
     """Metrics for resume swarm execution."""
     total_jobs: int = 0
     successful: int = 0
@@ -56,22 +56,22 @@ def _worker_generate_resume(payload: Dict) -> ResumeResult:
     start_time = time.time()
     worker_pid = os.getpid()
     try:
-        logger.debug(f'Worker {worker_pid} processing job {job_id}')
-        job_description = payload.get('job_description', '')
+        Logger.debug(f'Worker {worker_pid} processing job {job_id}')
+        JobDescription = payload.get('JobDescription', '')
         payload.get('user_profile', {})
         output_format = payload.get('output_format', 'pdf')
         time.sleep(0.5)
-        result = {'job_id': job_id, 'status': 'completed', 'output_path': f'/output/resume_{job_id}.{output_format}', 'worker_pid': worker_pid, 'job_description': job_description[:50] + '...' if len(job_description) > 50 else job_description}
+        result = {'job_id': job_id, 'status': 'completed', 'output_path': f'/output/resume_{job_id}.{output_format}', 'worker_pid': worker_pid, 'JobDescription': JobDescription[:50] + '...' if len(JobDescription) > 50 else JobDescription}
         execution_time = time.time() - start_time
-        logger.info(f'Worker {worker_pid} completed job {job_id} in {execution_time:.2f}s')
+        Logger.info(f'Worker {worker_pid} completed job {job_id} in {execution_time:.2f}s')
         return ResumeResult(job_id=job_id, status='success', result=result, worker_pid=worker_pid, execution_time=execution_time)
     except Exception as e:
         execution_time = time.time() - start_time
         error_msg = f'Worker {worker_pid} failed job {job_id}: {str(e)}'
-        logger.error(error_msg, exc_info=True)
+        Logger.error(error_msg, exc_info=True)
         return ResumeResult(job_id=job_id, status='failed', error=error_msg, worker_pid=worker_pid, execution_time=execution_time)
 
-class resume_swarm:
+class ResumeSwarm:
     """Multi-process resume generation swarm.
 
     Distributes CPU-intensive resume generation tasks across multiple worker
@@ -90,7 +90,7 @@ class resume_swarm:
         self.enable_metrics = enable_metrics
         self.worker_function = worker_function or _worker_generate_resume
         self.metrics = SwarmMetrics()
-        logger.info(f'Initialized ResumeSwarm: num_workers={num_workers}, available_cpus={multiprocessing.cpu_count()}')
+        Logger.info(f'Initialized ResumeSwarm: num_workers={num_workers}, available_cpus={multiprocessing.cpu_count()}')
 
     def generate_batch(self, job_payloads: List[Dict[str, Any]], chunksize: Optional[int]=None) -> List[ResumeResult]:
         """Distribute resume generation tasks across worker processes.
@@ -105,17 +105,17 @@ class resume_swarm:
         Example:
             >>> swarm = ResumeSwarm(num_workers=6)
             >>> jobs = [
-            ...     {"job_id": "1", "job_description": "Senior Python Dev"},
-            ...     {"job_id": "2", "job_description": "Data Scientist"},
+            ...     {"job_id": "1", "JobDescription": "Senior Python Dev"},
+            ...     {"job_id": "2", "JobDescription": "Data Scientist"},
             ... ]
             >>> results = swarm.generate_batch(jobs)
         """
         if not job_payloads:
-            logger.warning('Empty job_payloads provided to generate_batch')
+            Logger.warning('Empty job_payloads provided to generate_batch')
             return []
         if self.enable_metrics:
             self.metrics = SwarmMetrics(total_jobs=len(job_payloads), start_time=time.time())
-        logger.info(f'Starting batch generation: {len(job_payloads)} jobs across {self.num_workers} workers')
+        Logger.info(f'Starting batch generation: {len(job_payloads)} jobs across {self.num_workers} workers')
         if chunksize is None:
             chunksize: Any = max(1, len(job_payloads) // (self.num_workers * 4))
         try:
@@ -123,10 +123,10 @@ class resume_swarm:
                 results: Any = pool.map(self.worker_function, job_payloads, chunksize=chunksize)
             if self.enable_metrics:
                 self._update_metrics(results)
-            logger.info(f'Batch generation complete: {self.metrics.successful}/{self.metrics.total_jobs} successful, {self.metrics.failed} failed')
+            Logger.info(f'Batch generation complete: {self.metrics.successful}/{self.metrics.total_jobs} successful, {self.metrics.failed} failed')
             return results
         except Exception as e:
-            logger.error(f'Batch generation failed: {e}', exc_info=True)
+            Logger.error(f'Batch generation failed: {e}', exc_info=True)
             raise
 
     def generate_batch_async(self, job_payloads: List[Dict[str, Any]], callback: Optional[Callable[[ResumeResult], None]]=None, chunksize: Optional[int]=None) -> List[ResumeResult]:
@@ -144,7 +144,7 @@ class resume_swarm:
             return []
         if self.enable_metrics:
             self.metrics = SwarmMetrics(total_jobs=len(job_payloads), start_time=time.time())
-        logger.info(f'Starting async batch generation: {len(job_payloads)} jobs')
+        Logger.info(f'Starting async batch generation: {len(job_payloads)} jobs')
         if chunksize is None:
             chunksize: Any = max(1, len(job_payloads) // (self.num_workers * 4))
         try:
@@ -155,7 +155,7 @@ class resume_swarm:
                 self._update_metrics(results)
             return results
         except Exception as e:
-            logger.error(f'Async batch generation failed: {e}', exc_info=True)
+            Logger.error(f'Async batch generation failed: {e}', exc_info=True)
             raise
 
     def generate_streaming(self, job_payloads: List[Dict[str, Any]], chunksize: int=1) -> Any:
@@ -177,7 +177,7 @@ class resume_swarm:
             return
         if self.enable_metrics:
             self.metrics = SwarmMetrics(total_jobs=len(job_payloads), start_time=time.time())
-        logger.info(f'Starting streaming generation: {len(job_payloads)} jobs')
+        Logger.info(f'Starting streaming generation: {len(job_payloads)} jobs')
         try:
             with multiprocessing.Pool(processes=self.num_workers) as pool:
                 for result in pool.imap(self.worker_function, job_payloads, chunksize=chunksize):
@@ -185,7 +185,7 @@ class resume_swarm:
             if self.enable_metrics:
                 self.metrics.end_time = time.time()
         except Exception as e:
-            logger.error(f'Streaming generation failed: {e}', exc_info=True)
+            Logger.error(f'Streaming generation failed: {e}', exc_info=True)
             raise
 
     def _update_metrics(self, results: List[ResumeResult]) -> None:

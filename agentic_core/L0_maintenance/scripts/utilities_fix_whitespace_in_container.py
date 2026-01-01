@@ -1,4 +1,4 @@
-"""Simple script to fix trailing whitespace and missing newlines."""
+"""Simple script to fix trailing whitespace and Missing newlines."""
 import os
 from typing import Any
 

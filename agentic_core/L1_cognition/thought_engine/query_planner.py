@@ -6,18 +6,18 @@ import json
 import logging
 import re
 from typing import Any, Dict, List, Optional
-from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SemanticCache
-from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+from AgenticCore.L4_state.ValidationContext.semantic_cache_sovereign import SemanticCache
+from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class query_planner:
+class QueryPlanner:
     """
     Sovereign L1 Query Planner – transforms queries for maximum recall/precision
     """
@@ -91,7 +91,7 @@ class query_planner:
             result: Any = json.loads(self._clean_json_response(response))
             expanded: Any = result.get('queries', [])[:8]
         except Exception as e:
-            logger.error(f'L1 Decomposition failure: {e}')
+            Logger.error(f'L1 Decomposition failure: {e}')
             expanded: Any = [query]
         return expanded
 
@@ -105,5 +105,5 @@ class query_planner:
             result: Any = json.loads(self._clean_json_response(response))
             return result.get('passages', [])[:3]
         except Exception as e:
-            logger.error(f'L1 HyDE failure: {e}')
+            Logger.error(f'L1 HyDE failure: {e}')
             return []

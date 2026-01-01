@@ -5,10 +5,10 @@ Enforces Bounded Contexts and Aggregate Root access.
 import ast
 from pathlib import Path
 from typing import Any, List, Tuple
-from agentic_core.L1_cognition.P2_domain.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
+from AgenticCore.L1_cognition.P2_domain.sovereign_domain_constitution import BOUNDED_CONTEXTS, UBIQUITOUS_LANGUAGE
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

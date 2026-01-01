@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 # MCP Hardening
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Models (updated imports for new locations)
 from apps_lic.domain.lic_models import (
@@ -33,7 +33,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
     """
     v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)
     
-    Single Responsibility: Classify recipient archetype
+    Single Responsibility: Classify recipient Archetype
     
     Input:  mission_input_LIC.json
     Output: state/1_profile_analysis.json
@@ -54,7 +54,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
     
     def execute(self, state_mgr: StateManager, mission: OutreachMission) -> str:
         """
-        Execute HOP-1: Analyze profile and classify archetype
+        Execute HOP-1: Analyze profile and classify Archetype
         
         Args:
             state_mgr: State manager for this mission
@@ -70,8 +70,8 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
         # Extract profile data
         title = mission.recipient_profile.get('title', '').lower()
         
-        # Classify archetype using config-based rules
-        archetype = None
+        # Classify Archetype using config-based rules
+        Archetype = None
         confidence = 0.0
         reasoning = ""
         key_indicators = []
@@ -79,18 +79,18 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
         for arch_name, arch_config in self.archetype_indicators.items():
             for keyword in arch_config["keywords"]:
                 if keyword in title:
-                    archetype = arch_name
+                    Archetype = arch_name
                     confidence = arch_config["confidence"]
                     reasoning = f"Title '{title}' contains '{keyword}' indicator"
                     key_indicators = [keyword]
                     break
             
-            if archetype:
+            if Archetype:
                 break
         
         # Default if no match
-        if not archetype:
-            archetype = self.default_archetype
+        if not Archetype:
+            Archetype = self.default_archetype
             confidence = self.config["default_confidence"]
             reasoning = f"Default classification - ambiguous title '{title}'"
             key_indicators = [title]
@@ -99,7 +99,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
         
         # Prepare output state
         output_state = {
-            "archetype": archetype,
+            "Archetype": Archetype,
             "confidence": confidence,
             "reasoning": reasoning,
             "key_indicators": key_indicators,
@@ -113,7 +113,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
         output_path = state_mgr.write_state("HOP-1", output_state)
         
         print(f"✓ Profile Analysis Complete")
-        print(f"  Archetype: {archetype}")
+        print(f"  Archetype: {Archetype}")
         print(f"  Confidence: {confidence:.2f}")
         print(f"  Reasoning: {reasoning}\n")
         
@@ -238,7 +238,7 @@ class HOP4RoutingAgent(MCPHardenedMixin):
     """
     v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)
     
-    Single Responsibility: Determine optimal message route
+    Single Responsibility: Determine optimal message Route
     
     Input:  state/1_profile_analysis.json, mission_input_LIC.json
     Output: state/4_routing_decision.json
@@ -257,7 +257,7 @@ class HOP4RoutingAgent(MCPHardenedMixin):
     
     def execute(self, state_mgr: StateManager, mission: OutreachMission) -> str:
         """
-        Execute HOP-4: Determine message route
+        Execute HOP-4: Determine message Route
         
         Args:
             state_mgr: State manager for this mission
@@ -272,7 +272,7 @@ class HOP4RoutingAgent(MCPHardenedMixin):
         
         # Read HOP-1 state
         profile_state = state_mgr.read_state("HOP-1")
-        archetype = profile_state["archetype"]
+        Archetype = profile_state["Archetype"]
         
         # Extract mission context
         connection_status = mission.connection_status
@@ -282,8 +282,8 @@ class HOP4RoutingAgent(MCPHardenedMixin):
         selected_route = None
         reasoning = []
         
-        for route_name, route_config in self.routing_rules.items():
-            conditions = route_config["conditions"]
+        for route_name, RouteConfig in self.routing_rules.items():
+            conditions = RouteConfig["conditions"]
             
             # Check all conditions
             matches = True
@@ -314,15 +314,15 @@ class HOP4RoutingAgent(MCPHardenedMixin):
         # Default to INMAIL if no match
         if not selected_route:
             selected_route = "INMAIL"
-            reasoning.append("Default route: INMAIL")
+            reasoning.append("Default Route: INMAIL")
         
-        # Get constraints for this route
+        # Get constraints for this Route
         constraints = self.routing_rules[selected_route]["constraints"]
         
         # Prepare output state
         output_state = {
-            "route": selected_route,
-            "archetype": archetype,
+            "Route": selected_route,
+            "Archetype": Archetype,
             "constraints": constraints,
             "reasoning": "\n".join(reasoning),
             "connection_status": connection_status,
@@ -334,7 +334,7 @@ class HOP4RoutingAgent(MCPHardenedMixin):
         
         print(f"✓ Routing Decision Complete")
         print(f"  Route: {selected_route}")
-        print(f"  Archetype: {archetype}")
+        print(f"  Archetype: {Archetype}")
         print(f"  Word range: {constraints['word_range']}")
         print(f"  Char limit: {constraints['char_limit']}\n")
         
@@ -423,7 +423,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin):
         # Validation failed - classify failures
         critical_failures = [
             r for r in validation_results
-            if r.get("severity") in ["CRITICAL", "HIGH"] and not r.get("passed", True)
+            if r.get("Severity") in ["CRITICAL", "HIGH"] and not r.get("passed", True)
         ]
         
         if not critical_failures:
@@ -679,7 +679,7 @@ def test_hop_agents():
             "title": "VP of Engineering",
             "company": "Tech Giants Corp"
         },
-        job_description={
+        JobDescription={
             "title": "Head of AI Platform",
             "company": "Tech Giants Corp"
         },

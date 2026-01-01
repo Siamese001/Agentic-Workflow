@@ -9,7 +9,7 @@ from typing import Any
 def wake_the_brain() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] MISSION START: FINAL SOVEREIGN VALIDATION')
-    cmd: Any = ['python', 'canon_validator_agentic_v2.py', '--target', 'agentic_core', '--mode', 'comprehensive', '--heal', 'true']
+    cmd: Any = ['python', 'canon_validator_agentic_v2.py', '--target', 'AgenticCore', '--mode', 'comprehensive', '--heal', 'true']
     try:
         process: Any = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:

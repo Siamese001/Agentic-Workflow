@@ -3,9 +3,9 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class peer_intelligence_config:
+class PeerIntelligenceConfig:
     """Brief description of functionality and purpose."""
 
     def __init__(self):
@@ -13,19 +13,19 @@ class peer_intelligence_config:
         self.total_searches = 24
         self.differentiator_threshold = 0.3
 
-class integrity_gate_executor:
+class IntegrityGateExecutor:
     """Brief description of functionality and purpose."""
 
     def __init__(self):
         self.results = []
 
-class peer_intelligence_result:
+class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
 
     def __init__(self, hops, keyword_analyses, table_stakes, DIFFERENTIATORS, validation_results, SUCCESS, total_searches_executed):
         pass
 
-class rag_hop:
+class RagHop:
     """Brief description of functionality and purpose."""
 
     def __init__(self, hop_number, search_queries, RESULTS, keywords_found):
@@ -34,12 +34,12 @@ class rag_hop:
         self.RESULTS = RESULTS
         self.keywords_found = keywords_found
 
-class keyword_classification:
+class KeywordClassification:
     """Brief description of functionality and purpose."""
     TABLE_STAKES: Any = 'TABLE_STAKES'
     DIFFERENTIATOR: Any = 'DIFFERENTIATOR'
 
-class keyword_analysis:
+class KeywordAnalysis:
     """Brief description of functionality and purpose."""
 
     def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING):
@@ -49,18 +49,18 @@ class keyword_analysis:
         self.competitive_density = competitive_density
         self.REASONING = REASONING
 
-class validation_result:
+class ValidationResult:
     """Brief description of functionality and purpose."""
 
     def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, SIGNATURE=None, DETAILS=None):
         self.gate_id = gate_id
         self.passed = PASSED
-        self.severity = SEVERITY
+        self.Severity = SEVERITY
         self.message = MESSAGE
         self.signature = SIGNATURE
         self.details = DETAILS
 
-class peer_intelligence_auditor:
+class PeerIntelligenceAuditor:
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 
@@ -93,8 +93,8 @@ class peer_intelligence_auditor:
         keyword_analyses: Any = self._classify_keywords(jd_keywords, hops)
         table_stakes: Any = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.TABLE_STAKES]
         DIFFERENTIATORS: Any = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.DIFFERENTIATOR]
-        classification_result: Any = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION', PASSED=True, SEVERITY='INFO', MESSAGE=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,\n            {len(DIFFERENTIATORS)} differentiators', SIGNATURE=f'CLASSIFY:OK:{len(DIFFERENTIATORS)}', DETAILS={'total_keywords': len(jd_keywords), 'table_stakes_count': len(table_stakes), 'differentiators_count': len(DIFFERENTIATORS)})
-        validation_results.append(classification_result)
+        ClassificationResult: Any = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION', PASSED=True, SEVERITY='INFO', MESSAGE=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,\n            {len(DIFFERENTIATORS)} differentiators', SIGNATURE=f'CLASSIFY:OK:{len(DIFFERENTIATORS)}', DETAILS={'total_keywords': len(jd_keywords), 'table_stakes_count': len(table_stakes), 'differentiators_count': len(DIFFERENTIATORS)})
+        validation_results.append(ClassificationResult)
         self.gate_executor.results = validation_results
         return PeerIntelligenceResult(hops=hops, keyword_analyses=keyword_analyses, table_stakes=table_stakes, DIFFERENTIATORS=DIFFERENTIATORS, validation_results=validation_results, SUCCESS=True, total_searches_executed=sum((len(hop.search_queries) for hop in hops)))
 

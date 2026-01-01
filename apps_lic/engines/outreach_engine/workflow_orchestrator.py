@@ -1,4 +1,4 @@
-# File: workflow_orchestrator.py
+# File: WorkflowOrchestrator.py
 # Description: Complete workflow orchestration v13.0 - Pure Agentic Architecture
 # REFACTOR: All v12.0 agents replaced with HOP-based state architecture
 # HARDENED: 2026-01-01 - PascalCase + MCPHardenedMixin applied
@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional
 from pathlib import Path
 
 # MCP Hardening
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Core infrastructure (updated imports for new locations)
 from apps_shared.utils.state_manager import StateManager
@@ -90,11 +90,11 @@ class HOP2ResearchAgent(MCPHardenedMixin):
         profile_state = state_mgr.read_state("HOP-1")
         company = profile_state["recipient_company"]
         recipient = profile_state["recipient_name"]
-        archetype = profile_state["archetype"]
+        Archetype = profile_state["Archetype"]
         
         # STEP 1: Query vector store (fast, pre-computed)
         print("STEP 1: Querying vector store (cached intelligence)...")
-        cached_context = await self._query_vector_store(company, recipient, archetype)
+        cached_context = await self._query_vector_store(company, recipient, Archetype)
         print(f"  ✓ Retrieved {len(cached_context['all_results'])} cached documents")
         
         # STEP 2: Run cache critique
@@ -141,7 +141,7 @@ class HOP2ResearchAgent(MCPHardenedMixin):
         self,
         company: str,
         recipient: str,
-        archetype: str
+        Archetype: str
     ) -> Dict[str, Any]:
         """Query vector store for pre-computed intelligence"""
         
@@ -308,7 +308,7 @@ class HOP2ResearchAgent(MCPHardenedMixin):
     def _format_search_results(
         self,
         results: List[Dict],
-        source_type: str
+        SourceType: str
     ) -> List[Dict[str, Any]]:
         """Format search results for consistency"""
         
@@ -317,7 +317,7 @@ class HOP2ResearchAgent(MCPHardenedMixin):
             formatted.append({
                 "text": result.get("snippet", ""),
                 "metadata": {
-                    "source_type": source_type,
+                    "SourceType": SourceType,
                     "source_url": result.get("link", ""),
                     "title": result.get("title", ""),
                     "age_days": 0,
@@ -395,15 +395,15 @@ class HOP5GenerationAgent(MCPHardenedMixin):
         grounding = state_mgr.read_state("HOP-3")
         scaffold = state_mgr.read_state("HOP-4.5")
         
-        archetype = scaffold["archetype"]
-        route = scaffold["route"]
+        Archetype = scaffold["Archetype"]
+        Route = scaffold["Route"]
         
         # Determine N candidates (C_LEVEL uses 3, others use 1)
-        n_candidates = self.config["c_level_n_candidates"] if archetype == "C_LEVEL" else 1
+        n_candidates = self.config["c_level_n_candidates"] if Archetype == "C_LEVEL" else 1
         
         # Get temperature (use override if provided, else from config)
         if temperature is None:
-            temperature = self._get_base_temperature(archetype)
+            temperature = self._get_base_temperature(Archetype)
         
         print(f"Generating {n_candidates} candidate(s) at temperature {temperature:.2f}...")
         
@@ -446,8 +446,8 @@ class HOP5GenerationAgent(MCPHardenedMixin):
             "n_candidates": n_candidates,
             "generation_temperature": temperature,
             "generation_attempts": 1,  # Incremented by orchestrator on retry
-            "archetype": archetype,
-            "route": route
+            "Archetype": Archetype,
+            "Route": Route
         }
         
         # Write to state
@@ -492,8 +492,8 @@ class HOP5GenerationAgent(MCPHardenedMixin):
             word_count_min=scaffold["constraints"]["word_range"][0],
             word_count_max=scaffold["constraints"]["word_range"][1],
             forbidden=", ".join(voice.get("forbidden_phrases", [])[:10]),
-            route=scaffold["route"],
-            archetype=scaffold["archetype"],
+            Route=scaffold["Route"],
+            Archetype=scaffold["Archetype"],
             adversarial_constraints=""  # TODO: Add if needed
         )
         
@@ -530,10 +530,10 @@ class HOP5GenerationAgent(MCPHardenedMixin):
         )
         
         # Merge scores back with candidates
-        for i, score_result in enumerate(scored):
-            score_result["candidate_id"] = candidates[score_result["candidate_index"]]["candidate_id"]
-            score_result["word_count"] = candidates[score_result["candidate_index"]]["word_count"]
-            score_result["temperature"] = candidates[score_result["candidate_index"]]["temperature"]
+        for i, ScoreResult in enumerate(scored):
+            ScoreResult["candidate_id"] = candidates[ScoreResult["candidate_index"]]["candidate_id"]
+            ScoreResult["word_count"] = candidates[ScoreResult["candidate_index"]]["word_count"]
+            ScoreResult["temperature"] = candidates[ScoreResult["candidate_index"]]["temperature"]
         
         return scored
     
@@ -580,10 +580,10 @@ class HOP5GenerationAgent(MCPHardenedMixin):
                 return json.load(f)
         return {}
     
-    def _get_base_temperature(self, archetype: str) -> float:
-        """Get base temperature for archetype from config"""
+    def _get_base_temperature(self, Archetype: str) -> float:
+        """Get base temperature for Archetype from config"""
         temp_config = self.config.get("base_temperatures", {})
-        return temp_config.get(archetype, 0.50)
+        return temp_config.get(Archetype, 0.50)
 
 
 # ============================================================================
@@ -653,9 +653,9 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         validation_results = self._validate_draft(text, draft, research, grounding)
         
         # Aggregate results
-        critical_issues = sum(1 for r in validation_results if r["severity"] == "CRITICAL" and not r["passed"])
-        high_issues = sum(1 for r in validation_results if r["severity"] == "HIGH" and not r["passed"])
-        medium_issues = sum(1 for r in validation_results if r["severity"] == "MEDIUM" and not r["passed"])
+        critical_issues = sum(1 for r in validation_results if r["Severity"] == "CRITICAL" and not r["passed"])
+        high_issues = sum(1 for r in validation_results if r["Severity"] == "HIGH" and not r["passed"])
+        medium_issues = sum(1 for r in validation_results if r["Severity"] == "MEDIUM" and not r["passed"])
         
         passed = critical_issues == 0 and high_issues == 0
         
@@ -701,7 +701,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
             if re.search(pattern, text):
                 results.append({
                     "passed": False,
-                    "severity": "CRITICAL",
+                    "Severity": "CRITICAL",
                     "rule_id": "LIC-QA-PLACEHOLDERS",
                     "message": f"Placeholder detected: {pattern}"
                 })
@@ -717,7 +717,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if not is_clean:
             results.append({
                 "passed": False,
-                "severity": "MEDIUM",
+                "Severity": "MEDIUM",
                 "rule_id": "LIC-QA-FORBIDDEN-VERBS",
                 "message": f"Forbidden verbs detected: {violations[:3]}"
             })
@@ -732,7 +732,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if not is_clean:
             results.append({
                 "passed": False,
-                "severity": "MEDIUM",
+                "Severity": "MEDIUM",
                 "rule_id": "LIC-QA-FILLERS",
                 "message": f"Filler phrases detected: {violations[:3]}"
             })
@@ -748,7 +748,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if not is_valid:
             results.append({
                 "passed": False,
-                "severity": "HIGH",
+                "Severity": "HIGH",
                 "rule_id": "LIC-QA-WORD-COUNT",
                 "message": f"Word count {details['word_count']} outside range {details['min_words']}-{details['max_words']}"
             })
@@ -759,7 +759,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if not is_ascii:
             results.append({
                 "passed": False,
-                "severity": "HIGH",
+                "Severity": "HIGH",
                 "rule_id": "LIC-QA-055",
                 "message": f"Non-ASCII characters detected: {non_ascii[:3]}"
             })
@@ -779,7 +779,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
             if len(overlap) < min_overlap:
                 results.append({
                     "passed": False,
-                    "severity": "CRITICAL",
+                    "Severity": "CRITICAL",
                     "rule_id": "LIC-QA-201",
                     "message": f"Strategic alignment failure: Only {len(overlap)} keyword overlap (need {min_overlap}+)",
                     "details": {
@@ -798,7 +798,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if has_team_claim and not sender_grounding_data.get("team_members"):
             results.append({
                 "passed": False,
-                "severity": "CRITICAL",
+                "Severity": "CRITICAL",
                 "rule_id": "LIC-QA-105-TEAM",
                 "message": "Team claims without whitelist"
             })
@@ -807,7 +807,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if has_product_claim and not sender_grounding_data.get("products"):
             results.append({
                 "passed": False,
-                "severity": "CRITICAL",
+                "Severity": "CRITICAL",
                 "rule_id": "LIC-QA-105-PRODUCT",
                 "message": "Product claims without whitelist"
             })
@@ -816,7 +816,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
         if not results:
             results.append({
                 "passed": True,
-                "severity": "INFO",
+                "Severity": "INFO",
                 "rule_id": "ALL-CHECKS",
                 "message": "All validation checks passed"
             })
@@ -926,10 +926,10 @@ class HOP8QAReportAgent(MCPHardenedMixin):
         profile = states.get("HOP-1", {})
         routing = states.get("HOP-4", {})
         
-        lines.append(f"**Archetype**: {profile.get('archetype', 'N/A')}")
+        lines.append(f"**Archetype**: {profile.get('Archetype', 'N/A')}")
         lines.append(f"**Confidence**: {profile.get('confidence', 0):.2f}")
         lines.append(f"**Reasoning**: {profile.get('reasoning', 'N/A')}")
-        lines.append(f"\n**Route**: {routing.get('route', 'N/A')}")
+        lines.append(f"\n**Route**: {routing.get('Route', 'N/A')}")
         lines.append(f"**Route Reasoning**: {routing.get('reasoning', 'N/A')}")
         lines.append("\n")
         
@@ -965,7 +965,7 @@ class HOP8QAReportAgent(MCPHardenedMixin):
         failed = [r for r in results if not r.get("passed", True)]
         if failed:
             for result in failed:
-                lines.append(f"- **{result['rule_id']}** ({result['severity']}): {result['message']}")
+                lines.append(f"- **{result['rule_id']}** ({result['Severity']}): {result['message']}")
         else:
             lines.append("_No failed checks_")
         
@@ -1268,7 +1268,7 @@ async def main():
             "title": "VP of Engineering",
             "company": "Tech Giants Corp"
         },
-        job_description={
+        JobDescription={
             "title": "Head of AI Platform",
             "company": "Tech Giants Corp",
             "location": "San Francisco, CA"

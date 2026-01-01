@@ -25,10 +25,10 @@ from typing import List, Dict, Any, Tuple, Optional
 from collections import Counter
 
 # Sovereign Hardening Mixins – Phase 36
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 
 class ScriptToAgentClassifier(
@@ -54,7 +54,7 @@ class ScriptToAgentClassifier(
 
     def __init__(self):
         super().__init__()  # Required for mixins
-        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}")
 
         # Experience buffer for learning from classification feedback
         log_dir = Path("logs")
@@ -72,7 +72,7 @@ class ScriptToAgentClassifier(
     def classify_module(self, file_path: Path) -> Dict[str, Any]:
         """
         Primary classification entry point.
-        Returns comprehensive verdict with confidence and rationale.
+        Returns comprehensive Verdict with confidence and rationale.
         """
         if not file_path.exists() or file_path.suffix != ".py":
             return {
@@ -96,20 +96,20 @@ class ScriptToAgentClassifier(
         analyzer = _ModuleAnalyzer(tree, source, file_path)
         signals = analyzer.extract_signals()
 
-        verdict = self._compute_verdict(signals, file_path.name)
-        verdict["signals"] = signals
+        Verdict = self._compute_verdict(signals, file_path.name)
+        Verdict["signals"] = signals
 
         # Record classification attempt
         self.experience_buffer.record({
             "file": str(file_path),
-            "recommended_type": verdict["recommended_type"],
-            "confidence": verdict["confidence"],
+            "recommended_type": Verdict["recommended_type"],
+            "confidence": Verdict["confidence"],
             "line_count": signals.get("line_count", 0),
             "num_classes": signals.get("num_classes", 0),
             "attempted": True,
         })
 
-        return verdict
+        return Verdict
 
     def _compute_verdict(
         self, signals: Dict[str, Any], filename: str
@@ -164,7 +164,7 @@ class ScriptToAgentClassifier(
             score_agent += 0.6
             rationale.append("Filename matches sovereign agent pattern")
 
-        # === Final verdict ===
+        # === Final Verdict ===
         total = score_script + score_agent
         if total == 0:
             confidence = 0.5
@@ -246,7 +246,7 @@ class ScriptToAgentClassifier(
 
     # === AdaptiveExecutionMixin Overrides ===
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.info("Conservative mode: using cached classifications where possible")
+        self.Logger.info("Conservative mode: using cached classifications where possible")
         # Skip AST parsing for known files
         file_path = context.get("file_path")
         if file_path:
@@ -254,14 +254,14 @@ class ScriptToAgentClassifier(
             if recent and recent[0].get("confidence", 0) > 0.85:
                 return {
                     "cached": True,
-                    "recommendation": recent[0]["recommended_type"],
+                    "Recommendation": recent[0]["recommended_type"],
                     "confidence": recent[0]["confidence"]
                 }
         # Fallback to standard
         return await self._execute_standard(ctx, **context)
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.warning("Minimal mode: classification paused")
+        self.Logger.warning("Minimal mode: classification paused")
         return {
             "mode": "minimal",
             "status": "standby",

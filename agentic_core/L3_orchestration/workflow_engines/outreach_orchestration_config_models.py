@@ -4,13 +4,13 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
-# from agentic_core.outreach_orchestration_config_enums import *  # Star import removed
+# from AgenticCore.outreach_orchestration_config_enums import *  # Star import removed
 
 
 @dataclass
-# NAMING FIXED: CharLimitConstraint → char_limit_constraint
-class char_limit_constraint:
-    """Character limit constraint for a route."""
+# NAMING FIXED: CharLimitConstraint → CharLimitConstraint
+class CharLimitConstraint:
+    """Character limit constraint for a Route."""
 
     _min: Optional[int] = None
     _max: Optional[int] = None
@@ -26,9 +26,9 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-# NAMING FIXED: WordLimitConstraint → word_limit_constraint
-class word_limit_constraint:
-    """Word limit constraint for a route."""
+# NAMING FIXED: WordLimitConstraint → WordLimitConstraint
+class WordLimitConstraint:
+    """Word limit constraint for a Route."""
 
     min: Optional[int] = None
     max: Optional[int] = None
@@ -43,9 +43,9 @@ def validate(self: Any, count: int) -> bool:
 
 
 @dataclass
-# NAMING FIXED: RouteConfig → route_config
-class route_config:
-    """Configuration for a message route."""
+# NAMING FIXED: RouteConfig → RouteConfig
+class RouteConfig:
+    """Configuration for a message Route."""
 
     _route: Route
     _char_limit: Optional[CharLimitConstraint] = None
@@ -60,9 +60,9 @@ class route_config:
 
 
 @dataclass
-# NAMING FIXED: ArchetypeConfig → archetype_config
-class archetype_config:
-    """Configuration for recipient archetype."""
+# NAMING FIXED: ArchetypeConfig → ArchetypeConfig
+class ArchetypeConfig:
+    """Configuration for recipient Archetype."""
 
     _archetype: Archetype
     _temperature: float = 0.7
@@ -77,8 +77,8 @@ class archetype_config:
 
 
 @dataclass
-# NAMING FIXED: ValidationRule → validation_rule
-class validation_rule:
+# NAMING FIXED: ValidationRule → ValidationRule
+class ValidationRule:
     """Validation rule configuration."""
 
     _rule_id: str

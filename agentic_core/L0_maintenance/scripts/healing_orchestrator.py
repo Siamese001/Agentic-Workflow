@@ -11,10 +11,10 @@ import logging
 from datetime import datetime
 
 # Sovereign Hardening Mixins – Phase 33
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class HealingOrchestrator(
@@ -34,7 +34,7 @@ class HealingOrchestrator(
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.Logger = logging.getLogger(__name__)
 
         # === Hardening Initialization ===
         super().__init__()  # Required for cooperative multiple inheritance
@@ -61,7 +61,7 @@ class HealingOrchestrator(
     def _load_healing_components(self):
         """Load strategies and transaction manager."""
         try:
-            from agentic_core.L0_maintenance.P1_core.healing_strategies import (
+            from AgenticCore.L0_maintenance.P1_core.healing_strategies import (
                 HEALING_STRATEGIES,
                 get_strategies_by_priority,
             )
@@ -70,28 +70,28 @@ class HealingOrchestrator(
         except ImportError:
             self.strategies = []
             self.strategy_map = {}
-            self.logger.warning("Healing strategies not available")
+            self.Logger.warning("Healing strategies not available")
 
         try:
-            from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+            from AgenticCore.L0_maintenance.P1_core.transaction_manager import HealingTransaction
             self.transaction_cls = HealingTransaction
         except ImportError:
             self.transaction_cls = None
-            self.logger.warning("HealingTransaction manager not available")
+            self.Logger.warning("HealingTransaction manager not available")
 
         try:
-            from agentic_core.observability.healing_audit import log_healing_action
+            from AgenticCore.observability.healing_audit import log_healing_action
             self.log_healing_action = log_healing_action
         except ImportError:
             self.log_healing_action = None
-            self.logger.warning("Healing audit logging not available")
+            self.Logger.warning("Healing audit logging not available")
 
     # === AutonomyMixin Override ===
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
         """Proactively detect when healing is needed."""
         # Simple trigger: sovereignty health degradation
         try:
-            from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
+            from AgenticCore.L0_maintenance.scripts.metrics_witness import MetricsWitness
             witness = MetricsWitness(Path("."))
             structural_score, _ = witness.calculate_structural_ssot_score()
             healing_score, healing_issues = witness.calculate_healing_resilience_score()
@@ -105,19 +105,19 @@ class HealingOrchestrator(
                     "trigger": "proactive_health_check",
                 }
         except Exception as e:
-            self.logger.debug(f"Proactive check failed: {e}")
+            self.Logger.debug(f"Proactive check failed: {e}")
 
         return None
 
     # === AdaptiveExecutionMixin Overrides ===
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.info("Conservative mode: limiting to high-priority fixes only")
+        self.Logger.info("Conservative mode: limiting to high-priority fixes only")
         # Filter fixes to priority >= 8
         high_priority = [f for f in context.get("fixes", []) if f.get("priority", 5) >= 8]
         return await self._execute_standard(ctx, fixes=high_priority, **context)
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.warning("Minimal mode: standing by to preserve resources")
+        self.Logger.warning("Minimal mode: standing by to preserve resources")
         return {
             "mode": "minimal",
             "action": "standby",
@@ -153,7 +153,7 @@ class HealingOrchestrator(
                     # Boost priority for high-confidence fixes
                     fix["priority"] = fix.get("priority", 5) + (2 if prob > 0.8 else 0)
                 all_fixes.extend(fixes)
-                self.logger.info(f"{strategy.name} proposed {len(fixes)} fixes")
+                self.Logger.info(f"{strategy.name} proposed {len(fixes)} fixes")
         return all_fixes
 
     async def apply_fixes_transactionally(self, fixes: List[Dict]) -> int:
@@ -171,9 +171,9 @@ class HealingOrchestrator(
             })
 
         if self.transaction_cls is None or self.log_healing_action is None:
-            self.logger.warning("Transactional healing unavailable – logging for manual review")
+            self.Logger.warning("Transactional healing unavailable – logging for manual review")
             for fix in sorted(fixes, key=lambda f: f.get("priority", 10)):
-                self.logger.info(f"PROPOSED: {fix['action']} | {fix['reason']} | File: {fix.get('file', 'N/A')}")
+                self.Logger.info(f"PROPOSED: {fix['action']} | {fix['reason']} | File: {fix.get('file', 'N/A')}")
             return 0
 
         tx = self.transaction_cls()
@@ -189,7 +189,7 @@ class HealingOrchestrator(
 
                 strategy = self.strategy_map.get(fix.get("strategy"))
                 if not strategy:
-                    self.logger.warning(f"Strategy '{fix.get('strategy')}' not found – skipping")
+                    self.Logger.warning(f"Strategy '{fix.get('strategy')}' not found – skipping")
                     continue
 
                 success = await strategy.apply(fix, ctx=None)
@@ -208,12 +208,12 @@ class HealingOrchestrator(
                     fixes_applied += 1
 
             tx.commit()
-            self.logger.info(f"Healing Complete: {fixes_applied} fixes committed")
+            self.Logger.info(f"Healing Complete: {fixes_applied} fixes committed")
             return fixes_applied
 
         except Exception as e:
             tx.rollback()
-            self.logger.error(f"Healing Aborted: {e} – All changes reverted")
+            self.Logger.error(f"Healing Aborted: {e} – All changes reverted")
             return fixes_applied
 
     async def execute_self_correction(self, issues: List[Dict]) -> None:

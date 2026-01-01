@@ -6,11 +6,11 @@ Validates and enforces architectural patterns across the codebase.
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-logger: Any = logging.getLogger(__name__)
-layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+Logger: Any = logging.getLogger(__name__)
+layer_dirs: Any = set(SOVEREIGN_REGISTRY['AgenticCore']['subfolders'])
 
-class architecture_governor:
+class ArchitectureGovernor:
     """
     L3 Orchestration: Architecture Pattern Enforcement
     Ensures code follows canonical architectural patterns and layer boundaries.
@@ -39,7 +39,7 @@ class architecture_governor:
         try:
             rel_path: Any = file_path.relative_to(self.project_root)
             parts: Any = rel_path.parts
-            if len(parts) > 1 and parts[0] == 'agentic_core':
+            if len(parts) > 1 and parts[0] == 'AgenticCore':
                 if len(parts) > 2 and parts[1] in LAYER_DIRS:
                     return (True, f'Valid layer structure: {parts[1]}')
             return (False, 'File outside layer structure')

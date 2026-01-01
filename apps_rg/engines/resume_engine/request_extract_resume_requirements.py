@@ -1,5 +1,5 @@
 """
-extract_resume_requirements.py - Retrieval Module
+ExtractResumeRequirements.py - Retrieval Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.188342
@@ -17,7 +17,7 @@ class ExtractResumeRequirements:
     def __init__(self, config: Optional[Dict[str, object]] = None):
         SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f"Initialized {self.__class__.__name__}")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
                  query: str,

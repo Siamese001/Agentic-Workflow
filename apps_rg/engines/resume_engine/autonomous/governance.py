@@ -33,7 +33,7 @@ class DependencyStatus(Enum):
     HEALTHY = "healthy"
     WARNING = "warning"
     CONFLICT = "conflict"
-    MISSING = "missing"
+    MISSING = "Missing"
 
 
 class DocComplianceLevel(Enum):
@@ -59,15 +59,15 @@ class DependencyIssue:
     status: DependencyStatus
     package: str
     description: str
-    recommendation: str
+    Recommendation: str
 
 
 @dataclass
 class DocViolation:
-    """A documentation violation."""
+    """A documentation Violation."""
     file_path: str
     function_name: str
-    violation_type: str
+    ViolationType: str
     missing_args: List[str]
     missing_return: bool
     line_number: int
@@ -91,7 +91,7 @@ class CostPrediction:
     estimated_cost: float
     budget_remaining: float
     will_exceed: bool
-    recommendation: str
+    Recommendation: str
 
 
 class DependencyArbiter:
@@ -161,7 +161,7 @@ class DependencyArbiter:
                             status=DependencyStatus.CONFLICT,
                             package=line.split()[0] if line.split() else "unknown",
                             description=line,
-                            recommendation="Resolve version conflict",
+                            Recommendation="Resolve version conflict",
                         )
                         issues.append(issue)
         except subprocess.TimeoutExpired:
@@ -170,7 +170,7 @@ class DependencyArbiter:
                 status=DependencyStatus.WARNING,
                 package="pip",
                 description="pip check timed out",
-                recommendation="Run pip check manually",
+                Recommendation="Run pip check manually",
             ))
         except Exception as e:
             issues.append(DependencyIssue(
@@ -178,7 +178,7 @@ class DependencyArbiter:
                 status=DependencyStatus.WARNING,
                 package="pip",
                 description=f"pip check failed: {e}",
-                recommendation="Verify pip is installed correctly",
+                Recommendation="Verify pip is installed correctly",
             ))
 
         return issues
@@ -194,7 +194,7 @@ class DependencyArbiter:
                 status=DependencyStatus.MISSING,
                 package="requirements.txt",
                 description="requirements.txt not found",
-                recommendation="Create requirements.txt with pip freeze",
+                Recommendation="Create requirements.txt with pip freeze",
             ))
         else:
             # Check for common issues
@@ -211,7 +211,7 @@ class DependencyArbiter:
                                 status=DependencyStatus.WARNING,
                                 package=line,
                                 description=f"Unpinned version: {line}",
-                                recommendation="Pin version with ==",
+                                Recommendation="Pin version with ==",
                             ))
 
         return issues
@@ -303,10 +303,10 @@ class StrictDocEnforcer:
 
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    violation = self._check_function(node, file_path)
-                    if violation:
-                        violations.append(violation)
-                        self._violations.append(violation)
+                    Violation = self._check_function(node, file_path)
+                    if Violation:
+                        violations.append(Violation)
+                        self._violations.append(Violation)
 
         except SyntaxError:
             pass
@@ -325,7 +325,7 @@ class StrictDocEnforcer:
             return DocViolation(
                 file_path=file_path,
                 function_name=node.name,
-                violation_type="missing_docstring",
+                ViolationType="missing_docstring",
                 missing_args=[],
                 missing_return=False,
                 line_number=node.lineno,
@@ -340,7 +340,7 @@ class StrictDocEnforcer:
         # Parse docstring for Args section
         documented_args = self._parse_args_section(docstring)
 
-        # Find missing args
+        # Find Missing args
         missing_args = [a for a in args if a not in documented_args]
 
         # Check for return documentation
@@ -358,7 +358,7 @@ class StrictDocEnforcer:
             return DocViolation(
                 file_path=file_path,
                 function_name=node.name,
-                violation_type="incomplete_docstring",
+                ViolationType="incomplete_docstring",
                 missing_args=missing_args,
                 missing_return=missing_return,
                 line_number=node.lineno,
@@ -401,8 +401,8 @@ class StrictDocEnforcer:
         if not violations:
             return DocComplianceLevel.COMPLETE
 
-        missing_docstrings = sum(1 for v in violations if v.violation_type == "missing_docstring")
-        incomplete = sum(1 for v in violations if v.violation_type == "incomplete_docstring")
+        missing_docstrings = sum(1 for v in violations if v.ViolationType == "missing_docstring")
+        incomplete = sum(1 for v in violations if v.ViolationType == "incomplete_docstring")
 
         if missing_docstrings > 0:
             return DocComplianceLevel.NONE
@@ -415,8 +415,8 @@ class StrictDocEnforcer:
         """Get enforcer statistics."""
         return {
             "total_violations": len(self._violations),
-            "missing_docstrings": sum(1 for v in self._violations if v.violation_type == "missing_docstring"),
-            "incomplete_docstrings": sum(1 for v in self._violations if v.violation_type == "incomplete_docstring"),
+            "missing_docstrings": sum(1 for v in self._violations if v.ViolationType == "missing_docstring"),
+            "incomplete_docstrings": sum(1 for v in self._violations if v.ViolationType == "incomplete_docstring"),
         }
 
 
@@ -488,7 +488,7 @@ class DashboardGenerator:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Condensed CSS for line reduction
-        condensed_css = """* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; min-height: 100vh; padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; background: linear-gradient(90deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .timestamp { text-align: center; color: #888; margin-bottom: 20px; } .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; } .metric-card { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; backdrop-filter: blur(10px); } .metric-value { font-size: 2.5em; font-weight: bold; } .metric-label { color: #888; margin-top: 5px; } .success { color: #00ff88; } .failure { color: #ff4444; } .warning { color: #ffaa00; } .section { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; } .section h2 { margin-bottom: 15px; color: #00d4ff; } table { width: 100%; border-collapse: collapse; } th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); } th { color: #888; font-weight: normal; } .status-pass { color: #00ff88; } .status-fail { color: #ff4444; } .signal-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(255,170,0,0.2); color: #ffaa00; margin: 4px; font-size: 0.9em; } .mermaid { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }"""
+        condensed_css = """* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; min-height: 100vh; padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; background: linear-gradient(90deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .timestamp { text-align: center; color: #888; margin-bottom: 20px; } .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; } .Metric-card { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; backdrop-filter: blur(10px); } .Metric-value { font-size: 2.5em; font-weight: bold; } .Metric-label { color: #888; margin-top: 5px; } .success { color: #00ff88; } .failure { color: #ff4444; } .warning { color: #ffaa00; } .section { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; } .section h2 { margin-bottom: 15px; color: #00d4ff; } table { width: 100%; border-collapse: collapse; } th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); } th { color: #888; font-weight: normal; } .status-pass { color: #00ff88; } .status-fail { color: #ff4444; } .signal-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(255,170,0,0.2); color: #ffaa00; margin: 4px; font-size: 0.9em; } .mermaid { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }"""
 
         html = f"""<!DOCTYPE html>
 <html>
@@ -501,10 +501,10 @@ class DashboardGenerator:
 <body>
     <div class="container"><h1>🧬 Resume Engine Mission Control</h1><p class="timestamp">Generated: {timestamp}</p>
         <div class="metrics">
-            <div class="metric-card"><div class="metric-value">{total}</div><div class="metric-label">Total Checks</div></div>
-            <div class="metric-card"><div class="metric-value success">{passed}</div><div class="metric-label">Passed</div></div>
-            <div class="metric-card"><div class="metric-value failure">{failed}</div><div class="metric-label">Failed</div></div>
-            <div class="metric-card"><div class="metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div><div class="metric-label">Success Rate</div></div>
+            <div class="Metric-card"><div class="Metric-value">{total}</div><div class="Metric-label">Total Checks</div></div>
+            <div class="Metric-card"><div class="Metric-value success">{passed}</div><div class="Metric-label">Passed</div></div>
+            <div class="Metric-card"><div class="Metric-value failure">{failed}</div><div class="Metric-label">Failed</div></div>
+            <div class="Metric-card"><div class="Metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div><div class="Metric-label">Success Rate</div></div>
         </div>
         <div class="section"><h2>📡 Active Signals</h2><div>{self._render_signals(signals)}</div></div>
         <div class="section"><h2>📊 Agent Results</h2><table><thead><tr><th>Agent</th><th>Status</th><th>Details</th></tr></thead><tbody>{self._render_results_table(results)}</tbody></table></div>
@@ -519,9 +519,9 @@ class DashboardGenerator:
     def _render_signals(self, signals: Set[str]) -> str:
         """Render signals as badges."""
         if not signals:
-            return '<span style="color: #888;">No active signals</span>'
+            return '<Span style="color: #888;">No active signals</Span>'
 
-        return "".join(f'<span class="signal-badge">{s}</span>' for s in signals)
+        return "".join(f'<Span class="signal-badge">{s}</Span>' for s in signals)
 
     def _render_results_table(self, results: Dict[str, Any]) -> str:
         """Render results as table rows."""
@@ -692,9 +692,9 @@ class PromptGovernor:
     def _looks_like_prompt(self, text: str) -> bool:
         """Check if text looks like an LLM prompt."""
         prompt_indicators = [
-            "you are", "your task", "please", "generate",
+            "you are", "your Task", "please", "generate",
             "respond", "answer", "role:", "context:",
-            "instructions:", "task:", "system:",
+            "instructions:", "Task:", "system:",
         ]
 
         text_lower = text.lower()
@@ -808,20 +808,20 @@ class PredictiveBudgetManager:
         budget_remaining = self.budget_limit - self._current_cost
         will_exceed = estimated_cost > budget_remaining
 
-        # Generate recommendation
+        # Generate Recommendation
         if will_exceed:
-            recommendation = f"Reduce scope or increase budget by ${estimated_cost - budget_remaining:.4f}"
+            Recommendation = f"Reduce scope or increase budget by ${estimated_cost - budget_remaining:.4f}"
         elif estimated_cost > budget_remaining * 0.8:
-            recommendation = "Approaching budget limit - consider reducing scope"
+            Recommendation = "Approaching budget limit - consider reducing scope"
         else:
-            recommendation = "Within budget"
+            Recommendation = "Within budget"
 
         prediction = CostPrediction(
             estimated_tokens=total_tokens,
             estimated_cost=estimated_cost,
             budget_remaining=budget_remaining,
             will_exceed=will_exceed,
-            recommendation=recommendation,
+            Recommendation=Recommendation,
         )
 
         self._predictions.append(prediction)

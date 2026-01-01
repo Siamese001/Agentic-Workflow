@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 # NOT_AN_AGENT — base class implementation, not a true agent — excluded from agent discovery
-class canon_base_agent(CanonBaseAgentInterface):
+class CanonBaseAgent(CanonBaseAgentInterface):
     """
     Implementation of canon agent base — lives in Execution context.
     
@@ -34,13 +34,13 @@ class canon_base_agent(CanonBaseAgentInterface):
         Execute primary mission.
         
         Args:
-            goal: The goal/task to execute
+            goal: The goal/Task to execute
             context: Execution context with necessary data
             
         Returns:
             Dictionary with execution results
         """
-        # Implementation preserved from original canon_base_agent.py
+        # Implementation preserved from original CanonBaseAgent.py
         # This is a simplified version - full implementation would include
         # all the resilient_mutation, verify_fix, and other methods
         return {
@@ -69,7 +69,7 @@ class canon_base_agent(CanonBaseAgentInterface):
         # Basic validation - ensure name is set
         return bool(self.name)
 
-# NOTE: The full implementation from the original canon_base_agent.py
+# NOTE: The full implementation from the original CanonBaseAgent.py
 # (465 lines) should be migrated here, including:
 # - resilient_mutation method
 # - verify_fix method

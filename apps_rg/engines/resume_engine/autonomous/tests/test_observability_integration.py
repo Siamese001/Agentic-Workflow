@@ -325,7 +325,7 @@ class TestTelemetryExport:
         # Run mission
         phase5.start_mission("export_test")
         phase5.track_agent("TestAgent", "test")
-        phase5.metrics.increment("test.metric")
+        phase5.metrics.increment("test.Metric")
         phase5.end_mission()
 
         # Export

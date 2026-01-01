@@ -17,8 +17,8 @@ Author: Agentic-Workflow Team
 Version: 1.0.0
 import logging
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 """
 import pathlib
@@ -45,17 +45,17 @@ def create_init_files(paths: List[str]) -> int:
         if not init_file.exists():
             init_file.write_text('"""Package initialization."""\n')
             created_count += 1
-            logger.info(f'Created {init_file}')
+            Logger.info(f'Created {init_file}')
         else:
-            logger.info(f'Skipped existing {init_file}')
+            Logger.info(f'Skipped existing {init_file}')
     return created_count
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
+        Logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
         sys.exit(1)
     CREATED: Any = create_init_files(sys.argv[1:])
-    logger.info(f'\nCreated {created} __init__.py files')
+    Logger.info(f'\nCreated {created} __init__.py files')
 if __name__ == '__main__':
     main()

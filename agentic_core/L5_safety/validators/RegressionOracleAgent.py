@@ -15,10 +15,10 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -31,10 +31,10 @@ except ImportError:
     GENAI_AVAILABLE: Any = False
     genai: Any = None
     types: Any = None
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class method_change:
+class MethodChange:
     """Represents a changed method requiring test generation."""
     file_path: str
     method_name: str
@@ -45,7 +45,7 @@ class method_change:
     is_deleted: bool
 
 @dataclass
-class generated_test:
+class GeneratedTest:
     """Represents a generated test case."""
     test_file: str
     test_name: str
@@ -55,7 +55,7 @@ class generated_test:
     passed: bool
     error_message: Optional[str]
 
-class method_change_detector:
+class MethodChangeDetector:
     """Detects method changes between two versions of a file."""
 
     def __init__(self, ctx):
@@ -76,7 +76,7 @@ class method_change_detector:
                 before_tree: Any = ast.parse(before_code) if before_code else None
                 after_tree: Any = ast.parse(after_code) if after_code else None
             except SyntaxError:
-                logger.warning(f'Syntax error parsing {file_path} for method changes. Skipping.')
+                Logger.warning(f'Syntax error parsing {file_path} for method changes. Skipping.')
                 continue
             before_methods: Any = self._extract_methods(before_tree, before_code) if before_tree else {}
             after_methods: Any = self._extract_methods(after_tree, after_code) if after_tree else {}
@@ -104,7 +104,7 @@ class method_change_detector:
                 methods[node.name] = method_code
         return methods
 
-class regression_test_generator:
+class RegressionTestGenerator:
     """Generates pytest code and creates test files."""
 
     def __init__(self, ctx, test_dir: Path, pinecone_available: bool, pinecone_index, genai_available: bool, genai_client):
@@ -134,7 +134,7 @@ class regression_test_generator:
         try:
             return self._generate_default_edge_cases(change)
         except Exception as e:
-            logger.warning(f'Could not query Pinecone: {e}')
+            Logger.warning(f'Could not query Pinecone: {e}')
             return self._generate_default_edge_cases(change)
 
     def _generate_default_edge_cases(self, change: MethodChange) -> List[str]:
@@ -148,7 +148,7 @@ class regression_test_generator:
             try:
                 return await self._synthesize_with_gemini(change, edge_cases)
             except Exception as e:
-                logger.warning(f'Gemini synthesis failed: {e}, falling back to template')
+                Logger.warning(f'Gemini synthesis failed: {e}, falling back to template')
         return self._synthesize_with_template(change, edge_cases)
 
     async def _synthesize_with_gemini(self, change: MethodChange, edge_cases: List[str]) -> str:
@@ -175,10 +175,10 @@ class regression_test_generator:
         test_file = self.test_dir / f'test_{file_name}_{change.method_name}.py'
         with open(test_file, 'w') as f:
             f.write(test_code)
-        logger.info(f'   Generated test: {test_file}')
+        Logger.info(f'   Generated test: {test_file}')
         return test_file
 
-class regression_test_runner:
+class RegressionTestRunner:
     """Runs generated tests, performs self-correction, and reports results."""
 
     def __init__(self, ctx, test_dir: Path, genai_available: bool, genai_client, emit_signal_callback: Callable[[str, str], None]):
@@ -205,7 +205,7 @@ class regression_test_runner:
             error_msg = result.stderr if not passed else None
             return (passed, error_msg)
         except Exception as e:
-            logger.error(f'Error running test: {e}')
+            Logger.error(f'Error running test: {e}')
             return (False, str(e))
 
     async def _self_correct(self, change: MethodChange, test_code: str, error_msg: str) -> Tuple[bool, Optional[str]]:
@@ -213,39 +213,39 @@ class regression_test_runner:
         Self-correction: Decide if test is bad or code is broken.
         Uses Gemini to analyze failure and determine root cause.
         """
-        logger.warning(f'   Test failed for {change.method_name}, attempting self-correction...')
+        Logger.warning(f'   Test failed for {change.method_name}, attempting self-correction...')
         if not self.genai_available or not self.genai_client:
-            logger.warning('   Gemini not available for self-correction')
+            Logger.warning('   Gemini not available for self-correction')
             return (False, f'Self-correction unavailable: {error_msg}')
         try:
-            analysis_prompt = f'Analyze this test failure and determine the root cause.\n\nMETHOD: {change.method_name}\nFILE: {change.file_path}\n\nBEFORE CODE (expected behavior):\n{change.before_code}\n```\n\nAFTER CODE (actual implementation):\n{change.after_code}\n```\n\nGENERATED TEST:\n{test_code}\n```\n\nTEST FAILURE:\n{error_msg}\n\nANALYSIS REQUIRED:\n1. Is the test incorrectly written? (missing mocks, wrong assertions, syntax errors)\n2. Is the new code actually broken? (regression, logic error, breaking change)\n3. What is the root cause of the failure?\n\nOUTPUT FORMAT:\nProvide a JSON response with:\n{{\n    "root_cause": "test_error" or "code_regression",\n    "explanation": "detailed explanation of the issue",\n    "fix_suggestion": "what should be fixed"\n}}\n'
+            analysis_prompt = f'Analyze this test failure and determine the root cause.\n\nMETHOD: {change.method_name}\nFILE: {change.file_path}\n\nBEFORE CODE (expected behavior):\n{change.before_code}\n```\n\nAFTER CODE (actual implementation):\n{change.after_code}\n```\n\nGENERATED TEST:\n{test_code}\n```\n\nTEST FAILURE:\n{error_msg}\n\nANALYSIS REQUIRED:\n1. Is the test incorrectly written? (Missing mocks, wrong assertions, syntax errors)\n2. Is the new code actually broken? (regression, logic error, breaking change)\n3. What is the root cause of the failure?\n\nOUTPUT FORMAT:\nProvide a JSON response with:\n{{\n    "root_cause": "test_error" or "code_regression",\n    "explanation": "detailed explanation of the issue",\n    "fix_suggestion": "what should be fixed"\n}}\n'
             response = await self.genai_client.models.generate_content_async(model='gemini-2.5-flash', contents=analysis_prompt, generation_config=types.GenerationConfig(temperature=0.1, max_output_tokens=1024))
             analysis = response.text
             if 'code_regression' in analysis.lower():
-                logger.error(f'   [ALERT] REGRESSION DETECTED in {change.method_name}')
-                logger.error(f'   Analysis: {analysis}')
+                Logger.error(f'   [ALERT] REGRESSION DETECTED in {change.method_name}')
+                Logger.error(f'   Analysis: {analysis}')
                 if hasattr(self.ctx, 'signals'):
                     self.ctx.signals.add(f'REGRESSION_DETECTED:{change.file_path}:{change.method_name}')
                 return (False, f'REGRESSION DETECTED: {analysis}')
             elif 'test_error' in analysis.lower():
-                logger.warning(f'   Test error detected, attempting auto-fix...')
+                Logger.warning(f'   Test error detected, attempting auto-fix...')
                 fixed_test = await self._auto_fix_test(change, test_code, error_msg, analysis)
                 if fixed_test:
                     test_file = self._create_test_file_for_correction(change, fixed_test)
                     passed, new_error = await self._run_test(test_file)
                     if passed:
-                        logger.info(f'   [OK] Test auto-fixed and now passes')
+                        Logger.info(f'   [OK] Test auto-fixed and now passes')
                         return (True, None)
                     else:
-                        logger.warning(f'   Fixed test still fails: {new_error}')
+                        Logger.warning(f'   Fixed test still fails: {new_error}')
                         return (False, f'Auto-fix failed: {new_error}')
                 else:
                     return (False, f'Could not auto-fix test: {analysis}')
             else:
-                logger.warning(f'   Unclear root cause, flagging for human review')
+                Logger.warning(f'   Unclear root cause, flagging for human review')
                 return (False, f'Unclear failure: {analysis}')
         except Exception as e:
-            logger.error(f'Self-correction failed: {e}')
+            Logger.error(f'Self-correction failed: {e}')
             return (False, f'Self-correction error: {e}')
 
     async def _auto_fix_test(self, change: MethodChange, test_code: str, error_msg: str, analysis: str) -> Optional[str]:
@@ -254,7 +254,7 @@ class regression_test_runner:
         Uses Gemini to generate a corrected version.
         """
         try:
-            fix_prompt = f"Fix this broken pytest test based on the analysis.\n\nORIGINAL TEST:\n{test_code}\n```\n\nERROR:\n{error_msg}\n\nANALYSIS:\n{analysis}\n\nREQUIREMENTS:\n1. Fix the identified issues (missing mocks, wrong imports, incorrect assertions)\n2. Preserve the test's intent and coverage\n3. Ensure all dependencies are properly mocked\n4. Return ONLY the complete fixed test code\n\nOUTPUT FORMAT:\nReturn the complete corrected Python test file code.\n"
+            fix_prompt = f"Fix this broken pytest test based on the analysis.\n\nORIGINAL TEST:\n{test_code}\n```\n\nERROR:\n{error_msg}\n\nANALYSIS:\n{analysis}\n\nREQUIREMENTS:\n1. Fix the identified issues (Missing mocks, wrong imports, incorrect assertions)\n2. Preserve the test's intent and coverage\n3. Ensure all dependencies are properly mocked\n4. Return ONLY the complete fixed test code\n\nOUTPUT FORMAT:\nReturn the complete corrected Python test file code.\n"
             response = await self.genai_client.models.generate_content_async(model='gemini-2.5-flash', contents=fix_prompt, generation_config=types.GenerationConfig(temperature=0.2, max_output_tokens=2048))
             fixed_code = response.text
             if '```python' in fixed_code:
@@ -263,7 +263,7 @@ class regression_test_runner:
                 fixed_code = fixed_code.split('```')[1].split('```')[0].strip()
             return fixed_code
         except Exception as e:
-            logger.error(f'Auto-fix failed: {e}')
+            Logger.error(f'Auto-fix failed: {e}')
             return None
 
     def _create_test_file_for_correction(self, change: MethodChange, test_code: str) -> Path:
@@ -272,7 +272,7 @@ class regression_test_runner:
         test_file = self.test_dir / f'test_{file_name}_{change.method_name}.py'
         with open(test_file, 'w') as f:
             f.write(test_code)
-        logger.info(f'   Re-generated test file for correction: {test_file}')
+        Logger.info(f'   Re-generated test file for correction: {test_file}')
         return test_file
 
     def report_results(self, generated_tests: List[GeneratedTest]) -> Any:
@@ -280,23 +280,23 @@ class regression_test_runner:
         total_tests: Any = len(generated_tests)
         passed_tests: Any = sum((1 for t in generated_tests if t.passed))
         failed_tests: Any = total_tests - passed_tests
-        logger.info(f"\n{'=' * 80}")
-        logger.info('🔮 REGRESSION ORACLE REPORT')
-        logger.info(f"{'=' * 80}")
-        logger.info(f'Total Tests Generated: {total_tests}')
-        logger.info(f'  Passed: {passed_tests}')
-        logger.info(f'  Failed: {failed_tests}')
+        Logger.info(f"\n{'=' * 80}")
+        Logger.info('🔮 REGRESSION ORACLE REPORT')
+        Logger.info(f"{'=' * 80}")
+        Logger.info(f'Total Tests Generated: {total_tests}')
+        Logger.info(f'  Passed: {passed_tests}')
+        Logger.info(f'  Failed: {failed_tests}')
         if failed_tests > 0:
-            logger.warning(f'\n[!]  FAILED TESTS:')
+            Logger.warning(f'\n[!]  FAILED TESTS:')
             for test in generated_tests:
                 if not test.passed:
-                    logger.warning(f'  {test.test_name}: {test.error_message}')
+                    Logger.warning(f'  {test.test_name}: {test.error_message}')
         if passed_tests > 0:
-            logger.info(f'\n[OK] PASSED TESTS:')
+            Logger.info(f'\n[OK] PASSED TESTS:')
             for test in generated_tests:
                 if test.passed:
-                    logger.info(f'  {test.test_name} → {test.test_file}')
-        logger.info(f"{'=' * 80}\n")
+                    Logger.info(f'  {test.test_name} → {test.test_file}')
+        Logger.info(f"{'=' * 80}\n")
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class RegressionOracleAgent(SubAtomicAgent):
@@ -335,9 +335,9 @@ class RegressionOracleAgent(SubAtomicAgent):
                 try:
                     pc = Pinecone(api_key=api_key)
                     pinecone_index = pc.Index('canon-healing-patterns')
-                    logger.info('[OK] Regression Oracle connected to Pinecone')
+                    Logger.info('[OK] Regression Oracle connected to Pinecone')
                 except Exception as e:
-                    logger.warning(f'[!]  Could not connect to Pinecone: {e}')
+                    Logger.warning(f'[!]  Could not connect to Pinecone: {e}')
                     pinecone_available = False
         genai_available = GENAI_AVAILABLE
         genai_client = None
@@ -346,9 +346,9 @@ class RegressionOracleAgent(SubAtomicAgent):
             if api_key:
                 try:
                     genai_client = genai.Client(api_key=api_key)
-                    logger.info('[OK] Regression Oracle connected to Gemini 2.5')
+                    Logger.info('[OK] Regression Oracle connected to Gemini 2.5')
                 except Exception as e:
-                    logger.warning(f'[!]  Could not connect to Gemini: {e}')
+                    Logger.warning(f'[!]  Could not connect to Gemini: {e}')
                     genai_available = False
         self.change_detector = MethodChangeDetector(self.ctx)
         self.test_generator = RegressionTestGenerator(self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client)
@@ -361,21 +361,21 @@ class RegressionOracleAgent(SubAtomicAgent):
         
         Listens for FILE_MODIFIED signals and generates tests.
         """
-        logger.info('🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...')
+        Logger.info('🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...')
         modified_files_to_process: Any = []
         if hasattr(self.ctx, 'signals'):
             modified_signals: Any = [s for s in self.ctx.signals if s.startswith('FILE_MODIFIED:')]
             if modified_signals:
-                logger.info(f'   Detected {len(modified_signals)} FILE_MODIFIED signals')
+                Logger.info(f'   Detected {len(modified_signals)} FILE_MODIFIED signals')
                 modified_files_to_process.extend([s.replace('FILE_MODIFIED:', '') for s in modified_signals])
             else:
-                logger.info('   No FILE_MODIFIED signals detected')
+                Logger.info('   No FILE_MODIFIED signals detected')
         if hasattr(self.ctx, 'modified_files') and self.ctx.modified_files:
-            logger.info(f'   Processing {len(self.ctx.modified_files)} modified files from context')
+            Logger.info(f'   Processing {len(self.ctx.modified_files)} modified files from context')
             modified_files_to_process.extend(self.ctx.modified_files)
         unique_modified_files: Any = list(set(modified_files_to_process))
         if not unique_modified_files:
-            logger.info('   No modified files to test')
+            Logger.info('   No modified files to test')
             return
         for file_path in unique_modified_files:
             await self._process_modified_file(file_path)
@@ -383,10 +383,10 @@ class RegressionOracleAgent(SubAtomicAgent):
 
     async def _process_modified_file(self, file_path: str):
         """Process a modified file and generate tests."""
-        logger.info(f'   Analyzing {file_path}...')
+        Logger.info(f'   Analyzing {file_path}...')
         changes = self.change_detector.detect_method_changes(file_path)
         if not changes:
-            logger.info(f'   No method changes detected in {file_path}')
+            Logger.info(f'   No method changes detected in {file_path}')
             return
         for change in changes:
             test_code, test_file, edge_cases = await self.test_generator.generate_test_code_and_file(change)
@@ -398,7 +398,7 @@ class RegressionOracleAgent(SubAtomicAgent):
         """Emit REGRESSION_CHECK_PASS signal to blackboard."""
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'REGRESSION_CHECK_PASS:{file_path}:{method_name}')
-            logger.info(f'   [OK] Regression check passed for {method_name}')
+            Logger.info(f'   [OK] Regression check passed for {method_name}')
 _regression_oracle = None
 
 def get_regression_oracle(ctx: Any) -> RegressionOracle:

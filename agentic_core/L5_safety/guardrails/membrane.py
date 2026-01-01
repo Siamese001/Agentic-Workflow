@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
 
-class input_membrane:
+class InputMembrane:
     """
     L5 Safety Guardrail: The Data Membrane.
     Scrubs inputs and outputs to prevent data contamination or prompt injection.

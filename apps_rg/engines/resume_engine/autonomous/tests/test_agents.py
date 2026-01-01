@@ -124,7 +124,7 @@ class TestFactCheckAgent:
 
     @pytest.mark.asyncio
     async def test_no_profile_skips(self, ctx, valid_resume):
-        """Test that missing profile skips deep fact-check."""
+        """Test that Missing profile skips deep fact-check."""
         ctx.current_resume = valid_resume
         ctx.user_profile = {}
         agent = FactCheckAgent(ctx)
@@ -210,7 +210,7 @@ class TestTemplateOptimizer:
     async def test_technical_job_detection(self, ctx, valid_resume):
         """Test technical job type detection."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Senior Software Engineer needed for cloud development"
+        ctx.JobDescription = "Senior Software Engineer needed for cloud development"
         agent = TemplateOptimizer(ctx)
 
         await agent.execute()
@@ -222,7 +222,7 @@ class TestTemplateOptimizer:
     async def test_executive_job_detection(self, ctx, valid_resume):
         """Test executive job type detection."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "VP of Engineering, Director level position"
+        ctx.JobDescription = "VP of Engineering, Director level position"
         agent = TemplateOptimizer(ctx)
 
         await agent.execute()
@@ -231,9 +231,9 @@ class TestTemplateOptimizer:
 
     @pytest.mark.asyncio
     async def test_no_job_description(self, ctx, valid_resume):
-        """Test handling of missing job description."""
+        """Test handling of Missing job description."""
         ctx.current_resume = valid_resume
-        ctx.job_description = ""
+        ctx.JobDescription = ""
         agent = TemplateOptimizer(ctx)
 
         await agent.execute()
@@ -257,7 +257,7 @@ class TestSectionBalanceAgent:
 
     @pytest.mark.asyncio
     async def test_missing_required_section(self, ctx):
-        """Test detection of missing required sections."""
+        """Test detection of Missing required sections."""
         ctx.current_resume = {
             "summary": "A good summary here",
             # Missing experience and skills
@@ -286,7 +286,7 @@ class TestATSCompatibilityAgent:
     async def test_ats_friendly_passes(self, ctx, valid_resume):
         """Test that ATS-friendly resume passes."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Python developer needed"
+        ctx.JobDescription = "Python developer needed"
         agent = ATSCompatibilityAgent(ctx)
 
         await agent.execute()
@@ -336,7 +336,7 @@ class TestTestPilot:
 
     @pytest.mark.asyncio
     async def test_missing_sections_fail(self, ctx):
-        """Test that missing required sections fail."""
+        """Test that Missing required sections fail."""
         ctx.current_resume = {
             "contact": "email@test.com",
             # Missing summary, experience, skills

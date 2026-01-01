@@ -21,32 +21,32 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 # Assuming ValidationResult, IntegrityGateExecutor, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
 # For the purpose of fixing syntax, these are treated as existing types.
 
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result: # Placeholder for ValidationResult
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult: # Placeholder for ValidationResult
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None):
         self.gate_id = gate_id
         self.passed = PASSED
-        self.severity = SEVERITY
+        self.Severity = SEVERITY
         self.message = MESSAGE
         self.details = DETAILS
         self.signature = SIGNATURE
 
-# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
-class integrity_gate_executor: # Placeholder for IntegrityGateExecutor
+# NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
+class IntegrityGateExecutor: # Placeholder for IntegrityGateExecutor
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):
@@ -55,8 +55,8 @@ class integrity_gate_executor: # Placeholder for IntegrityGateExecutor
                     
         return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
 
-# NAMING FIXED: AdaptiveRecoveryLoop → adaptive_recovery_loop
-class adaptive_recovery_loop: # Placeholder for AdaptiveRecoveryLoop
+# NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
+class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, initial_temperature):
@@ -80,8 +80,8 @@ class adaptive_recovery_loop: # Placeholder for AdaptiveRecoveryLoop
 
 
 @dataclass
-# NAMING FIXED: SectionIntegratorConfig → section_integrator_config
-class section_integrator_config:
+# NAMING FIXED: SectionIntegratorConfig → SectionIntegratorConfig
+class SectionIntegratorConfig:
     """TODO: Add docstring."""
 
     max_similarity_threshold: float = 0.75
@@ -89,8 +89,8 @@ class section_integrator_config:
     max_attempts: int = 3
 
 @dataclass
-# NAMING FIXED: SectionIntegratorResult → section_integrator_result
-class section_integrator_result:
+# NAMING FIXED: SectionIntegratorResult → SectionIntegratorResult
+class SectionIntegratorResult:
     """Docstring."""
     overview: str
     similarity_score: float
@@ -99,8 +99,8 @@ class section_integrator_result:
     success: bool
     attempts: int
 
-# NAMING FIXED: SectionScopeIntegrator → section_scope_integrator
-class section_scope_integrator:
+# NAMING FIXED: SectionScopeIntegrator → SectionScopeIntegrator
+class SectionScopeIntegrator:
     """
     K.5B & K.6B - Overview Synthesis Agent
 

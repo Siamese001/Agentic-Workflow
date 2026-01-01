@@ -11,7 +11,7 @@ import sys
 import tempfile
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 few_shot_property_tests: Any = '\nFEW-SHOT HYPOTHESIS PROPERTY TESTS (Valid syntax only):\n\nEXAMPLE 1: List reversal idempotency\nfrom hypothesis import given, strategies as st\n@given(st.lists(st.integers()))\ndef test_reverse_twice(lst):\n    assert lst[::-1][::-1] == lst\n\nEXAMPLE 2: JSON serialization roundtrip\n@given(st.dictionaries(st.text(), st.integers()))\ndef test_json_roundtrip(data):\n    assert json.loads(json.dumps(data)) == data\n\nEXAMPLE 3: Sorting is idempotent\n@given(st.lists(st.integers()))\ndef test_sorted_idempotent(numbers):\n    assert sorted(sorted(numbers)) == sorted(numbers)\n\nEXAMPLE 4: Set operations\n@given(st.sets(st.integers()))\ndef test_set_union_idempotent(s):\n    assert s | s == s\n\nEXAMPLE 5: Dictionary merge\n@given(st.dictionaries(st.text(), st.integers()), st.dictionaries(st.text(), st.integers()))\ndef test_dict_merge(a, b):\n    merged = {**a, **b}\n    for k, v in a.items():\n        if k not in b:\n            assert merged[k] == v\n'
 
 # NAMING CANON COMPLIANCE — renamed to TestPilotAgent for discovery and sovereignty — 2025-12-30
@@ -35,8 +35,8 @@ class TestPilotAgent:
         self.property_violations = []
         self.enable_conversational_repair = enable_conversational_repair
         if self.enable_conversational_repair:
-            from agentic_core.conversational_repair import get_conversational_repair
-            self.conversational_repair = get_conversational_repair()
+            from AgenticCore.ConversationalRepair import get_conversational_repair
+            self.ConversationalRepair = get_conversational_repair()
 
     async def execute(self, modified_files: List[str]=None) -> Dict[str, Any]:
         """
@@ -51,7 +51,7 @@ class TestPilotAgent:
         results: Any = {'standard_tests': await self._run_standard_tests(), 'property_tests': await self._run_property_tests(modified_files or []), 'violations': self.property_violations, 'signals': set()}
         if self.enable_conversational_repair and self._needs_conversational_repair(results):
             repair_results: Any = await self._initiate_conversational_repair(results)
-            results['conversational_repair'] = repair_results
+            results['ConversationalRepair'] = repair_results
         if not results['standard_tests']['passed']:
             results['signals'].add('TEST_FAILURE')
             LOGGER.error(f"Standard tests failed: {results['standard_tests']['failures']}")
@@ -134,9 +134,9 @@ class TestPilotAgent:
             try:
                 result = await self._execute_property_test(test_file, file_path)
                 if 'Falsifying example' in result.get('output', ''):
-                    violation = self._parse_violation(result['output'], file_path)
-                    self._property_violations.append(violation)
-                    return {'passed': False, 'generated': 1, 'violations': 1, 'details': [f"Property violation in {file_path}: {violation['description']}"]}
+                    Violation = self._parse_violation(result['output'], file_path)
+                    self._property_violations.append(Violation)
+                    return {'passed': False, 'generated': 1, 'violations': 1, 'details': [f"Property Violation in {file_path}: {Violation['description']}"]}
                 return {'passed': True, 'generated': 1, 'violations': 0, 'details': [f'Property tests passed for {file_path}']}
             finally:
                 try:
@@ -232,8 +232,8 @@ class TestPilotAgent:
             return {'file': source_file, 'returncode': -1, 'output': f'Error: {str(e)}'}
 
     def _parse_violation(self, output: str, file_path: str) -> Dict[str, Any]:
-        """Parse a property test violation from Hypothesis output."""
-        violation = {'file': file_path, 'description': '', 'example': '', 'timestamp': time.time()}
+        """Parse a property test Violation from Hypothesis output."""
+        Violation = {'file': file_path, 'description': '', 'example': '', 'timestamp': time.time()}
         lines = output.split('\n')
         for i, line in enumerate(lines):
             if 'Falsifying example' in line:
@@ -242,10 +242,10 @@ class TestPilotAgent:
                     if lines[j].strip() and (not lines[j].startswith(' ')):
                         break
                     example_lines.append(lines[j])
-                violation['example'] = '\n'.join(example_lines)
-                violation['description'] = f'Property violation found: {line}'
+                Violation['example'] = '\n'.join(example_lines)
+                Violation['description'] = f'Property Violation found: {line}'
                 break
-        return violation
+        return Violation
 
     def _find_test_files(self) -> List[str]:
         """Find test files in the repository."""

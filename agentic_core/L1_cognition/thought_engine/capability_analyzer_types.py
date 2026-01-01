@@ -1,11 +1,11 @@
-"""Types and models for capability_analyzer."""
+"""Types and models for CapabilityAnalyzer."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class capability_gap_type(Enum):
+class CapabilityGapType(Enum):
     """Types of capability gaps."""
     MISSING_TOOL: Any = 'missing_tool'
     INSUFFICIENT_KNOWLEDGE: Any = 'insufficient_knowledge'
@@ -13,7 +13,7 @@ class capability_gap_type(Enum):
     REASONING_LIMITATION: Any = 'reasoning_limitation'
     INTEGRATION_FAILURE: Any = 'integration_failure'
 
-class recommendation_type(Enum):
+class RecommendationType(Enum):
     """Types of recommendations."""
     ADD_TOOL: Any = 'add_tool'
     ADD_SUB_AGENT: Any = 'add_sub_agent'
@@ -22,25 +22,25 @@ class recommendation_type(Enum):
     OPTIMIZE_PERFORMANCE: Any = 'optimize_performance'
 
 @dataclass
-class capability_gap:
+class CapabilityGap:
     """Identified capability gap."""
     gap_id: str
-    gap_type: CapabilityGapType
+    GapType: CapabilityGapType
     description: str
     affected_scenarios: List[str]
     failure_count: int
-    severity: float
+    Severity: float
     evidence: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'gap_id': self.gap_id, 'gap_type': self.gap_type.value, 'description': self.description, 'affected_scenarios': self.affected_scenarios, 'failure_count': self.failure_count, 'severity': self.severity, 'evidence': self.evidence}
+        return {'gap_id': self.gap_id, 'GapType': self.GapType.value, 'description': self.description, 'affected_scenarios': self.affected_scenarios, 'failure_count': self.failure_count, 'Severity': self.Severity, 'evidence': self.evidence}
 
 @dataclass
-class recommendation:
-    """Improvement recommendation."""
+class Recommendation:
+    """Improvement Recommendation."""
     recommendation_id: str
-    recommendation_type: RecommendationType
+    RecommendationType: RecommendationType
     title: str
     description: str
     addresses_gaps: List[str]
@@ -50,10 +50,10 @@ class recommendation:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'recommendation_id': self.recommendation_id, 'recommendation_type': self.recommendation_type.value, 'title': self.title, 'description': self.description, 'addresses_gaps': self.addresses_gaps, 'priority': self.priority, 'implementation_steps': self.implementation_steps, 'estimated_impact': self.estimated_impact}
+        return {'recommendation_id': self.recommendation_id, 'RecommendationType': self.RecommendationType.value, 'title': self.title, 'description': self.description, 'addresses_gaps': self.addresses_gaps, 'priority': self.priority, 'implementation_steps': self.implementation_steps, 'estimated_impact': self.estimated_impact}
 
 @dataclass
-class analysis_report:
+class AnalysisReport:
     """Capability gap analysis report."""
     report_id: str
     agent_id: str

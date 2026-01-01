@@ -8,7 +8,7 @@ from enum import Enum, auto
 from typing import Any, ClassVar, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -27,14 +27,14 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
 
-# NAMING FIXED: ModelProvider → model_provider
-class model_provider(str, Enum):
+# NAMING FIXED: ModelProvider → ModelProvider
+class ModelProvider(str, Enum):
     """Available model providers."""
 
 
 @dataclass
-# NAMING FIXED: ModelConfig → model_config
-class model_config:
+# NAMING FIXED: ModelConfig → ModelConfig
+class ModelConfig:
     """Configuration for LLM model parameters."""
 
     _provider: ModelProvider = ModelProvider.OPENAI
@@ -49,8 +49,8 @@ class model_config:
 
 
 @dataclass
-# NAMING FIXED: RAGConfig → rag_config
-class rag_config:
+# NAMING FIXED: RAGConfig → RagConfig
+class RagConfig:
     """Configuration for Retrieval-Augmented Generation."""
 
     _enabled: bool = True
@@ -65,8 +65,8 @@ class rag_config:
 
 
 @dataclass
-# NAMING FIXED: GovernorConfig → governor_config
-class governor_config:
+# NAMING FIXED: GovernorConfig → GovernorConfig
+class GovernorConfig:
     """Configuration for governance and safety controls."""
 
     _safety_enabled: bool = True
@@ -82,8 +82,8 @@ class governor_config:
 
 
 @dataclass
-# NAMING FIXED: ReasoningConfig → reasoning_config
-class reasoning_config:
+# NAMING FIXED: ReasoningConfig → ReasoningConfig
+class ReasoningConfig:
     """Centralized reasoning configuration for LLM generation."""
 
     _cot_min_paths: int = 3

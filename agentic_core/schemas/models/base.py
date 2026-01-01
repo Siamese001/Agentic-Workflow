@@ -20,7 +20,7 @@ class SovereignBaseModel(BaseModel):
     Enforces strict type checking and immutability (frozen) to ensure
     data integrity across agent handoffs and state transitions.
     """
-    model_config = ConfigDict(strict=True, frozen=True)
+    ModelConfig = ConfigDict(strict=True, frozen=True)
 
 # ==========================================
 # Structural Entities

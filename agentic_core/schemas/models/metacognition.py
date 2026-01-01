@@ -12,9 +12,9 @@ from pydantic import BaseModel, Field
 
 class Hypothesis(BaseModel):
     """A lightweight hypothesis generated during the reasoning layer."""
-    id: str = Field(..., description="Unique claim identifier")
+    id: str = Field(..., description="Unique Claim identifier")
     agent_id: str = Field(..., description="The agent that proposed this hypothesis")
-    content: str = Field(..., description="The specific claim or theory")
+    content: str = Field(..., description="The specific Claim or theory")
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     evidence_ids: List[str] = Field(default_factory=list, description="References to SignedClaims")
     rationale: Optional[str] = None

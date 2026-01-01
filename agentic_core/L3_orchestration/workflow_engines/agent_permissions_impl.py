@@ -2,36 +2,36 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 try:
-    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
+    from AgenticCore.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 except ImportError:
     AgentIdentity = IdentityType = type('Stub', (), {})
 try:
-    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
+    from AgenticCore.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
 except ImportError:
     Permission = PermissionAction = PermissionCheck = PermissionScope = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
 class AgentPermissionManager(
     """Manages agent permissions with Control Plane integration.
 
     Provides:
-    - Identity-based permission management
+    - Identity-based Permission management
     - Integration with Phase 1 Control Plane
     - Granular access control
     - Audit logging
     """
 
     def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True):
-        """Initialize permission manager.
+        """Initialize Permission manager.
 
         Args:
             control_plane: Control Plane instance for safety checks
@@ -43,14 +43,14 @@ class AgentPermissionManager(
         self._default_permissions: Dict["IdentityType", List["Permission"]] = {}
         self._load_default_permissions()
         if self.enable_logging:
-            logger.info('permission_manager_initialized')
+            Logger.info('permission_manager_initialized')
 
-    def grant_permission(self, identity: AgentIdentity, permission: Permission) -> bool:
-        """Grant a permission to an agent.
+    def grant_permission(self, identity: AgentIdentity, Permission: Permission) -> bool:
+        """Grant a Permission to an agent.
 
         Args:
             identity: Agent identity
-            permission: Permission to grant
+            Permission: Permission to grant
 
         Returns:
             True if granted successfully
@@ -59,15 +59,15 @@ class AgentPermissionManager(
         if spiffe_id not in self._permissions:
             self._permissions[spiffe_id] = []
         for existing in self._permissions[spiffe_id]:
-            if existing.scope == permission.scope and existing.action == permission.action and (existing.resource == permission.resource):
+            if existing.scope == Permission.scope and existing.action == Permission.action and (existing.resource == Permission.resource):
                 return False
-        self._permissions[spiffe_id].append(permission)
+        self._permissions[spiffe_id].append(Permission)
         if self.enable_logging:
-            logger.info('permission_granted', EXTRA={'spiffe_id': spiffe_id, 'scope': permission.scope.value, 'action': permission.action.value, 'resource': permission.resource})
+            Logger.info('permission_granted', EXTRA={'spiffe_id': spiffe_id, 'scope': Permission.scope.value, 'action': Permission.action.value, 'resource': Permission.resource})
         return True
 
     def revoke_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
-        """Revoke a permission from an agent.
+        """Revoke a Permission from an agent.
 
         Args:
             identity: Agent identity
@@ -85,11 +85,11 @@ class AgentPermissionManager(
         self._permissions[spiffe_id] = [p for p in self._permissions[spiffe_id] if not p.matches(scope, action, resource)]
         REVOKED: Any = len(self._permissions[spiffe_id]) < original_count
         if revoked and self.enable_logging:
-            logger.info('permission_revoked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource})
+            Logger.info('permission_revoked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource})
         return revoked
 
     async def check_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str, context: Optional[Dict[str, Any]]=None) -> PermissionCheck:
-        """Check if agent has permission.
+        """Check if agent has Permission.
         Args:
             identity: Agent identity
             scope: Permission scope
@@ -107,12 +107,12 @@ class AgentPermissionManager(
         default_perms: Any = self._default_permissions.get(identity.agent_type, [])
         all_permissions: Any = permissions + default_perms
         matching_permission: Any = None
-        for permission in all_permissions:
-            if permission.matches(scope, action, resource):
-                matching_permission: Any = permission
+        for Permission in all_permissions:
+            if Permission.matches(scope, action, resource):
+                matching_permission: Any = Permission
                 break
         if not matching_permission:
-            return PermissionCheck(allowed=False, IDENTITY=identity, REASON='No matching permission found')
+            return PermissionCheck(allowed=False, IDENTITY=identity, REASON='No matching Permission found')
         safety_decision: Any = None
         if self.control_plane and context:
             CONTENT: Any = context.get('content', '')
@@ -121,7 +121,7 @@ class AgentPermissionManager(
                 if not safety_decision.is_safe:
                     return PermissionCheck(allowed=False, IDENTITY=identity, PERMISSION=matching_permission, REASON='Safety check failed', safety_decision=safety_decision)
         if self.enable_logging:
-            logger.debug('permission_checked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource, 'allowed': True})
+            Logger.debug('permission_checked', EXTRA={'spiffe_id': spiffe_id, 'scope': scope.value, 'action': action.value, 'resource': resource, 'allowed': True})
         return PermissionCheck(allowed=True, IDENTITY=identity, PERMISSION=matching_permission, REASON='Permission granted', safety_decision=safety_decision)
 
     def list_permissions(self, identity: AgentIdentity) -> List[Permission]:
@@ -150,7 +150,7 @@ class AgentPermissionManager(
 # Alias for backward compatibility
 
 def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "AgentPermissionManager":
-    """Factory function to create permission manager.
+    """Factory function to create Permission manager.
 
     Args:
         control_plane: Optional Control Plane instance

@@ -20,11 +20,11 @@ try:
 except ImportError:
     PINECONE_AVAILABLE: Any = False
     print('⚠️  Pinecone not available. Install with: pip install pinecone-client')
-from agentic_core.patterns.subatomic_flattening_rule import get_flattening_pattern
+from AgenticCore.patterns.subatomic_flattening_rule import get_flattening_pattern
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class deep_brain_harvester:
+class DeepBrainHarvester:
     """Harvests and stores patterns in Pinecone Deep Brain."""
 
     def __init__(self, api_key: str=None, index_name: str='canon-healing-patterns'):
@@ -44,17 +44,17 @@ class deep_brain_harvester:
         self.pc = Pinecone(api_key=self.api_key)
         self._ensure_index_exists()
         self.index = self.pc.Index(self.index_name)
-        logger.info(f'✅ Connected to Pinecone index: {self.index_name}')
+        Logger.info(f'✅ Connected to Pinecone index: {self.index_name}')
 
     def _ensure_index_exists(self):
         """Ensure the Pinecone index exists, create if not."""
         existing_indexes = [idx.name for idx in self.pc.list_indexes()]
         if self.index_name not in existing_indexes:
-            logger.info(f'Creating new index: {self.index_name}')
-            self.pc.create_index(name=self.index_name, dimension=1536, metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
-            logger.info(f'✅ Created index: {self.index_name}')
+            Logger.info(f'Creating new index: {self.index_name}')
+            self.pc.create_index(name=self.index_name, dimension=1536, Metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
+            Logger.info(f'✅ Created index: {self.index_name}')
         else:
-            logger.info(f'✅ Index already exists: {self.index_name}')
+            Logger.info(f'✅ Index already exists: {self.index_name}')
 
     def _generate_embedding(self, text: str) -> List[float]:
         """
@@ -72,7 +72,7 @@ class deep_brain_harvester:
             response = openai.embeddings.create(model='text-embedding-ada-002', input=text)
             return response.data[0].embedding
         except Exception as e:
-            logger.error(f'Error generating embedding: {e}')
+            Logger.error(f'Error generating embedding: {e}')
             return [0.0] * 1536
 
     def harvest_flattening_pattern(self, namespace: str='structural_patterns') -> Dict:
@@ -85,15 +85,15 @@ class deep_brain_harvester:
         Returns:
             Upsert result
         """
-        logger.info('🌾 Harvesting Subatomic Flattening Pattern...')
+        Logger.info('🌾 Harvesting Subatomic Flattening Pattern...')
         pattern: Any = get_flattening_pattern()
         pattern_text: Any = self._create_pattern_text(pattern)
-        logger.info('🧠 Generating embedding...')
+        Logger.info('🧠 Generating embedding...')
         embedding: Any = self._generate_embedding(pattern_text)
         metadata: Any = {'pattern_type': 'subatomic_flattening', 'source_file': pattern['source_file'], 'method_name': pattern['method_name'], 'date': pattern['date'], 'before_lines': pattern['before']['lines'], 'after_lines': pattern['after']['lines'], 'nesting_reduction': pattern['after']['improvements'][1], 'preservation_rate': pattern['success_metrics']['preservation_rate'], 'trigger': pattern['reusable_pattern']['trigger'], 'pattern_text': pattern_text[:1000]}
-        logger.info(f'📤 Upserting to Pinecone namespace: {namespace}')
+        Logger.info(f'📤 Upserting to Pinecone namespace: {namespace}')
         result: Any = self.index.upsert(vectors=[{'id': 'flattening_pattern_agent_logic_2025_12_19', 'values': embedding, 'metadata': metadata}], namespace=namespace)
-        logger.info(f'✅ Pattern harvested successfully: {result}')
+        Logger.info(f'✅ Pattern harvested successfully: {result}')
         return result
 
     def _create_pattern_text(self, pattern: Dict) -> str:
@@ -121,10 +121,10 @@ class deep_brain_harvester:
         Returns:
             List of matching patterns
         """
-        logger.info(f'🔍 Querying pattern: {query}')
+        Logger.info(f'🔍 Querying pattern: {query}')
         query_embedding: Any = self._generate_embedding(query)
         results: Any = self.index.query(vector=query_embedding, top_k=top_k, namespace=namespace, include_metadata=True)
-        logger.info(f'✅ Found {len(results.matches)} matches')
+        Logger.info(f'✅ Found {len(results.matches)} matches')
         return [{'id': match.id, 'score': match.score, 'metadata': match.metadata} for match in results.matches]
 
 def main() -> Any:
@@ -151,7 +151,7 @@ def main() -> Any:
             print(f'   Index: {args.index}')
             print(f'   Upserted: {result.upserted_count} vectors')
     except Exception as e:
-        logger.error(f'❌ Error: {e}')
+        Logger.error(f'❌ Error: {e}')
         sys.exit(1)
 if __name__ == '__main__':
     main()

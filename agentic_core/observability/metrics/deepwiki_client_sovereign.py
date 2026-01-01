@@ -9,18 +9,18 @@ Enables self-verification and canon audit capabilities.
 import logging
 import json
 from typing import Dict, Any, Optional, List, Union
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger('L6.DeepWiki')
+Logger: Any = logging.getLogger('L6.DeepWiki')
 
-class sovereign_deep_wiki_client:
+class SovereignDeepWikiClient:
     """
     DeepWiki MCP Client for L6 Observability.
     
@@ -34,16 +34,16 @@ class sovereign_deep_wiki_client:
         """Initialize the DeepWiki client with sovereign routing."""
         self.router = SovereignMCPRouter(role='observability')
         self.initialized = False
-        logger.info('[L6 DEEPWIKI] Client initialized')
+        Logger.info('[L6 DEEPWIKI] Client initialized')
 
     async def initialize(self) -> Any:
         """Async initialization of MCP router."""
         try:
             await self.router.initialize()
             self.initialized = True
-            logger.info('[L6 DEEPWIKI] Router initialized successfully')
+            Logger.info('[L6 DEEPWIKI] Router initialized successfully')
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Initialization failed: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Initialization failed: {e}')
             raise
 
     async def ask_question(self, question: str, repo: Optional[str]=None) -> str:
@@ -63,7 +63,7 @@ class sovereign_deep_wiki_client:
         if not self.initialized:
             await self.initialize()
         repo_target: Any = repo or config.DEEPWIKI_REPO_CONTEXT
-        logger.info(f"[L6 DEEPWIKI] Analyzing codebase: '{question}'")
+        Logger.info(f"[L6 DEEPWIKI] Analyzing codebase: '{question}'")
         try:
             result: Any = await self.router.manager.call_tool(tool_name='deepwiki_ask', args={'question': question, 'repo': repo_target})
             if isinstance(result, dict) and 'answer' in result:
@@ -72,13 +72,13 @@ class sovereign_deep_wiki_client:
                 return result['response']
             return str(result)
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Query failed: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Query failed: {e}')
             return f'Error analyzing codebase: {e}'
 
     async def get_structure(self, repo: Optional[str]=None) -> Dict[str, Any]:
         """
         Retrieve the file/folder structure of the repository.
-        Useful for L6 'Canon Verification' (checking for missing files).
+        Useful for L6 'Canon Verification' (checking for Missing files).
         
         Args:
             repo: Optional repository identifier (defaults to config)
@@ -95,10 +95,10 @@ class sovereign_deep_wiki_client:
             result: Any = await self.router.manager.call_tool(tool_name='deepwiki_structure', args={'repo': repo_target})
             if isinstance(result, str):
                 return json.loads(result)
-            logger.info(f'[L6 DEEPWIKI] Structure retrieved for repo: {repo_target}')
+            Logger.info(f'[L6 DEEPWIKI] Structure retrieved for repo: {repo_target}')
             return result
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Structure fetch failed: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Structure fetch failed: {e}')
             return {'error': str(e)}
 
     async def read_wiki_structure(self, repo: str) -> Dict[str, Any]:
@@ -129,10 +129,10 @@ class sovereign_deep_wiki_client:
             await self.initialize()
         try:
             result: Any = await self.router.manager.call_tool('mcp2_read_wiki_contents', {'repoName': repo})
-            logger.info(f'[L6 DEEPWIKI] Wiki contents retrieved for repo: {repo}')
+            Logger.info(f'[L6 DEEPWIKI] Wiki contents retrieved for repo: {repo}')
             return result
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Contents read failed for {repo}: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Contents read failed for {repo}: {e}')
             return {'content': '', 'error': str(e), 'status': 'failed'}
 
     async def search_documentation(self, repo: str, query: str, max_results: int=5) -> List[Dict[str, Any]]:
@@ -160,11 +160,11 @@ class sovereign_deep_wiki_client:
                     answer: Any = await self.ask_question(repo, f'What does the documentation say about {topic}?')
                     results.append({'topic': topic, 'content': answer.get('response', ''), 'relevance': 'high'})
                 except Exception as e:
-                    logger.warning(f'[L6 DEEPWIKI] Failed to get content for topic {topic}: {e}')
-            logger.info(f'[L6 DEEPWIKI] Search returned {len(results)} results for: {query}')
+                    Logger.warning(f'[L6 DEEPWIKI] Failed to get content for topic {topic}: {e}')
+            Logger.info(f'[L6 DEEPWIKI] Search returned {len(results)} results for: {query}')
             return results
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Search failed for {repo}: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Search failed for {repo}: {e}')
             return []
 
     async def get_canon_guidance(self, key_id: int, violation_desc: str) -> Dict[str, Any]:
@@ -173,20 +173,20 @@ class sovereign_deep_wiki_client:
         
         Args:
             key_id: Canon key ID
-            violation_desc: Description of the violation
+            violation_desc: Description of the Violation
             
         Returns:
-            Guidance for resolving the violation
+            Guidance for resolving the Violation
         """
         if not self.initialized:
             await self.initialize()
         try:
             question: Any = f'How should Canon Key {key_id} be resolved? Context: {violation_desc}'
             result: Any = await self.ask_question('xai/grok-canon', question)
-            logger.info(f'[L6 DEEPWIKI] Canon guidance retrieved for Key {key_id}')
+            Logger.info(f'[L6 DEEPWIKI] Canon guidance retrieved for Key {key_id}')
             return {'key_id': key_id, 'guidance': result.get('response', ''), 'source': 'internal_canon', 'status': 'success'}
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Canon guidance failed for Key {key_id}: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Canon guidance failed for Key {key_id}: {e}')
             return {'key_id': key_id, 'guidance': '', 'error': str(e), 'status': 'failed'}
 
     async def verify_file_exists(self, filepath: str) -> bool:
@@ -203,9 +203,9 @@ class sovereign_deep_wiki_client:
         answer_lower: Any = answer.lower()
         if any((word in answer_lower for word in ['yes', 'exists', 'found', 'present'])):
             return True
-        if any((word in answer_lower for word in ['no', 'not found', 'missing', 'does not exist', "doesn't exist"])):
+        if any((word in answer_lower for word in ['no', 'not found', 'Missing', 'does not exist', "doesn't exist"])):
             return False
-        logger.warning(f'[L6 DEEPWIKI] Ambiguous file existence response for {filepath}: {answer}')
+        Logger.warning(f'[L6 DEEPWIKI] Ambiguous file existence response for {filepath}: {answer}')
         return False
 
     async def health_check(self) -> Dict[str, Any]:
@@ -221,7 +221,7 @@ class sovereign_deep_wiki_client:
                 return {'status': 'unhealthy', 'error': result}
             return {'status': 'healthy', 'response_length': len(result), 'initialized': self.initialized}
         except Exception as e:
-            logger.error(f'[L6 DEEPWIKI] Health check failed: {e}')
+            Logger.error(f'[L6 DEEPWIKI] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
 _deepwiki_client: Optional[SovereignDeepWikiClient] = None
 

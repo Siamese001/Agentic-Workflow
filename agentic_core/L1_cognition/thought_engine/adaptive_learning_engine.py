@@ -12,10 +12,10 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class healing_pattern:
+class HealingPattern:
     """Represents a learned healing pattern."""
     violation_key: int
     violation_signature: str
@@ -44,21 +44,21 @@ class healing_pattern:
         self.confidence_score = base_confidence * usage_factor * recency_factor
 
 @dataclass
-class violation_prediction:
-    """Prediction of potential violation."""
+class ViolationPrediction:
+    """Prediction of potential Violation."""
     file_path: str
     violation_key: int
     confidence: float
     recommended_pattern: Optional[HealingPattern]
     reasoning: str
 
-class adaptive_learning_engine:
+class AdaptiveLearningEngine:
     """
     Learns from healing patterns to predict and prevent violations.
     
     Features:
     - Pattern recognition from successful healing attempts
-    - Predictive violation detection
+    - Predictive Violation detection
     - Automatic fix suggestion based on learned patterns
     - Continuous learning from new healing attempts
     """
@@ -76,13 +76,13 @@ class adaptive_learning_engine:
         self.violation_history: Dict[str, List[Tuple[int, bool, datetime]]] = defaultdict(list)
         self.prediction_cache: Dict[str, List[ViolationPrediction]] = {}
         self._load_patterns()
-        logger.info('Adaptive Learning Engine initialized')
+        Logger.info('Adaptive Learning Engine initialized')
 
     def awaken(self) -> Any:
         """L1: Explicitly trigger the autonomous learning loop"""
         if self.autonomous_mode and (not self._improvement_task):
             self._improvement_task = asyncio.create_task(self.eternal_self_improvement())
-            logger.info('L1 Autonomous learning loop awakened')
+            Logger.info('L1 Autonomous learning loop awakened')
 
     async def eternal_self_improvement(self) -> Any:
         """L1: Continuous self-improvement loop"""
@@ -92,15 +92,15 @@ class adaptive_learning_engine:
                 for key in list(self.patterns.keys()):
                     self.patterns[key] = [p for p in self.patterns[key] if p.confidence_score > 0.3 or p.success_count + p.failure_count < 5]
                 self._save_patterns()
-                logger.debug('L1 Self-improvement cycle completed')
+                Logger.debug('L1 Self-improvement cycle completed')
             except Exception as e:
-                logger.error(f'L1 Self-improvement error: {e}')
+                Logger.error(f'L1 Self-improvement error: {e}')
                 await asyncio.sleep(60)
 
     def _load_patterns(self):
         """Load learned patterns from storage."""
         if not os.path.exists(self.pattern_storage_path):
-            logger.info('No existing patterns found, starting fresh')
+            Logger.info('No existing patterns found, starting fresh')
             return
         try:
             with open(self.pattern_storage_path, 'r', encoding='utf-8') as f:
@@ -110,9 +110,9 @@ class adaptive_learning_engine:
                 for p_data in patterns_data:
                     pattern = HealingPattern(violation_key=p_data['violation_key'], violation_signature=p_data['violation_signature'], fix_strategy=p_data['fix_strategy'], success_count=p_data['success_count'], failure_count=p_data['failure_count'], avg_rounds_to_fix=p_data['avg_rounds_to_fix'], last_used=datetime.fromisoformat(p_data['last_used']) if p_data.get('last_used') else None, confidence_score=p_data['confidence_score'], file_patterns=p_data.get('file_patterns', []))
                     self.patterns[key].append(pattern)
-            logger.info(f'Loaded {sum((len(p) for p in self.patterns.values()))} healing patterns')
+            Logger.info(f'Loaded {sum((len(p) for p in self.patterns.values()))} healing patterns')
         except Exception as e:
-            logger.error(f'Failed to load patterns: {e}')
+            Logger.error(f'Failed to load patterns: {e}')
 
     def _save_patterns(self):
         """Save learned patterns to storage with versioned rotation (Keep Last 10)."""
@@ -131,9 +131,9 @@ class adaptive_learning_engine:
                 data['patterns'][str(key)] = [{'violation_key': p.violation_key, 'violation_signature': p.violation_signature, 'fix_strategy': p.fix_strategy, 'success_count': p.success_count, 'failure_count': p.failure_count, 'avg_rounds_to_fix': p.avg_rounds_to_fix, 'last_used': p.last_used.isoformat() if p.last_used else None, 'confidence_score': p.confidence_score, 'file_patterns': p.file_patterns} for p in patterns]
             with open(self.pattern_storage_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
-            logger.debug(f'Saved patterns to {self.pattern_storage_path}')
+            Logger.debug(f'Saved patterns to {self.pattern_storage_path}')
         except Exception as e:
-            logger.error(f'Failed to save patterns: {e}')
+            Logger.error(f'Failed to save patterns: {e}')
 
     def learn_from_healing(self, file_path: str, violation_key: int, violation_details: str, fix_code: str, success: bool, rounds_taken: int) -> Any:
         """
@@ -142,7 +142,7 @@ class adaptive_learning_engine:
         Args:
             file_path: Path to the healed file
             violation_key: Canon key that was fixed
-            violation_details: Description of the violation
+            violation_details: Description of the Violation
             fix_code: The code that fixed the issue
             success: Whether healing succeeded
             rounds_taken: Number of rounds it took
@@ -165,16 +165,16 @@ class adaptive_learning_engine:
             self.patterns[violation_key].append(new_pattern)
         self.violation_history[file_path].append((violation_key, success, datetime.now()))
         self._save_patterns()
-        logger.info(f'Learned from healing: Key {violation_key}, Success: {success}')
+        Logger.info(f'Learned from healing: Key {violation_key}, Success: {success}')
 
     def _create_violation_signature(self, violation_details: str, file_path: str) -> str:
-        """Create a signature for a violation type."""
+        """Create a signature for a Violation type."""
         file_type = os.path.splitext(file_path)[1]
         keywords = self._extract_keywords(violation_details)
         return f"{file_type}:{':'.join(sorted(keywords[:5]))}"
 
     def _extract_keywords(self, text: str) -> List[str]:
-        """Extract key terms from violation details."""
+        """Extract key terms from Violation details."""
         stopwords = {'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is', 'are'}
         words = text.lower().split()
         return [w for w in words if len(w) > 3 and w not in stopwords]

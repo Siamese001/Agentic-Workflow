@@ -5,7 +5,7 @@ Scans directories for files that exceed complexity thresholds and would benefit
 from the Subatomic Flattening Pattern.
 
 Usage:
-    python scripts/complexity_scanner.py --target apps_shared/ --report
+    python scripts/ComplexityScanner.py --target apps_shared/ --report
 """
 import argparse
 import ast
@@ -14,11 +14,11 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from agentic_core.patterns.subatomic_flattening_rule import ComplexityMetrics
+from AgenticCore.patterns.subatomic_flattening_rule import ComplexityMetrics
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class complexity_scanner:
+class ComplexityScanner:
     """Scans Python files for complexity violations."""
 
     def __init__(self, max_lines: int=40, max_nesting: int=3):
@@ -42,12 +42,12 @@ class complexity_scanner:
             recursive: Whether to scan recursively
             
         Returns:
-            List of violation dictionaries
+            List of Violation dictionaries
         """
-        logger.info(f'🔍 Scanning directory: {directory}')
+        Logger.info(f'🔍 Scanning directory: {directory}')
         pattern: Any = '**/*.py' if recursive else '*.py'
         python_files: Any = list(directory.glob(pattern))
-        logger.info(f'📁 Found {len(python_files)} Python files')
+        Logger.info(f'📁 Found {len(python_files)} Python files')
         violations: Any = []
         for file_path in python_files:
             if '__pycache__' in str(file_path) or file_path.name.startswith('test_'):
@@ -71,19 +71,19 @@ class complexity_scanner:
             with open(file_path, 'r', encoding='utf-8') as f:
                 source: Any = f.read()
         except Exception as e:
-            logger.warning(f'⚠️  Could not read {file_path}: {e}')
+            Logger.warning(f'⚠️  Could not read {file_path}: {e}')
             return []
         try:
             tree: Any = ast.parse(source)
         except SyntaxError as e:
-            logger.warning(f'⚠️  Syntax error in {file_path}: {e}')
+            Logger.warning(f'⚠️  Syntax error in {file_path}: {e}')
             return []
         violations: Any = []
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 metrics: Any = self._analyze_function(node, source)
                 if metrics.exceeds_threshold():
-                    violations.append({'file': str(file_path), 'function': node.name, 'line': node.lineno, 'metrics': {'lines': metrics.line_count, 'nesting': metrics.nesting_depth, 'branches': metrics.conditional_branches}, 'severity': self._calculate_severity(metrics), 'recommendation': self._generate_recommendation(metrics)})
+                    violations.append({'file': str(file_path), 'function': node.name, 'line': node.lineno, 'metrics': {'lines': metrics.line_count, 'nesting': metrics.nesting_depth, 'branches': metrics.conditional_branches}, 'Severity': self._calculate_severity(metrics), 'Recommendation': self._generate_recommendation(metrics)})
         return violations
 
     def _analyze_function(self, node: ast.FunctionDef, source: str) -> ComplexityMetrics:
@@ -116,7 +116,7 @@ class complexity_scanner:
 
     def _calculate_severity(self, metrics: ComplexityMetrics) -> str:
         """
-        Calculate violation severity.
+        Calculate Violation Severity.
         
         Args:
             metrics: Complexity metrics
@@ -137,7 +137,7 @@ class complexity_scanner:
             return 'low'
 
     def _generate_recommendation(self, metrics: ComplexityMetrics) -> str:
-        """Generate recommendation based on metrics."""
+        """Generate Recommendation based on metrics."""
         recommendations = []
         if metrics.line_count > self.max_lines:
             excess = metrics.line_count - self.max_lines
@@ -159,20 +159,20 @@ class complexity_scanner:
         if not self.violations:
             return '✅ No complexity violations found!'
         by_severity: Any = {'critical': [], 'high': [], 'medium': [], 'low': []}
-        for violation in self.violations:
-            by_severity[violation['severity']].append(violation)
+        for Violation in self.violations:
+            by_severity[Violation['Severity']].append(Violation)
         report_lines: Any = ['⚛️ Complexity Scan Report', '=' * 80, '', f'Total Violations: {len(self.violations)}', f"  Critical: {len(by_severity['critical'])}", f"  High: {len(by_severity['high'])}", f"  Medium: {len(by_severity['medium'])}", f"  Low: {len(by_severity['low'])}", '', '=' * 80, '']
-        for severity in ['critical', 'high', 'medium', 'low']:
-            violations: Any = by_severity[severity]
+        for Severity in ['critical', 'high', 'medium', 'low']:
+            violations: Any = by_severity[Severity]
             if not violations:
                 continue
-            report_lines.append(f'\n## {severity.upper()} Priority ({len(violations)} violations)')
+            report_lines.append(f'\n## {Severity.upper()} Priority ({len(violations)} violations)')
             report_lines.append('')
             for v in violations:
                 report_lines.append(f"📍 {v['file']}:{v['line']}")
                 report_lines.append(f"   Function: {v['function']}")
                 report_lines.append(f"   Metrics: {v['metrics']['lines']} lines, {v['metrics']['nesting']} nesting, {v['metrics']['branches']} branches")
-                report_lines.append(f"   Action: {v['recommendation']}")
+                report_lines.append(f"   Action: {v['Recommendation']}")
                 report_lines.append('')
         report_lines.extend(['=' * 80, '', '💡 Recommendation:', '   Apply Subatomic Flattening Pattern to critical/high priority violations', "   Query Pinecone Deep Brain: 'method exceeds complexity threshold'", ''])
         return '\n'.join(report_lines)
@@ -182,7 +182,7 @@ class complexity_scanner:
         import json
         with open(output_path, 'w') as f:
             json.dump({'total_violations': len(self.violations), 'violations': self.violations}, f, indent=2)
-        logger.info(f'✅ Exported violations to {output_path}')
+        Logger.info(f'✅ Exported violations to {output_path}')
 
 def main() -> Any:
     """Main entry point for complexity scanner."""
@@ -192,18 +192,18 @@ def main() -> Any:
     parser.add_argument('--max-nesting', type=int, default=3, help='Maximum nesting depth (default: 3)')
     parser.add_argument('--report', action='store_true', help='Generate detailed report')
     parser.add_argument('--export', help='Export violations to JSON file')
-    parser.add_argument('--severity', choices=['low', 'medium', 'high', 'critical'], help='Filter by minimum severity')
+    parser.add_argument('--Severity', choices=['low', 'medium', 'high', 'critical'], help='Filter by minimum Severity')
     args: Any = parser.parse_args()
     target_dir: Any = Path(args.target)
     if not target_dir.exists():
-        logger.error(f'❌ Directory not found: {target_dir}')
+        Logger.error(f'❌ Directory not found: {target_dir}')
         sys.exit(1)
     scanner: Any = ComplexityScanner(max_lines=args.max_lines, max_nesting=args.max_nesting)
     violations: Any = scanner.scan_directory(target_dir)
-    if args.severity:
+    if args.Severity:
         severity_order: Any = ['low', 'medium', 'high', 'critical']
-        min_index: Any = severity_order.index(args.severity)
-        violations: Any = [v for v in violations if severity_order.index(v['severity']) >= min_index]
+        min_index: Any = severity_order.index(args.Severity)
+        violations: Any = [v for v in violations if severity_order.index(v['Severity']) >= min_index]
     if args.report:
         print(scanner.generate_report())
     else:

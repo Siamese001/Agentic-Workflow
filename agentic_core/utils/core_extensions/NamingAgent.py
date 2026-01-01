@@ -38,7 +38,7 @@ except ImportError:
     Language = None
     Parser = None
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,              # High-signal keywords SSOT
     FORBIDDEN_PATTERNS,         # Compiled regex list of banned names
     ROOT_PROTECTED_FILES,
@@ -50,7 +50,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     NAMING_EXEMPT_FILES,
     NAMING_EXEMPT_DIRS,
 )
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SEMANTIC_L2_REGISTRY, CORE_SUBFOLDER_MAP, SOVEREIGN_REGISTRY,
     AST_PLACEMENT_SIGNALS, PLACEMENT_CONFIDENCE, L2_TO_L1_MAP
 )
@@ -61,7 +61,7 @@ sovereign_registry = SOVEREIGN_REGISTRY
 
 # Global agent registry for tracking moved agents
 AGENT_REGISTRY: Dict[str, List[Dict[str, Any]]] = {
-    l1: [] for l1 in sovereign_registry.get('agentic_core', {}).get('subfolders', [])
+    l1: [] for l1 in sovereign_registry.get('AgenticCore', {}).get('subfolders', [])
 }
 
 @dataclass
@@ -70,7 +70,7 @@ class PlacementResult:
     l1_folder: str
     l2_subfolder: Optional[str]
     confidence: float
-    confidence_level: str
+    ConfidenceLevel: str
     signals_matched: List[str]
     reasoning: str
     alternative_paths: List[str]
@@ -123,7 +123,7 @@ class NamingAgent:
     def _get_hierarchy_agent(self):
         """Lazy load HierarchyAgent for semantic territory context"""
         if self._hierarchy_agent is None:
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from AgenticCore.L5_safety.validators.HierarchyAgent import HierarchyAgent
             self._hierarchy_agent = HierarchyAgent(self.project_root)
         return self._hierarchy_agent
 
@@ -323,7 +323,7 @@ class NamingAgent:
                 l1_folder=legacy_path.split("/")[1] if "/" in legacy_path else "",
                 l2_subfolder=legacy_path.split("/")[2] if legacy_path.count("/") >= 2 else None,
                 confidence=0.2,
-                confidence_level="LOW",
+                ConfidenceLevel="LOW",
                 signals_matched=["fallback:keyword_heuristic"],
                 reasoning="No strong AST signals found, using keyword fallback",
                 alternative_paths=[]
@@ -338,13 +338,13 @@ class NamingAgent:
         confidence = min(raw_confidence + diversity_bonus, 1.0)
         
         if confidence >= PLACEMENT_CONFIDENCE["HIGH"]:
-            confidence_level = "HIGH"
+            ConfidenceLevel = "HIGH"
         elif confidence >= PLACEMENT_CONFIDENCE["MEDIUM"]:
-            confidence_level = "MEDIUM"
+            ConfidenceLevel = "MEDIUM"
         elif confidence >= PLACEMENT_CONFIDENCE["LOW"]:
-            confidence_level = "LOW"
+            ConfidenceLevel = "LOW"
         else:
-            confidence_level = "REJECT"
+            ConfidenceLevel = "REJECT"
         
         path_parts = top_path.split("/")
         l1_folder = path_parts[1] if len(path_parts) > 1 else ""
@@ -361,7 +361,7 @@ class NamingAgent:
             l1_folder=l1_folder,
             l2_subfolder=l2_subfolder,
             confidence=confidence,
-            confidence_level=confidence_level,
+            ConfidenceLevel=ConfidenceLevel,
             signals_matched=top_data["signals"],
             reasoning=reasoning,
             alternative_paths=alternatives
@@ -405,25 +405,25 @@ class NamingAgent:
         lower_preview = content_preview.lower()
         
         if any(k in lower_preview for k in ['planner', 'strategy', 'reasoning', 'mission']):
-            return 'agentic_core/L1_cognition/planning'
+            return 'AgenticCore/L1_cognition/planning'
         if any(k in lower_preview for k in ['thought', 'node', 'react', 'chain']):
-            return 'agentic_core/L1_cognition/thought_engine'
+            return 'AgenticCore/L1_cognition/thought_engine'
         if any(k in lower_preview for k in ['router', 'orchestrator', 'workflow', 'coordinate']):
-            return 'agentic_core/L3_orchestration/workflow_engines'
+            return 'AgenticCore/L3_orchestration/workflow_engines'
         if any(k in lower_preview for k in ['fission', 'split', 'parallel']):
-            return 'agentic_core/L3_orchestration/fission_logic'
+            return 'AgenticCore/L3_orchestration/fission_logic'
         if any(k in lower_preview for k in ['pinecone', 'redis', 'vector', 'embedding']):
-            return 'agentic_core/L4_state/memory'
+            return 'AgenticCore/L4_state/memory'
         if any(k in lower_preview for k in ['guardrail', 'safety', 'heal']):
-            return 'agentic_core/L5_safety/guardrails'
+            return 'AgenticCore/L5_safety/guardrails'
         if any(k in lower_preview for k in ['validator', 'enforce', 'compliance']):
-            return 'agentic_core/L5_safety/validators'
+            return 'AgenticCore/L5_safety/validators'
         if 'prompt' in lower_preview or 'template' in lower_preview:
-            return 'agentic_core/prompt_governance/templates'
+            return 'AgenticCore/prompt_governance/templates'
         if 'schema' in lower_preview or 'pydantic' in lower_preview:
-            return 'agentic_core/schemas/models'
+            return 'AgenticCore/schemas/models'
         
-        return 'agentic_core/L1_cognition/thought_engine'
+        return 'AgenticCore/L1_cognition/thought_engine'
 
     def _count_words_in_name(self, name: str) -> int:
         """
@@ -636,7 +636,7 @@ class NamingAgent:
 
             sovereign_markers = {'validator', 'compliance', 'healer', 'enforcer', 'governor', 'auditor', 'canon'}
             if not any(marker in lower_stem for marker in sovereign_markers):
-                return False, f"SOVEREIGN VIOLATION: Root file '{file_name}' missing required marker {sovereign_markers}"
+                return False, f"SOVEREIGN VIOLATION: Root file '{file_name}' Missing required marker {sovereign_markers}"
             return True, "Valid sovereign root file"
 
         # === ULTRA GLOBAL UNIQUENESS ENFORCEMENT ===
@@ -784,7 +784,7 @@ class NamingAgent:
             file_path: Path to file to analyze
             
         Returns:
-            List of detected violation types
+            List of detected Violation types
         """
         violations = []
         current_name = file_path.name
@@ -1143,7 +1143,7 @@ class NamingAgent:
         }
         
         # Skip files in ALLOWED_DUPLICATE_FILENAMES
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
         if file_path.name in ALLOWED_DUPLICATE_FILENAMES:
             result['reason'] = 'File in ALLOWED_DUPLICATE_FILENAMES - exempt'
             return result
@@ -1224,7 +1224,7 @@ class NamingAgent:
             Dict mapping duplicate filenames to list of paths where they exist
         """
         from collections import defaultdict
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
         
         if python_files is None:
             python_files = list(self.project_root.rglob("*.py"))
@@ -1332,12 +1332,12 @@ class NamingAgent:
             
             current_l1 = current_parts[1] if len(current_parts) > 1 else ""
             current_l2 = current_parts[2] if len(current_parts) > 2 else ""
-            current_path = f"agentic_core/{current_l1}/{current_l2}"
+            current_path = f"AgenticCore/{current_l1}/{current_l2}"
             
         except ValueError:
             return True, suggested
         
-        if suggested.confidence_level in ["HIGH", "MEDIUM"]:
+        if suggested.ConfidenceLevel in ["HIGH", "MEDIUM"]:
             if current_path != suggested.full_path:
                 return False, suggested
         
@@ -1355,7 +1355,7 @@ class NamingAgent:
         try:
             content = file_path.read_text(encoding='utf-8', errors='ignore')
             placement = self.get_placement_guidance_v2(content)
-            if placement.confidence_level in ["LOW", "REJECT"]:
+            if placement.ConfidenceLevel in ["LOW", "REJECT"]:
                 result['error'] = f"Low confidence ({placement.confidence:.2f}) - skipping move"
                 return result
             
@@ -1450,7 +1450,7 @@ def get_naming_agent(project_root: Path = None) -> NamingAgent:
     Get singleton NamingAgent instance for centralized naming validation.
     
     Usage by other agents:
-        from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+        from AgenticCore.utils.core_extensions.NamingAgent import get_naming_agent
         naming = get_naming_agent(self.project_root)
         is_valid, reason = naming.validate_proposed_name("MyNewAgent.py")
     """

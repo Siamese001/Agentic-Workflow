@@ -7,7 +7,7 @@ from typing import Any, Optional, Protocol, Dict, List
 import re
 
 _logger = logging.getLogger(__name__)
-# Ownership: agentic_core / unknown
+# Ownership: AgenticCore / unknown
 # -*- coding: utf-8 -*-
 """Test Compute Tests Score - atomic execution layer."""
 

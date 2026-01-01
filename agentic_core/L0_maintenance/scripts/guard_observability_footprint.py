@@ -43,7 +43,7 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
         reasoning_signals = ["think", "plan", "execute", "decide", "reason", "validate", "check"]
         
         # Signals that indicate L6 logging
-        log_signals = ["logger.", "logging.", "self.log", "trace(", "print("]
+        log_signals = ["Logger.", "logging.", "self.log", "trace(", "print("]
         
         for i, line in enumerate(lines):
             # Skip comments and docstrings
@@ -54,8 +54,8 @@ def check_dark_reasoning(filepath: Path) -> List[str]:
             # Check if line contains reasoning signal
             if any(sig in line.lower() for sig in reasoning_signals):
                 # Scan the next 10 lines for a corresponding log entry
-                context_window = "\n".join(lines[i:min(i+10, len(lines))])
-                if not any(log_sig in context_window for log_sig in log_signals):
+                ContextWindow = "\n".join(lines[i:min(i+10, len(lines))])
+                if not any(log_sig in ContextWindow for log_sig in log_signals):
                     issues.append(f"Potential Dark Reasoning at line {i+1}: Action without L6 footprint")
         
     except Exception as e:

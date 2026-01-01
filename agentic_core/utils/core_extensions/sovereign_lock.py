@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 from typing import Any
 root: Any = Path.cwd()
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 
 def enforce_gravity() -> Any:
-    """Ensures no file in agentic_core reaches 'down' into apps."""
+    """Ensures no file in AgenticCore reaches 'down' into apps."""
     print('[*] ENFORCING GRAVITY...')
     violations: Any = 0
     forbidden: Any = ['apps_rg', 'apps_lic', 'apps_shared']

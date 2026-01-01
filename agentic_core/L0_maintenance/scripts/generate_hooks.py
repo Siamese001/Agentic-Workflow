@@ -16,7 +16,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 
 def sync_pre_commit(dry_run: bool = False):
@@ -46,7 +46,7 @@ def sync_pre_commit(dry_run: bool = False):
     print(f"   [PATTERN] Files: {files_pattern}")
     
     # Locate the pre-commit config
-    config_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
+    config_path = project_root / "AgenticCore" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
     
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")
@@ -69,12 +69,12 @@ def sync_pre_commit(dry_run: bool = False):
     replacements = [
         # Exclude patterns (with data/archives)
         (
-            r'exclude: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config\|data\|archives[)]/',
+            r'exclude: \^[(]AgenticCore\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config\|data\|archives[)]/',
             f'exclude: ^({all_roots_pattern})/'
         ),
         # Files patterns (sovereign only)
         (
-            r'files: \^[(]agentic_core\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config[)]/\.\*\\\.py\$',
+            r'files: \^[(]AgenticCore\|apps_lic\|apps_rg\|apps_shared\|schemas\|prompt_governance\|observability\|config[)]/\.\*\\\.py\$',
             f'files: ^({roots_pattern})/.*\\.py$'
         ),
     ]

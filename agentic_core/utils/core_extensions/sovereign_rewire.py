@@ -6,8 +6,8 @@ import re
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-rewire_rules: Any = [('from agentic_core\\.utils import', 'from agentic_core.utils.P1_core import'), ('from agentic_core\\.memory import', 'from agentic_core.memory.P1_core import')]
+core: Any = ROOT / 'AgenticCore'
+rewire_rules: Any = [('from AgenticCore\\.utils import', 'from AgenticCore.utils.P1_core import'), ('from AgenticCore\\.memory import', 'from AgenticCore.memory.P1_core import')]
 
 def rewire_synapses() -> Any:
     """Brief description of functionality and purpose."""
@@ -22,7 +22,7 @@ def rewire_synapses() -> Any:
             for pattern, replacement in REWIRE_RULES:
                 content: Any = re.sub(pattern, replacement, content)
             if 'P1_core' in str(py_file):
-                content: Any = content.replace('from ..', 'from agentic_core.')
+                content: Any = content.replace('from ..', 'from AgenticCore.')
             if content != original:
                 py_file.write_text(content, encoding='utf-8')
                 print(f'  [✓] Rewired: {py_file.relative_to(ROOT)}')

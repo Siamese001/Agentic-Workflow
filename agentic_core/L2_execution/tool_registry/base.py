@@ -6,17 +6,17 @@ import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
-from agentic_core.L4_state.validation_context.validation_context import ValidationContext
+from AgenticCore.L4_state.ValidationContext.ValidationContext import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 # NOT_AN_AGENT — Base class for agents, not a true agent itself — excluded from agent discovery
-class sub_atomic_agent:
+class SubAtomicAgent:
     """Base class for all validation agents with async support."""
 
     def __init__(self, context: ValidationContext):
@@ -40,7 +40,7 @@ class sub_atomic_agent:
             print(f'   [X] [{self.name}] Error: {e}')
             raise
 
-class import_patcher:
+class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
 
     def _is_import_node_for_module(self, node: ast.AST, old_module: str) -> bool:

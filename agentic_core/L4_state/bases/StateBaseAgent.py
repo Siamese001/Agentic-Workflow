@@ -19,11 +19,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 
 
 class L4SovereignSeverity(Enum):
-    """Sovereign event severity levels for L4 subatomic testing."""
+    """Sovereign event Severity levels for L4 subatomic testing."""
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -38,22 +38,22 @@ class L4SubatomicTestingMixin:
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
 
-    async def run_l4_subatomic_critique(self, artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def run_l4_subatomic_critique(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """L4 CRITIQUE hop: Basic state testing + delegation on failure.
         
         Args:
-            artifact: The state update/retrieval/reflection artifact
+            Artifact: The state update/retrieval/reflection Artifact
             artifact_type: Type (state_update, memory_retrieval, reflection_summary)
-            context: Execution context with goal, task info
+            context: Execution context with goal, Task info
             
         Returns:
             Dict with passed, tests, coverage info
         """
-        # Step 1: Generate basic tests for state artifact
-        tests = self._generate_state_tests(artifact, artifact_type, context)
+        # Step 1: Generate basic tests for state Artifact
+        tests = self._generate_state_tests(Artifact, artifact_type, context)
         
         # Step 2: Run sandboxed tests
-        test_result = self._run_state_sandbox_tests(tests, artifact)
+        test_result = self._run_state_sandbox_tests(tests, Artifact)
         
         if test_result["passed"]:
             self._emit_l4_event(L4SovereignSeverity.INFO, "L4_CRITIQUE_PASSED", {
@@ -68,7 +68,7 @@ class L4SubatomicTestingMixin:
             "reason": test_result.get("error", "unknown")
         })
         
-        advanced_result = await self._delegate_to_l5_specialist(artifact, artifact_type, context)
+        advanced_result = await self._delegate_to_l5_specialist(Artifact, artifact_type, context)
         
         if not advanced_result["passed"]:
             self._emit_l4_event(L4SovereignSeverity.ERROR, "L4_CRITIQUE_FAILED", {
@@ -78,16 +78,16 @@ class L4SubatomicTestingMixin:
         
         return advanced_result
 
-    def _generate_state_tests(self, artifact: Dict, artifact_type: str, context: Dict) -> str:
-        """Generate basic tests for L4 state artifact."""
+    def _generate_state_tests(self, Artifact: Dict, artifact_type: str, context: Dict) -> str:
+        """Generate basic tests for L4 state Artifact."""
         if artifact_type == "state_update":
-            return self._generate_state_update_tests(artifact, context)
+            return self._generate_state_update_tests(Artifact, context)
         elif artifact_type == "memory_retrieval":
-            return self._generate_retrieval_tests(artifact, context)
+            return self._generate_retrieval_tests(Artifact, context)
         elif artifact_type == "reflection_summary":
-            return self._generate_reflection_tests(artifact, context)
+            return self._generate_reflection_tests(Artifact, context)
         else:
-            return self._generate_generic_state_tests(artifact, context)
+            return self._generate_generic_state_tests(Artifact, context)
 
     def _generate_state_update_tests(self, update: Dict, context: Dict) -> str:
         """L4 Example 1: Unit tests for state update consistency/idempotency."""
@@ -234,22 +234,22 @@ def test_balanced_sentiment():
     assert len(summary_json) > 0
 '''
 
-    def _generate_generic_state_tests(self, artifact: Dict, context: Dict) -> str:
+    def _generate_generic_state_tests(self, Artifact: Dict, context: Dict) -> str:
         """Fallback tests for unknown state types."""
-        artifact_str = json.dumps(artifact)[:500] if isinstance(artifact, dict) else str(artifact)[:500]
+        artifact_str = json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
         # Escape for embedding in f-string
         escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
 def test_artifact_exists():
-    """Verify artifact is not empty."""
-    artifact = """{escaped_artifact}"""
-    assert artifact is not None
-    assert len(str(artifact)) > 0
+    """Verify Artifact is not empty."""
+    Artifact = """{escaped_artifact}"""
+    assert Artifact is not None
+    assert len(str(Artifact)) > 0
 '''
 
-    def _run_state_sandbox_tests(self, tests: str, artifact: Dict) -> Dict:
+    def _run_state_sandbox_tests(self, tests: str, Artifact: Dict) -> Dict:
         """Run state tests in sandboxed subprocess."""
         try:
             temp_test = Path.cwd() / "temp_l4_test.py"
@@ -277,15 +277,15 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    async def _delegate_to_l5_specialist(self, artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced state testing."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
-            artifact_str = json.dumps(artifact) if isinstance(artifact, dict) else str(artifact)
+            artifact_str = json.dumps(Artifact) if isinstance(Artifact, dict) else str(Artifact)
             result = await specialist.execute({
-                "artifact": artifact_str,
+                "Artifact": artifact_str,
                 "type": "state_regression",
                 "coverage_target": 95
             })
@@ -295,9 +295,9 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    def _emit_l4_event(self, severity: L4SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_l4_event(self, Severity: L4SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L4 subatomic testing event for observability."""
-        print(f"[SUBATOMIC L4] {severity.value} | {event_type}")
+        print(f"[SUBATOMIC L4] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")
 
@@ -314,27 +314,27 @@ class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin):
     Includes L4SubatomicTestingMixin for CRITIQUE hop testing.
     """
 
-    async def update_state(self, task: Dict) -> Dict:
+    async def update_state(self, Task: Dict) -> Dict:
         """Execute state update logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement update_state()")
 
-    async def execute_with_critique(self, task: Dict) -> Dict:
+    async def execute_with_critique(self, Task: Dict) -> Dict:
         """Execute with L4 subatomic CRITIQUE hop.
         
         Subclasses should call this instead of raw execute
         to get automatic state validation and testing.
         """
         # INIT/THINK/ACT
-        result = await self.update_state(task)
+        result = await self.update_state(Task)
         
         # CRITIQUE: Run L4 subatomic tests
-        artifact = result.get("state_update", result.get("retrieval", result.get("reflection", result)))
+        Artifact = result.get("state_update", result.get("retrieval", result.get("reflection", result)))
         artifact_type = result.get("artifact_type", "state_update")
         
         critique_result = await self.run_l4_subatomic_critique(
-            artifact=artifact,
+            Artifact=Artifact,
             artifact_type=artifact_type,
-            context=task
+            context=Task
         )
         
         if not critique_result["passed"]:

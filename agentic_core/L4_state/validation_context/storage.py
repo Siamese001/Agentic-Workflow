@@ -9,9 +9,9 @@ import logging
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class blob_storage_provider(Protocol):
+class BlobStorageProvider(Protocol):
     """
     Protocol defining atomic storage operations.
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
@@ -29,7 +29,7 @@ class blob_storage_provider(Protocol):
         """Checks if key exists."""
         ...
 
-class local_disk_adapter:
+class LocalDiskAdapter:
     """
     Mimics cloud storage on local disk.
     Uses atomic 'write-to-temp-then-move' logic to prevent corruption.
@@ -165,7 +165,7 @@ class local_disk_adapter:
                     blobs.append(key)
         return blobs
 
-class s3_adapter:
+class S3Adapter:
     """
     Production adapter for AWS S3.
 
@@ -294,7 +294,7 @@ def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStoragePr
     else:
         raise ValueError(f'Unknown adapter type: {adapter_type}')
 
-class redis_distributed_lock:
+class RedisDistributedLock:
     """
     Redis-based distributed lock for coordination across multiple processes.
     """
@@ -392,7 +392,7 @@ class redis_distributed_lock:
         except Exception:
             return key in self._local_cache
 
-class redis_hot_cache:
+class RedisHotCache:
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """
@@ -587,7 +587,7 @@ async def get_cache(key: str) -> Optional[Any]:
     cache: Any = get_hot_cache()
     return await cache.get_cache(key)
 
-class signal_ledger:
+class SignalLedger:
     """
     Simple ledger that logs ExecutionResults to a permanent log file.
     """
@@ -625,7 +625,7 @@ class signal_ledger:
         except FileNotFoundError:
             existing_lines: Any = ''
         updated_data: Any = existing_lines + json_line
-        await self.storage.write_blob(self.ledger_key, updated_data.encode('utf-8'), metadata={'type': 'signal_ledger', 'session_id': self.session_id})
+        await self.storage.write_blob(self.ledger_key, updated_data.encode('utf-8'), metadata={'type': 'SignalLedger', 'session_id': self.session_id})
         LOGGER.debug(f'Appended result to signal ledger: {self.ledger_key}')
 
     async def get_results(self) -> list:
@@ -686,7 +686,7 @@ class signal_ledger:
             summary['recommendations'].append('CRITICAL: Integrity failures must be resolved before continuing')
         return summary
 
-class hot_brain_cache:
+class HotBrainCache:
     """
     Redis-based hot brain cache for distributed coordination.
 

@@ -6,14 +6,14 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-rewire_map: Any = [('agentic_core\\.agents', 'agentic_core.L2_execution.tool_registry'), ('agentic_core\\.tools', 'agentic_core.L2_execution.P2_tools'), ('agentic_core\\.interfaces', 'agentic_core.L1_cognition.P1_interfaces'), ('agentic_core\\.domain', 'agentic_core.L1_cognition.P2_domain'), ('agentic_core\\.L1_cognition\\.action_registry_modules', 'agentic_core.L1_cognition.P1_sensing.action_registry_modules'), ('agentic_core\\.state', 'agentic_core.L4_state.S1_store'), ('agentic_core\\.infra', 'agentic_core.L3_orchestration.S3_vitality'), ('agentic_core\\.security', 'agentic_core.L5_safety.P4_security'), ('from apps_rg\\.L3_orchestration\\.l5_autonomous_orchestrator import WorkflowSnapshot', '')]
+rewire_map: Any = [('AgenticCore\\.agents', 'AgenticCore.L2_execution.ToolRegistry'), ('AgenticCore\\.tools', 'AgenticCore.L2_execution.P2_tools'), ('AgenticCore\\.interfaces', 'AgenticCore.L1_cognition.P1_interfaces'), ('AgenticCore\\.domain', 'AgenticCore.L1_cognition.P2_domain'), ('AgenticCore\\.L1_cognition\\.action_registry_modules', 'AgenticCore.L1_cognition.P1_sensing.action_registry_modules'), ('AgenticCore\\.state', 'AgenticCore.L4_state.S1_store'), ('AgenticCore\\.infra', 'AgenticCore.L3_orchestration.S3_vitality'), ('AgenticCore\\.security', 'AgenticCore.L5_safety.P4_security'), ('from apps_rg\\.L3_orchestration\\.l5_autonomous_orchestrator import WorkflowSnapshot', '')]
 
 def rewire_synapses() -> Any:
     """Brief description of functionality and purpose."""

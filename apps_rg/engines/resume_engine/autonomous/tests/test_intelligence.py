@@ -108,16 +108,16 @@ class TestSecurityIssue:
         """Test creating a security issue."""
         issue = SecurityIssue(
             issue_id="test123",
-            severity="high",
+            Severity="high",
             category="hardcoded_secret",
             file_path="test.py",
             line_number=10,
             description="Found hardcoded password",
-            recommendation="Use environment variables",
+            Recommendation="Use environment variables",
         )
 
         assert issue.issue_id == "test123"
-        assert issue.severity == "high"
+        assert issue.Severity == "high"
 
 
 class TestSemanticMatch:
@@ -205,7 +205,7 @@ class TestSecurityHardener:
         assert len(issues) >= 1
 
     def test_get_issues_by_severity(self, ctx):
-        """Test getting issues by severity."""
+        """Test getting issues by Severity."""
         hardener = SecurityHardener(ctx)
 
         content = "password = 'secret'\nrandom.random()"
@@ -213,7 +213,7 @@ class TestSecurityHardener:
 
         high_issues = hardener.get_issues_by_severity("high")
 
-        assert all(i.severity == "high" for i in high_issues)
+        assert all(i.Severity == "high" for i in high_issues)
 
     def test_get_stats(self, ctx):
         """Test getting security statistics."""
@@ -256,7 +256,7 @@ class TestSemanticAnalyzer:
         assert any(i["type"] == "weak_language" for i in result["issues"])
 
     def test_analyze_content_no_metrics(self, ctx):
-        """Test detecting missing metrics."""
+        """Test detecting Missing metrics."""
         analyzer = SemanticAnalyzer(ctx)
 
         content = "Developed software applications for clients."

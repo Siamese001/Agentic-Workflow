@@ -3,14 +3,14 @@ from dataclasses import dataclass
 
 'Brief description of functionality and purpose.'
 from enum import Enum
-'Types and models for rules_policy_check_safety.'
+'Types and models for RulesPolicyCheckSafety.'
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class execution_status(Enum):
+class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING: Any = 'pending'
     RUNNING: Any = 'running'
@@ -19,7 +19,7 @@ class execution_status(Enum):
     CANCELLED: Any = 'cancelled'
 
 @dataclass
-class execution_context:
+class ExecutionContext:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
@@ -33,7 +33,7 @@ class execution_context:
         """Mark execution as started."""
         SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f'Execution started for operation: {self.operation_id}')
+        Logger.info(f'Execution started for operation: {self.operation_id}')
 
     def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
         """Mark execution as completed."""
@@ -41,15 +41,15 @@ class execution_context:
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
             self.error_details = {'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()}
-            logger.error(f'Execution failed: {error}')
+            Logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
+            Logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
-class processing_result:
+class ProcessingResult:
     """Standardized result container for all operations."""
     success: bool
     data: Optional[Any] = None
     error_message: Optional[str] = None
-    execution_context: Optional[ExecutionContext] = None
+    ExecutionContext: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)

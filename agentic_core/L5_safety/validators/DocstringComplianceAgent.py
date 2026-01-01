@@ -17,7 +17,7 @@ class DocstringComplianceAgent:
     - Minimal stub: '''Brief description of functionality and purpose.'''
 
     Why ungated healing is safe:
-    - Only adds missing triple-quoted strings immediately after def/class
+    - Only adds Missing triple-quoted strings immediately after def/class
     - Never removes or modifies existing content
     - Single-file scope
     """
@@ -36,7 +36,7 @@ class DocstringComplianceAgent:
 
     async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
         """
-        Per-file healing: add missing docstrings.
+        Per-file healing: add Missing docstrings.
         """
         ctx: Any = ctx or self.ctx
         try:
@@ -75,7 +75,7 @@ class DocstringComplianceAgent:
             if added_count > 0:
                 new_content: Any = ''.join(new_lines)
                 file_path.write_text(new_content, encoding='utf-8')
-                message: Any = f'Added {added_count} missing docstring(s)'
+                message: Any = f'Added {added_count} Missing docstring(s)'
                 print(f'      [HEALED] {file_path.name}: {message}')
                 ctx.report(self.__class__.__name__, key_id=18, success=True, msg=message)
                 return {'healed': True, 'details': message}

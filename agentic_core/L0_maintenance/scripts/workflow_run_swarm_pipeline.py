@@ -16,12 +16,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 project_root: Any = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
-from scripts.runtime.core.subatomic_swarm import create_subatomic_swarm
+from scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
 from scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
 from scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
-from scripts.runtime.shared.resume_swarm import create_resume_swarm
+from scripts.runtime.shared.ResumeSwarm import create_resume_swarm
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def mock_embedder(texts: List[str]) -> List[List[float]]:
     """Mock embedding function simulating network latency."""
@@ -30,7 +30,7 @@ def mock_embedder(texts: List[str]) -> List[List[float]]:
     return [[0.1] * 768 for _ in texts]
 
 # NOT_AN_AGENT — mock/example class, not a true agent — excluded from agent discovery
-class mock_subatomic_hop:
+class MockSubatomicHop:
     """Mock SubatomicHop for demonstration."""
 
     def __init__(self, hop_id: str='mock_hop'):
@@ -125,7 +125,7 @@ async def demo_phase4_resume_swarm() -> Any:
     print('=' * 80)
     swarm: Any = create_resume_swarm(num_workers=6, enable_metrics=True)
     num_jobs: Any = 24
-    jobs: Any = [{'job_id': f'job_{i}', 'job_description': f'Senior Developer position {i}', 'user_profile': {'name': 'Candidate', 'skills': ['Python', 'AWS']}, 'output_format': 'pdf'} for i in range(num_jobs)]
+    jobs: Any = [{'job_id': f'job_{i}', 'JobDescription': f'Senior Developer position {i}', 'user_profile': {'name': 'Candidate', 'skills': ['Python', 'AWS']}, 'output_format': 'pdf'} for i in range(num_jobs)]
     print(f'\n⏱️  Sequential Processing ({num_jobs} resumes)...')
     time_seq: Any = num_jobs * 0.5
     print(f'   Estimated time: {time_seq:.2f}s')
@@ -220,7 +220,7 @@ async def main() -> Any:
         print('  4. Monitor metrics and adjust concurrency levels')
         print('  5. Scale up gradually to production workloads')
     except Exception as e:
-        logger.error(f'Pipeline failed: {e}', exc_info=True)
+        Logger.error(f'Pipeline failed: {e}', exc_info=True)
         print(f'\n❌ Error: {e}')
         return 1
     return 0

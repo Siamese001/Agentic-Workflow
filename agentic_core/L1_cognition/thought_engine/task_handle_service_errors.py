@@ -1,14 +1,14 @@
 """
-handle_service_errors.py - Retry/Fallback Module
+HandleServiceErrors.py - Retry/Fallback Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.090417
 """
 import logging
 from typing import Any, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class retry_result:
+class RetryResult:
     """Brief description of functionality and purpose."""
 
     def __init__(self, success: bool, attempts: int, result=None, error: Optional[str]=None):
@@ -17,8 +17,8 @@ class retry_result:
         self.result = result
         self.error = error
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class handle_service_errors:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class HandleServiceErrors:
     """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

@@ -1,8 +1,8 @@
 """Mock Vector Store module."""
 from typing import Dict, Any, List
 
-# NAMING FIXED: PineconeSovereignAgent → pinecone_sovereign_agent
-class pinecone_sovereign_agent:
+# NAMING FIXED: PineconeSovereignAgent → PineconeSovereignAgent
+class PineconeSovereignAgent:
     """Mock Pinecone Sovereign Agent."""
     
     def __init__(self, api_key: str = None, index_name: str = None):

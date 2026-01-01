@@ -6,14 +6,14 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-violations: Any = [{'file': 'agentic_core/L1_cognition/agent_logic.py', 'pattern': 'from schemas', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (schemas)\n# '}, {'file': 'agentic_core/L3_orchestration/mission_runner.py', 'pattern': 'from scripts', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (scripts)\n# '}, {'file': 'apps_shared/verify_hardening.py', 'pattern': 'from apps_rg', 'comment': '# GRAVITY FIX: Level 3 cannot import from Level 4 (apps_rg)\n# '}]
+violations: Any = [{'file': 'AgenticCore/L1_cognition/agent_logic.py', 'pattern': 'from schemas', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (schemas)\n# '}, {'file': 'AgenticCore/L3_orchestration/mission_runner.py', 'pattern': 'from scripts', 'comment': '# GRAVITY FIX: Level 0 cannot import from Level 1 (scripts)\n# '}, {'file': 'apps_shared/verify_hardening.py', 'pattern': 'from apps_rg', 'comment': '# GRAVITY FIX: Level 3 cannot import from Level 4 (apps_rg)\n# '}]
 
 def comment_out_import_line(file_path: Path, pattern: str, comment: str) -> Any:
     """Comment out import lines matching the pattern."""
@@ -41,13 +41,13 @@ def fix_violations() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] FIXING GRAVITY VIOLATIONS...')
     fixed_count: Any = 0
-    print('\n[PHASE 1] Fixing Level 0 violations (agentic_core)...')
-    file1: Any = ROOT / 'agentic_core/L1_cognition/agent_logic.py'
+    print('\n[PHASE 1] Fixing Level 0 violations (AgenticCore)...')
+    file1: Any = ROOT / 'AgenticCore/L1_cognition/agent_logic.py'
     if file1.exists():
         if comment_out_import_line(file1, 'from schemas', '# GRAVITY FIX: Level 0 cannot import from Level 1\n# '):
             print(f'  ✓ Fixed: {file1.relative_to(ROOT)}')
             fixed_count += 1
-    file2: Any = ROOT / 'agentic_core/L3_orchestration/mission_runner.py'
+    file2: Any = ROOT / 'AgenticCore/L3_orchestration/mission_runner.py'
     if file2.exists():
         if comment_out_import_line(file2, 'from scripts', '# GRAVITY FIX: Level 0 cannot import from Level 1\n# '):
             print(f'  ✓ Fixed: {file2.relative_to(ROOT)}')

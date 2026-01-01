@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
-# from agentic_core.lic_cta_patterns_enums import *  # Star import removed
+# from AgenticCore.lic_cta_patterns_enums import *  # Star import removed
 
 
 @dataclass
-# NAMING FIXED: CTAPattern → cta_pattern
-class cta_pattern:
+# NAMING FIXED: CTAPattern → CtaPattern
+class CtaPattern:
     """Pattern for call-to-action generation."""
 
     _style: CTAStyle
@@ -21,9 +21,9 @@ class cta_pattern:
 
 
 @dataclass
-# NAMING FIXED: CTATemplate → cta_template
-class cta_template:
-    """Template for CTA generation by route."""
+# NAMING FIXED: CTATemplate → CtaTemplate
+class CtaTemplate:
+    """Template for CTA generation by Route."""
 
     _template: str
     _word_limit: Optional[int] = None
@@ -32,8 +32,8 @@ class cta_template:
 
 
 @dataclass
-# NAMING FIXED: DateWindowConfig → date_window_config
-class date_window_config:
+# NAMING FIXED: DateWindowConfig → DateWindowConfig
+class DateWindowConfig:
     """Configuration for date window generation."""
 
     _window_size_days: int = 2
@@ -43,8 +43,8 @@ class date_window_config:
 
 
 @dataclass
-# NAMING FIXED: DayBufferConfig → day_buffer_config
-class day_buffer_config:
+# NAMING FIXED: DayBufferConfig → DayBufferConfig
+class DayBufferConfig:
     """Buffer configuration for a specific day."""
 
     _min_buffer_days: int

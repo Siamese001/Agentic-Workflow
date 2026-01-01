@@ -7,7 +7,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Snapshot Resume State - atomic implementation.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class SnapshotResumeState:

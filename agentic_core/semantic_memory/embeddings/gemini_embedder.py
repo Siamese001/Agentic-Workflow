@@ -5,7 +5,7 @@ import google.generativeai as genai
 from typing import Any, List
 import os
 
-class gemini_embedder:
+class GeminiEmbedder:
     """
     Sovereign wrapper for Gemini embedding model.
     Uses configured GEMINI_MODEL and GOOGLE_API_KEY.
@@ -29,7 +29,7 @@ class gemini_embedder:
             List of embedding vectors
         """
         try:
-            result: Any = genai.embed_content(model=self.model, content=texts, task_type='retrieval_document')
+            result: Any = genai.embed_content(model=self.model, content=texts, TaskType='retrieval_document')
             return result['embedding']
         except Exception as e:
             raise RuntimeError(f'Gemini embedding failed: {e}')

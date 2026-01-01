@@ -1,7 +1,7 @@
 """
 Dynamic Tool Registry for Runtime Tool Discovery
 
-Allows agents to discover and request tools dynamically based on task requirements,
+Allows agents to discover and request tools dynamically based on Task requirements,
 rather than being hardcoded with a fixed set of tools.
 """
 import inspect
@@ -12,10 +12,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Protocol
 import numpy as np
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class tool_definition:
+class ToolDefinition:
     """Definition of a tool in the registry."""
     name: str
     description: str
@@ -28,23 +28,23 @@ class tool_definition:
     success_rate: float = 1.0
 
 # Alias for consistency
-ToolDefinition = tool_definition
+ToolDefinition = ToolDefinition
 
 @dataclass
-class tool_match:
-    """A matched tool for a task."""
+class ToolMatch:
+    """A matched tool for a Task."""
     tool: ToolDefinition
     relevance_score: float
     reason: str
 
 # Alias for consistency
-ToolMatch = tool_match
+ToolMatch = ToolMatch
 
-class tool_registry:
+class ToolRegistry:
     """
     Dynamic tool registry that enables agents to discover tools at runtime.
 
-    Uses semantic similarity to match task descriptions to tool capabilities.
+    Uses semantic similarity to match Task descriptions to tool capabilities.
     """
 
     def __init__(self, embedder, enable_caching: bool=True):
@@ -86,10 +86,10 @@ class tool_registry:
 
     async def find_tools_for_task(self, task_description: str, max_tools: int=5, min_relevance: float=0.6, categories: Optional[List[str]]=None) -> List[ToolMatch]:
         """
-        Find tools relevant to a task using semantic search.
+        Find tools relevant to a Task using semantic search.
 
         Args:
-            task_description: Description of the task
+            task_description: Description of the Task
             max_tools: Maximum number of tools to return
             min_relevance: Minimum relevance score
             categories: Optional category filter
@@ -132,16 +132,16 @@ class tool_registry:
         self._tool_names = tool_names
         LOGGER.debug(f'Computed embeddings for {len(embeddings)} tools')
 
-    def _generate_match_reason(self, task: str, tool: ToolDefinition, similarity: float) -> str:
-        """Generate a reason why this tool matches the task."""
-        task_lower = task.lower()
+    def _generate_match_reason(self, Task: str, tool: ToolDefinition, similarity: float) -> str:
+        """Generate a reason why this tool matches the Task."""
+        task_lower = Task.lower()
         desc_lower = tool.description.lower()
         name_lower = tool.name.lower()
         reasons = []
         if any((word in desc_lower for word in task_lower.split())):
-            reasons.append('description contains task keywords')
+            reasons.append('description contains Task keywords')
         if any((word in name_lower for word in task_lower.split())):
-            reasons.append('name matches task keywords')
+            reasons.append('name matches Task keywords')
         if 'file' in task_lower and tool.category == 'filesystem':
             reasons.append('file operation tool')
         elif 'api' in task_lower and tool.category == 'network':
@@ -152,31 +152,31 @@ class tool_registry:
             reasons.append(f'semantic similarity ({similarity:.2f})')
         return '; '.join(reasons)
 
-    async def get_tool_recommendations(self, task: str, context: Optional[Dict[str, Any]]=None) -> str:
+    async def get_tool_recommendations(self, Task: str, context: Optional[Dict[str, Any]]=None) -> str:
         """
-        Get natural language tool recommendations for a task.
+        Get natural language tool recommendations for a Task.
 
         Args:
-            task: Task description
+            Task: Task description
             context: Optional execution context
 
         Returns:
-            Formatted recommendation string
+            Formatted Recommendation string
         """
-        matches: Any = await self.find_tools_for_task(task)
+        matches: Any = await self.find_tools_for_task(Task)
         if not matches:
-            return 'No specific tools found for this task.\n                . You may need to implement a custom solution.\n                .'
-        recommendation: Any = f"Recommended tools for '{task}':\n\n"
+            return 'No specific tools found for this Task.\n                . You may need to implement a custom solution.\n                .'
+        Recommendation: Any = f"Recommended tools for '{Task}':\n\n"
         for i, match in enumerate(matches, 1):
             tool: Any = match.tool
-            recommendation += f'{i}. {tool.name}\n'
-            recommendation += f'   Description: {tool.description}\n'
-            recommendation += f'   Relevance: {match.relevance_score:.2f}\n'
-            recommendation += f'   Reason: {match.reason}\n'
+            Recommendation += f'{i}. {tool.name}\n'
+            Recommendation += f'   Description: {tool.description}\n'
+            Recommendation += f'   Relevance: {match.relevance_score:.2f}\n'
+            Recommendation += f'   Reason: {match.reason}\n'
             if tool.parameters:
-                recommendation += f'   Parameters: {json.dumps(tool.parameters, indent=6)}\n'
-            recommendation += '\n'
-        return recommendation
+                Recommendation += f'   Parameters: {json.dumps(tool.parameters, indent=6)}\n'
+            Recommendation += '\n'
+        return Recommendation
 
     def get_tool(self, name: str) -> Optional[ToolDefinition]:
         """Get a tool by name."""
@@ -286,7 +286,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
 # =============================================================================
 # CODE TRANSFORMATION ENGINE (CTE) — Phase 1 Tool
 # =============================================================================
-from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -335,10 +335,10 @@ predefined_tool_categories['code_manipulation'] = 'AST-based code transformation
 # =============================================================================
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
-from agentic_core.L2_execution.tool_registry.tools.dependency_graph import (
+from AgenticCore.L2_execution.ToolRegistry.tools.DependencyGraph import (
     DependencyGraphArgs,
     GraphOperation,
-    dependency_graph,
+    DependencyGraph,
     quick_cycles,
     quick_impact,
 )
@@ -355,7 +355,7 @@ def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
     
     Args:
         args: DependencyGraphArgs with operation details
-            - operation: "build_graph", "detect_cycles", "impact_analysis", etc.
+            - operation: "build_graph", "detect_cycles", "ImpactAnalysis", etc.
             - target_path: File or directory to analyze
             - symbol: Symbol name for impact analysis
             
@@ -365,13 +365,13 @@ def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
     Example:
         >>> args = DependencyGraphArgs(
         ...     operation=GraphOperation.DETECT_CYCLES,
-        ...     target_path="agentic_core/"
+        ...     target_path="AgenticCore/"
         ... )
         >>> result = dependency_graph_tool(args)
         >>> result["data"]["has_cycles"]
         False
     """
-    return dependency_graph(args)
+    return DependencyGraph(args)
 
 
 # Add DGA to predefined categories
@@ -381,7 +381,7 @@ predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
 # =============================================================================
 # DIFF/PATCH GENERATOR (DPG) — Phase 2 Tool
 # =============================================================================
-from agentic_core.L2_execution.tool_registry.tools.diff_generator import (
+from AgenticCore.L2_execution.ToolRegistry.tools.diff_generator import (
     DiffGeneratorArgs,
     DiffFormat,
     generate_diff,

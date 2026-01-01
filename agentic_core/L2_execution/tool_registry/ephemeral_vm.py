@@ -9,25 +9,25 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
-from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig
+from AgenticCore.L2_execution.ToolRegistry.firecracker_manager_impl import FirecrackerManager
+from AgenticCore.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class isolation_level(Enum):
+class IsolationLevel(Enum):
     """Isolation levels for VM."""
     NONE: Any = 'none'
     NETWORK_ONLY: Any = 'network_only'
     FULL: Any = 'full'
 
 @dataclass
-class isolation_config:
+class IsolationConfig:
     """Configuration for VM isolation."""
     level: IsolationLevel = IsolationLevel.FULL
     allow_network: bool = False
@@ -42,7 +42,7 @@ class isolation_config:
         return {'level': self.level.value, 'allow_network': self.allow_network, 'allow_filesystem': self.allow_filesystem, 'allow_subprocess': self.allow_subprocess, 'max_cpu_percent': self.max_cpu_percent, 'max_memory_mb': self.max_memory_mb, 'max_execution_time_seconds': self.max_execution_time_seconds}
 
 @dataclass
-class execution_result:
+class ExecutionResult:
     """Result from code execution in VM."""
     success: bool
     output: str
@@ -55,7 +55,7 @@ class execution_result:
         """Convert to dictionary."""
         return {'success': self.success, 'output': self.output, 'error': self.error, 'execution_time_seconds': self.execution_time_seconds, 'exit_code': self.exit_code, 'metadata': self.metadata}
 
-class ephemeral_vm:
+class EphemeralVm:
     """Ephemeral VM for secure code execution.
 
     Features:
@@ -66,20 +66,20 @@ class ephemeral_vm:
     - Network isolation
     """
 
-    def __init__(self, vm_manager: FirecrackerManager, isolation_config: Optional[IsolationConfig]=None, enable_logging: bool=True):
+    def __init__(self, vm_manager: FirecrackerManager, IsolationConfig: Optional[IsolationConfig]=None, enable_logging: bool=True):
         """Initialize ephemeral VM.
 
         Args:
             vm_manager: Firecracker manager
-            isolation_config: Isolation configuration
+            IsolationConfig: Isolation configuration
             enable_logging: Enable logging
         """
         self.vm_manager = vm_manager
-        self.isolation_config = isolation_config or IsolationConfig()
+        self.IsolationConfig = IsolationConfig or IsolationConfig()
         self.enable_logging = enable_logging
         self._vm_counter = 0
         if self.enable_logging:
-            LOGGER.info('ephemeral_vm_initialized', extra={'isolation': self.isolation_config.to_dict()})
+            LOGGER.info('ephemeral_vm_initialized', extra={'isolation': self.IsolationConfig.to_dict()})
 
     async def execute_code(self, code: str, language: str='python', timeout_seconds: Optional[int]=None) -> ExecutionResult:
         """Execute code in ephemeral VM.
@@ -91,33 +91,33 @@ class ephemeral_vm:
         Returns:
             ExecutionResult
         """
-        timeout: Any = timeout_seconds or self.isolation_config.max_execution_time_seconds
+        timeout: Any = timeout_seconds or self.IsolationConfig.max_execution_time_seconds
         start_time: Any = time.time()
-        vm_id, vm_config = self._create_vm_config(timeout)
-        vm_instance: Any = None
+        vm_id, VmConfig = self._create_vm_config(timeout)
+        VmInstance: Any = None
         try:
-            vm_instance: Any = await self._create_and_execute_vm(vm_id, vm_config, code, language, timeout, start_time)
-            return vm_instance
+            VmInstance: Any = await self._create_and_execute_vm(vm_id, VmConfig, code, language, timeout, start_time)
+            return VmInstance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
         except Exception as e:
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
-            await self._teardown_vm(vm_instance, vm_id)
+            await self._teardown_vm(VmInstance, vm_id)
 
     def _create_vm_config(self, timeout: int) -> tuple:
         """Create VM configuration."""
         self._vm_counter += 1
         vm_id = f'ephemeral_vm_{self._vm_counter}_{int(time.time())}'
-        vm_config = VMConfig(vm_id=vm_id, provider=self.vm_manager.provider, cpu_count=1, memory_mb=self.isolation_config.max_memory_mb, network_enabled=self.isolation_config.allow_network, timeout_seconds=timeout, auto_teardown=True)
-        return (vm_id, vm_config)
+        VmConfig = VMConfig(vm_id=vm_id, Provider=self.vm_manager.Provider, cpu_count=1, memory_mb=self.IsolationConfig.max_memory_mb, network_enabled=self.IsolationConfig.allow_network, timeout_seconds=timeout, auto_teardown=True)
+        return (vm_id, VmConfig)
 
-    async def _create_and_execute_vm(self, vm_id: str, vm_config, code: str, language: str, timeout: int, start_time: float) -> ExecutionResult:
+    async def _create_and_execute_vm(self, vm_id: str, VmConfig, code: str, language: str, timeout: int, start_time: float) -> ExecutionResult:
         """Create VM and execute code."""
         if self.enable_logging:
             LOGGER.info('creating_ephemeral_vm', extra={'vm_id': vm_id, 'language': language})
-        vm_instance = await self.vm_manager.create_vm(vm_config)
-        result = await self._execute_in_vm(vm_instance=vm_instance, code=code, language=language, timeout=timeout)
+        VmInstance = await self.vm_manager.create_vm(VmConfig)
+        result = await self._execute_in_vm(VmInstance=VmInstance, code=code, language=language, timeout=timeout)
         result.execution_time_seconds = time.time() - start_time
         if self.enable_logging:
             LOGGER.info('code_executed', extra={'vm_id': vm_id, 'success': result.success, 'execution_time': result.execution_time_seconds})
@@ -135,9 +135,9 @@ class ephemeral_vm:
             LOGGER.error('execution_failed', extra={'vm_id': vm_id, 'error': str(error)}, exc_info=True)
         return ExecutionResult(success=False, output='', error=str(error), execution_time_seconds=time.time() - start_time, exit_code=1)
 
-    async def _teardown_vm(self, vm_instance, vm_id: str) -> None:
+    async def _teardown_vm(self, VmInstance, vm_id: str) -> None:
         """Teardown VM."""
-        if vm_instance:
+        if VmInstance:
             try:
                 await self.vm_manager.terminate_vm(vm_id)
                 if self.enable_logging:
@@ -146,11 +146,11 @@ class ephemeral_vm:
                 if self.enable_logging:
                     LOGGER.error('vm_teardown_failed', extra={'vm_id': vm_id, 'error': str(e)})
 
-    async def _execute_in_vm(self, vm_instance: Any, code: str, language: str, timeout: int) -> ExecutionResult:
+    async def _execute_in_vm(self, VmInstance: Any, code: str, language: str, timeout: int) -> ExecutionResult:
         """Execute code inside VM.
 
         Args:
-            vm_instance: VM instance
+            VmInstance: VM instance
             code: Code to execute
             language: Programming language
             timeout: Timeout in seconds
@@ -202,16 +202,16 @@ class ephemeral_vm:
         except Exception as e:
             return ExecutionResult(success=False, output='', error=str(e), exit_code=1)
 
-def create_ephemeral_vm(vm_manager: Optional[FirecrackerManager]=None, isolation_config: Optional[IsolationConfig]=None) -> EphemeralVM:
+def create_ephemeral_vm(vm_manager: Optional[FirecrackerManager]=None, IsolationConfig: Optional[IsolationConfig]=None) -> EphemeralVM:
     """Factory function to create ephemeral VM.
 
     Args:
         vm_manager: Optional VM manager
-        isolation_config: Optional isolation config
+        IsolationConfig: Optional isolation config
 
     Returns:
         EphemeralVM instance
     """
     if vm_manager is None:
         vm_manager: Any = create_firecracker_manager()
-    return EphemeralVM(vm_manager=vm_manager, isolation_config=isolation_config)
+    return EphemeralVM(vm_manager=vm_manager, IsolationConfig=IsolationConfig)

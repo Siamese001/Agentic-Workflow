@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 
 from .react_engine import ReasoningMode
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class TaskType(Enum):
@@ -55,23 +55,23 @@ class ReasoningRouter:
             TaskType.UNKNOWN: self.default_mode,
         }
     
-    def classify_task(self, task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
-        """Classify task type based on content and context.
+    def classify_task(self, Task: str, context: Optional[Dict[str, Any]] = None) -> TaskType:
+        """Classify Task type based on content and context.
         
         Args:
-            task: The task description
+            Task: The Task description
             context: Optional context with hints
             
         Returns:
             TaskType classification
         """
-        if context and "task_type" in context:
+        if context and "TaskType" in context:
             try:
-                return TaskType(context["task_type"])
+                return TaskType(context["TaskType"])
             except ValueError:
                 pass
         
-        task_lower = task.lower()
+        task_lower = Task.lower()
         
         tool_indicators = [
             "search",
@@ -128,67 +128,67 @@ class ReasoningRouter:
             if indicator in task_lower:
                 return TaskType.QUESTION_ANSWERING
         
-        if len(task.split()) > 50:
+        if len(Task.split()) > 50:
             return TaskType.ANALYSIS
         
         return TaskType.UNKNOWN
     
     def select_strategy(
         self,
-        task: str,
+        Task: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> ReasoningMode:
-        """Select appropriate reasoning strategy for task.
+        """Select appropriate reasoning strategy for Task.
         
         Args:
-            task: The task to solve
+            Task: The Task to solve
             context: Optional context with hints
             
         Returns:
             Selected ReasoningMode
         """
-        task_type = self.classify_task(task, context)
+        TaskType = self.classify_task(Task, context)
         
-        strategy = self._strategy_map.get(task_type, self.default_mode)
+        strategy = self._strategy_map.get(TaskType, self.default_mode)
         
-        logger.info(
+        Logger.info(
             "reasoning_strategy_selected",
             extra={
-                "task_type": task_type.value,
+                "TaskType": TaskType.value,
                 "strategy": strategy.value,
-                "task_preview": task[:100],
+                "task_preview": Task[:100],
             }
         )
         
         return strategy
     
-    def override_strategy(self, task_type: TaskType, mode: ReasoningMode) -> None:
-        """Override strategy mapping for a task type.
+    def override_strategy(self, TaskType: TaskType, mode: ReasoningMode) -> None:
+        """Override strategy mapping for a Task type.
         
         Args:
-            task_type: The task type to override
+            TaskType: The Task type to override
             mode: The reasoning mode to use
         """
-        self._strategy_map[task_type] = mode
+        self._strategy_map[TaskType] = mode
         
-        logger.info(
+        Logger.info(
             "reasoning_strategy_override",
             extra={
-                "task_type": task_type.value,
+                "TaskType": TaskType.value,
                 "new_strategy": mode.value,
             }
         )
 
 
 def select_reasoning_strategy(
-    task: str,
+    Task: str,
     context: Optional[Dict[str, Any]] = None,
     router: Optional[ReasoningRouter] = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
     
     Args:
-        task: The task to solve
+        Task: The Task to solve
         context: Optional context
         router: Optional custom router (creates default if None)
         
@@ -198,4 +198,4 @@ def select_reasoning_strategy(
     if router is None:
         router = ReasoningRouter()
     
-    return router.select_strategy(task, context)
+    return router.select_strategy(Task, context)

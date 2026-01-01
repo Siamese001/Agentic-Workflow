@@ -1,7 +1,7 @@
 """Signal Enhancer - Hardened quality gates for high-signal outputs.
 
 This module provides strict validation gates, signal-to-noise optimization,
-and claim confidence scoring to ensure maximum output quality.
+and Claim confidence scoring to ensure maximum output quality.
 """
 
 import hashlib
@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import asyncio
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class SignalQuality(Enum):
@@ -52,7 +52,7 @@ class QualityThresholds:
 @dataclass
 class ClaimAnalysis:
     """Analysis of claims within content."""
-    claim: str
+    Claim: str
     confidence: float
     verifiable: bool
     sources: List[str]
@@ -134,7 +134,7 @@ class SignalEnhancer:
             "flag_distribution": {}
         }
         
-        logger.debug(f"Initialized SignalEnhancer: {name}")
+        Logger.debug(f"Initialized SignalEnhancer: {name}")
     
     def assess_signal(
         self,
@@ -583,9 +583,9 @@ class SignalEnhancer:
             content: Content to analyze
             
         Returns:
-            List of claim analyses
+            List of Claim analyses
         """
-        # Simplified claim extraction
+        # Simplified Claim extraction
         claim_patterns = [
             r"([^.]*(?:is|are|shows|indicates|proves|demonstrates)[^.]*\.)",
             r"([^.]*(?:according to|research|study|data)[^.]*\.)"
@@ -599,14 +599,14 @@ class SignalEnhancer:
                 confidence = 0.7 if "according to" in match.lower() else 0.5
                 verifiable = "according to" in match.lower() or "study" in match.lower()
                 
-                claim = ClaimAnalysis(
-                    claim=match.strip(),
+                Claim = ClaimAnalysis(
+                    Claim=match.strip(),
                     confidence=confidence,
                     verifiable=verifiable,
                     sources=[],  # Would extract in real implementation
                     risk_level="low" if confidence > 0.7 else "medium"
                 )
-                claims.append(claim)
+                claims.append(Claim)
         
         return claims[:5]  # Limit to top 5 claims
     
@@ -660,7 +660,7 @@ class SignalEnhancer:
         if composite_score < 0.7:
             recommendations.append("Add specific examples and data to strengthen claims")
         
-        if not any("according to" in c.claim.lower() for c in claims):
+        if not any("according to" in c.Claim.lower() for c in claims):
             recommendations.append("Include sources or references for key claims")
         
         return flags, recommendations

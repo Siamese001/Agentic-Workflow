@@ -8,18 +8,18 @@ and human-in-the-loop intervention.
 import asyncio
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+from AgenticCore.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 if TYPE_CHECKING:
-    from agentic_core.intervention_server import approval_event, start_intervention_server
+    from AgenticCore.InterventionServer import approval_event, start_intervention_server
 
-class canon_swarm_scheduler:
+class CanonSwarmScheduler:
     """
     Orchestrates validation agent execution in phases.
 
@@ -56,13 +56,13 @@ class canon_swarm_scheduler:
         """Build default phase configuration using agent classes."""
         if not self._agent_classes:
             raise ValueError('No agent classes provided. Call set_phases() or provide agent_classes in constructor.')
-        from agentic_core.L2_execution.tool_registry.engineering import PatternEnforcer, StructuralEngineer
-        from agentic_core.L2_execution.tool_registry.governance import ArchitectureGovernor, DependencySentinel
-        from agentic_core.L2_execution.tool_registry.infrastructure import BenchmarkingAgent, Historian
-        from agentic_core.L2_execution.tool_registry.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
-        from agentic_core.L2_execution.tool_registry.repair import TestPilot, ToolsmithAgent
-        from agentic_core.L2_execution.tool_registry.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
-        from agentic_core.L2_execution.tool_registry.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
+        from AgenticCore.L2_execution.ToolRegistry.engineering import PatternEnforcer, StructuralEngineer
+        from AgenticCore.L2_execution.ToolRegistry.governance import ArchitectureGovernor, DependencySentinel
+        from AgenticCore.L2_execution.ToolRegistry.infrastructure import BenchmarkingAgent, Historian
+        from AgenticCore.L2_execution.ToolRegistry.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+        from AgenticCore.L2_execution.ToolRegistry.repair import TestPilot, ToolsmithAgent
+        from AgenticCore.L2_execution.ToolRegistry.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
+        from AgenticCore.L2_execution.ToolRegistry.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
         self.phases = {'integrity_seq': [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinel(self.ctx)], 'curation_seq': [HygieneGuardian(self.ctx), CodeStyleGuardian(self.ctx)], 'test_seq': [TestPilot(self.ctx)], 'memory_parallel': [TheCartographer(self.ctx), TheOmniContext(self.ctx)], 'resilience_parallel': [SafetyInspector(self.ctx), SecurityEnforcer(self.ctx), PerformanceEnforcer(self.ctx)], 'resource_safety_parallel': [ConcurrencyGuardian(self.ctx)], 'engineering_parallel': [StructuralEngineer(self.ctx), PatternEnforcer(self.ctx), ToolsmithAgent(self.ctx)], 'refinement_parallel': [NamingEnforcer(self.ctx), DocEnforcer(self.ctx), TypeEnforcer(self.ctx)], 'benchmarking_seq': [BenchmarkingAgent(self.ctx)], 'optimization_conditional': [TheStrategist(self.ctx)]}
 
     async def run_mission(self, target_scope: str=None) -> Any:
@@ -77,11 +77,11 @@ class canon_swarm_scheduler:
             print(f'🎯 SURGICAL MISSION: Targeting {target_scope}')
             if not self.ctx.code_graph.graph:
                 self.ctx.code_graph.build(self.ctx.python_files)
-            blast_radius: Any = set([target_scope])
+            BlastRadius: Any = set([target_scope])
             dependents: Any = self.ctx.code_graph.get_impact_radius(target_scope)
-            blast_radius.update(dependents)
+            BlastRadius.update(dependents)
             original_files: Any = self.ctx.python_files.copy()
-            self.ctx.python_files = [f for f in self.ctx.python_files if f in blast_radius or any((f.endswith(b.lstrip('./')) for b in blast_radius))]
+            self.ctx.python_files = [f for f in self.ctx.python_files if f in BlastRadius or any((f.endswith(b.lstrip('./')) for b in BlastRadius))]
             print(f'   ☢️ BLAST RADIUS: {len(self.ctx.python_files)} files in scope')
             for f in self.ctx.python_files[:5]:
                 print(f'      - {f}')

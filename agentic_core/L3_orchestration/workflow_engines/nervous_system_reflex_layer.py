@@ -1,7 +1,7 @@
 """Reflex Layer for Nervous System."""
 from typing import Dict, Any
 
-class reflex_layer:
+class ReflexLayer:
     """Mock Reflex Layer for testing."""
 
     def __init__(self):

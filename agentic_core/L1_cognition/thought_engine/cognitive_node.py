@@ -12,14 +12,14 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 import yaml
 from llm_client import LLMClient
 
-class cognitive_node:
+class CognitiveNode:
     """
     Implements Sequential Thinking for the runtime agent.
     Forces the LLM to 'Show its work' before generating the final code.
     """
 
     def __init__(self, config_path: Optional[str]=None):
-        self.logger = logging.getLogger('CognitiveNode')
+        self.Logger = logging.getLogger('CognitiveNode')
         self.llm = LLMClient()
         if config_path is None:
             config_path = Path('config/sequential_thinking.yaml')
@@ -29,10 +29,10 @@ class cognitive_node:
             with open(config_path, 'r', encoding='utf-8') as f:
                 self.config = yaml.safe_load(f)
         except FileNotFoundError:
-            self.logger.warning(f'Config file not found at {config_path}, using defaults')
+            self.Logger.warning(f'Config file not found at {config_path}, using defaults')
             self.config = self._get_default_config()
         except yaml.YAMLError as e:
-            self.logger.error(f'Error parsing config file at {config_path}: {e}, using defaults')
+            self.Logger.error(f'Error parsing config file at {config_path}: {e}, using defaults')
             self.config = self._get_default_config()
         self.max_steps: int = self.config.get('max_steps', 10)
         self.step_timeout: int = self.config.get('step_timeout', 30)
@@ -83,7 +83,7 @@ class cognitive_node:
             return 'Phase: EXECUTION. FINAL WARNING. You must conclude immediately. Do not ask for more information.'
 
     def _get_default_config(self) -> Dict[str, Any]:
-        """Return default configuration if config file is missing or invalid."""
+        """Return default configuration if config file is Missing or invalid."""
         return {'max_steps': 5, 'step_timeout': 30, 'overall_timeout': 300, 'circuit_breaker_trips': 2, 'slow_step_threshold': 30, 'persist_history': True, 'history_dir': 'logs/thought_history', 'max_syntax_attempts': 2, 'base_temperature': 0.7, 'min_temperature': 0.0, 'log_thoughts': True, 'log_timing': True}
 
     def _handle_step_duration_and_circuit_breaker(self, step_duration: float, circuit_breaker_count: int, step_num: int) -> int:
@@ -104,9 +104,9 @@ class cognitive_node:
         if not step_duration > self.slow_step_threshold:
             return circuit_breaker_count
         circuit_breaker_count += 1
-        self.logger.warning(f'[!] Step {step_num} took {step_duration:.2f}s (threshold: {self.slow_step_threshold}s)')
+        self.Logger.warning(f'[!] Step {step_num} took {step_duration:.2f}s (threshold: {self.slow_step_threshold}s)')
         if circuit_breaker_count >= self.circuit_breaker_trips:
-            self.logger.error('[X] Circuit breaker tripped - too many slow steps')
+            self.Logger.error('[X] Circuit breaker tripped - too many slow steps')
             raise TimeoutError('Sequential thinking circuit breaker activated due to slow steps')
         return circuit_breaker_count
 
@@ -121,7 +121,7 @@ class cognitive_node:
             TimeoutError: If the overall timeout has been exceeded.
         """
         if time.time() - start_time > self.overall_timeout:
-            self.logger.error(f'[X] Overall thinking timeout exceeded ({self.overall_timeout}s)')
+            self.Logger.error(f'[X] Overall thinking timeout exceeded ({self.overall_timeout}s)')
             raise TimeoutError('Sequential thinking exceeded maximum allowed duration')
 
     def _build_thinking_prompt(self, user_goal: str, toolbox_desc: str, current_step: int, history: List[Dict[str, Any]], phase_directive: str) -> str:
@@ -169,7 +169,7 @@ class cognitive_node:
         except TimeoutError:
             raise
         except Exception as e:
-            self.logger.error(f'[X] Cognitive Step Failed: {e}')
+            self.Logger.error(f'[X] Cognitive Step Failed: {e}')
             raise RuntimeError(f'Cognitive step {current_step + 1} failed: {str(e)}') from e
 
     def _process_thinking_step_result(self, session_id: str, user_goal: str, current_step: int, response: Dict[str, Any], step_duration: float, history: List[Dict[str, Any]]) -> Tuple[str, bool]:
@@ -191,7 +191,7 @@ class cognitive_node:
         """
         thought = response.get('thought', 'Analysis failed, proceeding to synthesis.')
         needs_more = response.get('needs_more_thought', True)
-        self.logger.info(f'🤔 Step {current_step + 1}: {thought[:120]}...')
+        self.Logger.info(f'🤔 Step {current_step + 1}: {thought[:120]}...')
         history.append({'step': current_step + 1, 'thought': thought, 'timestamp': datetime.now().isoformat(), 'duration': step_duration})
         if self.persist_history:
             self._save_thought_history(session_id, user_goal, history)
@@ -210,7 +210,7 @@ class cognitive_node:
         Returns:
             The final generated Python code string.
         """
-        self.logger.info('💡 EPIPHANY REACHED. Constructing Final Plan.')
+        self.Logger.info('💡 EPIPHANY REACHED. Constructing Final Plan.')
         final_code = self._synthesize_code(user_goal, history, toolbox_desc)
         if self.persist_history:
             self._save_final_result(session_id, final_code)
@@ -235,7 +235,7 @@ class cognitive_node:
         """
         start_time: Any = time.time()
         session_id: Any = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.logger.info(f'🧠 STARTING SEQUENTIAL THINKING LOOP (Max {self.max_steps} Steps, {self.step_timeout}s timeout each)...')
+        self.Logger.info(f'🧠 STARTING SEQUENTIAL THINKING LOOP (Max {self.max_steps} Steps, {self.step_timeout}s timeout each)...')
         history: List[Dict[str, Any]] = []
         circuit_breaker_count: Any = 0
         raw_prompt: Any = user_goal
@@ -243,14 +243,14 @@ class cognitive_node:
             self._check_overall_timeout(start_time)
             current_temp: Any = self._calculate_dynamic_temperature(i)
             phase_directive: Any = self._get_system_directive(i)
-            self.logger.debug(f'Step {i + 1}/{self.max_steps} | Temp: {current_temp:.2f} | {phase_directive}')
+            self.Logger.debug(f'Step {i + 1}/{self.max_steps} | Temp: {current_temp:.2f} | {phase_directive}')
             system_prompt: Any = self._build_thinking_prompt(user_goal, toolbox_desc, i, history, phase_directive)
             response, circuit_breaker_count, step_duration = self._execute_thinking_step(system_prompt, raw_prompt, i, circuit_breaker_count)
             thought, needs_more = self._process_thinking_step_result(session_id, user_goal, i, response, step_duration, history)
             if not needs_more:
                 return self._handle_final_synthesis(session_id, user_goal, history, toolbox_desc)
             raw_prompt: Any = f'Previous thought: {thought}. Now, what is the next logical step?'
-        self.logger.warning(f'[!] Max thinking steps ({self.max_steps}) reached. Synthesizing plan with current context.')
+        self.Logger.warning(f'[!] Max thinking steps ({self.max_steps}) reached. Synthesizing plan with current context.')
         return self._handle_final_synthesis(session_id, user_goal, history, toolbox_desc)
 
     def _validate_generated_code(self, code: str) -> None:
@@ -310,11 +310,11 @@ class cognitive_node:
         try:
             final_response = self.llm.generate_plan('You are a master coder. Use the context provided to write perfect code.', final_prompt)
         except Exception as e:
-            self.logger.error(f'[X] LLM code synthesis failed: {e}')
+            self.Logger.error(f'[X] LLM code synthesis failed: {e}')
             raise RuntimeError(f'LLM code synthesis failed: {str(e)}') from e
         code = final_response.get('code', '')
-        self.logger.debug(f'Raw LLM response: {final_response}')
-        self.logger.debug(f"Extracted code (first 500 chars): {(code[:500] if code else 'EMPTY')}")
+        self.Logger.debug(f'Raw LLM response: {final_response}')
+        self.Logger.debug(f"Extracted code (first 500 chars): {(code[:500] if code else 'EMPTY')}")
         self._validate_generated_code(code)
         return code
 
@@ -325,7 +325,7 @@ class cognitive_node:
         """
         try:
             code = self._attempt_code_synthesis_single_pass(goal, thoughts, toolbox_desc, attempt, last_error)
-            self.logger.info('[OK] Code syntax validation passed!')
+            self.Logger.info('[OK] Code syntax validation passed!')
             return (code, None)
         except (SyntaxError, ValueError, RuntimeError) as e:
             return (None, f'Validation/Synthesis error: {str(e)}')
@@ -345,7 +345,7 @@ class cognitive_node:
         Raises:
             RuntimeError: If valid code cannot be generated after max attempts.
         """
-        self.logger.info('✍️ Synthesizing final code from thought sequence...')
+        self.Logger.info('✍️ Synthesizing final code from thought sequence...')
         thoughts = '\n'.join([f"Thought {h['step']}: {h['thought']}" for h in history])
         max_attempts = self.max_syntax_attempts
         last_error = None
@@ -355,8 +355,8 @@ class cognitive_node:
                 return code
             else:
                 last_error = error
-                self.logger.warning(f'[!] Code validation/synthesis failed (attempt {attempt + 1}): {last_error}')
-        self.logger.error('[X] Max validation attempts reached. Raising exception.')
+                self.Logger.warning(f'[!] Code validation/synthesis failed (attempt {attempt + 1}): {last_error}')
+        self.Logger.error('[X] Max validation attempts reached. Raising exception.')
         raise RuntimeError(f'Failed to generate valid code after {max_attempts} attempts. Last error: {last_error}')
 
     def _save_thought_history(self, session_id: str, goal: str, history: List[Dict[str, Any]]) -> None:
@@ -374,7 +374,7 @@ class cognitive_node:
             with open(history_file, 'w', encoding='utf-8') as f:
                 json.dump(data_to_save, f, indent=2)
         except Exception as e:
-            self.logger.warning(f'Failed to save thought history: {e}')
+            self.Logger.warning(f'Failed to save thought history: {e}')
 
     def _save_final_result(self, session_id: str, code: str) -> None:
         """
@@ -390,4 +390,4 @@ class cognitive_node:
             with open(result_file, 'w', encoding='utf-8') as f:
                 f.write(content)
         except Exception as e:
-            self.logger.warning(f'Failed to save final result: {e}')
+            self.Logger.warning(f'Failed to save final result: {e}')

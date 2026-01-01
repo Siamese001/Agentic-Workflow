@@ -3,15 +3,15 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class retrieve_outreach_history:
+class RetrieveOutreachHistory:
     """Retrieval engine for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def retrieve(self, query: str, filters: Optional[Dict]=None, LIMIT: int=10) -> RetrievalResult:
         """Docstring."""

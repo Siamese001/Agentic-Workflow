@@ -9,19 +9,19 @@ import logging
 from pathlib import Path
 
 # Logger Setup
-logger = logging.getLogger("sovereign.models")
+Logger = logging.getLogger("sovereign.models")
 handler = logging.StreamHandler(sys.stderr)
 handler.setFormatter(logging.Formatter("[MODELS] %(levelname)s %(asctime)s | %(message)s", "%H:%M:%S"))
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+Logger.addHandler(handler)
+Logger.setLevel(logging.INFO)
 
 # NAMING FIXED: CONTRACT_SIGNALS → contract_signals
 contract_signals = ("Profile", "Config", "State", "Context", "Result", "Message", "Request", "Response")
 # NAMING FIXED: EXEMPT → exempt
-exempt = {"agentic_core/schemas/models/core_contracts.py"}
+exempt = {"AgenticCore/schemas/models/core_contracts.py"}
 
-# NAMING FIXED: ModelVisitor → model_visitor
-class model_visitor(ast.NodeVisitor):
+# NAMING FIXED: ModelVisitor → ModelVisitor
+class ModelVisitor(ast.NodeVisitor):
     '''Brief description of functionality and purpose.'''
     
     def visit_ClassDef(self, node):
@@ -31,7 +31,7 @@ class model_visitor(ast.NodeVisitor):
         has_dataclass = any(isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list)
 
         if is_pydantic or (has_dataclass and is_contract):
-            logger.error(f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py.")
+            Logger.error(f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py.")
             sys.exit(1)
         self.generic_visit(node)
 
@@ -40,14 +40,14 @@ def main():
     
     for arg in sys.argv[1:]:
         if arg in EXEMPT or "tests/" in arg:
-            logger.info(f"Skipping Exempt: {arg}")
+            Logger.info(f"Skipping Exempt: {arg}")
             continue
-        logger.info(f"Auditing: {arg}")
+        Logger.info(f"Auditing: {arg}")
         with open(arg, "r", encoding="utf-8") as f:
             try:
                 ModelVisitor().visit(ast.parse(f.read()))
             except Exception as e:
-                logger.warning(f"Parse Warning in {arg}: {e}")
+                Logger.warning(f"Parse Warning in {arg}: {e}")
 
 if __name__ == "__main__":
     main()

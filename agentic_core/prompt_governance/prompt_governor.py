@@ -15,7 +15,7 @@ import re
 from typing import Dict, Optional
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class PromptGovernor:
@@ -40,7 +40,7 @@ CRITICAL SAFETY RULES (NEVER VIOLATE):
 - NEVER suggest file operations: open() for writing, Path.unlink(), shutil.rmtree, os.remove
 - NEVER suggest network operations: requests, urllib, socket, http
 - NEVER suggest serialization of untrusted data: pickle, marshal, yaml.unsafe_load
-- NEVER add or modify import statements unless explicitly required by the task
+- NEVER add or modify import statements unless explicitly required by the Task
 - NEVER remove existing functionality - only fix violations
 
 OUTPUT FORMAT REQUIREMENTS:
@@ -51,17 +51,17 @@ OUTPUT FORMAT REQUIREMENTS:
 
 ARCHITECTURAL COMPLIANCE:
 - Respect the project's layer hierarchy (L0-L5)
-- Maintain span-of-two compliance (max 4 path parts)
+- Maintain Span-of-two compliance (max 4 path parts)
 - Preserve existing import structure unless fixing violations
 - Keep files under 800 lines of code
 
 REASONING PROCESS:
-1. Analyze the violation or task
+1. Analyze the Violation or Task
 2. Identify minimal changes needed
 3. Verify changes don't introduce new violations
 4. Output complete healed code
 
-If the task violates project invariants or safety rules, output the original code unchanged.""".strip()
+If the Task violates project invariants or safety rules, output the original code unchanged.""".strip()
         
         # [HARDENING 8] Fission-specific template for file splitting
         self.fission_template = """You are a code fission specialist in a sovereign agentic system.
@@ -83,7 +83,7 @@ QUALITY REQUIREMENTS:
     
     def build_healing_prompt(
         self, 
-        task: str, 
+        Task: str, 
         code: str, 
         file_path: str = "unknown",
         context: str = ""
@@ -92,7 +92,7 @@ QUALITY REQUIREMENTS:
         Build a hardened healing prompt with safety guards.
         
         Args:
-            task: Description of the healing task or violation to fix
+            Task: Description of the healing Task or Violation to fix
             code: Original code to be healed
             file_path: Path to the file (for context)
             context: Optional additional context (e.g., from vector memory)
@@ -101,7 +101,7 @@ QUALITY REQUIREMENTS:
             Dict with 'system' and 'user' prompt components
         """
         # [HARDENING 8] Sanitize inputs to prevent prompt injection
-        task_sanitized = self._sanitize_input(task)
+        task_sanitized = self._sanitize_input(Task)
         context_sanitized = self._sanitize_input(context) if context else ""
         
         # Build user prompt with clear structure
@@ -172,14 +172,14 @@ Return ONLY JSON in this format:
             match = re.search(r'```\n(.*?)\n```', raw_response, re.DOTALL)
         
         if not match:
-            logger.error("[PROMPT_GOVERNOR] LLM output missing required fenced code block")
-            raise ValueError("LLM output missing required fenced code block - response may be malformed")
+            Logger.error("[PROMPT_GOVERNOR] LLM output Missing required fenced code block")
+            raise ValueError("LLM output Missing required fenced code block - response may be malformed")
         
         code = match.group(1)
         
         # [HARDENING 8] Validate extracted code doesn't contain dangerous patterns
         if self._contains_dangerous_patterns(code):
-            logger.error("[PROMPT_GOVERNOR] LLM output contains dangerous patterns - rejecting")
+            Logger.error("[PROMPT_GOVERNOR] LLM output contains dangerous patterns - rejecting")
             raise ValueError("LLM output contains dangerous code patterns")
         
         return code
@@ -241,7 +241,7 @@ Return ONLY JSON in this format:
         
         for pattern in dangerous_patterns:
             if re.search(pattern, code, re.IGNORECASE):
-                logger.warning(f"[PROMPT_GOVERNOR] Dangerous pattern detected: {pattern}")
+                Logger.warning(f"[PROMPT_GOVERNOR] Dangerous pattern detected: {pattern}")
                 return True
         
         return False

@@ -9,15 +9,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
+from AgenticCore.L4_state.ValidationContext.RedisSovereignAgent import RedisSovereignAgent
 
 
-# NAMING FIXED: CachedOrchestrator → cached_orchestrator
-class cached_orchestrator:
+# NAMING FIXED: CachedOrchestrator → CachedOrchestrator
+class CachedOrchestrator:
     """
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
     """
@@ -70,16 +70,16 @@ class cached_orchestrator:
             return json.loads(data) if data else None
         except: return None
 
-    def cache_routing_decision(self, task: str, delegation: Dict):
+    def cache_routing_decision(self, Task: str, delegation: Dict):
                     
-        key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
+        key = f"{self.prefix_routing}:{hashlib.sha256(Task.encode()).hexdigest()}"
         try:
             self.redis.set(key, json.dumps(delegation), ex=3600) # 1 hour
         except: pass
 
-    def get_cached_routing(self, task: str) -> Optional[Dict]:
+    def get_cached_routing(self, Task: str) -> Optional[Dict]:
                     
-        key = f"{self.prefix_routing}:{hashlib.sha256(task.encode()).hexdigest()}"
+        key = f"{self.prefix_routing}:{hashlib.sha256(Task.encode()).hexdigest()}"
         try:
             data = self.redis.get(key)
             return json.loads(data) if data else None

@@ -8,7 +8,7 @@ from .resume_engine import (
 )
 
 # Generator and planner classes
-from .resume_generator import ResumeGenerator
+from .ResumeGenerator import ResumeGenerator
 from .resume_planner import (
     RGPlanner,
     ResumeAnalysisPlan,
@@ -17,10 +17,10 @@ from .resume_planner import (
 )
 
 # Execution and orchestration
-from .execute_resume_generation import execute_resume_generation
+from .ExecuteResumeGeneration import ExecuteResumeGeneration
 from .dispatch_resume_tools import DispatchResumeTools
 from .orchestrate_resume import orchestrate_resume
-from .evaluate_resume_effectiveness import evaluate_resume_effectiveness
+from .EvaluateResumeEffectiveness import EvaluateResumeEffectiveness
 
 __all__ = [
     'generate_personalized_cover_letter',
@@ -31,8 +31,8 @@ __all__ = [
     'ResumeAnalysisPlan',
     'ResumeSectionConfig',
     'ResumeProcessingPlan',
-    'execute_resume_generation',
+    'ExecuteResumeGeneration',
     'DispatchResumeTools',
     'orchestrate_resume',
-    'evaluate_resume_effectiveness',
+    'EvaluateResumeEffectiveness',
 ]

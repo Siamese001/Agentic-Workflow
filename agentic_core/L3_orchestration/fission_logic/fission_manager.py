@@ -6,15 +6,15 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 
-# NAMING FIXED: FissionManager → fission_manager
-class fission_manager:
+# NAMING FIXED: FissionManager → FissionManager
+class FissionManager:
     """
     L3 Orchestration: The Task Splitter.
     Determines if a mission needs to be broken down into sub-atomic hops.
@@ -22,12 +22,12 @@ class fission_manager:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
 
-    async def decompose_task(self, task: str) -> List[Dict]:
-        """Splits a complex task into a list of atomic contexts for SubatomicHops."""
-        logging.info("FissionManager: Decomposing task for multi-hop execution...")
+    async def decompose_task(self, Task: str) -> List[Dict]:
+        """Splits a complex Task into a list of atomic contexts for SubatomicHops."""
+        logging.info("FissionManager: Decomposing Task for multi-hop execution...")
         
         # In a real run, this would use L1_cognition to plan the split.
         return [
-            {"hop_id": 1, "task": f"Phase 1: {task[:20]}..."},
-            {"hop_id": 2, "task": "Phase 2: Final synthesis."}
+            {"hop_id": 1, "Task": f"Phase 1: {Task[:20]}..."},
+            {"hop_id": 2, "Task": "Phase 2: Final synthesis."}
         ]

@@ -5,16 +5,16 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: RAGType → rag_type
-class rag_type(str, Enum):
+# NAMING FIXED: RAGType → RagType
+class RagType(str, Enum):
     """RAG execution type."""
 
 
-# NAMING FIXED: ClaimVerificationMode → claim_verification_mode
-class claim_verification_mode(str, Enum):
+# NAMING FIXED: ClaimVerificationMode → ClaimVerificationMode
+class ClaimVerificationMode(str, Enum):
     """Claim verification strictness."""
 
 
-# NAMING FIXED: ValidationSeverity → validation_severity
-class validation_severity(str, Enum):
-    """Validation gate severity."""
+# NAMING FIXED: ValidationSeverity → ValidationSeverity
+class ValidationSeverity(str, Enum):
+    """Validation gate Severity."""

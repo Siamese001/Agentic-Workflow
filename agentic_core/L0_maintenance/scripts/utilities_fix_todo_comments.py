@@ -7,9 +7,9 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 'Fix TODO/FIXME comments in Python files.'
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def fix_todo_comments(directory: Any) -> None:
     """Remove or replace TODO/FIXME comments."""
@@ -21,7 +21,7 @@ def fix_todo_comments(directory: Any) -> None:
                 content: Any = f.read()
             matches: Any = todo_pattern.findall(content)
             if matches:
-                logger.info(f'{filepath}: Found {len(matches)} TODO/FIXME comments')
+                Logger.info(f'{filepath}: Found {len(matches)} TODO/FIXME comments')
                 content: Any = re.sub('#\\s*TODO:', '# NOTE:', content)
                 content: Any = re.sub('#\\s*FIXME:', '# NOTE:', content)
                 content: Any = re.sub('#\\s*XXX:', '# NOTE:', content)
@@ -30,7 +30,7 @@ def fix_todo_comments(directory: Any) -> None:
                     f.write(content)
                 COUNT += 1
         except Exception as e:
-            logger.error(f'Error processing {filepath}: {e}')
-    logger.info(f'Fixed TODO/FIXME comments in {COUNT} files')
+            Logger.error(f'Error processing {filepath}: {e}')
+    Logger.info(f'Fixed TODO/FIXME comments in {COUNT} files')
 if __name__ == '__main__':
     fix_todo_comments()

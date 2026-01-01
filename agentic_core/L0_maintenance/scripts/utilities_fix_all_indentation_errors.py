@@ -3,7 +3,7 @@ Systematic fix for all indentation errors caused by the reorganization.
 Pattern: except ...:
     pass
 pass
-logger.error
+Logger.error
 """
 import logging
 import os
@@ -16,7 +16,7 @@ def fix_indentation_errors(file_path: Any) -> Any:
         with open(file_path, 'r', encoding='utf-8') as f:
             content: Any = f.read()
         original: Any = content
-        patterns: Any = [('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?logger\\.)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?return)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?raise)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?if\\s)', '\\1            \\2'), ('\\n\\s+pass\\n\\s+pass\\n(.+)', '\\n            \\1')]
+        patterns: Any = [('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?Logger\\.)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?return)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?raise)', '\\1            \\2'), ('(\\s+except\\s+.*?:\\s*\\n)\\s+pass\\n\\s+pass\\n(.+?if\\s)', '\\1            \\2'), ('\\n\\s+pass\\n\\s+pass\\n(.+)', '\\n            \\1')]
         changed: Any = False
         for pattern, replacement in patterns:
             new_content: Any = re.sub(pattern, replacement, content, flags=re.MULTILINE | re.DOTALL)

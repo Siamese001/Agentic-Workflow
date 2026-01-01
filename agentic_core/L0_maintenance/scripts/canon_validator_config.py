@@ -6,7 +6,7 @@ The Three Laws of Subatomic Governance are defined here.
 import os
 from pathlib import Path
 from typing import Any, List
-from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
 depth_map: Any = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
 max_lines: Any = 200
 min_lines: Any = 10

@@ -23,7 +23,7 @@ class Route(Enum):
     FOLLOW_UP = "FOLLOW_UP"
 
 class Archetype(Enum):
-    """Recipient archetypes for personalization - v11.6 4-archetype standard"""
+    """Recipient archetypes for personalization - v11.6 4-Archetype standard"""
     C_LEVEL = "C_LEVEL"
     EXECUTIVE = "EXECUTIVE"
     SENIOR_TA = "SENIOR_TA"
@@ -53,7 +53,7 @@ class AgentStatus(Enum):
     FAILED = "FAILED"
 
 class ValidationSeverity(Enum):
-    """Validation result severity levels"""
+    """Validation result Severity levels"""
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -98,7 +98,7 @@ class OutreachMission:
     mission_id: str
     sender_profile: Dict[str, Any]
     recipient_profile: Dict[str, Any]
-    job_description: Dict[str, Any]
+    JobDescription: Dict[str, Any]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     route_override: Optional[Route] = None
@@ -111,7 +111,7 @@ class ProfileAnalysis:
     Output is now state/1_profile_analysis.json
     This class is kept for type hinting in legacy models if needed.
     """
-    archetype: Archetype
+    Archetype: Archetype
     confidence: float
     reasoning: str
     key_indicators: List[str]
@@ -124,7 +124,7 @@ class RAGResult:
     Used by HOP-2 ResearchAgent.
     """
     source: str
-    source_type: str
+    SourceType: str
     text: str
     extracted_keywords: List[str]
     source_weight: float
@@ -165,8 +165,8 @@ class MessageScaffold:
     Output is now state/4_routing_decision.json
     This class is kept for type hinting in legacy models if needed.
     """
-    route: Route
-    archetype: Archetype
+    Route: Route
+    Archetype: Archetype
     sections: Dict[str, Dict[str, Any]]
     constraints: Dict[str, Any]
     locked_sections: Set[str] = field(default_factory=set)
@@ -181,8 +181,8 @@ class GeneratedMessage:
     content: str
     word_count: int
     char_count: int
-    route: Route
-    archetype: Archetype
+    Route: Route
+    Archetype: Archetype
     generation_temperature: float
     generation_attempts: int
     checksum: str
@@ -193,7 +193,7 @@ class ValidationResult:
     Result from a single validation check in HOP-6.
     """
     passed: bool
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     rule_id: str
     message: str
     details: Optional[Dict[str, Any]] = None

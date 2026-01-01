@@ -13,7 +13,7 @@ from collections import defaultdict
 from typing import Dict, List, Any, Tuple, Optional
 
 import numpy as np
-# from scripts.utilities.format_scripts_context import TfidfVectorizer  # TODO: Replace with sovereign equivalent
+# from scripts.utilities.FormatScriptsContext import TfidfVectorizer  # TODO: Replace with sovereign equivalent
 from sklearn.metrics.pairwise import cosine_similarity
 
 # PDF parsing library
@@ -34,7 +34,7 @@ from apps_lic.core.data_models import (
     ProfileAnalysis, ResearchContext, SenderGroundingWhitelists, MessageScaffold
 )
 
-# Stub classes for missing dependencies (TODO: Replace with sovereign equivalents)
+# Stub classes for Missing dependencies (TODO: Replace with sovereign equivalents)
 class CircuitBreaker:
     """Stub for CircuitBreaker - TODO: Replace with sovereign equivalent"""
     pass
@@ -93,7 +93,7 @@ class SignalQualityScorer:
     def calculate_signal_score(
         self,
         rag_results: List[RAGResult],
-        message_content: str
+        MessageContent: str
     ) -> Tuple[float, Dict[str, int]]:
         """
         Calculate weighted signal quality score for generated message
@@ -102,11 +102,11 @@ class SignalQualityScorer:
         source_breakdown = defaultdict(int)
         
         for result in rag_results:
-            weight = self.SOURCE_WEIGHTS.get(result.source_type, 0.5)
+            weight = self.SOURCE_WEIGHTS.get(result.SourceType, 0.5)
             for keyword in result.extracted_keywords:
-                if keyword.lower() in message_content.lower():
+                if keyword.lower() in MessageContent.lower():
                     keyword_scores[keyword] += weight
-                    source_breakdown[result.source_type] += 1
+                    source_breakdown[result.SourceType] += 1
         
         if not keyword_scores:
             return 0.0, dict(source_breakdown)
@@ -123,7 +123,7 @@ class SignalQualityScorer:
 
 class ClaimConfidenceScorer:
     """
-    Per-claim confidence scoring with rejection gate
+    Per-Claim confidence scoring with rejection gate
     FEATURE 1.2 from SUPREME_SPELL
     """
     
@@ -137,7 +137,7 @@ class ClaimConfidenceScorer:
         embedding_similarity_threshold: float = 0.75
     ) -> MessageClaim:
         """
-        Score individual claim based on RAG evidence
+        Score individual Claim based on RAG evidence
         (Simplified version - full implementation would use embeddings)
         """
         supporting = []
@@ -179,8 +179,8 @@ class ClaimConfidenceScorer:
         
         claims = []
         for sentence in sentences:
-            claim = self.score_claim(sentence, rag_results)
-            claims.append(claim)
+            Claim = self.score_claim(sentence, rag_results)
+            claims.append(Claim)
         
         if not claims:
             return [], 0.0
@@ -223,7 +223,7 @@ class RAGReflexionSystem:
     def critique_rag_sufficiency(
         self,
         rag_results: List[RAGResult],
-        recipient_archetype: Archetype,
+        RecipientArchetype: Archetype,
         iteration: int
     ) -> RAGCritique:
         """
@@ -233,7 +233,7 @@ class RAGReflexionSystem:
         gaps = []
         
         # Gap 1: Strategic Brief (NEW v12.0)
-        source_types = set(r.source_type for r in rag_results)
+        source_types = set(r.SourceType for r in rag_results)
         if "STRATEGIC_BRIEF" not in source_types:
             gaps.append("Missing strategic brief - critical for v12.0 alignment strategy")
         
@@ -242,7 +242,7 @@ class RAGReflexionSystem:
             gaps.append("Missing sender grounding data")
         
         # Gap 3: Recency for C_LEVEL
-        if recipient_archetype == Archetype.C_LEVEL:
+        if RecipientArchetype == Archetype.C_LEVEL:
             recent_sources = [r for r in rag_results if r.age_days <= 90]
             if len(recent_sources) < 2:  # Lowered from 3 since strategic brief is primary
                 gaps.append("Insufficient recent sources for C_LEVEL (need 2+ within 90 days)")
@@ -272,13 +272,13 @@ class RAGReflexionSystem:
         v12.0: Bonus for strategic brief presence
         """
         num_results = len(rag_results)
-        num_source_types = len(set(r.source_type for r in rag_results))
+        num_source_types = len(set(r.SourceType for r in rag_results))
         base_score = min(0.75, num_results * 0.15)
         diversity_bonus = min(0.30, num_source_types * 0.10)
         gap_penalty = len(gaps) * 0.10
         
         # v12.0: Bonus for strategic brief
-        strategic_brief_bonus = 0.15 if any(r.source_type == "STRATEGIC_BRIEF" for r in rag_results) else 0.0
+        strategic_brief_bonus = 0.15 if any(r.SourceType == "STRATEGIC_BRIEF" for r in rag_results) else 0.0
         
         confidence = base_score + diversity_bonus + strategic_brief_bonus - gap_penalty
         return max(0.0, min(1.0, confidence))
@@ -288,7 +288,7 @@ class RAGReflexionSystem:
         tasks = []
         for gap in gaps:
             if "strategic brief" in gap.lower():
-                tasks.append("ERROR: Strategic brief missing - check for target_brief.pdf or *.pdf in root directory")
+                tasks.append("ERROR: Strategic brief Missing - check for target_brief.pdf or *.pdf in root directory")
             elif "sender grounding" in gap.lower():
                 tasks.append("Search for sender capabilities and achievements")
             elif "recent sources" in gap.lower():
@@ -351,12 +351,12 @@ class RecipientAgent:
         
         return {"rag_results": rag_results}
     
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
+    async def run_refinement_task(self, Task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
 
         loop = asyncio.get_event_loop()
         search_results = await loop.run_in_executor(
-            None, self.search_client.search, task, 2
+            None, self.search_client.search, Task, 2
         )
         
         rag_results = self._process_search_results(search_results, "", recipient_specific=True)
@@ -376,15 +376,15 @@ class RecipientAgent:
             keywords = [w.strip('.,!?') for w in text.split() if len(w) > 4]
             keywords = list(set(keywords[:10]))
             
-            source_type = "RECIPIENT_LINKEDIN_ABOUT"
+            SourceType = "RECIPIENT_LINKEDIN_ABOUT"
             if "github.com" in link:
-                source_type = "RECIPIENT_GITHUB_REPO"
+                SourceType = "RECIPIENT_GITHUB_REPO"
             elif "linkedin.com" in link:
-                source_type = "RECIPIENT_LINKEDIN_ABOUT"
+                SourceType = "RECIPIENT_LINKEDIN_ABOUT"
             
             rag_results.append(RAGResult(
                 source=link,
-                source_type=source_type,
+                SourceType=SourceType,
                 text=text,
                 extracted_keywords=keywords,
                 source_weight=1.5,  # Reduced from 1.8 - now secondary validation only
@@ -409,7 +409,7 @@ class OrganizationAgent:
         NEW v12.0: Validate a specific initiative from strategic brief.
         """
 
-        company = mission.job_description.get('company', '')
+        company = mission.JobDescription.get('company', '')
         query = f'"{company}" "{initiative_name}"'
         
         loop = asyncio.get_event_loop()
@@ -431,7 +431,7 @@ class OrganizationAgent:
     async def get_organization_context(self, mission: OutreachMission) -> Dict[str, object]:
         """Legacy method - minimal search for basic org validation."""
 
-        company = mission.job_description.get('company', '')
+        company = mission.JobDescription.get('company', '')
         query = f'"{company}" news'
         
         loop = asyncio.get_event_loop()
@@ -443,12 +443,12 @@ class OrganizationAgent:
         
         return {"rag_results": rag_results}
 
-    async def run_refinement_task(self, task: str, mission: OutreachMission) -> Dict[str, object]:
+    async def run_refinement_task(self, Task: str, mission: OutreachMission) -> Dict[str, object]:
         """Perform targeted refinement RAG."""
 
         loop = asyncio.get_event_loop()
         search_results = await loop.run_in_executor(
-            None, self.search_client.search, task, 2
+            None, self.search_client.search, Task, 2
         )
         
         rag_results = self._process_search_results(search_results, "")
@@ -468,17 +468,17 @@ class OrganizationAgent:
             keywords = [w.strip('.,!?') for w in text.split() if len(w) > 4]
             keywords = list(set(keywords[:10]))
             
-            source_type = "COMPANY_BLOG_ANNOUNCEMENT"
+            SourceType = "COMPANY_BLOG_ANNOUNCEMENT"
             if "news" in link or "press" in link:
-                source_type = "NEWS_ARTICLE_COMPANY"
+                SourceType = "NEWS_ARTICLE_COMPANY"
             elif "blog" in link:
-                source_type = "COMPANY_BLOG_ANNOUNCEMENT"
+                SourceType = "COMPANY_BLOG_ANNOUNCEMENT"
             elif "linkedin.com" in link:
-                source_type = "COMPANY_LINKEDIN_PAGE"
+                SourceType = "COMPANY_LINKEDIN_PAGE"
             
             rag_results.append(RAGResult(
                 source=link,
-                source_type=source_type,
+                SourceType=SourceType,
                 text=text,
                 extracted_keywords=keywords,
                 source_weight=1.3,  # Reduced from 1.5 - now secondary validation only
@@ -572,7 +572,7 @@ class InternalAgent:
                 
                 rag_results.append(RAGResult(
                     source=pdf_path,
-                    source_type="STRATEGIC_BRIEF",
+                    SourceType="STRATEGIC_BRIEF",
                     text=para,
                     extracted_keywords=keywords,
                     source_weight=2.5,  # Highest weight
@@ -650,7 +650,7 @@ class InternalAgent:
                 
                 rag_results.append(RAGResult(
                     source=f"master_resume_{company}",
-                    source_type="MASTER_RESUME",
+                    SourceType="MASTER_RESUME",
                     text=bullet,
                     extracted_keywords=keywords,
                     source_weight=2.0,
@@ -684,7 +684,7 @@ class InternalAgent:
             
             rag_results.append(RAGResult(
                 source="sender_knowledge_base",
-                source_type="SENDER_KNOWLEDGE_BASE",
+                SourceType="SENDER_KNOWLEDGE_BASE",
                 text=vp,
                 extracted_keywords=keywords,
                 source_weight=1.8,
@@ -703,7 +703,7 @@ class InternalAgent:
             
             rag_results.append(RAGResult(
                 source="sender_knowledge_base",
-                source_type="SENDER_KNOWLEDGE_BASE",
+                SourceType="SENDER_KNOWLEDGE_BASE",
                 text=text,
                 extracted_keywords=keywords,
                 source_weight=1.8,
@@ -722,7 +722,7 @@ class InternalAgent:
             
             rag_results.append(RAGResult(
                 source="sender_knowledge_base",
-                source_type="SENDER_KNOWLEDGE_BASE",
+                SourceType="SENDER_KNOWLEDGE_BASE",
                 text=text,
                 extracted_keywords=keywords,
                 source_weight=1.8,
@@ -803,7 +803,7 @@ class S2_SupervisorAgent:
         
         # Phase 3: Light supplemental RAG (minimal - strategic brief is primary)
         # Only run if no strategic brief found
-        if not any(r.source_type == "STRATEGIC_BRIEF" for r in rag_results):
+        if not any(r.SourceType == "STRATEGIC_BRIEF" for r in rag_results):
 
             recipient_report = await self.recipient_agent.get_profile(mission)
             org_report = await self.organization_agent.get_organization_context(mission)
@@ -816,7 +816,7 @@ class S2_SupervisorAgent:
             
             critique = self.rag_reflexion.critique_rag_sufficiency(
                 rag_results,
-                profile_analysis.archetype,
+                profile_analysis.Archetype,
                 iteration=reflexion_iterations + 1
             )
             
@@ -824,22 +824,22 @@ class S2_SupervisorAgent:
 
                 failure_rule = refinement_context[0].rule_id
                 failure_msg = refinement_context[0].message
-                task = f"S6 Validation Failed ({failure_rule}): {failure_msg}. Find new evidence to resolve this."
+                Task = f"S6 Validation Failed ({failure_rule}): {failure_msg}. Find new evidence to resolve this."
                 critique.is_sufficient = False
-                critique.refinement_tasks = [task]
+                critique.refinement_tasks = [Task]
 
             if critique.is_sufficient:
 
                 break
             
             reflexion_iterations += 1
-            task = critique.refinement_tasks[0]
+            Task = critique.refinement_tasks[0]
 
             refinement_report = None
-            if any(kw in task.lower() for kw in ["recipient", "github", "linkedin"]):
-                refinement_report = await self.recipient_agent.run_refinement_task(task, mission)
+            if any(kw in Task.lower() for kw in ["recipient", "github", "linkedin"]):
+                refinement_report = await self.recipient_agent.run_refinement_task(Task, mission)
             else:
-                refinement_report = await self.organization_agent.run_refinement_task(task, mission)
+                refinement_report = await self.organization_agent.run_refinement_task(Task, mission)
             
             rag_results.extend(refinement_report['rag_results'])
         
@@ -851,19 +851,19 @@ class S2_SupervisorAgent:
             recipient_insights=[
                 f"Title: {mission.recipient_profile.get('title')}",
                 f"Company: {mission.recipient_profile.get('company')}",
-                f"Archetype: {profile_analysis.archetype.value}"
+                f"Archetype: {profile_analysis.Archetype.value}"
             ],
             company_context=[
-                f"Company: {mission.job_description.get('company')}",
-                f"Job: {mission.job_description.get('title')}"
+                f"Company: {mission.JobDescription.get('company')}",
+                f"Job: {mission.JobDescription.get('title')}"
             ],
             recent_activity=[],
             rag_results=rag_results,
             reflexion_iterations=reflexion_iterations,
             prior_applications=prior_applications,
             mission_context={
-                "job_title": mission.job_description.get("title", ""),
-                "company": mission.job_description.get("company", ""),
+                "job_title": mission.JobDescription.get("title", ""),
+                "company": mission.JobDescription.get("company", ""),
                 "sender_teams": mission.sender_profile.get("teams", [])
             },
             sender_context=[],
@@ -888,7 +888,7 @@ class S2_SupervisorAgent:
         # ... (rest of the code remains the same)
 
         rag_summary = "\n".join([
-            f"- {r.source_type}: {r.text[:100]}..." 
+            f"- {r.SourceType}: {r.text[:100]}..." 
             for r in context.rag_results[:10]
         ])
         
@@ -989,20 +989,20 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
         provisional_analysis: ProfileAnalysis,
         context: ResearchContext
     ) -> ProfileAnalysis:
-        """Agentic self-correction of archetype classification."""
+        """Agentic self-correction of Archetype classification."""
         all_text = " ".join([r.text for r in context.rag_results]).lower()
         
-        if provisional_analysis.archetype != Archetype.C_LEVEL:
+        if provisional_analysis.Archetype != Archetype.C_LEVEL:
             if any(term in all_text for term in ["strategic vision", "board member", "company direction"]):
                 critique = "RAG evidence suggests C_LEVEL status (strategic indicators)"
-                provisional_analysis.archetype = Archetype.C_LEVEL
+                provisional_analysis.Archetype = Archetype.C_LEVEL
                 provisional_analysis.confidence = 0.90
                 provisional_analysis.critique_history.append(critique)
         
-        if provisional_analysis.archetype != Archetype.RECRUITER:
+        if provisional_analysis.Archetype != Archetype.RECRUITER:
             if any(term in all_text for term in ["talent acquisition", "hiring manager", "recruitment"]):
                 critique = "RAG evidence suggests RECRUITER role (hiring indicators)"
-                provisional_analysis.archetype = Archetype.RECRUITER
+                provisional_analysis.Archetype = Archetype.RECRUITER
                 provisional_analysis.confidence = 0.88
                 provisional_analysis.critique_history.append(critique)
         

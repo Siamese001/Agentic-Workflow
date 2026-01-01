@@ -8,18 +8,18 @@ HTML to clean Markdown—essential for feeding L1 Cognition high-signal data.
 """
 import logging
 from typing import Dict, Any, Optional
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger('L2.Fetch')
+Logger: Any = logging.getLogger('L2.Fetch')
 
-class sovereign_fetch_mcp_client:
+class SovereignFetchMcpClient:
     """
     Fetch MCP Client for sanitized content ingestion.
     
@@ -31,16 +31,16 @@ class sovereign_fetch_mcp_client:
         """Initialize Fetch client with sovereign routing."""
         self.router = SovereignMCPRouter(role='content_ingestion')
         self.initialized = False
-        logger.info('[L2 FETCH] Client initialized')
+        Logger.info('[L2 FETCH] Client initialized')
 
     async def initialize(self) -> Any:
         """Async initialization of MCP router."""
         try:
             await self.router.initialize()
             self.initialized = True
-            logger.info('[L2 FETCH] Router initialized successfully')
+            Logger.info('[L2 FETCH] Router initialized successfully')
         except Exception as e:
-            logger.error(f'[L2 FETCH] Initialization failed: {e}')
+            Logger.error(f'[L2 FETCH] Initialization failed: {e}')
             raise
 
     async def _ensure_initialized(self):
@@ -63,7 +63,7 @@ class sovereign_fetch_mcp_client:
         if not config.FETCH_MCP_ENABLED:
             return 'Error: Fetch MCP disabled in sovereign config'
         await self._ensure_initialized()
-        logger.info(f'📥 [L2 FETCH] Fetching clean content from: {url}')
+        Logger.info(f'📥 [L2 FETCH] Fetching clean content from: {url}')
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp3_fetch_url', args={'url': url, 'max_length': max_length or config.FETCH_MAX_CONTENT_LENGTH, 'start_index': 0, 'raw': False})
             content: Any = ''
@@ -77,12 +77,12 @@ class sovereign_fetch_mcp_client:
             else:
                 content: Any = str(result)
             if len(content) < 10:
-                logger.warning(f'⚠️ [L2 FETCH] Extremely low content signal for {url}')
+                Logger.warning(f'⚠️ [L2 FETCH] Extremely low content signal for {url}')
                 return f'Warning: Minimal content extracted from {url}'
-            logger.info(f'✅ [L2 FETCH] Successfully fetched {len(content)} chars from: {url}')
+            Logger.info(f'✅ [L2 FETCH] Successfully fetched {len(content)} chars from: {url}')
             return content
         except Exception as e:
-            logger.error(f'[L2 FETCH] Fetch failed for {url}: {e}')
+            Logger.error(f'[L2 FETCH] Fetch failed for {url}: {e}')
             return f'Error fetching content from {url}: {str(e)}'
 
     async def fetch_raw_html(self, url: str, max_length: Optional[int]=None) -> str:
@@ -99,7 +99,7 @@ class sovereign_fetch_mcp_client:
         if not config.FETCH_MCP_ENABLED:
             return 'Error: Fetch MCP disabled in sovereign config'
         await self._ensure_initialized()
-        logger.info(f'📥 [L2 FETCH] Fetching raw HTML from: {url}')
+        Logger.info(f'📥 [L2 FETCH] Fetching raw HTML from: {url}')
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp3_fetch_url', args={'url': url, 'max_length': max_length or config.FETCH_MAX_CONTENT_LENGTH, 'start_index': 0, 'raw': True})
             content: Any = ''
@@ -112,10 +112,10 @@ class sovereign_fetch_mcp_client:
                     content: Any = str(result.content)
             else:
                 content: Any = str(result)
-            logger.info(f'✅ [L2 FETCH] Successfully fetched {len(content)} chars (raw) from: {url}')
+            Logger.info(f'✅ [L2 FETCH] Successfully fetched {len(content)} chars (raw) from: {url}')
             return content
         except Exception as e:
-            logger.error(f'[L2 FETCH] Raw fetch failed for {url}: {e}')
+            Logger.error(f'[L2 FETCH] Raw fetch failed for {url}: {e}')
             return f'Error fetching raw content from {url}: {str(e)}'
 
     async def fetch_youtube_transcript(self, url: str) -> str:
@@ -131,7 +131,7 @@ class sovereign_fetch_mcp_client:
         if not config.FETCH_MCP_ENABLED:
             return 'Error: Fetch MCP disabled in sovereign config'
         await self._ensure_initialized()
-        logger.info(f'📺 [L2 FETCH] Fetching YouTube transcript from: {url}')
+        Logger.info(f'📺 [L2 FETCH] Fetching YouTube transcript from: {url}')
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp3_fetch_youtube_transcript', args={'url': url})
             transcript: Any = ''
@@ -145,12 +145,12 @@ class sovereign_fetch_mcp_client:
             else:
                 transcript: Any = str(result)
             if len(transcript) < 10:
-                logger.warning(f'⚠️ [L2 FETCH] No transcript found for: {url}')
+                Logger.warning(f'⚠️ [L2 FETCH] No transcript found for: {url}')
                 return f'Warning: No transcript available for {url}'
-            logger.info(f'✅ [L2 FETCH] Successfully fetched transcript ({len(transcript)} chars) from: {url}')
+            Logger.info(f'✅ [L2 FETCH] Successfully fetched transcript ({len(transcript)} chars) from: {url}')
             return transcript
         except Exception as e:
-            logger.error(f'[L2 FETCH] YouTube transcript fetch failed for {url}: {e}')
+            Logger.error(f'[L2 FETCH] YouTube transcript fetch failed for {url}: {e}')
             return f'Error fetching YouTube transcript from {url}: {str(e)}'
 
     async def fetch_multiple_urls(self, urls: list[str], max_length: Optional[int]=None) -> Dict[str, str]:
@@ -167,17 +167,17 @@ class sovereign_fetch_mcp_client:
         if not config.FETCH_MCP_ENABLED:
             return {url: 'Error: Fetch MCP disabled' for url in urls}
         await self._ensure_initialized()
-        logger.info(f'📥 [L2 FETCH] Fetching content from {len(urls)} URLs')
+        Logger.info(f'📥 [L2 FETCH] Fetching content from {len(urls)} URLs')
         results: Any = {}
         for url in urls:
             try:
                 content: Any = await self.get_clean_content(url, max_length)
                 results[url] = content
             except Exception as e:
-                logger.error(f'[L2 FETCH] Failed to fetch {url}: {e}')
+                Logger.error(f'[L2 FETCH] Failed to fetch {url}: {e}')
                 results[url] = f'Error: {str(e)}'
         successful: Any = sum((1 for v in results.values() if not v.startswith('Error')))
-        logger.info(f'✅ [L2 FETCH] Successfully fetched {successful}/{len(urls)} URLs')
+        Logger.info(f'✅ [L2 FETCH] Successfully fetched {successful}/{len(urls)} URLs')
         return results
 
     async def health_check(self) -> Dict[str, Any]:
@@ -194,7 +194,7 @@ class sovereign_fetch_mcp_client:
             else:
                 return {'status': 'unhealthy', 'error': 'Failed to fetch test URL'}
         except Exception as e:
-            logger.error(f'[L2 FETCH] Health check failed: {e}')
+            Logger.error(f'[L2 FETCH] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
 _fetch_client: Optional[SovereignFetchMCPClient] = None
 

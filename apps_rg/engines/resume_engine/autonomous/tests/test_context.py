@@ -227,7 +227,7 @@ class TestResumeEngineContext:
     def test_record_success(self):
         """Test success recording for learning."""
         ctx = ResumeEngineContext()
-        ctx.job_description = "Software Engineer role"
+        ctx.JobDescription = "Software Engineer role"
 
         resume_data = {"summary": "Test", "experience": "Test exp"}
         ctx.record_success(resume_data, quality_score=0.95)

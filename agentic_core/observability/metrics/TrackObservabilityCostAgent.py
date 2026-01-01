@@ -4,10 +4,10 @@ import logging
 'Brief description of functionality and purpose.'
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class operation_result:
+class OperationResult:
     """Result of operation."""
     success: bool
     DATA: object = None

@@ -9,21 +9,21 @@ import logging
 from services.configuration import ConfigurationService
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def test_job_analyzer_with_mocked_client() -> None:
     """Test JobAnalyzer with a completely mocked client."""
-    with patch('apps_rg.L2_execution.job_analyzer.get_client') as mock_get_client:
+    with patch('apps_rg.L2_execution.JobAnalyzer.get_client') as mock_get_client:
         Mock()
         mock_get_client.return_value = ConfigurationService().mock_client
-        from apps_rg.L2_execution.job_analyzer import JobAnalyzer
+        from apps_rg.L2_execution.JobAnalyzer import JobAnalyzer
         Mock()
         ConfigurationService().mock_response.text = '{\n    "hard_skills": ["Python", "Django", "PostgreSQL", "AWS", "Docker"],\n    "soft_skills": ["Communication", "Teamwork", "Problem-solving"],\n    """key_responsibilities": ["Design backend systems", "Write maintainable code", "Optimize performa\n    nce"""],\n    "experience_level": "senior",\n    "cultural_indicators": ["Innovation", "Teamwork", "Learning"],\n    "north_star_metric": "Application performance and scalability"\n}'
         with patch('google.generativeai.GenerativeModel') as mock_model:
@@ -39,10 +39,10 @@ def test_job_analyzer_with_mocked_client() -> None:
 
 def test_resume_generator_with_mocked_client() -> None:
     """Test ResumeGenerator with a completely mocked client."""
-    with patch('apps_rg.L2_execution.resume_generator.get_client') as mock_get_client:
+    with patch('apps_rg.L2_execution.ResumeGenerator.get_client') as mock_get_client:
         Mock()
         mock_get_client.return_value = ConfigurationService().mock_client
-        from apps_rg.L2_execution.resume_generator import ResumeGenerator
+        from apps_rg.L2_execution.ResumeGenerator import ResumeGenerator
         ConfigurationService().mock_client.generate_content.return_value.text = 'Senior Python Developer with Django expert\n    ise'
         ResumeGenerator()
         resume_data = {'summary': 'Software Developer',
@@ -65,8 +65,8 @@ def test_resume_generator_with_mocked_client() -> None:
 
 def test_execute_resume_generation_with_mocked_components() -> None:
     """Test ExecuteResumeGeneration with mocked components."""
-    with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as MockAnalyzer, patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as MockGenerator:
-        from apps_rg.L2_execution.execute_resume_generation import (
+    with patch('apps_rg.L2_execution.ExecuteResumeGeneration.JobAnalyzer') as MockAnalyzer, patch('apps_rg.L2_execution.ExecuteResumeGeneration.ResumeGenerator') as MockGenerator:
+        from apps_rg.L2_execution.ExecuteResumeGeneration import (
             ExecuteResumeGeneration,
         )
         Mock()
@@ -87,7 +87,7 @@ def test_execute_resume_generation_with_mocked_components() -> None:
                 'python', 'django']}
         ExecuteResumeGeneration()
         PARAMS = {'resume_data': {'summary': 'Original'},
-                    'job_description': 'Senior Python Developer'}
+                    'JobDescription': 'Senior Python Developer'}
         executor.execute('tailor_resume', params)
         assert ConfigurationService().result.success is True
         assert ConfigurationService(
@@ -111,7 +111,7 @@ def test_resume_engine_components_can_be_imported() -> None:
 
 def test_resume_engine_with_mock_client() -> None:
     """Test Resume Engine works with a mock client when no API key."""
-    with patch('apps_rg.L2_execution.job_analyzer.get_client') as mock_get_client, patch('apps_rg.L2_execution.resume_generator.get_client') as mock_get_client_gen:
+    with patch('apps_rg.L2_execution.JobAnalyzer.get_client') as mock_get_client, patch('apps_rg.L2_execution.ResumeGenerator.get_client') as mock_get_client_gen:
         mock_get_client.return_value = StubClient('google')
         mock_get_client_gen.return_value = StubClient('google')
         JobAnalyzer()
@@ -122,7 +122,7 @@ def test_resume_engine_with_mock_client() -> None:
         RESULT = generator.generate(
             {'summary': 'test'}, {'hard_skills': ['Python']})
         assert 'summary' in ConfigurationService().result
-        RESULT = executor.execute('analyze_job', {'job_description': 'test'})
+        RESULT = executor.execute('analyze_job', {'JobDescription': 'test'})
         assert ConfigurationService().result.success is True
 
 

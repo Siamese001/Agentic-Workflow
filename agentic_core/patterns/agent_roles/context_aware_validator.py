@@ -27,7 +27,7 @@ class ContextAwareValidator:
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(f"{self.__class__.__name__}.Context")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}.Context")
 
     async def validate_with_context(self, target: Path, rule: str) -> Dict[str, Any]:
         """
@@ -37,13 +37,13 @@ class ContextAwareValidator:
         # 1. Basic rule check
         basic_result = await self._basic_rule_check(target, rule)
         if basic_result["compliant"]:
-            self.logger.debug(f"Basic compliance passed for {target} on rule {rule}")
+            self.Logger.debug(f"Basic compliance passed for {target} on rule {rule}")
             return basic_result
 
         # 2. Context analysis for potential justified exception
         context = await self._analyze_violation_context(target, rule)
         if context.get("justified_exception", False):
-            self.logger.info(f"Justified exception found for {target}: {context['justification']}")
+            self.Logger.info(f"Justified exception found for {target}: {context['justification']}")
             return {
                 "compliant": True,
                 "exception": True,
@@ -67,7 +67,7 @@ class ContextAwareValidator:
             "fix_confidence": fix.get("confidence", 0.0),
         }
 
-        self.logger.info(
+        self.Logger.info(
             f"Violation detected on {target} for {rule} — "
             f"auto_fixable={result['auto_fixable']} (confidence={result['fix_confidence']:.0%})"
         )
@@ -85,7 +85,7 @@ class ContextAwareValidator:
 
     async def _analyze_violation_context(self, target: Path, rule: str) -> Dict[str, Any]:
         """
-        Analyze why violation occurred — look for justification patterns.
+        Analyze why Violation occurred — look for justification patterns.
         Default: no justification (conservative).
         Override for rule-specific exceptions.
         """
@@ -111,7 +111,7 @@ class ContextAwareValidator:
         Override for high-precision fixes.
         """
         return {
-            "suggested_action": f"Manually review and correct {rule} violation",
+            "suggested_action": f"Manually review and correct {rule} Violation",
             "confidence": 0.5,
             "reason": "No specific contextual fix pattern matched",
             "example": None,

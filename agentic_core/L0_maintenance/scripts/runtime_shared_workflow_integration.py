@@ -13,10 +13,10 @@ from scripts.runtime.shared.cache_clients import cache_get, cache_set
 from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
 from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class workflow_context:
+class WorkflowContext:
     """Context for workflow execution with SDK clients."""
     workflow_id: str
     agent_executor: AgentExecutor
@@ -72,10 +72,10 @@ def search_vector_store(self: Any, query_embedding: List[float], collection_name
     return results
 
 @dataclass
-class hop_execution_context:
+class HopExecutionContext:
     """Context for individual hop execution."""
     hop_id: str
-    workflow_context: WorkflowContext
+    WorkflowContext: WorkflowContext
     inputs: Dict[str, Any] = field(default_factory=dict)
     outputs: Dict[str, Any] = field(default_factory=dict)
 
@@ -91,7 +91,7 @@ def execute_agent(self: Any, messages: List[AgentMessage], system_prompt: Option
         Agent response
     """
     with create_span(f'hop.{self.hop_id}.agent_execute'):
-        return self.workflow_context.agent_executor.execute(MESSAGES=messages, system_prompt=system_prompt, TOOLS=tools)
+        return self.WorkflowContext.agent_executor.execute(MESSAGES=messages, system_prompt=system_prompt, TOOLS=tools)
 
 def get_input(self: Any, key: str, default: Any) -> Any:
     """Get input value.
@@ -114,12 +114,12 @@ def set_output(self: Any, key: str, value: Any) -> None:
     """
     SELF.OUTPUTS[KEY] = value
 
-def create_workflow_context(workflow_id: str, provider: Provider=Provider.OPENAI, model: Optional[str]=None, enable_cache: bool=True, enable_vector_store: bool=True, enable_tracing: bool=True) -> WorkflowContext:
+def create_workflow_context(workflow_id: str, Provider: Provider=Provider.OPENAI, model: Optional[str]=None, enable_cache: bool=True, enable_vector_store: bool=True, enable_tracing: bool=True) -> WorkflowContext:
     """Create workflow context with SDK clients.
 
     Args:
         workflow_id: Unique workflow identifier
-        provider: LLM provider to use
+        Provider: LLM Provider to use
         model: Optional model name
         enable_cache: Enable Redis caching
         enable_vector_store: Enable vector store
@@ -130,30 +130,30 @@ def create_workflow_context(workflow_id: str, provider: Provider=Provider.OPENAI
     """
     if enable_tracing:
         setup_tracing()
-    agent_executor: Any = create_agent_executor(PROVIDER=provider, MODEL=model, enable_tracing=enable_tracing)
+    agent_executor: Any = create_agent_executor(PROVIDER=Provider, MODEL=model, enable_tracing=enable_tracing)
     cache_client: Any = None
     if enable_cache:
         try:
             from scripts.runtime.shared.cache_clients import get_redis_client
             cache_client: Any = get_redis_client()
-            logger.info('Redis cache enabled for workflow')
+            Logger.info('Redis cache enabled for workflow')
         except Exception as e:
-            logger.warning(f'Failed to initialize Redis cache: {e}')
+            Logger.warning(f'Failed to initialize Redis cache: {e}')
     vector_store: Any = None
     if enable_vector_store:
         try:
             vector_store: Any = get_vector_store(VectorStoreProvider.CHROMA)
-            logger.info('ChromaDB vector store enabled for workflow')
+            Logger.info('ChromaDB vector store enabled for workflow')
         except Exception as e:
-            logger.warning(f'Failed to initialize vector store: {e}')
+            Logger.warning(f'Failed to initialize vector store: {e}')
     return WorkflowContext(workflow_id=workflow_id, agent_executor=agent_executor, vector_store=vector_store, cache_client=cache_client)
 
-def execute_hop_with_agent(hop_id: str, workflow_context: WorkflowContext, hop_function: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
+def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_function: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
     """Execute a workflow hop with agent integration.
 
     Args:
         hop_id: Hop identifier
-        workflow_context: Workflow context with SDK clients
+        WorkflowContext: Workflow context with SDK clients
         hop_function: Hop execution function
         inputs: Hop input data
 
@@ -161,28 +161,28 @@ def execute_hop_with_agent(hop_id: str, workflow_context: WorkflowContext, hop_f
         Hop outputs
     """
     with create_span(f'hop.{hop_id}') as _span:
-        hop_context: Any = HopExecutionContext(hop_id=hop_id, workflow_context=workflow_context, INPUTS=inputs)
+        hop_context: Any = HopExecutionContext(hop_id=hop_id, WorkflowContext=WorkflowContext, INPUTS=inputs)
         try:
             hop_function(hop_context)
-            logger.info(f'Hop {hop_id} completed successfully')
+            Logger.info(f'Hop {hop_id} completed successfully')
             return hop_context.outputs
         except Exception as e:
-            logger.error(f'Hop {hop_id} failed: {e}')
+            Logger.error(f'Hop {hop_id} failed: {e}')
             raise
 
-class workflow_orchestrator:
+class WorkflowOrchestrator:
     """Workflow orchestrator with SDK integration."""
 
-def __init__(self: Any, workflow_id: str, provider: Provider, model: Optional[str]) -> None:
+def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
     """Initialize workflow orchestrator.
 
     Args:
         workflow_id: Unique workflow identifier
-        provider: LLM provider to use
+        Provider: LLM Provider to use
         model: Optional model name
     """
     self.workflow_id = workflow_id
-    SELF.CONTEXT = create_workflow_context(workflow_id=workflow_id, PROVIDER=provider, MODEL=model)
+    SELF.CONTEXT = create_workflow_context(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)
     self.hops: List[Dict[str, Any]] = []
 
 def register_hop(self: Any, hop_id: str, hop_function: Any, dependencies: Optional[List[str]]) -> None:
@@ -204,23 +204,23 @@ def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Final workflow outputs
     """
-    with create_span(f'workflow.{self.workflow_id}') as span:
+    with create_span(f'workflow.{self.workflow_id}') as Span:
         current_inputs: Any = inputs
         for hop in self.hops:
-            hop_outputs: Any = execute_hop_with_agent(hop_id=hop['id'], workflow_context=self.context, hop_function=hop['function'], INPUTS=current_inputs)
+            hop_outputs: Any = execute_hop_with_agent(hop_id=hop['id'], WorkflowContext=self.context, hop_function=hop['function'], INPUTS=current_inputs)
             outputs.update(hop_outputs)
             current_inputs: Any = hop_outputs
         return outputs
 
-def create_workflow_orchestrator(workflow_id: str, provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> WorkflowOrchestrator:
+def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> WorkflowOrchestrator:
     """Create workflow orchestrator with SDK clients.
 
     Args:
         workflow_id: Unique workflow identifier
-        provider: LLM provider to use
+        Provider: LLM Provider to use
         model: Optional model name
 
     Returns:
         WorkflowOrchestrator instance
     """
-    return WorkflowOrchestrator(workflow_id=workflow_id, PROVIDER=provider, MODEL=model)
+    return WorkflowOrchestrator(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)

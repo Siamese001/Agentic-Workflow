@@ -5,13 +5,13 @@ import json
 from pathlib import Path
 from typing import Any, List, Optional
 
-class research_cache:
+class ResearchCache:
     """Simple file-based cache for RAG results, optimized for agentic retrieval."""
 
     def __init__(self, cache_dir: Path):
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.cache_file = cache_dir / 'research_cache.jsonl'
+        self.cache_file = cache_dir / 'ResearchCache.jsonl'
 
     def store(self, query: str, content: str, metadata: Optional[dict]=None) -> None:
         """Atomically store a research result with metadata."""

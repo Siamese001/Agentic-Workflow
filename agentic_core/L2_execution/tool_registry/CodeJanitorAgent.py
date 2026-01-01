@@ -5,10 +5,10 @@ import ast
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -167,16 +167,16 @@ class CodeJanitorAgent(CanonBaseAgent):
         
         Args:
             key: Canon key number
-            violations: List of violation descriptions
+            violations: List of Violation descriptions
         """
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         file_violations = {}
-        for violation in violations[:max_healing_per_file]:
-            if ':' in violation:
-                file_path = violation.split(':')[0]
+        for Violation in violations[:max_healing_per_file]:
+            if ':' in Violation:
+                file_path = Violation.split(':')[0]
                 if file_path not in file_violations:
                     file_violations[file_path] = []
-                file_violations[file_path].append(violation)
+                file_violations[file_path].append(Violation)
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, key, file_viols)
 
@@ -219,13 +219,13 @@ class CodeJanitorAgent(CanonBaseAgent):
             print(f'      [!] {read_error}')
             return
         violation_details = '\n'.join(violations)
-        task = f'Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}'
+        Task = f'Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}'
         max_rounds = 5
         current_code = original_code
         previous_failure = None
         for round_num in range(1, max_rounds + 1):
             print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}')
-            mutated_code = await self.resilient_mutation(task=task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
+            mutated_code = await self.resilient_mutation(Task=Task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
             is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
             if not is_valid:
                 print(f'      [!] Round {round_num}: {reason} – retrying')

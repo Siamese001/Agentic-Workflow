@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 
 def get_class_names(file_path: Any) -> Any:
     """Statically parse class names to avoid execution/circular imports."""
@@ -49,9 +49,9 @@ def sovereign_restore() -> Any:
                 f.write(f'__all__ = {exports}\n')
         print(f'  [✓] Restored {len(exports)} exports to {init_path.relative_to(ROOT)}')
     with open(CORE / '__init__.py', 'w', encoding='utf-8') as f:
-        f.write('"""agentic_core: Sovereign AI Architecture"""\n')
+        f.write('"""AgenticCore: Sovereign AI Architecture"""\n')
         f.write('# Root exports disabled to prevent circular death loops.\n')
-        f.write('# Use: from agentic_core.L_layer import Component\n')
+        f.write('# Use: from AgenticCore.L_layer import Component\n')
     print('\n[OK] SOVEREIGN RESTORE COMPLETE.')
 if __name__ == '__main__':
     sovereign_restore()

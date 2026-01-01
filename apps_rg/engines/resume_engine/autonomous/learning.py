@@ -36,7 +36,7 @@ class ConfidenceLevel(Enum):
 class LearningExample:
     """A single learning example for few-shot recall."""
     id: str
-    task_type: str
+    TaskType: str
     input_context: str
     output_result: str
     success: bool
@@ -154,15 +154,15 @@ class LearningLoop:
     async def recall_similar(
         self,
         query: str,
-        task_type: Optional[str] = None,
+        TaskType: Optional[str] = None,
         top_k: int = 3,
     ) -> List[LearningExample]:
         """
         Recall similar past examples for few-shot learning.
 
         Args:
-            query: The current task/problem description
-            task_type: Optional filter by task type
+            query: The current Task/problem description
+            TaskType: Optional filter by Task type
             top_k: Number of examples to return
 
         Returns:
@@ -171,19 +171,19 @@ class LearningLoop:
         # Try vector store first
         if self._pinecone_available and self._pinecone_index:
             try:
-                results = await self._search_pinecone(query, task_type, top_k)
+                results = await self._search_pinecone(query, TaskType, top_k)
                 if results:
                     return results
             except Exception:
                 pass
 
         # Fallback to local search
-        return self._search_local(query, task_type, top_k)
+        return self._search_local(query, TaskType, top_k)
 
     async def _search_pinecone(
         self,
         query: str,
-        task_type: Optional[str],
+        TaskType: Optional[str],
         top_k: int,
     ) -> List[LearningExample]:
         """Search Pinecone for similar examples."""
@@ -194,7 +194,7 @@ class LearningLoop:
     def _search_local(
         self,
         query: str,
-        task_type: Optional[str],
+        TaskType: Optional[str],
         top_k: int,
     ) -> List[LearningExample]:
         """Search local examples using simple text matching."""
@@ -206,7 +206,7 @@ class LearningLoop:
             if not ex.success:
                 continue
 
-            if task_type and ex.task_type != task_type:
+            if TaskType and ex.TaskType != TaskType:
                 continue
 
             # Simple word overlap scoring
@@ -222,7 +222,7 @@ class LearningLoop:
 
     async def record_success(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         output_result: str,
         confidence: float = 1.0,
@@ -232,15 +232,15 @@ class LearningLoop:
         Record a successful fix for future learning.
 
         Args:
-            task_type: Type of task (e.g., "quality_fix", "ats_optimization")
+            TaskType: Type of Task (e.g., "quality_fix", "ats_optimization")
             input_context: The input/problem that was solved
             output_result: The successful output/fix
             confidence: Confidence score of the fix
             metadata: Additional metadata
         """
         example = LearningExample(
-            id=f"{task_type}_{int(time.time())}_{hashlib.md5(input_context.encode()).hexdigest()[:8]}",
-            task_type=task_type,
+            id=f"{TaskType}_{int(time.time())}_{hashlib.md5(input_context.encode()).hexdigest()[:8]}",
+            TaskType=TaskType,
             input_context=input_context[:1000],  # Truncate
             output_result=output_result[:1000],
             success=True,
@@ -264,7 +264,7 @@ class LearningLoop:
         successful = [ex for ex in self._local_examples if ex.success]
         task_types = {}
         for ex in successful:
-            task_types[ex.task_type] = task_types.get(ex.task_type, 0) + 1
+            task_types[ex.TaskType] = task_types.get(ex.TaskType, 0) + 1
 
         return {
             "total_examples": len(self._local_examples),
@@ -777,7 +777,7 @@ class ResumeLearningAgent:
     async def get_few_shot_context(
         self,
         task_description: str,
-        task_type: str = "general",
+        TaskType: str = "general",
     ) -> str:
         """
         Get few-shot context from past successful fixes.
@@ -786,7 +786,7 @@ class ResumeLearningAgent:
         """
         examples = await self.learning_loop.recall_similar(
             task_description,
-            task_type=task_type,
+            TaskType=TaskType,
             top_k=2,
         )
 
@@ -803,14 +803,14 @@ class ResumeLearningAgent:
 
     async def record_success(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         output_result: str,
         confidence: float = 1.0,
     ):
         """Record a successful operation for future learning."""
         await self.learning_loop.record_success(
-            task_type=task_type,
+            TaskType=TaskType,
             input_context=input_context,
             output_result=output_result,
             confidence=confidence,

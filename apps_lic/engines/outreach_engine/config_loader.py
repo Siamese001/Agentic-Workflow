@@ -6,8 +6,8 @@
 Config Loader for LIC Outreach Engine.
 
 Provides centralized access to:
-- Agent specs (from agentic_core/config/lic_agent_specs.json)
-- Prompts (from agentic_core/config/lic_prompts.json)
+- Agent specs (from AgenticCore/config/lic_agent_specs.json)
+- Prompts (from AgenticCore/config/lic_prompts.json)
 - Validator rules (from apps_lic/domain/validator_rules.json)
 
 Usage:
@@ -27,7 +27,7 @@ from typing import Any, Dict
 # Resolve config root relative to this file
 _THIS_DIR = Path(__file__).parent
 _REPO_ROOT = _THIS_DIR.parent.parent.parent.parent  # apps_lic/engines/outreach_engine -> repo root
-_CONFIG_ROOT = _REPO_ROOT / "agentic_core" / "config"
+_CONFIG_ROOT = _REPO_ROOT / "AgenticCore" / "config"
 _DOMAIN_ROOT = _THIS_DIR.parent.parent / "domain"  # apps_lic/domain
 
 
@@ -40,13 +40,13 @@ def _load_json(path: Path) -> Dict[str, Any]:
 
 
 def load_prompts() -> Dict[str, Any]:
-    """Load LIC prompts from agentic_core/config/lic_prompts.json."""
+    """Load LIC prompts from AgenticCore/config/lic_prompts.json."""
     config_path = os.getenv("LIC_PROMPTS_PATH", str(_CONFIG_ROOT / "lic_prompts.json"))
     return _load_json(Path(config_path))
 
 
 def load_agent_specs() -> Dict[str, Any]:
-    """Load LIC agent specs from agentic_core/config/lic_agent_specs.json."""
+    """Load LIC agent specs from AgenticCore/config/lic_agent_specs.json."""
     config_path = os.getenv("LIC_AGENT_SPECS_PATH", str(_CONFIG_ROOT / "lic_agent_specs.json"))
     return _load_json(Path(config_path))
 

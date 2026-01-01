@@ -4,10 +4,10 @@ import logging
 import shutil
 from pathlib import Path
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -15,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
-class hierarchy_healer:
+class HierarchyHealer:
     """
     [L3 AGENT] The Structural Surgeon.
     Directive: Physically relocate files to satisfy Depth-4 Canon.
@@ -29,14 +29,14 @@ class hierarchy_healer:
         path_obj = Path(file_path)
         # Identify L1 (e.g., L5_safety) from path
         parts = path_obj.parts
-        if "agentic_core" in parts:
-            l1_idx = parts.index("agentic_core") + 1
+        if "AgenticCore" in parts:
+            l1_idx = parts.index("AgenticCore") + 1
             l1_layer = parts[l1_idx]
             
             # Check if file is "floating" at L1 (Depth 3)
             if len(parts) == l1_idx + 2 and l1_layer in self.blueprint:
                 target_l2 = self.blueprint[l1_layer][0] # Default to P1 layer
-                target_dir = Path(self.ctx.project_root) / "agentic_core" / l1_layer / target_l2
+                target_dir = Path(self.ctx.project_root) / "AgenticCore" / l1_layer / target_l2
                 
                 target_dir.mkdir(parents=True, exist_ok=True)
                 (target_dir / "__init__.py").touch() # Ensure importability

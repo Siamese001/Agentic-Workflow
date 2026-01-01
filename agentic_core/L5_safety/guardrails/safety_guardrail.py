@@ -1,16 +1,16 @@
 """
-L5 Safety: safety_guardrail
+L5 Safety: SafetyGuardrail
 Enforces Zero-Loss principles during code mutation.
 """
 import ast
 from typing import Any, Tuple
 
-class safety_guardrail:
+class SafetyGuardrail:
     """Enforces Zero-Loss principles during mutation."""
 
     def __init__(self, deletion_limit: int=110):
         """
-        Initialize safety_guardrail.
+        Initialize SafetyGuardrail.
         
         Args:
             deletion_limit: Maximum number of lines that can be deleted in standard mode

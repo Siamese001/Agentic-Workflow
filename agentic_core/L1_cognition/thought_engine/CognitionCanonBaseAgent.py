@@ -6,16 +6,16 @@ import hashlib
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
+from AgenticCore.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 class CanonBaseAgent:
     """Base class for all validation agents."""
@@ -27,11 +27,11 @@ class CanonBaseAgent:
         """Builds the registry once to avoid repetitive agent instantiation."""
         if cls._registry_built:
             return
-        from agentic_core.canon_agents_core import SystemArchitect
-        from agentic_core.canon_agents_pattern import PatternEnforcer
-        from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
-        from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
-        from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
+        from AgenticCore.canon_agents_core import SystemArchitect
+        from AgenticCore.canon_agents_pattern import PatternEnforcer
+        from AgenticCore.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
+        from AgenticCore.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
+        from AgenticCore.canon_agents_syntax import CodeJanitor, DependencySentinel
         arch = SystemArchitect(ctx)
         budget = BudgetAgent(ctx)
         janitor = CodeJanitor(ctx)
@@ -60,7 +60,7 @@ class CanonBaseAgent:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
         except IOError as e:
-            logger.warning(f'Could not read file {file_path} for hashing: {e}')
+            Logger.warning(f'Could not read file {file_path} for hashing: {e}')
             return ''
 
     def check_cache(self, file_path: str, key: int) -> Optional[dict]:
@@ -80,12 +80,12 @@ class CanonBaseAgent:
         self.ctx.services.cache_result(cache_key, result)
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
-        """Trigger an LLM-based fix for a specific violation."""
+        """Trigger an LLM-based fix for a specific Violation."""
         if not self.ctx.intelligence_enabled:
-            logger.debug('Intelligence not enabled, skipping smart fix.')
+            Logger.debug('Intelligence not enabled, skipping smart fix.')
             return False
         if not self.ctx.can_attempt_healing(file_path):
-            logger.debug(f'Cannot attempt healing for {file_path}.')
+            Logger.debug(f'Cannot attempt healing for {file_path}.')
             return False
         self.__class__._init_registry(self.ctx)
         try:
@@ -94,7 +94,7 @@ class CanonBaseAgent:
             current_code: Any = original_code
             check_func: Any = self.VERIFICATION_REGISTRY.get(violation_key)
             if not check_func:
-                logger.warning(f'No check function found for violation key {violation_key}.')
+                Logger.warning(f'No check function found for Violation key {violation_key}.')
                 return False
             violation_details: Any = ''
             res: Any = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
@@ -103,7 +103,7 @@ class CanonBaseAgent:
                 if relevant:
                     max_violations_shown: Any = int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))
                     violation_details: Any = '\nSpecific Violations:\n' + '\n'.join(map(str, relevant[:max_violations_shown]))
-            violation_desc: Any = f'{self.name} Key {violation_key} violation in {file_path}'
+            violation_desc: Any = f'{self.name} Key {violation_key} Violation in {file_path}'
             similar_patterns: Any = self.ctx.services.find_similar_patterns(violation_desc)
             reference_fix: Any = None
             if similar_patterns:
@@ -114,13 +114,13 @@ class CanonBaseAgent:
             previous_failure: Any = None
             for round_num in range(1, max_rounds + 1):
                 print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}', flush=True)
-                task_parts: Any = [f'Fix Key {violation_key} violation in {file_path}.']
+                task_parts: Any = [f'Fix Key {violation_key} Violation in {file_path}.']
                 if violation_details:
                     task_parts.append(violation_details)
                 if reference_fix:
                     task_parts.append(reference_fix)
-                task: Any = '\n'.join(task_parts)
-                fixed_code: Any = await self.ctx.resilient_mutation(agent_name=self.name, task=task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
+                Task: Any = '\n'.join(task_parts)
+                fixed_code: Any = await self.ctx.resilient_mutation(agent_name=self.name, Task=Task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
                 if fixed_code == current_code:
                     print(f'      [!] No changes made in Round {round_num}', flush=True)
                     previous_failure: Any = 'No changes were made to the code.'
@@ -135,14 +135,14 @@ class CanonBaseAgent:
                     if file_path not in self.ctx.healing_history:
                         self.ctx.healing_history[file_path] = []
                     self.ctx.healing_history[file_path].append(f'Key{violation_key}')
-                    self.ctx.services.store_healing_pattern(violation=violation_desc, fix=fixed_code[:500], success_rate=1.0)
+                    self.ctx.services.store_healing_pattern(Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0)
                     return True
                 else:
                     relevant: Any = [d for d in res[1] if str(d).startswith(file_path)]
                     if relevant:
                         previous_failure: Any = 'Fix attempt failed. Remaining violations:\n' + '\n'.join(map(str, relevant[:3]))
                     else:
-                        previous_failure: Any = 'Fix attempt did not resolve the violation (no specific file violations found).'
+                        previous_failure: Any = 'Fix attempt did not resolve the Violation (no specific file violations found).'
                 current_code: Any = fixed_code
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(original_code)
@@ -150,7 +150,7 @@ class CanonBaseAgent:
             self.ctx.record_healing_attempt(file_path, success=False)
             return False
         except Exception as e:
-            logger.error(f'Healing error for {file_path}, key {violation_key}: {e}', exc_info=True)
+            Logger.error(f'Healing error for {file_path}, key {violation_key}: {e}', exc_info=True)
             print(f'      [ALERT] Healing error for {os.path.basename(file_path)}: {e}', flush=True)
             return False
 

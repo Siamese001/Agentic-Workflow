@@ -4,9 +4,9 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def fix_trailing_whitespace(directory: Any) -> None:
     """Remove trailing whitespace from all Python files."""

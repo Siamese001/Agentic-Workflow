@@ -10,7 +10,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -71,7 +71,7 @@ class MCPToolServer:
         """
         self.name = name
         self._tools: Dict[str, MCPTool] = {}
-        logger.info(f"MCP tool server initialized: {name}")
+        Logger.info(f"MCP tool server initialized: {name}")
     
     def register_tool(self, tool: MCPTool) -> None:
         """Register a tool.
@@ -80,7 +80,7 @@ class MCPToolServer:
             tool: MCP tool to register
         """
         self._tools[tool.name] = tool
-        logger.info(f"Registered MCP tool: {tool.name}")
+        Logger.info(f"Registered MCP tool: {tool.name}")
     
     def register_function(
         self,
@@ -129,12 +129,12 @@ class MCPToolServer:
     
     def get_tools_for_provider(
         self,
-        provider: str = "openai",
+        Provider: str = "openai",
     ) -> List[Dict[str, Any]]:
-        """Get tools in provider-specific format.
+        """Get tools in Provider-specific format.
         
         Args:
-            provider: Provider name (openai, anthropic)
+            Provider: Provider name (openai, anthropic)
             
         Returns:
             List of tool definitions
@@ -142,7 +142,7 @@ class MCPToolServer:
         tools = []
         
         for tool in self._tools.values():
-            if provider == "anthropic":
+            if Provider == "anthropic":
                 tools.append(tool.to_anthropic_format())
             else:
                 tools.append(tool.to_openai_format())
@@ -183,7 +183,7 @@ class MCPToolServer:
             )
         
         except Exception as e:
-            logger.error(f"Tool execution failed for {name}: {e}")
+            Logger.error(f"Tool execution failed for {name}: {e}")
             
             return MCPToolResult(
                 tool_name=name,
@@ -289,7 +289,7 @@ def register_default_tools(server: MCPToolServer) -> None:
         handler=analyze_text,
     )
     
-    logger.info("Registered default MCP tools")
+    Logger.info("Registered default MCP tools")
 
 
 def create_mcp_server(

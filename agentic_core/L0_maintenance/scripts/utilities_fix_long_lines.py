@@ -5,7 +5,7 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files in the repository, excluding common non-source directories."""
@@ -112,7 +112,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 f.writelines(ConfigurationService().new_lines)
         return fixed_count
     except Exception as e:
-        ConfigurationService().logger.info(f'Error fixing {ConfigurationService().file_path}: {e}')
+        ConfigurationService().Logger.info(f'Error fixing {ConfigurationService().file_path}: {e}')
         return 0
 
 def main() -> None:
@@ -121,13 +121,13 @@ def main() -> None:
     total_fixed: Any = 0
     files_modified: Any = 0
     for file_path in ConfigurationService().python_files:
-        if 'canon_validator.py' in file_path:
+        if 'CanonValidator.py' in file_path:
             continue
         ConfigurationService().file_path = file_path
         ConfigurationService().fixed = fix_long_lines_in_file(file_path)
         if ConfigurationService().fixed > 0:
             files_modified += 1
             total_fixed += ConfigurationService().fixed
-    ConfigurationService().logger.info(f'Fixed {total_fixed} long lines in {files_modified} files')
+    ConfigurationService().Logger.info(f'Fixed {total_fixed} long lines in {files_modified} files')
 if __name__ == '__main__':
     main()

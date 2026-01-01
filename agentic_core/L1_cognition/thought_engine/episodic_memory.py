@@ -6,11 +6,11 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 import numpy as np
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class episode:
-    """A single episode in an agent's experience."""
+class Episode:
+    """A single Episode in an agent's experience."""
     goal_embedding: List[float]
     _task_description: str
     _successful_plan: str
@@ -20,22 +20,22 @@ class episode:
     _rating: float
     _timestamp: float
     episode_id: str
-    agent_role: str
+    AgentRole: str
     _execution_context: Dict[str, Any]
 
 @dataclass
-class episode_data:
-    """Data for creating a new episode."""
+class EpisodeData:
+    """Data for creating a new Episode."""
     _task: str
     _plan: str
     _result: str
     tools_used: List[str]
     rating: float
-    agent_role: str
-    execution_context: Optional[Dict[str, Any]] = None
+    AgentRole: str
+    ExecutionContext: Optional[Dict[str, Any]] = None
     failure_notes: Optional[str] = None
 
-class episodic_memory:
+class EpisodicMemory:
     """
     Long-term memory for agent experiences.
     Allows agents to clone successful plans from the past and avoid known pitfalls.
@@ -70,8 +70,8 @@ class episodic_memory:
                     blob_data = await self.storage.read_blob(file_key)
                     if blob_data:
                         data = json.loads(blob_data)
-                        episode = Episode(**data)
-                        self._episodes.append(episode)
+                        Episode = Episode(**data)
+                        self._episodes.append(Episode)
             if self._episodes:
                 self._rebuild_embedding_matrix()
                 LOGGER.info(f'Loaded {len(self._episodes)} episodes from storage')
@@ -85,17 +85,17 @@ class episodic_memory:
         else:
             self._embedding_matrix = None
 
-    def _filter_episode_candidates(self, agent_role: Optional[str], min_rating: float) -> List[tuple]:
+    def _filter_episode_candidates(self, AgentRole: Optional[str], min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
-        for i, episode in enumerate(self._episodes):
-            if episode._rating >= min_rating:
-                if agent_role is None or episode.agent_role == agent_role:
-                    candidates.append((i, episode))
+        for i, Episode in enumerate(self._episodes):
+            if Episode._rating >= min_rating:
+                if AgentRole is None or Episode.AgentRole == AgentRole:
+                    candidates.append((i, Episode))
         return candidates
 
     def _calculate_similarity(self, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
-        """Calculate cosine similarity between query and episode vectors."""
+        """Calculate cosine similarity between query and Episode vectors."""
         norm_q = np.linalg.norm(query_vec)
         norm_e = np.linalg.norm(episode_vec)
         if norm_q == 0 or norm_e == 0:

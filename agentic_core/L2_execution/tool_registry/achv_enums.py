@@ -5,13 +5,13 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: BulletFormat → bullet_format
-class bullet_format(Enum):
+# NAMING FIXED: BulletFormat → BulletFormat
+class BulletFormat(Enum):
     """TODO: Add docstring."""
 
     """TODO: Add docstring."""
 
 
-# NAMING FIXED: ProvenanceType → provenance_type
-class provenance_type(Enum):
+# NAMING FIXED: ProvenanceType → ProvenanceType
+class ProvenanceType(Enum):
     """TODO: Add docstring."""

@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -52,10 +52,10 @@ class CharCountConstraint:  # Local Runtime DTO (Allowed)
 class ReasoningConfig:  # Local Runtime DTO (Allowed)
     """Reasoning configuration for K-node execution."""
     temperature: float = 0.7
-    rag_type: RAGType = RAGType.HYBRID
+    RagType: RAGType = RAGType.HYBRID
     rag_total_calls: int = 5
     rag_hops: int = 2
-    claim_verification_mode: ClaimVerificationMode = ClaimVerificationMode.BALANCED
+    ClaimVerificationMode: ClaimVerificationMode = ClaimVerificationMode.BALANCED
     hybrid_cot_tot: bool = True
     cot_min_paths: Optional[int] = 1
     tot_branches: Optional[int] = 3
@@ -88,7 +88,7 @@ class ValidationGate:  # Local Runtime DTO (Allowed)
     gate_id: str
     execution_point: str
     blocking: bool
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     checks: List[str] = field(default_factory=list)
     on_fail: str = 'HALT'
     halt_message: Optional[str] = None

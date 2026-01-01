@@ -1,8 +1,8 @@
 """Specificity Prose Engine Agent - Cover Letter Generator (K.10)
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This agent generates high-signal cover letters with company-specific details.
 Enforces 3 paragraphs @ 85-100 words each with ≥4 company-specific details.
 
@@ -23,14 +23,14 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 @dataclass
-class specificity_prose_config:
+class SpecificityProseConfig:
     """Docstring."""
     paragraph_count: int = 3
     min_words_per_paragraph: int = 85
@@ -40,14 +40,14 @@ class specificity_prose_config:
     max_attempts: int = 3
 
 @dataclass
-class company_specific_detail:
+class CompanySpecificDetail:
     """Docstring."""
     detail: str
     category: str
     source: str
 
 @dataclass
-class specificity_prose_result:
+class SpecificityProseResult:
     """Docstring."""
     cover_letter: str
     paragraphs: List[str]
@@ -58,7 +58,7 @@ class specificity_prose_result:
     success: bool
     attempts: int
 
-class specificity_prose_engine:
+class SpecificityProseEngine:
     """
     K.10 - Cover Letter Generator
 

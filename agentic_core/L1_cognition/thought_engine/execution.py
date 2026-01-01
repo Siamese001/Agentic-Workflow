@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-class execution_phase(Enum):
+class ExecutionPhase(Enum):
     """Phases of the Think-Act-Observe execution cycle."""
     MISSION: Any = 'mission'
     SCENE: Any = 'scene'
@@ -17,11 +17,11 @@ class execution_phase(Enum):
     REFLECT: Any = 'reflect'
 
 @dataclass
-class execution_context:
+class ExecutionContext:
     """Context for agent execution containing mission, scene, and state.
 
     Attributes:
-        mission: The goal or task to accomplish
+        mission: The goal or Task to accomplish
         scene: Environmental context and available resources
         state: Current execution state (mutable during execution)
         history: List of previous execution steps
@@ -40,7 +40,7 @@ class execution_context:
         return {'mission': self.mission, 'scene': self.scene, 'state': self.state, 'history': self.history, 'metadata': self.metadata, 'previous_phase_signals': self.previous_phase_signals}
 
 @dataclass
-class execution_result:
+class ExecutionResult:
     """Result of an agent execution cycle.
 
     Attributes:

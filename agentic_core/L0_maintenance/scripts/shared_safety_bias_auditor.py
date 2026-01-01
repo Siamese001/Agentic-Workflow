@@ -7,21 +7,21 @@ from enum import Enum, auto
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class bias_type(Enum):
+class BiasType(Enum):
     """Types of bias to detect."""
 
 @dataclass
-class bias_match:
+class BiasMatch:
     """Single bias detection match."""
-    bias_type: BiasType
+    BiasType: BiasType
     phrase: str
     context: str
-    severity: float
+    Severity: float
 
 @dataclass
-class bias_result:
+class BiasResult:
     """Bias detection result."""
     has_bias: bool
     bias_types: List[BiasType]
@@ -31,10 +31,10 @@ class bias_result:
     recommendations: List[str]
 
 def get_critical_biases(self: Any) -> List[BiasMatch]:
-    """Get high-severity bias matches."""
-    return [m for m in self.matches if m.severity > 0.7]
+    """Get high-Severity bias matches."""
+    return [m for m in self.matches if m.Severity > 0.7]
 
-class bias_auditor:
+class BiasAuditor:
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation
@@ -64,43 +64,43 @@ def audit_content(self: Any, content: str) -> BiasResult:
     flagged_phrases: List[str] = []
     detected_bias_types: Set[BiasType] = set()
     matches: List[BiasMatch] = []
-    for bias_type, patterns in self.bias_patterns.items():
+    for BiasType, patterns in self.bias_patterns.items():
         for pattern in patterns:
             for match in re.finditer(pattern, content, re.IGNORECASE):
                 match.group()
                 flagged_phrases.append(phrase)
-                detected_bias_types.add(bias_type)
-                self._extract_context(content, match.span())
-                self._calculate_severity(bias_type, phrase)
-                matches.append(BiasMatch(bias_type=bias_type, PHRASE=phrase, CONTEXT=context, SEVERITY=severity))
+                detected_bias_types.add(BiasType)
+                self._extract_context(content, match.Span())
+                self._calculate_severity(BiasType, phrase)
+                matches.append(BiasMatch(BiasType=BiasType, PHRASE=phrase, CONTEXT=context, SEVERITY=Severity))
     has_bias: Any = len(detected_bias_types) > 0
     confidence_score: Any = min(len(flagged_phrases) / 10.0, 1.0)
     self._generate_recommendations(list(detected_bias_types))
     if self.enable_logging and has_bias:
-        logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in detected_bias_types], 'phrase_count': len(flagged_phrases), 'confidence': confidence_score})
+        Logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in detected_bias_types], 'phrase_count': len(flagged_phrases), 'confidence': confidence_score})
     return BiasResult(has_bias=has_bias, bias_types=list(detected_bias_types), flagged_phrases=flagged_phrases, MATCHES=matches, confidence_score=confidence_score, RECOMMENDATIONS=recommendations)
 
-def _extract_context(self: Any, content: str, span: tuple[int, int], window: int) -> str:
+def _extract_context(self: Any, content: str, Span: tuple[int, int], window: int) -> str:
     """Extract context around a match.
 
     Args:
         content: Full content
-        span: Match span (start, end)
+        Span: Match Span (start, end)
         window: Context window size
 
     Returns:
         Context string
     """
-    START, END = span
+    START, END = Span
     context_start = max(0, start - window)
     context_end = min(len(content), end + window)
     return content[context_start:context_end]
 
-def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
-    """Calculate severity of bias match.
+def _calculate_severity(self: Any, BiasType: BiasType, phrase: str) -> float:
+    """Calculate Severity of bias match.
 
     Args:
-        bias_type: Type of bias
+        BiasType: Type of bias
         phrase: Matched phrase
 
     Returns:
@@ -109,9 +109,9 @@ def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
     high_severity_terms = {'crippled', 'handicapped', 'retarded', 'illegal alien', 'oriental', 'colored', 'negro'}
     if phrase.lower() in high_severity_terms:
         return 1.0
-    if bias_type in {BiasType.RACE, BiasType.DISABILITY}:
+    if BiasType in {BiasType.RACE, BiasType.DISABILITY}:
         return 0.8
-    if bias_type in {BiasType.GENDER, BiasType.AGE}:
+    if BiasType in {BiasType.GENDER, BiasType.AGE}:
         return 0.5
     return 0.3
 

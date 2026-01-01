@@ -6,25 +6,25 @@ import logging
 import re
 from typing import List, Dict, Any, Optional
 from pathlib import Path
-from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
-from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+from AgenticCore.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
+from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class sovereign_healing_engine:
+class SovereignHealingEngine:
     """
     The brain of L0: Detects and transactionally repairs constitutional breaches.
     
     Features:
-    - Autonomous violation detection and correction
+    - Autonomous Violation detection and correction
     - Transactional safety with rollback capability
     - MCP-routed file operations (Filesystem MCP)
     - MCP-routed version control (GitKraken MCP)
@@ -37,7 +37,7 @@ class sovereign_healing_engine:
         self.git_client = get_git_client()
         self.fs_client = get_filesystem_client()
         self.applied_fixes = 0
-        logger.info('[L0 HEALING] Engine initialized')
+        Logger.info('[L0 HEALING] Engine initialized')
 
     async def execute_autonomous_cycle(self, issues: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -50,16 +50,16 @@ class sovereign_healing_engine:
             Healing cycle results
         """
         if not config.AUTONOMOUS_HEALING_ENABLED:
-            logger.info('[L0 HEALING] Autonomous mode disabled in config.')
+            Logger.info('[L0 HEALING] Autonomous mode disabled in config.')
             return {'status': 'disabled', 'applied_fixes': 0, 'message': 'Autonomous healing disabled in configuration'}
         if not issues:
-            logger.info('[L0 HEALING] No issues detected. Purity maintained.')
+            Logger.info('[L0 HEALING] No issues detected. Purity maintained.')
             return {'status': 'clean', 'applied_fixes': 0, 'message': 'No violations detected'}
-        logger.info(f'[L0 HEALING] Initiating autonomous cycle for {len(issues)} issues')
+        Logger.info(f'[L0 HEALING] Initiating autonomous cycle for {len(issues)} issues')
         target_issues: Any = issues[:config.HEALING_MAX_FIXES_PER_CYCLE]
         affected_files: Any = []
         try:
-            logger.info('[L0 HEALING] Starting transaction with backups')
+            Logger.info('[L0 HEALING] Starting transaction with backups')
             for issue in target_issues:
                 action: Any = issue.get('action')
                 if action == 'replace_import':
@@ -76,23 +76,23 @@ class sovereign_healing_engine:
                     if file_path and file_path not in affected_files:
                         affected_files.append(file_path)
                 else:
-                    logger.error(f"[L0 HEALING] Failed to apply fix for {issue.get('file', 'unknown')}")
+                    Logger.error(f"[L0 HEALING] Failed to apply fix for {issue.get('file', 'unknown')}")
                     if not config.HEALING_AUTO_APPLY:
                         raise Exception('Strict healing mode: failure on single fix triggers rollback')
             if self.applied_fixes > 0:
-                logger.info(f'[L0 HEALING] Successfully applied {self.applied_fixes} fixes')
+                Logger.info(f'[L0 HEALING] Successfully applied {self.applied_fixes} fixes')
                 if config.HEALING_AUTO_COMMIT:
                     await self._create_healing_commit(affected_files)
                 if config.HEALING_AUTO_PR:
                     await self._create_healing_pr()
                 self.transaction_manager.commit()
-                logger.info(f'[L0 HEALING] Cycle complete. Applied {self.applied_fixes} fixes.')
+                Logger.info(f'[L0 HEALING] Cycle complete. Applied {self.applied_fixes} fixes.')
                 return {'status': 'success', 'applied_fixes': self.applied_fixes, 'affected_files': affected_files, 'message': f'Successfully healed {self.applied_fixes} violations'}
             else:
-                logger.warning('[L0 HEALING] No fixes were successfully applied')
+                Logger.warning('[L0 HEALING] No fixes were successfully applied')
                 return {'status': 'no_fixes', 'applied_fixes': 0, 'message': 'No fixes could be applied'}
         except Exception as e:
-            logger.critical(f'[L0 HEALING] Cycle CRASHED. Rolling back state. Error: {e}')
+            Logger.critical(f'[L0 HEALING] Cycle CRASHED. Rolling back state. Error: {e}')
             self.transaction_manager.rollback()
             return {'status': 'error', 'applied_fixes': 0, 'error': str(e), 'message': 'Healing cycle failed and was rolled back'}
 
@@ -108,34 +108,34 @@ class sovereign_healing_engine:
         """
         file_path = issue.get('file')
         if not file_path:
-            logger.error('[L0 HEALING] Issue missing file path')
+            Logger.error('[L0 HEALING] Issue Missing file path')
             return False
-        violation_type = issue.get('type', '')
+        ViolationType = issue.get('type', '')
         message = issue.get('message', '')
         try:
             path_obj = Path(file_path)
             if not path_obj.exists():
-                logger.warning(f'[L0 HEALING] File does not exist: {file_path}')
+                Logger.warning(f'[L0 HEALING] File does not exist: {file_path}')
                 return False
             self.transaction_manager.backup(path_obj)
             content = await self.fs_client.read_text(file_path)
             if not content:
-                logger.warning(f'[L0 HEALING] Could not read file: {file_path}')
+                Logger.warning(f'[L0 HEALING] Could not read file: {file_path}')
                 return False
-            new_content = await self._generate_fix(content, violation_type, message)
+            new_content = await self._generate_fix(content, ViolationType, message)
             if new_content and new_content != content:
                 success = await self.fs_client.write_text(file_path, new_content)
                 if success:
-                    logger.info(f'[L0 HEALING] Fixed {violation_type} in {file_path}')
+                    Logger.info(f'[L0 HEALING] Fixed {ViolationType} in {file_path}')
                     return True
                 else:
-                    logger.error(f'[L0 HEALING] Failed to write healed content to {file_path}')
+                    Logger.error(f'[L0 HEALING] Failed to write healed content to {file_path}')
                     return False
             else:
-                logger.warning(f'[L0 HEALING] No fix generated for {file_path}')
+                Logger.warning(f'[L0 HEALING] No fix generated for {file_path}')
                 return False
         except Exception as e:
-            logger.error(f'[L0 HEALING] Error applying fix to {file_path}: {e}')
+            Logger.error(f'[L0 HEALING] Error applying fix to {file_path}: {e}')
             return False
 
     async def _exec_replace_import(self, fix: Dict) -> bool:
@@ -163,7 +163,7 @@ class sovereign_healing_engine:
             content = re.sub(fix['old_usage'], fix['new_usage'], content)
             return await self.fs_client.write_text(file_path, content)
         except Exception as e:
-            logger.error(f'[L0 HEALING] Error in _exec_replace_import: {e}')
+            Logger.error(f'[L0 HEALING] Error in _exec_replace_import: {e}')
             return False
 
     async def _exec_replace_llm(self, fix: Dict) -> bool:
@@ -192,7 +192,7 @@ class sovereign_healing_engine:
             content = re.sub(f"{fix['sdk']}\\(.*?\\)", f"{fix['new_client']}", content)
             return await self.fs_client.write_text(file_path, content)
         except Exception as e:
-            logger.error(f'[L0 HEALING] Error in _exec_replace_llm: {e}')
+            Logger.error(f'[L0 HEALING] Error in _exec_replace_llm: {e}')
             return False
 
     async def _exec_replace_io(self, fix: Dict) -> bool:
@@ -222,16 +222,16 @@ class sovereign_healing_engine:
             content = content.replace('Path(', f"# TODO: Use {fix['new_client']} for file operations\n# Path(")
             return await self.fs_client.write_text(file_path, content)
         except Exception as e:
-            logger.error(f'[L0 HEALING] Error in _exec_replace_io: {e}')
+            Logger.error(f'[L0 HEALING] Error in _exec_replace_io: {e}')
             return False
 
-    async def _generate_fix(self, content: str, violation_type: str, message: str) -> Optional[str]:
+    async def _generate_fix(self, content: str, ViolationType: str, message: str) -> Optional[str]:
         """
-        Generate fixed content based on violation type (legacy method).
+        Generate fixed content based on Violation type (legacy method).
         
         Args:
             content: Original file content
-            violation_type: Type of violation (IMPORT_BREACH, PATH_BREACH, etc.)
+            ViolationType: Type of Violation (IMPORT_BREACH, PATH_BREACH, etc.)
             message: Violation message
             
         Returns:
@@ -239,18 +239,18 @@ class sovereign_healing_engine:
         """
         new_content = content
         if 'HTTP' in message or 'requests' in message.lower():
-            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client')
+            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from AgenticCore.L2_execution.ToolRegistry.fetch_mcp_client')
             new_content = new_content.replace('requests.get(', '# await get_fetch_client().get_clean_content(')
             new_content = new_content.replace('requests.post(', '# await get_fetch_client().fetch_url(')
         if 'Redis' in message:
-            new_content = new_content.replace('import redis', '# Sovereign healing: Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client')
+            new_content = new_content.replace('import redis', '# Sovereign healing: Use get_redis_client() from AgenticCore.L4_state.caching.redis_mcp_client')
             new_content = new_content.replace('redis.Redis(', '# get_redis_client().')
         if 'Vector' in message or 'pinecone' in message.lower():
-            new_content = new_content.replace('from pinecone import', '# Sovereign healing: Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client\n# from pinecone import')
+            new_content = new_content.replace('from pinecone import', '# Sovereign healing: Use get_pinecone_mcp_client() from AgenticCore.L4_state.semantic_memory.pinecone_mcp_client\n# from pinecone import')
             new_content = new_content.replace('Pinecone(', '# get_pinecone_mcp_client().')
-        if 'PATH_BREACH' in violation_type or 'tools/' in message:
-            new_content = new_content.replace('agentic_core/tools/', 'agentic_core/utils/')
-            new_content = new_content.replace('from agentic_core.tools.', 'from agentic_core.utils.')
+        if 'PATH_BREACH' in ViolationType or 'tools/' in message:
+            new_content = new_content.replace('AgenticCore/tools/', 'AgenticCore/utils/')
+            new_content = new_content.replace('from AgenticCore.tools.', 'from AgenticCore.utils.')
         return new_content if new_content != content else None
 
     async def _create_healing_commit(self, affected_files: List[str]):
@@ -267,9 +267,9 @@ class sovereign_healing_engine:
             if len(affected_files) > 10:
                 commit_message += f'... and {len(affected_files) - 10} more files\n'
             await self.git_client.add_and_commit(files=affected_files, message=commit_message)
-            logger.info(f'[L0 HEALING] Created healing commit for {len(affected_files)} files')
+            Logger.info(f'[L0 HEALING] Created healing commit for {len(affected_files)} files')
         except Exception as e:
-            logger.error(f'[L0 HEALING] Failed to create commit: {e}')
+            Logger.error(f'[L0 HEALING] Failed to create commit: {e}')
 
     async def _create_healing_pr(self):
         """Create a pull request for healed changes."""
@@ -277,9 +277,9 @@ class sovereign_healing_engine:
             pr_title = f'{config.GITKRAKEN_PR_TITLE_PREFIX} Autonomous Sovereignty Restoration'
             pr_description = f'\n# Autonomous Sovereignty Restoration\n\nThis PR contains automated corrections for {self.applied_fixes} constitutional violations detected by the Sovereignty Auditor.\n\n## Healing Summary\n- **Fixes Applied:** {self.applied_fixes}\n- **Healing Mode:** Autonomous\n- **Transaction:** Committed with rollback safety\n\n## Review Notes\nAll fixes were applied using the Sovereign Healing Engine with:\n- Transactional safety (rollback on failure)\n- MCP-routed file operations (Filesystem MCP)\n- MCP-routed version control (GitKraken MCP)\n\nPlease review the changes to ensure they align with sovereignty requirements.\n'
             await self.git_client.create_pull_request(title=pr_title, description=pr_description, branch=config.GITKRAKEN_HEALING_BRANCH)
-            logger.info('[L0 HEALING] Created healing PR for review')
+            Logger.info('[L0 HEALING] Created healing PR for review')
         except Exception as e:
-            logger.error(f'[L0 HEALING] Failed to create PR: {e}')
+            Logger.error(f'[L0 HEALING] Failed to create PR: {e}')
 
 async def run_autonomous_healing(issues: List[Dict[str, Any]]) -> Dict[str, Any]:
     """

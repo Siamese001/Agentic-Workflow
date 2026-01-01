@@ -113,13 +113,13 @@ class ASTEnforcementMixin:
         
         Args:
             repo_root: Root directory to scan
-            target_prefixes: List of directory prefixes to include (e.g., ["agentic_core", "apps_"])
+            target_prefixes: List of directory prefixes to include (e.g., ["AgenticCore", "apps_"])
             
         Returns:
             Dict with aggregated results and file list
         """
         if target_prefixes is None:
-            target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+            target_prefixes = ["AgenticCore", "apps_rg", "apps_lic", "apps_shared"]
 
         files_with_violations = []
         total_snake = 0
@@ -179,7 +179,7 @@ class ASTEnforcementMixin:
             return []
 
     def _is_snake_case_class(self, class_name: str) -> bool:
-        """Check if class name is snake_case (violation).
+        """Check if class name is snake_case (Violation).
         
         Args:
             class_name: Name to check

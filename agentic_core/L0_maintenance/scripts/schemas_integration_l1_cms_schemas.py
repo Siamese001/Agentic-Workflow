@@ -8,22 +8,22 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 """
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 CMS (Content Management System) schemas for prompt validation.
 
 This module provides schema definitions for prompt validation and structure.
 """
 
 
-# NAMING FIXED: PromptType → prompt_type
-class prompt_type(str, Enum):
+# NAMING FIXED: PromptType → PromptType
+class PromptType(str, Enum):
     """Types of prompts supported by the CMS."""
 
 
 @dataclass
-# NAMING FIXED: PromptSchema → prompt_schema
-class prompt_schema:
+# NAMING FIXED: PromptSchema → PromptSchema
+class PromptSchema:
     """Schema definition for prompt validation."""
 
     _name: str
@@ -34,8 +34,8 @@ class prompt_schema:
 
 
 @dataclass
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result:
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult:
     """Result of prompt validation."""
 
     _is_valid: bool

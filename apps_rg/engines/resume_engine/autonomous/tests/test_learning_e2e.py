@@ -49,7 +49,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -79,11 +79,11 @@ class TestFullMissionWithLearning:
     """Tests for full mission with learning integration."""
 
     @pytest.mark.asyncio
-    async def test_mission_records_learning(self, valid_resume, job_description):
+    async def test_mission_records_learning(self, valid_resume, JobDescription):
         """Test that successful mission records learning."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         learning_agent = ResumeLearningAgent(ctx)
 
@@ -94,8 +94,8 @@ class TestFullMissionWithLearning:
         # Record learning from mission
         if result.success:
             await learning_agent.record_success(
-                task_type="mission_success",
-                input_context=f"Job: {job_description[:100]}",
+                TaskType="mission_success",
+                input_context=f"Job: {JobDescription[:100]}",
                 output_result=f"Converged in {result.convergence_cycle} cycles",
                 confidence=0.9,
             )
@@ -104,11 +104,11 @@ class TestFullMissionWithLearning:
         assert stats["learning"]["total_examples"] >= 0
 
     @pytest.mark.asyncio
-    async def test_mission_with_instructions(self, valid_resume, job_description):
+    async def test_mission_with_instructions(self, valid_resume, JobDescription):
         """Test mission with pre-injected instructions."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         learning_agent = ResumeLearningAgent(ctx)
 
@@ -130,11 +130,11 @@ class TestFullMissionWithLearning:
         assert len(ctx.instructions) >= 2
 
     @pytest.mark.asyncio
-    async def test_mission_with_section_memory(self, valid_resume, job_description, temp_memory_dir):
+    async def test_mission_with_section_memory(self, valid_resume, JobDescription, temp_memory_dir):
         """Test mission with section memory tracking."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         memory = MemoryPersistence(memory_file=temp_memory_dir / "mission_memory.json")
 
@@ -165,23 +165,23 @@ class TestFewShotRecallDuringHealing:
 
         # Pre-populate with examples
         await learning_agent.record_success(
-            task_type="summary_fix",
+            TaskType="summary_fix",
             input_context="Summary without metrics",
             output_result="Summary with 3 quantified achievements",
             confidence=0.9,
         )
 
-        # Get context for similar task
+        # Get context for similar Task
         context = await learning_agent.get_few_shot_context(
             "Fix summary to include metrics",
-            task_type="summary_fix",
+            TaskType="summary_fix",
         )
 
         # Context may or may not be populated depending on matching
         assert isinstance(context, str)
 
     @pytest.mark.asyncio
-    async def test_learning_improves_over_missions(self, valid_resume, job_description):
+    async def test_learning_improves_over_missions(self, valid_resume, JobDescription):
         """Test that learning accumulates over multiple missions."""
         ctx = ResumeEngineContext()
         learning_agent = ResumeLearningAgent(ctx)
@@ -189,7 +189,7 @@ class TestFewShotRecallDuringHealing:
         # Run multiple missions
         for i in range(3):
             ctx.current_resume = valid_resume.copy()
-            ctx.job_description = job_description
+            ctx.JobDescription = JobDescription
             ctx.signals.clear()
             ctx.results.clear()
 
@@ -198,7 +198,7 @@ class TestFewShotRecallDuringHealing:
 
             if result.success:
                 await learning_agent.record_success(
-                    task_type=f"mission_{i}",
+                    TaskType=f"mission_{i}",
                     input_context=f"Mission {i}",
                     output_result=f"Success in {result.convergence_cycle} cycles",
                     confidence=0.9,
@@ -371,7 +371,7 @@ class TestEdgeCases:
 
         # Record with low confidence
         await learning_agent.record_success(
-            task_type="uncertain_fix",
+            TaskType="uncertain_fix",
             input_context="Uncertain input",
             output_result="Uncertain output",
             confidence=0.3,  # Low confidence
@@ -386,12 +386,12 @@ class TestComprehensiveWorkflow:
     """Tests for comprehensive end-to-end workflow."""
 
     @pytest.mark.asyncio
-    async def test_full_workflow_with_all_components(self, valid_resume, job_description, temp_memory_dir):
+    async def test_full_workflow_with_all_components(self, valid_resume, JobDescription, temp_memory_dir):
         """Test complete workflow with all Phase 3 components."""
         # Initialize context
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Initialize all components
         learning_agent = ResumeLearningAgent(ctx)
@@ -421,7 +421,7 @@ class TestComprehensiveWorkflow:
         # 5. Record learning from mission
         if result.success:
             await learning_agent.record_success(
-                task_type="full_workflow",
+                TaskType="full_workflow",
                 input_context=f"Resume with {len(valid_resume)} sections",
                 output_result=f"Converged in {result.convergence_cycle} cycles",
                 confidence=0.9,
@@ -429,17 +429,17 @@ class TestComprehensiveWorkflow:
 
         # 6. Verify all components have state
         learning_agent.get_comprehensive_stats()
-        memory_stats = memory.get_stats()
+        MemoryStats = memory.get_stats()
 
         assert result.success is True
-        assert memory_stats["total_tracked"] > 0
+        assert MemoryStats["total_tracked"] > 0
         assert len(ctx.instructions) > 0
 
     @pytest.mark.asyncio
-    async def test_workflow_with_run_self_healing_mission(self, valid_resume, job_description):
+    async def test_workflow_with_run_self_healing_mission(self, valid_resume, JobDescription):
         """Test workflow using the main entry point function."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
             enable_reflection=True,

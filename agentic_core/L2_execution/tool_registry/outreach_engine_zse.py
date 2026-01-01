@@ -8,27 +8,27 @@ import time
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.utils.P1_core.core_utilities import log_action, register_process
-from agentic_core.utils.P1_core.networking import get_networking_utility, send_email, strict_egress_filter
-from agentic_core.utils.P1_core.pitch_generator import PitchGenerator
-from agentic_core.utils.P1_core.shadow_mode import ShadowModeEngine
+from AgenticCore.utils.P1_core.core_utilities import log_action, register_process
+from AgenticCore.utils.P1_core.networking import get_networking_utility, send_email, strict_egress_filter
+from AgenticCore.utils.P1_core.PitchGenerator import PitchGenerator
+from AgenticCore.utils.P1_core.shadow_mode import ShadowModeEngine
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class exit_reason(Enum):
+class ExitReason(Enum):
     """Exit reasons for Outreach Engine."""
     ZSE_SUCCESS: Any = 'ZSE_SUCCESS'
     P8_EGRESS_BLOCK: Any = 'P8_EGRESS_BLOCK'
     ZSE_MAX_REFINEMENTS: Any = 'ZSE_MAX_REFINEMENTS'
     CRITICAL_ERROR: Any = 'CRITICAL_ERROR'
 
-class outreach_engine_zse:
+class OutreachEngineZse:
     """
     Outreach Engine with Zero-Side Effect (ZSE) policy.
 
@@ -54,13 +54,13 @@ class outreach_engine_zse:
         self.refinement_count = 0
         self.networking = get_networking_utility()
         self.knowledge = get_consolidated_knowledge()
-        self.pitch_generator = PitchGenerator()
-        self.shadow_mode = ShadowModeEngine(self.pitch_generator)
+        self.PitchGenerator = PitchGenerator()
+        self.shadow_mode = ShadowModeEngine(self.PitchGenerator)
         os.makedirs(output_dir, exist_ok=True)
         register_process('OutreachEngine', os.getpid())
-        logger.info('============================================================')
-        logger.info('ZSE ENGINE START: Outreach Engine (E3)')
-        logger.info('============================================================')
+        Logger.info('============================================================')
+        Logger.info('ZSE ENGINE START: Outreach Engine (E3)')
+        Logger.info('============================================================')
 
     def execute_outreach(self, company_url: str, contact_email: str) -> tuple:
         """
@@ -71,31 +71,31 @@ class outreach_engine_zse:
             contact_email: Target contact email
 
         Returns:
-            Tuple of (exit_reason, result_data)
+            Tuple of (ExitReason, result_data)
         """
         try:
             log_action('L1_FETCH_START', {'company_url': company_url})
-            egress_result: Any = strict_egress_filter(company_url)
-            if egress_result.status == 'FAIL':
-                logger.error(f'P8_BLOCK: {egress_result.reason}')
-                log_action('P8_EGRESS_BLOCK', {'host': egress_result.host})
+            EgressResult: Any = strict_egress_filter(company_url)
+            if EgressResult.status == 'FAIL':
+                Logger.error(f'P8_BLOCK: {EgressResult.reason}')
+                log_action('P8_EGRESS_BLOCK', {'host': EgressResult.host})
                 return (ExitReason.P8_EGRESS_BLOCK, None)
             context: Any = self._fetch_company_context(company_url)
             log_action('L5_L4_START')
             contact_context: Any = self.knowledge.search_knowledge(query=f'Contact for {company_url}', types=['profile'])
             optimal_send_time: Any = self._calculate_optimal_time(contact_context)
             log_action('PITCH_START')
-            pitch_draft: Any = self.pitch_generator.generate_pitch(context=context, relationships=contact_context.user_profile or {})
+            pitch_draft: Any = self.PitchGenerator.generate_pitch(context=context, relationships=contact_context.user_profile or {})
             while True:
                 if self.refinement_count >= self.MAX_PITCH_REFINEMENTS:
-                    logger.error('ZSE_FAIL: Max refinement attempts reached')
+                    Logger.error('ZSE_FAIL: Max refinement attempts reached')
                     log_action('ZSE_FAIL_MAX_REFINEMENTS', {'count': self.refinement_count})
                     self.knowledge.add_observations({'event': 'ZSE_FAIL_MAX_REFINEMENTS', 'count': self.refinement_count})
                     return (ExitReason.ZSE_MAX_REFINEMENTS, None)
                 log_action('P6_START', {'attempt': self.refinement_count})
                 p6_result: Any = self.knowledge.query_consensus(pitch=pitch_draft.content, guidelines=self._get_brand_guidelines())
                 if p6_result['status'] == 'FAIL':
-                    logger.warning(f"VET_FAIL: P6 Compliance Failure - {p6_result['reason']}")
+                    Logger.warning(f"VET_FAIL: P6 Compliance Failure - {p6_result['reason']}")
                     log_action('P6_COMPLIANCE_FAIL', {'reason': p6_result['reason']})
                     self.refinement_count += 1
                     log_action('P10_START', {'attempt': self.refinement_count})
@@ -110,7 +110,7 @@ class outreach_engine_zse:
                 self.knowledge.add_observations({'event': 'OUTREACH_COMPLETE', 'status': 'SENT' if not self.dry_run else 'DRY_RUN', 'refinement_count': self.refinement_count})
                 return (ExitReason.ZSE_SUCCESS, {'email_result': send_result, 'pitch': pitch_draft, 'refinements': self.refinement_count})
         except Exception as e:
-            logger.error(f'CRITICAL_ERROR: {e}')
+            Logger.error(f'CRITICAL_ERROR: {e}')
             log_action('CRITICAL_ERROR', {'error': str(e)})
             return (ExitReason.CRITICAL_ERROR, None)
 
@@ -125,7 +125,7 @@ class outreach_engine_zse:
         """Calculate optimal send time (L4 utility)."""
         timezone = contact_context.user_profile.get('timezone', 'UTC') if contact_context.user_profile else 'UTC'
         optimal_time = datetime.now().strftime('%Y-%m-%d %H:00')
-        logger.info(f'L4_TIME: Optimal send time calculated for {timezone}: {optimal_time}')
+        Logger.info(f'L4_TIME: Optimal send time calculated for {timezone}: {optimal_time}')
         log_action('L4_TIME', {'timezone': timezone, 'send_time': optimal_time})
         return optimal_time
 
@@ -133,10 +133,10 @@ class outreach_engine_zse:
         """Get brand style guidelines for P6 consensus."""
         return {'tone': 'professional', 'prohibited_words': ['amazing', 'incredible', 'revolutionary', 'guarantee'], 'max_exclamation': 1, 'min_length': 100, 'max_length': 200}
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('logs/outreach_engine_zse.log'), logging.StreamHandler()])
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('logs/OutreachEngineZse.log'), logging.StreamHandler()])
     engine: Any = OutreachEngineZSE(output_dir='output', dry_run=True)
-    exit_reason, result = engine.execute_outreach(company_url='https://linkedin.com/company/techcorp', contact_email='hiring@techcorp.com')
-    print(f'\nExecution complete: {exit_reason.value}')
+    ExitReason, result = engine.execute_outreach(company_url='https://linkedin.com/company/techcorp', contact_email='hiring@techcorp.com')
+    print(f'\nExecution complete: {ExitReason.value}')
     if result:
         print(f"Refinements: {result.get('refinements', 0)}")
         print(f"Email status: {result['email_result']['status']}")

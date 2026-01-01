@@ -55,7 +55,7 @@ def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:
 
 def main():
     """Run the fix on core_contracts.py"""
-    file_path = Path(r"c:\Git\Agentic-Workflow\agentic_core\schemas\models\core_contracts.py")
+    file_path = Path(r"c:\Git\Agentic-Workflow\AgenticCore\schemas\models\core_contracts.py")
     
     print("="*70)
     print("EMERGENCY FIX: Removing ALL dataclass underscore prefixes")

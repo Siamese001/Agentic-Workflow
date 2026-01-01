@@ -13,12 +13,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 from dotenv import load_dotenv
-from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
 load_dotenv(Path(__file__).parent.parent.parent / '.env')
 allowed_root_files: Any = ROOT_PROTECTED_FILES
-from agentic_core.prompts import FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS, FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN, FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES, FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY, FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE, FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT
+from AgenticCore.prompts import FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS, FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN, FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES, FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY, FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE, FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT
 
-class dependency_graph:
+class DependencyGraph:
     """Builds a directed graph of imports and class hierarchies."""
 
     def __init__(self):
@@ -58,7 +58,7 @@ class dependency_graph:
             impacted.update(self.reverse_graph[module_name])
         return list(impacted)
 
-class budget_manager:
+class BudgetManager:
     """Tracks estimated token usage and enforces stops."""
 
     def __init__(self, limit_usd: float=2.0):
@@ -88,7 +88,7 @@ class budget_manager:
         return f'${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)'
 
 @dataclass
-class validation_context:
+class ValidationContext:
     """Shared memory for all agents with Tri-Brain infrastructure and persistence."""
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
@@ -143,13 +143,13 @@ class validation_context:
         return self._client
 
     def __post_init__(self):
-        """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys missing)."""
+        """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys Missing)."""
         print('   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...')
         self.python_files = get_python_files()
         self._load_memory()
         api_key = os.environ.get('GOOGLE_API_KEY')
         if not api_key:
-            raise RuntimeError('CRITICAL: GOOGLE_API_KEY environment variable is missing.')
+            raise RuntimeError('CRITICAL: GOOGLE_API_KEY environment variable is Missing.')
         try:
             import google.genai as genai
             self._client = genai.Client(api_key=api_key)
@@ -159,7 +159,7 @@ class validation_context:
             raise RuntimeError(f'CRITICAL: Gemini connection failed: {e}')
         redis_url = os.environ.get('REDIS_URL')
         if not redis_url:
-            raise RuntimeError('CRITICAL: REDIS_URL environment variable is missing.')
+            raise RuntimeError('CRITICAL: REDIS_URL environment variable is Missing.')
         try:
             import redis as redis_lib
             self.redis_client = redis_lib.from_url(redis_url, decode_responses=True)
@@ -169,7 +169,7 @@ class validation_context:
             raise RuntimeError(f'CRITICAL: Redis connection failed: {e}')
         pine_key = os.environ.get('PINECONE_API_KEY')
         if not pine_key:
-            raise RuntimeError('CRITICAL: PINECONE_API_KEY environment variable is missing.')
+            raise RuntimeError('CRITICAL: PINECONE_API_KEY environment variable is Missing.')
         try:
             from pinecone import Pinecone
             pc = Pinecone(api_key=pine_key)
@@ -344,7 +344,7 @@ class validation_context:
         if not self.pinecone_available or not self.intelligence_enabled:
             return
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str='', file_path: str=None, *, max_attempts: int=4, diff_mode: bool=False, min_confidence: float=0.7) -> str:
+    async def resilient_mutation(self, agent_name: str, Task: str, code: str='', file_path: str=None, *, max_attempts: int=4, diff_mode: bool=False, min_confidence: float=0.7) -> str:
         """Level 6 Mutation with retry logic. Returns original code if intelligence disabled."""
         if not self.intelligence_enabled:
             print(f'   [{agent_name}] ⚠️ Intelligence disabled - skipping mutation')
@@ -354,7 +354,7 @@ class validation_context:
             try:
                 if not self.budget.check_budget():
                     return current_code
-                prompt: Any = f'{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {task}\nContext:\n{current_code[:4000]}'
+                prompt: Any = f'{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {Task}\nContext:\n{current_code[:4000]}'
                 response: Any = await asyncio.to_thread(self._client.models.generate_content, model=self.model_id, contents=[prompt])
                 self.budget.track(prompt, response.text)
                 result_text: Any = self._clean_llm_code(response.text)

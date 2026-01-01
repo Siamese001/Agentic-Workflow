@@ -6,18 +6,18 @@ Tool ID Prefix: ACT-001
 import logging
 import json
 from typing import Any, Dict, List, Optional
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger('ActionRegistry.WebSearch')
+Logger: Any = logging.getLogger('ActionRegistry.WebSearch')
 
-class web_search_tools:
+class WebSearchTools:
     """
     Standardized toolset for external intelligence.
     Routes all traffic through L3 Sovereign Router.
@@ -27,7 +27,7 @@ class web_search_tools:
     def __init__(self):
         """Initialize with sovereign MCP router — L5 shielded"""
         self.router = SovereignMCPRouter(role='web_research')
-        logger.info('[L2 WEB SEARCH] Initialized with Sovereign MCP Router')
+        Logger.info('[L2 WEB SEARCH] Initialized with Sovereign MCP Router')
 
     async def search_web(self, query: str) -> str:
         """
@@ -42,12 +42,12 @@ class web_search_tools:
         """
         if not config.BRAVE_SEARCH_MCP_ENABLED:
             return 'Error: Brave Search MCP disabled in sovereign config'
-        logger.info(f"🌐 Sovereign Web Search: '{query}'")
+        Logger.info(f"🌐 Sovereign Web Search: '{query}'")
         try:
             result: Any = await self.router.manager.call_tool(tool_name='brave_web_search', args={'query': query, 'count': config.BRAVE_SEARCH_COUNT, 'summarize': config.BRAVE_SEARCH_SUMMARIZE, 'safe_search': config.BRAVE_SEARCH_SAFE_SEARCH, 'country': config.BRAVE_SEARCH_COUNTRY})
             return self._parse_mcp_response(result, 'web')
         except Exception as e:
-            logger.error(f'[L2 WEB SEARCH] MCP call failed: {e}')
+            Logger.error(f'[L2 WEB SEARCH] MCP call failed: {e}')
             return f'Search Error: {str(e)}'
 
     async def search_local(self, query: str, location: Optional[str]=None) -> str:
@@ -63,12 +63,12 @@ class web_search_tools:
         """
         if not config.BRAVE_SEARCH_MCP_ENABLED:
             return 'Error: Brave Search MCP disabled'
-        logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
+        Logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
         try:
             result: Any = await self.router.manager.call_tool(tool_name='brave_local_search', args={'query': query, 'count': config.BRAVE_SEARCH_COUNT})
             return self._parse_mcp_response(result, 'local')
         except Exception as e:
-            logger.error(f'[L2 LOCAL SEARCH] MCP call failed: {e}')
+            Logger.error(f'[L2 LOCAL SEARCH] MCP call failed: {e}')
             return f'Local search error: {str(e)}'
 
     def _parse_mcp_response(self, result: Any, mode: str) -> str:

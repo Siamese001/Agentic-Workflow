@@ -63,7 +63,7 @@ class OutreachExecutionTrace:
 
 @dataclass
 class OutreachMetric:
-    """A single metric measurement."""
+    """A single Metric measurement."""
     name: str
     metric_type: OutreachMetricType
     value: float
@@ -166,7 +166,7 @@ class OutreachMetricsCollector:
         self._gauges: Dict[str, float] = {}
 
     def counter(self, name: str, value: float = 1, labels: Dict[str, str] = None):
-        """Increment a counter metric."""
+        """Increment a counter Metric."""
         self._counters[name] = self._counters.get(name, 0) + value
 
         self._metrics.append(OutreachMetric(
@@ -177,7 +177,7 @@ class OutreachMetricsCollector:
         ))
 
     def gauge(self, name: str, value: float, labels: Dict[str, str] = None):
-        """Set a gauge metric."""
+        """Set a gauge Metric."""
         self._gauges[name] = value
 
         self._metrics.append(OutreachMetric(
@@ -188,7 +188,7 @@ class OutreachMetricsCollector:
         ))
 
     def timer(self, name: str, duration_ms: float, labels: Dict[str, str] = None):
-        """Record a timer metric."""
+        """Record a timer Metric."""
         self._metrics.append(OutreachMetric(
             name=name,
             metric_type=OutreachMetricType.TIMER,

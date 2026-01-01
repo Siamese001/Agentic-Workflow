@@ -4,13 +4,13 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
-# from agentic_core.orchestrate_workflow_types_enums import *  # Star import removed
+# from AgenticCore.orchestrate_workflow_types_enums import *  # Star import removed
 
 
 @dataclass
-# NAMING FIXED: Artifact → artifact
-class artifact:
-    """A workflow artifact (file)."""
+# NAMING FIXED: Artifact → Artifact
+class Artifact:
+    """A workflow Artifact (file)."""
 
     _id: str
     _path: Path
@@ -20,8 +20,8 @@ class artifact:
 
 
 @dataclass
-# NAMING FIXED: HopCheckpoint → hop_checkpoint
-class hop_checkpoint:
+# NAMING FIXED: HopCheckpoint → HopCheckpoint
+class HopCheckpoint:
     """Checkpoint for a completed hop."""
 
     _hop_id: str
@@ -33,8 +33,8 @@ class hop_checkpoint:
 
 
 @dataclass
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result:
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult:
     """Result from a validation gate."""
 
     _gate_id: str

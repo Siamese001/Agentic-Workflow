@@ -1,6 +1,6 @@
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
-This module provides a secure checkpoint implementation that encrypts data at rest,
+This module provides a secure Checkpoint implementation that encrypts data at rest,
 validates integrity on load, and prevents tampering or unauthorized access.
 """
 
@@ -16,18 +16,18 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 
-from agentic_core.schemas.models.runtime_models import MicroCheckpoint
+from AgenticCore.schemas.models.runtime_models import MicroCheckpoint
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class CheckpointIntegrityError(Exception):
-    """Raised when checkpoint integrity validation fails."""
+    """Raised when Checkpoint integrity validation fails."""
     pass
 
 
 class SecureCheckpointManager:
-    """Manages secure checkpoint persistence with encryption and integrity checks."""
+    """Manages secure Checkpoint persistence with encryption and integrity checks."""
     
     def __init__(
         self,
@@ -36,7 +36,7 @@ class SecureCheckpointManager:
         encryption_key: Optional[bytes] = None,
         integrity_key: Optional[bytes] = None
     ):
-        """Initialize the secure checkpoint manager.
+        """Initialize the secure Checkpoint manager.
         
         Args:
             hop_id: Unique identifier for the hop
@@ -55,7 +55,7 @@ class SecureCheckpointManager:
         # Initialize cipher
         self.cipher = Fernet(self.encryption_key)
         
-        logger.debug(f"Initialized SecureCheckpointManager for hop {hop_id}")
+        Logger.debug(f"Initialized SecureCheckpointManager for hop {hop_id}")
     
     def _generate_key(self) -> bytes:
         """Generate a cryptographically secure key."""
@@ -111,18 +111,18 @@ class SecureCheckpointManager:
         calculated_hmac = self._calculate_hmac(data)
         return hmac.compare_digest(calculated_hmac, expected_hmac)
     
-    async def save_checkpoint(self, checkpoint: MicroCheckpoint) -> None:
-        """Save a checkpoint with encryption and integrity protection.
+    async def save_checkpoint(self, Checkpoint: MicroCheckpoint) -> None:
+        """Save a Checkpoint with encryption and integrity protection.
         
         Args:
-            checkpoint: Checkpoint data to save
+            Checkpoint: Checkpoint data to save
             
         Raises:
-            IOError: If unable to save checkpoint
+            IOError: If unable to save Checkpoint
         """
         try:
-            # Serialize checkpoint
-            checkpoint_data = json.dumps(checkpoint.dict(), default=str)
+            # Serialize Checkpoint
+            checkpoint_data = json.dumps(Checkpoint.dict(), default=str)
             
             # Encrypt the data
             encrypted_data = self._encrypt_data(checkpoint_data)
@@ -130,7 +130,7 @@ class SecureCheckpointManager:
             # Calculate HMAC for integrity
             integrity_hmac = self._calculate_hmac(encrypted_data)
             
-            # Prepare secure checkpoint file
+            # Prepare secure Checkpoint file
             secure_checkpoint = {
                 "version": "1.0",
                 "hop_id": self.hop_id,
@@ -140,7 +140,7 @@ class SecureCheckpointManager:
             }
             
             # Write to file with atomic operation
-            checkpoint_file = self.checkpoint_dir / f"{self.hop_id}_{checkpoint.stage.value}.secure"
+            checkpoint_file = self.checkpoint_dir / f"{self.hop_id}_{Checkpoint.stage.value}.secure"
             temp_file = checkpoint_file.with_suffix(".tmp")
             
             with open(temp_file, 'w') as f:
@@ -149,57 +149,57 @@ class SecureCheckpointManager:
             # Atomic rename
             temp_file.replace(checkpoint_file)
             
-            logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
+            Logger.debug(f"Saved secure Checkpoint for stage {Checkpoint.stage.value}")
             
         except Exception as e:
-            logger.error(f"Failed to save secure checkpoint: {e}")
+            Logger.error(f"Failed to save secure Checkpoint: {e}")
             raise IOError(f"Checkpoint save failed: {e}")
     
     async def load_latest_checkpoint(self) -> Optional[MicroCheckpoint]:
-        """Load the most recent checkpoint with integrity validation.
+        """Load the most recent Checkpoint with integrity validation.
         
         Returns:
-            The latest checkpoint or None if no valid checkpoint found
+            The latest Checkpoint or None if no valid Checkpoint found
             
         Raises:
-            CheckpointIntegrityError: If checkpoint integrity validation fails
+            CheckpointIntegrityError: If Checkpoint integrity validation fails
         """
         latest_checkpoint = None
         latest_time = 0
         
-        # Find all secure checkpoint files
+        # Find all secure Checkpoint files
         for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
             try:
-                checkpoint = await self._load_checkpoint_file(checkpoint_file)
+                Checkpoint = await self._load_checkpoint_file(checkpoint_file)
                 
-                if checkpoint and checkpoint.timestamp > latest_time:
-                    latest_time = checkpoint.timestamp
-                    latest_checkpoint = checkpoint
+                if Checkpoint and Checkpoint.timestamp > latest_time:
+                    latest_time = Checkpoint.timestamp
+                    latest_checkpoint = Checkpoint
                     
             except CheckpointIntegrityError as e:
-                logger.warning(f"Checkpoint integrity check failed for {checkpoint_file}: {e}")
-                # Move corrupted checkpoint to quarantine
+                Logger.warning(f"Checkpoint integrity check failed for {checkpoint_file}: {e}")
+                # Move corrupted Checkpoint to quarantine
                 quarantine_file = checkpoint_file.with_suffix(".corrupt")
                 checkpoint_file.replace(quarantine_file)
-                logger.warning(f"Moved corrupted checkpoint to {quarantine_file}")
+                Logger.warning(f"Moved corrupted Checkpoint to {quarantine_file}")
                 
             except Exception as e:
-                logger.warning(f"Failed to load checkpoint {checkpoint_file}: {e}")
+                Logger.warning(f"Failed to load Checkpoint {checkpoint_file}: {e}")
         
         if latest_checkpoint:
-            logger.info(f"Loaded secure checkpoint from stage {latest_checkpoint.stage.value}")
+            Logger.info(f"Loaded secure Checkpoint from stage {latest_checkpoint.stage.value}")
             return latest_checkpoint
         
         return None
     
     async def _load_checkpoint_file(self, checkpoint_file: Path) -> Optional[MicroCheckpoint]:
-        """Load and validate a single checkpoint file.
+        """Load and validate a single Checkpoint file.
         
         Args:
-            checkpoint_file: Path to checkpoint file
+            checkpoint_file: Path to Checkpoint file
             
         Returns:
-            Loaded checkpoint or None
+            Loaded Checkpoint or None
             
         Raises:
             CheckpointIntegrityError: If integrity validation fails
@@ -209,7 +209,7 @@ class SecureCheckpointManager:
         
         # Verify basic structure
         if not all(k in secure_data for k in ["encrypted_data", "integrity_hmac"]):
-            raise CheckpointIntegrityError("Invalid checkpoint structure")
+            raise CheckpointIntegrityError("Invalid Checkpoint structure")
         
         # Decode and verify integrity
         encrypted_data = base64.b64decode(secure_data["encrypted_data"])
@@ -251,7 +251,7 @@ class SecureCheckpointManager:
             # Remove excess checkpoints
             for old_file in files[keep_count:]:
                 old_file.unlink()
-                logger.debug(f"Removed old checkpoint: {old_file}")
+                Logger.debug(f"Removed old Checkpoint: {old_file}")
     
     def quarantine_all_checkpoints(self) -> None:
         """Quarantine all checkpoints for this hop (emergency measure)."""
@@ -261,12 +261,12 @@ class SecureCheckpointManager:
         for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
             quarantine_file = quarantine_dir / checkpoint_file.name
             checkpoint_file.replace(quarantine_file)
-            logger.warning(f"Quarantined checkpoint: {checkpoint_file.name}")
+            Logger.warning(f"Quarantined Checkpoint: {checkpoint_file.name}")
 
 
-# Factory for managing checkpoint managers
+# Factory for managing Checkpoint managers
 class CheckpointManagerFactory:
-    """Factory for creating and managing secure checkpoint managers."""
+    """Factory for creating and managing secure Checkpoint managers."""
     
     _managers: Dict[str, SecureCheckpointManager] = {}
     _global_key: Optional[bytes] = None
@@ -278,7 +278,7 @@ class CheckpointManagerFactory:
         checkpoint_dir: Path,
         use_global_key: bool = True
     ) -> SecureCheckpointManager:
-        """Get or create a checkpoint manager.
+        """Get or create a Checkpoint manager.
         
         Args:
             hop_id: Unique hop identifier
@@ -292,7 +292,7 @@ class CheckpointManagerFactory:
             if use_global_key:
                 if cls._global_key is None:
                     cls._global_key = Fernet.generate_key()
-                    logger.info("Generated global checkpoint encryption key")
+                    Logger.info("Generated global Checkpoint encryption key")
                 
                 manager = SecureCheckpointManager(
                     hop_id,

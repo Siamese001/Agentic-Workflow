@@ -19,11 +19,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 
 
 class L3SovereignSeverity(Enum):
-    """Sovereign event severity levels for L3 subatomic testing."""
+    """Sovereign event Severity levels for L3 subatomic testing."""
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -38,22 +38,22 @@ class L3SubatomicTestingMixin:
     - Delegation to TestSovereigntyAgent: YES (on failure)
     """
 
-    async def run_l3_subatomic_critique(self, artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def run_l3_subatomic_critique(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """L3 CRITIQUE hop: Basic plan testing + delegation on failure.
         
         Args:
-            artifact: The produced plan/workflow (dict or JSON)
+            Artifact: The produced plan/workflow (dict or JSON)
             artifact_type: Type (plan_json, delegation_tree, conditional_plan)
-            context: Execution context with goal, task info
+            context: Execution context with goal, Task info
             
         Returns:
             Dict with passed, tests, coverage info
         """
-        # Step 1: Generate basic tests for plan artifact
-        tests = self._generate_plan_tests(artifact, artifact_type, context)
+        # Step 1: Generate basic tests for plan Artifact
+        tests = self._generate_plan_tests(Artifact, artifact_type, context)
         
         # Step 2: Run sandboxed tests
-        test_result = self._run_plan_sandbox_tests(tests, artifact)
+        test_result = self._run_plan_sandbox_tests(tests, Artifact)
         
         if test_result["passed"]:
             self._emit_l3_event(L3SovereignSeverity.INFO, "L3_CRITIQUE_PASSED", {
@@ -68,7 +68,7 @@ class L3SubatomicTestingMixin:
             "reason": test_result.get("error", "unknown")
         })
         
-        advanced_result = await self._delegate_to_l5_specialist(artifact, artifact_type, context)
+        advanced_result = await self._delegate_to_l5_specialist(Artifact, artifact_type, context)
         
         if not advanced_result["passed"]:
             self._emit_l3_event(L3SovereignSeverity.ERROR, "L3_CRITIQUE_FAILED", {
@@ -78,16 +78,16 @@ class L3SubatomicTestingMixin:
         
         return advanced_result
 
-    def _generate_plan_tests(self, artifact: Dict, artifact_type: str, context: Dict) -> str:
-        """Generate basic tests for L3 plan artifact."""
+    def _generate_plan_tests(self, Artifact: Dict, artifact_type: str, context: Dict) -> str:
+        """Generate basic tests for L3 plan Artifact."""
         if artifact_type == "plan_json":
-            return self._generate_plan_json_tests(artifact, context)
+            return self._generate_plan_json_tests(Artifact, context)
         elif artifact_type == "delegation_tree":
-            return self._generate_delegation_tests(artifact, context)
+            return self._generate_delegation_tests(Artifact, context)
         elif artifact_type == "conditional_plan":
-            return self._generate_routing_tests(artifact, context)
+            return self._generate_routing_tests(Artifact, context)
         else:
-            return self._generate_generic_plan_tests(artifact, context)
+            return self._generate_generic_plan_tests(Artifact, context)
 
     def _generate_plan_json_tests(self, plan: Dict, context: Dict) -> str:
         """L3 Example 1: Unit tests for plan JSON structure/validity."""
@@ -198,20 +198,20 @@ def test_default_fallback():
     assert True  # Pass - default is recommended not required
 '''
 
-    def _generate_generic_plan_tests(self, artifact: Dict, context: Dict) -> str:
+    def _generate_generic_plan_tests(self, Artifact: Dict, context: Dict) -> str:
         """Fallback tests for unknown plan types."""
-        artifact_str = json.dumps(artifact)[:500] if isinstance(artifact, dict) else str(artifact)[:500]
+        artifact_str = json.dumps(Artifact)[:500] if isinstance(Artifact, dict) else str(Artifact)[:500]
         return f'''
 import pytest
 
 def test_artifact_exists():
-    """Verify artifact is not empty."""
-    artifact = """{artifact_str.replace('"', '\\"')}"""
-    assert artifact is not None
-    assert len(str(artifact)) > 0
+    """Verify Artifact is not empty."""
+    Artifact = """{artifact_str.replace('"', '\\"')}"""
+    assert Artifact is not None
+    assert len(str(Artifact)) > 0
 '''
 
-    def _run_plan_sandbox_tests(self, tests: str, artifact: Dict) -> Dict:
+    def _run_plan_sandbox_tests(self, tests: str, Artifact: Dict) -> Dict:
         """Run plan tests in sandboxed subprocess."""
         try:
             temp_test = Path.cwd() / "temp_l3_test.py"
@@ -239,15 +239,15 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    async def _delegate_to_l5_specialist(self, artifact: Dict, artifact_type: str, context: Dict) -> Dict:
+    async def _delegate_to_l5_specialist(self, Artifact: Dict, artifact_type: str, context: Dict) -> Dict:
         """Delegate to TestSovereigntyAgent for advanced plan testing."""
         try:
-            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
             
             specialist = TestSovereigntyAgent()
-            artifact_str = json.dumps(artifact) if isinstance(artifact, dict) else str(artifact)
+            artifact_str = json.dumps(Artifact) if isinstance(Artifact, dict) else str(Artifact)
             result = await specialist.execute({
-                "artifact": artifact_str,
+                "Artifact": artifact_str,
                 "type": "orchestration_integration",
                 "coverage_target": 95
             })
@@ -257,9 +257,9 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
-    def _emit_l3_event(self, severity: L3SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_l3_event(self, Severity: L3SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L3 subatomic testing event for observability."""
-        print(f"[SUBATOMIC L3] {severity.value} | {event_type}")
+        print(f"[SUBATOMIC L3] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")
 
@@ -276,27 +276,27 @@ class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin):
     Includes L3SubatomicTestingMixin for CRITIQUE hop testing.
     """
 
-    async def orchestrate(self, task: Dict) -> Dict:
+    async def orchestrate(self, Task: Dict) -> Dict:
         """Execute orchestration logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement orchestrate()")
 
-    async def execute_with_critique(self, task: Dict) -> Dict:
+    async def execute_with_critique(self, Task: Dict) -> Dict:
         """Execute with L3 subatomic CRITIQUE hop.
         
         Subclasses should call this instead of raw execute
         to get automatic plan validation and testing.
         """
         # INIT/THINK/ACT
-        result = await self.orchestrate(task)
+        result = await self.orchestrate(Task)
         
         # CRITIQUE: Run L3 subatomic tests
-        artifact = result.get("plan", result.get("workflow", result))
+        Artifact = result.get("plan", result.get("workflow", result))
         artifact_type = result.get("artifact_type", "plan_json")
         
         critique_result = await self.run_l3_subatomic_critique(
-            artifact=artifact,
+            Artifact=Artifact,
             artifact_type=artifact_type,
-            context=task
+            context=Task
         )
         
         if not critique_result["passed"]:

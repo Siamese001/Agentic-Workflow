@@ -11,8 +11,8 @@ Responsible for:
 import os
 from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
-from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -23,7 +23,7 @@ from agentic_core.L2_execution.tool_registry.tools.code_transform import (
 
 class HealerAgent(CanonBaseAgent):
     """
-    Healer Agent provides autonomous code repair for any canon violation.
+    Healer Agent provides autonomous code repair for any canon Violation.
     
     This is the general-purpose healing agent that can fix violations
     across all canon keys (0-50) using Gemini 2.5 Flash with thinking_budget.
@@ -65,8 +65,8 @@ class HealerAgent(CanonBaseAgent):
         [KEY 40/49 HARDENING] High-Signal Re-homing.
         Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from agentic_core.runtime.shared_runtime.void_compliance import (
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from AgenticCore.runtime.shared_runtime.void_compliance import (
             FORBIDDEN_ROOT_FOLDERS,
             get_placement_guidance,
         )
@@ -88,7 +88,7 @@ class HealerAgent(CanonBaseAgent):
             # Final fallback if heuristics drift from hierarchy
             if root_folder not in SOVEREIGN_REGISTRY or (l1_layer and l1_layer not in SOVEREIGN_REGISTRY[root_folder]["subfolders"]):
                 print(f"      [!] HIERARCHY DRIFT: Candidate '{candidate_path}' not in SSOT. Defaulting to cognition.")
-                target_dir = "agentic_core/L1_cognition"
+                target_dir = "AgenticCore/L1_cognition"
             else:
                 target_dir = candidate_path
             
@@ -115,7 +115,7 @@ CURRENT CODE:
 {code}
 """
             fixed_code = await self.resilient_mutation(
-                task=refactor_prompt,
+                Task=refactor_prompt,
                 code=code,
                 file_path=file_path,
                 round_num=1
@@ -132,21 +132,21 @@ CURRENT CODE:
             print(f"      [!] Re-homing/Import healing failed: {e}")
             return {"healed": False}
     
-    async def _handle_move_operation(self, violation: dict) -> bool:
+    async def _handle_move_operation(self, Violation: dict) -> bool:
         """
-        Handle structural violation by generating move instructions.
+        Handle structural Violation by generating move instructions.
         
         Args:
-            violation: Dictionary containing file_path, message, suggested_home
+            Violation: Dictionary containing file_path, message, suggested_home
             
         Returns:
             True if move instruction generated, False otherwise
         """
         from pathlib import Path
         
-        file_path = violation['file_path']
-        suggested_home = violation['suggested_home']
-        message = violation['message']
+        file_path = Violation['file_path']
+        suggested_home = Violation['suggested_home']
+        message = Violation['message']
         
         # Read file to determine specific subfolder based on content
         try:
@@ -197,12 +197,12 @@ CURRENT CODE:
         reference_fix: Optional[str] = None
     ) -> bool:
         """
-        Heal a specific violation in a file.
+        Heal a specific Violation in a file.
         
         Args:
-            file_path: Path to file with violation
+            file_path: Path to file with Violation
             violation_key: Canon key number
-            violation_details: Description of the violation
+            violation_details: Description of the Violation
             reference_fix: Optional reference fix from similar patterns
             
         Returns:
@@ -221,7 +221,7 @@ CURRENT CODE:
             if hasattr(self.ctx, 'fission'):
                 blueprint_task = f"GENERATE_FISSION_BLUEPRINT for {file_path}. Split into logical sub-modules."
                 res = await self.ctx.engine.resilient_mutation(
-                    task=blueprint_task, 
+                    Task=blueprint_task, 
                     code=original_code, 
                     file_path=file_path, 
                     round_num=1,
@@ -229,7 +229,7 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                from agentic_core.L3_orchestration.workflow_engines.canon_scheduler import (
+                from AgenticCore.L3_orchestration.workflow_engines.canon_scheduler import (
                     apply_fission_blueprint,
                 )
                 blueprint_data = self.ctx.engine.parse_fission_output(res)
@@ -237,13 +237,13 @@ CURRENT CODE:
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):
                         return True
 
-        # Build task description
+        # Build Task description
         base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
         
         # Add reference fix if available
         if reference_fix:
             reference_chars = int(os.getenv('REFERENCE_FIX_CHARS', '500'))
-            base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:reference_chars]}..."
+            base_prompt += f"\n\nReference successful fix for similar Violation:\n{reference_fix[:reference_chars]}..."
         
         # Multi-round healing with reflective learning
         max_rounds = 5
@@ -255,13 +255,13 @@ CURRENT CODE:
             
             # Build round-specific prompt
             if round_num == 1:
-                task = f"{base_prompt}\nReturn ONLY full corrected code."
+                Task = f"{base_prompt}\nReturn ONLY full corrected code."
             else:
-                task = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
+                Task = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
             
             # Get mutated code from Gemini
             mutated_code = await self.resilient_mutation(
-                task=task,
+                Task=Task,
                 code=current_code,
                 file_path=file_path,
                 round_num=round_num,
@@ -286,7 +286,7 @@ CURRENT CODE:
             
             if deletion_count > max_allowed_deletion:
                 print(f"      [X] ZERO-TOLERANCE VIOLATION: {original_lines} -> {mutated_lines} lines ({deletion_count} deleted, max {max_allowed_deletion})")
-                previous_failure = f"ZERO-TOLERANCE VIOLATION: You deleted {deletion_count} lines (max allowed: {max_allowed_deletion}). You are an ELITE engineer - preserve the complete file structure and only fix the specific violation."
+                previous_failure = f"ZERO-TOLERANCE VIOLATION: You deleted {deletion_count} lines (max allowed: {max_allowed_deletion}). You are an ELITE engineer - preserve the complete file structure and only fix the specific Violation."
                 current_code = mutated_code
                 continue
             
@@ -294,11 +294,11 @@ CURRENT CODE:
             expansion_factor = int(os.getenv('CODE_EXPANSION_FACTOR', '4'))
             if mutated_lines > original_lines * expansion_factor:
                 print(f"      [!] Round {round_num}: Code bloat detected – rejecting")
-                previous_failure = f"Code bloat detected: You added too many lines. Only fix the specific violation."
+                previous_failure = f"Code bloat detected: You added too many lines. Only fix the specific Violation."
                 current_code = mutated_code
                 continue
             
-            # 4. Verify fix resolved the violation
+            # 4. Verify fix resolved the Violation
             is_fixed = await self._verify_fix_resolved(file_path, mutated_code, violation_key)
             
             if not is_fixed:
@@ -312,7 +312,7 @@ CURRENT CODE:
             
             if has_side_effects:
                 print(f"      [!] Round {round_num}: New violations introduced – retrying")
-                previous_failure = f"Your fix introduced new violations. Fix only the target violation without breaking other code."
+                previous_failure = f"Your fix introduced new violations. Fix only the target Violation without breaking other code."
                 current_code = mutated_code
                 continue
             
@@ -335,7 +335,7 @@ CURRENT CODE:
     
     async def _verify_fix_resolved(self, file_path: str, fixed_code: str, violation_key: int) -> bool:
         """
-        Verify that the fix actually resolved the violation.
+        Verify that the fix actually resolved the Violation.
         
         Args:
             file_path: Path to the file
@@ -343,7 +343,7 @@ CURRENT CODE:
             violation_key: Canon key that was being fixed
             
         Returns:
-            True if violation is resolved, False otherwise
+            True if Violation is resolved, False otherwise
         """
         # Write to temp file and re-validate
         temp_path = file_path + ".heal_tmp"
@@ -485,12 +485,12 @@ CURRENT CODE:
 
     async def heal_snake_case_class(self, file_path: str, old_name: str, new_name: str) -> bool:
         """
-        [CTE SHORTCUT] Fix snake_case class naming violation (Key 1).
+        [CTE SHORTCUT] Fix snake_case class naming Violation (Key 1).
         
         Deterministic rename without LLM — 50-80% cost reduction for naming fixes.
         
         Args:
-            file_path: Path to file with violation
+            file_path: Path to file with Violation
             old_name: Current snake_case class name (e.g., "my_class")
             new_name: New PascalCase name (e.g., "MyClass")
             
@@ -517,7 +517,7 @@ CURRENT CODE:
         
         Args:
             violation_key: Canon key that was fixed
-            violation_details: Description of the violation
+            violation_details: Description of the Violation
             fixed_code: The successful fix
             file_path: Path to the fixed file
         """

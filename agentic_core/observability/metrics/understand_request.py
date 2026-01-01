@@ -1,5 +1,5 @@
 """
-get_info_understand_request.py - Core Module Implementation.
+GetInfoUnderstandRequest.py - Core Module Implementation.
 
 This module provides comprehensive functionality for the get info understand request system.
 It implements standardized patterns for data processing, validation, and
@@ -22,9 +22,9 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class execution_status(Enum):
+class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING: Any = 'pending'
     RUNNING: Any = 'running'
@@ -33,7 +33,7 @@ class execution_status(Enum):
     CANCELLED: Any = 'cancelled'
 
 @dataclass
-class execution_context:
+class ExecutionContext:
     """Comprehensive execution context with full state tracking."""
     operation_id: str
     status: ExecutionStatus = ExecutionStatus.PENDING
@@ -60,15 +60,15 @@ class execution_context:
             LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
-class processing_result:
+class ProcessingResult:
     """Standardized result container for all operations."""
     success: bool
     data: Optional[Any] = None
     error_message: Optional[str] = None
-    execution_context: Optional[ExecutionContext] = None
+    ExecutionContext: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
 
-class get_info_understand_request:
+class GetInfoUnderstandRequest:
     """
     Main executor class for get info understand request operations.
 
@@ -84,20 +84,20 @@ class get_info_understand_request:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
-        if not self.logger.handlers:
+        self.Logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
+        if not self.Logger.handlers:
             executor = logging.StreamHandler(sys.stdout)
             formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
-            self.logger.setLevel(logging.INFO)
+            self.Logger.addHandler(executor)
+            self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
-        missing = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        Missing = [key for key in required_keys if key not in self.config]
+        if Missing:
+            raise ValueError(f'Missing required config keys: {Missing}')
 
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
         """
@@ -117,10 +117,10 @@ class get_info_understand_request:
                 raise ValueError('Payload cannot be None')
             result: Any = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
-            return ProcessingResult(success=True, data=result, execution_context=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
+            return ProcessingResult(success=True, data=result, ExecutionContext=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
-            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
+            return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""

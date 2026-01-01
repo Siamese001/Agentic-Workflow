@@ -3,7 +3,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:
     """

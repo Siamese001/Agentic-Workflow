@@ -6,7 +6,7 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
-# Ownership: agentic_core / unknown
+# Ownership: AgenticCore / unknown
 # -*- coding: utf-8 -*-
 """Test L5 Enforcement - atomic implementation."""
 
@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-# NAMING FIXED: TestSafetyEnforcement → test_safety_enforcement
-class test_safety_enforcement:
+# NAMING FIXED: TestSafetyEnforcement → TestSafetyEnforcement
+class TestSafetyEnforcement:
     """TestSafetyEnforcement implementation."""
 
 

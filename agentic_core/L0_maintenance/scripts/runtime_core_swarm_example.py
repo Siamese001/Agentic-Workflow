@@ -8,15 +8,15 @@ import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 
-from subatomic_swarm import SwarmResult, create_subatomic_swarm
+from SubatomicSwarm import SwarmResult, create_subatomic_swarm
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 # Mock SubatomicHop for demonstration
 # NOT_AN_AGENT — mock/example class, not a true agent — excluded from agent discovery
-class mock_subatomic_hop:
+class MockSubatomicHop:
     """Mock SubatomicHop for testing swarm execution."""
 
     def __init__(self, hop_id: str, simulate_delay: float = 1.0):
@@ -41,7 +41,7 @@ class mock_subatomic_hop:
 
 async def example_basic_swarm():
     """Example 1: Basic swarm execution with multiple HOPs."""
-    logger.info("=== Example 1: Basic Swarm Execution ===")
+    Logger.info("=== Example 1: Basic Swarm Execution ===")
 
     # Create swarm with max 5 concurrent HOPs
     swarm = create_subatomic_swarm(max_concurrency=5, timeout_per_hop=10.0)
@@ -53,30 +53,30 @@ async def example_basic_swarm():
     inputs = [{"data": f"input_{i}"} for i in range(10)]
 
     # Execute swarm
-    logger.info("Starting swarm with 10 HOPs (max 5 concurrent)...")
+    Logger.info("Starting swarm with 10 HOPs (max 5 concurrent)...")
     results = await swarm.execute_swarm(hops=hops, inputs=inputs)
 
     # Display results
-    logger.info(f"\nResults: {len(results)} HOPs completed")
+    Logger.info(f"\nResults: {len(results)} HOPs completed")
     for i, result in enumerate(results):
         if isinstance(result, SwarmResult):
-            logger.info(
+            Logger.info(
                 f"  HOP {i}: {result.status} "
                 f"(time: {result.execution_time:.2f}s)"
             )
 
     # Display metrics
     metrics = swarm.get_metrics()
-    logger.info(f"\nMetrics:")
-    logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
-    logger.info(f"  Total time: {metrics.total_execution_time:.2f}s")
-    logger.info(f"  Avg time per HOP: {metrics.average_execution_time:.2f}s")
-    logger.info(f"  Max time: {metrics.max_execution_time:.2f}s")
+    Logger.info(f"\nMetrics:")
+    Logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
+    Logger.info(f"  Total time: {metrics.total_execution_time:.2f}s")
+    Logger.info(f"  Avg time per HOP: {metrics.average_execution_time:.2f}s")
+    Logger.info(f"  Max time: {metrics.max_execution_time:.2f}s")
 
 
 async def example_error_handling():
     """Example 2: Error handling and isolation."""
-    logger.info("\n=== Example 2: Error Handling ===")
+    Logger.info("\n=== Example 2: Error Handling ===")
 
     swarm = create_subatomic_swarm(max_concurrency=3)
 
@@ -93,24 +93,24 @@ async def example_error_handling():
         {"data": "success_6"}
     ]
 
-    logger.info("Starting swarm with mixed success/failure inputs...")
+    Logger.info("Starting swarm with mixed success/failure inputs...")
     results = await swarm.execute_swarm(hops=hops, inputs=inputs)
 
     # Analyze results
     successful = [r for r in results if isinstance(r, SwarmResult) and r.status == "success"]
     failed = [r for r in results if isinstance(r, SwarmResult) and r.status == "failed"]
 
-    logger.info(f"\nResults:")
-    logger.info(f"  Successful: {len(successful)}")
-    logger.info(f"  Failed: {len(failed)}")
+    Logger.info(f"\nResults:")
+    Logger.info(f"  Successful: {len(successful)}")
+    Logger.info(f"  Failed: {len(failed)}")
 
     for result in failed:
-        logger.info(f"  Failed HOP: {result.hop_id} - {result.error}")
+        Logger.info(f"  Failed HOP: {result.hop_id} - {result.error}")
 
 
 async def example_batch_execution():
     """Example 3: Batch execution with HOP factory."""
-    logger.info("\n=== Example 3: Batch Execution ===")
+    Logger.info("\n=== Example 3: Batch Execution ===")
 
     swarm = create_subatomic_swarm(max_concurrency=5)
 
@@ -125,20 +125,20 @@ async def example_batch_execution():
         for i in range(20)
     ]
 
-    logger.info("Processing 20 resume generation tasks...")
+    Logger.info("Processing 20 resume generation tasks...")
     results = await swarm.execute_batch(
         hop_factory=create_resume_hop,
         inputs=job_descriptions,
         batch_size=10  # Process in batches of 10
     )
 
-    logger.info(f"\nProcessed {len(results)} resumes")
-    logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
+    Logger.info(f"\nProcessed {len(results)} resumes")
+    Logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
 
 
 async def example_resume_generation_swarm():
     """Example 4: Real-world resume generation swarm."""
-    logger.info("\n=== Example 4: Resume Generation Swarm ===")
+    Logger.info("\n=== Example 4: Resume Generation Swarm ===")
 
     # Create swarm optimized for resume generation
     swarm = create_subatomic_swarm(
@@ -150,7 +150,7 @@ async def example_resume_generation_swarm():
     # Simulate resume generation HOPs
     def create_resume_generator():
                     
-        return MockSubatomicHop("resume_generator", simulate_delay=2.0)
+        return MockSubatomicHop("ResumeGenerator", simulate_delay=2.0)
 
     # Sample job descriptions
     jobs = [
@@ -181,7 +181,7 @@ async def example_resume_generation_swarm():
         }
     ] * 4  # 20 total jobs
 
-    logger.info(f"Generating {len(jobs)} tailored resumes...")
+    Logger.info(f"Generating {len(jobs)} tailored resumes...")
 
     results = await swarm.execute_batch(
         hop_factory=create_resume_generator,
@@ -194,21 +194,21 @@ async def example_resume_generation_swarm():
         if isinstance(r, SwarmResult) and r.status == "success"
     ]
 
-    logger.info(f"\nResume Generation Complete:")
-    logger.info(f"  Total jobs: {len(jobs)}")
-    logger.info(f"  Successful: {len(successful_resumes)}")
-    logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
+    Logger.info(f"\nResume Generation Complete:")
+    Logger.info(f"  Total jobs: {len(jobs)}")
+    Logger.info(f"  Successful: {len(successful_resumes)}")
+    Logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
 
     metrics = swarm.get_metrics()
-    logger.info(f"\nPerformance Metrics:")
-    logger.info(f"  Total execution time: {metrics.total_execution_time:.2f}s")
-    logger.info(f"  Average per resume: {metrics.average_execution_time:.2f}s")
-    logger.info(f"  Throughput: {len(jobs) / (metrics.end_time - metrics.start_time):.2f} resumes/sec")
+    Logger.info(f"\nPerformance Metrics:")
+    Logger.info(f"  Total execution time: {metrics.total_execution_time:.2f}s")
+    Logger.info(f"  Average per resume: {metrics.average_execution_time:.2f}s")
+    Logger.info(f"  Throughput: {len(jobs) / (metrics.end_time - metrics.start_time):.2f} resumes/sec")
 
 
 async def example_progressive_scaling():
     """Example 5: Progressive scaling with different concurrency levels."""
-    logger.info("\n=== Example 5: Progressive Scaling ===")
+    Logger.info("\n=== Example 5: Progressive Scaling ===")
 
     # Test different concurrency levels
     concurrency_levels = [1, 3, 5, 8]
@@ -220,7 +220,7 @@ async def example_progressive_scaling():
         hops = [MockSubatomicHop(f"hop_{i}", simulate_delay=1.0) for i in range(num_hops)]
         inputs = [{"data": f"input_{i}"} for i in range(num_hops)]
 
-        logger.info(f"\nTesting with concurrency={concurrency}...")
+        Logger.info(f"\nTesting with concurrency={concurrency}...")
 
         start_time = asyncio.get_event_loop().time()
         results = await swarm.execute_swarm(hops=hops, inputs=inputs)
@@ -228,19 +228,19 @@ async def example_progressive_scaling():
 
         wall_time = end_time - start_time
 
-        logger.info(f"  Wall time: {wall_time:.2f}s")
-        logger.info(f"  Speedup vs sequential: {(num_hops * 1.0) / wall_time:.2f}x")
+        Logger.info(f"  Wall time: {wall_time:.2f}s")
+        Logger.info(f"  Speedup vs sequential: {(num_hops * 1.0) / wall_time:.2f}x")
 
 
 async def example_with_real_subatomic_hop():
     """Example 6: Integration with real SubatomicHop (if available)."""
-    logger.info("\n=== Example 6: Real SubatomicHop Integration ===")
+    Logger.info("\n=== Example 6: Real SubatomicHop Integration ===")
 
     try:
         # Try to import real SubatomicHop
-        from scripts.runtime.core.subatomic_hop import SubatomicHop, SubatomicHopConfig
+        from scripts.runtime.core.SubatomicHop import SubatomicHop, SubatomicHopConfig
 
-        logger.info("Real SubatomicHop found - creating swarm...")
+        Logger.info("Real SubatomicHop found - creating swarm...")
 
         swarm = create_subatomic_swarm(max_concurrency=3)
 
@@ -268,11 +268,11 @@ async def example_with_real_subatomic_hop():
             inputs=inputs
         )
 
-        logger.info(f"Executed {len(results)} real HOPs")
-        logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
+        Logger.info(f"Executed {len(results)} real HOPs")
+        Logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
 
     except ImportError:
-        logger.warning("Real SubatomicHop not available - skipping this example")
+        Logger.warning("Real SubatomicHop not available - skipping this example")
 
 
 async def main():
@@ -284,7 +284,7 @@ async def main():
     await example_progressive_scaling()
     await example_with_real_subatomic_hop()
 
-    logger.info("\n=== All Examples Complete ===")
+    Logger.info("\n=== All Examples Complete ===")
 
 
 if __name__ == "__main__":

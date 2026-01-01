@@ -7,9 +7,9 @@ discuss complex failures to reach consensus on fixes.
 import json
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class conversational_repair:
+class ConversationalRepair:
     """
     Manages multi-agent debate for complex failure resolution.
 
@@ -183,7 +183,7 @@ class conversational_repair:
 
     def _get_dependency_prompt(self) -> str:
         """Get DependencySentinel's import analysis prompt."""
-        return 'You are DependencySentinel, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.\n'
+        return 'You are DependencySentinel, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there Missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.\n'
 
     def _get_architecture_prompt(self) -> str:
         """Get ArchitectureGovernor's compliance review prompt."""

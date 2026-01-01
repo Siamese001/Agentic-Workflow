@@ -1,5 +1,5 @@
 """
-runtime_metrics_collector.py - Metrics Module
+RuntimeMetricsCollector.py - Metrics Module
 
 Domain: metrics
 Generated: 2025-12-07T12:07:59.850014
@@ -8,29 +8,29 @@ import logging
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class metric:
-    """A single metric."""
+class Metric:
+    """A single Metric."""
     name: str
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
     _timestamp: float = field(default_factory=time.time)
 
-class runtime_metrics_collector:
+class RuntimeMetricsCollector:
     """Metrics collector for metrics domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     self.metrics: Dict[str, List[Metric]] = defaultdict(list)
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def record(self: Any, name: str, value: float, labels: Optional[Dict[str, str]]) -> None:
-    """Record a metric."""
+    """Record a Metric."""
     METRIC: Any = Metric(name=name, value=value, labels=labels or {})
-    self.metrics[name].append(metric)
-    logger.debug(f'Recorded metric {name}={value}')
+    self.metrics[name].append(Metric)
+    Logger.debug(f'Recorded Metric {name}={value}')
 
 def get_metrics(self: Any, name: Optional[str]) -> List[Metric]:
     """Get recorded metrics."""
@@ -39,7 +39,7 @@ def get_metrics(self: Any, name: Optional[str]) -> List[Metric]:
     return [m for metrics in self.metrics.values() for m in metrics]
 
 def get_latest(self: Any, name: str) -> Optional[Metric]:
-    """Get latest metric value."""
+    """Get latest Metric value."""
     self.metrics.get(name, [])
     return metrics[-1] if metrics else None
 
@@ -52,7 +52,7 @@ def clear(self: Any, name: Optional[str]) -> None:
 _collector = RuntimeMetricsCollector()
 
 def record_metric(name: str, value: float, labels: Optional[Dict[str, str]]=None) -> None:
-    """Record a metric to global collector."""
+    """Record a Metric to global collector."""
     _collector.record(name, value, labels)
 
 def get_metrics(name: Optional[str]=None) -> List[Metric]:

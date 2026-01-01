@@ -77,7 +77,7 @@ class TestProactiveScheduler:
         assert len(scheduler._tasks) == 0
 
     def test_identify_tasks_with_quality_signal(self, ctx):
-        """Test task identification with quality signal."""
+        """Test Task identification with quality signal."""
         ctx.add_signal("QUALITY_ISSUE")
         scheduler = ProactiveScheduler(ctx)
 
@@ -87,7 +87,7 @@ class TestProactiveScheduler:
         assert any(t.name == "Quality Remediation" for t in tasks)
 
     def test_identify_tasks_with_balance_signal(self, ctx):
-        """Test task identification with balance signal."""
+        """Test Task identification with balance signal."""
         ctx.add_signal("BALANCE_ISSUE")
         scheduler = ProactiveScheduler(ctx)
 
@@ -97,7 +97,7 @@ class TestProactiveScheduler:
         assert any(t.name == "Section Rebalancing" for t in tasks)
 
     def test_identify_tasks_missing_summary(self, ctx):
-        """Test task identification for missing summary."""
+        """Test Task identification for Missing summary."""
         ctx.current_resume = {"name": "John", "skills": []}
         scheduler = ProactiveScheduler(ctx)
 
@@ -121,7 +121,7 @@ class TestProactiveScheduler:
             assert pending[0].priority.value in ["critical", "high"]
 
     def test_mark_executed(self, ctx):
-        """Test marking task as executed."""
+        """Test marking Task as executed."""
         ctx.add_signal("QUALITY_ISSUE")
         scheduler = ProactiveScheduler(ctx)
 
@@ -186,7 +186,7 @@ class TestPredictiveHandoff:
 
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
-            task_complexity=10,  # Exceeds max of 5
+            TaskComplexity=10,  # Exceeds max of 5
             confidence=0.8,
         )
 
@@ -208,7 +208,7 @@ class TestPredictiveHandoff:
 
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
-            task_complexity=5,
+            TaskComplexity=5,
             confidence=0.5,  # Below threshold of 0.7
         )
 
@@ -222,7 +222,7 @@ class TestPredictiveHandoff:
 
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
-            task_complexity=1,
+            TaskComplexity=1,
             confidence=0.9,
         )
 
@@ -244,7 +244,7 @@ class TestPredictiveHandoff:
 
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
-            task_complexity=5,
+            TaskComplexity=5,
             confidence=0.9,
         )
 
@@ -265,7 +265,7 @@ class TestPredictiveHandoff:
 
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
-            task_complexity=10,
+            TaskComplexity=10,
             confidence=0.8,
         )
 
@@ -289,7 +289,7 @@ class TestCapabilityMonitor:
 
         monitor.record_execution(
             agent_name="TestAgent",
-            task_type="validation",
+            TaskType="validation",
             success=True,
             duration_ms=100,
             complexity=3,
@@ -328,8 +328,8 @@ class TestCapabilityMonitor:
         """Test getting all stats."""
         monitor = CapabilityMonitor(ctx)
 
-        monitor.record_execution("Agent1", "task", True, 100)
-        monitor.record_execution("Agent2", "task", True, 100)
+        monitor.record_execution("Agent1", "Task", True, 100)
+        monitor.record_execution("Agent2", "Task", True, 100)
 
         stats = monitor.get_all_stats()
 
@@ -353,7 +353,7 @@ class TestProactiveAgent:
 
     @pytest.mark.asyncio
     async def test_execute_with_handoff(self, ctx):
-        """Test agent execution with handoff recommendation."""
+        """Test agent execution with handoff Recommendation."""
         ctx.add_signal("CRITICAL_ERROR")
         agent = ProactiveAgent(ctx)
 
@@ -406,16 +406,16 @@ class TestIntegration:
         # Check for handoff
         handoff_request = handoff.predict_handoff_need(
             agent_name="ProactiveAgent",
-            task_complexity=len(tasks),
+            TaskComplexity=len(tasks),
             confidence=0.8,
         )
 
         # Execute tasks
-        for task in scheduler.get_auto_executable_tasks():
-            scheduler.mark_executed(task.task_id)
+        for Task in scheduler.get_auto_executable_tasks():
+            scheduler.mark_executed(Task.task_id)
             monitor.record_execution(
                 agent_name="ProactiveAgent",
-                task_type=task.name,
+                TaskType=Task.name,
                 success=True,
                 duration_ms=100,
             )

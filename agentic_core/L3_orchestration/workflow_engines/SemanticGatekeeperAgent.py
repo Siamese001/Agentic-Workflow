@@ -9,7 +9,7 @@ import re
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
 class SemanticGatekeeperAgent:
@@ -28,7 +28,7 @@ class SemanticGatekeeperAgent:
         SELF.SEMAPHORE = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
-        logger.info(f'Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s')
+        Logger.info(f'Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s')
 
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str) -> Any:
@@ -41,15 +41,15 @@ class SemanticGatekeeperAgent:
         """
         await self.semaphore.acquire()
         try:
-            logger.debug(f'Starting execution for trace {trace_id}: {operation}')
+            Logger.debug(f'Starting execution for trace {trace_id}: {operation}')
             yield
-            logger.debug(f'Completed execution for trace {trace_id}')
+            Logger.debug(f'Completed execution for trace {trace_id}')
         except asyncio.TimeoutError:
-            logger.error(f'Timeout for trace {trace_id}: {operation}')
+            Logger.error(f'Timeout for trace {trace_id}: {operation}')
             self.dead_letter_queue.append({'trace_id': trace_id, 'operation': operation, 'error': 'TIMEOUT', 'timestamp': datetime.now().isoformat()})
             raise
         except Exception as e:
-            logger.error(f'Execution failed for trace {trace_id}: {e}')
+            Logger.error(f'Execution failed for trace {trace_id}: {e}')
             self.dead_letter_queue.append({'trace_id': trace_id, 'operation': operation, 'error': str(e), 'timestamp': datetime.now().isoformat()})
             raise
         finally:
@@ -77,7 +77,7 @@ class SemanticGatekeeperAgent:
     def clear_dead_letters(self) -> Any:
         """Clear the dead letter queue."""
         self.dead_letter_queue.clear()
-        logger.info('Dead letter queue cleared')
+        Logger.info('Dead letter queue cleared')
 
     def get_stats(self) -> dict:
         """Get gatekeeper statistics."""

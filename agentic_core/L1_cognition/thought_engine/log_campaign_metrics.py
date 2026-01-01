@@ -1,5 +1,5 @@
 """
-log_campaign_metrics.py - Diagnostics Module
+LogCampaignMetrics.py - Diagnostics Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.060979
@@ -7,14 +7,14 @@ Generated: 2025-12-07T13:28:54.060979
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
 from shared.result_types import DiagnosticReport
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class log_campaign_metrics:
+class LogCampaignMetrics:
     """Diagnostics for outreach domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     """Run diagnostics."""

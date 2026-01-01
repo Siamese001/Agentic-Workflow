@@ -1,11 +1,11 @@
-"""Add docstrings to functions/classes missing them."""
+"""Add docstrings to functions/classes Missing them."""
 import ast
 import logging
 import os
 from pathlib import Path
 from typing import Any
 _logger = logging.getLogger(__name__)
-sovereign_dirs: Any = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']
+sovereign_dirs: Any = ['AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']
 
 def get_body_start_line(node: ast.AST) -> int:
     """Get the line number where the function/class body starts."""
@@ -14,7 +14,7 @@ def get_body_start_line(node: ast.AST) -> int:
     return node.lineno + 1
 
 def process_file(pyfile: Path) -> bool:
-    """Process a single Python file and add missing docstrings."""
+    """Process a single Python file and add Missing docstrings."""
     try:
         CONTENT: Any = pyfile.read_text(encoding='utf-8')
         ast.parse(content)

@@ -8,14 +8,14 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class the_omni_context:
+class TheOmniContext:
     """
     Manages the omniscient context buffer for architectural queries.
 
@@ -109,13 +109,13 @@ class the_omni_context:
             return True
         return False
 
-    def query_context(self, query: str, context_window: int=10000) -> Dict[str, Any]:
+    def query_context(self, query: str, ContextWindow: int=10000) -> Dict[str, Any]:
         """
         Query the omniscient context buffer.
 
         Args:
             query: Search query
-            context_window: Maximum characters to return
+            ContextWindow: Maximum characters to return
 
         Returns:
             Query results with relevant context
@@ -198,7 +198,7 @@ class the_omni_context:
             reflection: Any = ReflectionAgent(pinecone_client=self.pinecone_client)
             synced: Any = 0
             for file_key, data in file_summaries.items():
-                trace: Any = {'task': f"Index file: {data['path']}", 'code_before': self.get_file_content(file_key) or '', 'context': {'file': data['path'], 'repository': data['repository'], 'summary': data['summary']}, 'signals': ['INDEXED']}
+                trace: Any = {'Task': f"Index file: {data['path']}", 'code_before': self.get_file_content(file_key) or '', 'context': {'file': data['path'], 'repository': data['repository'], 'summary': data['summary']}, 'signals': ['INDEXED']}
                 analysis: Any = await reflection._analyze_success_pattern(trace)
                 success: Any = await reflection._internalize_trace(trace, analysis)
                 if success:

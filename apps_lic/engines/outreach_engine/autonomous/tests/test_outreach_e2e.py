@@ -421,7 +421,7 @@ class TestMemoryPersistence:
     """Tests for memory persistence."""
 
     def test_memory_store_and_retrieve(self, tmp_path):
-        """Test storing and retrieving from agentic_core.semantic_memory."""
+        """Test storing and retrieving from AgenticCore.semantic_memory."""
         memory_file = tmp_path / "test_memory.json"
         memory = OutreachMemoryPersistence(str(memory_file))
 

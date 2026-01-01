@@ -5,10 +5,10 @@ import datetime
 import re
 import time
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -68,7 +68,7 @@ class OmniContextAgent(SubAtomicAgent):
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
         await asyncio.sleep(0)
-        self.ctx.omni_context = self
+        self.ctx.OmniContext = self
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30

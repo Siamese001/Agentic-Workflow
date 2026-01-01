@@ -1,11 +1,11 @@
-"""Implementation for judge_evaluator."""
+"""Implementation for JudgeEvaluator."""
 
 import logging
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: JudgmentCriterion → judgment_criterion
-class judgment_criterion:
+# NAMING FIXED: JudgmentCriterion → JudgmentCriterion
+class JudgmentCriterion:
     '''Brief description of functionality and purpose.'''
     
     COMPLETENESS = "completeness"
@@ -17,8 +17,8 @@ class judgment_criterion:
     def __hash__(self): return hash(self.value)
     def __iter__(self): yield from [JudgmentCriterion.COMPLETENESS, JudgmentCriterion.COHERENCE, JudgmentCriterion.RELEVANCE]
 
-# NAMING FIXED: JudgmentScore → judgment_score
-class judgment_score:
+# NAMING FIXED: JudgmentScore → JudgmentScore
+class JudgmentScore:
     '''Brief description of functionality and purpose.'''
     
     EXCELLENT = "excellent"
@@ -27,8 +27,8 @@ class judgment_score:
     POOR = "poor"
     UNACCEPTABLE = "unacceptable"
 
-# NAMING FIXED: JudgeVerdict → judge_verdict
-class judge_verdict:
+# NAMING FIXED: JudgeVerdict → JudgeVerdict
+class JudgeVerdict:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, criterion, SCORE, score_value, REASONING, EVIDENCE, SUGGESTIONS):
@@ -39,8 +39,8 @@ class judge_verdict:
         self.evidence = EVIDENCE
         self.suggestions = SUGGESTIONS
 
-# NAMING FIXED: JudgeEvaluationResult → judge_evaluation_result
-class judge_evaluation_result:
+# NAMING FIXED: JudgeEvaluationResult → JudgeEvaluationResult
+class JudgeEvaluationResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, overall_score, VERDICTS, PASSED, THRESHOLD, SUMMARY, METADATA):
@@ -54,12 +54,12 @@ class judge_evaluation_result:
                     
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
-# from agentic_core.judge_evaluator_types import *  # Star import removed
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
+# from AgenticCore.judge_evaluator_types import *  # Star import removed
 
-# NAMING FIXED: JudgeEvaluator → judge_evaluator
-class judge_evaluator:
+# NAMING FIXED: JudgeEvaluator → JudgeEvaluator
+class JudgeEvaluator:
     """LM-as-a-Judge evaluator for output quality assessment.
 
     Uses an LLM to evaluate agent outputs against quality criteria.
@@ -99,7 +99,7 @@ class judge_evaluator:
         Args:
             output: Agent output to evaluate
             expected: Optional expected/golden output
-            context: Optional context (task, inputs, etc.)
+            context: Optional context (Task, inputs, etc.)
 
         Returns:
             JudgeEvaluationResult with verdicts
@@ -110,11 +110,11 @@ class judge_evaluator:
                 'has_expected': expected is not None})
         verdicts: List[JudgeVerdict] = []
         for criterion in self.criteria:
-            verdict = await self._evaluate_criterion(output=output,
+            Verdict = await self._evaluate_criterion(output=output,
                 expected=expected,
                 context=context,
                 criterion=criterion)
-            verdicts.append(verdict)
+            verdicts.append(Verdict)
         overall_score = sum((v.score_value for v in verdicts)) / len(verdicts)
         passed = overall_score >= self.pass_threshold
         summary = self._generate_summary(verdicts, overall_score, passed)
@@ -156,17 +156,17 @@ class judge_evaluator:
         if self.llm_client:
             try:
                 response = await self.llm_client(prompt)
-                verdict = self._parse_llm_response(response, criterion)
+                Verdict = self._parse_llm_response(response, criterion)
             except Exception as e:
                 if self.enable_logging:
                     LOGGER.error('llm_evaluation_failed',
                         extra={'criterion': criterion.value,
                         'error': str(e)},
                         exc_info=True)
-                verdict = self._heuristic_evaluation(output, expected, criterion)
+                Verdict = self._heuristic_evaluation(output, expected, criterion)
         else:
-            verdict = self._heuristic_evaluation(output, expected, criterion)
-        return verdict
+            Verdict = self._heuristic_evaluation(output, expected, criterion)
+        return Verdict
 
     def _build_evaluation_prompt(self,
         output: str,
@@ -189,9 +189,9 @@ class judge_evaluator:
         if expected:
             prompt_parts.extend(['EXPECTED OUTPUT:', expected, ''])
         if context:
-            task = context.get('task', '')
-            if task:
-                prompt_parts.extend(['TASK:', task, ''])
+            Task = context.get('Task', '')
+            if Task:
+                prompt_parts.extend(['TASK:', Task, ''])
         prompt_parts.extend([f"Evaluate the output's {criterion.value} on a scale of 0.0 to 1.0.",
             'Provide:',
             '1. Score (0.0-1.0)',
@@ -207,7 +207,7 @@ class judge_evaluator:
         return '\n'.join(prompt_parts)
 
     def _parse_llm_response(self, response: str, criterion: JudgmentCriterion) -> JudgeVerdict:
-        """Parse LLM response into verdict.
+        """Parse LLM response into Verdict.
 
         Args:
             response: LLM response
@@ -279,7 +279,7 @@ class judge_evaluator:
         evidence: List[str],
         suggestions: List[str],
         criterion: JudgmentCriterion) -> JudgeVerdict:
-        """Create verdict from parsed data."""
+        """Create Verdict from parsed data."""
         if score_value >= 0.9:
             score = JudgmentScore.EXCELLENT
         elif score_value >= 0.7:

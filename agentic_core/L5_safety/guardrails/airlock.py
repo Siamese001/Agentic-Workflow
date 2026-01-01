@@ -6,11 +6,11 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: AirlockProtocol → airlock_protocol
-class airlock_protocol:
+# NAMING FIXED: AirlockProtocol → AirlockProtocol
+class AirlockProtocol:
     """
     L5 Safety Guardrail: The Execution Airlock.
-    Validates tool calls against a mission-specific permission matrix.
+    Validates tool calls against a mission-specific Permission matrix.
     """
     def __init__(self, config: Dict[str, Any]):
         self.config = config

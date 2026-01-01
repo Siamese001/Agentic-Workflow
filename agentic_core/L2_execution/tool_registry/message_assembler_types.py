@@ -3,9 +3,9 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class qa_block_type(Enum):
+class QaBlockType(Enum):
     """TODO: Add docstring."""
     LINKEDIN_QA_GRID: Any = 'LINKEDIN_QA_GRID'
     AI_FILTER_CANONICAL: Any = 'AI_FILTER_CANONICAL'
@@ -13,7 +13,7 @@ class qa_block_type(Enum):
     EVIDENCE_PACK: Any = 'EVIDENCE_PACK'
 
 @dataclass
-class qa_block:
+class QaBlock:
     """Docstring."""
     block_type: QABlockType
     title: str
@@ -21,13 +21,13 @@ class qa_block:
     order: int
 
 @dataclass
-class message_assembler_config:
+class MessageAssemblerConfig:
     """Docstring."""
     canonical_signature_lines: int = 4
     required_qa_blocks: int = 4
 
 @dataclass
-class message_assembler_result:
+class MessageAssemblerResult:
     """Docstring."""
     final_message: str
     qa_blocks: List[QABlock]

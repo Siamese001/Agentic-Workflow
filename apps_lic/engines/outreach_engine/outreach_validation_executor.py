@@ -1,7 +1,7 @@
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
 This module extends ValidationGateExecutor with outreach-specific validation
-rules including metric source binding, redundancy guards, and forbidden content.
+rules including Metric source binding, redundancy guards, and forbidden content.
 """
 from typing import Any, Optional, Protocol, Dict, List
 
@@ -34,7 +34,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
     def __init__(
         self,
         validation_gates: List[Any],
-        word_count_constraints: Dict[str, Any],
+        WordCountConstraints: Dict[str, Any],
         similarity_thresholds: Dict[str, float],
         forbidden_verbs: List[str],
         forbidden_filler_phrases: List[str],
@@ -43,14 +43,14 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         Args:
             validation_gates: Validation gates from config
-            word_count_constraints: Word count constraints
+            WordCountConstraints: Word count constraints
             similarity_thresholds: Similarity thresholds
             forbidden_verbs: Forbidden corporate verbs
             forbidden_filler_phrases: Forbidden filler phrases
         """
         super().__init__(
             validation_gates=validation_gates,
-            word_count_constraints=word_count_constraints,
+            WordCountConstraints=WordCountConstraints,
             similarity_thresholds=similarity_thresholds,
         )
 
@@ -94,11 +94,11 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return self._check_filler_phrases(content)
 
         # LIC-QA-041: Metric source binding (HIGH)
-        if "metric" in check.lower() and "source" in check.lower() or check == "LIC-QA-041":
+        if "Metric" in check.lower() and "source" in check.lower() or check == "LIC-QA-041":
             return self._check_metric_source_binding(content, context)
 
         # LIC-QA-043: Metric context validation (HIGH)
-        if "metric" in check.lower() and "context" in check.lower() or check == "LIC-QA-043":
+        if "Metric" in check.lower() and "context" in check.lower() or check == "LIC-QA-043":
             return self._check_metric_context(content, context)
 
         # Redundancy guard for EXISTING contacts
@@ -211,9 +211,9 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check metric source binding (LIC-QA-041 - HIGH).
+        """Check Metric source binding (LIC-QA-041 - HIGH).
 
-        Every metric must map to metric_source_map entry.
+        Every Metric must map to metric_source_map entry.
 
         Args:
             content: Content to check
@@ -239,12 +239,12 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             matches = re.findall(pattern, content, re.IGNORECASE)
             found_metrics.extend(matches)
 
-        # Check if each metric has source binding
+        # Check if each Metric has source binding
         unbound_metrics = []
-        for metric in found_metrics:
-            # Check if metric is in source map
-            if not any(metric in str(source) for source in metric_source_map.values()):
-                unbound_metrics.append(metric)
+        for Metric in found_metrics:
+            # Check if Metric is in source map
+            if not any(Metric in str(source) for source in metric_source_map.values()):
+                unbound_metrics.append(Metric)
 
         if unbound_metrics:
             return RuleFailure(
@@ -263,7 +263,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-        """Check metric context validation (LIC-QA-043 - HIGH).
+        """Check Metric context validation (LIC-QA-043 - HIGH).
 
         Metrics must have keyword context from RAG.
 
@@ -288,9 +288,9 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         # Check if metrics have surrounding context from RAG
         metrics_without_context = []
-        for metric in found_metrics:
-            # Find metric in content with surrounding words
-            metric_context = self._extract_metric_context(content, metric)
+        for Metric in found_metrics:
+            # Find Metric in content with surrounding words
+            metric_context = self._extract_metric_context(content, Metric)
 
             # Check if any RAG evidence keywords appear in context
             has_context = any(
@@ -299,7 +299,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             )
 
             if not has_context:
-                metrics_without_context.append(metric)
+                metrics_without_context.append(Metric)
 
         if metrics_without_context:
             return RuleFailure(
@@ -361,7 +361,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             context: Context with expected_transition_phrase
 
         Returns:
-            RuleFailure if transition phrase missing
+            RuleFailure if transition phrase Missing
         """
         expected_phrase = context.get("expected_transition_phrase")
         if not expected_phrase:
@@ -414,7 +414,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
                 rule_id="SIGNATURE_IMMUTABILITY",
                 rule_name="Signature Immutability",
                 SEVERITY="HIGH",
-                MESSAGE="Signature block missing 'Regards,' line",
+                MESSAGE="Signature block Missing 'Regards,' line",
                 ACTUAL="Not found",
                 EXPECTED="Exact 4-line signature block",
             )
@@ -432,12 +432,12 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         return None
 
-    def _extract_metric_context(self, content: str, metric: str) -> str:
-        """Extract surrounding context for a metric.
+    def _extract_metric_context(self, content: str, Metric: str) -> str:
+        """Extract surrounding context for a Metric.
 
         Args:
             content: Full content
-            metric: Metric to find
+            Metric: Metric to find
 
         Returns:
             Context string (5 words before and after)
@@ -445,7 +445,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         words = content.split()
 
         for i, word in enumerate(words):
-            if metric in word:
+            if Metric in word:
                 start = max(0, i - 5)
                 end = min(len(words), i + 6)
                 return " ".join(words[start:end])

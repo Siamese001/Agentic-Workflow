@@ -1,14 +1,14 @@
 """
-parse_job_description.py - Retrieval Module
+ParseJobDescription.py - Retrieval Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.189778
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class parse_job_description:
+class ParseJobDescription:
     """Retrieval engine for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

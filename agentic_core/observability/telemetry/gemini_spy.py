@@ -1,7 +1,7 @@
 # gemini_spy.py
 # L5 Telemetry Interceptor for SubAtomicEngine
 # PURPOSE: Wraps the SubAtomicEngine to force visibility of all LLM transactions
-# LOCATION: agentic_core/observability/telemetry/ (SSOT-compliant)
+# LOCATION: AgenticCore/observability/telemetry/ (SSOT-compliant)
 
 import asyncio
 import time
@@ -112,7 +112,7 @@ class GeminiSpy:
                 # Log detailed failure for debugging telemetry mismatches
                 print(f"[SPY] GEMINI SPY LLM OR TELEMETRY FAILURE: {e}")
                 if "successful_traces" in str(e):
-                    print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
+                    print("   -> CAUSE: ValidationContext is Missing .successful_traces list.")
                 raise e
         
         return wrapper

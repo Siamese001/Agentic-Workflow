@@ -7,7 +7,7 @@ Exempts root protected files and __init__.py glue files.
 from pathlib import Path
 from typing import List, Set
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES,
 )
@@ -34,7 +34,7 @@ class DriftDetectorAgent:
         Scan for unmapped files (drift violations).
         
         Returns:
-            List of violation messages
+            List of Violation messages
         """
         violations = []
         

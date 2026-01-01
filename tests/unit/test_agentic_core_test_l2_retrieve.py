@@ -4,14 +4,14 @@ import logging
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 _logger = logging.getLogger(__name__)
 
-class test_execution_context_retrieval:
+class TestExecutionContextRetrieval:
     """Tests for retrieving execution context."""
 
 def test_retrieve_tool_definitions(self: Any) -> None:

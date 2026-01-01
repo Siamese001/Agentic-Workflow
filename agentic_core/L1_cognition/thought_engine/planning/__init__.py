@@ -2,7 +2,7 @@
 L1_cognition/thought_engine/planning – Sovereign Territory
 
 Purpose:
-    Hierarchical task decomposition. HTN, BDI patterns. Reference: Ghallab et al. 'PDDL'.
+    Hierarchical Task decomposition. HTN, BDI patterns. Reference: Ghallab et al. 'PDDL'.
 
 Best Practices:
     - Single responsibility per module

@@ -6,8 +6,8 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: PIIVault → pii_vault
-class pii_vault:
+# NAMING FIXED: PIIVault → PiiVault
+class PiiVault:
     """
     L5 Safety: The Secret Vault.
     Handles tokenization and de-tokenization of sensitive data.

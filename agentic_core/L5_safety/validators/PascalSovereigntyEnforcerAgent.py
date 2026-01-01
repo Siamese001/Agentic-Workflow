@@ -18,13 +18,13 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from enum import Enum
 
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
-from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
-from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
+from AgenticCore.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from AgenticCore.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+from AgenticCore.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 
 
 class SovereignSeverity(Enum):
-    """Sovereign event severity levels."""
+    """Sovereign event Severity levels."""
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -58,7 +58,7 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin):
         self.dry_run = dry_run
         self.strict_mode = strict_mode  # False = basic fast, True = specialist deep
         # Sovereign scope
-        self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+        self.target_prefixes = ["AgenticCore", "apps_rg", "apps_lic", "apps_shared"]
         # Incremental layer order (from audit priority — schemas first)
         self.purge_order = [
             "schemas", "config", "apps_", "L5_safety", "L4_state",
@@ -136,7 +136,7 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin):
             if self.strict_mode:
                 try:
                     specialist = TestSovereigntyAgent()
-                    advanced_result = await specialist.execute({"artifact": purged_content, "type": "advanced"})
+                    advanced_result = await specialist.execute({"Artifact": purged_content, "type": "advanced"})
                     advanced_passed = advanced_result["passed"]
                     if not advanced_passed:
                         if not self.dry_run:
@@ -250,13 +250,13 @@ class SovereignSeverity(str, Enum):
 class tone_type(str, Enum):
     AUTHORITATIVE = "authoritative"
 ToneType = tone_type
-severity = tone_type.AUTHORITATIVE
+Severity = tone_type.AUTHORITATIVE
 obj = tone_type()
 """
         expected = """
 class ToneType(str, Enum):
     AUTHORITATIVE = "authoritative"
-severity = ToneType.AUTHORITATIVE
+Severity = ToneType.AUTHORITATIVE
 obj = ToneType()
 """
         result = self._purge_snake_case(input_content).strip()
@@ -265,9 +265,9 @@ obj = ToneType()
         # Test 3: Dataclass + purge
         input_content = """
 @dataclass
-class hard_state:
+class HardState:
     id: str
-HardState = hard_state
+HardState = HardState
 """
         expected = """
 @dataclass
@@ -292,8 +292,8 @@ class SovereignEvent(BaseModel):
             "all_passed": basic_passed  # Strict mode checked in _purge_layer
         }
 
-    def _emit_event(self, severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Telemetry for observability."""
-        print(f"[SOVEREIGN EVENT] {severity.value} | {event_type}")
+        print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")

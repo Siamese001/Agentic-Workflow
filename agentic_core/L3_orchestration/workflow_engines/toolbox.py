@@ -5,7 +5,7 @@ import glob
 import logging
 import os
 from typing import Any
-logger: Any = logging.getLogger('Toolbox')
+Logger: Any = logging.getLogger('Toolbox')
 
 def repository_get_file_content(file_path: Any) -> Any:
     """Safely reads a file from the repository."""

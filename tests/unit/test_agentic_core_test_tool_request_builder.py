@@ -21,14 +21,14 @@ Currently depends on legacy execution functions that need implementation.
 
 
 # Mock exceptions since they're zombie file dependencies
-# NAMING FIXED: OrchestrationError → orchestration_error
-class orchestration_error(Exception):
+# NAMING FIXED: OrchestrationError → OrchestrationError
+class OrchestrationError(Exception):
     """Orchestration error for tool routing."""
 
 
 # Mock PlanObject since it's a zombie file dependency
-# NAMING FIXED: PlanObject → plan_object
-class plan_object:
+# NAMING FIXED: PlanObject → PlanObject
+class PlanObject:
     """TODO: Add docstring."""
 
 

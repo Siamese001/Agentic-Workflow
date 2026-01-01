@@ -1,7 +1,7 @@
 """Persona Planner - L1 planning for persona parameters and messaging approaches.
 
 Incorporated from L1 lic_persona_planner.py to provide deterministic persona
-planning that maps archetype and profile analysis to specific messaging parameters
+planning that maps Archetype and profile analysis to specific messaging parameters
 including tone style, detail level, risk tolerance, and drift thresholds.
 
 This is a foundational L1 planning component that feeds into the hop-based
@@ -12,13 +12,13 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
 class PersonaPlan:
     """Complete persona parameters for message generation."""
-    archetype: str                       # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
+    Archetype: str                       # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
     tone_style: str                      # "concise_executive" | "technical_detailed" | "friendly_recruiter" | "neutral"
     detail_level: str                    # "high" | "medium" | "low"
     risk_tolerance: str                  # "low" | "medium" | "high"
@@ -33,7 +33,7 @@ class PersonaPlan:
 class PersonaPlanner:
     """L1 pure planner for persona parameter generation.
     
-    Generates deterministic persona plans by mapping archetype and
+    Generates deterministic persona plans by mapping Archetype and
     profile/grounding analysis to specific messaging parameters.
     """
     
@@ -137,7 +137,7 @@ class PersonaPlanner:
     def plan(
         self,
         *,
-        archetype: str,
+        Archetype: str,
         recipient_profile: Dict[str, object],
         grounding_plan: Optional[Any] = None,
         outreach_context: Dict[str, object] = None,
@@ -145,7 +145,7 @@ class PersonaPlanner:
         """Generate a deterministic persona plan.
         
         Args:
-            archetype: Primary archetype for this contact
+            Archetype: Primary Archetype for this contact
             recipient_profile: Recipient profile data
             grounding_plan: Optional grounding analysis results
             outreach_context: Additional context for planning
@@ -155,8 +155,8 @@ class PersonaPlanner:
         """
         outreach_context = outreach_context or {}
         
-        # 1. Get base persona from archetype
-        base_persona = self._get_base_persona(archetype)
+        # 1. Get base persona from Archetype
+        base_persona = self._get_base_persona(Archetype)
         
         # 2. Apply seniority-based adjustments
         seniority_adjusted = self._apply_seniority_adjustments(base_persona, recipient_profile)
@@ -168,11 +168,11 @@ class PersonaPlanner:
         final_persona = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
         
         # 5. Calculate confidence score
-        confidence_score = self._calculate_confidence_score(archetype, recipient_profile, final_persona)
+        confidence_score = self._calculate_confidence_score(Archetype, recipient_profile, final_persona)
         
         # 6. Build metadata
         metadata = {
-            "archetype": archetype,
+            "Archetype": Archetype,
             "base_persona": base_persona["tone_style"],
             "seniority": recipient_profile.get("seniority", "unknown"),
             "industry": recipient_profile.get("industry", "unknown"),
@@ -182,7 +182,7 @@ class PersonaPlanner:
         
         # 7. Create persona plan
         plan = PersonaPlan(
-            archetype=archetype,
+            Archetype=Archetype,
             tone_style=final_persona["tone_style"],
             detail_level=final_persona["detail_level"],
             risk_tolerance=final_persona["risk_tolerance"],
@@ -199,8 +199,8 @@ class PersonaPlanner:
         
         return plan
     
-    def _get_base_persona(self, archetype: str) -> Dict[str, object]:
-        """Get base persona mapping for archetype."""
+    def _get_base_persona(self, Archetype: str) -> Dict[str, object]:
+        """Get base persona mapping for Archetype."""
         archetype_map = {
             "C_LEVEL": self.executive_persona,
             "EXECUTIVE": self.executive_persona,
@@ -208,8 +208,8 @@ class PersonaPlanner:
             "RECRUITER": self.recruiter_persona,
         }
         
-        base = archetype_map.get(archetype.upper(), self.default_persona.copy())
-        logger.debug(f"Base persona for {archetype}: {base['tone_style']}")
+        base = archetype_map.get(Archetype.upper(), self.default_persona.copy())
+        Logger.debug(f"Base persona for {Archetype}: {base['tone_style']}")
         return base
     
     def _apply_seniority_adjustments(self, persona: Dict[str, object], profile: Dict[str, object]) -> Dict[str, object]:
@@ -222,7 +222,7 @@ class PersonaPlanner:
             if key in adjusted:
                 adjusted[key] = value
         
-        logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
+        Logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
     
     def _apply_industry_adjustments(self, persona: Dict[str, object], profile: Dict[str, object], context: Dict[str, object]) -> Dict[str, object]:
@@ -245,7 +245,7 @@ class PersonaPlanner:
             if key in adjusted:
                 adjusted[key] = value
         
-        logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
+        Logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
     
     def _apply_grounding_refinements(self, persona: Dict[str, object], grounding_plan: Optional[Any]) -> Dict[str, object]:
@@ -281,15 +281,15 @@ class PersonaPlanner:
                 if refined["detail_level"] == "high":
                     refined["detail_level"] = "medium"
         
-        logger.debug("Applied grounding-based refinements")
+        Logger.debug("Applied grounding-based refinements")
         return refined
     
-    def _calculate_confidence_score(self, archetype: str, profile: Dict[str, object], persona: Dict[str, object]) -> float:
+    def _calculate_confidence_score(self, Archetype: str, profile: Dict[str, object], persona: Dict[str, object]) -> float:
         """Calculate persona match confidence score."""
         base_score = 0.7  # Start with reasonable confidence
         
-        # Boost for clear archetype match
-        if archetype.upper() in ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"]:
+        # Boost for clear Archetype match
+        if Archetype.upper() in ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"]:
             base_score += 0.2
         
         # Boost for complete profile data
@@ -316,20 +316,20 @@ class PersonaPlanner:
         try:
             if self.telemetry_bus:
                 self.telemetry_bus.record("persona_plan_created", {
-                    "archetype": plan.archetype,
+                    "Archetype": plan.Archetype,
                     "tone_style": plan.tone_style,
                     "detail_level": plan.detail_level,
                     "risk_tolerance": plan.risk_tolerance,
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+            Logger.debug(f"Failed to record telemetry: {e}")
     
     def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""
         return {
-            "plan_id": f"persona_{plan.archetype}_{plan.tone_style}",
-            "archetype": plan.archetype,
+            "plan_id": f"persona_{plan.Archetype}_{plan.tone_style}",
+            "Archetype": plan.Archetype,
             "tone_style": plan.tone_style,
             "detail_level": plan.detail_level,
             "risk_tolerance": plan.risk_tolerance,
@@ -346,7 +346,7 @@ class PersonaPlanner:
         warnings = []
         
         # Check for contradictory combinations
-        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.archetype == "EXECUTIVE":
+        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.Archetype == "EXECUTIVE":
             warnings.append("High detail level with low risk tolerance may not suit executive audience")
         
         if plan.communication_style == "formal" and plan.tone_style == "friendly_recruiter":

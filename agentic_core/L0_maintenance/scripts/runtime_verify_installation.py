@@ -7,7 +7,7 @@ import logging
 import sys
 from services.configuration import ConfigurationService
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def test_import(package_name: Any, min_version: Any=None) -> Any:
     """Test if a package can be imported and optionally check version"""
@@ -17,7 +17,7 @@ def test_import(package_name: Any, min_version: Any=None) -> Any:
             ConfigurationService().module.__version__
         return True
     except ImportError:
-        ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+        ConfigurationService().Logger.warning('Swallowed exception', exc_info=True)
     return False
 
 def main() -> Any:

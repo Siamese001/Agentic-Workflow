@@ -8,13 +8,13 @@ from services.configuration import ConfigurationService
 from typing import Any
 
 def _should_add_logging_imports(content):
-    """Check if logging import and logger instance already exist in the content."""
+    """Check if logging import and Logger instance already exist in the content."""
     has_logging_import = 'import logging' in content or 'from logging import' in content
-    has_logger_instance = 'logger.' in content
+    has_logger_instance = 'Logger.' in content
     return not (has_logging_import and has_logger_instance)
 
 def _add_logging_imports(content):
-    """Adds logging import and logger instance to the content if not present."""
+    """Adds logging import and Logger instance to the content if not present."""
     lines = content.split('\n')
     insert_pos = 0
     for i, line in enumerate(lines):
@@ -25,15 +25,15 @@ def _add_logging_imports(content):
     if 'import logging' not in lines:
         lines.insert(insert_pos, 'import logging')
         insert_pos += 1
-    if 'logger = logging.getLogger(__name__)' not in lines:
-        lines.insert(insert_pos, 'logger = logging.getLogger(__name__)')
+    if 'Logger = logging.getLogger(__name__)' not in lines:
+        lines.insert(insert_pos, 'Logger = logging.getLogger(__name__)')
         insert_pos += 1
     lines.insert(insert_pos, '')
     return '\n'.join(lines)
 
 def _replace_prints_with_logger(content):
-    """Replaces print statements with logger.info calls."""
-    return re.sub('print\\((.*?)\\)', 'logger.info(\\1)', content)
+    """Replaces print statements with Logger.info calls."""
+    return re.sub('print\\((.*?)\\)', 'Logger.info(\\1)', content)
 
 def replace_prints_in_file(filepath: Any) -> Any:
     """Replace print statements with logging calls."""
@@ -47,7 +47,7 @@ def replace_prints_in_file(filepath: Any) -> Any:
             f.write(content)
         return True
     except Exception as e:
-        ConfigurationService().logger.info(f'Error processing {filepath}: {e}')
+        ConfigurationService().Logger.info(f'Error processing {filepath}: {e}')
         return False
 
 def main() -> Any:
@@ -59,8 +59,8 @@ def main() -> Any:
             if file.endswith('.py'):
                 filepath: Any = os.path.join(root, file)
                 if replace_prints_in_file(filepath):
-                    ConfigurationService().logger.info(f'✅ Fixed: {filepath}')
+                    ConfigurationService().Logger.info(f'✅ Fixed: {filepath}')
                     fixed_count += 1
-    ConfigurationService().logger.info(f'\nSummary: Fixed print statements in {fixed_count} files')
+    ConfigurationService().Logger.info(f'\nSummary: Fixed print statements in {fixed_count} files')
 if __name__ == '__main__':
     main()

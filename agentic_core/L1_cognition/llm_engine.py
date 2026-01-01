@@ -5,7 +5,7 @@ RESPONSIBILITIES:
 - Abstract interface for multiple LLM providers
 - Enable consistency checks across providers
 - Support fallback and redundancy
-- Prevent single-provider dependency
+- Prevent single-Provider dependency
 
 Placed in L1_cognition per SSOT semantic registry:
   "Cognitive layer for LLM interaction abstraction"
@@ -15,7 +15,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class LLMEngine(ABC):
@@ -25,7 +25,7 @@ class LLMEngine(ABC):
     Enables:
     - Provider diversification
     - Consistency checks across models
-    - Graceful fallback on provider failure
+    - Graceful fallback on Provider failure
     """
     
     @abstractmethod
@@ -41,7 +41,7 @@ class LLMEngine(ABC):
         Generate code mutation using LLM.
         
         Args:
-            prompt: System/task prompt
+            prompt: System/Task prompt
             code: Original code to mutate
             file_path: Path to file being mutated
             context: Additional context (e.g., from vector memory)
@@ -67,7 +67,7 @@ class LLMEngine(ABC):
     
     @abstractmethod
     def get_provider_name(self) -> str:
-        """Return the name of this LLM provider."""
+        """Return the name of this LLM Provider."""
         pass
 
 
@@ -90,11 +90,11 @@ class GeminiEngine(LLMEngine):
         
         # Lazy load SubAtomicEngine to avoid circular imports
         try:
-            from agentic_core.L5_safety.guardrails.subatomic_engine import sub_atomic_engine_impl
-            self._engine = sub_atomic_engine_impl(project_root)
-            logger.info("[GeminiEngine] Initialized successfully")
+            from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl
+            self._engine = SubAtomicEngineImpl(project_root)
+            Logger.info("[GeminiEngine] Initialized successfully")
         except Exception as e:
-            logger.error(f"[GeminiEngine] Initialization failed: {e}")
+            Logger.error(f"[GeminiEngine] Initialization failed: {e}")
     
     async def mutate(
         self, 
@@ -108,7 +108,7 @@ class GeminiEngine(LLMEngine):
         Generate code mutation using Gemini.
         
         Args:
-            prompt: System/task prompt
+            prompt: System/Task prompt
             code: Original code to mutate
             file_path: Path to file being mutated
             context: Additional context
@@ -123,7 +123,7 @@ class GeminiEngine(LLMEngine):
         # Use SubAtomicEngine's resilient_mutation
         return await self._engine.resilient_mutation(
             code=code,
-            task=prompt,
+            Task=prompt,
             file_path=file_path,
             system_prompt=None,
             fission_active=fission_active
@@ -150,16 +150,16 @@ class GeminiEngine(LLMEngine):
         return [0.0] * 768
     
     def get_provider_name(self) -> str:
-        """Return provider name."""
+        """Return Provider name."""
         return "gemini-2.5-flash"
 
 
 class MultiProviderEngine:
     """
-    [HARDENING 11] Multi-provider LLM engine with consistency checks.
+    [HARDENING 11] Multi-Provider LLM engine with consistency checks.
     
     Supports:
-    - Primary/secondary provider configuration
+    - Primary/secondary Provider configuration
     - Consistency verification across providers
     - Automatic fallback on failure
     """
@@ -172,12 +172,12 @@ class MultiProviderEngine:
         consistency_threshold: float = 0.95
     ):
         """
-        Initialize multi-provider engine.
+        Initialize multi-Provider engine.
         
         Args:
             project_root: Project root directory
-            primary: Primary provider name
-            secondary: Optional secondary provider for consistency checks
+            primary: Primary Provider name
+            secondary: Optional secondary Provider for consistency checks
             consistency_threshold: Minimum similarity for consistency check (0.0-1.0)
         """
         self.project_root = project_root
@@ -186,32 +186,32 @@ class MultiProviderEngine:
         
         # Initialize primary engine
         self.primary = self._load_engine(primary)
-        logger.info(f"[MultiProviderEngine] Primary: {primary}")
+        Logger.info(f"[MultiProviderEngine] Primary: {primary}")
         
         # Initialize secondary engine if specified
         self.secondary = None
         if secondary:
             try:
                 self.secondary = self._load_engine(secondary)
-                logger.info(f"[MultiProviderEngine] Secondary: {secondary} (consistency mode enabled)")
+                Logger.info(f"[MultiProviderEngine] Secondary: {secondary} (consistency mode enabled)")
             except Exception as e:
-                logger.warning(f"[MultiProviderEngine] Secondary engine failed to load: {e}")
+                Logger.warning(f"[MultiProviderEngine] Secondary engine failed to load: {e}")
                 self.consistency_mode = False
     
-    def _load_engine(self, provider: str) -> LLMEngine:
+    def _load_engine(self, Provider: str) -> LLMEngine:
         """
-        Load LLM engine by provider name.
+        Load LLM engine by Provider name.
         
         Args:
-            provider: Provider name (e.g., 'gemini', 'grok')
+            Provider: Provider name (e.g., 'gemini', 'grok')
             
         Returns:
             LLMEngine instance
         """
-        if provider.lower() == "gemini":
+        if Provider.lower() == "gemini":
             return GeminiEngine(self.project_root)
         else:
-            raise ValueError(f"Unsupported LLM provider: {provider}")
+            raise ValueError(f"Unsupported LLM Provider: {Provider}")
     
     async def mutate(
         self, 
@@ -225,7 +225,7 @@ class MultiProviderEngine:
         [HARDENING 11] Generate code mutation with optional consistency check.
         
         Args:
-            prompt: System/task prompt
+            prompt: System/Task prompt
             code: Original code to mutate
             file_path: Path to file being mutated
             context: Additional context
@@ -246,7 +246,7 @@ class MultiProviderEngine:
             fission_active=fission_active
         )
         
-        # If consistency mode enabled, verify with secondary provider
+        # If consistency mode enabled, verify with secondary Provider
         if self.consistency_mode and self.secondary:
             try:
                 secondary_output = await self.secondary.mutate(
@@ -259,7 +259,7 @@ class MultiProviderEngine:
                 
                 # Check consistency
                 if not self._outputs_equivalent(primary_output, secondary_output):
-                    logger.error(
+                    Logger.error(
                         f"[CONSISTENCY] Outputs diverge for {Path(file_path).name}\n"
                         f"  Primary: {self.primary.get_provider_name()}\n"
                         f"  Secondary: {self.secondary.get_provider_name()}"
@@ -268,12 +268,12 @@ class MultiProviderEngine:
                         "LLM consistency check failed - outputs diverge between providers"
                     )
                 
-                logger.info(f"[CONSISTENCY] Verified for {Path(file_path).name}")
+                Logger.info(f"[CONSISTENCY] Verified for {Path(file_path).name}")
                 
             except Exception as e:
                 if "consistency check failed" in str(e).lower():
                     raise
-                logger.warning(f"[CONSISTENCY] Secondary provider failed: {e}")
+                Logger.warning(f"[CONSISTENCY] Secondary Provider failed: {e}")
         
         return primary_output
     
@@ -296,7 +296,7 @@ class MultiProviderEngine:
         
         # Must have same number of non-empty lines
         if len(lines_a) != len(lines_b):
-            logger.warning(
+            Logger.warning(
                 f"[CONSISTENCY] Line count mismatch: {len(lines_a)} vs {len(lines_b)}"
             )
             return False
@@ -305,13 +305,13 @@ class MultiProviderEngine:
         matches = sum(1 for la, lb in zip(lines_a, lines_b) if la == lb)
         similarity = matches / len(lines_a) if lines_a else 1.0
         
-        logger.debug(f"[CONSISTENCY] Similarity: {similarity:.2%}")
+        Logger.debug(f"[CONSISTENCY] Similarity: {similarity:.2%}")
         
         return similarity >= self.consistency_threshold
     
     async def embed(self, text: str) -> List[float]:
         """
-        Generate embedding using primary provider.
+        Generate embedding using primary Provider.
         
         Args:
             text: Text to embed
@@ -322,5 +322,5 @@ class MultiProviderEngine:
         return await self.primary.embed(text)
     
     def get_provider_name(self) -> str:
-        """Return primary provider name."""
+        """Return primary Provider name."""
         return self.primary.get_provider_name()

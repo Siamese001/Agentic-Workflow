@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 from .client import MCPClientSpec, MCPClientStub, MCPClientRegistry
 from .exceptions import MCPClientInitializationError
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
@@ -41,13 +41,13 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
         if not isinstance(parameters, dict):
             raise ValueError(f"MCP client '{name}' parameters must be a mapping.")
         
-        provider = str(raw.get("provider", "stub")).lower()
+        Provider = str(raw.get("Provider", "stub")).lower()
         module = raw.get("module")
         class_name = raw.get("class_name") or raw.get("class")
         
         spec = MCPClientSpec(
             name=name,
-            provider=provider,
+            Provider=Provider,
             module=module,
             class_name=class_name,
             parameters=parameters,
@@ -72,8 +72,8 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     Raises:
         MCPClientInitializationError: If instantiation fails
     """
-    if spec.provider == "stub" and not spec.module:
-        logger.info(f"Using stub for MCP client '{spec.name}'")
+    if spec.Provider == "stub" and not spec.module:
+        Logger.info(f"Using stub for MCP client '{spec.name}'")
         return MCPClientStub(spec.name, spec.parameters)
     
     module_name = spec.resolved_module()
@@ -82,24 +82,24 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     if not module_name:
         raise MCPClientInitializationError(
             f"Cannot create MCP client '{spec.name}': "
-            f"no module specified and no provider mapping found.",
+            f"no module specified and no Provider mapping found.",
             client_name=spec.name,
-            provider=spec.provider,
+            Provider=spec.Provider,
         )
     
     if not class_name:
         raise MCPClientInitializationError(
             f"Cannot create MCP client '{spec.name}': "
-            f"no class_name specified and no provider mapping found.",
+            f"no class_name specified and no Provider mapping found.",
             client_name=spec.name,
-            provider=spec.provider,
+            Provider=spec.Provider,
         )
     
     try:
         module = importlib.import_module(module_name)
     except Exception as exc:
         if spec.optional:
-            logger.warning(
+            Logger.warning(
                 f"Optional MCP client '{spec.name}' module '{module_name}' "
                 f"not available, using stub: {exc}"
             )
@@ -112,14 +112,14 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             f"Failed to import MCP module '{module_name}' "
             f"for client '{spec.name}': {exc}",
             client_name=spec.name,
-            provider=spec.provider,
+            Provider=spec.Provider,
         ) from exc
     
     try:
         client_cls = getattr(module, class_name)
     except AttributeError as exc:
         if spec.optional:
-            logger.warning(
+            Logger.warning(
                 f"Optional MCP client '{spec.name}' class '{class_name}' "
                 f"not found in '{module_name}', using stub"
             )
@@ -129,22 +129,22 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
             )
         
         raise MCPClientInitializationError(
-            f"Module '{module_name}' missing class '{class_name}' "
+            f"Module '{module_name}' Missing class '{class_name}' "
             f"for MCP client '{spec.name}'.",
             client_name=spec.name,
-            provider=spec.provider,
+            Provider=spec.Provider,
         ) from exc
     
     try:
         instance = client_cls(**spec.parameters)
-        logger.info(
+        Logger.info(
             f"Initialized MCP client '{spec.name}' "
             f"via {module_name}.{class_name}"
         )
         return instance
     except Exception as exc:
         if spec.optional:
-            logger.warning(
+            Logger.warning(
                 f"Optional MCP client '{spec.name}' failed to initialize, "
                 f"using stub: {exc}"
             )
@@ -156,7 +156,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         raise MCPClientInitializationError(
             f"Failed to instantiate MCP client '{spec.name}': {exc}",
             client_name=spec.name,
-            provider=spec.provider,
+            Provider=spec.Provider,
         ) from exc
 
 
@@ -186,7 +186,7 @@ def create_mcp_registry(
             if fail_on_error and not spec.optional:
                 raise
             
-            logger.warning(
+            Logger.warning(
                 f"Failed to initialize MCP client '{spec.name}', "
                 f"registering stub: {exc}"
             )

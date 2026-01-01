@@ -8,12 +8,12 @@ import sys
 # Setup logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("TemporalOutreachTest")
+Logger = logging.getLogger("TemporalOutreachTest")
 
 
 def test_temporal_vetting():
     """Test the temporal vetting function"""
-    logger.info("\n=== Testing Temporal Vetting (L4) ===")
+    Logger.info("\n=== Testing Temporal Vetting (L4) ===")
 
     try:
         from action_registry import ActionRegistry
@@ -33,7 +33,7 @@ def test_temporal_vetting():
         all_passed = True
 
         for tz, utc_time, expected_send in test_cases:
-            result = vet_lead_optimal_time(tz, utc_time, tools, logger)
+            result = vet_lead_optimal_time(tz, utc_time, tools, Logger)
             actual_send = result['send_now']
 
             if actual_send == expected_send:
@@ -42,24 +42,24 @@ def test_temporal_vetting():
                 status = "❌ FAIL"
                 all_passed = False
 
-            logger.info(
+            Logger.info(
                 f"{status} {tz}: UTC {utc_time} -> Local {result['lead_local_time']} -> {result['decision']}")
 
         if all_passed:
-            logger.info("✅ Temporal vetting works correctly")
+            Logger.info("✅ Temporal vetting works correctly")
             return True
         else:
-            logger.error("❌ Temporal vetting has issues")
+            Logger.error("❌ Temporal vetting has issues")
             return False
 
     except Exception as e:
-        logger.error(f"❌ Temporal vetting test failed: {e}")
+        Logger.error(f"❌ Temporal vetting test failed: {e}")
         return False
 
 
 def test_governed_outreach():
     """Test the governed outreach sequence"""
-    logger.info("\n=== Testing Governed Outreach Sequence ===")
+    Logger.info("\n=== Testing Governed Outreach Sequence ===")
 
     try:
         from action_registry import ActionRegistry
@@ -85,14 +85,14 @@ def test_governed_outreach():
                 pitch_content="Test outreach message",
                 recipient_email="test@example.com",
                 tools=tools,
-                logger=logger
+                Logger=Logger
             )
 
             if result1['status'] == "SENT_COMPLIANT":
-                logger.info(
+                Logger.info(
                     "✅ Test 1 PASSED: Email sent during business hours")
             else:
-                logger.error(
+                Logger.error(
                     f"❌ Test 1 FAILED: Expected SENT_COMPLIANT, got {result1['status']}")
 
             # Test case 2: Should delay (off hours)
@@ -101,15 +101,15 @@ def test_governed_outreach():
                 pitch_content="Test outreach message",
                 recipient_email="test@example.com",
                 tools=tools,
-                logger=logger
+                Logger=Logger
             )
 
             if result2['status'] == "TEMPORAL_DELAY":
-                logger.info("✅ Test 2 PASSED: Email delayed for off-hours")
-                logger.info(
+                Logger.info("✅ Test 2 PASSED: Email delayed for off-hours")
+                Logger.info(
                     f"   Next optimal send time: {result2.get('next_optimal_send_time', 'N/A')}")
             else:
-                logger.error(
+                Logger.error(
                     f"❌ Test 2 FAILED: Expected TEMPORAL_DELAY, got {result2['status']}")
 
         finally:
@@ -120,20 +120,20 @@ def test_governed_outreach():
         # Overall result
         if (result1['status'] == "SENT_COMPLIANT" and
                 result2['status'] == "TEMPORAL_DELAY"):
-            logger.info("✅ Governed outreach sequence works correctly")
+            Logger.info("✅ Governed outreach sequence works correctly")
             return True
         else:
-            logger.error("❌ Governed outreach sequence has issues")
+            Logger.error("❌ Governed outreach sequence has issues")
             return False
 
     except Exception as e:
-        logger.error(f"❌ Governed outreach test failed: {e}")
+        Logger.error(f"❌ Governed outreach test failed: {e}")
         return False
 
 
 def test_time_bound_benchmarking():
     """Test time-bound salary benchmarking"""
-    logger.info("\n=== Testing Time-Bound Salary Benchmarking ===")
+    Logger.info("\n=== Testing Time-Bound Salary Benchmarking ===")
 
     try:
         from action_registry import ActionRegistry
@@ -147,31 +147,31 @@ def test_time_bound_benchmarking():
             job_title="Software Engineer",
             location="San Francisco",
             tools=tools,
-            logger=logger
+            Logger=Logger
         )
 
         if result['status'] == "success":
-            logger.info("✅ Salary benchmarking completed")
-            logger.info(f"   Salary data: {result.get('salary_data', 'N/A')}")
-            logger.info(f"   Source: {result.get('source', 'N/A')}")
-            logger.info(
+            Logger.info("✅ Salary benchmarking completed")
+            Logger.info(f"   Salary data: {result.get('salary_data', 'N/A')}")
+            Logger.info(f"   Source: {result.get('source', 'N/A')}")
+            Logger.info(
                 f"   Time window: {result.get('time_window_start', 'N/A')}")
             return True
         else:
-            logger.error(
+            Logger.error(
                 f"❌ Salary benchmarking failed: {result.get('message', 'Unknown error')}")
             return False
 
     except Exception as e:
-        logger.error(f"❌ Time-bound benchmarking test failed: {e}")
+        Logger.error(f"❌ Time-bound benchmarking test failed: {e}")
         return False
 
 
 def main():
     """Run all L4 Temporal Layer tests"""
-    logger.info("="*60)
-    logger.info("PHASE 2: L4 TEMPORAL LAYER TESTING")
-    logger.info("="*60)
+    Logger.info("="*60)
+    Logger.info("PHASE 2: L4 TEMPORAL LAYER TESTING")
+    Logger.info("="*60)
 
     results = []
 
@@ -181,27 +181,27 @@ def main():
     results.append(("Time-Bound Benchmarking", test_time_bound_benchmarking()))
 
     # Summary
-    logger.info("\n" + "="*60)
-    logger.info("PHASE 2 TEST SUMMARY")
-    logger.info("="*60)
+    Logger.info("\n" + "="*60)
+    Logger.info("PHASE 2 TEST SUMMARY")
+    Logger.info("="*60)
 
     passed = sum(1 for _, result in results if result)
     total = len(results)
 
     for name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
-        logger.info(f"{name}: {status}")
+        Logger.info(f"{name}: {status}")
 
-    logger.info(f"\nOverall: {passed}/{total} tests passed")
+    Logger.info(f"\nOverall: {passed}/{total} tests passed")
 
     if passed == total:
-        logger.info("\n🎉 L4 Temporal Layer is fully functional!")
-        logger.info("   - Temporal compliance gate working")
-        logger.info("   - Governed outreach sequence operational")
-        logger.info("   - Time-bound salary benchmarking active")
+        Logger.info("\n🎉 L4 Temporal Layer is fully functional!")
+        Logger.info("   - Temporal compliance gate working")
+        Logger.info("   - Governed outreach sequence operational")
+        Logger.info("   - Time-bound salary benchmarking active")
         return True
     else:
-        logger.error(f"\n💥 {total - passed} component(s) need attention")
+        Logger.error(f"\n💥 {total - passed} component(s) need attention")
         return False
 
 

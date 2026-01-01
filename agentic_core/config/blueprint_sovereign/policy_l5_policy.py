@@ -10,8 +10,8 @@ from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional, Protocol, TypeVar
 
 
-# NAMING FIXED: SafetyPolicy → safety_policy
-class safety_policy:
+# NAMING FIXED: SafetyPolicy → SafetyPolicy
+class SafetyPolicy:
     '''Brief description of functionality and purpose.'''
     
     policy_id: str
@@ -20,31 +20,31 @@ class safety_policy:
                     
 
 @dataclass
-# NAMING FIXED: PolicyDecision → policy_decision
-class policy_decision:
+# NAMING FIXED: PolicyDecision → PolicyDecision
+class PolicyDecision:
     '''Brief description of functionality and purpose.'''
     
     policy_id: str
-    verdict: 'Verdict'
+    Verdict: 'Verdict'
     findings: List['SafetyFinding'] = field(default_factory=list)
     def to_dict(self) -> Dict[str, object]: pass
                     
 
 @dataclass
-# NAMING FIXED: SafetyFinding → safety_finding
-class safety_finding:
+# NAMING FIXED: SafetyFinding → SafetyFinding
+class SafetyFinding:
     '''Brief description of functionality and purpose.'''
     
     id: str
     type: str
-    severity: 'Severity'
+    Severity: 'Severity'
     message: str
     details: Dict[str, object] = field(default_factory=dict)
     location: Optional[str] = None
 
 @dataclass
-# NAMING FIXED: SafetyContext → safety_context
-class safety_context:
+# NAMING FIXED: SafetyContext → SafetyContext
+class SafetyContext:
     '''Brief description of functionality and purpose.'''
     
     content_type: str
@@ -57,16 +57,16 @@ class safety_context:
 from enum import Enum, auto
 
 
-# NAMING FIXED: Verdict → verdict
-class verdict(Enum):
+# NAMING FIXED: Verdict → Verdict
+class Verdict(Enum):
     '''Brief description of functionality and purpose.'''
     
     ALLOW = "allow"
     REVIEW = "review"
     BLOCK = "block"
 
-# NAMING FIXED: Severity → severity
-class severity(Enum):
+# NAMING FIXED: Severity → Severity
+class Severity(Enum):
     '''Brief description of functionality and purpose.'''
     
     LOW = "low"
@@ -75,30 +75,30 @@ class severity(Enum):
     CRITICAL = "critical"
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: PolicyConfigurationError → policy_configuration_error
-class policy_configuration_error(Exception):
+# NAMING FIXED: PolicyConfigurationError → PolicyConfigurationError
+class PolicyConfigurationError(Exception):
     """Raised when policy configuration is invalid."""
 
 T = TypeVar('T')
 
 @dataclass
-# NAMING FIXED: PolicyResult → policy_result
-class policy_result:
+# NAMING FIXED: PolicyResult → PolicyResult
+class PolicyResult:
     """Result of evaluating multiple policies."""
     decisions: List[PolicyDecision] = field(default_factory=list)
     metadata: Dict[str, object] = field(default_factory=dict)
 
     @property
     def final_verdict(self) -> Verdict:
-        """Determine the overall verdict based on all policy decisions."""
+        """Determine the overall Verdict based on all policy decisions."""
         if not self.decisions:
             return Verdict.ALLOW
 
-        # Most restrictive verdict wins
-        verdicts = [d.verdict for d in self.decisions]
+        # Most restrictive Verdict wins
+        verdicts = [d.Verdict for d in self.decisions]
         if Verdict.BLOCK in verdicts:
             return Verdict.BLOCK
         elif Verdict.REVIEW in verdicts:
@@ -116,18 +116,18 @@ class policy_result:
     @property
     def blocking_findings(self) -> List[SafetyFinding]:
         """Get all findings that would cause a block."""
-        return [f for f in self.all_findings if f.severity >= Severity.HIGH]
+        return [f for f in self.all_findings if f.Severity >= Severity.HIGH]
 
     def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
         return {
-            'verdict': self.final_verdict.value,
+            'Verdict': self.final_verdict.value,
             'decisions': [d.to_dict() for d in self.decisions],
             'metadata': self.metadata
         }
 
-# NAMING FIXED: SafetyEngine → safety_engine
-class safety_engine:
+# NAMING FIXED: SafetyEngine → SafetyEngine
+class SafetyEngine:
     """
     Executes safety policies and aggregates their results.
 
@@ -189,7 +189,7 @@ class safety_engine:
             context: The safety context to evaluate
             policy_ids: Optional list of policy IDs to evaluate against.
                       If None, evaluates against all policies.
-            severity_threshold: Minimum severity level to consider for blocking.
+            severity_threshold: Minimum Severity level to consider for blocking.
                              If None, uses the engine's default.
 
         Returns:
@@ -214,7 +214,7 @@ class safety_engine:
                 decisions.append(decision)
 
                 LOGGER.debug(
-                    f"Policy '{policy.policy_id}' returned verdict: {decision.verdict} "
+                    f"Policy '{policy.policy_id}' returned Verdict: {decision.Verdict} "
                     f"with {len(decision.findings)} findings"
                 )
 
@@ -225,12 +225,12 @@ class safety_engine:
                 # Create a blocking decision for the failed policy
                 decisions.append(PolicyDecision(
                     policy_id=policy.policy_id,
-                    verdict=Verdict.BLOCK,
+                    Verdict=Verdict.BLOCK,
                     findings=[
                         SafetyFinding(
                             id=f"error-{uuid.uuid4()}",
                             type="policy",
-                            severity=Severity.CRITICAL,
+                            Severity=Severity.CRITICAL,
                             message=f"Policy evaluation failed: {str(e)}",
                             details={"error": str(e)},
                             location=policy.policy_id,
@@ -297,7 +297,7 @@ class safety_engine:
         Args:
             context: The safety context to evaluate
             policy_ids: Optional list of policy IDs to evaluate against
-            severity_threshold: Minimum severity level to consider for blocking
+            severity_threshold: Minimum Severity level to consider for blocking
 
         Returns:
             bool: True if the content is safe, False if it should be blocked

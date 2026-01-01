@@ -7,12 +7,12 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+from AgenticCore.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent
+from AgenticCore.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from AgenticCore.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent
 
 
-class rescue_reviewer:
+class RescueReviewer:
     """
     Sovereign judge of archived files — eternal purity through hash + semantics.
     """
@@ -35,7 +35,7 @@ class rescue_reviewer:
     def _map_active_canon(self) -> Dict[str, str]:
         """Map every active .py file hash to its current path"""
         hash_map = {}
-        targets = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests']
+        targets = ['AgenticCore', 'apps_rg', 'apps_lic', 'apps_shared', 'tests']
         for folder in targets:
             path = self.root / folder
             if not path.exists():
@@ -56,7 +56,7 @@ class rescue_reviewer:
             print('[OK] Archive is empty. Sovereignty is pure.')
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS, CANON_KEY_TO_FOLDER_MAP
         for arch_file in self.archive_path.rglob('*.py'):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')
@@ -66,7 +66,7 @@ class rescue_reviewer:
                 cached: Any = self.redis.get(cache_key)
                 if cached:
                     decision: Any = json.loads(cached)
-                    print(f"   [CACHE HIT] {rel} -> {decision['verdict']}")
+                    print(f"   [CACHE HIT] {rel} -> {decision['Verdict']}")
                     if decision.get('action') == 'moved':
                         continue
             if f_hash in self.active_hashes:
@@ -86,13 +86,13 @@ class rescue_reviewer:
                         break
                 sig_count: Any = sum((1 for s in CANON_SIGNALS if s in content.lower()))
                 print(f'         SUGGESTION: {territory} (Conf: {conf:.2f})')
-                verdict: Any = 'MANUAL_REVIEW'
+                Verdict: Any = 'MANUAL_REVIEW'
                 if auto_home and conf >= self.auto_home_threshold and (sig_count >= self.auto_home_min_signals):
                     dest: Any = self._execute_rescue(arch_file, territory)
-                    verdict: Any = 'RESCUED_AUTO'
+                    Verdict: Any = 'RESCUED_AUTO'
                     print(f'         [HEALED] Rescued to -> {dest.relative_to(self.root)}')
                 if self.redis:
-                    self.redis.set(cache_key, json.dumps({'verdict': verdict, 'action': 'moved' if verdict == 'RESCUED_AUTO' else 'stay'}), ex=604800)
+                    self.redis.set(cache_key, json.dumps({'Verdict': Verdict, 'action': 'moved' if Verdict == 'RESCUED_AUTO' else 'stay'}), ex=604800)
             else:
                 print(f'         VERDICT: Unknown logic. Manual review required.')
 

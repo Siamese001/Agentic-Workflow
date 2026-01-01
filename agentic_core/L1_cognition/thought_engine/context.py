@@ -16,7 +16,7 @@ except ImportError:
     genai = None
 
 # ==============================================================================
-# INLINED PROMPTS (Formerly from agentic_core.prompts - Resolves Architectural Violations)
+# INLINED PROMPTS (Formerly from AgenticCore.prompts - Resolves Architectural Violations)
 # ==============================================================================
 
 # NAMING FIXED: FEW_SHOT_HYGIENE → few_shot_hygiene
@@ -171,8 +171,8 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
 # LEVEL 6: SOVEREIGN ARCHITECTURE
 # ==============================================================================
 
-# NAMING FIXED: DependencyGraph → dependency_graph
-class dependency_graph:
+# NAMING FIXED: DependencyGraph → DependencyGraph
+class DependencyGraph:
     """Builds a directed graph of imports and class hierarchies."""
     def __init__(self):
         self.graph: Dict[str, Dict[str, List[Any]]] = {}
@@ -214,8 +214,8 @@ class dependency_graph:
         return list(impacted)
 
 
-# NAMING FIXED: BudgetManager → budget_manager
-class budget_manager:
+# NAMING FIXED: BudgetManager → BudgetManager
+class BudgetManager:
     """Tracks estimated token usage and financial safety limits."""
     def __init__(self, limit_usd: Optional[float] = None):
         # SAFETY FIX: Prioritize environment variables for resource limits
@@ -248,8 +248,8 @@ class budget_manager:
 
 
 @dataclass
-# NAMING FIXED: ValidationContext → validation_context
-class validation_context:
+# NAMING FIXED: ValidationContext → ValidationContext
+class ValidationContext:
     """Shared memory and infrastructure state for all agents."""
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
@@ -348,13 +348,13 @@ class validation_context:
         return self._client
 
     @_rate_limited_retry() # Refactored
-    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
+    async def resilient_mutation(self, agent_name: str, Task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
                     
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
 
         try:
-            prompt = f"Agent: {agent_name}\nTask: {task}\nContext:\n{code[:4000]}"
+            prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
                 self._client.models.generate_content,
                 model=self.model_id,

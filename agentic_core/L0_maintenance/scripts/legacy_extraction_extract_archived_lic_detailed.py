@@ -3,7 +3,7 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
-sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
+sovereign_roots: Any = {'AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
 
 def get_existing_filenames() -> Set[str]:
     """Get set of all Python filenames in sovereign codebase."""
@@ -15,7 +15,7 @@ def get_existing_filenames() -> Set[str]:
             for py_file in root_path.rglob('*.py'):
                 existing.add(py_file.name)
     return existing
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     """Analyze legacy files and categorize them."""

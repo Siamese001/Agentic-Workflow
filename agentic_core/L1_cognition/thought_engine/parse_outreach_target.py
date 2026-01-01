@@ -1,20 +1,20 @@
 """
-parse_outreach_target.py - Retrieval Module
+ParseOutreachTarget.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.034168
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class parse_outreach_target:
+class ParseOutreachTarget:
     """Retrieval engine for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def retrieve(self, query: str, filters: Optional[Dict]=None, limit: int=10) -> RetrievalResult:
         """Docstring."""

@@ -11,7 +11,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class SystemArchitectAgent(CanonBaseAgent):
@@ -83,9 +83,9 @@ class SystemArchitectAgent(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from AgenticCore.L5_safety.validators.HierarchyAgent import HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
             return HierarchyAgent(proj_root).validate_hierarchy()
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
@@ -108,7 +108,7 @@ class SystemArchitectAgent(CanonBaseAgent):
                     if not (l1_path / '__init__.py').exists():
                         violations.append(f'{root_folder}/{l1_name}: Missing __init__.py')
                     if config['depth'] == 4:
-                        from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+                        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
                         l2_list: Any = CORE_SUBFOLDER_MAP.get(l1_name, [])
                         for l2_name in l2_list:
                             l2_path: Any = l1_path / l2_name
@@ -135,7 +135,7 @@ class SystemArchitectAgent(CanonBaseAgent):
                 continue
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
-            from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+            from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth: Any = SOVEREIGN_REGISTRY[root_folder]['depth']
                 if depth != required_depth:
@@ -182,20 +182,20 @@ class SystemArchitectAgent(CanonBaseAgent):
         if not remaining_violations:
             return
         if key == 42:
-            for violation in remaining_violations:
-                file_path = violation.split(':')[0].strip()
-                await self._smart_fix(file_path, key, [violation])
+            for Violation in remaining_violations:
+                file_path = Violation.split(':')[0].strip()
+                await self._smart_fix(file_path, key, [Violation])
             return
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         file_violations = {}
-        for violation in remaining_violations[:max_healing_per_file]:
-            if ':' in violation:
-                parts = violation.split(': ', 1)
+        for Violation in remaining_violations[:max_healing_per_file]:
+            if ':' in Violation:
+                parts = Violation.split(': ', 1)
                 if len(parts) >= 1:
                     file_path = parts[0]
                     if file_path not in file_violations:
                         file_violations[file_path] = []
-                    file_violations[file_path].append(violation)
+                    file_violations[file_path].append(Violation)
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, key, file_viols)
 
@@ -213,16 +213,16 @@ class SystemArchitectAgent(CanonBaseAgent):
             print(f'      [!] Cannot read {file_path}: {e}')
             return
         if any((marker in v for marker in ['Missing Canonical Header', 'Missing Test Protocol'] for v in violations)):
-            task = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Inject Standard Sovereign Header (Key 40).\nFILE: {os.path.basename(file_path)}\n\nINSTRUCTIONS:\n1. Create a high-signal docstring at the VERY TOP of the file.\n2. The header must describe the file's purpose based on its content.\n3. Include 'Responsible for:' section with bullet points.\n4. IF THIS IS A TEST FILE: You MUST include a 'Test Protocol' section explaining exactly which canon key or functional behavior this file verifies.\n5. Preserve all existing code exactly as-is.\n\nReturn ONLY the full code with the new header injected."
+            Task = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Inject Standard Sovereign Header (Key 40).\nFILE: {os.path.basename(file_path)}\n\nINSTRUCTIONS:\n1. Create a high-signal docstring at the VERY TOP of the file.\n2. The header must describe the file's purpose based on its content.\n3. Include 'Responsible for:' section with bullet points.\n4. IF THIS IS A TEST FILE: You MUST include a 'Test Protocol' section explaining exactly which canon key or functional behavior this file verifies.\n5. Preserve all existing code exactly as-is.\n\nReturn ONLY the full code with the new header injected."
         else:
             violation_details = '\n'.join(violations)
-            task = f'Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}'
+            Task = f'Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}'
         max_rounds = 5
         current_code = original_code
         previous_failure = None
         for round_num in range(1, max_rounds + 1):
             print(f'      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}')
-            mutated_code = await self.resilient_mutation(task=task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
+            mutated_code = await self.resilient_mutation(Task=Task, code=current_code, file_path=file_path, round_num=round_num, previous_failure=previous_failure)
             is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
             if not is_valid:
                 print(f'      [!] Round {round_num}: {reason} – retrying')

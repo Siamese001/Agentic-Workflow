@@ -9,8 +9,8 @@ import re
 from pathlib import Path
 from typing import Dict, Set
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from AgenticCore.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 
 
 class GravityEnforcerAgent(CachedSafetyShield):
@@ -44,16 +44,16 @@ class GravityEnforcerAgent(CachedSafetyShield):
     async def execute(self):
         """
         Execute the gravity enforcement pass.
-        Scans agentic_core files and comments out any forbidden downstream imports.
+        Scans AgenticCore files and comments out any forbidden downstream imports.
         """
         print(f"\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
         self.healed_count = 0
         self.healed_files = []
         
-        # Only scan sovereign upstream code (agentic_core)
-        agentic_core_path = self.root / "agentic_core"
+        # Only scan sovereign upstream code (AgenticCore)
+        agentic_core_path = self.root / "AgenticCore"
         if not agentic_core_path.exists():
-            print(f"   [!] GravityEnforcerAgent: agentic_core not found")
+            print(f"   [!] GravityEnforcerAgent: AgenticCore not found")
             return
             
         for py_file in agentic_core_path.rglob("*.py"):
@@ -97,7 +97,7 @@ class GravityEnforcerAgent(CachedSafetyShield):
         # [CACHE-FIRST] Sovereign reflex
         cached = self.get_cached_verdict("gravity", str(file_path))
         if cached:
-            print(f"   [CACHE HIT] Gravity verdict for {file_path.name}")
+            print(f"   [CACHE HIT] Gravity Verdict for {file_path.name}")
             return cached.get('had_violations', False)
         
         try:
@@ -111,7 +111,7 @@ class GravityEnforcerAgent(CachedSafetyShield):
         if not self.forbidden_pattern or not self.forbidden_pattern.search(content):
             return False
             
-        # [HEALING] Comment out the violation to restore Gravity
+        # [HEALING] Comment out the Violation to restore Gravity
         # This preserves the code but prevents it from executing
         new_content = self.forbidden_pattern.sub(r"# GRAVITY VIOLATION: \g<0>", content)
         
@@ -120,16 +120,16 @@ class GravityEnforcerAgent(CachedSafetyShield):
             try:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(new_content)
-                # Cache the verdict
-                verdict = {"had_violations": True, "healed": True}
-                self.store_verdict("gravity", str(file_path), verdict)
+                # Cache the Verdict
+                Verdict = {"had_violations": True, "healed": True}
+                self.store_verdict("gravity", str(file_path), Verdict)
                 return True
             except Exception as e:
                 print(f"   [!] Could not write to {file_path}: {e}")
         
         # Cache no violations
-        verdict = {"had_violations": False, "healed": False}
-        self.store_verdict("gravity", str(file_path), verdict)
+        Verdict = {"had_violations": False, "healed": False}
+        self.store_verdict("gravity", str(file_path), Verdict)
         return False
         
     def get_summary(self) -> Dict:

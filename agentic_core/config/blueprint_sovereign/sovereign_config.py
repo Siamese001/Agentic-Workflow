@@ -22,9 +22,9 @@ class SovereignConfig(
     MAX_RETRY_ATTEMPTS: int = 3
     CHECKPOINT_INTERVAL_SECONDS: int = 300
     BASE_GIT_PATH: str = 'c:/Git/Agentic-Workflow/'
-    CORE_CONTRACTS_PATH: str = f'{BASE_GIT_PATH}agentic_core/schemas/models/core_contracts.py'
-    PROMPT_CONSTITUTION_PATH: str = f'{BASE_GIT_PATH}agentic_core/prompt_governance/meta_prompts/sovereign_prompt_constitution.py'
-    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split('agentic_core')[0]
+    CORE_CONTRACTS_PATH: str = f'{BASE_GIT_PATH}AgenticCore/schemas/models/core_contracts.py'
+    PROMPT_CONSTITUTION_PATH: str = f'{BASE_GIT_PATH}AgenticCore/prompt_governance/meta_prompts/sovereign_prompt_constitution.py'
+    ROOT_DIR: str = os.path.dirname(os.path.abspath(__file__)).split('AgenticCore')[0]
     RG_MIN_WORDS: int = 300
     RG_MAX_WORDS: int = 800
     RG_REASONING_TEMPERATURE: float = 0.7
@@ -114,16 +114,16 @@ class SovereignConfig(
     def __post_init__(self):
         """Initialize mutable defaults after dataclass creation."""
         object.__setattr__(self, 'MODEL_PRICING', {'gemini-2.5-flash': {'input': 0.075, 'output': 0.3}, 'gpt-5.1': {'input': 0.003, 'output': 0.012}, 'claude-sonnet-4.5': {'input': 0.0035, 'output': 0.018}})
-        object.__setattr__(self, 'FILESYSTEM_ALLOWED_ROOTS', ['agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'config'])
+        object.__setattr__(self, 'FILESYSTEM_ALLOWED_ROOTS', ['AgenticCore', 'apps_shared', 'apps_rg', 'apps_lic', 'config'])
         object.__setattr__(self, 'FILESYSTEM_FORBIDDEN_PATTERNS', ['\\.\\./', '/etc/', '/proc/', '\\.env'])
 
     def validate(self) -> Any:
         """Ensure critical secrets are present."""
         errors: Any = []
         if not self.PINECONE_API_KEY:
-            errors.append('CRITICAL: PINECONE_API_KEY is missing.')
+            errors.append('CRITICAL: PINECONE_API_KEY is Missing.')
         if not self.OPENAI_API_KEY:
-            errors.append('CRITICAL: OPENAI_API_KEY is missing.')
+            errors.append('CRITICAL: OPENAI_API_KEY is Missing.')
         if errors:
             raise ValueError('\n'.join(errors))
 # Alias for backward compatibility

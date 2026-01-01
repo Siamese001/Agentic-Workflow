@@ -8,8 +8,8 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-# NAMING FIXED: ActionRequest → action_request
-class action_request:
+# NAMING FIXED: ActionRequest → ActionRequest
+class ActionRequest:
     """Request for the action plane to execute a tool or action.
     Attributes:
         action_type: Type of action (e.g., "tool_call", "api_request")
@@ -39,8 +39,8 @@ class action_request:
 
 
 @dataclass
-# NAMING FIXED: ActionResult → action_result
-class action_result:
+# NAMING FIXED: ActionResult → ActionResult
+class ActionResult:
     """Result from action plane execution.
 
     Attributes:
@@ -68,17 +68,17 @@ class action_result:
 
 
 @dataclass
-# NAMING FIXED: PlanningRequest → planning_request
-class planning_request:
+# NAMING FIXED: PlanningRequest → PlanningRequest
+class PlanningRequest:
     """Request for the cognitive plane to generate a plan.
 
     Attributes:
-        task: The task or goal to plan for
+        Task: The Task or goal to plan for
         context: Current context including scene, state, history
         max_steps: Maximum number of steps to plan
         constraints: Any constraints on the plan
     """
-    task: str = ""
+    Task: str = ""
     context: Dict[str, Any] = field(default_factory=dict)
     max_steps: int = 10
     constraints: List[str] = field(default_factory=list)
@@ -86,7 +86,7 @@ class planning_request:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            "task": self.task,
+            "Task": self.Task,
             "context": self.context,
             "max_steps": self.max_steps,
             "constraints": self.constraints,
@@ -94,8 +94,8 @@ class planning_request:
 
 
 @dataclass
-# NAMING FIXED: PlanningResult → planning_result
-class planning_result:
+# NAMING FIXED: PlanningResult → PlanningResult
+class PlanningResult:
     """Result from cognitive plane planning.
 
     Attributes:

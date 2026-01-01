@@ -16,7 +16,7 @@ class GravityLeakRepairAgent:
     - Single-file scope, no risk of import cycles
     - Easy to audit/rollback
     """
-    UPWARD_IMPORT_PATTERNS: Any = ['^(\\s*)import\\s+agentic_core\\.L[45]_\\w+', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\s+import', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\.\\w+\\s+import']
+    UPWARD_IMPORT_PATTERNS: Any = ['^(\\s*)import\\s+AgenticCore\\.L[45]_\\w+', '^(\\s*)from\\s+AgenticCore\\.L[45]_\\w+\\s+import', '^(\\s*)from\\s+AgenticCore\\.L[45]_\\w+\\.\\w+\\s+import']
 
     def __init__(self, ctx, project_root=None):
         """Initialize with mandatory ctx for sovereign operation."""

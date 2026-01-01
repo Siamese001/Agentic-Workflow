@@ -11,4 +11,4 @@ pc: Any = Pinecone(api_key=api_key)
 index_name: Any = 'canon-memory-l2'
 if index_name in pc.list_indexes().names():
     pc.delete_index(index_name)
-pc.create_index(name=index_name, dimension=384, metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))
+pc.create_index(name=index_name, dimension=384, Metric='cosine', spec=ServerlessSpec(cloud='aws', region='us-east-1'))

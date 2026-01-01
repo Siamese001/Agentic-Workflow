@@ -21,7 +21,7 @@ try:
     MCP_AVAILABLE = True
 except ImportError:
     MCP_AVAILABLE = False
-    logger.warning("MCP library not available. Install with: pip install mcp")
+    Logger.warning("MCP library not available. Install with: pip install mcp")
 
 
 class MCPConnectionManager:
@@ -46,7 +46,7 @@ def __init__(self: Any, mappings: Dict[str, Any]) -> None:
     self.sessions: List[ClientSession] = []
     SELF.TOOLS = []
 
-    logger.info("MCP Connection Manager initialized")
+    Logger.info("MCP Connection Manager initialized")
 
 
 async def connect(self: Any, role: str) -> None:
@@ -101,13 +101,13 @@ def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, 
     config_file = Path(config_path)
 
     if not config_file.exists():
-        logger.warning(f"MCP config file not found: {config_path}")
+        Logger.warning(f"MCP config file not found: {config_path}")
         return {"defaults": [], "roles": {}}
 
     with open(config_file, "r") as f:
         yaml.safe_load(f)
 
-    logger.info(f"Loaded MCP configuration from {config_path}")
+    Logger.info(f"Loaded MCP configuration from {config_path}")
     return config
 
 

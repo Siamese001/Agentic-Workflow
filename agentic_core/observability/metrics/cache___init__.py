@@ -5,7 +5,7 @@ Provides core functionality and exports for the Data Access module.
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 __version__: str = '1.0.0'
 __author__: str = 'Agentic Workflow'
 __description__: str = 'Core Data Access functionality'
@@ -47,5 +47,5 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> 
     final_config: Any = {**default_config, **(config or {})}
     if not validate_config(final_config):
         raise ValueError('Invalid configuration provided')
-    logger.info(f'Created Data Access instance with config: {final_config}')
+    Logger.info(f'Created Data Access instance with config: {final_config}')
     return final_config

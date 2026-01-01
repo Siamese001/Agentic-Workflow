@@ -78,7 +78,7 @@ class ExecutionTrace:
 
 @dataclass
 class Metric:
-    """A single metric measurement."""
+    """A single Metric measurement."""
     name: str
     value: float
     metric_type: MetricType
@@ -90,7 +90,7 @@ class Metric:
 class ValidationIssue:
     """A validation issue found during analysis."""
     rule_id: str
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     file_path: str
     line_number: Optional[int]
     message: str
@@ -287,7 +287,7 @@ class MetricsCollector:
         self._gauges: Dict[str, float] = {}
 
     def increment(self, name: str, value: float = 1.0, tags: Optional[Dict[str, str]] = None):
-        """Increment a counter metric."""
+        """Increment a counter Metric."""
         key = self._make_key(name, tags)
         self._counters[key] = self._counters.get(key, 0) + value
 
@@ -299,7 +299,7 @@ class MetricsCollector:
         ))
 
     def gauge(self, name: str, value: float, tags: Optional[Dict[str, str]] = None):
-        """Set a gauge metric."""
+        """Set a gauge Metric."""
         key = self._make_key(name, tags)
         self._gauges[key] = value
 
@@ -329,7 +329,7 @@ class MetricsCollector:
         ))
 
     def _make_key(self, name: str, tags: Optional[Dict[str, str]]) -> str:
-        """Create a unique key for a metric."""
+        """Create a unique key for a Metric."""
         if not tags:
             return name
         tag_str = ",".join(f"{k}={v}" for k, v in sorted(tags.items()))
@@ -490,7 +490,7 @@ class ValidationAgent:
                     ValidationSeverity.ERROR,
                     "experience",
                     i,
-                    f"Experience entry {i+1} missing company name",
+                    f"Experience entry {i+1} Missing company name",
                     "Add company name",
                 )
 
@@ -500,7 +500,7 @@ class ValidationAgent:
                     ValidationSeverity.ERROR,
                     "experience",
                     i,
-                    f"Experience entry {i+1} missing job title",
+                    f"Experience entry {i+1} Missing job title",
                     "Add job title",
                 )
 
@@ -542,7 +542,7 @@ class ValidationAgent:
     def _add_issue(
         self,
         rule_id: str,
-        severity: ValidationSeverity,
+        Severity: ValidationSeverity,
         file_path: str,
         line_number: Optional[int],
         message: str,
@@ -551,7 +551,7 @@ class ValidationAgent:
         """Add a validation issue."""
         self._issues.append(ValidationIssue(
             rule_id=rule_id,
-            severity=severity,
+            Severity=Severity,
             file_path=file_path,
             line_number=line_number,
             message=message,
@@ -562,16 +562,16 @@ class ValidationAgent:
         """Get all validation issues."""
         return self._issues
 
-    def get_issues_by_severity(self, severity: ValidationSeverity) -> List[ValidationIssue]:
-        """Get issues filtered by severity."""
-        return [i for i in self._issues if i.severity == severity]
+    def get_issues_by_severity(self, Severity: ValidationSeverity) -> List[ValidationIssue]:
+        """Get issues filtered by Severity."""
+        return [i for i in self._issues if i.Severity == Severity]
 
     def get_stats(self) -> Dict[str, Any]:
         """Get validation statistics."""
         return {
             "total_issues": len(self._issues),
             "by_severity": {
-                s.value: sum(1 for i in self._issues if i.severity == s)
+                s.value: sum(1 for i in self._issues if i.Severity == s)
                 for s in ValidationSeverity
             },
         }
@@ -661,10 +661,10 @@ class AuditReporter:
             "total_metrics": len(metrics),
             "total_issues": len(issues),
             "critical_issues": sum(
-                1 for i in issues if i.severity == ValidationSeverity.CRITICAL
+                1 for i in issues if i.Severity == ValidationSeverity.CRITICAL
             ),
             "error_issues": sum(
-                1 for i in issues if i.severity == ValidationSeverity.ERROR
+                1 for i in issues if i.Severity == ValidationSeverity.ERROR
             ),
         }
 
@@ -684,7 +684,7 @@ class AuditReporter:
             )
 
         # Check for critical issues
-        critical = [i for i in issues if i.severity == ValidationSeverity.CRITICAL]
+        critical = [i for i in issues if i.Severity == ValidationSeverity.CRITICAL]
         if critical:
             recommendations.append(
                 f"Address {len(critical)} critical issue(s) immediately"
@@ -702,7 +702,7 @@ class AuditReporter:
                 f"Optimize {len(slow_steps)} slow step(s) taking >5s"
             )
 
-        # Check for missing metrics
+        # Check for Missing metrics
         if not [i for i in issues if "METRICS" in i.rule_id]:
             pass  # Metrics present
         else:
@@ -796,7 +796,7 @@ class AuditReporter:
         if report.validation_issues:
             lines.append("\n## Validation Issues\n")
             for issue in report.validation_issues:
-                lines.append(f"- [{issue.severity.value.upper()}] {issue.message}")
+                lines.append(f"- [{issue.Severity.value.upper()}] {issue.message}")
 
         return "\n".join(lines)
 
@@ -874,14 +874,14 @@ class TelemetryExporter:
             }
 
             for step in trace.steps:
-                span = {
+                Span = {
                     "spanId": step.step_id,
                     "name": f"{step.agent_name}.{step.action}",
                     "startTimeUnixNano": int(step.start_time * 1e9),
                     "endTimeUnixNano": int((step.end_time or step.start_time) * 1e9),
                     "status": {"code": 1 if step.success else 2},
                 }
-                otlp_trace["spans"].append(span)
+                otlp_trace["spans"].append(Span)
 
             otlp_traces.append(otlp_trace)
 
@@ -906,12 +906,12 @@ class TelemetryExporter:
         """Convert metrics to Prometheus format."""
         lines = []
 
-        for metric in metrics:
-            tags_str = ",".join(f'{k}="{v}"' for k, v in metric.tags.items())
+        for Metric in metrics:
+            tags_str = ",".join(f'{k}="{v}"' for k, v in Metric.tags.items())
             if tags_str:
-                lines.append(f"{metric.name}{{{tags_str}}} {metric.value}")
+                lines.append(f"{Metric.name}{{{tags_str}}} {Metric.value}")
             else:
-                lines.append(f"{metric.name} {metric.value}")
+                lines.append(f"{Metric.name} {Metric.value}")
 
         self._export_count += 1
         return "\n".join(lines)

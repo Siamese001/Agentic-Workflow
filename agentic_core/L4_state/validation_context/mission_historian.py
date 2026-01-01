@@ -7,9 +7,9 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class mission_historian:
+class MissionHistorian:
     """
     L4 State: Mission History Tracking
     Records all mission actions, decisions, and outcomes for audit trails.
@@ -44,9 +44,9 @@ class mission_historian:
             with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
                 writer: Any = csv.writer(f)
                 writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
-            logger.debug(f'[MissionHistorian] Recorded: {action} on {file_name}')
+            Logger.debug(f'[MissionHistorian] Recorded: {action} on {file_name}')
         except Exception as e:
-            logger.error(f'[MissionHistorian] Failed to record action: {e}')
+            Logger.error(f'[MissionHistorian] Failed to record action: {e}')
 
     def get_history(self, file_name: Optional[str]=None) -> list:
         """
@@ -68,7 +68,7 @@ class mission_historian:
                     if file_name is None or row.get('file') == file_name:
                         history.append(row)
         except Exception as e:
-            logger.error(f'[MissionHistorian] Failed to read history: {e}')
+            Logger.error(f'[MissionHistorian] Failed to read history: {e}')
         return history
 
     def get_summary(self) -> Dict[str, Any]:

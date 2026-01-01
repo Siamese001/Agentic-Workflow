@@ -5,10 +5,10 @@ from dataclasses import dataclass, field
 'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class competency_item:
+class CompetencyItem:
     """Single competency item."""
     title: str
     description: str
@@ -17,7 +17,7 @@ class competency_item:
     _industry_first_ranking: int
 
 @dataclass
-class competencies_output:
+class CompetenciesOutput:
     """Gap Closure Architect output."""
     competencies: List[CompetencyItem]
     _total_count: int
@@ -28,7 +28,7 @@ class competencies_output:
     industry_first_compliant: bool
     _metadata: Dict[str, Any]
 
-class gap_closure_architect(Agent):
+class GapClosureArchitect(Agent):
     """Gap Closure Architect agent for leadership competencies.
 
     This agent generates competencies with strict constraints:
@@ -60,7 +60,7 @@ def __init__(self: Any, config: ReasoningConfig, competency_count: int, word_cou
     self.word_count_min = word_count_min
     self.word_count_max = word_count_max
     self.gap_coverage_minimum = gap_coverage_minimum
-    logger.info(f'GapClosureArchitect initialized: COUNT={competency_count}, words={word_count_min}-{word_count_max}, gap_coverage≥{gap_coverage_minimum:.0%}')
+    Logger.info(f'GapClosureArchitect initialized: COUNT={competency_count}, words={word_count_min}-{word_count_max}, gap_coverage≥{gap_coverage_minimum:.0%}')
 
 async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     """Execute competency generation with gap filling.
@@ -79,14 +79,14 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     Returns:
         CompetenciesOutput with 6 competencies and gap coverage
     """
-    logger.info('Executing GapClosureArchitect (≥85% Gap Coverage)')
+    Logger.info('Executing GapClosureArchitect (≥85% Gap Coverage)')
     jd_keyword_gap: Any = context.get('JD_Keyword_Gap', [])
     authentic_phrasing: Any = context.get('Authentic_Phrasing', [])
     base_competency_pool: Any = context.get('Base_Competency_Pool', [])
     target_industry: Any = context.get('target_industry', 'Technology')
     regeneration_feedback: Any = context.get('regeneration_feedback')
     if not jd_keyword_gap:
-        logger.warning('No JD_Keyword_Gap provided - cannot calculate gap coverage')
+        Logger.warning('No JD_Keyword_Gap provided - cannot calculate gap coverage')
     if regeneration_feedback:
         PROMPT: Any = self._build_regeneration_prompt(context, regeneration_feedback)
     else:
@@ -94,7 +94,7 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     await self._call_llm(prompt)
     COMPETENCIES: Any = self._parse_competencies(response)
     if len(competencies) != self.competency_count:
-        logger.warning(f'Generated {len(competencies)} competencies, expected {self.competency_count}')
+        Logger.warning(f'Generated {len(competencies)} competencies, expected {self.competency_count}')
         while len(competencies) < self.competency_count:
             competencies.append(CompetencyItem(TITLE='[PLACEHOLDER]', DESCRIPTION='[PLACEHOLDER]', word_count=0, gap_keywords_covered=[], industry_first_ranking=len(competencies) + 1))
         COMPETENCIES: Any = competencies[:self.competency_count]
@@ -103,9 +103,9 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     missing_keywords: Any = list(set(jd_keyword_gap) - covered_keywords)
     industry_first_compliant: Any = self._check_industry_first_ranking(competencies, target_industry)
     OUTPUT: Any = CompetenciesOutput(COMPETENCIES=competencies, total_count=len(competencies), gap_coverage_percentage=gap_coverage, total_gap_keywords=len(jd_keyword_gap), covered_gap_keywords=len(covered_keywords), missing_gap_keywords=missing_keywords, industry_first_compliant=industry_first_compliant, METADATA={'k_node_id': self.k_node_id, 'temperature': self.config.temperature, 'gap_coverage_minimum': self.gap_coverage_minimum, 'word_count_range': f'{self.word_count_min}-{self.word_count_max}'})
-    logger.info(f'GapClosureArchitect complete: {len(competencies)} competencies, gap_coverage={gap_coverage:.1%}, Industry-First={industry_first_compliant}')
+    Logger.info(f'GapClosureArchitect complete: {len(competencies)} competencies, gap_coverage={gap_coverage:.1%}, Industry-First={industry_first_compliant}')
     if gap_coverage < self.gap_coverage_minimum:
-        logger.error(f'GAP COVERAGE VIOLATION: {gap_coverage:.1%} < {self.gap_coverage_minimum:.1%}')
+        Logger.error(f'GAP COVERAGE VIOLATION: {gap_coverage:.1%} < {self.gap_coverage_minimum:.1%}')
     return output
 
 def _build_initial_prompt(self: Any, jd_keyword_gap: List[str], authentic_phrasing: List[str], base_competency_pool: List[str], target_industry: str) -> str:

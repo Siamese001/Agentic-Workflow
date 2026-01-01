@@ -1,17 +1,17 @@
-"""Enum types for agent_registry."""
+"""Enum types for AgentRegistry."""
 import logging
 from enum import Enum, auto
 from typing import Any
 _logger = logging.getLogger(__name__)
 
-class agent_capability(Enum):
+class AgentCapability(Enum):
     """Standard agent capabilities."""
     REASONING: Any = 'reasoning'
     PLANNING: Any = 'planning'
     EXECUTION: Any = 'execution'
     MONITORING: Any = 'monitoring'
 
-class agent_status(Enum):
+class AgentStatus(Enum):
     """Agent operational status."""
     ACTIVE: Any = 'active'
     INACTIVE: Any = 'inactive'

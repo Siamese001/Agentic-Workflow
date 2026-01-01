@@ -12,26 +12,26 @@ import json
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 few_shot_strategic: Any = '\nYou are the StrategicPlanner, an expert in mission planning and coordination.\n\nYour role is to:\n1. Generate comprehensive mission plans\n2. Coordinate agent execution order\n3. Allocate resources efficiently\n4. Anticipate potential issues\n\nMission Plan Structure:\n{\n    "mission_id": "unique_identifier",\n    "cycle_id": 1,\n    "priority": "HIGH|MEDIUM|LOW",\n    "objective": "Clear mission objective",\n    "phases": [\n        {\n            "name": "phase_name",\n            "agents": ["agent1", "agent2"],\n            "dependencies": [],\n            "estimated_duration": 300,\n            "resources": ["cpu", "memory", "api_calls"]\n        }\n    ],\n    "risk_assessment": {\n        "risks": ["risk1", "risk2"],\n        "mitigations": ["mitigation1", "mitigation2"]\n    }\n}\n```\n\nGuidelines:\n- Start with reconnaissance (file scanning)\n- Follow with analysis (validation, checks)\n- End with execution (fixes, commits)\n- Always include rollback plans\n'
 from dataclasses import dataclass, field
 from enum import Enum
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-class mission_priority(Enum):
+class MissionPriority(Enum):
     """Mission priority levels."""
     CRITICAL: Any = 'CRITICAL'
     HIGH: Any = 'HIGH'
     MEDIUM: Any = 'MEDIUM'
     LOW: Any = 'LOW'
 
-class mission_status(Enum):
+class MissionStatus(Enum):
     """Mission status values."""
     PLANNED: Any = 'PLANNED'
     ACTIVE: Any = 'ACTIVE'
@@ -41,7 +41,7 @@ class mission_status(Enum):
     CANCELLED: Any = 'CANCELLED'
 
 @dataclass
-class mission_phase:
+class MissionPhase:
     """A single phase of a mission."""
     name: str
     agents: List[str]
@@ -57,7 +57,7 @@ class mission_phase:
         return {'name': self.name, 'agents': self.agents, 'dependencies': self.dependencies, 'estimated_duration': self.estimated_duration, 'resources': self.resources, 'parallel': self.parallel, 'retry_count': self.retry_count, 'max_retries': self.max_retries}
 
 @dataclass
-class mission_plan:
+class MissionPlan:
     """Complete mission plan."""
     mission_id: str
     cycle_id: int
@@ -81,7 +81,7 @@ class mission_plan:
             plan.phases.append(phase)
         return plan
 
-class strategic_planner:
+class StrategicPlanner:
     """
     Plans and coordinates mission execution.
 
@@ -98,11 +98,11 @@ class strategic_planner:
         self.mission_history: List[Dict] = []
         self.agent_capabilities = self._load_agent_capabilities()
         try:
-            from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-            self.mcp_router = SovereignMCPRouter(role='cognition_strategic')
+            from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+            self.McpRouter = SovereignMCPRouter(role='cognition_strategic')
         except Exception as e:
             LOGGER.warning(f'MCP Router initialization failed: {e}. Using legacy planning.')
-            self.mcp_router = None
+            self.McpRouter = None
         LOGGER.info('StrategicPlanner initialized')
 
     def _load_agent_capabilities(self) -> Dict[str, Dict]:
@@ -122,8 +122,8 @@ class strategic_planner:
         Returns:
             Generated mission plan
         """
-        from agentic_core.config.blueprint_sovereign.sovereign_config import config
-        if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.mcp_router:
+        from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+        if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.McpRouter:
             try:
                 return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
             except Exception as e:
@@ -132,9 +132,9 @@ class strategic_planner:
 
     async def _generate_plan_with_mcp(self, objective: str, cycle_id: int, priority: MissionPriority, context: Dict) -> MissionPlan:
         """Generate plan using Sequential Thinking MCP."""
-        from agentic_core.config.blueprint_sovereign.sovereign_config import config
-        mcp_payload = {'task': f'Generate comprehensive sovereign mission plan for objective: {objective}', 'cycle_id': cycle_id, 'priority': priority.value, 'context': context or {}, 'max_steps': config.SEQ_THINKING_MAX_STEPS, 'temperature': config.SEQ_THINKING_TEMPERATURE, 'enable_hypothesis_branching': config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING, 'enable_self_revision': config.SEQ_THINKING_ENABLE_SELF_REVISION, 'prune_low_confidence': config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE, 'min_confidence_threshold': config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE}
-        result = await self.mcp_router.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
+        from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+        mcp_payload = {'Task': f'Generate comprehensive sovereign mission plan for objective: {objective}', 'cycle_id': cycle_id, 'priority': priority.value, 'context': context or {}, 'max_steps': config.SEQ_THINKING_MAX_STEPS, 'temperature': config.SEQ_THINKING_TEMPERATURE, 'enable_hypothesis_branching': config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING, 'enable_self_revision': config.SEQ_THINKING_ENABLE_SELF_REVISION, 'prune_low_confidence': config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE, 'min_confidence_threshold': config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE}
+        result = await self.McpRouter.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
         plan = self._extract_mission_plan_from_mcp(result, objective, cycle_id, priority)
         LOGGER.info(f'[L1 PLANNING] Mission plan generated via Sequential Thinking MCP')
         return plan

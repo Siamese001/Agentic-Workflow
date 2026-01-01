@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Set
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class BiasType(Enum):
@@ -27,10 +27,10 @@ class BiasType(Enum):
 @dataclass
 class BiasMatch:
     """Single bias detection match."""
-    bias_type: BiasType
+    BiasType: BiasType
     phrase: str
     context: str
-    severity: float
+    Severity: float
 
 
 @dataclass
@@ -44,8 +44,8 @@ class BiasResult:
     recommendations: List[str]
     
     def get_critical_biases(self) -> List[BiasMatch]:
-        """Get high-severity bias matches."""
-        return [m for m in self.matches if m.severity > 0.7]
+        """Get high-Severity bias matches."""
+        return [m for m in self.matches if m.Severity > 0.7]
 
 
 class BiasAuditor:
@@ -120,21 +120,21 @@ class BiasAuditor:
         detected_bias_types: Set[BiasType] = set()
         matches: List[BiasMatch] = []
         
-        for bias_type, patterns in self.bias_patterns.items():
+        for BiasType, patterns in self.bias_patterns.items():
             for pattern in patterns:
                 for match in re.finditer(pattern, content, re.IGNORECASE):
                     phrase = match.group()
                     flagged_phrases.append(phrase)
-                    detected_bias_types.add(bias_type)
+                    detected_bias_types.add(BiasType)
                     
-                    context = self._extract_context(content, match.span())
-                    severity = self._calculate_severity(bias_type, phrase)
+                    context = self._extract_context(content, match.Span())
+                    Severity = self._calculate_severity(BiasType, phrase)
                     
                     matches.append(BiasMatch(
-                        bias_type=bias_type,
+                        BiasType=BiasType,
                         phrase=phrase,
                         context=context,
-                        severity=severity,
+                        Severity=Severity,
                     ))
         
         has_bias = len(detected_bias_types) > 0
@@ -143,7 +143,7 @@ class BiasAuditor:
         recommendations = self._generate_recommendations(list(detected_bias_types))
         
         if self.enable_logging and has_bias:
-            logger.warning(
+            Logger.warning(
                 "bias_detected",
                 extra={
                     "bias_types": [bt.value for bt in detected_bias_types],
@@ -161,27 +161,27 @@ class BiasAuditor:
             recommendations=recommendations,
         )
     
-    def _extract_context(self, content: str, span: tuple[int, int], window: int = 50) -> str:
+    def _extract_context(self, content: str, Span: tuple[int, int], window: int = 50) -> str:
         """Extract context around a match.
         
         Args:
             content: Full content
-            span: Match span (start, end)
+            Span: Match Span (start, end)
             window: Context window size
             
         Returns:
             Context string
         """
-        start, end = span
+        start, end = Span
         context_start = max(0, start - window)
         context_end = min(len(content), end + window)
         return content[context_start:context_end]
     
-    def _calculate_severity(self, bias_type: BiasType, phrase: str) -> float:
-        """Calculate severity of bias match.
+    def _calculate_severity(self, BiasType: BiasType, phrase: str) -> float:
+        """Calculate Severity of bias match.
         
         Args:
-            bias_type: Type of bias
+            BiasType: Type of bias
             phrase: Matched phrase
             
         Returns:
@@ -195,10 +195,10 @@ class BiasAuditor:
         if phrase.lower() in high_severity_terms:
             return 1.0
         
-        if bias_type in {BiasType.RACE, BiasType.DISABILITY}:
+        if BiasType in {BiasType.RACE, BiasType.DISABILITY}:
             return 0.8
         
-        if bias_type in {BiasType.GENDER, BiasType.AGE}:
+        if BiasType in {BiasType.GENDER, BiasType.AGE}:
             return 0.5
         
         return 0.3

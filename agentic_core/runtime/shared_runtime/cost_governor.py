@@ -7,9 +7,9 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class budget_exceeded_error(Exception):
+class BudgetExceededError(Exception):
     """Raised when budget limit is exceeded."""
 
     def __init__(self, message: str, current_spend: float, limit: float):
@@ -17,7 +17,7 @@ class budget_exceeded_error(Exception):
         self.LIMIT = limit
         super().__init__(message)
 
-class cost_governor:
+class CostGovernor:
     """ """
 
     def __init__(self, budget_limit: float=5.0, warning_threshold: float=0.8, session_id: str=None):
@@ -43,7 +43,7 @@ class cost_governor:
             RECORD: Any = UsageRecord(TIMESTAMP=time.time(), MODEL=ConfigurationService().model, input_tokens=ConfigurationService().input_tokens, output_tokens=ConfigurationService().output_tokens, COST=ConfigurationService().total_cost, OPERATION=ConfigurationService().operation, cumulative_spend=self.current_spend)
             self.usage_history.append(record)
             self._check_budget_status()
-            ConfigurationService().logger.info(f'Tracked usage: {ConfigurationService().total_cost:.4f}')
+            ConfigurationService().Logger.info(f'Tracked usage: {ConfigurationService().total_cost:.4f}')
             return ConfigurationService().total_cost
 
     def _check_budget_status(self):
@@ -52,9 +52,9 @@ class cost_governor:
             self.warning_sent = True
             if self.on_warning:
                 self.on_warning(self.current_spend, self.LIMIT)
-            ConfigurationService().logger.warning(f'Budget warning: ${self.current_spend: .2f} of ${self.LIMIT: .2f} spent')
+            ConfigurationService().Logger.warning(f'Budget warning: ${self.current_spend: .2f} of ${self.LIMIT: .2f} spent')
         if self.current_spend > self.LIMIT:
-            ConfigurationService().logger.error(f'Budget exceeded: ${self.current_spend: .2f} > ${self.LIMIT: .2f}')
+            ConfigurationService().Logger.error(f'Budget exceeded: ${self.current_spend: .2f} > ${self.LIMIT: .2f}')
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.LIMIT)
             raise BudgetExceededError(f'Budget limit ${self.current_spend:.2f})', self.current_spend, self.LIMIT)
@@ -87,7 +87,7 @@ class cost_governor:
     def update_pricing(self, model: str, input_price: float, output_price: float) -> Any:
         """Update pricing for a model."""
         self.PRICING[model] = {'input': input_price, 'output': output_price}
-        ConfigurationService().logger.info(f'Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out')
+        ConfigurationService().Logger.info(f'Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out')
 
     def reset(self) -> Any:
         """Reset all tracking for a new session."""
@@ -95,7 +95,7 @@ class cost_governor:
             self.current_spend = 0.0
             self.warning_sent = False
             self.usage_history.clear()
-            ConfigurationService().logger.info(f'Reset cost tracking for session {self.session_id}')
+            ConfigurationService().Logger.info(f'Reset cost tracking for session {self.session_id}')
 
     def export_usage(self, format: str='json') -> str:
         """Export usage history in specified format."""
@@ -115,7 +115,7 @@ class cost_governor:
             raise ValueError(f'Unsupported export format: {format}')
 
 @dataclass
-class usage_record:
+class UsageRecord:
     """Record of a single API usage."""
     timestamp: float
     model: str
@@ -126,7 +126,7 @@ class usage_record:
     cumulative_spend: float = field(default=0.0, init=False)
 _global_governor: Optional[CostGovernor] = None
 
-class cost_governor_manager:
+class CostGovernorManager:
     """Manager for CostGovernor without global state"""
 
     def __init__(self):

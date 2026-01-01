@@ -14,8 +14,8 @@ from typing import Any, Optional
 import redis
 
 
-# NAMING FIXED: SovereignRedisOrchestrator → sovereign_redis_orchestrator
-class sovereign_redis_orchestrator:
+# NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
+class SovereignRedisOrchestrator:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):

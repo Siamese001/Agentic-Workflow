@@ -6,10 +6,10 @@ Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integratio
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class cycle_config:
+class CycleConfig:
     """Configuration for Think-Act-Observe cycle."""
     max_iterations: int = 10
     enable_react: bool = True
@@ -22,7 +22,7 @@ class cycle_config:
         return {'max_iterations': self.max_iterations, 'enable_react': self.enable_react, 'enable_dag': self.enable_dag, 'enable_state_persistence': self.enable_state_persistence, 'react_max_steps': self.react_max_steps}
 
 @dataclass
-class cycle_state:
+class CycleState:
     """State of the Think-Act-Observe cycle."""
     mission: str
     scene: Dict[str, Any]
@@ -37,12 +37,12 @@ class cycle_state:
         """Convert to dictionary."""
         return {'mission': self.mission, 'scene': self.scene, 'iteration': self.iteration, 'current_phase': self.current_phase, 'observations': self.observations, 'actions_taken': self.actions_taken, 'reasoning_traces': self.reasoning_traces, 'metadata': self.metadata}
 
-class think_act_observe_engine:
+class ThinkActObserveEngine:
     """Engine for executing the Think-Act-Observe cycle.
 
     Integrates:
     - ReAct engine for structured reasoning (Pillar 6)
-    - DAG engine for task dependencies (Pillar 4)
+    - DAG engine for Task dependencies (Pillar 4)
     - State persistence for pause/resume
 
     5-Step Cycle:
@@ -124,7 +124,7 @@ class think_act_observe_engine:
         if self.react_engine:
             try:
                 context = {'mission': self.state.mission, 'scene': self.state.scene, 'iteration': self.state.iteration, 'previous_observations': self.state.observations[-3:] if self.state.observations else []}
-                trace = await self.react_engine.run(task=self.state.mission, think_fn=think_fn, act_fn=lambda action: {'type': 'plan', 'action': action})
+                trace = await self.react_engine.run(Task=self.state.mission, think_fn=think_fn, act_fn=lambda action: {'type': 'plan', 'action': action})
                 reasoning_trace = trace.to_reasoning_trace()
                 self.state.reasoning_traces.append(reasoning_trace.to_dict())
                 actions = []
@@ -162,9 +162,9 @@ class think_act_observe_engine:
             try:
                 self.dag_engine.reset()
                 for i, action in enumerate(actions):
-                    task = Task(id=f'action_{i}', name=action.get('action', f'Action {i}'), task_type=TaskType.ACTION, parameters=action)
-                    self.dag_engine.add_task(task)
-                dag_result = await self.dag_engine.execute(executor=lambda task: act_fn(task.parameters))
+                    Task = Task(id=f'action_{i}', name=action.get('action', f'Action {i}'), TaskType=TaskType.ACTION, parameters=action)
+                    self.dag_engine.add_task(Task)
+                dag_result = await self.dag_engine.execute(executor=lambda Task: act_fn(Task.parameters))
                 for action in actions:
                     self.state.actions_taken.append(action)
                 return {'success': dag_result.success, 'results': list(dag_result.task_results.values()), 'dag_result': dag_result.to_dict()}

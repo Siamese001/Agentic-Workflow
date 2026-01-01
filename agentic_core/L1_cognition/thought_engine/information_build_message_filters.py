@@ -1,5 +1,5 @@
 """
-build_message_filters.py - Formatting Module
+BuildMessageFilters.py - Formatting Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.037113
@@ -7,15 +7,15 @@ Generated: 2025-12-07T13:28:54.037113
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class build_message_filters:
+class BuildMessageFilters:
     """Formatter for outreach domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     self.format_type = self.config.get('format', 'default')
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
     """Format input data into the required output structure."""
@@ -29,6 +29,6 @@ def _transform(self: Any, data: Union[str, Dict]) -> object:
         return data.strip()
     return data
 
-def format_data(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
+def FormatData(data: Union[str, Dict], config: Optional[Dict]=None) -> FormatResult:
     """Format input data into the required output structure."""
     return BuildMessageFilters(config).format(data)

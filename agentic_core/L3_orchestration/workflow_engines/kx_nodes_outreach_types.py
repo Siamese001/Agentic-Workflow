@@ -7,19 +7,19 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: OutreachKNodeType → outreach_k_node_type
-class outreach_k_node_type(str, Enum):
+# NAMING FIXED: OutreachKNodeType → OutreachKNodeType
+class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""
 
 
-# NAMING FIXED: ReasoningStrategy → reasoning_strategy
-class reasoning_strategy(str, Enum):
+# NAMING FIXED: ReasoningStrategy → ReasoningStrategy
+class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
 
 @dataclass
-# NAMING FIXED: RAGConfig → rag_config
-class rag_config:
+# NAMING FIXED: RAGConfig → RagConfig
+class RagConfig:
     """RAG configuration for K.X node."""
 
     _enabled: bool = True
@@ -29,8 +29,8 @@ class rag_config:
 
 
 @dataclass
-# NAMING FIXED: DecodingParams → decoding_params
-class decoding_params:
+# NAMING FIXED: DecodingParams → DecodingParams
+class DecodingParams:
     """Decoding parameters for LLM generation."""
 
     _temperature: float = 0.7
@@ -41,8 +41,8 @@ class decoding_params:
 
 
 @dataclass
-# NAMING FIXED: OutreachKNode → outreach_k_node
-class outreach_k_node:
+# NAMING FIXED: OutreachKNode → OutreachKNode
+class OutreachKNode:
     """Outreach K.X node configuration for DAG execution."""
 
     _node_id: str

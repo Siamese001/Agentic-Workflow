@@ -1,5 +1,5 @@
 """
-inspect_message_quality.py - Diagnostics Module
+InspectMessageQuality.py - Diagnostics Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.060108
@@ -7,14 +7,14 @@ Generated: 2025-12-07T13:28:54.060108
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
 from shared.result_types import DiagnosticReport
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class inspect_message_quality:
+class InspectMessageQuality:
     """Diagnostics for outreach domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
     """Run diagnostics."""

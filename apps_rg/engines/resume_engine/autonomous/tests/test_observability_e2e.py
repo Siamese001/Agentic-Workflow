@@ -41,7 +41,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -57,11 +57,11 @@ class TestFullMissionWithObservability:
     """Tests for full mission with observability."""
 
     @pytest.mark.asyncio
-    async def test_mission_with_full_observability(self, valid_resume, job_description):
+    async def test_mission_with_full_observability(self, valid_resume, JobDescription):
         """Test a complete mission with full observability."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase5 = Phase5Orchestrator(ctx)
 
@@ -71,7 +71,7 @@ class TestFullMissionWithObservability:
         # Track healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -89,7 +89,7 @@ class TestFullMissionWithObservability:
         assert len(trace.steps) >= 1
 
     @pytest.mark.asyncio
-    async def test_mission_metrics_collection(self, valid_resume, job_description):
+    async def test_mission_metrics_collection(self, valid_resume, JobDescription):
         """Test that mission collects proper metrics."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
@@ -116,7 +116,7 @@ class TestReportGenerationAndExport:
     """Tests for report generation and export."""
 
     @pytest.mark.asyncio
-    async def test_generate_comprehensive_report(self, valid_resume, job_description):
+    async def test_generate_comprehensive_report(self, valid_resume, JobDescription):
         """Test generating a comprehensive report."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
@@ -181,11 +181,11 @@ class TestIntegrationWithAllPhases:
     """Tests for integration with all previous phases."""
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_with_all_phases(self, valid_resume, job_description, tmp_path):
+    async def test_full_pipeline_with_all_phases(self, valid_resume, JobDescription, tmp_path):
         """Test complete pipeline with all phases and observability."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Initialize all phase orchestrators
         phase5 = Phase5Orchestrator(ctx)
@@ -213,7 +213,7 @@ class TestIntegrationWithAllPhases:
         # Phase 2: Healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -222,7 +222,7 @@ class TestIntegrationWithAllPhases:
         # Phase 3: Record learning
         step_id = phase5.track_agent("ResumeLearningAgent", "record_success")
         await learning_agent.record_success(
-            task_type="full_pipeline",
+            TaskType="full_pipeline",
             input_context=str(valid_resume),
             output_result="Success",
             confidence=0.9,
@@ -244,11 +244,11 @@ class TestIntegrationWithAllPhases:
         assert report.summary["total_steps"] >= 4
 
     @pytest.mark.asyncio
-    async def test_observability_with_healing_orchestrator(self, valid_resume, job_description):
+    async def test_observability_with_healing_orchestrator(self, valid_resume, JobDescription):
         """Test observability integration with healing orchestrator."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase5 = Phase5Orchestrator(ctx)
 
@@ -342,11 +342,11 @@ class TestComprehensiveWorkflow:
     """Tests for comprehensive end-to-end workflow."""
 
     @pytest.mark.asyncio
-    async def test_complete_workflow_with_telemetry_export(self, valid_resume, job_description, tmp_path):
+    async def test_complete_workflow_with_telemetry_export(self, valid_resume, JobDescription, tmp_path):
         """Test complete workflow with telemetry export."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase5 = Phase5Orchestrator(ctx)
 
@@ -385,7 +385,7 @@ class TestComprehensiveWorkflow:
         assert len(metrics_data) > 0
 
     @pytest.mark.asyncio
-    async def test_workflow_with_run_self_healing_mission(self, valid_resume, job_description):
+    async def test_workflow_with_run_self_healing_mission(self, valid_resume, JobDescription):
         """Test workflow using the main entry point function."""
         ctx = ResumeEngineContext()
         phase5 = Phase5Orchestrator(ctx)
@@ -396,7 +396,7 @@ class TestComprehensiveWorkflow:
         # Run self-healing mission
         step_id = phase5.track_agent("run_self_healing_mission", "execute")
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
             enable_reflection=True,
@@ -415,7 +415,7 @@ class TestComprehensiveWorkflow:
         assert report is not None
 
     @pytest.mark.asyncio
-    async def test_comprehensive_stats(self, valid_resume, job_description):
+    async def test_comprehensive_stats(self, valid_resume, JobDescription):
         """Test getting comprehensive statistics."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume

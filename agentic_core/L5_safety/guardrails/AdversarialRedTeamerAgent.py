@@ -18,35 +18,35 @@ import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class vulnerability_test:
+class VulnerabilityTest:
     """Represents a vulnerability test case."""
     test_id: str
     test_type: str
     target_file: str
     attack_vector: str
     expected_behavior: str
-    severity: str
+    Severity: str
 
 @dataclass
-class red_team_result:
+class RedTeamResult:
     """Result of a red team test."""
     test_id: str
     passed: bool
     vulnerability_found: bool
     details: str
-    severity: Optional[str]
-    recommendation: str
+    Severity: Optional[str]
+    Recommendation: str
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
 class AdversarialRedTeamerAgent(SubAtomicAgent):
@@ -81,7 +81,7 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
 
         Runs in pre-deployment phase to find vulnerabilities before production.
         """
-        logger.info('🔴 Adversarial Red-Teamer: Initiating vulnerability scan...')
+        Logger.info('🔴 Adversarial Red-Teamer: Initiating vulnerability scan...')
         await self._test_preservation_boundaries()
         await self._test_sandbox_escapes()
         await self._test_connectivity_breaks()
@@ -99,23 +99,23 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
 
     def _build_preservation_tests(self) -> List[VulnerabilityTest]:
         """Build tests for preservation attacks."""
-        return [VulnerabilityTest(test_id='PRES-001', test_type='preservation', target_file='test_target.py', attack_vector='Mass deletion of code blocks', expected_behavior='Should fail preservation check', severity='critical'), VulnerabilityTest(test_id='PRES-002', test_type='preservation', target_file='test_target.py', attack_vector='Silent truncation of methods', expected_behavior='Should detect line count drop', severity='high'), VulnerabilityTest(test_id='PRES-003', test_type='preservation', target_file='test_target.py', attack_vector='Comment-only preservation (no code)', expected_behavior='Should fail functional preservation', severity='high')]
+        return [VulnerabilityTest(test_id='PRES-001', test_type='preservation', target_file='test_target.py', attack_vector='Mass deletion of code blocks', expected_behavior='Should fail preservation check', Severity='critical'), VulnerabilityTest(test_id='PRES-002', test_type='preservation', target_file='test_target.py', attack_vector='Silent truncation of methods', expected_behavior='Should detect line count drop', Severity='high'), VulnerabilityTest(test_id='PRES-003', test_type='preservation', target_file='test_target.py', attack_vector='Comment-only preservation (no code)', expected_behavior='Should fail functional preservation', Severity='high')]
 
     def _build_sandbox_tests(self) -> List[VulnerabilityTest]:
         """Build tests for sandbox escapes."""
-        return [VulnerabilityTest(test_id='SAND-001', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt file system access outside sandbox', expected_behavior='Should be blocked by sandbox', severity='critical'), VulnerabilityTest(test_id='SAND-002', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt network access', expected_behavior='Should be blocked by sandbox', severity='critical'), VulnerabilityTest(test_id='SAND-003', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt subprocess execution', expected_behavior='Should be blocked by sandbox', severity='critical')]
+        return [VulnerabilityTest(test_id='SAND-001', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt file system access outside sandbox', expected_behavior='Should be blocked by sandbox', Severity='critical'), VulnerabilityTest(test_id='SAND-002', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt network access', expected_behavior='Should be blocked by sandbox', Severity='critical'), VulnerabilityTest(test_id='SAND-003', test_type='sandbox', target_file='test_target.py', attack_vector='Attempt subprocess execution', expected_behavior='Should be blocked by sandbox', Severity='critical')]
 
     def _build_connectivity_tests(self) -> List[VulnerabilityTest]:
         """Build tests for connectivity breaks."""
-        return [VulnerabilityTest(test_id='CONN-001', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Change output schema without updating downstream', expected_behavior='Should detect schema drift', severity='high'), VulnerabilityTest(test_id='CONN-002', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Remove required field from data contract', expected_behavior='Should fail forward propagation check', severity='high'), VulnerabilityTest(test_id='CONN-003', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Introduce circular dependency', expected_behavior='Should detect cycle in dependency graph', severity='medium')]
+        return [VulnerabilityTest(test_id='CONN-001', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Change output schema without updating downstream', expected_behavior='Should detect schema drift', Severity='high'), VulnerabilityTest(test_id='CONN-002', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Remove required field from data contract', expected_behavior='Should fail forward propagation check', Severity='high'), VulnerabilityTest(test_id='CONN-003', test_type='connectivity', target_file='pipeline_stage.py', attack_vector='Introduce circular dependency', expected_behavior='Should detect cycle in dependency graph', Severity='medium')]
 
     def _build_edge_case_tests(self) -> List[VulnerabilityTest]:
         """Build tests for edge cases."""
-        return [VulnerabilityTest(test_id='EDGE-001', test_type='edge_case', target_file='test_target.py', attack_vector='Empty file healing attempt', expected_behavior='Should handle gracefully', severity='low'), VulnerabilityTest(test_id='EDGE-002', test_type='edge_case', target_file='test_target.py', attack_vector='File with only comments', expected_behavior='Should skip healing', severity='low'), VulnerabilityTest(test_id='EDGE-003', test_type='edge_case', target_file='test_target.py', attack_vector='Extremely nested code (10+ levels)', expected_behavior='Should trigger atomic fission', severity='medium')]
+        return [VulnerabilityTest(test_id='EDGE-001', test_type='edge_case', target_file='test_target.py', attack_vector='Empty file healing attempt', expected_behavior='Should handle gracefully', Severity='low'), VulnerabilityTest(test_id='EDGE-002', test_type='edge_case', target_file='test_target.py', attack_vector='File with only comments', expected_behavior='Should skip healing', Severity='low'), VulnerabilityTest(test_id='EDGE-003', test_type='edge_case', target_file='test_target.py', attack_vector='Extremely nested code (10+ levels)', expected_behavior='Should trigger atomic fission', Severity='medium')]
 
     async def _test_preservation_boundaries(self):
         """Test 90% preservation rule boundaries."""
-        logger.info('   Testing preservation boundaries...')
+        Logger.info('   Testing preservation boundaries...')
         result = await self._attempt_mass_deletion()
         self.results.append(result)
         result = await self._attempt_silent_truncation()
@@ -132,7 +132,7 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
         modified_lines = len([l for l in modified_code.split('\n') if l.strip()])
         preservation_rate = modified_lines / original_lines * 100
         vulnerability_found = preservation_rate >= 90.0
-        return RedTeamResult(test_id=test_id, passed=not vulnerability_found, vulnerability_found=vulnerability_found, details=f'Preservation rate: {preservation_rate:.1f}% (threshold: 90%)', severity='critical' if vulnerability_found else None, recommendation='Preservation check working correctly' if not vulnerability_found else 'CRITICAL: Preservation rule can be bypassed!')
+        return RedTeamResult(test_id=test_id, passed=not vulnerability_found, vulnerability_found=vulnerability_found, details=f'Preservation rate: {preservation_rate:.1f}% (threshold: 90%)', Severity='critical' if vulnerability_found else None, Recommendation='Preservation check working correctly' if not vulnerability_found else 'CRITICAL: Preservation rule can be bypassed!')
 
     async def _attempt_silent_truncation(self) -> RedTeamResult:
         """Attempt to silently truncate methods."""
@@ -140,7 +140,7 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
         original_method_lines = 50
         modified_method_lines = 30
         truncation_detected = modified_method_lines / original_method_lines < 0.9
-        return RedTeamResult(test_id=test_id, passed=truncation_detected, vulnerability_found=not truncation_detected, details=f'Method truncated from {original_method_lines} to {modified_method_lines} lines', severity='high' if not truncation_detected else None, recommendation='Truncation detection working' if truncation_detected else 'WARNING: Silent truncation possible')
+        return RedTeamResult(test_id=test_id, passed=truncation_detected, vulnerability_found=not truncation_detected, details=f'Method truncated from {original_method_lines} to {modified_method_lines} lines', Severity='high' if not truncation_detected else None, Recommendation='Truncation detection working' if truncation_detected else 'WARNING: Silent truncation possible')
 
     async def _attempt_comment_only_preservation(self) -> RedTeamResult:
         """Attempt to preserve line count with only comments."""
@@ -154,14 +154,14 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
             modified_stmts = sum((1 for _ in ast.walk(modified_tree) if isinstance(_, ast.stmt)))
             functional_preservation = modified_stmts / original_stmts * 100 if original_stmts > 0 else 0
             vulnerability_found = functional_preservation >= 90.0
-            return RedTeamResult(test_id=test_id, passed=not vulnerability_found, vulnerability_found=vulnerability_found, details=f'Functional preservation: {functional_preservation:.1f}%', severity='high' if vulnerability_found else None, recommendation='Functional check working' if not vulnerability_found else 'WARNING: Comment-only preservation possible')
+            return RedTeamResult(test_id=test_id, passed=not vulnerability_found, vulnerability_found=vulnerability_found, details=f'Functional preservation: {functional_preservation:.1f}%', Severity='high' if vulnerability_found else None, Recommendation='Functional check working' if not vulnerability_found else 'WARNING: Comment-only preservation possible')
         except Exception as e:
-            logger.exception(f'Error during functional preservation test {test_id}')
-            return RedTeamResult(test_id=test_id, passed=False, vulnerability_found=True, details=f'Error: {e}', severity='high', recommendation='Functional preservation check failed due to an error')
+            Logger.exception(f'Error during functional preservation test {test_id}')
+            return RedTeamResult(test_id=test_id, passed=False, vulnerability_found=True, details=f'Error: {e}', Severity='high', Recommendation='Functional preservation check failed due to an error')
 
     async def _test_sandbox_escapes(self):
         """Test sandbox security boundaries."""
-        logger.info('   Testing sandbox escapes...')
+        Logger.info('   Testing sandbox escapes...')
         result = await self._attempt_filesystem_escape()
         self.results.append(result)
         result = await self._attempt_network_escape()
@@ -173,23 +173,23 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
         """Simulate attempt to access file system outside sandbox."""
         test_id = 'SAND-001'
         blocked = True
-        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt to access sensitive paths', severity='critical' if not blocked else None, recommendation='Sandbox blocking file access' if blocked else 'CRITICAL: Sandbox can be escaped!')
+        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt to access sensitive paths', Severity='critical' if not blocked else None, Recommendation='Sandbox blocking file access' if blocked else 'CRITICAL: Sandbox can be escaped!')
 
     async def _attempt_network_escape(self) -> RedTeamResult:
         """Simulate attempt network access from sandbox."""
         test_id = 'SAND-002'
         blocked = True
-        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt network connection', severity='critical' if not blocked else None, recommendation='Sandbox blocking network' if blocked else 'CRITICAL: Network access possible!')
+        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt network connection', Severity='critical' if not blocked else None, Recommendation='Sandbox blocking network' if blocked else 'CRITICAL: Network access possible!')
 
     async def _attempt_subprocess_escape(self) -> RedTeamResult:
         """Simulate attempt subprocess execution."""
         test_id = 'SAND-003'
         blocked = True
-        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt subprocess execution', severity='critical' if not blocked else None, recommendation='Sandbox blocking subprocess' if blocked else 'CRITICAL: Subprocess execution possible!')
+        return RedTeamResult(test_id=test_id, passed=blocked, vulnerability_found=not blocked, details='Simulated attempt subprocess execution', Severity='critical' if not blocked else None, Recommendation='Sandbox blocking subprocess' if blocked else 'CRITICAL: Subprocess execution possible!')
 
     async def _test_connectivity_breaks(self):
         """Test pipeline stage connectivity."""
-        logger.info('   Testing connectivity breaks...')
+        Logger.info('   Testing connectivity breaks...')
         result = await self._attempt_schema_drift()
         self.results.append(result)
         result = await self._attempt_missing_field()
@@ -201,23 +201,23 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
         """Simulate attempt to change schema without updating downstream."""
         test_id = 'CONN-001'
         detected = True
-        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated change output schema in Stage 2', severity='high' if not detected else None, recommendation='Schema drift detected' if detected else 'WARNING: Schema drift undetected!')
+        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated change output schema in Stage 2', Severity='high' if not detected else None, Recommendation='Schema drift detected' if detected else 'WARNING: Schema drift undetected!')
 
     async def _attempt_missing_field(self) -> RedTeamResult:
         """Simulate attempt to remove required field."""
         test_id = 'CONN-002'
         detected = True
-        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated removal of required field from data contract', severity='high' if not detected else None, recommendation='Forward propagation working' if detected else 'WARNING: Missing field undetected!')
+        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated removal of required field from data contract', Severity='high' if not detected else None, Recommendation='Forward propagation working' if detected else 'WARNING: Missing field undetected!')
 
     async def _attempt_circular_dependency(self) -> RedTeamResult:
         """Simulate attempt to introduce circular dependency."""
         test_id = 'CONN-003'
         detected = True
-        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated introduction of circular import', severity='medium' if not detected else None, recommendation='Cycle detection working' if detected else 'WARNING: Circular dependency possible!')
+        return RedTeamResult(test_id=test_id, passed=detected, vulnerability_found=not detected, details='Simulated introduction of circular import', Severity='medium' if not detected else None, Recommendation='Cycle detection working' if detected else 'WARNING: Circular dependency possible!')
 
     async def _test_edge_cases(self):
         """Test edge case handling."""
-        logger.info('   Testing edge cases...')
+        Logger.info('   Testing edge cases...')
         result = await self._test_empty_file()
         self.results.append(result)
         result = await self._test_comment_only_file()
@@ -229,49 +229,49 @@ class AdversarialRedTeamerAgent(SubAtomicAgent):
         """Simulate empty file handling."""
         test_id = 'EDGE-001'
         handled_gracefully = True
-        return RedTeamResult(test_id=test_id, passed=handled_gracefully, vulnerability_found=False, details='Simulated empty file handled without crash', severity=None, recommendation='Edge case handled correctly')
+        return RedTeamResult(test_id=test_id, passed=handled_gracefully, vulnerability_found=False, details='Simulated empty file handled without crash', Severity=None, Recommendation='Edge case handled correctly')
 
     async def _test_comment_only_file(self) -> RedTeamResult:
         """Simulate comment-only file handling."""
         test_id = 'EDGE-002'
         skipped = True
-        return RedTeamResult(test_id=test_id, passed=skipped, vulnerability_found=False, details='Simulated comment-only file skipped', severity=None, recommendation='Edge case handled correctly')
+        return RedTeamResult(test_id=test_id, passed=skipped, vulnerability_found=False, details='Simulated comment-only file skipped', Severity=None, Recommendation='Edge case handled correctly')
 
     async def _test_extreme_nesting(self) -> RedTeamResult:
         """Simulate extreme nesting handling."""
         test_id = 'EDGE-003'
         fission_triggered = True
-        return RedTeamResult(test_id=test_id, passed=fission_triggered, vulnerability_found=not fission_triggered, details='Simulated 10+ nesting levels detected', severity='medium' if not fission_triggered else None, recommendation='Atomic fission triggered' if fission_triggered else 'WARNING: Extreme nesting not handled')
+        return RedTeamResult(test_id=test_id, passed=fission_triggered, vulnerability_found=not fission_triggered, details='Simulated 10+ nesting levels detected', Severity='medium' if not fission_triggered else None, Recommendation='Atomic fission triggered' if fission_triggered else 'WARNING: Extreme nesting not handled')
 
     def _generate_report(self):
         """Generate red team report."""
         total_tests = len(self.results)
         passed_tests = sum((1 for r in self.results if r.passed))
         vulnerabilities = sum((1 for r in self.results if r.vulnerability_found))
-        critical_vulns = [r for r in self.results if r.severity == 'critical' and r.vulnerability_found]
-        high_vulns = [r for r in self.results if r.severity == 'high' and r.vulnerability_found]
-        logger.info(f"\n{'=' * 80}")
-        logger.info('🔴 ADVERSARIAL RED TEAM REPORT')
-        logger.info(f"{'=' * 80}")
-        logger.info(f'Total Tests: {total_tests}')
-        logger.info(f'Passed: {passed_tests}')
-        logger.info(f'Failed: {total_tests - passed_tests}')
-        logger.info(f'Vulnerabilities Found: {vulnerabilities}')
-        logger.info(f'  Critical: {len(critical_vulns)}')
-        logger.info(f'  High: {len(high_vulns)}')
+        critical_vulns = [r for r in self.results if r.Severity == 'critical' and r.vulnerability_found]
+        high_vulns = [r for r in self.results if r.Severity == 'high' and r.vulnerability_found]
+        Logger.info(f"\n{'=' * 80}")
+        Logger.info('🔴 ADVERSARIAL RED TEAM REPORT')
+        Logger.info(f"{'=' * 80}")
+        Logger.info(f'Total Tests: {total_tests}')
+        Logger.info(f'Passed: {passed_tests}')
+        Logger.info(f'Failed: {total_tests - passed_tests}')
+        Logger.info(f'Vulnerabilities Found: {vulnerabilities}')
+        Logger.info(f'  Critical: {len(critical_vulns)}')
+        Logger.info(f'  High: {len(high_vulns)}')
         if critical_vulns:
-            logger.error('\n[!]  CRITICAL VULNERABILITIES:')
+            Logger.error('\n[!]  CRITICAL VULNERABILITIES:')
             for vuln in critical_vulns:
-                logger.error(f'  [{vuln.test_id}] {vuln.details}')
-                logger.error(f'    → {vuln.recommendation}')
+                Logger.error(f'  [{vuln.test_id}] {vuln.details}')
+                Logger.error(f'    → {vuln.Recommendation}')
         if high_vulns:
-            logger.warning('\n[!]  HIGH SEVERITY VULNERABILITIES:')
+            Logger.warning('\n[!]  HIGH SEVERITY VULNERABILITIES:')
             for vuln in high_vulns:
-                logger.warning(f'  [{vuln.test_id}] {vuln.details}')
-                logger.warning(f'    → {vuln.recommendation}')
+                Logger.warning(f'  [{vuln.test_id}] {vuln.details}')
+                Logger.warning(f'    → {vuln.Recommendation}')
         if not vulnerabilities:
-            logger.info('\n[OK] No vulnerabilities found - system is resilient')
-        logger.info(f"{'=' * 80}\n")
+            Logger.info('\n[OK] No vulnerabilities found - system is resilient')
+        Logger.info(f"{'=' * 80}\n")
 _red_teamer: Optional[AdversarialRedTeamer] = None
 
 def get_red_teamer(ctx: Any) -> AdversarialRedTeamer:

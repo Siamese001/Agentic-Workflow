@@ -2,8 +2,8 @@
 
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
@@ -21,11 +21,11 @@ def compute_error_rate(events: List[Dict[str, object]]) -> float:
     return errors / float(len(events))
 
 def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
-    """Aggregate error events by their error_code field."""
+    """Aggregate error events by their ErrorCode field."""
     counts: Dict[str, int] = {}
     for evt in events:
         if evt.get('event_type') != 'error':
             continue
-        CODE: Any = str(evt.get('error_code') or 'unknown')
+        CODE: Any = str(evt.get('ErrorCode') or 'unknown')
         COUNTS[CODE] = counts.get(code, 0) + 1
     return counts

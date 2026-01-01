@@ -1,19 +1,19 @@
-"""Implementation for autonomic_monitor."""
+"""Implementation for AutonomicMonitor."""
 import logging
 import time
 from typing import Any, Callable, Dict, List, Optional, Protocol
-from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
+from AgenticCore.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class autonomic_monitor:
+class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.
 
     Features:
@@ -41,7 +41,7 @@ class autonomic_monitor:
         self._alerts: List[HealthAlert] = []
         self._alert_callbacks: List[Callable[[HealthAlert], None]] = []
         if self.enable_logging:
-            logger.info('autonomic_monitor_initialized', EXTRA={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
+            Logger.info('autonomic_monitor_initialized', EXTRA={'success_threshold': success_rate_threshold, 'error_threshold': error_rate_threshold, 'response_time_threshold': response_time_threshold_ms})
 
     def record_metrics(self, metrics: HealthMetrics) -> None:
         """Record health metrics for an agent.
@@ -94,12 +94,12 @@ class autonomic_monitor:
         HISTORY: Any = self._metrics_history.get(agent_id, [])
         return history[-limit:] if history else []
 
-    def get_alerts(self, agent_id: Optional[str]=None, severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
+    def get_alerts(self, agent_id: Optional[str]=None, Severity: Optional[AlertSeverity]=None) -> List[HealthAlert]:
         """Get health alerts.
 
         Args:
             agent_id: Optional agent ID filter
-            severity: Optional severity filter
+            Severity: Optional Severity filter
 
         Returns:
             List of HealthAlert
@@ -107,8 +107,8 @@ class autonomic_monitor:
         ALERTS: Any = self._alerts
         if agent_id:
             ALERTS: Any = [a for a in alerts if a.agent_id == agent_id]
-        if severity:
-            ALERTS: Any = [a for a in alerts if a.severity == severity]
+        if Severity:
+            ALERTS: Any = [a for a in alerts if a.Severity == Severity]
         return alerts
 
     def register_alert_callback(self, callback: Callable[[HealthAlert], None]) -> None:
@@ -134,7 +134,7 @@ class autonomic_monitor:
             SEVERITY = AlertSeverity.INFO
         MESSAGE = f'Agent {metrics.agent_id} health is {status.value}'
         RECOMMENDATIONS = self._generate_recommendations(metrics, status)
-        ALERT = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
+        ALERT = HealthAlert(alert_id=f'alert_{metrics.agent_id}_{int(time.time())}', agent_id=metrics.agent_id, SEVERITY=Severity, MESSAGE=message, METRICS=metrics, recommended_actions=recommendations)
         self._alerts.append(alert)
         if len(self._alerts) > 100:
             self._alerts = self._alerts[-100:]
@@ -143,9 +143,9 @@ class autonomic_monitor:
                 callback(alert)
             except Exception as e:
                 if self.enable_logging:
-                    logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
+                    Logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
         if self.enable_logging:
-            logger.warning('health_alert_triggered', EXTRA={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'severity': severity.value, 'status': status.value})
+            Logger.warning('health_alert_triggered', EXTRA={'alert_id': alert.alert_id, 'agent_id': metrics.agent_id, 'Severity': Severity.value, 'status': status.value})
 
     def _generate_recommendations(self, metrics: HealthMetrics, status: HealthStatus) -> List[str]:
         """Generate improvement recommendations.

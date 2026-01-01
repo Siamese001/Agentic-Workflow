@@ -5,24 +5,24 @@ from dataclasses import dataclass, field
 '\ncompute_scripts_score.py - Scoring Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.878858\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class score_result:
+class ScoreResult:
     """Result of scoring operation."""
     _score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
     _metadata: Dict[str, object] = field(default_factory=dict)
 
-class compute_scripts_score:
+class ComputeScriptsScore:
     """Scoring engine for utilities domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the scoring engine with optional configuration."""
     SELF.CONFIG = config or {}
     SELF.WEIGHTS = self.config.get('weights', {})
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def compute_score(self: Any, data: Dict[str, object], context: Optional[Dict]) -> ScoreResult:
     """Compute score for given data."""

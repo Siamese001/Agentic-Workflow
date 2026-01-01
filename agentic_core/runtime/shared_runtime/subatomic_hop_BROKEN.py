@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     pass
 
 LOGGER = logging.getLogger(__name__)
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class SovereignDependencyError(Exception):
@@ -40,15 +40,15 @@ class SubatomicHop:
         # Injected Dependencies (Sovereign Pattern)
         storage: Optional[Any] = None,
         genealogy: Optional[Any] = None,
-        pii_vault: Optional[Any] = None,
-        cost_governor: Optional[Any] = None,
+        PiiVault: Optional[Any] = None,
+        CostGovernor: Optional[Any] = None,
         overseer: Optional[Any] = None,
         membrane: Optional[Any] = None,
         airlock: Optional[Any] = None,
-        supreme_court: Optional[Any] = None,
+        SupremeCourt: Optional[Any] = None,
         mcp_manager: Optional[Any] = None,
         sandbox: Optional[Any] = None,
-        structured_engine: Optional[Any] = None,
+        StructuredEngine: Optional[Any] = None,
         gatekeeper: Optional[Any] = None,
         telemetry: Optional[Any] = None,
     ) -> None:
@@ -59,20 +59,20 @@ class SubatomicHop:
             config: Configuration dictionary
             storage: LocalDiskAdapter instance (injected)
             genealogy: GenealogyRegistry instance (injected)
-            pii_vault: PIIVault instance (injected)
-            cost_governor: CostGovernor instance (injected)
+            PiiVault: PIIVault instance (injected)
+            CostGovernor: CostGovernor instance (injected)
             overseer: ConstitutionalOverseer instance (injected)
             membrane: InputMembrane instance (injected)
             airlock: AirlockProtocol instance (injected)
-            supreme_court: SupremeCourt instance (injected)
+            SupremeCourt: SupremeCourt instance (injected)
             mcp_manager: MCPConnectionManager instance (injected)
             sandbox: DockerSandbox instance (injected)
-            structured_engine: StructuredEngine instance (injected)
+            StructuredEngine: StructuredEngine instance (injected)
             gatekeeper: SemanticGatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
             
         Raises:
-            SovereignDependencyError: If required dependencies are missing
+            SovereignDependencyError: If required dependencies are Missing
         """
         self.role = role
         self.id = str(uuid.uuid4())
@@ -92,17 +92,17 @@ class SubatomicHop:
             )
         self.genealogy = genealogy
         
-        if pii_vault is None:
+        if PiiVault is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'pii_vault' (PIIVault) to be injected."
+                "SubatomicHop requires 'PiiVault' (PIIVault) to be injected."
             )
-        self.pii = pii_vault
+        self.pii = PiiVault
         
-        if cost_governor is None:
+        if CostGovernor is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'cost_governor' (CostGovernor) to be injected."
+                "SubatomicHop requires 'CostGovernor' (CostGovernor) to be injected."
             )
-        self.governor = cost_governor
+        self.governor = CostGovernor
         
         if overseer is None:
             raise SovereignDependencyError(
@@ -122,11 +122,11 @@ class SubatomicHop:
             )
         self.airlock = airlock
         
-        if supreme_court is None:
+        if SupremeCourt is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'supreme_court' (SupremeCourt) to be injected."
+                "SubatomicHop requires 'SupremeCourt' (SupremeCourt) to be injected."
             )
-        self.supreme_court = supreme_court
+        self.SupremeCourt = SupremeCourt
         
         if mcp_manager is None:
             raise SovereignDependencyError(
@@ -140,11 +140,11 @@ class SubatomicHop:
             )
         self.sandbox = sandbox
         
-        if structured_engine is None:
+        if StructuredEngine is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'structured_engine' (StructuredEngine) to be injected."
+                "SubatomicHop requires 'StructuredEngine' (StructuredEngine) to be injected."
             )
-        self.structured_engine = structured_engine
+        self.StructuredEngine = StructuredEngine
         
         if gatekeeper is None:
             raise SovereignDependencyError(
@@ -204,7 +204,7 @@ class SubatomicHop:
         self.genealogy.register_attempt(
             ConfigurationService().trace_id, str(
                 ConfigurationService().context.get(
-                    'task', '')), ConfigurationService().context_hash)
+                    'Task', '')), ConfigurationService().context_hash)
         await self.mcp.connect(self.role)
         await self._sanitize_input(ConfigurationService().context, ConfigurationService().trace_id)
         ConfigurationService().context.update(ConfigurationService().sanitized_context)
@@ -244,10 +244,10 @@ class SubatomicHop:
 
     async def _execute_think_stage_with_consensus(self, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
-        self._assess_task_risk(ConfigurationService().context.get('task', ''))
-        await self._check_past_failures(ConfigurationService().context.get('task', ''))
+        self._assess_task_risk(ConfigurationService().context.get('Task', ''))
+        await self._check_past_failures(ConfigurationService().context.get('Task', ''))
         try:
-            VERDICT = await self.supreme_court.deliberate(CONTEXT=str(ConfigurationService().context), GOAL=ConfigurationService().context.get('task', ''), risk_level=ConfigurationService().risk_level)
+            VERDICT = await self.SupremeCourt.deliberate(CONTEXT=str(ConfigurationService().context), GOAL=ConfigurationService().context.get('Task', ''), risk_level=ConfigurationService().risk_level)
             PLAN = AgentPlan(REASONING=VERDICT.reasoning, tool_calls=[
                             {'name': 'execute_plan', 'args': {'plan': VERDICT.chosen_plan}}])
             self.governor.track('gpt-4', 300, 150)
@@ -276,9 +276,9 @@ class SubatomicHop:
             raise
 
 
-    def _assess_task_risk(self, task: str) -> str:
-        """Assess the risk level of a task."""
-        task_lower = task.lower() # Assign to a variable to avoid repeated calls to ConfigurationService()
+    def _assess_task_risk(self, Task: str) -> str:
+        """Assess the risk level of a Task."""
+        task_lower = Task.lower() # Assign to a variable to avoid repeated calls to ConfigurationService()
         if any((keyword in task_lower for keyword in ConfigurationService().high_risk_keywords)):
             return 'high'
         elif any((keyword in task_lower for keyword in ['modify', 'update', 'change'])):
@@ -287,7 +287,7 @@ class SubatomicHop:
             return 'low'
 
 
-    async def _check_past_failures(self, task: str) -> str:
+    async def _check_past_failures(self, Task: str) -> str:
         """Check telemetry for past failures on similar tasks."""
         try:
             return 'No similar failures found'

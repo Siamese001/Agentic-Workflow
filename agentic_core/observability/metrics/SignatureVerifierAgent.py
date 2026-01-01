@@ -6,10 +6,10 @@ from dataclasses import dataclass
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class operation_result:
+class OperationResult:
     """Result of operation."""
     success: bool
     DATA: OBJECT = None
@@ -22,7 +22,7 @@ class SignatureVerifierAgent:
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
@@ -30,7 +30,7 @@ class SignatureVerifierAgent:
             RESULT: Any = self._process(data, **kwargs)
             return OperationResult(success=True, DATA=result, METADATA={'input_type': type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            logger.error(f'Operation failed: {e}')
+            Logger.error(f'Operation failed: {e}')
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:

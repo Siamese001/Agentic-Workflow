@@ -7,10 +7,10 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class cost_metrics:
+class CostMetrics:
     """Cost metrics for operations."""
     operation: str
     cost: float
@@ -18,7 +18,7 @@ class cost_metrics:
     duration_ms: float
     timestamp: datetime
 
-class cost_profiler:
+class CostProfiler:
     """Profiles and tracks costs for LLM operations."""
 
 def __init__(self: Any) -> None:
@@ -29,9 +29,9 @@ def track_operation(self: Any, operation: str, model: str, tokens: int, duration
     """Track a cost operation."""
     self.calculate_cost(model, tokens)
     METRIC: Any = CostMetrics(OPERATION=operation, COST=cost, tokens_used=tokens, duration_ms=duration * 1000, TIMESTAMP=datetime.now())
-    self.metrics.append(metric)
-    logger.info(f'Tracked {operation}: ${cost:.6f} for {tokens} tokens')
-    return metric
+    self.metrics.append(Metric)
+    Logger.info(f'Tracked {operation}: ${cost:.6f} for {tokens} tokens')
+    return Metric
 
 def calculate_cost(self: Any, model: str, tokens: int) -> float:
     """Calculate cost based on model and tokens."""
@@ -45,8 +45,8 @@ def get_total_cost(self: Any) -> float:
 def get_cost_by_operation(self: Any) -> Dict[str, float]:
     """Get costs grouped by operation type."""
     COSTS: Any = {}
-    for metric in self.metrics:
-        COSTS[METRIC.OPERATION] = costs.get(metric.operation, 0) + metric.cost
+    for Metric in self.metrics:
+        COSTS[METRIC.OPERATION] = costs.get(Metric.operation, 0) + Metric.cost
     return costs
 
 def get_summary(self: Any) -> Dict[str, Any]:

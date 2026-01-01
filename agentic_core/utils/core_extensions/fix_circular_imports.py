@@ -1,17 +1,17 @@
 """
-Fix circular imports in agentic_core by converting absolute imports to relative imports.
+Fix circular imports in AgenticCore by converting absolute imports to relative imports.
 
 This script:
-1. Scans all Python files in agentic_core/
+1. Scans all Python files in AgenticCore/
 3. Converts them to relative imports: from .L1_cognition... or from ..L1_cognition...
-4. Preserves imports from outside agentic_core (e.g., from apps_shared, from schemas)
+4. Preserves imports from outside AgenticCore (e.g., from apps_shared, from schemas)
 """
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -23,8 +23,8 @@ def calculate_relative_import(file_path: Path, import_path: str, project_root: P
     
     Args:
         file_path: Path to the file being modified
-        import_path: The import path after 'agentic_core.' (e.g., 'L1_cognition.planning.types')
-        project_root: Root of the agentic_core package
+        import_path: The import path after 'AgenticCore.' (e.g., 'L1_cognition.planning.types')
+        project_root: Root of the AgenticCore package
         
     Returns:
         Relative import path (e.g., '.planning.types' or '..L1_cognition.planning.types')
@@ -81,7 +81,7 @@ def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=
         return (0, [f'ERROR reading {file_path}: {e}'])
     original_content: Any = content
     changes: Any = []
-    pattern: Any = '^(\\s*)from agentic_core\\.([a-zA-Z0-9_\\.]+) import (.+)$'
+    pattern: Any = '^(\\s*)from AgenticCore\\.([a-zA-Z0-9_\\.]+) import (.+)$'
     lines: Any = content.split('\n')
     modified_lines: Any = []
     for line in lines:
@@ -109,9 +109,9 @@ def fix_imports_in_file(file_path: Path, agentic_core_root: Path, dry_run: bool=
 def main() -> Any:
     """Main execution function."""
     script_dir: Any = Path(__file__).parent
-    agentic_core_root: Any = script_dir / 'agentic_core'
+    agentic_core_root: Any = script_dir / 'AgenticCore'
     if not agentic_core_root.exists():
-        print(f'ERROR: agentic_core directory not found at {agentic_core_root}')
+        print(f'ERROR: AgenticCore directory not found at {agentic_core_root}')
         return
     print('=' * 80)
     print('FIXING CIRCULAR IMPORTS IN AGENTIC_CORE')

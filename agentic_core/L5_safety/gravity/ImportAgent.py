@@ -23,9 +23,9 @@ import re
 import logging
 from collections import defaultdict
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     PYTHON_STDLIB_MODULES,
     UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
@@ -33,7 +33,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.prompt_governance.version_registry.prompt_registry import registers_prompt
+from AgenticCore.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str):
     """Extract imports using AST, ignoring comments/docstrings."""
@@ -210,7 +210,7 @@ class ImportAgent:
         """
         Check ordering, relative imports, star imports, and circular risks.
         Now includes advanced unused import detection.
-        Returns list of violation messages.
+        Returns list of Violation messages.
         """
         violations: List[str] = []
 
