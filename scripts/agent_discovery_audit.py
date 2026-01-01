@@ -1,7 +1,18 @@
 """
+DEPRECATED: Use scripts/full_agent_discovery.py instead.
+
+This scanner is deprecated - full_agent_discovery.py is the canonical Single Source of Truth
+for agent discovery with MRO-aware healing detection and ULTRA zero-loss detection.
+
 PHASE 1: Exhaustive PascalCase Agent Discovery Audit
 AST-based structural fingerprinting for deduplication, dead code, and layer analysis.
 """
+import warnings
+warnings.warn(
+    "agent_discovery_audit.py is DEPRECATED. Use full_agent_discovery.py instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 import ast
 import hashlib
 import os
