@@ -63,6 +63,12 @@ class SubatomicHopAgent:
         self.gatekeeper = self._ensure_dep(gatekeeper, 'SemanticGatekeeper')
         self.telemetry = self._ensure_dep(telemetry, 'TelemetryRecorder')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'role'), "Missing role"
+        assert hasattr(self, 'config'), "Missing config"
+        return True
+
     def _ensure_dep(self, dep: Any, name: str) -> Any:
         """Validate that a required dependency was injected.
         

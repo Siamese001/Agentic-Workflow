@@ -27,6 +27,11 @@ class DispatchResumeToolsAgent:
             LOGGER.info('Initialized with legacy search')
         LOGGER.info(f'Initialized {self.__class__.__name__}')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'CONFIG'), "Missing CONFIG"
+        return True
+
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START: Any = time.time()

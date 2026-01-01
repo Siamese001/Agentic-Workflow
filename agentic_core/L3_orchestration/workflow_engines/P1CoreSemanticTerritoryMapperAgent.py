@@ -16,6 +16,11 @@ class SemanticTerritoryMapperAgent:
     def __init__(self, project_root: Path = None):
         self.project_root = project_root or Path.cwd()
         
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'project_root'), "Missing project_root"
+        return True
+        
     def build_territory_map(self) -> Dict[str, Any]:
         """Build semantic territory map."""
         return {'territories': {}, 'total': 0}

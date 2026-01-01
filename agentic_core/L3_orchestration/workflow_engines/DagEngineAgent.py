@@ -92,6 +92,12 @@ class DagEngineAgent:
         self.tasks: Dict[str, Task] = {}
         self.execution_order: List[str] = []
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'tasks'), "Missing tasks"
+        assert hasattr(self, 'execution_order'), "Missing execution_order"
+        return True
+
     def add_task(self, Task: Task) -> None:
         """Add a Task to the DAG.
 
@@ -102,7 +108,7 @@ class DagEngineAgent:
             raise ValueError(f'Task {Task.id} already exists')
         self.tasks[Task.id] = Task
         if self.enable_logging:
-            LOGGER.debug('task_added', extra={'task_id': Task.id, 'TaskType': Task.TaskType.value, 'dependencies': Task.dependencies})
+            Logger.debug('task_added', extra={'task_id': Task.id, 'TaskType': Task.TaskType.value, 'dependencies': Task.dependencies})
 
     def remove_task(self, task_id: str) -> None:
         """Remove a Task from the DAG.

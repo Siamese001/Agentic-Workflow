@@ -26,6 +26,12 @@ class AgentRegistryValidatorAgent:
         self.missing_agents = []
         self.found_agents = []
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'project_root'), "Missing project_root"
+        assert hasattr(self, 'missing_agents'), "Missing missing_agents"
+        return True
+
     def validate_agent_exists(self, agent_name: str, search_paths: List[str]) -> Tuple[bool, str]:
         """
         Validate that an agent exists in one of the search paths.

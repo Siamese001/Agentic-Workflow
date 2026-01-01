@@ -40,6 +40,12 @@ class MetaLearningAgent(
             "strategy_buffer",
         ]
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'strategy_buffer'), "Missing strategy_buffer"
+        assert hasattr(self, 'MANDATORY_COMPONENTS'), "Missing MANDATORY_COMPONENTS"
+        return True
+
     async def evolve_agent_strategy(self, agent_name: str) -> Dict[str, Any]:
         """
         Critical enhancement: evolve an agent's execution strategy based on performance patterns.

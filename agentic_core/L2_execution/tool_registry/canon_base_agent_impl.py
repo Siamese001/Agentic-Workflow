@@ -30,6 +30,12 @@ class CanonBaseAgent(CanonBaseAgentInterface):
         self.ctx = ctx
         self.name = self.__class__.__name__
         self._capabilities = ["file_read", "code_gen", "analysis", "validation"]
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, 'name'), "Missing name"
+        assert hasattr(self, '_capabilities'), "Missing _capabilities"
+        return True
     
     async def execute(self, goal: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """

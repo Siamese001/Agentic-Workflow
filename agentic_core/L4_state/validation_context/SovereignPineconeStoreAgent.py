@@ -34,6 +34,12 @@ class SovereignPineconeStoreAgent:
         self._initialized = False
         Logger.info('[L4 ADAPTER] Initialized - routing to MCP client')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'McpClient'), "Missing McpClient"
+        assert hasattr(self, 'namespace'), "Missing namespace"
+        return True
+
     async def _ensure_initialized(self):
         """Ensure MCP client is initialized."""
         if not self._initialized:

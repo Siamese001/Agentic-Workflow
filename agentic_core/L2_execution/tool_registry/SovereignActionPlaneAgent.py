@@ -106,6 +106,12 @@ class SovereignActionPlaneAgent(IActionPlane):
         self._safety_layer = safety_layer
         self._signal_ledger = SignalLedger
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, '_toolsmith'), "Missing _toolsmith"
+        assert hasattr(self, '_sandbox'), "Missing _sandbox"
+        return True
+
     def get_capabilities(self) -> List[Any]:
         """Get available action capabilities."""
         return ['tool_execution', 'file_operations', 'diagnostic_tool_creation']

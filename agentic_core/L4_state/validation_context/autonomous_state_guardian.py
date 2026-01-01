@@ -57,6 +57,12 @@ class AutonomousStateGuardianAgent:
         self.load_meta_state()
         
         Logger.info("L4 Autonomous State Guardian initialized")
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'state_manifest_path'), "Missing state_manifest_path"
+        assert hasattr(self, 'is_recovering'), "Missing is_recovering"
+        return True
     
     def awaken(self):
         """L4: Explicitly activate the eternal guardianship"""

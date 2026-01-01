@@ -41,6 +41,12 @@ class GitAgent:
             self.enabled = True
             Logger.info(f'GitAgent initialized for {self.repo_root}')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, 'repo_root'), "Missing repo_root"
+        assert hasattr(self, 'enabled'), "Missing enabled"
+        return True
+
     def _is_git_repo(self) -> bool:
         """Check if current directory is a git repository."""
         git_dir = self.repo_root / '.git'

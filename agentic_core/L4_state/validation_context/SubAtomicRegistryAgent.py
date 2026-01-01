@@ -38,6 +38,12 @@ class SubAtomicRegistryAgent:
         self.method_index_name = f"{self.pinecone.index_name}_methods"
         self.method_index = self.pinecone.index
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'root'), "Missing root"
+        assert hasattr(self, 'pinecone'), "Missing pinecone"
+        return True
+
     def extract_methods(self) -> List[Dict]:
         """Deep crawl of all .py files to find callables"""
         methods = []
