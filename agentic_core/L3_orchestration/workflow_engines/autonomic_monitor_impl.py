@@ -13,7 +13,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
-class AutonomicMonitor:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class AutonomicMonitor(HealerMixin):
     """Autonomic immune system for agent health monitoring.
 
     Features:

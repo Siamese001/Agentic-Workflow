@@ -19,9 +19,10 @@ from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class HierarchyHealer:
+class HierarchyHealer(HealerMixin):
     """
     L5 Hierarchy Healer Agent
     

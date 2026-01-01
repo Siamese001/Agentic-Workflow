@@ -72,8 +72,9 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
     'B607',  # start_process_with_partial_path
 ]
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class HealValidator:
+class HealValidator(HealerMixin):
     """
     Multi-stage validator for LLM-healed code.
     

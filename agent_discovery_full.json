@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "L0DelegationTestingMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,8 +239,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -270,8 +270,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -372,8 +372,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "L0DelegationTestingMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2411,8 +2411,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
-      "HealerMixin"
+      "HealerMixin",
+      "IActionPlane"
     ],
     "key_methods": [
       "__init__",
@@ -2869,7 +2869,9 @@
     "class_name": "AgentFactory",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "_create_impl",
       "create_system_architect",
@@ -2882,10 +2884,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 76,
+    "loc": 77,
     "class_count": 1,
     "description": "\n    Centralized factory for sovereign agent injection.\n    \n    Phase 9A DDD Compliance:\n    - Only",
     "pascal_compliant": true,
@@ -2895,7 +2897,9 @@
     "class_name": "AgentGym",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_gym_impl.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "register_scenario",
@@ -2910,10 +2914,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 130,
+    "loc": 131,
     "class_count": 1,
     "description": "Agent Gym for self-evolution and benchmarking.\n\n    Features:\n    - Offline simulation environment\n ",
     "pascal_compliant": true,
@@ -3007,7 +3011,9 @@
     "class_name": "AutonomicMonitor",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\autonomic_monitor_impl.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "record_metrics",
@@ -3020,10 +3026,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 92,
+    "loc": 93,
     "class_count": 1,
     "description": "Autonomic immune system for agent health monitoring.\n\n    Features:\n    - Runtime metrics monitoring",
     "pascal_compliant": true,
@@ -3463,8 +3469,8 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -4810,7 +4816,9 @@
     "class_name": "ComplianceOrchestrator",
     "path": "agentic_core\\L5_safety\\validators\\compliance_orchestrator.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_discover_all_agents",
@@ -4825,10 +4833,10 @@
     ],
     "has_tools": true,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 519,
+    "loc": 520,
     "class_count": 1,
     "description": "\n    L5 Sovereign Compliance Orchestrator\n\n    Single responsibility:\n      - Discover all validator",
     "pascal_compliant": true,
@@ -5036,8 +5044,8 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "HealerMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -5144,7 +5152,9 @@
     "class_name": "HealValidator",
     "path": "agentic_core\\L5_safety\\validators\\heal_validator.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "validate_healed_code",
@@ -5156,10 +5166,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 227,
+    "loc": 228,
     "class_count": 1,
     "description": "\n    Multi-stage validator for LLM-healed code.\n    \n    Validation Pipeline:\n    1. Syntax check (A",
     "pascal_compliant": true,
@@ -5229,7 +5239,9 @@
     "class_name": "HierarchyHealer",
     "path": "agentic_core\\L5_safety\\guardrails\\hierarchy_healer.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "heal_hierarchy_violations",
@@ -5239,10 +5251,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 227,
+    "loc": 228,
     "class_count": 1,
     "description": "\n    L5 Hierarchy Healer Agent\n    \n    Heals hierarchy violations by:\n    1. Relocating files from ",
     "pascal_compliant": true,
@@ -5326,7 +5338,9 @@
     "class_name": "InputValidator",
     "path": "agentic_core\\L5_safety\\guardrails\\input_validator.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "add_rule",
@@ -5341,10 +5355,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 288,
+    "loc": 289,
     "class_count": 6,
     "description": "Validates input data against schema and rules.",
     "pascal_compliant": true,
@@ -5461,9 +5475,9 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "HealerMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
