@@ -5,9 +5,10 @@ Atomic agent: Removes unused imports and variables using autoflake.
 """
 import subprocess
 from pathlib import Path
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class UnusedCleanupAgent:
+class UnusedCleanupAgent(HealerMixin):
     """
     Atomic agent: Removes unused imports and variables using autoflake.
     """

@@ -120,8 +120,9 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                     break
         self.generic_visit(node)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class DeadCodeDetectorAgent:
+class DeadCodeDetectorAgent(HealerMixin):
     """
     Sovereign dead code auditor that identifies unused code across the project.
     Enhanced with class-aware method tracking and parent-node traversal.

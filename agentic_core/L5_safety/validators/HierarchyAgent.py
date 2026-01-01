@@ -29,9 +29,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_WHITELIST,
 )
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class HierarchyAgent:
+class HierarchyAgent(HealerMixin):
     """
     Autonomous agent for hierarchical structure compliance.
     Scans folders only (no file content parsing).

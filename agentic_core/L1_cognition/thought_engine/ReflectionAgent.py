@@ -4,9 +4,11 @@ import logging
 'Brief description of functionality and purpose.'
 import os
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger: Any = logging.getLogger(__name__)
 
-class ReflectionAgent:
+class ReflectionAgent(HealerMixin):
     """
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).

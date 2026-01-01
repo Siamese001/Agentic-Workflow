@@ -173,6 +173,9 @@ class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin, L0DelegationTestin
     On failure, delegate to TestSovereigntyAgent for validation.
     """
 
+    # [PHASE 3] L0 boot isolation safety - healing disabled
+    _healing_enabled: bool = False
+
     async def maintain(self, Task: Dict) -> Dict:
         """Execute maintenance logic. Override in subclasses."""
         raise NotImplementedError(f"{self.name} must implement maintain()")

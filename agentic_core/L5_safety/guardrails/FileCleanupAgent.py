@@ -8,9 +8,10 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class FileCleanupAgent:
+class FileCleanupAgent(HealerMixin):
     """
     Batch agent: Identifies and removes files with repeated strings in filenames.
     Detects patterns like 'word_word', 'word_word_word', etc.

@@ -104,8 +104,9 @@ class Span:
 # Uppercase alias for backward compatibility
 Span = Span
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class TracingAgent:
+class TracingAgent(HealerMixin):
     """
     Autonomous distributed tracing agent.
     Manages trace context and Span lifecycle.

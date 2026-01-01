@@ -153,7 +153,9 @@ class ValidationResult:
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class L5IntegrityGateExecutorAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class L5IntegrityGateExecutorAgent(HealerMixin):
     """
     L5+ Integrity Gate Executor with Two-Pass Validation.
 

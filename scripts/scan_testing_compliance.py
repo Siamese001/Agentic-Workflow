@@ -35,9 +35,15 @@ DELEGATION_BASES = {
 
 HEALING_BASES = {
     'HealerMixin',
-    'SubAtomicAgent',  # Now has HealerMixin
-    'OrchestrationBaseAgent',  # Now has HealerMixin
-    'StateBaseAgent',  # Now has HealerMixin
+    'SubAtomicAgent',  # L2 - has HealerMixin
+    'OrchestrationBaseAgent',  # L3 - has HealerMixin
+    'StateBaseAgent',  # L4 - has HealerMixin
+    'SafetyBaseAgent',  # L5 - has HealerMixin
+    'CanonBaseAgent',  # Parent - child bases have HealerMixin
+    'L3SubatomicTestingMixin',  # L3 agents inherit healing via base
+    'L4SubatomicTestingMixin',  # L4 agents inherit healing via base
+    'SubatomicTestingMixin',  # L2 agents inherit healing via base
+    'ABC',  # CanonBaseAgent inherits from ABC + HealerMixin
 }
 
 

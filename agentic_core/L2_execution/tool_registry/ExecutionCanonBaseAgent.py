@@ -83,8 +83,10 @@ def get_safety_guardrail() -> Any:
 # Alias for backward compatibility
 CanonBaseAgent = None  # Will be set after class definition
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 @dataclass
-class CanonBaseAgent(ABC):
+class CanonBaseAgent(ABC, HealerMixin):
     """
     Base class for Canon Validator agents with Subatomic healing capabilities.
 

@@ -39,8 +39,9 @@ try:
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class ReportingAgent:
+class ReportingAgent(HealerMixin):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.

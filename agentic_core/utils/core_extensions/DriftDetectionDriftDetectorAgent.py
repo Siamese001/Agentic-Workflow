@@ -11,9 +11,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES,
 )
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class DriftDetectorAgent:
+class DriftDetectorAgent(HealerMixin):
     """Detects files that have drifted outside mapped canon territories."""
     
     def __init__(self, project_root: Path):

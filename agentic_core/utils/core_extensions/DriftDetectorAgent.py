@@ -7,10 +7,12 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class DriftDetectorAgent:
+class DriftDetectorAgent(HealerMixin):
     """Naming/Compliance: Drift Detection"""
     
     def __init__(self, project_root: Path = None):

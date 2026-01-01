@@ -28,8 +28,10 @@ warnings.warn(
     stacklevel=2
 )
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
-class NamingNormalizationAgent:
+class NamingNormalizationAgent(HealerMixin):
     """
     Normalizes filenames and public symbols to snake_case.
 

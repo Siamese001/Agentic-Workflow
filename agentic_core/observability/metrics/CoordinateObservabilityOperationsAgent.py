@@ -32,8 +32,10 @@ class OrchestrationResult:
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class CoordinateObservabilityOperationsAgent:
+class CoordinateObservabilityOperationsAgent(HealerMixin):
     """Orchestrator for operations domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

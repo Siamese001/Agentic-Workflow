@@ -61,12 +61,14 @@ def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool
     return False
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 @registers_prompt(
     template_name="file_placement.jinja",
     purpose="Enforces territory/file placement rules",
     territory="templates"
 )
-class LocationAgent:
+class LocationAgent(HealerMixin):
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.

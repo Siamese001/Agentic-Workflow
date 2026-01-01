@@ -14,8 +14,10 @@ from typing import Dict, List, Optional
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousThreatEvolutionAgent:
+class AutonomousThreatEvolutionAgent(HealerMixin):
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None):
         self.safety = SafetyEngine

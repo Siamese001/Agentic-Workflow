@@ -6,10 +6,12 @@ Aggregates compliance results across all validation agents.
 import logging
 from typing import Any, Dict, List
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class GlobalComplianceAggregatorAgent:
+class GlobalComplianceAggregatorAgent(HealerMixin):
     """Naming/Compliance: Global Compliance Aggregation"""
     
     def __init__(self):

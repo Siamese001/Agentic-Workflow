@@ -98,8 +98,9 @@ class ImportUpdater(ast.NodeVisitor):
                 self.found_usage = True
         self.generic_visit(node)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class HealerAgent:
+class HealerAgent(HealerMixin):
     """
     Autonomous Conductor for structural healing.
     """

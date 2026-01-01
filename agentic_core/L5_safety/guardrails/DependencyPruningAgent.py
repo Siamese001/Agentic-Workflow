@@ -9,9 +9,10 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Dict, List
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class DependencyPruningAgent:
+class DependencyPruningAgent(HealerMixin):
     """
     Batch agent: Detects and removes unused Python dependencies from requirements.txt.
     Uses 'deptry' for accurate unused detection.

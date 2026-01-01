@@ -120,8 +120,10 @@ class BenchmarkSuite:
         }
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: BenchmarkingAgent → benchmarking_agent
-class BenchmarkingAgent:
+class BenchmarkingAgent(HealerMixin):
     """
     Measures and tracks performance metrics.
 

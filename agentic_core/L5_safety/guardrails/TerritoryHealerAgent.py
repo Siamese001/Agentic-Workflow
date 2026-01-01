@@ -28,8 +28,10 @@ warnings.warn(
     stacklevel=2
 )
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # DEPRECATED — Logic absorbed into HealerAgent — 2025-12-31
-class TerritoryHealerAgent:
+class TerritoryHealerAgent(HealerMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """

@@ -5,9 +5,10 @@ HierarchyEnforcerAgent - Ensures L4 structure compliance
 
 from pathlib import Path
 from typing import Any, Dict, List
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class HierarchyEnforcerAgent:
+class HierarchyEnforcerAgent(HealerMixin):
     """
     Enforces the canonical L4 hierarchy across agentic_core.
     Drills down from L2 -> L3 -> L4 to ensure all required directories exist.
