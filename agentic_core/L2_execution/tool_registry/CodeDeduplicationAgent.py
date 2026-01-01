@@ -124,7 +124,8 @@ class CodeDeduplicationAgent:
         hash_to_blocks: Any = defaultdict(list)
         for file_str in python_files:
             file_path: Any = Path(file_str)
-            if not file_path.exists():
+            # EXCLUDE archives/ directory
+            if not file_path.exists() or 'archives' in str(file_path):
                 continue
             for name, code, line in self._extract_functions_classes(file_path):
                 block_hash: Any = self._hash_block(code)
