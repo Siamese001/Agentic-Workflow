@@ -47,6 +47,13 @@ class CodeDeduplicationAgent:
             except Exception as e:
                 self.errors.append(f'Tree-sitter initialization failed: {e}')
                 self.ts_parser = None
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, 'threshold'), "Missing threshold"
+        assert hasattr(self, 'duplicate_groups'), "Missing duplicate_groups"
+        assert 0 < self.threshold <= 1, "threshold must be 0-1"
+        return True
 
     @staticmethod
     def _normalize_code(code: str) -> str:

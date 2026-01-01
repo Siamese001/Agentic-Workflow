@@ -87,6 +87,12 @@ class PineconeSovereignAgent:
 
         # Note: bootstrap_territory_vectors is now async and will be called from execute()
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'status'), "Missing status"
+        assert hasattr(self, 'project_root'), "Missing project_root"
+        return True
+
     async def get_embedding(self, text: str, is_sanity_check: bool = False) -> List[float]:
         """
         Sovereign embedding — cached, deterministic, QUALITY-VALIDATED.

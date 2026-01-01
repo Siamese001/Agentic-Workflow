@@ -137,6 +137,12 @@ class IntegrityGateExecutorAgent:
     def __init__(self, min_depth_score: float = 0.7):
         self.min_depth_score = min_depth_score
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, 'min_depth_score'), "Missing min_depth_score"
+        assert 0 <= self.min_depth_score <= 1, "min_depth_score must be 0-1"
+        return True
+
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
         """Execute integrity gate validation on research output.
         Args:

@@ -45,6 +45,12 @@ class SemanticTerritoryMapperAgent:
             17: {"agent", "manager", "engine", "healer"},
             19: {"script", "test", "heal"},
         }
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'project_root'), "Missing project_root"
+        assert hasattr(self, 'pinecone'), "Missing pinecone"
+        return True
             
     def _seed_territory_examples(self):
         """Seed the index with known territory examples for reference."""

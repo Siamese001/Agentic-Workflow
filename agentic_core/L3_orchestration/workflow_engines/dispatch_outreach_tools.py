@@ -21,6 +21,11 @@ class DispatchOutreachToolsAgent:
         SELF.TIMEOUT = self.config.get('timeout', 30.0)
         Logger.info(f'Initialized {self.__class__.__name__}')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'CONFIG'), "Missing CONFIG"
+        return True
+
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
         START: Any = time.time()

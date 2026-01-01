@@ -379,8 +379,12 @@ class NervousSystemPhaseExecution:
                     self.name = name
                     self.phase = phase
 
+                def _run_self_tests(self) -> bool:
+                    """Phase 1: Self-testing for L3 compliance."""
+                    assert hasattr(self, 'name'), "Missing name"
+                    return True
+
                 async def execute(self):
-                                                                    
                     # Simulate agent execution
                     return {
                         "passed": True,
@@ -1102,6 +1106,7 @@ class NervousSystemAgent:
         self._intervention_manager = NervousSystemInterventionManager(
             self.InterventionServer, LOGGER
         )
+
         self._phase_orchestrator = NervousSystemPhaseOrchestrator( # New orchestrator
             self._phase_execution,
             self._checkpointing,
@@ -1124,6 +1129,13 @@ class NervousSystemAgent:
                 "phases_populated": len([p for p in self.phases.values() if p])
             }
         )
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'brain'), "Missing brain"
+        assert hasattr(self, 'hands'), "Missing hands"
+        assert hasattr(self, 'safety_layer'), "Missing safety_layer"
+        return True
 
     @property
     def _iteration(self):

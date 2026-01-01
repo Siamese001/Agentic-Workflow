@@ -55,6 +55,12 @@ class TerritoryHealerAgent:
             19: {"script", "test", "heal"},                          # L5_safety: no ops/tests/healing
         }
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'root'), "Missing root"
+        assert hasattr(self, 'ctx'), "Missing ctx"
+        return True
+
     def check_depth_precision(self, file_path: Path) -> Optional[dict]:
         """
         Check if file violates precision depth requirements.

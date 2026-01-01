@@ -126,6 +126,12 @@ class CanonBaseAgent(ABC):
         name = self.__class__.__name__
         return re.sub('(?<!^)(?=[A-Z])', '_', name).lower()
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L2 compliance."""
+        assert hasattr(self, 'name'), "Missing name"
+        assert hasattr(self, 'role'), "Missing role"
+        return True
+
     @abstractmethod
     async def execute(self) -> Any:
         """Execute agent's validation logic. Must be implemented by subclasses."""

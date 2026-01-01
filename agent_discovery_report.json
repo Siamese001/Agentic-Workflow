@@ -1,0 +1,2385 @@
+{
+  "agents": [
+    {
+      "name": "BootstrapAgent",
+      "module": "agentic_core.L0_maintenance.scripts.BootstrapAgent",
+      "file": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
+      "layer": "L0",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 135,
+      "fingerprint": "39786287d34aca68",
+      "line": 36,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 5,
+        "files": []
+      }
+    },
+    {
+      "name": "FilesystemSSOTReconcilerAgent",
+      "module": "agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent",
+      "file": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
+      "layer": "L0",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 393,
+      "fingerprint": "60110871ee0a617b",
+      "line": 59,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 2,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_controller.py",
+          "agentic_core\\L0_maintenance\\scripts\\auditors_sovereign_auditor_v3.py"
+        ]
+      }
+    },
+    {
+      "name": "MaintenanceBaseAgent",
+      "module": "agentic_core.L0_maintenance.bases.MaintenanceBaseAgent",
+      "file": "agentic_core\\L0_maintenance\\bases\\MaintenanceBaseAgent.py",
+      "layer": "L0",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 110,
+      "fingerprint": "4e4b3182ae81649b",
+      "line": 157,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\bases\\MaintenanceBaseAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "CanonBaseAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.CognitionCanonBaseAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\CognitionCanonBaseAgent.py",
+      "layer": "L1",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 137,
+      "fingerprint": "3a0028d0af7c374b",
+      "line": 20,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\CognitionCanonBaseAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 31,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py"
+        ]
+      }
+    },
+    {
+      "name": "DependencySentinelAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.DependencySentinelAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\DependencySentinelAgent.py",
+      "layer": "L1",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 152,
+      "fingerprint": "8b6b6ec87d6352c7",
+      "line": 65,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\DependencySentinelAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 5,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "GovernanceAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.GovernanceAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+      "layer": "L1",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 335,
+      "fingerprint": "f4c9a3ce301868c9",
+      "line": 218,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\GovernanceAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 6,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "tests\\integration\\test_agent_integration_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "MetaLearningAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.MetaLearningAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\MetaLearningAgent.py",
+      "layer": "L1",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 108,
+      "fingerprint": "8bbd15ebc4461938",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\MetaLearningAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 6,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "ReflectionAgent",
+      "module": "agentic_core.L1_cognition.thought_engine.ReflectionAgent",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py",
+      "layer": "L1",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 135,
+      "fingerprint": "691fe262df86f771",
+      "line": 9,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\thought_engine\\ReflectionAgent.py",
+      "usages": {
+        "real": 7,
+        "string_ref": 26,
+        "files": [
+          "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\orchestrator.py",
+          "agentic_core\\L4_state\\validation_context\\omni_context.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_runner.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
+          "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py"
+        ]
+      }
+    },
+    {
+      "name": "CanonBaseAgent",
+      "module": "agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\ExecutionCanonBaseAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 294,
+      "fingerprint": "ac57d115079f0afb",
+      "line": 87,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\ExecutionCanonBaseAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 30,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py"
+        ]
+      }
+    },
+    {
+      "name": "CodeDeduplicationAgent",
+      "module": "agentic_core.L2_execution.tool_registry.CodeDeduplicationAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\CodeDeduplicationAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 254,
+      "fingerprint": "0c9f3c3461789a4f",
+      "line": 23,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\CodeDeduplicationAgent.py",
+      "usages": {
+        "real": 5,
+        "string_ref": 20,
+        "files": [
+          "tests\\test_dedup_agents_comprehensive.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "tests\\test_CodeDeduplicationAgent.py",
+          "tests\\test_integration_ast_deduplication.py",
+          "scripts\\run_dedup_agents.py"
+        ]
+      }
+    },
+    {
+      "name": "CodeJanitorAgent",
+      "module": "agentic_core.L2_execution.tool_registry.CodeJanitorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\CodeJanitorAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 146,
+      "fingerprint": "2d04270c474784c0",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\CodeJanitorAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 5,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "ContextCuratorAgent",
+      "module": "agentic_core.L2_execution.tool_registry.ContextCuratorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\ContextCuratorAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 197,
+      "fingerprint": "0521632c19217e40",
+      "line": 72,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\ContextCuratorAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 5,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "DependencyDiplomatAgent",
+      "module": "agentic_core.L2_execution.tool_registry.DependencyDiplomatAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\DependencyDiplomatAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 191,
+      "fingerprint": "24aed9c2b0a02ef1",
+      "line": 62,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\DependencyDiplomatAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 5,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "DynamicModelRouterAgent",
+      "module": "agentic_core.L2_execution.tool_registry.DynamicModelRouterAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\DynamicModelRouterAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 248,
+      "fingerprint": "5ed88d35babe1351",
+      "line": 105,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\DynamicModelRouterAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 5,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "GitAgent",
+      "module": "agentic_core.L2_execution.tool_registry.GitAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\GitAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 180,
+      "fingerprint": "6c57440c2645a65f",
+      "line": 16,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\GitAgent.py",
+      "usages": {
+        "real": 3,
+        "string_ref": 33,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_runner.py",
+          "tests\\unit\\test_remote_git.py"
+        ]
+      }
+    },
+    {
+      "name": "HealerAgent",
+      "module": "agentic_core.L2_execution.tool_registry.HealerAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\HealerAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": false,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 301,
+      "fingerprint": "0cf4287c6d3a74b6",
+      "line": 24,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\HealerAgent.py",
+      "usages": {
+        "real": 3,
+        "string_ref": 66,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
+          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
+          "tests\\unit\\test_HealerAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "IntegrityGateExecutorAgent",
+      "module": "agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\IntegrityGateExecutorAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 206,
+      "fingerprint": "c5dc18e078f27c6c",
+      "line": 118,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\IntegrityGateExecutorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "MemoryArchitectAgent",
+      "module": "agentic_core.L2_execution.tool_registry.MemoryArchitectAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 244,
+      "fingerprint": "ff71284332407ab9",
+      "line": 153,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "SovereignActionPlaneAgent",
+      "module": "agentic_core.L2_execution.tool_registry.SovereignActionPlaneAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 189,
+      "fingerprint": "3e085039ca9a8231",
+      "line": 94,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "StructuralEngineerAgent",
+      "module": "agentic_core.L2_execution.tool_registry.StructuralEngineerAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\StructuralEngineerAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 142,
+      "fingerprint": "5131575e87b41e18",
+      "line": 23,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\StructuralEngineerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "SystemArchitectAgent",
+      "module": "agentic_core.L2_execution.tool_registry.SystemArchitectAgent",
+      "file": "agentic_core\\L2_execution\\tool_registry\\SystemArchitectAgent.py",
+      "layer": "L2",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 52,
+      "fingerprint": "e6ed472beb321095",
+      "line": 17,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\tool_registry\\SystemArchitectAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "AgentRegistryValidatorAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.AgentRegistryValidatorAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 67,
+      "fingerprint": "6db6d826c032068c",
+      "line": 12,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 1,
+        "files": []
+      }
+    },
+    {
+      "name": "DagEngineAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.DagEngineAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 207,
+      "fingerprint": "c7e8fca16ec43fbd",
+      "line": 74,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "MetaLearningAgent",
+      "module": "agentic_core.L3_orchestration.meta_learning.MetaLearningAgent",
+      "file": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 119,
+      "fingerprint": "0fb7e2ef2c5c84c8",
+      "line": 16,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 9,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "MockAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 869,
+      "fingerprint": "d85af9271753e4de",
+      "line": 376,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 47,
+        "files": []
+      }
+    },
+    {
+      "name": "NervousSystemAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 869,
+      "fingerprint": "301b4af5d15692d0",
+      "line": 1027,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 3,
+        "files": []
+      }
+    },
+    {
+      "name": "OrchestrationBaseAgent",
+      "module": "agentic_core.L3_orchestration.bases.OrchestrationBaseAgent",
+      "file": "agentic_core\\L3_orchestration\\bases\\OrchestrationBaseAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 133,
+      "fingerprint": "c3a69e6d537c0d54",
+      "line": 316,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\bases\\OrchestrationBaseAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "SemanticGatekeeperAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.SemanticGatekeeperAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 49,
+      "fingerprint": "62adc0d64e0bd4cc",
+      "line": 15,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "SemanticTerritoryMapperAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.P1CoreSemanticTerritoryMapperAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\P1CoreSemanticTerritoryMapperAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 9,
+      "fingerprint": "5dcc84cb06d0d14a",
+      "line": 13,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\P1CoreSemanticTerritoryMapperAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 5,
+        "files": []
+      }
+    },
+    {
+      "name": "SemanticTerritoryMapperAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.SemanticTerritoryMapperAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 132,
+      "fingerprint": "f91cd6e51f62e6cc",
+      "line": 22,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 5,
+        "files": []
+      }
+    },
+    {
+      "name": "SubatomicHopAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.SubatomicHopAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 136,
+      "fingerprint": "7399c38191ae0af0",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "TerritoryHealerAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.P1CoreTerritoryHealerAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\P1CoreTerritoryHealerAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 9,
+      "fingerprint": "bbd367a6defc1202",
+      "line": 13,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\P1CoreTerritoryHealerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 7,
+        "files": []
+      }
+    },
+    {
+      "name": "TerritoryHealerAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.TerritoryHealerAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 191,
+      "fingerprint": "830ac78c4c19243c",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 7,
+        "files": []
+      }
+    },
+    {
+      "name": "TestPilotAgent",
+      "module": "agentic_core.L3_orchestration.workflow_engines.TestPilotAgent",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\TestPilotAgent.py",
+      "layer": "L3",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 185,
+      "fingerprint": "6a3c608247641d3c",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\workflow_engines\\TestPilotAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "AutonomousCheckpointManagerAgent",
+      "module": "agentic_core.L4_state.validation_context.AutonomousCheckpointManagerAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\AutonomousCheckpointManagerAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 197,
+      "fingerprint": "13b00da328ea0462",
+      "line": 50,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\AutonomousCheckpointManagerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "AutonomousStateGuardianAgent",
+      "module": "agentic_core.L4_state.validation_context.AutonomousStateGuardianAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\AutonomousStateGuardianAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 154,
+      "fingerprint": "873fece5c5b09567",
+      "line": 24,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\AutonomousStateGuardianAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "PineconeSovereignAgent",
+      "module": "agentic_core.L4_state.validation_context.PineconeSovereignAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 254,
+      "fingerprint": "51ec6ec13fcba428",
+      "line": 26,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
+      "usages": {
+        "real": 9,
+        "string_ref": 11,
+        "files": [
+          "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
+          "agentic_core\\L4_state\\validation_context\\memory_sovereign_mcp.py",
+          "agentic_core\\L0_maintenance\\scripts\\sovereign_rescue_review.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+          "agentic_core\\L5_safety\\guardrails\\TerritoryHealerAgent.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "agentic_core\\L5_safety\\guardrails\\subatomic_engine.py",
+          "agentic_core\\L4_state\\validation_context\\semantic_cache_sovereign.py"
+        ]
+      }
+    },
+    {
+      "name": "RedisSovereignAgent",
+      "module": "agentic_core.L4_state.validation_context.RedisSovereignAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\RedisSovereignAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 66,
+      "fingerprint": "3e5570b3d16964e3",
+      "line": 17,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\RedisSovereignAgent.py",
+      "usages": {
+        "real": 8,
+        "string_ref": 5,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\cached_orchestrator.py",
+          "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
+          "agentic_core\\L0_maintenance\\scripts\\sovereign_rescue_review.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
+          "agentic_core\\L5_safety\\guardrails\\TerritoryHealerAgent.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py",
+          "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "SchemaEvolverAgent",
+      "module": "agentic_core.L4_state.validation_context.SchemaEvolverAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SchemaEvolverAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 203,
+      "fingerprint": "94126cee80d07227",
+      "line": 67,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\SchemaEvolverAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "SovereignPineconeStoreAgent",
+      "module": "agentic_core.L4_state.validation_context.SovereignPineconeStoreAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SovereignPineconeStoreAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 97,
+      "fingerprint": "d017efd181d4334e",
+      "line": 21,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\SovereignPineconeStoreAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "StateBaseAgent",
+      "module": "agentic_core.L4_state.bases.StateBaseAgent",
+      "file": "agentic_core\\L4_state\\bases\\StateBaseAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 147,
+      "fingerprint": "212761b24ee9a27d",
+      "line": 365,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\bases\\StateBaseAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "SubAtomicRegistryAgent",
+      "module": "agentic_core.L4_state.validation_context.SubAtomicRegistryAgent",
+      "file": "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
+      "layer": "L4",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 107,
+      "fingerprint": "ceb3ba4e8d3bb1f5",
+      "line": 26,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "AdversarialRedTeamerAgent",
+      "module": "agentic_core.L5_safety.guardrails.AdversarialRedTeamerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 187,
+      "fingerprint": "9ad4e8ed1c0d22a7",
+      "line": 52,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "AutonomousThreatEvolutionAgent",
+      "module": "agentic_core.L5_safety.guardrails.AutonomousThreatEvolutionAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\AutonomousThreatEvolutionAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 75,
+      "fingerprint": "f70a61b7fc65eeda",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\AutonomousThreatEvolutionAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "CodeFormatterAgent",
+      "module": "agentic_core.L5_safety.guardrails.CodeFormatterAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\CodeFormatterAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 33,
+      "fingerprint": "76a3cb01c3e148ae",
+      "line": 10,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\CodeFormatterAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "CodeSSOTEnforcerAgent",
+      "module": "agentic_core.L5_safety.validators.CodeSSOTEnforcerAgent",
+      "file": "agentic_core\\L5_safety\\validators\\CodeSSOTEnforcerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 86,
+      "fingerprint": "9880b37689041b39",
+      "line": 64,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\CodeSSOTEnforcerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "DependencyPruningAgent",
+      "module": "agentic_core.L5_safety.guardrails.DependencyPruningAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\DependencyPruningAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 70,
+      "fingerprint": "690b23a7fbe8f784",
+      "line": 14,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\DependencyPruningAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "DocstringComplianceAgent",
+      "module": "agentic_core.L5_safety.validators.DocstringComplianceAgent",
+      "file": "agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 60,
+      "fingerprint": "a41d817cdc9b3f58",
+      "line": 9,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "DuplicateCodeDetectorAgent",
+      "module": "agentic_core.L5_safety.guardrails.DuplicateCodeDetectorAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\DuplicateCodeDetectorAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 89,
+      "fingerprint": "126f4d4184eea702",
+      "line": 25,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\DuplicateCodeDetectorAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 10,
+        "files": [
+          "tests\\test_dedup_agents_comprehensive.py",
+          "scripts\\run_dedup_agents.py"
+        ]
+      }
+    },
+    {
+      "name": "FileCleanupAgent",
+      "module": "agentic_core.L5_safety.guardrails.FileCleanupAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\FileCleanupAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 128,
+      "fingerprint": "9ca3c90494f530d5",
+      "line": 13,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\FileCleanupAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 3,
+        "files": [
+          "tests\\test_FileCleanupAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "FilenameUniquenessGuardianAgent",
+      "module": "agentic_core.L5_safety.validators.FilenameUniquenessGuardianAgent",
+      "file": "agentic_core\\L5_safety\\validators\\FilenameUniquenessGuardianAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 106,
+      "fingerprint": "92384b8dca92b733",
+      "line": 50,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\FilenameUniquenessGuardianAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "FilesystemAgent",
+      "module": "agentic_core.L5_safety.validators.FilesystemAgent",
+      "file": "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 198,
+      "fingerprint": "b9d7cc3803b056b6",
+      "line": 47,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 10,
+        "files": [
+          "tests\\test_archive_loop_prevention.py"
+        ]
+      }
+    },
+    {
+      "name": "GitHygieneAgent",
+      "module": "agentic_core.L5_safety.guardrails.GitHygieneAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\GitHygieneAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 94,
+      "fingerprint": "31de23ddfaa17f91",
+      "line": 15,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\GitHygieneAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "GovernanceAgent",
+      "module": "agentic_core.L5_safety.validators.GovernanceAgent",
+      "file": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 124,
+      "fingerprint": "bb128196ab9c3bc4",
+      "line": 14,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 7,
+        "files": [
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "tests\\integration\\test_agent_integration_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "GravityEnforcerAgent",
+      "module": "agentic_core.L5_safety.guardrails.GravityEnforcerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 87,
+      "fingerprint": "d711dc2e00b40426",
+      "line": 16,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "GravityLeakRepairAgent",
+      "module": "agentic_core.L5_safety.gravity.GravityLeakRepairAgent",
+      "file": "agentic_core\\L5_safety\\gravity\\GravityLeakRepairAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 57,
+      "fingerprint": "7ed18d31dcf47025",
+      "line": 9,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\gravity\\GravityLeakRepairAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "HallucinationHunterAgent",
+      "module": "agentic_core.L5_safety.guardrails.HallucinationHunterAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\HallucinationHunterAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 291,
+      "fingerprint": "1c21f434bc5dc56e",
+      "line": 169,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\HallucinationHunterAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "HealerAgent",
+      "module": "agentic_core.L5_safety.guardrails.HealerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 785,
+      "fingerprint": "e9dc4635914ecf94",
+      "line": 102,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
+      "usages": {
+        "real": 3,
+        "string_ref": 45,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
+          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
+          "tests\\unit\\test_HealerAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "HierarchyAgent",
+      "module": "agentic_core.L5_safety.validators.HierarchyAgent",
+      "file": "agentic_core\\L5_safety\\validators\\HierarchyAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 338,
+      "fingerprint": "707de790313c2948",
+      "line": 34,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\HierarchyAgent.py",
+      "usages": {
+        "real": 4,
+        "string_ref": 11,
+        "files": [
+          "agentic_core\\utils\\core_extensions\\NamingAgent.py",
+          "agentic_core\\L2_execution\\tool_registry\\SystemArchitectAgent.py",
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
+          "scripts\\test_capability_enforcement.py"
+        ]
+      }
+    },
+    {
+      "name": "HygieneGuardianAgent",
+      "module": "agentic_core.L5_safety.validators.HygieneGuardianAgent",
+      "file": "agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 50,
+      "fingerprint": "ed42c2efc8b02ec1",
+      "line": 14,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 3,
+        "files": []
+      }
+    },
+    {
+      "name": "ImportAgent",
+      "module": "agentic_core.L5_safety.gravity.ImportAgent",
+      "file": "agentic_core\\L5_safety\\gravity\\ImportAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 211,
+      "fingerprint": "7e01374a7d32b910",
+      "line": 95,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\gravity\\ImportAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 7,
+        "files": [
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py"
+        ]
+      }
+    },
+    {
+      "name": "InferenceTypeHintAgent",
+      "module": "agentic_core.L5_safety.validators.InferenceTypeHintAgent",
+      "file": "agentic_core\\L5_safety\\validators\\InferenceTypeHintAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 70,
+      "fingerprint": "c17cba9f690df7d9",
+      "line": 9,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\InferenceTypeHintAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "L5IntegrityGateExecutorAgent",
+      "module": "agentic_core.L5_safety.guardrails.L5IntegrityGateExecutorAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 398,
+      "fingerprint": "fc9adcb3ab3759d9",
+      "line": 156,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "LocationAgent",
+      "module": "agentic_core.L5_safety.validators.LocationAgent",
+      "file": "agentic_core\\L5_safety\\validators\\LocationAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 184,
+      "fingerprint": "d68925e45a10cf7a",
+      "line": 69,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\LocationAgent.py",
+      "usages": {
+        "real": 5,
+        "string_ref": 17,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_orchestrator.py",
+          "tests\\test_archive_loop_prevention.py",
+          "agentic_core\\L5_safety\\validators\\mission_preflight.py",
+          "agentic_core\\prompt_governance\\rendering\\sovereign_prompt_renderer.py",
+          "agentic_core\\prompt_governance\\version_registry\\prompt_registry.py"
+        ]
+      }
+    },
+    {
+      "name": "MCPGuardianAgent",
+      "module": "agentic_core.L5_safety.agents.MCPGuardianAgent",
+      "file": "agentic_core\\L5_safety\\agents\\MCPGuardianAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 138,
+      "fingerprint": "87a8f41c661b24cd",
+      "line": 23,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\agents\\MCPGuardianAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "NeuralAutoImmuneAgent",
+      "module": "agentic_core.L5_safety.guardrails.NeuralAutoImmuneAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 192,
+      "fingerprint": "aa634edb060552d7",
+      "line": 19,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "NeuralAutoImmuneAgent",
+      "module": "agentic_core.L5_safety.guardrails.PolicyNeuralAutoImmuneAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 10,
+      "fingerprint": "e2db9d2f93317c01",
+      "line": 14,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 5,
+        "files": []
+      }
+    },
+    {
+      "name": "PascalSovereigntyEnforcerAgent",
+      "module": "agentic_core.L5_safety.validators.PascalSovereigntyEnforcerAgent",
+      "file": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 175,
+      "fingerprint": "c71972902e003639",
+      "line": 34,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
+      "usages": {
+        "real": 4,
+        "string_ref": 16,
+        "files": [
+          "tests\\e2e\\test_sovereign_e2e_comprehensive.py",
+          "tests\\test_pascal_sovereignty_enforcer.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "tests\\integration\\test_agent_integration_comprehensive.py"
+        ]
+      }
+    },
+    {
+      "name": "RedTeamAgent",
+      "module": "agentic_core.L5_safety.red_teaming.RedTeamAgent",
+      "file": "agentic_core\\L5_safety\\red_teaming\\RedTeamAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": false,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 82,
+      "fingerprint": "6ecd2d5d7d39dd85",
+      "line": 37,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\red_teaming\\RedTeamAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "RegressionOracleAgent",
+      "module": "agentic_core.L5_safety.validators.RegressionOracleAgent",
+      "file": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 314,
+      "fingerprint": "773eb9aff4456884",
+      "line": 302,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "SelfUpdatingSafetyEngineAgent",
+      "module": "agentic_core.L5_safety.guardrails.SelfUpdatingSafetyEngineAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\SelfUpdatingSafetyEngineAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 218,
+      "fingerprint": "7dd865125536aee3",
+      "line": 93,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\SelfUpdatingSafetyEngineAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "TerritoryHealerAgent",
+      "module": "agentic_core.L5_safety.guardrails.TerritoryHealerAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\TerritoryHealerAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 166,
+      "fingerprint": "16582b8804b919ed",
+      "line": 32,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\TerritoryHealerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "TestCoverageGuardianAgent",
+      "module": "agentic_core.L5_safety.guardrails.TestCoverageGuardianAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\TestCoverageGuardianAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 305,
+      "fingerprint": "392e7467b65cc917",
+      "line": 22,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\TestCoverageGuardianAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "TestSovereigntyAgent",
+      "module": "agentic_core.L5_safety.validators.TestSovereigntyAgent",
+      "file": "agentic_core\\L5_safety\\validators\\TestSovereigntyAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 161,
+      "fingerprint": "0e133e3c04a98aad",
+      "line": 29,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\TestSovereigntyAgent.py",
+      "usages": {
+        "real": 7,
+        "string_ref": 31,
+        "files": [
+          "agentic_core\\L3_orchestration\\bases\\OrchestrationBaseAgent.py",
+          "tests\\unit\\test_sovereign_agents_comprehensive.py",
+          "agentic_core\\L2_execution\\tool_registry\\ExecutionCanonBaseAgent.py",
+          "agentic_core\\L0_maintenance\\bases\\MaintenanceBaseAgent.py",
+          "agentic_core\\L4_state\\bases\\StateBaseAgent.py",
+          "tests\\integration\\test_agent_integration_comprehensive.py",
+          "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "TypeHintEnforcementAgent",
+      "module": "agentic_core.L5_safety.validators.TypeHintEnforcementAgent",
+      "file": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 83,
+      "fingerprint": "e11896fc9322fe4d",
+      "line": 21,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "UnusedCleanupAgent",
+      "module": "agentic_core.L5_safety.guardrails.UnusedCleanupAgent",
+      "file": "agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py",
+      "layer": "L5",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 31,
+      "fingerprint": "ea53f14e8e4af582",
+      "line": 10,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "BenchmarkingAgent",
+      "module": "agentic_core.observability.metrics.BenchmarkingAgent",
+      "file": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 228,
+      "fingerprint": "3573be244d89a233",
+      "line": 124,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 7,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\canon_scheduler.py"
+        ]
+      }
+    },
+    {
+      "name": "CoordinateObservabilityOperationsAgent",
+      "module": "agentic_core.observability.metrics.CoordinateObservabilityOperationsAgent",
+      "file": "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 55,
+      "fingerprint": "9a6afa259f35b6fd",
+      "line": 36,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "HierarchyEnforcerAgent",
+      "module": "agentic_core.observability.metrics.HierarchyEnforcerAgent",
+      "file": "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 148,
+      "fingerprint": "d659b7e8c1cf0bc3",
+      "line": 10,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "MetricsAgent",
+      "module": "agentic_core.observability.metrics.MetricsAgent",
+      "file": "agentic_core\\observability\\metrics\\MetricsAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 169,
+      "fingerprint": "4d4d1c9753ec66e0",
+      "line": 33,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\MetricsAgent.py",
+      "usages": {
+        "real": 2,
+        "string_ref": 13,
+        "files": [
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
+          "agentic_core\\observability\\compliance\\ReportingAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "PredictiveCostAuditorAgent",
+      "module": "agentic_core.observability.metrics.PredictiveCostAuditorAgent",
+      "file": "agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 212,
+      "fingerprint": "217e7cb0f25b2dc0",
+      "line": 69,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "ReportingAgent",
+      "module": "agentic_core.observability.compliance.ReportingAgent",
+      "file": "agentic_core\\observability\\compliance\\ReportingAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 80,
+      "fingerprint": "73a57c57f8002773",
+      "line": 43,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\compliance\\ReportingAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 7,
+        "files": [
+          "agentic_core\\L3_orchestration\\workflow_engines\\mission_controller.py"
+        ]
+      }
+    },
+    {
+      "name": "SignatureVerifierAgent",
+      "module": "agentic_core.observability.metrics.SignatureVerifierAgent",
+      "file": "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 28,
+      "fingerprint": "3a2836503dbfa8d1",
+      "line": 20,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "TelemetryAgent",
+      "module": "agentic_core.observability.telemetry.TelemetryAgent",
+      "file": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 146,
+      "fingerprint": "890a213d228e9247",
+      "line": 35,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\telemetry\\TelemetryAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 2,
+        "files": [
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "TracingAgent",
+      "module": "agentic_core.observability.tracing.TracingAgent",
+      "file": "agentic_core\\observability\\tracing\\TracingAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 253,
+      "fingerprint": "95bf4712b3f1fd74",
+      "line": 108,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\tracing\\TracingAgent.py",
+      "usages": {
+        "real": 1,
+        "string_ref": 2,
+        "files": [
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "TrackObservabilityCostAgent",
+      "module": "agentic_core.observability.metrics.TrackObservabilityCostAgent",
+      "file": "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
+      "layer": "observability",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 26,
+      "fingerprint": "15494a1bd6a93d61",
+      "line": 18,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "DeadCodeDetectorAgent",
+      "module": "agentic_core.utils.core_extensions.DeadCodeDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 229,
+      "fingerprint": "508ba53a91abbf6e",
+      "line": 124,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 3,
+        "files": []
+      }
+    },
+    {
+      "name": "DriftDetectorAgent",
+      "module": "agentic_core.utils.core_extensions.DriftDetectionDriftDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DriftDetectionDriftDetectorAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 25,
+      "fingerprint": "379385d80900204a",
+      "line": 16,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\DriftDetectionDriftDetectorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "DriftDetectorAgent",
+      "module": "agentic_core.utils.core_extensions.DriftDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 12,
+      "fingerprint": "0988b831ee04b6e1",
+      "line": 13,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 2,
+        "files": []
+      }
+    },
+    {
+      "name": "GlobalComplianceAggregatorAgent",
+      "module": "agentic_core.utils.core_extensions.GlobalComplianceAggregatorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 13,
+      "fingerprint": "2a8f61c625e18d7f",
+      "line": 12,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 0,
+        "files": []
+      }
+    },
+    {
+      "name": "NamingAgent",
+      "module": "agentic_core.utils.core_extensions.NamingAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": false,
+        "run": true,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 870,
+      "fingerprint": "70b7cd34bedda77b",
+      "line": 79,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\NamingAgent.py",
+      "usages": {
+        "real": 8,
+        "string_ref": 24,
+        "files": [
+          "tests\\unit\\test_NamingAgent_demo.py",
+          "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
+          "tests\\test_ast_placement.py",
+          "agentic_core\\L1_cognition\\thought_engine\\CognitionCanonBaseAgent.py",
+          "tests\\unit\\test_naming_agent.py",
+          "agentic_core\\L5_safety\\guardrails\\HealerAgent.py",
+          "agentic_core\\L5_safety\\validators\\FilesystemAgent.py",
+          "tests\\unit\\test_NamingAgent.py"
+        ]
+      }
+    },
+    {
+      "name": "NamingLawHealerAgent",
+      "module": "agentic_core.utils.core_extensions.NamingLawHealerAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": false,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 134,
+      "fingerprint": "842dc3301c082fc7",
+      "line": 19,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    },
+    {
+      "name": "NamingNormalizationAgent",
+      "module": "agentic_core.utils.core_extensions.NamingNormalizationAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py",
+      "layer": "utils",
+      "methods": {
+        "__init__": true,
+        "heal_violation": true,
+        "execute": true,
+        "run": false,
+        "monitor": false,
+        "validate": false
+      },
+      "loc": 82,
+      "fingerprint": "c6bd79048c405cba",
+      "line": 32,
+      "abs_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py",
+      "usages": {
+        "real": 0,
+        "string_ref": 4,
+        "files": []
+      }
+    }
+  ],
+  "duplicates": {},
+  "dead_agents": [
+    "MaintenanceBaseAgent",
+    "OrchestrationBaseAgent",
+    "CodeFormatterAgent",
+    "DependencyPruningAgent",
+    "GitHygieneAgent",
+    "GravityEnforcerAgent",
+    "MCPGuardianAgent",
+    "TestCoverageGuardianAgent",
+    "UnusedCleanupAgent",
+    "HierarchyEnforcerAgent",
+    "GlobalComplianceAggregatorAgent"
+  ],
+  "suspect_agents": [
+    "BootstrapAgent",
+    "IntegrityGateExecutorAgent",
+    "MemoryArchitectAgent",
+    "SovereignActionPlaneAgent",
+    "StructuralEngineerAgent",
+    "SystemArchitectAgent",
+    "AgentRegistryValidatorAgent",
+    "DagEngineAgent",
+    "MockAgent",
+    "NervousSystemAgent",
+    "SemanticGatekeeperAgent",
+    "SemanticTerritoryMapperAgent",
+    "SemanticTerritoryMapperAgent",
+    "SubatomicHopAgent",
+    "TerritoryHealerAgent",
+    "TerritoryHealerAgent",
+    "TestPilotAgent",
+    "AutonomousCheckpointManagerAgent",
+    "AutonomousStateGuardianAgent",
+    "SchemaEvolverAgent",
+    "SovereignPineconeStoreAgent",
+    "StateBaseAgent",
+    "SubAtomicRegistryAgent",
+    "AdversarialRedTeamerAgent",
+    "AutonomousThreatEvolutionAgent",
+    "CodeSSOTEnforcerAgent",
+    "DocstringComplianceAgent",
+    "FilenameUniquenessGuardianAgent",
+    "GravityLeakRepairAgent",
+    "HallucinationHunterAgent",
+    "HygieneGuardianAgent",
+    "InferenceTypeHintAgent",
+    "L5IntegrityGateExecutorAgent",
+    "NeuralAutoImmuneAgent",
+    "NeuralAutoImmuneAgent",
+    "RedTeamAgent",
+    "RegressionOracleAgent",
+    "SelfUpdatingSafetyEngineAgent",
+    "TerritoryHealerAgent",
+    "TypeHintEnforcementAgent",
+    "CoordinateObservabilityOperationsAgent",
+    "PredictiveCostAuditorAgent",
+    "SignatureVerifierAgent",
+    "TrackObservabilityCostAgent",
+    "DeadCodeDetectorAgent",
+    "DriftDetectorAgent",
+    "DriftDetectorAgent",
+    "NamingLawHealerAgent",
+    "NamingNormalizationAgent"
+  ],
+  "misplacements": [
+    {
+      "agent": "HealerAgent",
+      "current": "L2",
+      "suggested": "L5",
+      "file": "agentic_core\\L2_execution\\tool_registry\\HealerAgent.py"
+    },
+    {
+      "agent": "AgentRegistryValidatorAgent",
+      "current": "L3",
+      "suggested": "L5",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py"
+    },
+    {
+      "agent": "AutonomousStateGuardianAgent",
+      "current": "L4",
+      "suggested": "L5",
+      "file": "agentic_core\\L4_state\\validation_context\\AutonomousStateGuardianAgent.py"
+    },
+    {
+      "agent": "SubAtomicRegistryAgent",
+      "current": "L4",
+      "suggested": "L2",
+      "file": "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py"
+    },
+    {
+      "agent": "L5IntegrityGateExecutorAgent",
+      "current": "L5",
+      "suggested": "L2",
+      "file": "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py"
+    },
+    {
+      "agent": "HierarchyEnforcerAgent",
+      "current": "observability",
+      "suggested": "L5",
+      "file": "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py"
+    },
+    {
+      "agent": "NamingNormalizationAgent",
+      "current": "utils",
+      "suggested": "L5",
+      "file": "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py"
+    }
+  ],
+  "summary": {
+    "total": 93,
+    "duplicates": 0,
+    "dead": 11,
+    "suspect": 49,
+    "misplacements": 7
+  }
+}

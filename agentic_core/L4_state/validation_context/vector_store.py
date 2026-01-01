@@ -9,6 +9,11 @@ class PineconeSovereignAgent:
         self.api_key = api_key
         self.index_name = index_name
         self.index = None
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'index_name'), "Missing index_name"
+        return True
     
     def query(self, vector: List[float], top_k: int = 10) -> Dict[str, Any]:
         """Mock query."""

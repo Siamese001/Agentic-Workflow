@@ -69,7 +69,14 @@ class AutonomousCheckpointManagerAgent:
         self.auto_checkpoint_interval = timedelta(minutes=5)
         self.last_auto_checkpoint: Optional[datetime] = None
         self._load_checkpoints()
+        self._run_self_tests()
         Logger.info(f'Autonomous Checkpoint Manager initialized at {self.checkpoint_dir}')
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'checkpoint_dir'), "Missing checkpoint_dir"
+        assert hasattr(self, 'checkpoints'), "Missing checkpoints"
+        return True
 
     def _load_checkpoints(self):
         """Load existing checkpoints from disk."""

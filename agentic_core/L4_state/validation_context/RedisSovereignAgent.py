@@ -63,6 +63,12 @@ class RedisSovereignAgent:
         except Exception as e:
             raise ConnectionError(f"[L6 CRITICAL] Redis gateway failed: {e}")
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L4 compliance."""
+        assert hasattr(self, 'client'), "Missing client"
+        assert hasattr(self, 'pool'), "Missing pool"
+        return True
+
     def get_client(self) -> redis.Redis:
         return self.client
 

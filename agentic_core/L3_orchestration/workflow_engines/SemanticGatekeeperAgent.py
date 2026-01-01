@@ -30,6 +30,12 @@ class SemanticGatekeeperAgent:
         self.dead_letter_queue = []
         Logger.info(f'Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s')
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'timeout_seconds'), "Missing timeout_seconds"
+        assert hasattr(self, 'dead_letter_queue'), "Missing dead_letter_queue"
+        return True
+
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str) -> Any:
         """

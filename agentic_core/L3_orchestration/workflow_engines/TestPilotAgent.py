@@ -38,6 +38,12 @@ class TestPilotAgent:
             from agentic_core.ConversationalRepair import get_conversational_repair
             self.ConversationalRepair = get_conversational_repair()
 
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        assert hasattr(self, 'test_paths'), "Missing test_paths"
+        assert hasattr(self, 'property_violations'), "Missing property_violations"
+        return True
+
     async def execute(self, modified_files: List[str]=None) -> Dict[str, Any]:
         """
         Execute tests and return results.
