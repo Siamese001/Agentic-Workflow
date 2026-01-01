@@ -17,6 +17,8 @@ class SubatomicTestingMixin:
     """
     Phase 1: Canonical self-testing mixin for L2 agents.
     
+    NOTE: _healing_enabled = False - Pure testing utility, no repair context.
+    
     All SubAtomicAgent subclasses inherit this mixin to gain:
     - Automatic self-test execution on instantiation
     - Basic capability and invariant checks
@@ -116,6 +118,8 @@ class L2SelfTestingMixin(SubatomicTestingMixin):
     """
     Alias for SubatomicTestingMixin - use in L2 agents.
     Provides the same functionality with clearer naming.
+    
+    NOTE: _healing_enabled = False - Pure testing utility, no repair context.
     """
     pass
 

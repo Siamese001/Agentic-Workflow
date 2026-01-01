@@ -31,9 +31,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
+      "AutonomyMixin",
       "L0DelegationTestingMixin",
-      "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -105,8 +105,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -136,8 +136,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1924,8 +1924,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "IActionPlane"
+      "IActionPlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2194,7 +2194,7 @@
     "has_subatomic": true,
     "loc": 53,
     "class_count": 2,
-    "description": "\n    Phase 1: Canonical self-testing mixin for L2 agents.\n    \n    All SubAtomicAgent subclasses inh",
+    "description": "\n    Phase 1: Canonical self-testing mixin for L2 agents.\n    \n    NOTE: _healing_enabled = False - ",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -2305,7 +2305,9 @@
     "class_name": "ToolsmithAgent",
     "path": "agentic_core\\L2_execution\\tool_registry\\ToolsmithAgent.py",
     "layer": "L2",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_load_templates",
@@ -2320,10 +2322,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 202,
+    "loc": 203,
     "class_count": 4,
     "description": "\n    Creates and manages tools dynamically.\n    Features:\n    - Generates tools from specifications\n",
     "pascal_compliant": true,
@@ -2735,8 +2737,8 @@
     "layer": "L3",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4261,8 +4263,8 @@
     "layer": "L5",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4688,9 +4690,9 @@
     "layer": "L5",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4764,8 +4766,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "CanonBaseAgent",
-      "ASTEnforcementMixin"
+      "ASTEnforcementMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
