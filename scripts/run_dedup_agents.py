@@ -15,6 +15,13 @@ from concurrent.futures import ThreadPoolExecutor
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+# Import centralized operational config
+from apps_shared.config.operational_config import (
+    OPERATIONAL_EXCLUDED_DIRS,
+    OPERATIONAL_SCAN_TARGETS,
+    is_excluded_path,
+)
+
 
 async def run_file_librarian(project_root: Path) -> Dict[str, Any]:
     """Run L0 FileLibrarian for file-level deduplication."""
@@ -35,11 +42,9 @@ async def run_file_librarian(project_root: Path) -> Dict[str, Any]:
             "duration": 0
         }
         
-        # Scan for Python files (EXCLUDE archives/)
+        # Scan for Python files using centralized exclusions
         python_files = list(project_root.rglob("*.py"))
-        python_files = [f for f in python_files if not any(
-            x in str(f) for x in ['.git', '__pycache__', 'venv', 'node_modules', 'archives']
-        )]
+        python_files = [f for f in python_files if not is_excluded_path(str(f))]
         result["files_scanned"] = len(python_files)
         
         # Run content hashing
@@ -93,15 +98,14 @@ async def run_code_deduplication_agent(project_root: Path) -> Dict[str, Any]:
             "duration": 0
         }
         
-        # Scan Python files for duplicate code blocks (EXCLUDE archives/)
-        target_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']
+        # Scan Python files using centralized scan targets
         files_analyzed = 0
         
-        for target_dir in target_dirs:
+        for target_dir in OPERATIONAL_SCAN_TARGETS:
             target_path = project_root / target_dir
             if target_path.exists():
                 for py_file in target_path.rglob("*.py"):
-                    if not any(x in str(py_file) for x in ['__pycache__', 'archives']):
+                    if not is_excluded_path(str(py_file)):
                         files_analyzed += 1
         
         result["files_analyzed"] = files_analyzed
@@ -128,13 +132,12 @@ async def run_duplicate_code_detector(project_root: Path) -> Dict[str, Any]:
         ctx = MagicMock()
         ctx.python_files = []
         
-        # Collect Python files (EXCLUDE archives/)
-        target_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']
-        for target_dir in target_dirs:
+        # Collect Python files using centralized scan targets
+        for target_dir in OPERATIONAL_SCAN_TARGETS:
             target_path = project_root / target_dir
             if target_path.exists():
                 for py_file in target_path.rglob("*.py"):
-                    if not any(x in str(py_file) for x in ['__pycache__', 'archives']):
+                    if not is_excluded_path(str(py_file)):
                         ctx.python_files.append(py_file)
         
         agent = DuplicateCodeDetectorAgent(project_root, ctx)

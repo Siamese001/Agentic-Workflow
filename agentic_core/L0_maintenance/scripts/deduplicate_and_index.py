@@ -13,21 +13,26 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+from apps_shared.config.operational_config import (
+    OPERATIONAL_EXCLUDED_DIRS,
+    OPERATIONAL_ALLOWED_DUPLICATES,
+    is_excluded_path as op_is_excluded_path,
+    is_allowed_duplicate as op_is_allowed_duplicate,
+)
 
 def is_excluded_path(path: Path) -> bool:
     """Check if a path should be excluded from indexing."""
-    excluded_dirs: Any = {'.git', '__pycache__', '.pytest_cache', '.venv', 'venv', 'env', '.idea', '.vscode', 'node_modules', '.DS_Store', 'archives', 'output', 'chroma_db', '.workflow_state'}
+    # Use centralized operational config
     for part in path.parts:
-        if part in excluded_dirs:
+        if part in OPERATIONAL_EXCLUDED_DIRS:
             return True
     if path.name.startswith('.') and path.name not in {'.gitignore', '.env'}:
         return True
     return False
 
 def is_allowed_duplicate(filename: str) -> bool:
-    """Check if a filename is allowed to have duplicates across directories (from SSOT)."""
-    return filename in ALLOWED_DUPLICATE_FILENAMES
+    """Check if a filename is allowed to have duplicates across directories."""
+    return filename in OPERATIONAL_ALLOWED_DUPLICATES
 
 def get_python_files(root_dir: Path) -> List[Path]:
     """Get all Python files that are not excluded."""
