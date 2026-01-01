@@ -50,6 +50,17 @@ class RoutingDecision:
     rationale: str
     estimated_tokens: int
     complexity_score: float
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "ModelTier"), "Missing ModelTier"
+        assert hasattr(self, "thinking_budget"), "Missing thinking_budget"
+        assert self.thinking_budget > 0, "thinking_budget must be positive"
+        return True
+    
+    def __post_init__(self):
+        """Run self-tests after dataclass initialization."""
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 
 @dataclass
@@ -65,6 +76,18 @@ class ComplexityProfile:
     import_count: int
     class_count: int
     complexity_score: float  # 0-100
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "file_path"), "Missing file_path"
+        assert hasattr(self, "complexity_score"), "Missing complexity_score"
+        assert 0 <= self.complexity_score <= 100, "complexity_score must be 0-100"
+        assert self.total_lines >= 0, "total_lines must be non-negative"
+        return True
+    
+    def __post_init__(self):
+        """Run self-tests after dataclass initialization."""
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
