@@ -4,9 +4,10 @@ import re
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Dict, Any, Match
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to GravityLeakRepairAgent for discovery and sovereignty — 2025-12-30
-class GravityLeakRepairAgent:
+class GravityLeakRepairAgent(HealerMixin):
     """
     Converts forbidden static imports from higher layers (L4/L5) into dynamic importlib calls.
 

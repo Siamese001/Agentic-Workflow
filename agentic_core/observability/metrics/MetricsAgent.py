@@ -27,10 +27,12 @@ from threading import Lock
 from datetime import datetime
 import logging
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class MetricsAgent:
+class MetricsAgent(HealerMixin):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.

@@ -41,10 +41,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP
 )
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class FilesystemAgent:
+class FilesystemAgent(HealerMixin):
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.

@@ -12,6 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
@@ -34,7 +35,7 @@ jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path
     territory="templates",
     content=jailbreak_content,
 )
-class RedTeamAgent:
+class RedTeamAgent(HealerMixin):
     """
     Sovereign red-teaming agent for guardrail penetration testing.
 

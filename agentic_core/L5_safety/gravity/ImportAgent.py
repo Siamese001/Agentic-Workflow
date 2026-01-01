@@ -87,12 +87,14 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 @registers_prompt(
     template_name="gravity_repair.jinja",
     purpose="Fixes import violations and gravity conventions",
     territory="templates"
 )
-class ImportAgent:
+class ImportAgent(HealerMixin):
     """
     Autonomous agent for import convention and gravity compliance.
     Requires file content access → run only on location-valid files.

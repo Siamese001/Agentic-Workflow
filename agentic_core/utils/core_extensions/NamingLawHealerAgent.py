@@ -14,9 +14,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class NamingLawHealerAgent:
+class NamingLawHealerAgent(HealerMixin):
     """
     L1 Cognition: High-Signal Naming Law Healer — Key 49 Sovereign Enforcement
     The "Naming Surgeon" that standardizes file identities by renaming

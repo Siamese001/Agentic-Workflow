@@ -14,8 +14,10 @@ class OperationResult:
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class TrackObservabilityCostAgent:
+class TrackObservabilityCostAgent(HealerMixin):
     """function class for standard domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

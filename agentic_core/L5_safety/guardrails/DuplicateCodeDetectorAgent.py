@@ -21,8 +21,9 @@ except ImportError:
     Parser = None
     Language = None
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class DuplicateCodeDetectorAgent:
+class DuplicateCodeDetectorAgent(HealerMixin):
     """
     Batch agent: Detects exact duplicate code blocks across the entire territory.
     Uses token-based hashing for speed and accuracy (ignores whitespace/comments).

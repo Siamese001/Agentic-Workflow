@@ -29,10 +29,12 @@ import json
 import logging
 from threading import Lock
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class TelemetryAgent:
+class TelemetryAgent(HealerMixin):
     """
     Autonomous telemetry emission agent.
     Collects and emits structured events for sovereign observability.

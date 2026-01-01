@@ -89,8 +89,10 @@ class ThreatDetection:
     confidence: float
     recommendations: List[str]
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SelfUpdatingSafetyEngineAgent:
+class SelfUpdatingSafetyEngineAgent(HealerMixin):
     """
     Safety engine that learns and adapts to new threats.
     

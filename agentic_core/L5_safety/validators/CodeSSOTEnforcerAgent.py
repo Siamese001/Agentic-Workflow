@@ -60,8 +60,9 @@ SKIP_PATHS = {
     "runtime/backups",
 }
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class CodeSSOTEnforcerAgent:
+class CodeSSOTEnforcerAgent(HealerMixin):
     """
     Ultra high-signal code-level SSOT enforcer using AST analysis.
     

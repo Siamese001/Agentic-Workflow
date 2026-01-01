@@ -75,8 +75,9 @@ class PlacementResult:
     reasoning: str
     alternative_paths: List[str]
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class NamingAgent:
+class NamingAgent(HealerMixin):
     """
     Autonomous agent for naming law compliance.
     Operates after LocationAgent (assumes file is in valid territory).

@@ -17,9 +17,10 @@ import textwrap
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class TestCoverageGuardianAgent:
+class TestCoverageGuardianAgent(HealerMixin):
     """
     Ultimate verification agent: Enforces comprehensive test coverage with branch, mutation, and property testing.
     - Coverage: line + branch

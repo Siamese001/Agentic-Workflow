@@ -61,8 +61,10 @@ class DependencyViolation:
         """Convert to dictionary."""
         return {'type': self.type, 'file': str(self.file_path), 'line': self.line, 'message': self.message, 'details': self.details}
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON COMPLIANCE — renamed to DependencySentinelAgent for discovery and sovereignty — 2025-12-30
-class DependencySentinelAgent:
+class DependencySentinelAgent(HealerMixin):
     """
     Guards the codebase against illegal dependencies.
 

@@ -20,7 +20,9 @@ from typing import Any, Dict, List, Optional
 Logger: Any = logging.getLogger(__name__)
 
 
-class MCPGuardianAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class MCPGuardianAgent(HealerMixin):
     """
     L5 Safety Guardian for MCP integration compliance.
     
