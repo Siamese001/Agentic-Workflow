@@ -39,7 +39,10 @@ class TypeHintEnforcementAgent:
     FALLBACK_RETURN = "Any"
     FALLBACK_VAR = "Any"
 
-    def __init__(self, ctx=None, project_root=None):
+    def __init__(self, ctx, project_root=None):
+        """Initialize with mandatory ctx for sovereign operation."""
+        if ctx is None:
+            raise ValueError("ctx is mandatory for TypeHintEnforcementAgent (sovereign agent)")
         self.ctx = ctx
         self.project_root = project_root
 

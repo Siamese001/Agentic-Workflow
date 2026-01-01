@@ -24,10 +24,20 @@ from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereign
 class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
     """L5 Safety agent — enforces PascalCase as eternal sole SSOT."""
 
-    def __init__(self, ctx: Any = None, dry_run: bool = False):
+    def __init__(self, ctx: Any, dry_run: bool = False, _allow_mock: bool = False):
+        """Initialize with mandatory ctx for sovereign operation.
+        
+        Args:
+            ctx: Execution context (mandatory for production)
+            dry_run: If True, audit only without making changes
+            _allow_mock: Internal flag for testing - allows MagicMock ctx
+        """
         if ctx is None:
-            from unittest.mock import MagicMock
-            ctx = MagicMock()
+            if _allow_mock:
+                from unittest.mock import MagicMock
+                ctx = MagicMock()
+            else:
+                raise ValueError("ctx is mandatory for PascalSovereigntyEnforcerAgent (sovereign agent)")
         super().__init__(ctx)
         self.repo_root = Path.cwd()
         self.branch_name = "refactor/eternal-pascal-sovereignty-2026"

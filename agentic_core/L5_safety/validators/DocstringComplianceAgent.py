@@ -23,7 +23,10 @@ class DocstringComplianceAgent:
     """
     MIN_DOCSTRING: Any = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx=None, project_root=None):
+    def __init__(self, ctx, project_root=None):
+        """Initialize with mandatory ctx for sovereign operation."""
+        if ctx is None:
+            raise ValueError("ctx is mandatory for DocstringComplianceAgent (sovereign agent)")
         self.ctx = ctx
         self.project_root = project_root
 

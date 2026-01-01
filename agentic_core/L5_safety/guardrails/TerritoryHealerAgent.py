@@ -34,7 +34,10 @@ class TerritoryHealerAgent:
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """
 
-    def __init__(self, project_root: Path = None, ctx = None):
+    def __init__(self, project_root: Path, ctx):
+        """Initialize with mandatory ctx for sovereign operation."""
+        if ctx is None:
+            raise ValueError("ctx is mandatory for TerritoryHealerAgent (sovereign agent)")
         self.root = project_root
         self.ctx = ctx
         from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY, CANON_SIGNALS
