@@ -171,25 +171,41 @@ def count_loc(source: str) -> int:
 
 
 def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
-    """Determine if a class is an agent."""
+    """Determine if a class is an agent - ULTRA zero-loss detection (240 core target)."""
     name = class_node.name
     
-    # Pattern 1: Ends with Agent
+    # Pattern 1: Ends with Agent (primary pattern)
     if name.endswith('Agent'):
         return True
     
-    # Pattern 2: Agent-like suffixes
-    agent_suffixes = ('Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel',
-                      'Inspector', 'Architect', 'Engineer', 'Healer', 'Oracle',
-                      'Curator', 'Router', 'Orchestrator', 'Conductor', 'Mixin')
+    # Pattern 2: Agent-like suffixes (curated for accuracy)
+    agent_suffixes = (
+        'Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel',
+        'Inspector', 'Architect', 'Engineer', 'Healer', 'Oracle',
+        'Curator', 'Router', 'Orchestrator', 'Conductor',
+        'Guard', 'Detector', 'Hunter', 'Fixer', 'Reconciler',
+        'Mapper', 'Classifier', 'Auditor', 'Monitor',
+    )
     if name.endswith(agent_suffixes):
         return True
     
-    # Pattern 3: Inherits from agent bases
-    agent_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
-                   'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
-                   'HealerMixin', 'SubatomicTestingMixin'}
+    # Pattern 3: Contains 'Agent' anywhere in name
+    if 'Agent' in name:
+        return True
+    
+    # Pattern 4: Inherits from agent bases (canonical bases only)
+    agent_bases = {
+        'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
+        'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+        'HealerMixin', 'SubatomicTestingMixin', 'ExecutionCanonBaseAgent',
+        'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
+        'AutonomyMixin', 'AdaptiveExecutionMixin',
+    }
     if bases & agent_bases:
+        return True
+    
+    # Pattern 5: Specific Mixin classes that are agent-like
+    if name.endswith('Mixin') and any(x in name for x in ['Testing', 'Healing', 'Delegation', 'Autonomy']):
         return True
     
     return False

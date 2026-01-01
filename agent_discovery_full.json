@@ -1,5 +1,140 @@
 [
   {
+    "class_name": "AgentCapability",
+    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_registry_agent_capabilities.py",
+    "layer": "L0",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 57,
+    "class_count": 4,
+    "description": "Defines the capability of an agent role.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentRegistry",
+    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_registry_agent_capabilities.py",
+    "layer": "L0",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "get_capability",
+      "register_agent",
+      "get_agent_spec",
+      "list_roles",
+      "run"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 57,
+    "class_count": 4,
+    "description": "Registry for managing agent capabilities and specifications.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentRole",
+    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_registry_agent_capabilities.py",
+    "layer": "L0",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 57,
+    "class_count": 4,
+    "description": "Functional roles for agents in the system.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentSpec",
+    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_registry_agent_capabilities.py",
+    "layer": "L0",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "_configure_for_role"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 57,
+    "class_count": 4,
+    "description": "Specification for creating an agent instance.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgenticWorkflowError",
+    "path": "agentic_core\\L0_maintenance\\bases\\l0_delegation_testing_mixin.py",
+    "layer": "L0",
+    "inheritance": [
+      "Exception"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 68,
+    "class_count": 2,
+    "description": "Base exception for agentic workflow errors at L0.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgenticWorkflowError",
+    "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_models.py",
+    "layer": "L0",
+    "inheritance": [
+      "Exception"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 27,
+    "class_count": 5,
+    "description": "Base exception for agentic workflow.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "BiasAuditor",
+    "path": "agentic_core\\L0_maintenance\\scripts\\shared_safety_bias_auditor.py",
+    "layer": "L0",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 73,
+    "class_count": 4,
+    "description": "Lightweight Bias Detection for Content Quality.\n\n    Simple pattern-based bias detection for risk mi",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "BootstrapAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
     "layer": "L0",
@@ -32,8 +167,8 @@
     "inheritance": [
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -233,6 +368,35 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "MetricsWitness",
+    "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
+    "layer": "L0",
+    "inheritance": [
+      "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "calculate_structural_ssot_score",
+      "calculate_healing_resilience_score",
+      "_detect_action_opportunity",
+      "_execute_conservative",
+      "_execute_minimal",
+      "_execute_standard"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 71,
+    "class_count": 1,
+    "description": "\n    Sovereign witness that cross-examines L6 observability metrics against constitutional expectati",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "SafeSystemCommandExecutor",
     "path": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
     "layer": "L0",
@@ -251,6 +415,37 @@
     "loc": 138,
     "class_count": 4,
     "description": "\n    A secure system command executor that prevents destructive actions\n    and logs attempts. This ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "ScriptToAgentClassifier",
+    "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
+    "layer": "L0",
+    "inheritance": [
+      "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
+      "AutonomyMixin",
+      "L0DelegationTestingMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "classify_module",
+      "_compute_verdict",
+      "suggest_fission_targets",
+      "_detect_action_opportunity",
+      "_execute_conservative",
+      "_execute_minimal",
+      "_execute_standard"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "Delegated",
+    "has_subatomic": false,
+    "loc": 246,
+    "class_count": 3,
+    "description": "\n    Sovereign classifier for script vs agent constitutional compliance.\n    Uses static analysis (A",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -314,6 +509,105 @@
     "loc": 92,
     "class_count": 3,
     "description": "Workflow orchestrator with SDK integration.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentCapability",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\agent_registry_enums.py",
+    "layer": "L1",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 14,
+    "class_count": 2,
+    "description": "Standard agent capabilities.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentIdentity",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\spiffe_manager_types.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "is_expired",
+      "is_valid",
+      "to_dict",
+      "get_namespace",
+      "get_agent_name"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 52,
+    "class_count": 4,
+    "description": "Cryptographically-verified agent identity.\n\n    Based on SPIFFE ID format: spiffe://trust-domain/pat",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 50,
+    "class_count": 2,
+    "description": "Simple agent information container with explicit initialization.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane_with_streamer.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 53,
+    "class_count": 2,
+    "description": "Simple agent information container.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentStatus",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\agent_registry_enums.py",
+    "layer": "L1",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 14,
+    "class_count": 2,
+    "description": "Agent operational status.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -557,6 +851,25 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "DummyAgentCard",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\metacognition_hypothesis_generation.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 26,
+    "class_count": 2,
+    "description": "TODO: Add docstring.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "EmptyExceptValidator",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
@@ -619,6 +932,35 @@
     "description": "\n    Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).\n    Automatically han",
     "pascal_compliant": true,
     "mcp_hardened": true
+  },
+  {
+    "class_name": "GenerativeGuard",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
+    "layer": "L1",
+    "inheritance": [
+      "CanonBaseAgentInterface"
+    ],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "get_capabilities",
+      "validate_state",
+      "_execute_guard",
+      "_purge_single_file",
+      "_process_found_violations",
+      "_is_runaway_file",
+      "_find_runaway_violations_in_dir"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 299,
+    "class_count": 4,
+    "description": "\n    KEYS: 45 (Dead Code/Runaway Generation)\n    ROLE: The Watchdog. Identifies and deletes recursiv",
+    "pascal_compliant": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "GovernanceAgent",
@@ -770,6 +1112,27 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "OrchestratorAgentAndScopeManager",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "create_agent_swarm",
+      "calculate_smart_scope"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 372,
+    "class_count": 6,
+    "description": "\n    Manages the creation of the subatomic agent swarm and calculates\n    the smart scope for target",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "PatternEnforcer",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
     "layer": "L1",
@@ -898,6 +1261,25 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "SemanticMapper",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "execute"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 160,
+    "class_count": 4,
+    "description": "\n    ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.\n   ",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
     "class_name": "SystemArchitect",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
     "layer": "L1",
@@ -924,6 +1306,34 @@
     "loc": 299,
     "class_count": 4,
     "description": "\n    KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)\n    ROLE: The G",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestInjectionDetector",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\l5_injection_detection.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "setup_method",
+      "test_prompt_injection_detection",
+      "test_system_override_detection",
+      "test_indirection_injection_detection",
+      "test_base64_injection_detection",
+      "test_tool_injection_detection",
+      "test_state_injection_detection",
+      "test_bias_injection_detection",
+      "test_safe_content_no_findings",
+      "test_multiple_injection_types"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 99,
+    "class_count": 3,
+    "description": "Test cases for injection detection patterns.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -1179,6 +1589,29 @@
     "loc": 230,
     "class_count": 2,
     "description": "\n    Sovereign dead code auditor that identifies unused code across the project.\n    Enhanced with c",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "DeadlockDetector",
+    "path": "agentic_core\\L2_execution\\tool_registry\\concurrency.py",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "_detect_global_cycles",
+      "_generate_deadlock_free_code",
+      "_save_analysis_report"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 643,
+    "class_count": 4,
+    "description": "ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -1604,6 +2037,34 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "MemoryLeakDetector",
+    "path": "agentic_core\\L2_execution\\tool_registry\\concurrency.py",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "execute",
+      "_scan_and_fix",
+      "_detect_leaks",
+      "_analyze_leak_context",
+      "_is_in_with_block",
+      "_has_close_call",
+      "_prioritize_leaks",
+      "_generate_leak_free_code",
+      "_save_safety_report"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 643,
+    "class_count": 4,
+    "description": "ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "NamingAgent",
     "path": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
     "layer": "L2",
@@ -1777,6 +2238,32 @@
     "loc": 286,
     "class_count": 2,
     "description": "\n    KEYS: 26-39 (Pattern Checks)\n    ROLE: Enforces coding patterns and best practices.\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "PeerIntelligenceAuditor",
+    "path": "agentic_core\\L2_execution\\tool_registry\\peer_intelligence_auditor_impl.py",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "analyze_competitive_landscape",
+      "_execute_multi_hop_search",
+      "_generate_hop_queries",
+      "_execute_searches",
+      "_extract_keywords_from_results",
+      "_classify_keywords",
+      "_validate_search_count"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 111,
+    "class_count": 8,
+    "description": "\n    K.2.5 - Multi-Hop RAG Analysis Agent\n\n    RAG Intensity Constraint:\n    - MUST run 24 searches ",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -2005,6 +2492,32 @@
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
     "mcp_hardened": false
+  },
+  {
+    "class_name": "SovereigntyAuditor",
+    "path": "agentic_core\\utils\\core_extensions\\sovereignty_auditor.py",
+    "layer": "L2",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "run_audit",
+      "_calculate_depth",
+      "_audit_file",
+      "_add_violation",
+      "_report_results",
+      "get_stats",
+      "get_violations"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 106,
+    "class_count": 1,
+    "description": "\n    Sovereignty Audit Engine for MCP compliance.\n    \n    Scans codebase for:\n    - Direct SDK usag",
+    "pascal_compliant": true,
+    "mcp_hardened": true
   },
   {
     "class_name": "SprawlInspector",
@@ -2353,6 +2866,101 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "AgentFactory",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "_create_impl",
+      "create_system_architect",
+      "create_healer_agent",
+      "create_generative_guard",
+      "create_code_janitor",
+      "create_dependency_sentinel",
+      "create_safety_inspector",
+      "create_pattern_enforcer"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 76,
+    "class_count": 1,
+    "description": "\n    Centralized factory for sovereign agent injection.\n    \n    Phase 9A DDD Compliance:\n    - Only",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentGym",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_gym_impl.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "register_scenario",
+      "run_benchmark",
+      "_execute_test_cases",
+      "_create_benchmark_result",
+      "_log_benchmark_start",
+      "run_training_session",
+      "get_scenario",
+      "list_scenarios",
+      "get_session_history"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 130,
+    "class_count": 1,
+    "description": "Agent Gym for self-evolution and benchmarking.\n\n    Features:\n    - Offline simulation environment\n ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentPermissionManager",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_permissions_impl.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "grant_permission",
+      "revoke_permission",
+      "check_permission",
+      "list_permissions",
+      "_load_default_permissions"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 85,
+    "class_count": 1,
+    "description": "Manages agent permissions with Control Plane integration.\n\n    Provides:\n    - Identity-based Permis",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentRegistry",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 348,
+    "class_count": 9,
+    "description": "Mock AgentRegistry for type hinting.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "AgentRegistryValidatorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\AgentRegistryValidatorAgent.py",
     "layer": "L3",
@@ -2373,6 +2981,51 @@
     "loc": 71,
     "class_count": 1,
     "description": "\n    L3 Orchestration: Agent Registry Validation\n    Ensures all agents defined in CANON_AGENT_REGIS",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentRole",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "layer": "L3",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 348,
+    "class_count": 9,
+    "description": "Brief description of functionality and purpose.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AutonomicMonitor",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\autonomic_monitor_impl.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "record_metrics",
+      "check_health",
+      "get_metrics",
+      "get_alerts",
+      "register_alert_callback",
+      "_trigger_alert",
+      "_generate_recommendations"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 92,
+    "class_count": 1,
+    "description": "Autonomic immune system for agent health monitoring.\n\n    Features:\n    - Runtime metrics monitoring",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -2554,6 +3207,34 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "DeadlockDetector",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "start_monitoring",
+      "stop_monitoring",
+      "register_task",
+      "heartbeat",
+      "_task_done",
+      "_monitor_loop",
+      "_check_tasks",
+      "_alert_deadlock",
+      "get_status"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 190,
+    "class_count": 2,
+    "description": "\n    Detects potential deadlocks in asyncio tasks.\n\n    Monitors:\n    - Task execution time\n    - He",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "DispatchOutreachToolsAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\dispatch_outreach_tools.py",
     "layer": "L3",
@@ -2597,6 +3278,23 @@
     "loc": 65,
     "class_count": 1,
     "description": "Executor for resume domain with Titanium RAG integration.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "HallucinationDetector",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\check_hallucination.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 9,
+    "class_count": 1,
+    "description": "Stub implementation of hallucination detector.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -2732,6 +3430,33 @@
     "description": "\n    L3 Orchestration switchboard: Hardens the L1-L5 stack by routing\n    specific layer failures to",
     "pascal_compliant": true,
     "mcp_hardened": true
+  },
+  {
+    "class_name": "MemoryLeakDetector",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\memory_leak_detector.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "start_cycle",
+      "end_cycle",
+      "take_snapshot",
+      "_analyze_cycle",
+      "_alert_memory_leak",
+      "get_current_usage",
+      "get_cycle_summary",
+      "force_gc"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 158,
+    "class_count": 2,
+    "description": "\n    Detects memory leaks in the agentic system.\n\n    Features:\n    - Tracks memory usage across cyc",
+    "pascal_compliant": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "MetaLearningAgent",
@@ -3124,6 +3849,29 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "SovereignCanonAuditor",
+    "path": "agentic_core\\observability\\metrics\\canon_audit.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "audit_core_components",
+      "get_architectural_insight",
+      "verify_mcp_integration",
+      "run_full_audit"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 110,
+    "class_count": 1,
+    "description": "\n    Sovereign Canon Auditor using DeepWiki MCP.\n    Performs self-verification of critical system c",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
     "class_name": "SovereignMcpRouter",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router_sovereign.py",
     "layer": "L3",
@@ -3234,6 +3982,28 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "TaskMonitor",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "update_heartbeat",
+      "check_timeout",
+      "get_stack_trace"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 190,
+    "class_count": 2,
+    "description": "Monitors a single asyncio Task.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "TelemetryAgent",
     "path": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
     "layer": "L3",
@@ -3311,6 +4081,26 @@
     "loc": 196,
     "class_count": 1,
     "description": "\n    Enforces exhaustive territory compliance by detecting intra-territory strays.\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestMetricsWithAgents",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_observability_integration.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "test_metrics_track_agent_invocations",
+      "test_metrics_track_healing_duration"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 195,
+    "class_count": 6,
+    "description": "Integration tests for MetricsCollector with agents.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -3616,29 +4406,6 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "HardeningMixin",
-    "path": "agentic_core\\L4_resilience\\mixins\\resilience_mixin.py",
-    "layer": "L4",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "execute_hardened",
-      "validate_token_budget_tiktoken",
-      "get_circuit_breaker_state",
-      "reset_circuit_breaker"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 123,
-    "class_count": 2,
-    "description": "Mixin that adds military-grade resilience to any executor.\n    \n    Integrates circuit breaking, ret",
-    "pascal_compliant": true,
-    "mcp_hardened": false
-  },
-  {
     "class_name": "L4SubatomicTestingMixin",
     "path": "agentic_core\\L4_state\\bases\\StateBaseAgent.py",
     "layer": "L4",
@@ -3833,28 +4600,6 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ASTEnforcementMixin",
-    "path": "agentic_core\\L5_safety\\utils\\ASTEnforcementMixin.py",
-    "layer": "L5",
-    "inheritance": [],
-    "key_methods": [
-      "_ast_audit_file",
-      "_ast_audit_repo",
-      "_extract_class_names",
-      "_is_snake_case_class"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 111,
-    "class_count": 1,
-    "description": "Mixin for sovereign AST enforcement.\n    \n    Provides precise AST-based code analysis capabilities ",
-    "pascal_compliant": true,
-    "mcp_hardened": false
-  },
-  {
     "class_name": "AdversarialRedTeamerAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\AdversarialRedTeamerAgent.py",
     "layer": "L5",
@@ -3963,6 +4708,29 @@
     "loc": 166,
     "class_count": 14,
     "description": "Stub for BaseAgent - TODO: Replace with sovereign equivalent",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "BiasAuditor",
+    "path": "agentic_core\\L5_safety\\validators\\bias_auditor.py",
+    "layer": "L5",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "audit_content",
+      "_extract_context",
+      "_calculate_severity",
+      "_generate_recommendations"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 147,
+    "class_count": 4,
+    "description": "Lightweight Bias Detection for Content Quality.\n    \n    Simple pattern-based bias detection for ris",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -4268,8 +5036,8 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "AdaptiveExecutionMixin",
+      "HealerMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -4668,36 +5436,34 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MCPHardenedMixin",
-    "path": "agentic_core\\L5_safety\\guardrails\\mcp_hardened_mixin.py",
+    "class_name": "MethodChangeDetector",
+    "path": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
     "layer": "L5",
     "inheritance": [],
     "key_methods": [
-      "_hardened_call",
-      "_emit_sovereign_event",
-      "_emit_critique",
-      "get_redis_connection",
-      "get_neo4j_driver"
+      "__init__",
+      "detect_method_changes",
+      "_extract_methods"
     ],
     "has_tools": true,
     "has_memory": true,
     "has_healing": false,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 144,
-    "class_count": 1,
-    "description": "\n    Mixin providing hardened MCP operations:\n    - Exponential backoff retry (3 attempts by default",
+    "loc": 314,
+    "class_count": 6,
+    "description": "Detects method changes between two versions of a file.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "mcp_hardened": false
   },
   {
     "class_name": "NeuralAutoImmuneAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "HealerMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -4772,8 +5538,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "ASTEnforcementMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5052,6 +5818,30 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "TypeHintFixer",
+    "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
+    "layer": "L5",
+    "inheritance": [
+      "NodeTransformer"
+    ],
+    "key_methods": [
+      "__init__",
+      "visit_FunctionDef",
+      "visit_AsyncFunctionDef",
+      "visit_Assign"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 84,
+    "class_count": 2,
+    "description": "\n    AST transformer that adds Missing type hints to public symbols.\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "UnusedCleanupAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\UnusedCleanupAgent.py",
     "layer": "L5",
@@ -5090,6 +5880,44 @@
     "loc": 411,
     "class_count": 7,
     "description": "\n    Enforce ASCII-only characters for LinkedIn compatibility\n    GAP 1.10 from v10.22\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentStatus",
+    "path": "apps_lic\\domain\\lic_models.py",
+    "layer": "apps_lic",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 122,
+    "class_count": 18,
+    "description": "Agent execution status",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentStatus",
+    "path": "apps_lic\\domain\\models\\outreach_models.py",
+    "layer": "apps_lic",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 135,
+    "class_count": 20,
+    "description": "Agent execution status",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -5195,6 +6023,44 @@
     "loc": 229,
     "class_count": 9,
     "description": "Checks email deliverability factors.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "FailureClassifier",
+    "path": "apps_lic\\domain\\lic_models.py",
+    "layer": "apps_lic",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 122,
+    "class_count": 18,
+    "description": "\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "FailureClassifier",
+    "path": "apps_lic\\domain\\models\\outreach_models.py",
+    "layer": "apps_lic",
+    "inheritance": [
+      "Enum"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 135,
+    "class_count": 20,
+    "description": "\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -5570,6 +6436,52 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "OutreachAgentFactory",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "create_all_agents",
+      "create_quality_agents",
+      "create_compliance_agents",
+      "create_agents_by_name"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 293,
+    "class_count": 7,
+    "description": "Factory for creating outreach agents.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "OutreachCapabilityMonitor",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\proactive.py",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "record_execution",
+      "get_success_rate",
+      "get_capability_profile",
+      "_get_supported_tasks",
+      "get_all_stats"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 348,
+    "class_count": 9,
+    "description": "\n    Monitors outreach agent capabilities and performance.\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "OutreachHealingOrchestrator",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
     "layer": "apps_lic",
@@ -5709,6 +6621,26 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "PlaceholderDetector",
+    "path": "apps_lic\\domain\\validators\\profile_validator.py",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "detect_placeholders",
+      "validate"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 411,
+    "class_count": 7,
+    "description": "\n    Comprehensive placeholder detection\n    FEATURE 3.3 from SUPREME_SPELL / GAP 1.5\n    ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "RecipientAgent",
     "path": "apps_lic\\engines\\outreach_engine\\rag\\campaign_rag.py",
     "layer": "apps_lic",
@@ -5813,6 +6745,28 @@
     "loc": 254,
     "class_count": 11,
     "description": "Tests for MessageComplianceAgent.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestOutreachCapabilityMonitor",
+    "path": "apps_lic\\engines\\outreach_engine\\autonomous\\tests\\test_outreach_proactive.py",
+    "layer": "apps_lic",
+    "inheritance": [],
+    "key_methods": [
+      "test_init",
+      "test_record_execution",
+      "test_get_success_rate",
+      "test_get_capability_profile"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 254,
+    "class_count": 7,
+    "description": "Tests for OutreachCapabilityMonitor.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -5948,6 +6902,28 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "AgentFactory",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "create_all_agents",
+      "create_agents_by_name",
+      "create_quality_agents",
+      "create_compliance_agents"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 334,
+    "class_count": 9,
+    "description": "Factory for creating agent instances.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "BrandComplianceAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
     "layer": "apps_rg",
@@ -5970,6 +6946,30 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "CapabilityMonitor",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "record_execution",
+      "get_success_rate",
+      "get_capability_profile",
+      "_get_supported_tasks",
+      "get_all_stats"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 331,
+    "class_count": 9,
+    "description": "\n    Monitors agent capabilities and performance.\n\n    Tracks success rates, identifies limitations,",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "ContentQualityAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
     "layer": "apps_rg",
@@ -5988,6 +6988,29 @@
     "loc": 418,
     "class_count": 9,
     "description": "\n    Validates resume content quality.\n\n    Checks for:\n    - Minimum content length\n    - Proper se",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "ConvergenceDetector",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "record_state",
+      "is_converged",
+      "is_oscillating",
+      "get_stuck_signals"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 334,
+    "class_count": 9,
+    "description": "Detects when the system has converged.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6311,6 +7334,49 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "TestAgentCoordination",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_integration.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_full_agent_pipeline_valid",
+      "test_full_agent_pipeline_invalid"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 218,
+    "class_count": 6,
+    "description": "Tests for multi-agent coordination.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestAgentFactory",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_create_all_agents",
+      "test_create_agents_by_name",
+      "test_create_agents_by_name_unknown",
+      "test_create_quality_agents",
+      "test_create_compliance_agents"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 238,
+    "class_count": 7,
+    "description": "Tests for AgentFactory class.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "TestBrandComplianceAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_agents.py",
     "layer": "apps_rg",
@@ -6328,6 +7394,29 @@
     "loc": 273,
     "class_count": 9,
     "description": "Tests for BrandComplianceAgent.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestCapabilityMonitor",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_proactive.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_init",
+      "test_record_execution",
+      "test_get_success_rate",
+      "test_get_capability_profile",
+      "test_get_all_stats"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 269,
+    "class_count": 7,
+    "description": "Tests for CapabilityMonitor.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6350,6 +7439,29 @@
     "loc": 273,
     "class_count": 9,
     "description": "Tests for ContentQualityAgent.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestConvergenceDetector",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_healing.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_is_converged_true",
+      "test_is_converged_false",
+      "test_record_state",
+      "test_is_oscillating_false",
+      "test_get_stuck_signals"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 238,
+    "class_count": 7,
+    "description": "Tests for ConvergenceDetector class.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6507,6 +7619,26 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "TestResilientMutatorWithAgents",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_gitops_integration.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_mutator_tracks_statistics",
+      "test_mutator_with_healing_context"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 144,
+    "class_count": 6,
+    "description": "Integration tests for ResilientMutator with agents.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "TestResumeLearningAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning.py",
     "layer": "apps_rg",
@@ -6529,6 +7661,27 @@
     "loc": 322,
     "class_count": 10,
     "description": "Tests for ResumeLearningAgent class.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestResumeLearningAgentIntegration",
+    "path": "apps_rg\\engines\\resume_engine\\autonomous\\tests\\test_learning_integration.py",
+    "layer": "apps_rg",
+    "inheritance": [],
+    "key_methods": [
+      "test_learning_agent_with_healing_cycle",
+      "test_learning_agent_section_tracking",
+      "test_learning_agent_few_shot_integration"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 243,
+    "class_count": 6,
+    "description": "Integration tests for ResumeLearningAgent with full workflow.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6651,30 +7804,251 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "AdaptiveExecutionMixin",
-    "path": "agentic_core\\patterns\\agent_roles\\adaptive_execution_mixin.py",
-    "layer": "misc",
-    "inheritance": [],
+    "class_name": "CanonBaseAgentInterface",
+    "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
+    "layer": "apps_shared",
+    "inheritance": [
+      "ABC"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 14,
+    "class_count": 2,
+    "description": "",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "CanonBaseAgentInterfaceImpl",
+    "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
+    "layer": "apps_shared",
+    "inheritance": [
+      "ABC"
+    ],
     "key_methods": [
-      "__init__",
-      "current_mode",
-      "select_execution_mode",
-      "_get_recent_failure_rate",
       "execute",
-      "_execute_standard",
-      "_execute_conservative",
-      "_execute_aggressive",
-      "_execute_minimal",
-      "force_mode"
+      "get_capabilities",
+      "validate_state"
     ],
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 63,
-    "class_count": 1,
-    "description": "\n    Mixin that adds context-aware execution mode selection.\n    Agents inherit this to become envir",
+    "loc": 14,
+    "class_count": 2,
+    "description": "Sovereign interface for all canon agents \u2014 shared across contexts.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentContract",
+    "path": "agentic_core\\schemas\\models\\core_contracts.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 30,
+    "class_count": 3,
+    "description": "Contract specification for an agent.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "scripts\\ast_redundancy_analyzer.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 357,
+    "class_count": 2,
+    "description": "Information about a discovered agent class.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "scripts\\ast_redundancy_analyzer_ultra.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 273,
+    "class_count": 2,
+    "description": "",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentMessage",
+    "path": "agentic_core\\schemas\\models\\messaging.py",
+    "layer": "misc",
+    "inheritance": [
+      "SovereignBaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 21,
+    "class_count": 3,
+    "description": "\n    Sovereign-grade message used for inter-agent handoffs.\n    Inherits immutability and strict val",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentMessage",
+    "path": "agentic_core\\schemas\\models\\base\\__init__.py",
+    "layer": "misc",
+    "inheritance": [
+      "SovereignBaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 22,
+    "class_count": 3,
+    "description": "Brief description of functionality and purpose.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentPlan",
+    "path": "agentic_core\\runtime\\shared_runtime\\subatomic_hop_BROKEN.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 320,
+    "class_count": 4,
+    "description": "",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "AgentPlan",
+    "path": "agentic_core\\schemas\\models\\reasoning.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 72,
+    "class_count": 4,
+    "description": "Agent execution plan with reasoning and tool calls.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentPlan",
+    "path": "agentic_core\\schemas\\models\\reasoning\\__init__.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 92,
+    "class_count": 6,
+    "description": "Agent execution plan with reasoning and tool calls.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentResponse",
+    "path": "agentic_core\\schemas\\models\\runtime_shared.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 82,
+    "class_count": 13,
+    "description": "Response from agent execution containing a residual message.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentThoughtProcess",
+    "path": "agentic_core\\schemas\\models\\reasoning.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [
+      "validate_args"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 72,
+    "class_count": 4,
+    "description": "\n    Forces the agent to show its work before acting.\n    This is the \"Physics\" of your Agent - the ",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentThoughtProcess",
+    "path": "agentic_core\\schemas\\models\\reasoning\\__init__.py",
+    "layer": "misc",
+    "inheritance": [
+      "BaseModel"
+    ],
+    "key_methods": [
+      "validate_args"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 92,
+    "class_count": 6,
+    "description": "\n    Forces the agent to show its work before acting.\n    This is the \"Physics\" of your Agent - the ",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6698,6 +8072,27 @@
     "loc": 45,
     "class_count": 1,
     "description": "",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "BiasAuditor",
+    "path": "agentic_core\\runtime\\shared_runtime\\bias_auditor.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "audit",
+      "check_bias_type"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 45,
+    "class_count": 5,
+    "description": "Audits text for potential bias.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6770,31 +8165,6 @@
     "loc": 74,
     "class_count": 1,
     "description": "\n    Base class for intelligent validators.\n    Subclasses implement rule-specific logic while inher",
-    "pascal_compliant": true,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "HealerMixin",
-    "path": "agentic_core\\common\\healing\\healer_mixin.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [
-      "heal",
-      "apply_fix",
-      "_can_heal",
-      "_log_healing_success",
-      "disable_healing",
-      "enable_healing",
-      "reset_healing_budget"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 81,
-    "class_count": 1,
-    "description": "\n    Phase 3: Default-on healing mixin for autonomous repair.\n    \n    Provides:\n    - heal() method",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -6922,24 +8292,58 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SelfDiagnosisMixin",
-    "path": "agentic_core\\patterns\\agent_roles\\self_diagnosis_mixin.py",
+    "class_name": "NonConformingAgentFinder",
+    "path": "scripts\\find_non_conforming_agents.py",
     "layer": "misc",
-    "inheritance": [],
+    "inheritance": [
+      "NodeVisitor"
+    ],
     "key_methods": [
       "__init__",
-      "self_diagnose",
-      "_attempt_component_repair",
-      "health_check"
+      "visit_ClassDef"
     ],
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 81,
+    "loc": 103,
     "class_count": 1,
-    "description": "\n    Mixin that adds comprehensive self-diagnostic capability.\n    Agents define MANDATORY_COMPONENT",
+    "description": "",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "ResidualAgentMessage",
+    "path": "agentic_core\\schemas\\models\\messaging.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 21,
+    "class_count": 3,
+    "description": "\n    Lightweight runtime message format discovered during Phase 2C sweep.\n    Maintains compatibilit",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "ResidualAgentMessage",
+    "path": "agentic_core\\schemas\\models\\runtime_shared.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 82,
+    "class_count": 13,
+    "description": "Message in agent conversation (Residual Phase 2C).",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -7032,6 +8436,91 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "TestAgentDiscovery",
+    "path": "tests\\e2e\\test_sovereign_e2e_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_discover_l2_agents",
+      "test_discover_l5_validators",
+      "test_agent_registry_matches_filesystem"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 123,
+    "class_count": 5,
+    "description": "E2E tests for agent discovery and registry.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestAgentFileValidation",
+    "path": "tests\\unit\\test_naming_agent.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_valid_agent_file",
+      "test_agent_file_wrong_case",
+      "test_agent_file_class_mismatch",
+      "test_agent_file_no_agent_class",
+      "test_agent_file_word_count_too_few",
+      "test_agent_file_word_count_too_many"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 201,
+    "class_count": 8,
+    "description": "Test validation of Agent files.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestAgentHierarchy",
+    "path": "tests\\integration\\test_agent_integration_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_l2_agents_use_canon_base",
+      "test_l5_validators_exist"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 126,
+    "class_count": 6,
+    "description": "Test agent hierarchy and inheritance patterns.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestAgentRegistry",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_agent_registry_exists",
+      "test_agent_registry_has_layers"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "Test AGENT_REGISTRY from structure_blueprint.py.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
     "class_name": "TestCodeDeduplicationAgent",
     "path": "tests\\test_dedup_agents_comprehensive.py",
     "layer": "tests",
@@ -7111,30 +8600,290 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "TestMCPHardenedMixin",
-    "path": "tests\\unit\\test_mcp_hardened_mixin.py",
+    "class_name": "TestHealerAgentASTDiff",
+    "path": "tests\\unit\\test_HealerAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "tearDown",
+      "test_ast_fingerprint_structural_match",
+      "test_ast_fingerprint_structural_difference",
+      "test_ast_fingerprint_class_structure",
+      "test_structural_patch_replace_function",
+      "test_partial_parse_with_syntax_error",
+      "test_integrity_validation_valid",
+      "test_integrity_validation_invalid",
+      "test_string_fallback_on_invalid_ast"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 126,
+    "class_count": 3,
+    "description": "Test AST-based diff application for structural healing.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestHealerAgentIntegration",
+    "path": "tests\\unit\\test_HealerAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "tearDown",
+      "test_heal_with_ast_validation",
+      "test_fingerprint_caching"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 126,
+    "class_count": 3,
+    "description": "Integration tests for AST-based healing.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestHealerAgentPerformance",
+    "path": "tests\\unit\\test_HealerAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "tearDown",
+      "test_fingerprint_performance"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 126,
+    "class_count": 3,
+    "description": "Performance tests for AST operations.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestL0MaintenanceAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
     "layer": "tests",
     "inheritance": [],
     "key_methods": [
-      "mixin_client",
-      "test_successful_call_on_first_attempt",
-      "test_retry_on_transient_failure",
-      "test_retry_multiple_failures",
-      "test_emit_critique_on_exhaustion",
-      "test_timeout_enforcement",
-      "test_sovereign_events_emitted",
-      "test_sovereign_events_on_failure"
+      "test_bootstrap_agent_import",
+      "test_l0_layer_exists",
+      "test_l0_subfolders_per_ssot"
     ],
     "has_tools": true,
     "has_memory": true,
     "has_healing": false,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 162,
-    "class_count": 5,
-    "description": "Test suite for MCPHardenedMixin.",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L0 Maintenance Layer: Scripts, logs, benchmarks.",
     "pascal_compliant": true,
     "mcp_hardened": true
+  },
+  {
+    "class_name": "TestL1CognitionAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_cognition_base_agent_import",
+      "test_dependency_sentinel_agent",
+      "test_governance_agent",
+      "test_meta_learning_agent",
+      "test_reflection_agent"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L1 Cognition Layer: Thought engine, intent analysis, planning.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "TestL2ExecutionAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_execution_base_agent_import",
+      "test_code_deduplication_agent",
+      "test_code_janitor_agent",
+      "test_context_curator_agent",
+      "test_dependency_diplomat_agent",
+      "test_dynamic_model_router_agent",
+      "test_git_agent"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L2 Execution Layer: Tool registry, action handlers, MCP.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "TestL3OrchestrationAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_l3_layer_exists",
+      "test_l3_subfolders_per_ssot"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L3 Orchestration Layer: Workflow engines, fission logic, meta-learning.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "TestL4StateAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_l4_layer_exists",
+      "test_state_base_agent_import",
+      "test_pinecone_sovereign_agent",
+      "test_redis_sovereign_agent"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L4 State Layer: Validation context, ledger, filesystem, memory.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "TestL5SafetyAgents",
+    "path": "tests\\unit\\test_sovereign_agents_comprehensive.py",
+    "layer": "tests",
+    "inheritance": [],
+    "key_methods": [
+      "test_l5_layer_exists",
+      "test_l5_subfolders_per_ssot",
+      "test_test_sovereignty_agent",
+      "test_pascal_sovereignty_enforcer_agent",
+      "test_subatomic_engine"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 280,
+    "class_count": 8,
+    "description": "L5 Safety Layer: Guardrails, validators, gravity, red-teaming.",
+    "pascal_compliant": true,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "TestNamingAgentFallback",
+    "path": "tests\\unit\\test_NamingAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "test_ast_fallback_works",
+      "test_graceful_degradation"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 86,
+    "class_count": 3,
+    "description": "Test fallback behavior when tree-sitter is not available.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestNamingAgentPerformance",
+    "path": "tests\\unit\\test_NamingAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "test_large_file_performance"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 86,
+    "class_count": 3,
+    "description": "Test performance improvements with tree-sitter.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "TestNamingAgentTreeSitter",
+    "path": "tests\\unit\\test_NamingAgent.py",
+    "layer": "tests",
+    "inheritance": [
+      "TestCase"
+    ],
+    "key_methods": [
+      "setUp",
+      "test_python_symbols",
+      "test_javascript_symbols",
+      "test_typescript_symbols",
+      "test_partial_parse_python",
+      "test_fallback_to_ast_when_tree_sitter_unavailable",
+      "test_language_detection_from_extension",
+      "test_jsx_file_detection",
+      "test_tsx_file_detection",
+      "test_empty_code"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 86,
+    "class_count": 3,
+    "description": "Test tree-sitter multi-language symbol extraction.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestPascalSovereigntyEnforcer",
