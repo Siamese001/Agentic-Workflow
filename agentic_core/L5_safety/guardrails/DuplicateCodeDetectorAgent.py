@@ -56,7 +56,8 @@ class DuplicateCodeDetectorAgent:
 
         for file_path_str in self.ctx.python_files:
             file_path = Path(file_path_str)
-            if not file_path.exists():
+            # EXCLUDE archives/ directory
+            if not file_path.exists() or 'archives' in str(file_path):
                 continue
 
             try:

@@ -35,10 +35,10 @@ async def run_file_librarian(project_root: Path) -> Dict[str, Any]:
             "duration": 0
         }
         
-        # Scan for Python files
+        # Scan for Python files (EXCLUDE archives/)
         python_files = list(project_root.rglob("*.py"))
         python_files = [f for f in python_files if not any(
-            x in str(f) for x in ['.git', '__pycache__', 'venv', 'archives', 'node_modules']
+            x in str(f) for x in ['.git', '__pycache__', 'venv', 'node_modules', 'archives']
         )]
         result["files_scanned"] = len(python_files)
         
@@ -93,7 +93,7 @@ async def run_code_deduplication_agent(project_root: Path) -> Dict[str, Any]:
             "duration": 0
         }
         
-        # Scan Python files for duplicate code blocks
+        # Scan Python files for duplicate code blocks (EXCLUDE archives/)
         target_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']
         files_analyzed = 0
         
@@ -101,7 +101,7 @@ async def run_code_deduplication_agent(project_root: Path) -> Dict[str, Any]:
             target_path = project_root / target_dir
             if target_path.exists():
                 for py_file in target_path.rglob("*.py"):
-                    if '__pycache__' not in str(py_file):
+                    if not any(x in str(py_file) for x in ['__pycache__', 'archives']):
                         files_analyzed += 1
         
         result["files_analyzed"] = files_analyzed
@@ -128,13 +128,13 @@ async def run_duplicate_code_detector(project_root: Path) -> Dict[str, Any]:
         ctx = MagicMock()
         ctx.python_files = []
         
-        # Collect Python files
+        # Collect Python files (EXCLUDE archives/)
         target_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared']
         for target_dir in target_dirs:
             target_path = project_root / target_dir
             if target_path.exists():
                 for py_file in target_path.rglob("*.py"):
-                    if '__pycache__' not in str(py_file):
+                    if not any(x in str(py_file) for x in ['__pycache__', 'archives']):
                         ctx.python_files.append(py_file)
         
         agent = DuplicateCodeDetectorAgent(project_root, ctx)
