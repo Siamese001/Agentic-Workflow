@@ -1,34 +1,37 @@
-# File: hop_agents_LIC.py
+# File: hop_agents.py
 # Description: Refactored HOP agents for v13.0 pure agentic architecture
 # Demonstrates state-based I/O, single responsibility, and tool augmentation
+# HARDENED: 2026-01-01 - PascalCase + MCPHardenedMixin applied
 
-__version__ = "13.0"
+__version__ = "13.1"
 
 import json
 import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from models_LIC import (
+# MCP Hardening
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+# Models (updated imports for new locations)
+from apps_lic.domain.lic_models import (
     OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,
     Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,
     SenderGroundingWhitelists, FactualGapError, FailureClassifier
 )
-from state_manager_LIC import StateManager
-from memory_LIC import VectorMemoryStore
-from llm_clients import GeminiLLMClient
-from retrieval_clients import GoogleSearchClient
-from utils_LIC import CircuitBreaker
-from tools_LIC import CodeInterpreterTool, ValidationToolkit
+from apps_shared.utils.state_manager import StateManager
+from apps_shared.utils.vector_memory import VectorMemoryStore
+from apps_shared.utils.circuit_breaker import CircuitBreaker
+from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpreterTool, ValidationToolkit
 
 
 # ============================================================================
 # HOP-1: PROFILE ANALYSIS AGENT
 # ============================================================================
 
-class HOP1_ProfileAnalysisAgent:
+class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
     """
-    v13.0: HOP-1 - Profile Analysis with state-based I/O
+    v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)
     
     Single Responsibility: Classify recipient archetype
     
@@ -43,6 +46,7 @@ class HOP1_ProfileAnalysisAgent:
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["profile_analysis_agent"]
         self.archetype_indicators = self.config["archetype_indicators"]
         self.default_archetype = self.config["default_archetype"]
@@ -120,9 +124,9 @@ class HOP1_ProfileAnalysisAgent:
 # HOP-3: SENDER GROUNDING AGENT
 # ============================================================================
 
-class HOP3_SenderGroundingAgent:
+class HOP3SenderGroundingAgent(MCPHardenedMixin):
     """
-    v13.0: HOP-3 - Sender Grounding Extraction (NEW - decomposed from S2)
+    v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)
     
     Single Responsibility: Extract sender capabilities from knowledge base
     
@@ -137,6 +141,7 @@ class HOP3_SenderGroundingAgent:
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["sender_grounding_agent"]
         self.source_files = self.config["source_files"]
         self.extraction_targets = self.config["extraction_targets"]
@@ -229,9 +234,9 @@ class HOP3_SenderGroundingAgent:
 # HOP-4: ROUTING AGENT
 # ============================================================================
 
-class HOP4_RoutingAgent:
+class HOP4RoutingAgent(MCPHardenedMixin):
     """
-    v13.0: HOP-4 - Routing Decision with state-based I/O
+    v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)
     
     Single Responsibility: Determine optimal message route
     
@@ -246,6 +251,7 @@ class HOP4_RoutingAgent:
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["routing_agent"]
         self.routing_rules = self.config["routing_rules"]
     
@@ -339,9 +345,9 @@ class HOP4_RoutingAgent:
 # HOP-7: GATE DECISION AGENT
 # ============================================================================
 
-class HOP7_GateDecisionAgent:
+class HOP7GateDecisionAgent(MCPHardenedMixin):
     """
-    v13.0: HOP-7 - Gate Decision Agent (NEW - extracted from GenerationOrchestrator)
+    v13.1: HOP-7 - Gate Decision Agent (MCP Hardened)
     
     Single Responsibility: Make the "Slow Loop" decision
     
@@ -361,6 +367,7 @@ class HOP7_GateDecisionAgent:
         Args:
             config: Loaded from config/agent_specs_LIC.json
         """
+        super().__init__()  # MCPHardenedMixin init
         self.config = config["gate_decision_agent"]
         self.factual_failure_rules = set(self.config["factual_failure_rules"])
         self.max_factual_loops = self.config["max_factual_loops"]

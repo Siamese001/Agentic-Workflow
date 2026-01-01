@@ -1,8 +1,9 @@
-# File: state_manager_LIC.py
+# File: state_manager.py
 # Description: State Manager for HOP-based architecture - v13.0
 # Manages explicit state files for auditable, debuggable, resumable workflow
+# HARDENED: 2026-01-01 - Environment variable support for paths
 
-__version__ = "13.0"
+__version__ = "13.1"
 
 import json
 import os
@@ -27,7 +28,7 @@ class StateManager:
     def __init__(
         self,
         mission_id: str,
-        state_directory: str = "state",
+        state_directory: str = None,
         create_if_missing: bool = True
     ):
         """
@@ -35,11 +36,13 @@ class StateManager:
         
         Args:
             mission_id: Unique mission identifier
-            state_directory: Base directory for state files
+            state_directory: Base directory for state files (defaults to AGENTIC_STATE_DIR env var or 'state')
             create_if_missing: Create directory if it doesn't exist
         """
         self.mission_id = mission_id
-        self.base_dir = Path(state_directory)
+        # Use environment variable for portability, fallback to 'state'
+        resolved_dir = state_directory or os.getenv("AGENTIC_STATE_DIR", "state")
+        self.base_dir = Path(resolved_dir)
         self.mission_dir = self.base_dir / mission_id
         
         if create_if_missing:

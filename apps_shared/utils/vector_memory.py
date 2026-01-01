@@ -1,8 +1,9 @@
-# File: memory_LIC.py
+# File: vector_memory.py
 # Description: Vector Memory Store for persistent intelligence - v13.0
 # Provides interface to ChromaDB for storing and querying pre-computed research
+# HARDENED: 2026-01-01 - Environment variable support for paths
 
-__version__ = "13.0"
+__version__ = "13.1"
 
 import os
 from typing import List, Dict, Any, Optional, Tuple
@@ -33,25 +34,26 @@ class VectorMemoryStore:
     
     def __init__(
         self,
-        collection_name: str = "lic_intelligence",
-        persist_directory: str = "./chroma_db"
+        collection_name: str = None,
+        persist_directory: str = None
     ):
         """
         Initialize vector memory store
         
         Args:
-            collection_name: Name of ChromaDB collection
-            persist_directory: Directory for persistent storage
+            collection_name: Name of ChromaDB collection (defaults to CHROMA_COLLECTION_NAME env var or 'lic_intelligence')
+            persist_directory: Directory for persistent storage (defaults to CHROMA_PERSIST_DIR env var or './chroma_db')
         """
         if not CHROMADB_AVAILABLE:
             raise ImportError("ChromaDB not installed. Install with: pip install chromadb")
         
-        self.collection_name = collection_name
-        self.persist_directory = persist_directory
+        # Use environment variables for portability
+        self.collection_name = collection_name or os.getenv("CHROMA_COLLECTION_NAME", "lic_intelligence")
+        self.persist_directory = persist_directory or os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
         
         # Initialize ChromaDB client
         self.client = chromadb.PersistentClient(
-            path=persist_directory,
+            path=self.persist_directory,
             settings=Settings(
                 anonymized_telemetry=False,
                 allow_reset=True
@@ -60,14 +62,14 @@ class VectorMemoryStore:
         
         # Get or create collection
         self.collection = self.client.get_or_create_collection(
-            name=collection_name,
+            name=self.collection_name,
             metadata={"description": "LIC Intelligence Service - Pre-computed research"}
         )
         
         # Configure Gemini embedding
         self.embedding_model = "models/embedding-001"
         
-        print(f"[VectorMemory] Initialized collection '{collection_name}' at {persist_directory}")
+        print(f"[VectorMemory] Initialized collection '{self.collection_name}' at {self.persist_directory}")
         print(f"[VectorMemory] Current document count: {self.collection.count()}")
     
     def add_document(

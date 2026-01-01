@@ -1,8 +1,9 @@
-# File: intelligence_service_LIC.py
+# File: intelligence_librarian.py
 # Description: Persistent Intelligence Service ("The Librarian") - v13.0
 # Runs offline/async to pre-compute deep research and store in vector database
+# HARDENED: 2026-01-01 - MCPHardenedMixin applied
 
-__version__ = "13.0"
+__version__ = "13.1"
 
 import asyncio
 import json
@@ -10,6 +11,9 @@ import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
+
+# MCP Hardening
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # PDF parsing
 try:
@@ -22,16 +26,15 @@ except ImportError:
 # Embedding and vector store
 import google.generativeai as genai
 
-from models_LIC import RAGResult
-from retrieval_clients import GoogleSearchClient
-from llm_clients import GeminiLLMClient
-from utils_LIC import CircuitBreaker
-from memory_LIC import VectorMemoryStore
+# Models (updated imports for new locations)
+from apps_lic.domain.lic_models import RAGResult
+from apps_shared.utils.circuit_breaker import CircuitBreaker
+from apps_shared.utils.vector_memory import VectorMemoryStore
 
 
-class IntelligenceLibrarian:
+class IntelligenceLibrarian(MCPHardenedMixin):
     """
-    v13.0: Offline research agent that pre-computes intelligence
+    v13.1: Offline research agent that pre-computes intelligence (MCP Hardened)
     
     The Librarian runs asynchronously (e.g., nightly via cron) to:
     1. Research target companies and executives
@@ -44,9 +47,9 @@ class IntelligenceLibrarian:
     
     def __init__(
         self,
-        search_client: GoogleSearchClient,
-        llm_client: GeminiLLMClient,
-        memory_store: VectorMemoryStore
+        search_client: Any = None,
+        llm_client: Any = None,
+        memory_store: VectorMemoryStore = None
     ):
         """
         Initialize Librarian with API clients and vector store
@@ -56,6 +59,7 @@ class IntelligenceLibrarian:
             llm_client: Gemini LLM client for analysis
             memory_store: Vector database for persistent storage
         """
+        super().__init__()  # MCPHardenedMixin init
         self.search_client = search_client
         self.llm_client = llm_client
         self.memory_store = memory_store
