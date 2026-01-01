@@ -22,7 +22,9 @@ class neo4j_graph_store:
 
         URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
-        PWD = os.environ.get("NEO4J_PASSWORD", "password")
+        PWD = os.environ.get("NEO4J_PASSWORD")
+        if not PWD:
+            raise ValueError("[L6 CRITICAL] NEO4J_PASSWORD must be set in environment - no default allowed")
         self._driver = GraphDatabase.driver(URI, auth=(USER, PWD))
 
     def close(self) -> None:
