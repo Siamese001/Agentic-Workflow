@@ -6,8 +6,9 @@ Contains app-specific domain logic moved from agentic_core for separation of con
 - Validation Gates: Domain validation rules
 """
 
-from .rg_creative_brief import *
-from .rg_creative_brief_enums import *
-from .rg_creative_brief_models import *
-from .rg_validation_gates import *
-from .rg_validation_gates_types import *
+# Import modules (avoid wildcard imports due to shim files)
+from . import rg_creative_brief
+from . import rg_creative_brief_enums
+from . import rg_creative_brief_models
+from . import rg_validation_gates
+from . import rg_validation_gates_types
