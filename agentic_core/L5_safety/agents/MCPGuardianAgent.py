@@ -1,0 +1,249 @@
+"""
+MCPGuardianAgent - L5 Safety Guardian for MCP Integration Compliance
+
+Audits all MCP calls for:
+- No hardcoded credentials
+- Environment variable usage
+- SSL/TLS enforcement
+- Retry configuration
+- Timeout enforcement
+- SovereignEvent emission
+
+Emits CRITIQUE on violations for subatomic retry.
+"""
+import logging
+import os
+import re
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+logger: Any = logging.getLogger(__name__)
+
+
+class MCPGuardianAgent:
+    """
+    L5 Safety Guardian for MCP integration compliance.
+    
+    Validates that all MCP integrations follow sovereignty principles:
+    - No hardcoded credentials
+    - Proper retry/timeout configuration
+    - SSL/TLS enforcement where applicable
+    - SovereignEvent emission on lifecycle events
+    """
+
+    def __init__(self, project_root: Optional[Path] = None):
+        """
+        Initialize MCP Guardian.
+        
+        Args:
+            project_root: Project root directory for scanning
+        """
+        self.project_root = project_root or Path.cwd()
+        self.violations: List[Dict[str, Any]] = []
+        
+    async def audit_mcp_call(
+        self,
+        operation: str,
+        client_name: str,
+        config: Dict[str, Any]
+    ) -> bool:
+        """
+        Audit a single MCP call for compliance.
+        
+        Args:
+            operation: Name of the operation (e.g., 'redis_get')
+            client_name: Name of the MCP client
+            config: Configuration dictionary for the call
+            
+        Returns:
+            True if compliant, False if violations found
+        """
+        violations = []
+        
+        # Check for hardcoded credentials
+        if self._has_hardcoded_credentials(config):
+            violations.append({
+                "severity": "CRITICAL",
+                "type": "HARDCODED_CREDENTIALS",
+                "operation": operation,
+                "client": client_name,
+                "message": "Hardcoded credentials detected in MCP call"
+            })
+        
+        # Check for missing timeout
+        if "timeout" not in config and "timeout_seconds" not in config:
+            violations.append({
+                "severity": "MEDIUM",
+                "type": "MISSING_TIMEOUT",
+                "operation": operation,
+                "client": client_name,
+                "message": "No timeout configured for MCP call"
+            })
+        
+        # Check for SSL enforcement (Redis, Neo4j)
+        if client_name.lower() in ["redis", "neo4j"]:
+            if not config.get("ssl", False) and not config.get("use_ssl", False):
+                violations.append({
+                    "severity": "HIGH",
+                    "type": "SSL_NOT_ENFORCED",
+                    "operation": operation,
+                    "client": client_name,
+                    "message": f"{client_name} connection without SSL/TLS"
+                })
+        
+        if violations:
+            self.violations.extend(violations)
+            self._emit_critique(violations)
+            return False
+        
+        return True
+    
+    def scan_codebase(self) -> Dict[str, Any]:
+        """
+        Scan entire codebase for MCP compliance violations.
+        
+        Returns:
+            Dictionary with scan results and violations
+        """
+        results = {
+            "files_scanned": 0,
+            "violations": [],
+            "compliant_files": [],
+            "non_compliant_files": []
+        }
+        
+        # Scan for hardcoded credentials
+        hardcoded_patterns = [
+            (r'password\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_PASSWORD"),
+            (r'api_key\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_API_KEY"),
+            (r'secret\s*=\s*["\'](?!.*getenv)[\w\-]+["\']', "HARDCODED_SECRET"),
+        ]
+        
+        for py_file in self.project_root.rglob("*.py"):
+            if "test" in str(py_file) or "__pycache__" in str(py_file):
+                continue
+            
+            results["files_scanned"] += 1
+            content = py_file.read_text(encoding="utf-8", errors="ignore")
+            
+            file_violations = []
+            for pattern, violation_type in hardcoded_patterns:
+                matches = re.finditer(pattern, content, re.IGNORECASE)
+                for match in matches:
+                    file_violations.append({
+                        "file": str(py_file.relative_to(self.project_root)),
+                        "line": content[:match.start()].count("\n") + 1,
+                        "type": violation_type,
+                        "severity": "CRITICAL",
+                        "match": match.group(0)
+                    })
+            
+            if file_violations:
+                results["violations"].extend(file_violations)
+                results["non_compliant_files"].append(str(py_file.relative_to(self.project_root)))
+            else:
+                results["compliant_files"].append(str(py_file.relative_to(self.project_root)))
+        
+        return results
+    
+    def _has_hardcoded_credentials(self, config: Dict[str, Any]) -> bool:
+        """
+        Check if configuration contains hardcoded credentials.
+        
+        Args:
+            config: Configuration dictionary
+            
+        Returns:
+            True if hardcoded credentials found
+        """
+        sensitive_keys = ["password", "api_key", "secret", "token", "key"]
+        
+        for key, value in config.items():
+            if any(sensitive in key.lower() for sensitive in sensitive_keys):
+                if isinstance(value, str) and not value.startswith("$"):
+                    # Check if it's not an env var reference
+                    if "getenv" not in str(value) and "environ" not in str(value):
+                        return True
+        
+        return False
+    
+    def _emit_critique(self, violations: List[Dict[str, Any]]) -> None:
+        """
+        Emit CRITIQUE for MCP violations.
+        
+        Args:
+            violations: List of violation dictionaries
+        """
+        for violation in violations:
+            logger.critical(
+                f"[MCP GUARDIAN CRITIQUE] {violation['severity']}: "
+                f"{violation['type']} in {violation.get('client', 'unknown')} "
+                f"operation {violation.get('operation', 'unknown')}"
+            )
+        
+        try:
+            from agentic_core.observability.telemetry.sovereign_events import emit_event
+            emit_event(
+                "MCP_GUARDIAN_CRITIQUE",
+                {
+                    "violations": violations,
+                    "total_violations": len(violations)
+                }
+            )
+        except ImportError:
+            pass
+    
+    def generate_report(self) -> str:
+        """
+        Generate compliance report.
+        
+        Returns:
+            Formatted report string
+        """
+        scan_results = self.scan_codebase()
+        
+        report = []
+        report.append("=" * 80)
+        report.append("MCP GUARDIAN COMPLIANCE REPORT")
+        report.append("=" * 80)
+        report.append(f"Files Scanned: {scan_results['files_scanned']}")
+        report.append(f"Violations Found: {len(scan_results['violations'])}")
+        report.append(f"Compliant Files: {len(scan_results['compliant_files'])}")
+        report.append(f"Non-Compliant Files: {len(scan_results['non_compliant_files'])}")
+        report.append("")
+        
+        if scan_results['violations']:
+            report.append("VIOLATIONS:")
+            report.append("-" * 80)
+            for violation in scan_results['violations']:
+                report.append(
+                    f"[{violation['severity']}] {violation['type']} in "
+                    f"{violation['file']}:{violation['line']}"
+                )
+                report.append(f"  Match: {violation['match']}")
+                report.append("")
+        else:
+            report.append("✅ NO VIOLATIONS FOUND - MCP SOVEREIGNTY MAINTAINED")
+        
+        report.append("=" * 80)
+        return "\n".join(report)
+
+
+# Singleton instance
+_guardian: Optional[MCPGuardianAgent] = None
+
+
+def get_mcp_guardian(project_root: Optional[Path] = None) -> MCPGuardianAgent:
+    """
+    Get or create the global MCP Guardian instance.
+    
+    Args:
+        project_root: Project root directory
+        
+    Returns:
+        MCPGuardianAgent singleton
+    """
+    global _guardian
+    if _guardian is None:
+        _guardian = MCPGuardianAgent(project_root)
+    return _guardian

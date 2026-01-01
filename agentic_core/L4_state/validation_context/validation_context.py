@@ -22,16 +22,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class ValidationContext(
-    """
-    Context for a validation cycle.
-
-    Tracks:
-    - Modified files in this cycle
-    - Signals generated during validation
-    - File hashes for change detection
-    - Cycle metadata
-    """
+class ValidationContext:
     modified_files: Set[Path] = field(default_factory=set)
     signals: List[str] = field(default_factory=list)
     file_hashes: Dict[str, str] = field(default_factory=dict)
@@ -148,15 +139,15 @@ class ValidationContext(
                 return None
             with open(file_path, 'r') as f:
                 data: Any = json.load(f)
-            LOGGER.debug(f'Loaded ValidationContext from {file_path}')
+            logger.debug(f'Loaded ValidationContext from {file_path}')
             return cls.from_dict(data)
         except Exception as e:
-            LOGGER.error(f'Failed to load ValidationContext: {e}')
+            logger.error(f'Failed to load ValidationContext: {e}')
             return None
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
-class ValidationContextManager(
+class ValidationContextManager:
     """
     Manages ValidationContext persistence and history.
     """

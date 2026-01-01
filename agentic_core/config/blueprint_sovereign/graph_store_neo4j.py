@@ -14,6 +14,8 @@ from typing import Any, Dict, List, Optional, Protocol
 class neo4j_graph_store:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
+    
+    [HARDENING] Now uses connection pooling and SSL enforcement (Jan 1, 2026)
     """
 
     def __init__(self) -> None:
@@ -25,7 +27,17 @@ class neo4j_graph_store:
         PWD = os.environ.get("NEO4J_PASSWORD")
         if not PWD:
             raise ValueError("[L6 CRITICAL] NEO4J_PASSWORD must be set in environment - no default allowed")
-        self._driver = GraphDatabase.driver(URI, auth=(USER, PWD))
+        
+        # [HARDENING G4] Connection pooling with SSL enforcement
+        self._driver = GraphDatabase.driver(
+            URI,
+            auth=(USER, PWD),
+            encrypted=True,
+            trust="TRUST_SYSTEM_CA_SIGNED_CERTIFICATES",
+            max_connection_lifetime=3600,
+            max_connection_pool_size=int(os.environ.get("NEO4J_MAX_POOL_SIZE", "50")),
+            connection_acquisition_timeout=int(os.environ.get("NEO4J_TIMEOUT", "60")),
+        )
 
     def close(self) -> None:
         """TODO: Add docstring."""
