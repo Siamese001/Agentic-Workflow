@@ -9,6 +9,7 @@ from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import C
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -65,7 +66,6 @@ def test_mission_checkpoint_persistence(orchestrator: Any) -> Any:
 
 def test_mission_resume_from_checkpoint(orchestrator: Any) -> Any:
     """Brief description of functionality and purpose."""
-from typing import Any
     engine, client = orchestrator
     client.get.return_value = '7'
     checkpoint: Any = engine.get_last_checkpoint()

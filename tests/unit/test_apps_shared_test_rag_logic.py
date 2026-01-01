@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import re
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_calculate_hybrid_score_basic() -> Any:
@@ -132,4 +133,3 @@ def test_hybrid_scorer_with_cache() -> Any:
     """
     Test using HybridScorer and EnhancedSemanticCache together.
     """
-from typing import Any

@@ -22,6 +22,7 @@ from agentic_core.L2_execution.P3_engines.canon_validator_engine_zlm import Cano
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -212,7 +213,6 @@ class test_l5_audit_trail(unittest.TestCase):
 
 def run_test_suite() -> Any:
     """Run the complete ZLM test suite."""
-from typing import Any
     loader: Any = unittest.TestLoader()
     suite: Any = unittest.TestSuite()
     suite.addTests(loader.loadTestsFromTestCase(TestZLMStandardSuccessfulMerge))

@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import re
 import pytest
+from typing import Any
 
 class hardened_orchestrator:
     """Brief description of functionality and purpose."""
@@ -115,4 +116,3 @@ def test_checkpoint_overhead() -> Any:
     """
     Test that checkpointing doesn't significantly impact performance.
     """
-from typing import Any

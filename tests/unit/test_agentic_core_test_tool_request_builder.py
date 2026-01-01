@@ -18,7 +18,6 @@ Tests for tool routing that maps PlanObject to L2 execution functions.
 Currently depends on legacy execution functions that need implementation.
 """
 
-from typing import Any
 
 
 # Mock exceptions since they're zombie file dependencies

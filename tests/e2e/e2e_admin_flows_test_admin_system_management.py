@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_health_check_all_components() -> Any:
@@ -95,4 +96,3 @@ def test_scheduled_maintenance_window() -> Any:
     """
     E2E: Maintenance window is scheduled.
     """
-from typing import Any

@@ -3,6 +3,7 @@ import pytest
 
 'Brief description of functionality and purpose.'
 from security_utils import PromptFirewall, SecurityException
+from typing import Any
 
 @pytest.mark.skip(reason='Test not implemented')
 def test_firewall_blocks_basic_injection() -> Any:
@@ -39,7 +40,6 @@ def test_firewall_allows_safe_job_description() -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_firewall_handles_empty_input() -> Any:
     """Ensure empty input doesn't crash."""
-from typing import Any
     fw: Any = PromptFirewall()
     assert fw.scan_input('') is True
     assert fw.scan_input(None) is True

@@ -23,6 +23,7 @@ logger.info('')
 logger.info('2. Testing Python MCP Tools...')
 try:
     from runtime.shared.workflow.python_mcp_tools import PythonMCPToolkit
+from typing import Any
     TOOLKIT: Any = PythonMCPToolkit()
     TOOLS: Any = toolkit.get_available_tools()
     logger.info(f'   ✓ Python MCP Toolkit loaded')

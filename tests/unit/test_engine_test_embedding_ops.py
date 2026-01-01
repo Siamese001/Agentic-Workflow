@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_embedding_dimension() -> Any:
@@ -60,7 +61,6 @@ def test_normalize_zero_vector() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_match_relevant_context() -> Any:
     """Test from original file."""
-from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_match_multiple_contexts() -> Any:

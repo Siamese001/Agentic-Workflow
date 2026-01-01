@@ -171,6 +171,7 @@ class test_git_kraken_healing_guardian_integration:
     def test_guardian_blocks_subprocess_git(self) -> Any:
         """Test guardian blocks subprocess git calls."""
         from agentic_core.utils.guardian.sovereignty_auditor import BANNED_IMPORTS
+from typing import Any
         git_patterns: Any = BANNED_IMPORTS.get('Git Operations', [])
         assert len(git_patterns) > 0
         assert any(('subprocess' in pattern for pattern in git_patterns))
@@ -192,7 +193,6 @@ class test_git_kraken_healing_branch_configuration:
 
 def run_tests() -> None:
     """Run all GitKraken healing tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

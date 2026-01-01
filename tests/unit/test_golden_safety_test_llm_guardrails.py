@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_llm_guardrails_initialization() -> Any:
@@ -12,4 +13,3 @@ def test_content_filtering_guardrails() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_prompt_injection_protection() -> Any:
     """Test from original file."""
-from typing import Any

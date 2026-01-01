@@ -51,9 +51,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     NAMING_EXEMPT_DIRS,
 )
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    semantic_l2_registry, core_subfolder_map, sovereign_registry,
+    SEMANTIC_L2_REGISTRY, CORE_SUBFOLDER_MAP, SOVEREIGN_REGISTRY,
     AST_PLACEMENT_SIGNALS, PLACEMENT_CONFIDENCE, L2_TO_L1_MAP
 )
+# Backward compatible aliases
+semantic_l2_registry = SEMANTIC_L2_REGISTRY
+core_subfolder_map = CORE_SUBFOLDER_MAP
+sovereign_registry = SOVEREIGN_REGISTRY
 
 # Global agent registry for tracking moved agents
 AGENT_REGISTRY: Dict[str, List[Dict[str, Any]]] = {

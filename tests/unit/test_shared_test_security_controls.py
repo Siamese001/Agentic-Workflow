@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_html_tag_removal() -> Any:
@@ -76,7 +77,6 @@ def test_resource_ownership_check() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_security_event_logged() -> Any:
     """Test from original file."""
-from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_threat_detection_logged() -> Any:

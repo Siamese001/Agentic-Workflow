@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_available_providers_with_keys() -> Any:
@@ -23,4 +24,3 @@ def test_provider_enum_routing() -> Any:
     """
     Provider enum values map correctly for routing.
     """
-from typing import Any

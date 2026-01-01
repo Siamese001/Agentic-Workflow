@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 def test_filesystem_mcp() -> Any:
     """Test filesystem MCP integration."""
@@ -27,7 +28,6 @@ def test_terminal_mcp() -> Any:
 
 def test_sequential_thinking_mcp() -> Any:
     """Test sequential thinking MCP integration."""
-from typing import Any
     assert True
 
 def test_executive_orchestrator_integration() -> Any:

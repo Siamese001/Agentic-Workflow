@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_cv_a_005_path_traversal_defense() -> Any:
@@ -41,4 +42,3 @@ def test_cv_a_006_ebp_with_different_tools() -> Any:
     """
     Test EBP affects all tools, not just writes
     """
-from typing import Any

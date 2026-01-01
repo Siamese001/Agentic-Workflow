@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_pipeline_executes_all_stages() -> Any:
@@ -83,4 +84,3 @@ def test_partial_failure_recovery() -> Any:
     """
     Integration: Pipeline recovers from partial failures.
     """
-from typing import Any

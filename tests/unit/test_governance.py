@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'scripts'))
 from canon_validator_agentic import ValidationContext
+from typing import Any
 
 @pytest.fixture
 def mock_context() -> Any:
@@ -37,7 +38,6 @@ def test_governor_enforces_min_depth(mock_context: Any) -> Any:
 
 def test_governor_enforces_max_lines(mock_context: Any) -> Any:
     """Law: Max Lines = 200 (Subatomic)."""
-from typing import Any
     huge_content: Any = '\n'.join(['print(i)' for i in range(201)])
     with patch.object(mock_context, 'request_mutation') as mock_gemini:
         mock_gemini.return_value = 'SPLIT_PROPOSAL'

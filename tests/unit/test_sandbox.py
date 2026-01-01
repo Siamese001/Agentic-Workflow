@@ -5,6 +5,7 @@ import pytest
 from sandbox_utils import DockerSandbox, execute_in_sandbox
 try:
     import docker
+from typing import Any
     client: Any = docker.from_env()
     client.ping()
     DOCKER_AVAILABLE: Any = True
@@ -35,7 +36,6 @@ def test_sandbox_execution_success() -> Any:
 @pytest.mark.skipif(not DOCKER_AVAILABLE, reason='Docker not available')
 def test_execute_in_sandbox_wrapper(tmp_path: Any) -> Any:
     """Test the high-level wrapper."""
-from typing import Any
     repo_dir: Any = tmp_path / 'my_repo'
     repo_dir.mkdir()
     (repo_dir / 'test_main.py').write_text('import unittest\nclass T(unittest.TestCase):\n def test_p(self): pass')

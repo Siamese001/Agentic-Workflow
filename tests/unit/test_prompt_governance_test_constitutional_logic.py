@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_evaluate_compliance_with_safe_content() -> Any:
@@ -77,4 +78,3 @@ def test_mock_client_harmful_content() -> Any:
     """
     Test MockLLMClient with harmful content.
     """
-from typing import Any

@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_all_30_injections_loaded() -> Any:
@@ -92,4 +93,3 @@ def test_critical_injections_are_required() -> Any:
     """
     Verify critical injections are marked as required.
     """
-from typing import Any

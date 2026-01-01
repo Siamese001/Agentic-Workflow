@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_contains_core_sdks() -> Any:
@@ -28,7 +29,6 @@ def test_chromadb_singleton() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_invalid_provider() -> Any:
     """Test from original file."""
-from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_default_config() -> Any:

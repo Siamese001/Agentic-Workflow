@@ -165,6 +165,7 @@ class test_guardian_lockdown:
         from agentic_core.L0_maintenance.scripts.guard_no_hardcoded_config import check_file
         from pathlib import Path
         import tempfile
+from typing import Any
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
             f.write('from agentic_core.utils.guardian import SovereigntyAuditor\n')
             temp_path: Any = Path(f.name)
@@ -209,7 +210,6 @@ class test_auditor_integration:
     @pytest.mark.asyncio
     async def test_run_sovereignty_audit_function(self) -> Any:
         """Test standalone audit function."""
-from typing import Any
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('# Clean file')

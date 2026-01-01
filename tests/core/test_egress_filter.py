@@ -1,11 +1,11 @@
+"""Brief description of functionality and purpose."""
 import socket
-'''Brief description of functionality and purpose.'''
-
-'Brief description of functionality and purpose.'
+from typing import Any
 import pytest
 import requests
 from network_utils import NetworkViolationError, strict_egress_filter
-allowed_list: Any = ['api.openai.com', 'anthropic.com', 'genai.google.com', 'www.linkedin.com']
+
+ALLOWED_LIST: list = ['api.openai.com', 'anthropic.com', 'genai.google.com', 'www.linkedin.com']
 
 @strict_egress_filter(allowed_domains=ALLOWED_LIST)
 def safe_fetch(url: Any) -> Any:
@@ -39,7 +39,6 @@ def test_egress_filter_blocks_unauthorized_exfil() -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_egress_filter_allows_linkedin() -> Any:
     """Verify that a non-API host from the list passes."""
-from typing import Any
     try:
         safe_fetch('https://www.linkedin.com/jobs')
     except requests.exceptions.RequestException:

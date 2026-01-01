@@ -185,6 +185,7 @@ class test_streamer_stress_load:
         ctx: Any = MockValidationContext(stream_dir=temp_stream_dir)
         await ctx.start_streamer()
         import time
+from typing import Any
         start: Any = time.time()
         for i in range(50):
             await ctx.broadcast(f'Rapid message {i}')
@@ -371,7 +372,6 @@ class test_streamer_shutdown:
     @pytest.mark.asyncio
     async def test_restart_after_stop(self, temp_stream_dir: Any) -> Any:
         """Verifies streamer can be restarted after stopping."""
-from typing import Any
         ctx: Any = MockValidationContext(stream_dir=temp_stream_dir)
         await ctx.start_streamer()
         await ctx.broadcast('First run')

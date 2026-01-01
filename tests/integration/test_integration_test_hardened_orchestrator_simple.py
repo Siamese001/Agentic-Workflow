@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 class hardened_orchestrator:
     """Brief description of functionality and purpose."""
@@ -130,4 +131,3 @@ def test_orchestrator_with_default_storage() -> Any:
     """
     Test that orchestrator works with default storage.
     """
-from typing import Any

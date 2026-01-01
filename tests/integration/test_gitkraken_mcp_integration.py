@@ -126,6 +126,7 @@ class test_guardian_enforcement:
         from agentic_core.L0_maintenance.scripts.guard_no_hardcoded_config import check_file
         from pathlib import Path
         import tempfile
+from typing import Any
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
             f.write('from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client\n')
             f.write('client = get_git_client()\n')
@@ -193,7 +194,6 @@ class test_branch_operations:
 
 def run_tests() -> None:
     """Run all GitKraken MCP integration tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

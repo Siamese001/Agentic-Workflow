@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 class hardened_orchestrator:
     """Brief description of functionality and purpose."""
@@ -48,6 +49,5 @@ def test_hardened_orchestrator_integration() -> Any:
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_dispatch_tools() -> Any:
     """
-from typing import Any
     Test dispatch_resume_tools with Titanium integration.
     """

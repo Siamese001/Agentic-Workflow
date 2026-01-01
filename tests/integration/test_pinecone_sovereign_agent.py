@@ -20,6 +20,7 @@ def real_agent(tmp_path_factory: Any) -> Any:
     root: Any = tmp_path_factory.mktemp('real_project')
     test_index: Any = f'test-canon-{int(time.time())}'
     from unittest.mock import patch
+from typing import Any
     with patch('os.getenv', side_effect=lambda k, d=None: test_index if k == 'PINECONE_INDEX_NAME' else d):
         agent: Any = PineconeSovereignAgent(root)
         yield agent
@@ -64,7 +65,6 @@ def test_live_vector_lifecycle(real_agent: Any) -> Any:
 
 def test_batch_operations_live(real_agent: Any) -> Any:
     """Test batch upsert operations with live Pinecone."""
-from typing import Any
     test_files: Any = [(Path('batch1.py'), 'batch_territory'), (Path('batch2.py'), 'batch_territory'), (Path('batch3.py'), 'batch_territory')]
     for file_path, territory in test_files:
         real_agent.upsert_file_vector(file_path, territory)

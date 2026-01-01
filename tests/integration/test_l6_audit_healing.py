@@ -105,6 +105,7 @@ class test_l6_audit_healing_strategy_registry:
     def test_strategy_priority(self) -> Any:
         """Test L6AuditHealingStrategy has correct priority."""
         from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
+from typing import Any
         l6_strategy: Any = next((s for s in HEALING_STRATEGIES if s.name == 'L6AuditHealing'), None)
         assert l6_strategy is not None
         assert l6_strategy.priority == 1
@@ -198,7 +199,6 @@ class test_l6_audit_healing_daily_limit:
 
     def test_daily_limit_enforcement_logic(self) -> Any:
         """Test daily limit enforcement logic."""
-from typing import Any
         strategy: Any = L6AuditHealingStrategy()
         strategy.processed_today = config.L6_AUDIT_HEALING_MAX_DAILY
         assert strategy.processed_today >= config.L6_AUDIT_HEALING_MAX_DAILY

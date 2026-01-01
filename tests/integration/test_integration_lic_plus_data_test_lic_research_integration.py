@@ -1,5 +1,6 @@
 """Test file - regenerated due to syntax errors."""
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_contact_data_retrieval() -> Any:
@@ -36,4 +37,3 @@ def test_campaign_metrics_aggregation() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_conversion_tracking() -> Any:
     """Test from original file."""
-from typing import Any

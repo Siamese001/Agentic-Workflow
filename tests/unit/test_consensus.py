@@ -3,6 +3,7 @@ import pytest
 
 'Brief description of functionality and purpose.'
 from consensus_engine import ConsensusEngine
+from typing import Any
 
 @pytest.mark.skip(reason='Test not implemented')
 def test_unanimous_pass() -> Any:
@@ -43,7 +44,6 @@ def test_gemini_3_pro_hallucination_catch() -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_majority_fail_complex_bug() -> Any:
     """
-from typing import Any
     Simulates a complex bug that triggers 2 out of 3 reasoning models.
     (e.g., Infinite Loop + Race Condition) -> FAIL
     """

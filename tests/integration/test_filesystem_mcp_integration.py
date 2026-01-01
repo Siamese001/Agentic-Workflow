@@ -154,6 +154,7 @@ class test_guardian_enforcement:
         from agentic_core.L0_maintenance.scripts.guard_no_hardcoded_config import check_file
         from pathlib import Path
         import tempfile
+from typing import Any
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
             f.write('from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client\n')
             f.write('client = get_filesystem_client()\n')
@@ -189,7 +190,6 @@ class test_security_validation:
     @pytest.mark.asyncio
     async def test_system_directory_access_blocked(self) -> None:
         """Test access to system directories is blocked."""
-from typing import Any
         client = get_filesystem_client()
         system_dirs: Any = ['/etc/', '/proc/', '/sys/']
         for sys_dir in system_dirs:

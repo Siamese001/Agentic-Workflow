@@ -3,6 +3,7 @@ import pytest
 
 'Brief description of functionality and purpose.'
 from core_utils import validate_python_syntax
+from typing import Any
 
 @pytest.mark.skip(reason='Test not implemented')
 def test_sentinel_catches_syntax_error(tmp_path: Any) -> Any:
@@ -61,7 +62,6 @@ def test_sentinel_handles_empty_file(tmp_path: Any) -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_sentinel_handles_unicode(tmp_path: Any) -> Any:
     """Ensure the validator handles unicode characters correctly."""
-from typing import Any
     unicode_file: Any = tmp_path / 'unicode.py'
     unicode_file.write_text("# -*- coding: utf-8 -*-\ndef hello():\n    print('你好世界')", encoding='utf-8')
     is_valid, error = validate_python_syntax(str(unicode_file))

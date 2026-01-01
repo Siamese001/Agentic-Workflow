@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
@@ -58,4 +59,3 @@ def test_circuit_breaker_metrics_collection() -> Any:
     """
     Test that circuit breaker properly collects and reports metrics.
     """
-from typing import Any

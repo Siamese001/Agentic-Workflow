@@ -9,6 +9,7 @@ This script tests:
 """
 import sys
 import time
+from typing import Any
 from core.semantic_gatekeeper import SemanticGatekeeper
 
 def test_redis_connection() -> Any:
@@ -54,7 +55,6 @@ def test_safety_stats(gatekeeper: Any) -> Any:
 
 def main() -> Any:
     """Run all tests."""
-from typing import Any
     gatekeeper: Any = test_redis_connection()
     if not gatekeeper:
         sys.exit(1)

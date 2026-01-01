@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import time
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_no_memory_leak_simple_operations() -> Any:
@@ -96,4 +97,3 @@ def test_thread_safety_under_load() -> Any:
     """
     Soak: Operations remain thread-safe under load.
     """
-from typing import Any

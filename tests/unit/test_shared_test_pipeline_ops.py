@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import re
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_pipeline_step_data_flow() -> Any:
@@ -108,4 +109,3 @@ def test_error_context_preserved() -> Any:
     """
     Error context is preserved for debugging.
     """
-from typing import Any

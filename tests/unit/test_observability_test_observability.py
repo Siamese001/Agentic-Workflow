@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import time
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_log_entry_creation() -> Any:
@@ -126,4 +127,3 @@ def test_liveness_check() -> Any:
     """
     Nominal: Liveness check for process health.
     """
-from typing import Any

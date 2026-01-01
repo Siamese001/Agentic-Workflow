@@ -148,6 +148,7 @@ class test_vector_healing_strategy_registry:
     def test_strategy_priority(self) -> Any:
         """Test VectorHealingStrategy has correct priority."""
         from agentic_core.L0_maintenance.P1_core.healing_strategies import HEALING_STRATEGIES
+from typing import Any
         vector_strategy: Any = next((s for s in HEALING_STRATEGIES if s.name == 'VectorHealing'), None)
         assert vector_strategy is not None
         assert vector_strategy.priority == 2
@@ -168,7 +169,6 @@ class test_vector_healing_metadata:
 
 def run_tests() -> Any:
     """Run all vector healing tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

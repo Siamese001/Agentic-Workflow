@@ -6,6 +6,7 @@ import asyncio
 import pytest
 import tempfile
 from pathlib import Path
+from typing import Any
 from agentic_core.L2_execution.tool_registry.fetch_mcp_client import SovereignFetchMCPClient, get_fetch_client
 from agentic_core.config.P1_core.sovereign_config import config
 
@@ -210,7 +211,6 @@ class test_sovereignty_protection:
     @pytest.mark.asyncio
     async def test_mcp_tools_used(self) -> Any:
         """Test correct MCP tools are used."""
-from typing import Any
         client: Any = get_fetch_client()
 
 def run_tests() -> Any:

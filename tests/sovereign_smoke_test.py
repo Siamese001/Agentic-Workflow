@@ -4,6 +4,7 @@ Run on every commit to validate SSOT runtime integrity.
 """
 import pytest
 from agentic_core.schemas.models.core_contracts import CORE_CONTRACTS_REGISTRY, RetryPolicy, HopSpec
+from typing import Any
 
 @pytest.mark.sovereign
 def test_registry_uniqueness() -> Any:
@@ -14,7 +15,6 @@ def test_registry_uniqueness() -> Any:
 @pytest.mark.sovereign
 def test_pydantic_purity() -> Any:
     """Ensure key models are Pydantic BaseModels, not dataclasses."""
-from typing import Any
     assert hasattr(RetryPolicy, 'model_dump'), 'RetryPolicy must be a Pydantic model'
 
 @pytest.mark.sovereign

@@ -6,6 +6,7 @@ All tests are skipped until the original implementation is fixed.
 """
 import re
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_initialization() -> Any:
@@ -142,4 +143,3 @@ def test_concurrent_evaluations() -> Any:
     """
     Test concurrent reflection evaluations.
     """
-from typing import Any

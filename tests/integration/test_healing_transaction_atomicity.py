@@ -3,6 +3,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 import hashlib
+from typing import Any
 
 @pytest.mark.integration
 class test_healing_transaction_atomicity:
@@ -159,7 +160,6 @@ class test_zero_loss_guarantee:
 
     def test_unicode_content_preservation(self, tmp_sovereign_workspace: Any, healing_transaction_mock: Any, file_hash_tracker: Any) -> Any:
         """
-from typing import Any
         GIVEN: File with unicode characters
         WHEN: Transaction rollback occurs
         THEN: Unicode preserved exactly

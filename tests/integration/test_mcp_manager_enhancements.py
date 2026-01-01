@@ -128,6 +128,7 @@ class test_mcp_manager_guardian_enforcement:
     def test_guardian_blocks_duplicate_imports(self) -> Any:
         """Test guardian blocks duplicate MCP manager imports."""
         from agentic_core.utils.guardian.sovereignty_auditor import BANNED_IMPORTS
+from typing import Any
         mcp_patterns: Any = BANNED_IMPORTS.get('MCP Manager', [])
         assert len(mcp_patterns) > 0
         assert any(('L2_execution.*mcp_manager' in pattern for pattern in mcp_patterns))
@@ -153,7 +154,6 @@ class test_mcp_manager_connection_lifecycle:
 
 def run_tests() -> Any:
     """Run all MCP manager enhancement tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

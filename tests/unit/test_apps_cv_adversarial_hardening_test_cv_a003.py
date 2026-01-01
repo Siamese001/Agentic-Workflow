@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_critical_rag_failure_priority() -> Any:
@@ -35,4 +36,3 @@ def test_logging_queue_overflow_handling() -> Any:
     """
     Test handling of logging queue overflow
     """
-from typing import Any

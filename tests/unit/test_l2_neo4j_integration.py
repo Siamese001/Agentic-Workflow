@@ -5,6 +5,7 @@ Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
 import pytest
+from typing import Any
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_trend_analysis_without_neo4j() -> Any:
@@ -61,4 +62,3 @@ def test_all_modules_import_without_neo4j() -> Any:
     """
     Test that all new Neo4j modules can be imported without Neo4j driver.
     """
-from typing import Any
