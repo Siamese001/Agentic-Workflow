@@ -38,14 +38,14 @@ class sovereign_severity(str, Enum):
 
 # Registry for validation and observability mapping
 # NAMING FIXED: SOVEREIGN_SEVERITIES → sovereign_severities
-sovereign_severities = {e.value for e in SovereignSeverity}
+sovereign_severities = {e.value for e in sovereign_severity}
 # NAMING FIXED: SEVERITY_LOG_LEVELS → severity_log_levels
 severity_log_levels = {
-    SovereignSeverity.CRITICAL: logging.CRITICAL,
-    SovereignSeverity.ERROR: logging.ERROR,
-    SovereignSeverity.WARNING: logging.WARNING,
-    SovereignSeverity.INFO: logging.INFO,
-    SovereignSeverity.DEBUG: logging.DEBUG,
+    sovereign_severity.CRITICAL: logging.CRITICAL,
+    sovereign_severity.ERROR: logging.ERROR,
+    sovereign_severity.WARNING: logging.WARNING,
+    sovereign_severity.INFO: logging.INFO,
+    sovereign_severity.DEBUG: logging.DEBUG,
 }
 
 # === SOVEREIGN EVENT TYPE REGISTRY – CATEGORIZED (Dec 26, 2025) ===
@@ -182,67 +182,67 @@ class sovereign_event_type(str, Enum):
 # NAMING FIXED: SOVEREIGN_EVENT_CATEGORIES → sovereign_event_categories
 sovereign_event_categories = {
     "GOVERNANCE": [
-        SovereignEventType.AUDIT_STARTED, 
-        SovereignEventType.AUDIT_COMPLETED,
-        SovereignEventType.SOVEREIGNTY_COMPROMISED, 
-        SovereignEventType.SOVEREIGNTY_RESTORED,
-        SovereignEventType.SOVEREIGNTY_ACHIEVED,
-        SovereignEventType.SOVEREIGNTY_PERFECT
+        sovereign_event_type.AUDIT_STARTED, 
+        sovereign_event_type.AUDIT_COMPLETED,
+        sovereign_event_type.SOVEREIGNTY_COMPROMISED, 
+        sovereign_event_type.SOVEREIGNTY_RESTORED,
+        sovereign_event_type.SOVEREIGNTY_ACHIEVED,
+        sovereign_event_type.SOVEREIGNTY_PERFECT
     ],
     "GUARDIAN": [
-        SovereignEventType.GUARDIAN_BLOCKED_COMMIT, 
-        SovereignEventType.GUARDIAN_VIOLATION,
-        SovereignEventType.GUARDIAN_CLEAN
+        sovereign_event_type.GUARDIAN_BLOCKED_COMMIT, 
+        sovereign_event_type.GUARDIAN_VIOLATION,
+        sovereign_event_type.GUARDIAN_CLEAN
     ],
     "HEALING": [
-        SovereignEventType.HEALING_CYCLE_STARTED,
-        SovereignEventType.HEALING_ACTION_APPLIED, 
-        SovereignEventType.HEALING_ACTION_FAILED,
-        SovereignEventType.HEALING_TRANSACTION_START, 
-        SovereignEventType.HEALING_TRANSACTION_COMMIT,
-        SovereignEventType.HEALING_TRANSACTION_ROLLBACK,
-        SovereignEventType.HEALING_FIX_APPLIED,
-        SovereignEventType.HEALING_FIX_REVERTED,
-        SovereignEventType.HEALING_CYCLE_COMPLETE
+        sovereign_event_type.HEALING_CYCLE_STARTED,
+        sovereign_event_type.HEALING_ACTION_APPLIED, 
+        sovereign_event_type.HEALING_ACTION_FAILED,
+        sovereign_event_type.HEALING_TRANSACTION_START, 
+        sovereign_event_type.HEALING_TRANSACTION_COMMIT,
+        sovereign_event_type.HEALING_TRANSACTION_ROLLBACK,
+        sovereign_event_type.HEALING_FIX_APPLIED,
+        sovereign_event_type.HEALING_FIX_REVERTED,
+        sovereign_event_type.HEALING_CYCLE_COMPLETE
     ],
     "REASONING": [
-        SovereignEventType.REASONING_START, 
-        SovereignEventType.REASONING_END,
-        SovereignEventType.REASONING_STEP, 
-        SovereignEventType.HYPOTHESIS_FORMED,
-        SovereignEventType.HYPOTHESIS_VALIDATED, 
-        SovereignEventType.HYPOTHESIS_REJECTED,
-        SovereignEventType.DARK_REASONING_DETECTED
+        sovereign_event_type.REASONING_START, 
+        sovereign_event_type.REASONING_END,
+        sovereign_event_type.REASONING_STEP, 
+        sovereign_event_type.HYPOTHESIS_FORMED,
+        sovereign_event_type.HYPOTHESIS_VALIDATED, 
+        sovereign_event_type.HYPOTHESIS_REJECTED,
+        sovereign_event_type.DARK_REASONING_DETECTED
     ],
     "VIOLATION": [
-        SovereignEventType.VIOLATION_DETECTED, 
-        SovereignEventType.SSOT_INLINE_MODEL,
-        SovereignEventType.SSOT_RAW_PROMPT, 
-        SovereignEventType.SSOT_HARDCODED_CONFIG,
-        SovereignEventType.SSOT_UNDERSCORE_FIELD, 
-        SovereignEventType.DDD_VIOLATION,
-        SovereignEventType.DDD_AGGREGATE_BYPASS, 
-        SovereignEventType.DDD_UBIQUITOUS_LANGUAGE_MISSING,
-        SovereignEventType.LAYER_CROSS_IMPORT
+        sovereign_event_type.VIOLATION_DETECTED, 
+        sovereign_event_type.SSOT_INLINE_MODEL,
+        sovereign_event_type.SSOT_RAW_PROMPT, 
+        sovereign_event_type.SSOT_HARDCODED_CONFIG,
+        sovereign_event_type.SSOT_UNDERSCORE_FIELD, 
+        sovereign_event_type.DDD_VIOLATION,
+        sovereign_event_type.DDD_AGGREGATE_BYPASS, 
+        sovereign_event_type.DDD_UBIQUITOUS_LANGUAGE_MISSING,
+        sovereign_event_type.LAYER_CROSS_IMPORT
     ],
     "SYSTEM": [
-        SovereignEventType.SYSTEM_BOOT,
-        SovereignEventType.CONSTITUTION_LOAD
+        sovereign_event_type.SYSTEM_BOOT,
+        sovereign_event_type.CONSTITUTION_LOAD
     ],
     "MCP": [
-        SovereignEventType.MCP_INTEGRATION_STARTED,
-        SovereignEventType.MCP_INTEGRATION_SUCCESS,
-        SovereignEventType.MCP_INTEGRATION_FAILED
+        sovereign_event_type.MCP_INTEGRATION_STARTED,
+        sovereign_event_type.MCP_INTEGRATION_SUCCESS,
+        sovereign_event_type.MCP_INTEGRATION_FAILED
     ]
 }
 
-# NAMING FIXED: SovereignBaseModel → sovereign_base_model
+# NAMING FIXED: sovereign_base_model → sovereign_base_model
 class sovereign_base_model(BaseModel):
     """Base model for all Sovereign entities with strict config."""
     model_config = ConfigDict(strict=True, frozen=True)
 
 # NAMING FIXED: Territory → territory
-class territory(SovereignBaseModel):
+class territory(sovereign_base_model):
     '''Brief description of functionality and purpose.'''
     
     name: str
@@ -251,7 +251,7 @@ class territory(SovereignBaseModel):
     canon_key: Optional[int] = None
 
 # NAMING FIXED: AgentMessage → agent_message
-class agent_message(SovereignBaseModel):
+class agent_message(sovereign_base_model):
     '''Brief description of functionality and purpose.'''
     
     source: str
@@ -503,7 +503,7 @@ class generation_config(BaseModel):
         """Ensure temperature is within valid range."""
         return max(0.1, min(1.0, v))
 
-# NAMING FIXED: MicroStage → micro_stage
+# NAMING FIXED: micro_stage → micro_stage
 class micro_stage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""
     INIT = "init"
@@ -527,15 +527,15 @@ class retry_policy(BaseModel):
     max_retries: int = Field(default=3, ge=0, le=10)
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
-    retryable_stages: List[MicroStage] = Field(
-        default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
+    retryable_stages: List[micro_stage] = Field(
+        default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE]
     )
 
 # NAMING FIXED: MicroCheckpoint → micro_checkpoint
 class micro_checkpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
     hop_id: str
-    stage: MicroStage
+    stage: micro_stage
     timestamp: float
     state: HopState
     data: Dict[str, Any] = Field(default_factory=dict)
@@ -544,8 +544,8 @@ class micro_checkpoint(BaseModel):
 # NAMING FIXED: StageTransition → stage_transition
 class stage_transition(BaseModel):
     """Record of a stage transition."""
-    from_stage: Optional[MicroStage] = None
-    to_stage: MicroStage
+    from_stage: Optional[micro_stage] = None
+    to_stage: micro_stage
     timestamp: float
     reason: Optional[str] = None
 
@@ -607,7 +607,7 @@ core_contracts_registry = {
     "StyleProfile": StyleProfile,
     "GenerationConfig": GenerationConfig,
     # Runtime Shared
-    "MicroStage": MicroStage,
+    "micro_stage": micro_stage,
     "HopState": HopState,
     "RetryPolicy": RetryPolicy,
     "MicroCheckpoint": MicroCheckpoint,
@@ -616,6 +616,9 @@ core_contracts_registry = {
     "InjectionScope": InjectionScope,
     "InjectionPattern": InjectionPattern,
 }
+
+# Backward compatibility alias for UPPER_CASE registry name
+CORE_CONTRACTS_REGISTRY = core_contracts_registry
 
 # === Legacy P1 Core Profiles – Phase 2B Migration (Dec 2025) ===
 
@@ -703,7 +706,7 @@ class soft_state:
         })
 
 @dataclass
-# NAMING FIXED: ThermalConfig → thermal_config
+# NAMING FIXED: thermal_config → thermal_config
 class thermal_config:
     """Dynamic thermal configuration for LLM parameters."""
     profile: ThermalProfile = ThermalProfile.BALANCED
@@ -742,7 +745,7 @@ class thermal_config:
         self.node_overrides[node_id] = profile_configs[profile]
 
 @dataclass
-# NAMING FIXED: SignedClaim → signed_claim
+# NAMING FIXED: signed_claim → signed_claim
 class signed_claim:
     """A factual claim with source attribution and confidence score."""
     claim: str
@@ -763,8 +766,8 @@ class signal_context(BaseModel):
     """
     hard_state: HardState = Field(default_factory=HardState)
     soft_state: SoftState = Field(default_factory=SoftState)
-    thermal_config: ThermalConfig = Field(default_factory=ThermalConfig)
-    signed_claims: List[SignedClaim] = Field(default_factory=list)
+    thermal_config: thermal_config = Field(default_factory=thermal_config)
+    signed_claims: List[signed_claim] = Field(default_factory=list)
     context_version: str = "1.0.0"
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_modified: datetime = Field(default_factory=datetime.utcnow)
@@ -779,7 +782,7 @@ class signal_context(BaseModel):
 
     def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None:
         """Add a signed claim to the context."""
-        signed_claim = SignedClaim(claim=claim, source=source, confidence=confidence, evidence=evidence)
+        signed_claim = signed_claim(claim=claim, source=source, confidence=confidence, evidence=evidence)
         self.signed_claims.append(signed_claim)
 
 # Safety Profile
@@ -891,8 +894,8 @@ CORE_CONTRACTS_REGISTRY.update({
     "ThermalProfile": ThermalProfile,
     "HardState": HardState,
     "SoftState": SoftState,
-    "ThermalConfig": ThermalConfig,
-    "SignedClaim": SignedClaim,
+    "thermal_config": thermal_config,
+    "signed_claim": signed_claim,
     "SignalContext": SignalContext,
     # Profiles
     "SafetyProfile": SafetyProfile,
@@ -2050,7 +2053,7 @@ class mission_status(str, Enum):
 
 @dataclass(frozen=True)
 # NAMING FIXED: MissionPhase → mission_phase
-class mission_phase(SovereignBaseModel):
+class mission_phase(sovereign_base_model):
     """A single phase of a mission."""
     name: str
     agents: List[str]
@@ -2060,7 +2063,7 @@ class mission_phase(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: MissionPlan → mission_plan
-class mission_plan(SovereignBaseModel):
+class mission_plan(sovereign_base_model):
     """
     Complete mission plan with Builder pattern support.
     
@@ -2196,7 +2199,7 @@ class mission_plan(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: ThinkingStep → thinking_step
-class thinking_step(SovereignBaseModel):
+class thinking_step(sovereign_base_model):
     """A single step in a thought chain."""
     step_id: int
     thought: str
@@ -2205,7 +2208,7 @@ class thinking_step(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: RevisionStep → revision_step
-class revision_step(SovereignBaseModel):
+class revision_step(sovereign_base_model):
     """A revision made to the thought chain."""
     revision_number: int
     original_step: int
@@ -2215,7 +2218,7 @@ class revision_step(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: ThoughtChain → thought_chain
-class thought_chain(SovereignBaseModel):
+class thought_chain(sovereign_base_model):
     """
     Thought chain for reasoning trace with Builder pattern support.
     
@@ -2312,7 +2315,7 @@ import uuid
 
 @dataclass(frozen=True)
 # NAMING FIXED: ConstitutionalViolation → constitutional_violation
-class constitutional_violation(SovereignBaseModel):
+class constitutional_violation(sovereign_base_model):
     """
     Constitutional violation record with Builder pattern support.
     
@@ -2426,7 +2429,7 @@ class constitutional_violation(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingAction → healing_action
-class healing_action(SovereignBaseModel):
+class healing_action(sovereign_base_model):
     """
     Healing action record with Builder pattern support.
     
@@ -2551,7 +2554,7 @@ class healing_action(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingCycle → healing_cycle
-class healing_cycle(SovereignBaseModel):
+class healing_cycle(sovereign_base_model):
     """
     Healing cycle record with Builder pattern support.
     
@@ -2647,7 +2650,7 @@ class healing_cycle(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingReport → healing_report
-class healing_report(SovereignBaseModel):
+class healing_report(sovereign_base_model):
     """
     Healing report for DDD compliance audits with Builder pattern support.
     
@@ -2743,7 +2746,7 @@ class healing_report(SovereignBaseModel):
 
 @dataclass(frozen=True)
 # NAMING FIXED: SovereignEvent → sovereign_event
-class sovereign_event(SovereignBaseModel):
+class sovereign_event(sovereign_base_model):
     """
     Sovereign event telemetry with Builder pattern support.
     
@@ -2755,8 +2758,8 @@ class sovereign_event(SovereignBaseModel):
     """
     event_id: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    event_type: SovereignEventType
-    severity: SovereignSeverity
+    event_type: sovereign_event_type
+    severity: sovereign_severity
     source: str
     dimension: Optional[str] = None
     payload: Dict[str, Any] = field(default_factory=dict)
@@ -2779,7 +2782,7 @@ class sovereign_event(SovereignBaseModel):
         """Validate and convert severity to SovereignSeverity enum."""
         if isinstance(v, str):
             try:
-                return SovereignSeverity(v)
+                return sovereign_severity(v)
             except ValueError:
                 raise ValueError(f"Sovereignty Violation: '{v}' is not a valid SovereignSeverity")
         return v
@@ -2804,7 +2807,7 @@ class sovereign_event(SovereignBaseModel):
         def with_type(self, event_type: Any) -> 'SovereignEvent.Builder':
             """Supports both Enum and String types with immediate validation."""
             try:
-                self._event_type = SovereignEventType(event_type)
+                self._event_type = sovereign_event_type(event_type)
             except ValueError:
                 raise ValueError(f"Invalid Event Type: {event_type}. Use SovereignEventType.")
             return self
@@ -2812,7 +2815,7 @@ class sovereign_event(SovereignBaseModel):
         def with_severity(self, severity: Any) -> 'SovereignEvent.Builder':
             """Hardens the event emission with canonical weight."""
             try:
-                self._severity = SovereignSeverity(severity)
+                self._severity = sovereign_severity(severity)
             except ValueError:
                 raise ValueError(f"Invalid Severity: {severity}. Choose from {list(SOVEREIGN_SEVERITIES)}")
             return self
@@ -2895,6 +2898,15 @@ CORE_CONTRACTS_REGISTRY.update({
 # ANY FUTURE VIOLATION WILL BE BLOCKED AT SOURCE.
 
 # Final Registry Integrity Assertion (Runtime Lock)
+if __name__ != "__main__":
+    assert len(CORE_CONTRACTS_REGISTRY) == len(set(CORE_CONTRACTS_REGISTRY.values())), \
+        "CRITICAL: Duplicate class definitions detected in CORE_CONTRACTS_REGISTRY"
+if __name__ != "__main__":
+    assert len(CORE_CONTRACTS_REGISTRY) == len(set(CORE_CONTRACTS_REGISTRY.values())), \
+        "CRITICAL: Duplicate class definitions detected in CORE_CONTRACTS_REGISTRY"
+if __name__ != "__main__":
+    assert len(CORE_CONTRACTS_REGISTRY) == len(set(CORE_CONTRACTS_REGISTRY.values())), \
+        "CRITICAL: Duplicate class definitions detected in CORE_CONTRACTS_REGISTRY"
 if __name__ != "__main__":
     assert len(CORE_CONTRACTS_REGISTRY) == len(set(CORE_CONTRACTS_REGISTRY.values())), \
         "CRITICAL: Duplicate class definitions detected in CORE_CONTRACTS_REGISTRY"
