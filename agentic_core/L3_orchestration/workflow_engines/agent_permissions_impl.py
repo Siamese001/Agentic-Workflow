@@ -20,7 +20,7 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-class AgentPermissionManager(
+class AgentPermissionManager():
     """Manages agent permissions with Control Plane integration.
 
     Provides:

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 import redis
 
-class CachedSafetyShield(
+class CachedSafetyShield:
     def __init__(self, project_root=None, session_id: str='l5_global'):
         from pathlib import Path
         self.root = project_root or Path('.')
