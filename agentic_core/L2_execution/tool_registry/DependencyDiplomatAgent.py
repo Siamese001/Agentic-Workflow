@@ -45,6 +45,18 @@ class BlastRadius:
     indirect_dependents: List[str]
     total_affected: int
     depth: int
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "modified_file"), "Missing modified_file"
+        assert hasattr(self, "total_affected"), "Missing total_affected"
+        assert isinstance(self.direct_dependents, list), "direct_dependents must be list"
+        assert isinstance(self.indirect_dependents, list), "indirect_dependents must be list"
+        return True
+    
+    def __post_init__(self):
+        """Run self-tests after dataclass initialization."""
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class DependencyDiplomatAgent(SubAtomicAgent):

@@ -36,6 +36,16 @@ class ContextSnapshot:
     ephemeral_logs: int
     semantic_facts: int
     compressed_size: int
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "timestamp"), "Missing timestamp"
+        assert hasattr(self, "stage"), "Missing stage"
+        assert self.total_size >= 0, "total_size must be non-negative"
+        return True
+    
+    def __post_init__(self):
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 @dataclass
 class HandoffSummary:
@@ -47,6 +57,16 @@ class HandoffSummary:
     lessons_learned: List[str]
     warnings: List[str]
     compressed_context: str
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "previous_stage"), "Missing previous_stage"
+        assert hasattr(self, "next_stage"), "Missing next_stage"
+        assert isinstance(self.structural_facts, list), "structural_facts must be list"
+        return True
+    
+    def __post_init__(self):
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class ContextCuratorAgent(SubAtomicAgent):

@@ -52,6 +52,16 @@ class HealingSuccess:
     after_metrics: Dict
     timestamp: str
     healing_round: int
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "file_path"), "Missing file_path"
+        assert hasattr(self, "key_id"), "Missing key_id"
+        assert isinstance(self.before_metrics, dict), "before_metrics must be dict"
+        return True
+    
+    def __post_init__(self):
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 @dataclass
 class DistilledPattern:
@@ -68,6 +78,16 @@ class DistilledPattern:
     generalized_rule: str
     code_examples: Dict
     timestamp: str
+    
+    def _run_self_tests(self) -> bool:
+        """Phase 1 Final: Minimal self-testing for data container."""
+        assert hasattr(self, "pattern_id"), "Missing pattern_id"
+        assert hasattr(self, "pattern_type"), "Missing pattern_type"
+        assert isinstance(self.transformation_steps, list), "transformation_steps must be list"
+        return True
+    
+    def __post_init__(self):
+        assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 class HealingDiffAnalyzer:
     """
