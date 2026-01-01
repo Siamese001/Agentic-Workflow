@@ -5,7 +5,7 @@ As of 2025-12-31 (P1 Consolidation), all naming normalization logic has been
 centralized into NamingAgent. This file is kept for backward compatibility only.
 
 Use instead:
-    from AgenticCore.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+    from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
     naming = get_naming_agent(project_root)
     result = naming.normalize_filename(file_path, dry_run=False)
 
@@ -17,7 +17,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, Any
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
 )
 

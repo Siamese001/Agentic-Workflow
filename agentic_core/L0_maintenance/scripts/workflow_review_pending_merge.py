@@ -8,7 +8,7 @@ Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 repo: Any = Path('c:/Git/Agentic-Workflow')
 review_pending: Any = REPO / 'config/review_pending'
-approved_folders: Any = ['AgenticCore', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
+approved_folders: Any = ['agentic_core', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
 
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""

@@ -11,10 +11,10 @@ import logging
 from datetime import datetime
 
 # Sovereign Hardening Mixins – Phase 33
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
-from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class HealingOrchestrator(
@@ -61,7 +61,7 @@ class HealingOrchestrator(
     def _load_healing_components(self):
         """Load strategies and transaction manager."""
         try:
-            from AgenticCore.L0_maintenance.P1_core.healing_strategies import (
+            from agentic_core.L0_maintenance.P1_core.healing_strategies import (
                 HEALING_STRATEGIES,
                 get_strategies_by_priority,
             )
@@ -73,14 +73,14 @@ class HealingOrchestrator(
             self.Logger.warning("Healing strategies not available")
 
         try:
-            from AgenticCore.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+            from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
             self.transaction_cls = HealingTransaction
         except ImportError:
             self.transaction_cls = None
             self.Logger.warning("HealingTransaction manager not available")
 
         try:
-            from AgenticCore.observability.healing_audit import log_healing_action
+            from agentic_core.observability.healing_audit import log_healing_action
             self.log_healing_action = log_healing_action
         except ImportError:
             self.log_healing_action = None
@@ -91,7 +91,7 @@ class HealingOrchestrator(
         """Proactively detect when healing is needed."""
         # Simple trigger: sovereignty health degradation
         try:
-            from AgenticCore.L0_maintenance.scripts.metrics_witness import MetricsWitness
+            from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
             witness = MetricsWitness(Path("."))
             structural_score, _ = witness.calculate_structural_ssot_score()
             healing_score, healing_issues = witness.calculate_healing_resilience_score()

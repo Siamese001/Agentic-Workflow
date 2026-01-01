@@ -2,16 +2,16 @@
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 try:
-    from AgenticCore.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
+    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 except ImportError:
     AgentIdentity = IdentityType = type('Stub', (), {})
 try:
-    from AgenticCore.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
+    from agentic_core.L3_orchestration.workflow_engines.agent_permissions_types import Permission, PermissionAction, PermissionCheck, PermissionScope
 except ImportError:
     Permission = PermissionAction = PermissionCheck = PermissionScope = type('Stub', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

@@ -40,7 +40,7 @@ class MissionResult:
         return {'mission_id': self.mission_id, 'success': self.success, 'result': self.result, 'output': self.output, 'error': self.error}
 
 # NOT_AN_AGENT — main entry point class, not a true agent — excluded from agent discovery
-class AgenticCore:
+class agentic_core:
     """Main agentic core class."""
 
     def __init__(self):

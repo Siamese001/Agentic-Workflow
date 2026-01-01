@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from AgenticCore.patterns.subatomic_flattening_rule import ComplexityMetrics
+from agentic_core.patterns.subatomic_flattening_rule import ComplexityMetrics
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 

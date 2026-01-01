@@ -10,7 +10,7 @@ Placed in L0_maintenance/scripts per SSOT:
   L0_maintenance -> maintenance territory
   scripts -> approved L2 for boot scripts
 
-Depth: AgenticCore/L0_maintenance/scripts/bootstrap_agent.py -> 4 parts -> compliant
+Depth: agentic_core/L0_maintenance/scripts/bootstrap_agent.py -> 4 parts -> compliant
 """
 import os
 import urllib.parse
@@ -21,7 +21,7 @@ import logging
 from typing import Any, Dict, List
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -114,7 +114,7 @@ class BootstrapAgent:
         Returns:
             Dict with seeding results
         """
-        from AgenticCore.L2_execution.ToolRegistry.ToolsmithAgent import ToolsmithAgent
+        from agentic_core.L2_execution.tool_registry.ToolsmithAgent import ToolsmithAgent
         
         root = project_root or self.project_root
         toolsmith = ToolsmithAgent()
@@ -152,11 +152,11 @@ class BootstrapAgent:
         
         # Search paths for agents
         SEARCH_PATHS = [
-            'AgenticCore.L5_safety.validators',
-            'AgenticCore.L5_safety.guardrails',
-            'AgenticCore.L5_safety.gravity',
-            'AgenticCore.L2_execution.ToolRegistry',
-            'AgenticCore.utils.naming',
+            'agentic_core.L5_safety.validators',
+            'agentic_core.L5_safety.guardrails',
+            'agentic_core.L5_safety.gravity',
+            'agentic_core.L2_execution.tool_registry',
+            'agentic_core.utils.naming',
         ]
         
         Missing = []

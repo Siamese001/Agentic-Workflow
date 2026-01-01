@@ -4,7 +4,7 @@ HierarchyAgent: Canon Structural Hierarchy Enforcer (Key 3/12/41 territory)
 Enforces:
 - Exact canonical L1/L2 folder structure (no drift)
 - Span-of-Two rule: no redundant tunnel directories (single meaningful child folder)
-- Exact file depth 4 in AgenticCore (root/L1/L2/file.py)
+- Exact file depth 4 in agentic_core (root/L1/L2/file.py)
 - No Python files directly under sovereign roots or L1 layers (Key 41)
 
 Replaces logic from void_compliance.py:
@@ -22,7 +22,7 @@ import hashlib
 import json
 import ast
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     AUTONOMOUS_AGENT_WHITELIST,
@@ -90,15 +90,15 @@ class HierarchyAgent:
         Enforce canonical hierarchy from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP.
         Flags:
         - Unapproved L1 or L2 folders
-        - Files at invalid depths (especially AgenticCore strict depth 4)
+        - Files at invalid depths (especially agentic_core strict depth 4)
         - Files directly under root (Key 41)
         """
         violations: List[Tuple[Path, str]] = []
         MAX_FILE_DEPTH_AGENTIC_CORE = 4  # root/L1/L2/file.py → len(parts) == 4
 
         # === AGENTIC_CORE: Strict depth 4 enforcement for all .py files ===
-        if (self.project_root / "AgenticCore").exists():
-            py_files = list((self.project_root / "AgenticCore").rglob("*.py"))
+        if (self.project_root / "agentic_core").exists():
+            py_files = list((self.project_root / "agentic_core").rglob("*.py"))
             for file_path in py_files:
                 try:
                     rel_parts = file_path.relative_to(self.project_root).parts
@@ -109,7 +109,7 @@ class HierarchyAgent:
                 if any(p.startswith('.') or p in {"venv", "__pycache__"} for p in rel_parts):
                     continue
 
-                if rel_parts[0] != "AgenticCore":
+                if rel_parts[0] != "agentic_core":
                     continue
 
                 # Skip __init__.py files - structural package markers at every level
@@ -161,8 +161,8 @@ class HierarchyAgent:
                     f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {sorted(expected_l1)}"
                 ))
 
-            # L2 drift (only for AgenticCore and structured apps)
-            if root_key == "AgenticCore":
+            # L2 drift (only for agentic_core and structured apps)
+            if root_key == "agentic_core":
                 for l1_name in (subfolders_config if isinstance(subfolders_config, list) else subfolders_config.keys()):
                     l1_path = root_path / l1_name
                     if not l1_path.exists():
@@ -198,11 +198,11 @@ class HierarchyAgent:
     # SUPPLEMENTED FROM SemanticTerritoryMapperAgent — embedding-based semantic mapping — merged 2025-12-30
     # Territory examples for semantic matching
     TERRITORY_EXAMPLES: Dict[str, str] = {
-        'AgenticCore/L1_cognition': 'strategy planning reasoning mission decomposition intent',
-        'AgenticCore/L3_orchestration': 'fission orchestration routing workflow manager coordinator',
-        'AgenticCore/L4_state': 'memory cache pinecone redis Historian audit ledger',
-        'AgenticCore/L5_safety': 'guardrail safety policy enforcer filter validator healer',
-        'AgenticCore/L2_execution': 'tool agent executor registry runner',
+        'agentic_core/L1_cognition': 'strategy planning reasoning mission decomposition intent',
+        'agentic_core/L3_orchestration': 'fission orchestration routing workflow manager coordinator',
+        'agentic_core/L4_state': 'memory cache pinecone redis Historian audit ledger',
+        'agentic_core/L5_safety': 'guardrail safety policy enforcer filter validator healer',
+        'agentic_core/L2_execution': 'tool agent executor registry runner',
     }
 
     async def semantic_territory_map(self, file_path: Path, redis_client: Any = None) -> Dict[str, Any]:

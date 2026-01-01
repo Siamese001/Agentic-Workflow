@@ -5,9 +5,10 @@ import logging
 from agentic_core.L1_cognition.P1_interfaces import OrchestratorConfig
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
+from typing import Any
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

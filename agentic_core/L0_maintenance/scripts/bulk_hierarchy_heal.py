@@ -8,7 +8,7 @@ import sys
 from datetime import datetime
 from typing import Any
 dry_run: Any = False
-target_root: Any = 'AgenticCore'
+target_root: Any = 'agentic_core'
 primary_partition_only: Any = True
 current_file: Any = Path(__file__).resolve()
 project_root: Any = next((p for p in current_file.parents if (p / '.env').exists()), None)
@@ -17,7 +17,7 @@ if not project_root:
     sys.exit(1)
 sys.path.insert(0, str(project_root))
 try:
-    from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 except ImportError:
     print('[!] Critical Failure: Cannot find CORE_SUBFOLDER_MAP in structure_blueprint.py')
     sys.exit(1)

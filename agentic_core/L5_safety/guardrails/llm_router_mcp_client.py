@@ -5,10 +5,10 @@ L3 routed, L5 shielded, L6 observable.
 """
 import logging
 from typing import Any, Dict, Optional
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -21,7 +21,7 @@ class SovereignLlmRouterMcpClient:
     def __init__(self, role: str='safety_validation'):
         if not config.LLM_ROUTER_MCP_ENABLED:
             raise ValueError('LLM Router MCP disabled in sovereign config')
-        from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
         Logger.info('[L5 LLM ROUTER] Sovereign LLM Router MCP client initialized')
 

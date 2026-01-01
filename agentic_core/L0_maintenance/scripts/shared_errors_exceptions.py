@@ -17,6 +17,6 @@ about the refactoring that was performed to split the original module.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.exceptions_types import *  # Star import removed
+# from agentic_core.exceptions_types import *  # Star import removed
 
 __all__ = ["*"]  # Re-export all imported names

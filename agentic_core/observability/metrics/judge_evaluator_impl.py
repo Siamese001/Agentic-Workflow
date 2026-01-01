@@ -56,7 +56,7 @@ class JudgeEvaluationResult:
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
-# from AgenticCore.judge_evaluator_types import *  # Star import removed
+# from agentic_core.judge_evaluator_types import *  # Star import removed
 
 # NAMING FIXED: JudgeEvaluator → JudgeEvaluator
 class JudgeEvaluator:

@@ -16,7 +16,7 @@ Designed for integration with:
 Placed in observability/telemetry per SSOT semantic registry:
   "Distributed telemetry, event emission, and structured observability events"
 
-Depth: AgenticCore/observability/telemetry/telemetry_agent.py
+Depth: agentic_core/observability/telemetry/telemetry_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
 In-memory buffer + optional file persistence.

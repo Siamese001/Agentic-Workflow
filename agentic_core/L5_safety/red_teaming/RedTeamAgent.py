@@ -4,11 +4,11 @@ import json
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Any, Dict, List
-from AgenticCore.prompt_governance.rendering.SovereignPromptRenderer import get_sovereign_prompt_renderer
-from AgenticCore.prompt_governance.version_registry.PromptRegistry import registers_prompt
+from agentic_core.prompt_governance.rendering.SovereignPromptRenderer import get_sovereign_prompt_renderer
+from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

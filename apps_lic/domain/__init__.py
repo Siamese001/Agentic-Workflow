@@ -1,7 +1,7 @@
 """
 apps_lic.domain - LinkedIn/Outreach domain models and configurations.
 
-Contains app-specific domain logic moved from AgenticCore for separation of concerns:
+Contains app-specific domain logic moved from agentic_core for separation of concerns:
 - Archetypes: LIC persona archetypes
 - CTA Patterns: Call-to-action templates
 - Routing Rules: Message routing logic

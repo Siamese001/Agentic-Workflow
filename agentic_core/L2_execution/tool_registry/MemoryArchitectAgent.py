@@ -31,10 +31,10 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
-from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -341,7 +341,7 @@ class MemoryArchitectAgent(SubAtomicAgent):
 
     def _store_pattern_locally(self, pattern: DistilledPattern):
         """Store pattern locally when Pinecone is unavailable."""
-        patterns_dir = Path('AgenticCore/patterns/harvested')
+        patterns_dir = Path('agentic_core/patterns/harvested')
         patterns_dir.mkdir(parents=True, exist_ok=True)
         pattern_file = patterns_dir / f'{pattern.pattern_id}.json'
         with open(pattern_file, 'w') as f:

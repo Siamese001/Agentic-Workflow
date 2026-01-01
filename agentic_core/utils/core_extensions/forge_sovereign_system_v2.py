@@ -8,10 +8,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 excluded_zones: Any = ['data', 'archives', 'tests', '.git', '.venv', '__pycache__']
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 from typing import Any
 core_map: Any = CORE_SUBFOLDER_MAP
 external_map: Any = {'apps_rg': ['engines', 'templates', 'P1_core'], 'apps_lic': ['engines', 'templates', 'P1_core'], 'apps_shared': ['models', 'utils', 'P1_core'], 'tests': ['unit', 'integration', 'e2e', 'performance', 'fixtures', 'security'], 'data': ['raw', 'processed', 'vectordb'], 'archives': ['logs', 'backups', 'refactors']}

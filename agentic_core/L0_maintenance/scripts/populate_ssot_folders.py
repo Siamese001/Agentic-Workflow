@@ -12,15 +12,15 @@ import sys
 from pathlib import Path
 
 # Anchor to project root to allow imports
-project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> AgenticCore -> project_root
+project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> agentic_core -> project_root
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP
 )
 
-core_root = project_root / "AgenticCore"
+core_root = project_root / "agentic_core"
 
 # Layer-specific high-signal content
 LAYER_BEST_PRACTICES = {
@@ -113,7 +113,7 @@ def main():
         return
 
     # Iterate over SSOT structure
-    l1_folders = SOVEREIGN_REGISTRY.get("AgenticCore", {}).get("subfolders", [])
+    l1_folders = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
     
     for l1 in l1_folders:
         l1_path = core_root / l1

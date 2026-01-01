@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -61,21 +61,21 @@ def _get_imports():
     """Lazy import to avoid circular dependencies.
 
     NOTE: We import from scripts/CanonValidator/agents/ which has the FULL
-    self-healing agents with mutation logic. The AgenticCore/agents/ versions
+    self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
     # Import ALL self-healing agents from CanonValidator (ZERO CAPABILITY LOSS)
-    # WatchmanHandler is in AgenticCore (not in scripts/CanonValidator)
-    from AgenticCore.canon_scheduler import CanonSwarmScheduler
-    from AgenticCore.InterventionServer import (
+    # WatchmanHandler is in agentic_core (not in scripts/CanonValidator)
+    from agentic_core.canon_scheduler import CanonSwarmScheduler
+    from agentic_core.InterventionServer import (
         FASTAPI_AVAILABLE,
         approval_event,
         start_intervention_server,
     )
-    from AgenticCore.L2_execution.ToolRegistry.infrastructure import WatchmanHandler
+    from agentic_core.L2_execution.tool_registry.infrastructure import WatchmanHandler
 
     # GRAVITY FIX: Removed all scripts.CanonValidator imports
-    # These agents need to be moved to AgenticCore or refactored
+    # These agents need to be moved to agentic_core or refactored
     ArchitectureGovernor = None  # Keys 40, 41, 50 + syntax fix
     CodeStyleGuardian = None  # Keys 10-16, 21, 47 + auto-fix whitespace/tabs/newlines
     DependencySentinel = None  # Keys 7, 8, 9, 14, 44 + autoflake/isort
@@ -90,7 +90,7 @@ def _get_imports():
 
     # Use the FULL ValidationContext from scripts/CanonValidator which has all methods
     # GRAVITY FIX: Removed all scripts.CanonValidator imports
-    # These agents need to be moved to AgenticCore or refactored
+    # These agents need to be moved to agentic_core or refactored
 
     return {
         'ValidationContext': None,

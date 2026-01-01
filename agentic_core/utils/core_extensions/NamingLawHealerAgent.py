@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )

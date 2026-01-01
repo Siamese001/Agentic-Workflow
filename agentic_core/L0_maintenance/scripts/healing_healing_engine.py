@@ -6,13 +6,13 @@ import logging
 import re
 from typing import List, Dict, Any, Optional
 from pathlib import Path
-from AgenticCore.L0_maintenance.P1_core.transaction_manager import HealingTransaction
-from AgenticCore.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
-from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client import get_git_client
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -239,18 +239,18 @@ class SovereignHealingEngine:
         """
         new_content = content
         if 'HTTP' in message or 'requests' in message.lower():
-            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from AgenticCore.L2_execution.ToolRegistry.fetch_mcp_client')
+            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client')
             new_content = new_content.replace('requests.get(', '# await get_fetch_client().get_clean_content(')
             new_content = new_content.replace('requests.post(', '# await get_fetch_client().fetch_url(')
         if 'Redis' in message:
-            new_content = new_content.replace('import redis', '# Sovereign healing: Use get_redis_client() from AgenticCore.L4_state.caching.redis_mcp_client')
+            new_content = new_content.replace('import redis', '# Sovereign healing: Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client')
             new_content = new_content.replace('redis.Redis(', '# get_redis_client().')
         if 'Vector' in message or 'pinecone' in message.lower():
-            new_content = new_content.replace('from pinecone import', '# Sovereign healing: Use get_pinecone_mcp_client() from AgenticCore.L4_state.semantic_memory.pinecone_mcp_client\n# from pinecone import')
+            new_content = new_content.replace('from pinecone import', '# Sovereign healing: Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client\n# from pinecone import')
             new_content = new_content.replace('Pinecone(', '# get_pinecone_mcp_client().')
         if 'PATH_BREACH' in ViolationType or 'tools/' in message:
-            new_content = new_content.replace('AgenticCore/tools/', 'AgenticCore/utils/')
-            new_content = new_content.replace('from AgenticCore.tools.', 'from AgenticCore.utils.')
+            new_content = new_content.replace('agentic_core/tools/', 'agentic_core/utils/')
+            new_content = new_content.replace('from agentic_core.tools.', 'from agentic_core.utils.')
         return new_content if new_content != content else None
 
     async def _create_healing_commit(self, affected_files: List[str]):

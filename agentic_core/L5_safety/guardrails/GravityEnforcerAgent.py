@@ -9,8 +9,8 @@ import re
 from pathlib import Path
 from typing import Dict, Set
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-from AgenticCore.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
 
 
 class GravityEnforcerAgent(CachedSafetyShield):
@@ -44,16 +44,16 @@ class GravityEnforcerAgent(CachedSafetyShield):
     async def execute(self):
         """
         Execute the gravity enforcement pass.
-        Scans AgenticCore files and comments out any forbidden downstream imports.
+        Scans agentic_core files and comments out any forbidden downstream imports.
         """
         print(f"\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
         self.healed_count = 0
         self.healed_files = []
         
-        # Only scan sovereign upstream code (AgenticCore)
-        agentic_core_path = self.root / "AgenticCore"
+        # Only scan sovereign upstream code (agentic_core)
+        agentic_core_path = self.root / "agentic_core"
         if not agentic_core_path.exists():
-            print(f"   [!] GravityEnforcerAgent: AgenticCore not found")
+            print(f"   [!] GravityEnforcerAgent: agentic_core not found")
             return
             
         for py_file in agentic_core_path.rglob("*.py"):

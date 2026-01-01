@@ -90,7 +90,7 @@ class GeminiEngine(LLMEngine):
         
         # Lazy load SubAtomicEngine to avoid circular imports
         try:
-            from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl
+            from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngineImpl
             self._engine = SubAtomicEngineImpl(project_root)
             Logger.info("[GeminiEngine] Initialized successfully")
         except Exception as e:

@@ -6,7 +6,7 @@ No more "I hope this parses" - the LLM physically cannot output invalid structur
 """
 import logging
 from typing import Any, Dict, List, Literal, Optional, Protocol
-from AgenticCore.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
+from agentic_core.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
 from pydantic import BaseModel, Field, field_validator
 Logger: Any = logging.getLogger(__name__)
 try:

@@ -7,17 +7,17 @@ L3 routed, L5 shielded, L6 observable.
 """
 import logging
 from typing import Any, Optional, List, Dict
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
-from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 try:
-    from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+    from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 except ImportError:
     pass
 Logger: Any = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class SovereignRedisMcpClient(MCPHardenedMixin):
     def __init__(self, role: str='state_cache'):
         if not config.REDIS_MCP_ENABLED:
             raise ValueError('Redis MCP disabled in sovereign config')
-        from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
         Logger.info('[L4 REDIS] Sovereign Redis MCP client initialized')
 

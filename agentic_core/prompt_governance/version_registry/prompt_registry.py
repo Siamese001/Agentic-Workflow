@@ -1,5 +1,5 @@
 # PromptRegistry - Sovereign Version Registry
-# Territory: AgenticCore/prompt_governance/version_registry
+# Territory: agentic_core/prompt_governance/version_registry
 # Canon Alignment: Prompt versioning, active template management, backward compatibility
 # SSOT Integration: Used by SovereignPromptRenderer and mission logging
 
@@ -16,14 +16,14 @@ import numpy as np
 Logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 # Semantic deduplication imports
 try:
-    from AgenticCore.semantic_memory.embeddings.core_embedder import get_embedding
+    from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -44,7 +44,7 @@ class DuplicatePromptError(Exception):
 def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""
     try:
-        from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
         return LocationAgent(root).validate_file_location(path)
     except ImportError:
         return True, "Bootstrap"

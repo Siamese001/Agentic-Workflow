@@ -10,10 +10,10 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 
-from AgenticCore.L2_execution.ToolRegistry.definitions import (
+from agentic_core.L2_execution.tool_registry.definitions import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -74,7 +74,7 @@ def get_project_root() -> Path:
     """Get the project root directory."""
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / 'AgenticCore').exists() or (current / '.git').exists():
+        if (current / 'agentic_core').exists() or (current / '.git').exists():
             return current
         current = current.parent
     return Path.cwd()

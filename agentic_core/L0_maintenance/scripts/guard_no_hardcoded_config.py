@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, List, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -46,38 +46,38 @@ def check_file(filepath: Path) -> bool:
     for pattern, desc in redis_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_redis_client() from AgenticCore.L4_state.caching.redis_mcp_client'))
+            violations.append((line_no, desc, 'Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client'))
     llm_sdk_patterns: Any = [('\\bimport\\s+openai\\b', 'Direct openai import'), ('\\bfrom\\s+openai\\s+import\\b', 'Direct openai import'), ('\\bimport\\s+anthropic\\b', 'Direct anthropic import'), ('\\bfrom\\s+anthropic\\s+import\\b', 'Direct anthropic import'), ('\\bimport\\s+google\\.generativeai\\b', 'Direct google.generativeai import'), ('\\bgenai\\.GenerativeModel\\b', 'Direct genai.GenerativeModel usage')]
     for pattern, desc in llm_sdk_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_llm_router_client() from AgenticCore.L5_safety.guardrails.llm_router_mcp_client'))
+            violations.append((line_no, desc, 'Use get_llm_router_client() from agentic_core.L5_safety.guardrails.llm_router_mcp_client'))
     filesystem_patterns: Any = [('\\bopen\\s*\\(', 'Direct open() call'), ('\\.read_text\\(', 'Direct Path.read_text() call'), ('\\.write_text\\(', 'Direct Path.write_text() call'), ('\\bos\\.remove\\(', 'Direct os.remove() call'), ('\\bos\\.rename\\(', 'Direct os.rename() call'), ('\\bshutil\\.move\\(', 'Direct shutil.move() call'), ('\\bshutil\\.rmtree\\(', 'Direct shutil.rmtree() call')]
     for pattern, desc in filesystem_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_filesystem_client() from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client'))
+            violations.append((line_no, desc, 'Use get_filesystem_client() from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client'))
     git_patterns: Any = [('subprocess\\.run\\(\\[.*["\\\']git["\\\']', 'Direct git subprocess call'), ('os\\.system\\(["\\\']git', 'Direct git os.system() call'), ('\\bimport\\s+git\\b', 'Direct gitpython import'), ('\\bfrom\\s+git\\s+import\\b', 'Direct gitpython import'), ('\\bimport\\s+pygit2\\b', 'Direct pygit2 import')]
     for pattern, desc in git_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_git_client() from AgenticCore.L0_maintenance.P1_core.gitkraken_mcp_client'))
+            violations.append((line_no, desc, 'Use get_git_client() from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client'))
     pinecone_patterns: Any = [('\\bfrom\\s+pinecone\\s+import\\b', 'Direct pinecone import'), ('\\bPinecone\\s*\\(', 'Direct Pinecone() instantiation'), ('\\.Index\\s*\\(', 'Direct pc.Index() call'), ('["\\\']sovereign-territory-index["\\\']', 'Hardcoded index name')]
     for pattern, desc in pinecone_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_pinecone_mcp_client() from AgenticCore.L4_state.semantic_memory.pinecone_mcp_client'))
+            violations.append((line_no, desc, 'Use get_pinecone_mcp_client() from agentic_core.L4_state.semantic_memory.pinecone_mcp_client'))
     http_patterns: Any = [('\\bimport\\s+requests\\b', 'Direct requests import'), ('\\bimport\\s+httpx\\b', 'Direct httpx import'), ('\\bimport\\s+urllib\\b', 'Direct urllib import'), ('\\brequests\\.(get|post|put|delete|patch)\\s*\\(', 'Direct requests HTTP call'), ('\\bhttpx\\.(get|post|put|delete|patch|AsyncClient)\\s*\\(', 'Direct httpx HTTP call')]
     for pattern, desc in http_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_fetch_client() from AgenticCore.L2_execution.ToolRegistry.fetch_mcp_client'))
-    lockdown_patterns: Any = [('\\bsubprocess\\.call\\s*\\(', 'Direct subprocess.call() usage'), ('\\bos\\.popen\\s*\\(', 'Direct os.popen() usage'), ('AgenticCore/tools/', "Legacy 'tools/' path usage")]
+            violations.append((line_no, desc, 'Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client'))
+    lockdown_patterns: Any = [('\\bsubprocess\\.call\\s*\\(', 'Direct subprocess.call() usage'), ('\\bos\\.popen\\s*\\(', 'Direct os.popen() usage'), ('agentic_core/tools/', "Legacy 'tools/' path usage")]
     for pattern, desc in lockdown_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
             if "Legacy 'tools/' path" in desc:
-                violations.append((line_no, desc, "Use 'AgenticCore/utils/' or appropriate layer path"))
+                violations.append((line_no, desc, "Use 'agentic_core/utils/' or appropriate layer path"))
             else:
                 violations.append((line_no, desc, 'Use appropriate MCP client or approved subprocess wrapper'))
     if violations:
@@ -113,7 +113,7 @@ def main() -> Any:
         sys.exit(0)
     else:
         print(f'❌ VIOLATIONS: {violations}/{total} files have hardcoded config')
-        print('\nFix by importing: from AgenticCore.config.blueprint_sovereign.sovereign_config import config')
+        print('\nFix by importing: from agentic_core.config.blueprint_sovereign.sovereign_config import config')
         sys.exit(1)
 if __name__ == '__main__':
     main()

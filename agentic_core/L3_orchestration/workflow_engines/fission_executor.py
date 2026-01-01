@@ -9,7 +9,7 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
-    from AgenticCore.FissionManager import FissionManager
+    from agentic_core.FissionManager import FissionManager
 Logger: Any = logging.getLogger(__name__)
 
 async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 'FissionManager') -> bool:
@@ -51,9 +51,9 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
         for module_name, exports in created_modules:
             if exports:
                 exports_str: Any = ', '.join(exports)
-                router_content += f'from AgenticCore.{base_name}_modules.{module_name} import {exports_str}\n'
+                router_content += f'from agentic_core.{base_name}_modules.{module_name} import {exports_str}\n'
             else:
-                router_content += f'from AgenticCore.{base_name}_modules import {module_name}\n'
+                router_content += f'from agentic_core.{base_name}_modules import {module_name}\n'
         all_exports: Any = [e for _, exports in created_modules for e in exports]
         if all_exports:
             router_content += f'\n__all__ = [' + ', '.join((f'"{e}"' for e in all_exports)) + ']\n'

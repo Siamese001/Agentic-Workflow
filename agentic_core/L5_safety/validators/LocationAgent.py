@@ -26,7 +26,7 @@ import logging
 
 Logger = logging.getLogger(__name__)
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,          # ^\\d+_
@@ -34,14 +34,14 @@ from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     TESTS_ROOT_FILE_WHITELIST,
 )
-from AgenticCore.prompt_governance.version_registry.PromptRegistry import registers_prompt
+from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool:
     """Check if file/line is excepted from key validation."""
     import fnmatch
     import re
-    from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+    from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
     exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
     if not exceptions:
         return False
@@ -121,8 +121,8 @@ class LocationAgent:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
 
-        # Special strict depth for AgenticCore (Canon Key 3/12 hardening)
-        if root_folder == "AgenticCore":
+        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
+        if root_folder == "agentic_core":
             if len(parts) != 4:
                 return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
 

@@ -1,17 +1,17 @@
 # mission_preflight.py
 # L5 Mission Preflight Validator
 # PURPOSE: Executes pre-mission compliance checks and enforces void compliance
-# LOCATION: AgenticCore/L5_safety/validators/ (SSOT-compliant)
+# LOCATION: agentic_core/L5_safety/validators/ (SSOT-compliant)
 
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from AgenticCore.L5_safety.guardrails.HierarchyHealer import HierarchyHealer
+from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealer
 
 
 class MissionPreflight:
@@ -44,7 +44,7 @@ class MissionPreflight:
         """Lazy load LocationAgent."""
         if self._location_agent is None:
             try:
-                from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
+                from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
                 self._location_agent = LocationAgent(self.project_root)
             except ImportError:
                 pass
@@ -54,7 +54,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from AgenticCore.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
                 pass
@@ -64,7 +64,7 @@ class MissionPreflight:
         """Lazy load ImportAgent."""
         if self._import_agent is None:
             try:
-                from AgenticCore.L5_safety.gravity.ImportAgent import ImportAgent
+                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
                 self._import_agent = ImportAgent(self.project_root)
             except ImportError:
                 pass
@@ -204,7 +204,7 @@ class MissionPreflight:
                     try:
                         rel_path = py_file.relative_to(self.project_root)
                         root_folder = rel_path.parts[0]
-                        if root_folder == "AgenticCore":
+                        if root_folder == "agentic_core":
                             violations = import_agent.check_waterfall_violations(str(py_file))
                             if violations:
                                 waterfall_violations.extend([(py_file, v) for v in violations])

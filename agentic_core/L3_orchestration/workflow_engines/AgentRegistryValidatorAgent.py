@@ -111,12 +111,12 @@ class AgentRegistryValidatorAgent:
         
         # Map keys to layer directories
         layer_map = {
-            12: ['AgenticCore.L3_orchestration.P1_core', 'AgenticCore.L3_orchestration.S3_vitality'],
-            13: ['AgenticCore.L4_state.P1_core', 'AgenticCore.L4_state.S1_memory'],
-            19: ['AgenticCore.L5_safety.P1_core', 'AgenticCore.L5_safety.validators']
+            12: ['agentic_core.L3_orchestration.P1_core', 'agentic_core.L3_orchestration.S3_vitality'],
+            13: ['agentic_core.L4_state.P1_core', 'agentic_core.L4_state.S1_memory'],
+            19: ['agentic_core.L5_safety.P1_core', 'agentic_core.L5_safety.validators']
         }
         
-        base_paths = layer_map.get(key, ['AgenticCore.runtime.shared'])
+        base_paths = layer_map.get(key, ['agentic_core.runtime.shared'])
         return [f"{base}.{module_name}" for base in base_paths]
     
     def run_validation(self, registry: Dict[int, List[str]]) -> bool:

@@ -17,12 +17,12 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from AgenticCore.L2_execution.knowledge.knowledge_utilities import KnowledgeResult, get_consolidated_knowledge
-from AgenticCore.L2_execution.security.security_utilities import SecurityStatus, get_fact_checker, get_prompt_firewall
-from AgenticCore.utils.P1_core.core_utilities import DraftGenerator, FileManager, SemanticScorer, log_action, register_process
+from agentic_core.L2_execution.knowledge.knowledge_utilities import KnowledgeResult, get_consolidated_knowledge
+from agentic_core.L2_execution.security.security_utilities import SecurityStatus, get_fact_checker, get_prompt_firewall
+from agentic_core.utils.P1_core.core_utilities import DraftGenerator, FileManager, SemanticScorer, log_action, register_process
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -93,7 +93,7 @@ class mcp_sovereign_authority:
                 raise PermissionError('DeepWiki question contains potential credential leaks.')
         if tool_name in {'write_file', 'edit_file', 'move_file', 'create_directory'}:
             path: Any = args.get('path', '')
-            allowed_roots: Any = ['AgenticCore', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'config']
+            allowed_roots: Any = ['agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'config']
             if path and (not any((str(path).startswith(p) for p in allowed_roots))):
                 raise PermissionError(f'L4 Breach: Attempted write outside sovereign roots: {path}')
         if not self.is_authorized():

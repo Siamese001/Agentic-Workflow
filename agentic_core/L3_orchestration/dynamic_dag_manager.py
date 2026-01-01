@@ -14,12 +14,12 @@ from datetime import datetime
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from AgenticCore.schemas.models.runtime_models import HopState, MicroStage
-from AgenticCore.runtime.shared_runtime.reflection_engine import MutationRequest
+from agentic_core.schemas.models.runtime_models import HopState, MicroStage
+from agentic_core.runtime.shared_runtime.reflection_engine import MutationRequest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from AgenticCore.runtime.shared_runtime.SubatomicHop import SubatomicHop
+    from agentic_core.runtime.shared_runtime.SubatomicHop import SubatomicHop
 
 Logger = logging.getLogger(__name__)
 

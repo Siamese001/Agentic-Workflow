@@ -9,11 +9,11 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.L2_execution.ToolRegistry.firecracker_manager_impl import FirecrackerManager
-from AgenticCore.L2_execution.ToolRegistry.firecracker_manager_types import VMConfig
+from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

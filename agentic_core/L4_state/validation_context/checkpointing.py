@@ -10,7 +10,7 @@ import logging
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
-    from AgenticCore.storage import BlobStorageProvider
+    from agentic_core.storage import BlobStorageProvider
 Logger: Any = logging.getLogger(__name__)
 
 class VerifiableCheckpointManager:
@@ -190,6 +190,6 @@ def create_checkpoint_manager(storage_type: str='local', **storage_kwargs) -> Ve
     Returns:
         VerifiableCheckpointManager instance
     """
-    from AgenticCore.storage import create_storage_adapter
+    from agentic_core.storage import create_storage_adapter
     create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(storage)

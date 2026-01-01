@@ -14,7 +14,7 @@ def organize_all_files() -> Any:
     """Move ALL files from root to appropriate sovereign silos"""
     Logger.info('📁 Starting comprehensive file organization...')
     essential_files: Any = {'Dockerfile', 'docker-compose.yml', 'requirements.txt', '.gitignore', '.env', '.env.example', '.env.production', '.env.production.template', 'pyproject.toml'}
-    file_mappings: Any = {'config': ['.yml', '.yaml', '.json', '.toml', '.ini', '.env*'], 'docs': ['.md', '.txt', '.rst'], 'scripts': ['.sh', '.ps1', '.bat'], 'docker': ['.dockerignore', 'Dockerfile.*'], 'archives': ['.backup', '.old', '.bak'], 'data': ['.csv', '.jsonl', '.parquet', '.db', '.sqlite'], 'AgenticCore': ['ActionNode.py', 'agent_logic.py', 'CognitiveNode.py'], 'apps_rg': ['orchestrator.py', 'llm_client.py'], 'apps_shared': ['db_manager.py', 'etl_pipeline.py'], 'tests': ['test_*.py', '*_test.py'], 'scripts': ['fix_*.py', 'clean_*.py', 'assess_*.py']}
+    file_mappings: Any = {'config': ['.yml', '.yaml', '.json', '.toml', '.ini', '.env*'], 'docs': ['.md', '.txt', '.rst'], 'scripts': ['.sh', '.ps1', '.bat'], 'docker': ['.dockerignore', 'Dockerfile.*'], 'archives': ['.backup', '.old', '.bak'], 'data': ['.csv', '.jsonl', '.parquet', '.db', '.sqlite'], 'agentic_core': ['ActionNode.py', 'agent_logic.py', 'CognitiveNode.py'], 'apps_rg': ['orchestrator.py', 'llm_client.py'], 'apps_shared': ['db_manager.py', 'etl_pipeline.py'], 'tests': ['test_*.py', '*_test.py'], 'scripts': ['fix_*.py', 'clean_*.py', 'assess_*.py']}
     moved_count: Any = 0
     created_dirs: Any = set()
     root_files: Any = [f for f in os.listdir('.') if os.path.isfile(f)]

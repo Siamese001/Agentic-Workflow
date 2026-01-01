@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
-from AgenticCore.L1_cognition.P1_interfaces import (
+from agentic_core.L1_cognition.P1_interfaces import (
     ActionRequest,
     ExecutionContext,
     ExecutionResult,
@@ -16,23 +16,23 @@ from AgenticCore.L1_cognition.P1_interfaces import (
     ICognitivePlane,
     OrchestratorConfig,
 )
-from AgenticCore.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
+from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 if TYPE_CHECKING:
-    from AgenticCore.L1_cognition.SovereignCognitivePlane import (
+    from agentic_core.L1_cognition.SovereignCognitivePlane import (
         create_sovereign_cognitive_plane,
     )
-    from AgenticCore.L2_execution.sovereign_action_plane import (
+    from agentic_core.L2_execution.sovereign_action_plane import (
         create_sovereign_action_plane,
     )
-    from AgenticCore.telepathy import (
+    from agentic_core.telepathy import (
         InterventionServer,
         check_intervention_required,
         process_telepathy_instructions,
@@ -1057,7 +1057,7 @@ class NervousSystemAgent:
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.00)
 
         # Initialize L4 State Persistence
-        storage_adapter = create_storage_adapter("local", base_path="./AgenticCore")
+        storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)
         self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
         self.SignalLedger = SignalLedger(storage_adapter, self.session_id)

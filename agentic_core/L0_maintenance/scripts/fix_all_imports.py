@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -19,7 +19,7 @@ def fix_imports_in_file(file_path: Path) -> int:
         with open(file_path, 'r', encoding='utf-8') as f:
             content: Any = f.read()
         original_content: Any = content
-        replacements: Any = [('from AgenticCore\\.base import', 'from AgenticCore.L2_execution.ToolRegistry.base import'), ('import AgenticCore\\.base', 'import AgenticCore.L2_execution.ToolRegistry.base'), ('from AgenticCore\\.L2_execution\\.P4_agents\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('import AgenticCore\\.L2_execution\\.P4_agents\\.', 'import AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L2_execution\\.P2_tools\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('import AgenticCore\\.L2_execution\\.P2_tools\\.', 'import AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L2_execution\\.P3_engines\\.', 'from AgenticCore.L2_execution.ToolRegistry.'), ('import AgenticCore\\.L2_execution\\.P3_engines\\.', 'import AgenticCore.L2_execution.ToolRegistry.'), ('from AgenticCore\\.L5_safety\\.P1_core\\.', 'from AgenticCore.L5_safety.guardrails.'), ('import AgenticCore\\.L5_safety\\.P1_core\\.', 'import AgenticCore.L5_safety.guardrails.'), ('from AgenticCore\\.L5_safety\\.policy\\.', 'from AgenticCore.L5_safety.guardrails.'), ('import AgenticCore\\.L5_safety\\.policy\\.', 'import AgenticCore.L5_safety.guardrails.'), ('from AgenticCore\\.L4_state\\.cache\\.', 'from AgenticCore.L4_state.ValidationContext.'), ('import AgenticCore\\.L4_state\\.cache\\.', 'import AgenticCore.L4_state.ValidationContext.'), ('from AgenticCore\\.L4_state\\.vector\\.', 'from AgenticCore.L4_state.ValidationContext.'), ('import AgenticCore\\.L4_state\\.vector\\.', 'import AgenticCore.L4_state.ValidationContext.')]
+        replacements: Any = [('from agentic_core\\.base import', 'from agentic_core.L2_execution.tool_registry.base import'), ('import agentic_core\\.base', 'import agentic_core.L2_execution.tool_registry.base'), ('from agentic_core\\.L2_execution\\.P4_agents\\.', 'from agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P4_agents\\.', 'import agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P2_tools\\.', 'from agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P2_tools\\.', 'import agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P3_engines\\.', 'from agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P3_engines\\.', 'import agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L5_safety\\.P1_core\\.', 'from agentic_core.L5_safety.guardrails.'), ('import agentic_core\\.L5_safety\\.P1_core\\.', 'import agentic_core.L5_safety.guardrails.'), ('from agentic_core\\.L5_safety\\.policy\\.', 'from agentic_core.L5_safety.guardrails.'), ('import agentic_core\\.L5_safety\\.policy\\.', 'import agentic_core.L5_safety.guardrails.'), ('from agentic_core\\.L4_state\\.cache\\.', 'from agentic_core.L4_state.validation_context.'), ('import agentic_core\\.L4_state\\.cache\\.', 'import agentic_core.L4_state.validation_context.'), ('from agentic_core\\.L4_state\\.vector\\.', 'from agentic_core.L4_state.validation_context.'), ('import agentic_core\\.L4_state\\.vector\\.', 'import agentic_core.L4_state.validation_context.')]
         for pattern, replacement in replacements:
             content: Any = re.sub(pattern, replacement, content)
         if content != original_content:
@@ -36,7 +36,7 @@ def main() -> Any:
     """Fix all imports in the codebase."""
     fixed_count: Any = 0
     total_files: Any = 0
-    for py_file in Path('AgenticCore').rglob('*.py'):
+    for py_file in Path('agentic_core').rglob('*.py'):
         if py_file.name in ['__init__.py']:
             continue
         total_files += 1

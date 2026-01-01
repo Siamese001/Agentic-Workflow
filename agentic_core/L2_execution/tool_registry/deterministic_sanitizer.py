@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from AgenticCore.shared.architecture_constants import ALLOWED_ROOT_FILES
+from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 Logger: Any = logging.getLogger(__name__)
 
 class DeterministicCleaner:

@@ -20,10 +20,10 @@ try:
     REDIS_AVAILABLE: Any = True
 except ImportError:
     REDIS_AVAILABLE: Any = False
-from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -114,9 +114,9 @@ class DependencyDiplomatAgent(SubAtomicAgent):
             self._persist_to_redis()
 
     def _find_python_files(self) -> List[str]:
-        """Find all Python files in AgenticCore."""
+        """Find all Python files in agentic_core."""
         python_files = []
-        for py_file in Path('AgenticCore').rglob('*.py'):
+        for py_file in Path('agentic_core').rglob('*.py'):
             python_files.append(str(py_file))
         return python_files
 

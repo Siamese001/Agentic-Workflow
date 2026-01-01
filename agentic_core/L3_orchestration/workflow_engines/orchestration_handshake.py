@@ -5,12 +5,12 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
-from AgenticCore.L3_orchestration.workflow_engines.CachedOrchestrator import CachedOrchestrator
-from AgenticCore.L4_state.registry.subatomic_registry import SubAtomicRegistry
+from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.L3_orchestration.workflow_engines.CachedOrchestrator import CachedOrchestrator
+from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

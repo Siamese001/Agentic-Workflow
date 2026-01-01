@@ -12,7 +12,7 @@ from typing import Any
 class SprawlInspector:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, target_path='AgenticCore'):
+    def __init__(self, target_path='agentic_core'):
         self.root = Path(target_path)
         self.MAX_BREADTH = 7
         self.MIN_FILES = 3
@@ -51,7 +51,7 @@ class SprawlInspector:
                 print(f"  ... and {len(self.report['flattening_candidates']) - 10} more")
         print('=' * 70)
 if __name__ == '__main__':
-    inspector: Any = SprawlInspector('AgenticCore')
+    inspector: Any = SprawlInspector('agentic_core')
     data: Any = inspector.inspect()
     inspector.print_summary()
     with open('sprawl_report.json', 'w') as f:

@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -416,7 +416,7 @@ class DependencySentinel:
 
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """
-        Checks for relative imports (e.g., 'from AgenticCore. import module', 'from AgenticCore. import package').
+        Checks for relative imports (e.g., 'from agentic_core. import module', 'from agentic_core. import package').
         Reports file paths and line numbers.
         """
         violations = []
@@ -462,7 +462,7 @@ class DependencySentinel:
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from AgenticCore. import x' where module is None
+                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             name = alias.asname if alias.asname else alias.name
                             imported_names_with_lines[name] = node.lineno
@@ -523,7 +523,7 @@ class DependencySentinel:
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from AgenticCore. import x' where module is None
+                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             imported_name = alias.asname if alias.asname else alias.name
                             import_tuple = (module_name, imported_name)

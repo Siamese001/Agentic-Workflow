@@ -5,9 +5,9 @@ import logging
 
 from typing import Any, Dict, List, Optional, Protocol
 
-from AgenticCore.schemas.models.core_contracts import ConsensusVerdict
+from agentic_core.schemas.models.core_contracts import ConsensusVerdict
 
-# Models migrated to SSOT: AgenticCore/schemas/models/core_contracts.py
+# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
 
 # NAMING FIXED: SupremeCourt → SupremeCourt
 class SupremeCourt:

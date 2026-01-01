@@ -11,7 +11,7 @@ DELEGATION: Dead code pruning moved to specialized DeadCodeAgent.
 Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
 
-Depth: AgenticCore/L5_safety/guardrails/HealerAgent.py -> 4 parts -> compliant
+Depth: agentic_core/L5_safety/guardrails/HealerAgent.py -> 4 parts -> compliant
 """
 import ast
 import logging
@@ -38,18 +38,18 @@ except ImportError:
     Language = None
     Parser = None
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     HEALING_CONFIG,
     SOVEREIGN_EXCLUDED_FOLDERS,
     CANON_KEY_TO_FOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
     SOVEREIGN_REGISTRY,
 )
-from AgenticCore.utils.core_extensions.NamingAgent import NamingAgent
+from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
 
 # [HARDENING 9] Import audit Logger for comprehensive action tracking
 try:
-    from AgenticCore.observability.audit.audit_logger import AuditLogger
+    from agentic_core.observability.audit.audit_logger import AuditLogger
     AUDIT_LOGGER_AVAILABLE = True
 except ImportError:
     AUDIT_LOGGER_AVAILABLE = False
@@ -135,9 +135,9 @@ class HealerAgent:
 
         # Observability Linkage
         try:
-            from AgenticCore.observability.tracing.TracingAgent import tracing_agent as TracingAgent
-            from AgenticCore.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
-            from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+            from agentic_core.observability.tracing.TracingAgent import tracing_agent as TracingAgent
+            from agentic_core.observability.telemetry.TelemetryAgent import telemetry_agent as TelemetryAgent
+            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
             self.tracing = TracingAgent(project_root)
             self.telemetry = TelemetryAgent(project_root)
             self.metrics = MetricsAgent(project_root)
@@ -346,8 +346,8 @@ class HealerAgent:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
             
-            # Check if file is in AgenticCore structure
-            if len(parts) >= 2 and parts[0] == 'AgenticCore':
+            # Check if file is in agentic_core structure
+            if len(parts) >= 2 and parts[0] == 'agentic_core':
                 layer_part = parts[1]
                 # Validate it's a recognized layer
                 if layer_part.startswith('L') and layer_part[1].isdigit():
@@ -359,7 +359,7 @@ class HealerAgent:
     
     def _get_layer_directory(self, file_path: Path) -> Optional[Path]:
         """
-        Get the layer directory for a file (e.g., AgenticCore/L5_safety).
+        Get the layer directory for a file (e.g., agentic_core/L5_safety).
         Returns None if file is not in a recognized layer.
         """
         layer = self._detect_layer(file_path)
@@ -369,7 +369,7 @@ class HealerAgent:
         try:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
-            if len(parts) >= 2 and parts[0] == 'AgenticCore':
+            if len(parts) >= 2 and parts[0] == 'agentic_core':
                 return self.project_root / parts[0] / parts[1]
         except ValueError:
             pass
@@ -684,10 +684,10 @@ class HealerAgent:
                 except Exception:
                     continue
         
-        guidance = "AgenticCore/utils"
+        guidance = "agentic_core/utils"
         if combined_preview.strip():
             guidance = self.NamingAgent.get_placement_guidance(combined_preview)
-            # Extract domain stem (e.g., "AgenticCore/L3_orchestration" -> "orchestrator")
+            # Extract domain stem (e.g., "agentic_core/L3_orchestration" -> "orchestrator")
             suggested_domain = guidance.split("/")[-1] if "/" in guidance else "component"
         else:
             suggested_domain = "merged"

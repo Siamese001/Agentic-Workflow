@@ -6,11 +6,11 @@ L6 observability self-healing using official DeepWiki MCP.
 import logging
 from typing import List, Dict, Any
 from pathlib import Path
-from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -66,7 +66,7 @@ class DeepWikiHealingStrategy:
         try:
             documented_paths = await self._get_documented_paths()
             undocumented = []
-            agentic_core_path = Path('AgenticCore')
+            agentic_core_path = Path('agentic_core')
             if agentic_core_path.exists():
                 for py_file in agentic_core_path.rglob('*.py'):
                     if '__pycache__' in str(py_file):

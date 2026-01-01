@@ -3,7 +3,7 @@ TEST STRUCTURE ALIGNMENT
 Ensures all test directories have __init__.py for Python package recognition.
 """
 import os
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
+from agentic_core.config.blueprint_sovereign.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
 from typing import Any
 
 def align_tests_structure(root_path: Any) -> Any:

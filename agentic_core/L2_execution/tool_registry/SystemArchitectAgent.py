@@ -11,7 +11,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class SystemArchitectAgent(CanonBaseAgent):
@@ -83,9 +83,9 @@ class SystemArchitectAgent(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         # [PHASE 20] DEPRECATION: void_compliance.py removed - using HierarchyAgent
-        from AgenticCore.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
         def validate_canonical_hierarchy(proj_root):
             return HierarchyAgent(proj_root).validate_hierarchy()
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
@@ -108,7 +108,7 @@ class SystemArchitectAgent(CanonBaseAgent):
                     if not (l1_path / '__init__.py').exists():
                         violations.append(f'{root_folder}/{l1_name}: Missing __init__.py')
                     if config['depth'] == 4:
-                        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+                        from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
                         l2_list: Any = CORE_SUBFOLDER_MAP.get(l1_name, [])
                         for l2_name in l2_list:
                             l2_path: Any = l1_path / l2_name
@@ -135,7 +135,7 @@ class SystemArchitectAgent(CanonBaseAgent):
                 continue
             depth: Any = len(rel_path.parts) - 1
             root_folder: Any = rel_path.parts[0] if rel_path.parts else None
-            from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+            from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
             if root_folder in SOVEREIGN_REGISTRY:
                 required_depth: Any = SOVEREIGN_REGISTRY[root_folder]['depth']
                 if depth != required_depth:

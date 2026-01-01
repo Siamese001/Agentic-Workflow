@@ -14,10 +14,10 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map

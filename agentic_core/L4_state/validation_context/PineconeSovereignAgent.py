@@ -16,11 +16,11 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 
-from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
-from AgenticCore.L4_state.ValidationContext.redis_sovereign_agent import (
+from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 
 class PineconeSovereignAgent:
@@ -190,7 +190,7 @@ class PineconeSovereignAgent:
 
     def _get_sparse_vector(self, text: str) -> Dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         text_low = text.lower()
         # Simple TF-based sparse vector
         indices = []
@@ -227,7 +227,7 @@ class PineconeSovereignAgent:
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
         """
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
         
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():
@@ -311,13 +311,13 @@ class PineconeSovereignAgent:
         namespace = "default"
         if file_path:
             try:
-                # Extract layer from path (e.g., AgenticCore/L5_safety/... -> L5_safety)
-                rel_path = file_path.relative_to(self.project_root / 'AgenticCore')
+                # Extract layer from path (e.g., agentic_core/L5_safety/... -> L5_safety)
+                rel_path = file_path.relative_to(self.project_root / 'agentic_core')
                 if len(rel_path.parts) > 0:
                     layer = rel_path.parts[0]
                     namespace = f"layer_{layer}"
             except (ValueError, IndexError):
-                # File outside AgenticCore - use default namespace
+                # File outside agentic_core - use default namespace
                 pass
         
         q_emb = await self.get_embedding(query)

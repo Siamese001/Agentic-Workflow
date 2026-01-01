@@ -13,10 +13,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 from dotenv import load_dotenv
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
 load_dotenv(Path(__file__).parent.parent.parent / '.env')
 allowed_root_files: Any = ROOT_PROTECTED_FILES
-from AgenticCore.prompts import FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS, FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN, FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES, FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY, FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE, FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT
+from agentic_core.prompts import FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS, FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN, FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES, FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED, FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY, FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE, FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT
 
 class DependencyGraph:
     """Builds a directed graph of imports and class hierarchies."""

@@ -25,7 +25,7 @@ from collections import defaultdict
 
 Logger = logging.getLogger(__name__)
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     PYTHON_STDLIB_MODULES,
     UPSTREAM_SOVEREIGN_ROOTS,
     DOWNSTREAM_ROOTS,
@@ -33,7 +33,7 @@ from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from AgenticCore.prompt_governance.version_registry.PromptRegistry import registers_prompt
+from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str):
     """Extract imports using AST, ignoring comments/docstrings."""

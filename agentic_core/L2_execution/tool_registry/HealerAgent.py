@@ -11,8 +11,8 @@ Responsible for:
 import os
 from typing import Any, Dict, List, Optional, Protocol
 
-from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
-from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
+from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -65,8 +65,8 @@ class HealerAgent(CanonBaseAgent):
         [KEY 40/49 HARDENING] High-Signal Re-homing.
         Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from AgenticCore.runtime.shared_runtime.void_compliance import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from agentic_core.runtime.shared_runtime.void_compliance import (
             FORBIDDEN_ROOT_FOLDERS,
             get_placement_guidance,
         )
@@ -88,7 +88,7 @@ class HealerAgent(CanonBaseAgent):
             # Final fallback if heuristics drift from hierarchy
             if root_folder not in SOVEREIGN_REGISTRY or (l1_layer and l1_layer not in SOVEREIGN_REGISTRY[root_folder]["subfolders"]):
                 print(f"      [!] HIERARCHY DRIFT: Candidate '{candidate_path}' not in SSOT. Defaulting to cognition.")
-                target_dir = "AgenticCore/L1_cognition"
+                target_dir = "agentic_core/L1_cognition"
             else:
                 target_dir = candidate_path
             
@@ -229,7 +229,7 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                from AgenticCore.L3_orchestration.workflow_engines.canon_scheduler import (
+                from agentic_core.L3_orchestration.workflow_engines.canon_scheduler import (
                     apply_fission_blueprint,
                 )
                 blueprint_data = self.ctx.engine.parse_fission_output(res)

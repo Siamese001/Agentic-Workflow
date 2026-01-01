@@ -141,7 +141,7 @@ class CodeDeduplicationAgent:
 
     def _create_shared_utility(self, code: str, func_name: str, project_root: Path) -> Path:
         """Create deduplicated utility in sovereign shared location."""
-        utils_dir = project_root / 'AgenticCore' / 'utils' / 'deduplicated'
+        utils_dir = project_root / 'agentic_core' / 'utils' / 'deduplicated'
         utils_dir.mkdir(parents=True, exist_ok=True)
         safe_name = ''.join((c if c.isalnum() else '_' for c in func_name.lower()))[:40]
         candidate = utils_dir / f'{safe_name}_shared.py'
@@ -165,7 +165,7 @@ class CodeDeduplicationAgent:
             primary_path, func_name, _, canonical_code = occurrences[0]
             shared_file: Any = self._create_shared_utility(canonical_code, func_name, project_root)
             module_name: Any = shared_file.stem
-            import_stmt: Any = f'from AgenticCore.utils.deduplicated.{module_name} import {func_name}'
+            import_stmt: Any = f'from agentic_core.utils.deduplicated.{module_name} import {func_name}'
             for file_path, name, start_line, code in occurrences[1:]:
                 try:
                     lines: Any = file_path.read_text(encoding='utf-8').splitlines(keepends=True)

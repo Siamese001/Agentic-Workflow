@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -41,7 +41,7 @@ class SovereignImportSurgeon:
         self.violations: Dict[str, List[ImportViolation]] = defaultdict(list)
         self.import_patterns = [('L0_maintancne', 'L0_maintenance', 'TYPO_FIX')]
         self.test_file_pattern = re.compile('[\\\\/]tests?[\\\\/]|[\\\\/]test_.*\\.py$')
-        self.commented_import_pattern = re.compile('^\\s*#\\s*(from\\s+\\.\\.|from\\s+AgenticCore)')
+        self.commented_import_pattern = re.compile('^\\s*#\\s*(from\\s+\\.\\.|from\\s+agentic_core)')
         self.relative_import_pattern = re.compile('^(\\s*)from\\s+\\.\\.')
         self.apps_shared_pattern = re.compile('from\\s+apps_shared\\s+import')
         self.apps_engines_pattern = re.compile('from\\s+(apps_rg|apps_lic)\\.engines\\s+import')

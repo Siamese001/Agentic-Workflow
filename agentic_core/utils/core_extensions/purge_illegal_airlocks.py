@@ -4,10 +4,10 @@ Purge illegal __init__.py airlocks using SSOT depth requirements.
 """
 import os
 from pathlib import Path
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
-root_dir: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
-required_depth: Any = SOVEREIGN_REGISTRY['AgenticCore']['depth']
+root_dir: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
+required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 
 def purge_illegal_airlocks() -> Any:
     """Brief description of functionality and purpose."""

@@ -5,14 +5,14 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-mission_runner: Any = ROOT / 'AgenticCore/L3_orchestration/mission_runner.py'
+mission_runner: Any = ROOT / 'agentic_core/L3_orchestration/mission_runner.py'
 
 def fix_mission_runner() -> Any:
     """Remove all scripts.CanonValidator imports from mission_runner.py"""
@@ -25,14 +25,14 @@ def fix_mission_runner() -> Any:
         if 'from scripts.CanonValidator' in line:
             if not skip_until_blank:
                 new_lines.append('    # GRAVITY FIX: Removed all scripts.CanonValidator imports\n')
-                new_lines.append('    # These agents need to be moved to AgenticCore or refactored\n')
+                new_lines.append('    # These agents need to be moved to agentic_core or refactored\n')
                 skip_until_blank: Any = True
             continue
         if skip_until_blank and line.strip() == ')':
             continue
         if skip_until_blank and line.strip() == '':
             skip_until_blank: Any = False
-        if 'TODO: Move' in line and 'to AgenticCore' in line:
+        if 'TODO: Move' in line and 'to agentic_core' in line:
             continue
         if 'STRUCTURAL FIX:' in line:
             continue

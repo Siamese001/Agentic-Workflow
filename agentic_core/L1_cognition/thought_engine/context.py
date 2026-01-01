@@ -16,7 +16,7 @@ except ImportError:
     genai = None
 
 # ==============================================================================
-# INLINED PROMPTS (Formerly from AgenticCore.prompts - Resolves Architectural Violations)
+# INLINED PROMPTS (Formerly from agentic_core.prompts - Resolves Architectural Violations)
 # ==============================================================================
 
 # NAMING FIXED: FEW_SHOT_HYGIENE → few_shot_hygiene

@@ -6,11 +6,11 @@ import json
 import logging
 import re
 from typing import Any, Dict, List, Optional
-from AgenticCore.L4_state.ValidationContext.semantic_cache_sovereign import SemanticCache
-from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+from agentic_core.L4_state.validation_context.semantic_cache_sovereign import SemanticCache
+from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

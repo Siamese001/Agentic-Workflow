@@ -19,7 +19,7 @@ class AutonomousThreatEvolutionAgent:
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None):
         self.safety = SafetyEngine
-        # Use relative pathing to stay within the 'AgenticCore' root gravity
+        # Use relative pathing to stay within the 'agentic_core' root gravity
         self.log_path = Path("observability/logs/threat_detections.json")
         self.evolution_interval = 3600  
         self.running = True

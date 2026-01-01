@@ -5,10 +5,10 @@ import logging
 import re
 import time
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.L1_cognition.planning.capability_analyzer_types import AnalysisReport, CapabilityGap, CapabilityGapType, Recommendation, RecommendationType
+from agentic_core.L1_cognition.planning.capability_analyzer_types import AnalysisReport, CapabilityGap, CapabilityGapType, Recommendation, RecommendationType
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

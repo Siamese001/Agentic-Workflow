@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 obs_runtime: Any = CORE / 'observability/P1_core/runtime'
 obs_p1: Any = CORE / 'observability/P1_core'
 

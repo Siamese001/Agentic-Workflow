@@ -7,10 +7,10 @@ import logging
 import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from AgenticCore.config.blueprint_sovereign.sovereign_config import config
+from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -23,7 +23,7 @@ class SovereignFilesystemMcpClient:
     def __init__(self, role: str='maintenance_files'):
         if not config.FILESYSTEM_MCP_ENABLED:
             raise ValueError('Filesystem MCP disabled in sovereign config')
-        from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
         Logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
 

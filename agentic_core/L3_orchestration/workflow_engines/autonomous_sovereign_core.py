@@ -12,7 +12,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -45,29 +45,29 @@ class AutonomousSovereignCore:
         self.running = True
         
         # Import autonomous improvements
-        from AgenticCore.L1_cognition.thought_engine.AdaptiveLearningEngine import (
+        from agentic_core.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
         )
-        from AgenticCore.L2_execution.ToolRegistry.ProactiveResourceManager import (
+        from agentic_core.L2_execution.tool_registry.ProactiveResourceManager import (
             create_proactive_resource_manager,
         )
-        from AgenticCore.L3_orchestration.workflow_engines.autonomous_execution_engine import (
+        from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (
             create_autonomous_execution_engine,
         )
-        from AgenticCore.L3_orchestration.workflow_engines.SelfRecoveringOrchestrator import (
+        from agentic_core.L3_orchestration.workflow_engines.SelfRecoveringOrchestrator import (
             create_self_recovering_orchestrator,
         )
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
-            from AgenticCore.L4_state.ValidationContext.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
-            from AgenticCore.L4_state.ValidationContext.autonomous_state_guardian import create_autonomous_state_guardian
+            from agentic_core.L4_state.validation_context.autonomous_state_guardian import create_autonomous_state_guardian
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:
-            from AgenticCore.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
+            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
         except ImportError:
             create_self_updating_safety_engine = lambda: None
 

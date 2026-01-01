@@ -2,7 +2,7 @@
 One-time cleanup utility to collapse duplicate entries in registry.json.
 
 Usage:
-    python -m AgenticCore.prompt_governance.version_registry.cleanup_duplicates
+    python -m agentic_core.prompt_governance.version_registry.cleanup_duplicates
 
 This script:
 - Loads the current registry via get_prompt_registry() for consistency
@@ -15,7 +15,7 @@ This script:
 import logging
 from typing import Dict, List, Any, Set, Tuple
 
-from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
+from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
 
 Logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

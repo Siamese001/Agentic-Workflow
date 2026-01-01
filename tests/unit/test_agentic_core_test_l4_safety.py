@@ -6,7 +6,7 @@ import re
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -17,7 +17,7 @@ class TestMemorySafety:
     """Tests for memory safety operations."""
 
 def test_filter_pii_from_memory(self: Any) -> None:
-    """Nominal: PII is filtered from AgenticCore.semantic_memory."""
+    """Nominal: PII is filtered from agentic_core.semantic_memory."""
     MEMORY: Any = {'content': 'User email is john@example.com'}
     email_pattern: Any = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'
     re.sub(email_pattern, '[REDACTED]', memory['content'])

@@ -19,7 +19,7 @@ Designed for integration with:
 Placed in observability/tracing per SSOT semantic registry:
   "Span tracing, context propagation, and distributed trace ids"
 
-Depth: AgenticCore/observability/tracing/tracing_agent.py
+Depth: agentic_core/observability/tracing/tracing_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
 Sovereign tracing Provider:

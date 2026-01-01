@@ -1,12 +1,12 @@
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
-All models centralized in sovereign SSOT: AgenticCore/schemas/models/core_contracts.py
+All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
 
 Note: Some models renamed to avoid conflicts:
 - AgentMessage -> ResidualAgentMessage
 - ValidationResult -> ResidualValidationResult
 """
-from AgenticCore.schemas.models.core_contracts import (
+from agentic_core.schemas.models.core_contracts import (
     AgentResponse,
     CircuitState,
     GateDecision,

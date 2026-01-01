@@ -15,10 +15,10 @@ from typing import Any, Dict, List, Optional
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from AgenticCore.L2_execution.ToolRegistry.ProactiveResourceManager import (
+from agentic_core.L2_execution.tool_registry.ProactiveResourceManager import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -29,7 +29,7 @@ from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 # L4 Checkpoint integration
 # GRAVITY FIXED: Dynamic import for Checkpoint manager
 try:
-    from AgenticCore.L4_state.ValidationContext.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+    from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
 except ImportError:
     create_autonomous_checkpoint_manager = None
 

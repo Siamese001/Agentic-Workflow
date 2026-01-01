@@ -7,10 +7,10 @@ from pathlib import Path
 from datetime import datetime
 
 # Sovereign Hardening Mixins – Phase C (Critical Priority)
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
-from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class MetaLearningAgent(

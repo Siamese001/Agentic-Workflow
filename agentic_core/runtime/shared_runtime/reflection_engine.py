@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Dict, Any, Optional, List, Union, Callable
 from abc import ABC, abstractmethod
 
-from AgenticCore.L4_resilience.circuit_breaker import (
+from agentic_core.L4_resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,

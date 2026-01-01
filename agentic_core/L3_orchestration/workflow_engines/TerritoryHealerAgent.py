@@ -24,14 +24,14 @@ class TerritoryHealerAgent:
         self.root = project_root
         self.ctx = ctx
         
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP,
             CANON_SIGNALS_MK2,
             ROOT_PROTECTED_FILES,
             SOVEREIGN_REGISTRY,
             TERRITORY_EXAMPLES,
         )
-        from AgenticCore.runtime.shared_runtime.void_compliance import get_placement_guidance
+        from agentic_core.runtime.shared_runtime.void_compliance import get_placement_guidance
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS_MK2  # Legacy bridge – migrate to CANON_SIGNALS_MK2
@@ -66,8 +66,8 @@ class TerritoryHealerAgent:
             parts = rel_path.parts
             depth = len(parts)
             
-            agentic_core_exact_depth = SOVEREIGN_REGISTRY["AgenticCore"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
-            if parts[0] == "AgenticCore" and depth != agentic_core_exact_depth:
+            agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+            if parts[0] == "agentic_core" and depth != agentic_core_exact_depth:
                 return self._suggest_precision_move(file_path, agentic_core_exact_depth)
                 
         except ValueError:
@@ -82,8 +82,8 @@ class TerritoryHealerAgent:
         rel_path = file_path.relative_to(self.root)
         parts = rel_path.parts
         
-        # For AgenticCore, we need to ensure depth 4
-        if parts[0] == "AgenticCore" and len(parts) < 4:
+        # For agentic_core, we need to ensure depth 4
+        if parts[0] == "agentic_core" and len(parts) < 4:
             # Need to go deeper - suggest adding L3/L4 structure
             suggested = self.get_placement_guidance("")
             target_path = self.root / suggested / rel_path.name
@@ -91,16 +91,16 @@ class TerritoryHealerAgent:
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
-                "reason": f"Depth precision: AgenticCore requires depth {target_depth}, found {len(parts)}"
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
             }
-        elif parts[0] == "AgenticCore" and len(parts) > 4:
+        elif parts[0] == "agentic_core" and len(parts) > 4:
             # Need to flatten - move to appropriate L4 location
             target_path = self.root / parts[0] / parts[1] / parts[2] / parts[3] / rel_path.name
             return {
                 "action": "move",
                 "source": str(file_path),
                 "target": str(target_path),
-                "reason": f"Depth precision: AgenticCore requires depth {target_depth}, found {len(parts)}"
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
             }
         
         return None
@@ -252,10 +252,10 @@ class TerritoryHealerAgent:
         
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import (
+            from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
-            from AgenticCore.L4_state.ValidationContext.redis_sovereign_agent import (
+            from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
                 RedisSovereignAgent,
             )
             redis_agent = RedisSovereignAgent(self.root)

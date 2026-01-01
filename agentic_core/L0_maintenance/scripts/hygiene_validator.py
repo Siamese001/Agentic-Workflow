@@ -96,11 +96,11 @@ class HygieneValidator:
             return []
 
         # Heuristic Resolution:
-        # 1. Check if module matches a file directly (AgenticCore.utils -> AgenticCore/utils.py)
+        # 1. Check if module matches a file directly (agentic_core.utils -> agentic_core/utils.py)
         potential_path = module.replace(".", os.sep) + ".py"
         targets.append(potential_path)
 
-        # 2. Check if it matches a package init (AgenticCore.utils -> AgenticCore/utils/__init__.py)
+        # 2. Check if it matches a package init (agentic_core.utils -> agentic_core/utils/__init__.py)
         potential_init = os.path.join(module.replace(".", os.sep), "__init__.py")
         targets.append(potential_init)
 
@@ -141,7 +141,7 @@ class HygieneValidator:
             # Loose check: if the filename (or path) appears in any import target
             is_imported = False
             for target in imported_targets:
-                # Matches if 'AgenticCore/utils.py' is in target 'AgenticCore/utils.py'
+                # Matches if 'agentic_core/utils.py' is in target 'agentic_core/utils.py'
                 if file.endswith(target) or target.endswith(file):
                     is_imported = True
                     break
@@ -171,7 +171,7 @@ class HygieneValidator:
             # Loose check: if the filename (or path) appears in any import target
             is_imported = False
             for target in imported_targets:
-                # Matches if 'AgenticCore/utils.py' is in target 'AgenticCore/utils.py'
+                # Matches if 'agentic_core/utils.py' is in target 'agentic_core/utils.py'
                 if file.endswith(target) or target.endswith(file):
                     is_imported = True
                     break

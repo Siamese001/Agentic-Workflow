@@ -15,14 +15,14 @@ Directly replaces remaining utility functions from void_compliance.py:
 Placed in observability/compliance per SSOT semantic registry:
   "Compliance reporting, canon drift detection logs, and policy Violation records"
 
-Depth: AgenticCore/observability/compliance/reporting_agent.py
+Depth: agentic_core/observability/compliance/reporting_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 """
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,      # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
 
@@ -34,7 +34,7 @@ SCOPE_SUMMARY_EXCLUSIONS = {
 
 # Optional import: MetricsAgent from sibling territory
 try:
-    from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+    from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
     METRICS_AGENT_AVAILABLE = True
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False

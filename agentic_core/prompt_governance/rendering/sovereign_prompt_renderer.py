@@ -7,18 +7,18 @@ from typing import Dict, Any, Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 # Import for semantic deduplication awareness
-from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry, DuplicatePromptError
+from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry, DuplicatePromptError
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""
-    from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
     return LocationAgent(project_root).validate_file_location(file_path)
 
 class SovereignPromptRenderer:
@@ -31,7 +31,7 @@ class SovereignPromptRenderer:
     - Enforce sovereignty: no inline prompt strings > 50 lines outside this layer
     - Provide typed context injection for downstream agents
     """
-    TEMPLATE_ROOT: Any = Path('C:\\Git\\Agentic-Workflow\\AgenticCore\\prompt_governance\\templates')
+    TEMPLATE_ROOT: Any = Path('C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates')
 
     def __init__(self):
         if not self.TEMPLATE_ROOT.exists():

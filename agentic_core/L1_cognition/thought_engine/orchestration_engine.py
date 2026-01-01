@@ -14,20 +14,20 @@ except ImportError:
     FASTAPI_AVAILABLE = False
 
 # [DEPRECATED IMPORTS] Legacy agent imports - now using canon_agents_* modules
-# TODO: Migrate to AgenticCore.L1_cognition.thought_engine.canon_agents_* when needed
-# from AgenticCore.agents.engineering import PatternEnforcer, StructuralEngineer
-# from AgenticCore.agents.governance import ArchitectureGovernor, DependencySentinel
-# from AgenticCore.agents.infrastructure import BenchmarkingAgent, Historian
-# from AgenticCore.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
-# from AgenticCore.agents.repair import TestPilot, ToolsmithAgent
-# from AgenticCore.agents.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
-# from AgenticCore.agents.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
+# TODO: Migrate to agentic_core.L1_cognition.thought_engine.canon_agents_* when needed
+# from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+# from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+# from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+# from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+# from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+# from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
+# from agentic_core.agents.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
 
 # Import Domain
-from AgenticCore.L1_cognition.P2_domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

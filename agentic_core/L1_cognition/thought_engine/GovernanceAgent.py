@@ -17,7 +17,7 @@ GovernanceAgent now provides DECISION-ONLY functions:
 - check_atomicity_law() -> Returns Violation info, does NOT split files
 
 For file operations, use:
-    from AgenticCore.L5_safety.guardrails.HealerAgent import HealerAgent
+    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
     healer = HealerAgent(project_root)
     healer.heal_file_moves(violations)  # For depth violations
     healer.heal_fission(large_files)    # For atomicity violations
@@ -232,7 +232,7 @@ class GovernanceAgent:
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.Logger = logging.getLogger(__name__)
         self.DependencyGraph = DependencyGraph()
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
         self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
@@ -240,7 +240,7 @@ class GovernanceAgent:
         self.MAX_FUNC_LINES = 50
         self.MAX_NESTING_SPACES = 40
         self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
-        self.sovereign_dirs = {'AgenticCore', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
+        self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
         self.MAX_FILE_LINES = 200
 
     def build_graph(self, file_patterns: List[str]=['**/*.py']) -> Any:
@@ -398,7 +398,7 @@ class GovernanceAgent:
         
         # [P4] Return suggested path only - no actual move
         if 'shallow' in Violation.lower():
-            target_dir: Any = self.root_dir / 'AgenticCore' / 'L1_cognition'
+            target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
             target: Any = target_dir / path.name
         else:
             target_dir: Any = self.root_dir / 'scripts'

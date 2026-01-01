@@ -321,8 +321,8 @@ def analyze_supplementation():
     if "git_operations" in unique_to_dead or "git_integration" in unique_to_dead:
         recommendations.append(
             "→ Merge GitAgent methods into ToolsmithAgent or new L2 GitToolAgent\n"
-            "  Source: AgenticCore/L2_execution/ToolRegistry/GitAgent.py\n"
-            "  Target: AgenticCore/L2_execution/ToolRegistry/ToolsmithAgent.py (add git_* methods)"
+            "  Source: agentic_core/L2_execution/ToolRegistry/GitAgent.py\n"
+            "  Target: agentic_core/L2_execution/ToolRegistry/ToolsmithAgent.py (add git_* methods)"
         )
 
     if "dead_code_analysis" in unique_to_dead:
@@ -335,21 +335,21 @@ def analyze_supplementation():
     if "mapping" in unique_to_dead or "territory" in unique_to_dead:
         recommendations.append(
             "→ Integrate SemanticTerritoryMapperAgent patterns\n"
-            "  Source: AgenticCore/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py\n"
+            "  Source: agentic_core/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py\n"
             "  Target: HierarchyAgent or LocationAgent (L5) for semantic structural awareness"
         )
 
     if "monitoring" in unique_to_dead or "watchdog" in unique_to_dead:
         recommendations.append(
             "→ Add SovereignWatchdogAgent monitoring logic\n"
-            "  Source: AgenticCore/L0_maintenance/scripts/SovereignWatchdogAgent.py\n"
+            "  Source: agentic_core/L0_maintenance/scripts/SovereignWatchdogAgent.py\n"
             "  Target: BootstrapAgent or new L0 RuntimeGuard"
         )
 
     if "filesystem_introspection" in unique_to_dead:
         recommendations.append(
             "→ Supplement FilesystemAgent deep introspection\n"
-            "  Source: AgenticCore/L5_safety/validators/FilesystemAgent.py\n"
+            "  Source: agentic_core/L5_safety/validators/FilesystemAgent.py\n"
             "  Target: LocationAgent or HierarchyAgent (enhance path validation)"
         )
 

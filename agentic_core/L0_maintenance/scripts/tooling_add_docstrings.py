@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import Any
 _logger = logging.getLogger(__name__)
-sovereign_dirs: Any = ['AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']
+sovereign_dirs: Any = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']
 
 def get_body_start_line(node: ast.AST) -> int:
     """Get the line number where the function/class body starts."""

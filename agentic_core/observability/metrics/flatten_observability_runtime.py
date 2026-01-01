@@ -4,12 +4,12 @@ import shutil
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Any
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 obs_runtime: Any = CORE / 'observability/P1_core/runtime'
 
 def flatten_observability_runtime() -> Any:

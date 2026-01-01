@@ -6,12 +6,12 @@ centralized into HealerAgent.heal_file_moves(). This file is kept for
 backward compatibility only.
 
 Use instead:
-    from AgenticCore.L5_safety.guardrails.HealerAgent import HealerAgent
+    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
     healer = HealerAgent(project_root)
     healer.heal_file_moves(move_violations)
 
 Territory decisions should be delegated to LocationAgent:
-    from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
     location = LocationAgent(project_root)
     guidance = location.validate_file_location(file_path)
 
@@ -40,18 +40,18 @@ class TerritoryHealerAgent:
             raise ValueError("ctx is mandatory for TerritoryHealerAgent (sovereign agent)")
         self.root = project_root
         self.ctx = ctx
-        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY, CANON_SIGNALS
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY, CANON_SIGNALS
         # [PHASE 20] DEPRECATION: void_compliance.py removed - inline placement guidance
         def get_placement_guidance(content_preview):
             if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
-                return 'AgenticCore/L1_cognition'
+                return 'agentic_core/L1_cognition'
             if 'node' in content_preview.lower() or 'execute' in content_preview:
-                return 'AgenticCore/L1_cognition/thought_engine'
+                return 'agentic_core/L1_cognition/thought_engine'
             if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
-                return 'AgenticCore/L3_orchestration'
+                return 'agentic_core/L3_orchestration'
             if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
-                return 'AgenticCore/L4_state'
-            return 'AgenticCore/L1_cognition'
+                return 'agentic_core/L4_state'
+            return 'agentic_core/L1_cognition'
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
         self.key_positive_signals = CANON_SIGNALS
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps if p != '*'}
@@ -71,8 +71,8 @@ class TerritoryHealerAgent:
             rel_path: Any = file_path.relative_to(self.root)
             parts: Any = rel_path.parts
             depth: Any = len(parts)
-            agentic_core_exact_depth: Any = SOVEREIGN_REGISTRY['AgenticCore']['depth']
-            if parts[0] == 'AgenticCore' and depth != agentic_core_exact_depth:
+            agentic_core_exact_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
+            if parts[0] == 'agentic_core' and depth != agentic_core_exact_depth:
                 return self._suggest_precision_move(file_path, agentic_core_exact_depth)
         except ValueError:
             pass
@@ -84,13 +84,13 @@ class TerritoryHealerAgent:
         """
         rel_path = file_path.relative_to(self.root)
         parts = rel_path.parts
-        if parts[0] == 'AgenticCore' and len(parts) < 4:
+        if parts[0] == 'agentic_core' and len(parts) < 4:
             suggested = self.get_placement_guidance('')
             target_path = self.root / suggested / rel_path.name
-            return {'action': 'move', 'source': str(file_path), 'target': str(target_path), 'reason': f'Depth precision: AgenticCore requires depth {target_depth}, found {len(parts)}'}
-        elif parts[0] == 'AgenticCore' and len(parts) > 4:
+            return {'action': 'move', 'source': str(file_path), 'target': str(target_path), 'reason': f'Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}'}
+        elif parts[0] == 'agentic_core' and len(parts) > 4:
             target_path = self.root / parts[0] / parts[1] / parts[2] / parts[3] / rel_path.name
-            return {'action': 'move', 'source': str(file_path), 'target': str(target_path), 'reason': f'Depth precision: AgenticCore requires depth {target_depth}, found {len(parts)}'}
+            return {'action': 'move', 'source': str(file_path), 'target': str(target_path), 'reason': f'Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}'}
         return None
 
     def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> Optional[dict]:
@@ -190,8 +190,8 @@ class TerritoryHealerAgent:
         if len(stray_actions) > 10:
             print(f'      ... and {len(stray_actions) - 10} more')
         try:
-            from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
-            from AgenticCore.L4_state.ValidationContext.RedisSovereignAgent import RedisSovereignAgent
+            from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+            from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
             redis_agent: Any = RedisSovereignAgent(self.root)
             pinecone_agent: Any = PineconeSovereignAgent(self.root)
         except Exception:

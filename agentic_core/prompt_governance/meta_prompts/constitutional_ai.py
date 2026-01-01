@@ -8,9 +8,9 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from AgenticCore.constitutional_ai_impl_impl_impl_impl import *  # Star import removed
-# from AgenticCore.constitutional_ai_models import *  # Star import removed
-# from AgenticCore.constitutional_ai_models_1 import *  # Star import removed
-# from AgenticCore.constitutional_ai_impl import *  # Star import removed
+# from agentic_core.constitutional_ai_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.constitutional_ai_models import *  # Star import removed
+# from agentic_core.constitutional_ai_models_1 import *  # Star import removed
+# from agentic_core.constitutional_ai_impl import *  # Star import removed
 
 __all__ = ["*"]  # Re-export all imported names

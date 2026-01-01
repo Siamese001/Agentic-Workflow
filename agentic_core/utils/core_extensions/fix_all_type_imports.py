@@ -1,20 +1,20 @@
 """
-Fix all Missing type imports in AgenticCore implementation files.
+Fix all Missing type imports in agentic_core implementation files.
 Adds proper imports from corresponding *_types.py files.
 """
 import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
-type_import_fixes: Any = {'agent_gym_impl.py': {'module': 'AgenticCore.L3_orchestration.training.agent_gym_types', 'types': ['GoldenStateEvaluator', 'JudgeEvaluator', 'TrainingScenario', 'BenchmarkResult', 'PerformanceMetrics']}}
+core: Any = ROOT / 'agentic_core'
+type_import_fixes: Any = {'agent_gym_impl.py': {'module': 'agentic_core.L3_orchestration.training.agent_gym_types', 'types': ['GoldenStateEvaluator', 'JudgeEvaluator', 'TrainingScenario', 'BenchmarkResult', 'PerformanceMetrics']}}
 
 def fix_type_imports() -> Any:
     """Brief description of functionality and purpose."""

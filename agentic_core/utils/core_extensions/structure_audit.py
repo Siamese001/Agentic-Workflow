@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 root: Any = Path('C:/Git/Agentic-Workflow')
-hierarchy: Any = {'LEVEL_0_SOVEREIGN_CORE': {'folders': ['AgenticCore'], 'description': 'The Sovereign Core - L1-L5 layers', 'can_import_from': []}, 'LEVEL_1_ARCHITECTURAL': {'folders': ['prompt_governance', 'schemas', 'config', 'scripts'], 'description': 'Architectural Supports - Blueprints & Rules', 'can_import_from': ['AgenticCore', 'prompt_governance', 'schemas', 'config', 'scripts']}, 'LEVEL_2_OBSERVABILITY': {'folders': ['observability'], 'description': 'The Mirror - Logs all activity', 'can_import_from': ['AgenticCore', 'prompt_governance', 'schemas', 'config', 'scripts']}, 'LEVEL_3_SHARED': {'folders': ['apps_shared'], 'description': 'Transit Zone - Shared utilities', 'can_import_from': ['AgenticCore', 'prompt_governance', 'schemas', 'config', 'scripts', 'observability']}, 'LEVEL_4_DOWNSTREAM': {'folders': ['apps_rg', 'apps_lic'], 'description': 'The Territory - Domain-specific apps', 'can_import_from': ['AgenticCore', 'prompt_governance', 'schemas', 'config', 'scripts', 'observability', 'apps_shared']}}
+hierarchy: Any = {'LEVEL_0_SOVEREIGN_CORE': {'folders': ['agentic_core'], 'description': 'The Sovereign Core - L1-L5 layers', 'can_import_from': []}, 'LEVEL_1_ARCHITECTURAL': {'folders': ['prompt_governance', 'schemas', 'config', 'scripts'], 'description': 'Architectural Supports - Blueprints & Rules', 'can_import_from': ['agentic_core', 'prompt_governance', 'schemas', 'config', 'scripts']}, 'LEVEL_2_OBSERVABILITY': {'folders': ['observability'], 'description': 'The Mirror - Logs all activity', 'can_import_from': ['agentic_core', 'prompt_governance', 'schemas', 'config', 'scripts']}, 'LEVEL_3_SHARED': {'folders': ['apps_shared'], 'description': 'Transit Zone - Shared utilities', 'can_import_from': ['agentic_core', 'prompt_governance', 'schemas', 'config', 'scripts', 'observability']}, 'LEVEL_4_DOWNSTREAM': {'folders': ['apps_rg', 'apps_lic'], 'description': 'The Territory - Domain-specific apps', 'can_import_from': ['agentic_core', 'prompt_governance', 'schemas', 'config', 'scripts', 'observability', 'apps_shared']}}
 exempt_folders: Any = {'.git', '.venv', 'venv', '__pycache__', 'node_modules', 'data', 'archives', 'tests', 'knowledge', 'infra', 'memory'}
 
 def get_folder_level(folder_name: str) -> Tuple[int, str]:
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         f.write('# Sovereign Hierarchy Structure Audit Report\n\n')
         f.write('## Hierarchy Definition\n\n')
         f.write('```\n')
-        f.write('[LEVEL 0] AgenticCore (Sovereign Core)\n')
+        f.write('[LEVEL 0] agentic_core (Sovereign Core)\n')
         f.write('    ↓\n')
         f.write('[LEVEL 1] prompt_governance, schemas, config, scripts (Architectural)\n')
         f.write('    ↓\n')

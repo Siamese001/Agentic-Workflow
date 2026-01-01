@@ -12,7 +12,7 @@ Logger: Any = logging.getLogger(__name__)
 def move_files_to_silos() -> Any:
     """Move Python files from root to appropriate sovereign silos"""
     Logger.info('📁 Moving files to sovereign silos...')
-    silo_mappings: Any = {'AgenticCore': ['ActionNode', 'agent_logic', 'CognitiveNode', 'ConsensusEngine', 'core_utils', 'action_registry', 'agent_capabilities'], 'apps_lic': ['CanonValidator', 'canon_keys', 'validator', 'canon'], 'apps_rg': ['orchestrator', 'llm_client', 'connection_manager', 'monitor_blackboard'], 'apps_shared': ['db_manager', 'etl_pipeline', 'FactChecker', 'clarity_brevity_filter'], 'scripts': ['clean_duplicates', 'fix_', 'assess_dependencies', 'check_pinecone', 'clear_data', 'canary_monitor', 'bad_actor', 'debug_whitelist'], 'tests': ['test_', 'tests_', '_test']}
+    silo_mappings: Any = {'agentic_core': ['ActionNode', 'agent_logic', 'CognitiveNode', 'ConsensusEngine', 'core_utils', 'action_registry', 'agent_capabilities'], 'apps_lic': ['CanonValidator', 'canon_keys', 'validator', 'canon'], 'apps_rg': ['orchestrator', 'llm_client', 'connection_manager', 'monitor_blackboard'], 'apps_shared': ['db_manager', 'etl_pipeline', 'FactChecker', 'clarity_brevity_filter'], 'scripts': ['clean_duplicates', 'fix_', 'assess_dependencies', 'check_pinecone', 'clear_data', 'canary_monitor', 'bad_actor', 'debug_whitelist'], 'tests': ['test_', 'tests_', '_test']}
     moved_count: Any = 0
     root_files: Any = [f for f in os.listdir('/app') if f.endswith('.py') and os.path.isfile(f'/app/{f}')]
     for filename in root_files:

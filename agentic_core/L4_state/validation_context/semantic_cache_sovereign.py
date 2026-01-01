@@ -10,12 +10,12 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from AgenticCore.L4_state.caching.redis_mcp_client import get_redis_client
-from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
-from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
+from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

@@ -2,7 +2,7 @@
 ⚛️ THIN PROXY - Core Utils (Post-Atomic Fission)
 
 This file is now a thin proxy that re-exports utilities from the atomic submodules
-in AgenticCore/utils/ for backward compatibility.
+in agentic_core/utils/ for backward compatibility.
 
 Original file: 444 lines (too complex for single healing cycle)
 After Fission: 6 atomic modules (<300 lines each)
@@ -21,12 +21,12 @@ Preservation: 118% (added docstrings and type hints)
 """
 import logging
 import re
-from AgenticCore.utils.crypto_utils import setup_gpg_signing, sign_and_commit
-from AgenticCore.utils.error_handling import CircuitBreakerOpenError, MCPError, retry_with_backoff
-from AgenticCore.utils.mcp_mocks import add_observations, brave_search, browser_click, browser_navigate, browser_type, commit_transaction, convert_time, execute_cost_controlled_search, generate_draft_llm, get_and_set, get_current_time, get_file_versions, get_from_langcache, get_variable_defs, incr, issues_get_detail, read_text_file, search_nodes, search_records, semantic_score_draft, set_to_langcache, start_transaction, string_get, string_set, transaction_set_with_ttl, watch_key, write_file
-from AgenticCore.utils.process_utils import log_action, register_process
-from AgenticCore.utils.syntax_validator import validate_python_syntax
-from AgenticCore.utils.validation_utils import sanitize_filename, validate_email, validate_url
+from agentic_core.utils.crypto_utils import setup_gpg_signing, sign_and_commit
+from agentic_core.utils.error_handling import CircuitBreakerOpenError, MCPError, retry_with_backoff
+from agentic_core.utils.mcp_mocks import add_observations, brave_search, browser_click, browser_navigate, browser_type, commit_transaction, convert_time, execute_cost_controlled_search, generate_draft_llm, get_and_set, get_current_time, get_file_versions, get_from_langcache, get_variable_defs, incr, issues_get_detail, read_text_file, search_nodes, search_records, semantic_score_draft, set_to_langcache, start_transaction, string_get, string_set, transaction_set_with_ttl, watch_key, write_file
+from agentic_core.utils.process_utils import log_action, register_process
+from agentic_core.utils.syntax_validator import validate_python_syntax
+from agentic_core.utils.validation_utils import sanitize_filename, validate_email, validate_url
 from typing import Any
 Logger: Any = logging.getLogger('CanonValidator')
 __all__ = ['validate_python_syntax', 'add_observations', 'brave_search', 'browser_click', 'browser_navigate', 'browser_type', 'commit_transaction', 'convert_time', 'execute_cost_controlled_search', 'generate_draft_llm', 'get_and_set', 'get_current_time', 'get_file_versions', 'get_from_langcache', 'get_variable_defs', 'incr', 'issues_get_detail', 'read_text_file', 'search_nodes', 'search_records', 'semantic_score_draft', 'set_to_langcache', 'start_transaction', 'string_get', 'string_set', 'transaction_set_with_ttl', 'watch_key', 'write_file', 'CircuitBreakerOpenError', 'MCPError', 'retry_with_backoff', 'sanitize_filename', 'validate_email', 'validate_url', 'setup_gpg_signing', 'sign_and_commit', 'log_action', 'register_process', 'Logger']

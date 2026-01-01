@@ -9,11 +9,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from AgenticCore.L4_state.ValidationContext.RedisSovereignAgent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 
 
 # NAMING FIXED: CachedOrchestrator → CachedOrchestrator

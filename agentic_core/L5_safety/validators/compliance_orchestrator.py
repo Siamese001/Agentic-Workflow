@@ -36,7 +36,7 @@ import sys
 Logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth for folder structure
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     ROOT_WHITELIST,
@@ -57,7 +57,7 @@ class ComplianceOrchestrator:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
-        self.validators_path = self.project_root / "AgenticCore" / "L5_safety" / "validators"
+        self.validators_path = self.project_root / "agentic_core" / "L5_safety" / "validators"
 
         # Discovered and instantiated agents
         self._atomic_validators: List[Any] = []   # Per-file healers with heal_violation()
@@ -91,7 +91,7 @@ class ComplianceOrchestrator:
         }
 
         # [GRAVITY AUTHORITY] Layer rank (lower = higher authority) - derived from SSOT
-        # Layers are ordered by their L-number in AgenticCore
+        # Layers are ordered by their L-number in agentic_core
         self.LAYER_AUTHORITY = {
             subfolder: int(subfolder[1]) if subfolder.startswith("L") and subfolder[1].isdigit() else 99
             for subfolder in CORE_SUBFOLDER_MAP.keys()
@@ -105,7 +105,7 @@ class ComplianceOrchestrator:
         self._blocked_unregistered = 0
         self._blocked_tampered = 0
 
-        # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in AgenticCore
+        # [COMPREHENSIVE] Single discovery pass - scan ALL agent files in agentic_core
         self._discover_all_agents()
         self._enforce_mandatory_agent_compliance()
         
@@ -115,7 +115,7 @@ class ComplianceOrchestrator:
 
     def _discover_all_agents(self) -> None:
         """
-        [COMPREHENSIVE DISCOVERY] Scan ALL agent files in AgenticCore.
+        [COMPREHENSIVE DISCOVERY] Scan ALL agent files in agentic_core.
         
         Finds every *agent*.py file and instantiates all Agent classes.
         
@@ -136,14 +136,14 @@ class ComplianceOrchestrator:
         - MetaLearningAgent → L3_orchestration/workflow_engines
         - SovereignForensicsAgent → L3_orchestration/workflow_engines
         """
-        print(f"\n[FULL AGENT DISCOVERY] Scanning ENTIRE AgenticCore for ALL agents...")
+        print(f"\n[FULL AGENT DISCOVERY] Scanning ENTIRE agentic_core for ALL agents...")
         print(f"   [MANDATORY COUNT] Expecting {len(self.MANDATORY_AGENTS)} critical agents")
         
         # [COMPREHENSIVE] Scan ALL directories recursively for *agent*.py files
-        agentic_core_path = self.project_root / "AgenticCore"
+        agentic_core_path = self.project_root / "agentic_core"
         SKIP_FOLDERS = {"__pycache__", ".git", "archives", "data"}
         
-        # Find all agent files in entire AgenticCore
+        # Find all agent files in entire agentic_core
         agent_files = []
         for py_file in agentic_core_path.rglob("*agent*.py"):
             if any(skip in py_file.parts for skip in SKIP_FOLDERS):
@@ -218,7 +218,7 @@ class ComplianceOrchestrator:
         Safe to call multiple times due to deduplication in register_prompt().
         """
         try:
-            from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
+            from agentic_core.prompt_governance.version_registry.PromptRegistry import get_prompt_registry
             registry = get_prompt_registry()
             
             synced_count = 0
@@ -454,10 +454,10 @@ class ComplianceOrchestrator:
                 if module_rel.suffix == '.py':
                     module_rel = module_rel.with_suffix('')
                 nested_name = '.'.join((full_path / module_rel).relative_to(self.validators_path).parts).rstrip('.py')
-                module_name = f"AgenticCore.L5_safety.validators.{nested_name}"
+                module_name = f"agentic_core.L5_safety.validators.{nested_name}"
             except Exception:
                 # Fallback to flat assumption (original behaviour)
-                module_name = f"AgenticCore.L5_safety.validators.{module_info.name}"
+                module_name = f"agentic_core.L5_safety.validators.{module_info.name}"
 
             try:
                 module = importlib.import_module(module_name)
@@ -705,8 +705,8 @@ class ComplianceOrchestrator:
         # [ULTRA] Also block L5 importing from other L5 subpackages in unauthorized way
         # (e.g., validators importing directly from guardrails without mediation)
         RESTRICTED_L5 = [
-            "AgenticCore.L5_safety.guardrails",
-            "AgenticCore.L5_safety.red_teaming"
+            "agentic_core.L5_safety.guardrails",
+            "agentic_core.L5_safety.red_teaming"
         ]
 
         # Also block direct imports from higher sovereign territories if not mediated
@@ -780,7 +780,7 @@ class ComplianceOrchestrator:
         """
         # Build from SOVEREIGN_REGISTRY structure
         for root_folder, config in SOVEREIGN_REGISTRY.items():
-            if root_folder == 'AgenticCore':
+            if root_folder == 'agentic_core':
                 for layer in config.get('subfolders', []):
                     layer_path = self.project_root / root_folder / layer
                     if layer_path.exists():

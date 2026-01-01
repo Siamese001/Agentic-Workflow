@@ -10,7 +10,7 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from AgenticCore.L0_maintenance.scripts.hygiene_validator import HygieneValidator
+from agentic_core.L0_maintenance.scripts.hygiene_validator import HygieneValidator
 
 
 def prompt_user(question, default="no"):
@@ -169,14 +169,14 @@ class HygienePruner:
 
 
 if __name__ == "__main__":
-    # Default to AgenticCore directory
+    # Default to agentic_core directory
     if len(sys.argv) > 1:
         target_dir = sys.argv[1]
     else:
-        # Default to AgenticCore from project root
+        # Default to agentic_core from project root
         script_dir = Path(__file__).parent
         target_dir = script_dir.parent.parent.parent  # Go up to project root
-        target_dir = target_dir / "AgenticCore"
+        target_dir = target_dir / "agentic_core"
 
     target_dir = Path(target_dir).resolve()
 

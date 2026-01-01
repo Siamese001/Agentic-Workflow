@@ -10,9 +10,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase 34
-from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class GuardianOrchestrator(
@@ -50,7 +50,7 @@ class GuardianOrchestrator(
         """Lazy load guardians with constitutional graceful degradation."""
         # DDD Alignment Guardian
         try:
-            from AgenticCore.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
+            from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
             self.ddd_guardian: Callable[[str], Tuple[float, List[str]]] = validate_ddd_alignment
         except ImportError:
             self.ddd_guardian = None
@@ -59,7 +59,7 @@ class GuardianOrchestrator(
         # Observability Footprint Guardian
         # Note: Currently in illegal P1_core — will be healed in future mission
         try:
-            from AgenticCore.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint  # TODO: migrate to scripts/
+            from agentic_core.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint  # TODO: migrate to scripts/
             self.observability_guardian: Callable[[str], Tuple[float, List[str]]] = validate_observability_footprint
         except ImportError:
             self.observability_guardian = None

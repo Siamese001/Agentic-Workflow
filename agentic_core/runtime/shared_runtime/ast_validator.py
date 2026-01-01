@@ -6,7 +6,7 @@ import re
 import fnmatch
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
 try:
     project_root: Any = Path(__file__).resolve().parents[3]
 except IndexError:

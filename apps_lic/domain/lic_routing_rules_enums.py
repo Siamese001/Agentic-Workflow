@@ -1,12 +1,12 @@
 """
 DEPRECATED – Phase 5 Comprehensive Enforcement Sweep (Dec 26, 2025)
 All enums have been migrated to the Sovereign SSOT:
-AgenticCore/schemas/models/core_contracts.py
+agentic_core/schemas/models/core_contracts.py
 
 This file now serves as a backward-compatible import proxy.
 New code MUST import directly from core_contracts.py
 """
-from AgenticCore.schemas.models.core_contracts import (
+from agentic_core.schemas.models.core_contracts import (
     MessageRoute,
     RecipientArchetype,
     SignatureFormat,

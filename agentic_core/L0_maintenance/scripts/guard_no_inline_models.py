@@ -18,7 +18,7 @@ Logger.setLevel(logging.INFO)
 # NAMING FIXED: CONTRACT_SIGNALS → contract_signals
 contract_signals = ("Profile", "Config", "State", "Context", "Result", "Message", "Request", "Response")
 # NAMING FIXED: EXEMPT → exempt
-exempt = {"AgenticCore/schemas/models/core_contracts.py"}
+exempt = {"agentic_core/schemas/models/core_contracts.py"}
 
 # NAMING FIXED: ModelVisitor → ModelVisitor
 class ModelVisitor(ast.NodeVisitor):

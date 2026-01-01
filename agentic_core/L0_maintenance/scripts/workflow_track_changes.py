@@ -1,7 +1,7 @@
 """
 SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidator.py Key 00.
 Writes changes to a tracker file that CanonValidator reads.
-ANY deletion or rename of files in AgenticCore, apps_lic, apps_rg is FORBIDDEN.
+ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
 import logging
 
 # NAMING FIXED: LOGGER → Logger
@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
-sovereign_agents: Any = {'AgenticCore', 'apps_lic', 'apps_rg'}
+sovereign_agents: Any = {'agentic_core', 'apps_lic', 'apps_rg'}
 
 def main() -> None:
     """Main entry point for tracking changes."""

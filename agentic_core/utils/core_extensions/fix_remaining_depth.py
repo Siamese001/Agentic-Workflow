@@ -3,14 +3,14 @@ import shutil
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 
 def move_remaining() -> Any:
     """Move remaining depth 3 files to P1_core."""

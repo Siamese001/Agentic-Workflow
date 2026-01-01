@@ -2,10 +2,10 @@
 import logging
 import time
 from typing import Any, Callable, Dict, List, Optional, Protocol
-from AgenticCore.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
+from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import AlertSeverity, HealthAlert, HealthMetrics, HealthStatus
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

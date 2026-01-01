@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional
 from pathlib import Path
 
 # MCP Hardening
-from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # Core infrastructure (updated imports for new locations)
 from apps_shared.utils.state_manager import StateManager

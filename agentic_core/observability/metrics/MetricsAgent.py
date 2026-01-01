@@ -15,7 +15,7 @@ Designed for integration with:
 Placed in observability/metrics per SSOT semantic registry:
   "Metric collection, counters, gauges, and prometheus exports"
 
-Depth: AgenticCore/observability/metrics/metrics_agent.py
+Depth: agentic_core/observability/metrics/metrics_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
 In-memory only (no persistence) — suitable for runtime missions.
@@ -113,7 +113,7 @@ class MetricsAgent:
         """
         try:
             import redis
-            from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_redis_connection
+            from agentic_core.config.blueprint_sovereign.SovereignEnv import get_redis_connection
             
             # Reuse established connection logic from SSOT
             r = get_redis_connection()

@@ -4,18 +4,18 @@ Enforces the 3-level depth law for agentic architecture.
 """
 import os
 import sys
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
+from agentic_core.config.blueprint_sovereign.structure_blueprint import APPS_LIC_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP, CORE_SUBFOLDER_MAP, TESTS_L2_SUBFOLDER_MAP
 from typing import Any
 
 def check_sovereign_law(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
     violations: Any = []
-    core_path: Any = os.path.join(root_path, 'AgenticCore')
+    core_path: Any = os.path.join(root_path, 'agentic_core')
     for l1, l2_list in CORE_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             path: Any = os.path.join(core_path, l1, l2)
             if not os.path.exists(path):
-                violations.append(f'MISSING CORE DEPTH: AgenticCore/{l1}/{l2}')
+                violations.append(f'MISSING CORE DEPTH: agentic_core/{l1}/{l2}')
     for l1, l2_list in APPS_RG_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             path: Any = os.path.join(root_path, 'apps_rg', l1, l2)

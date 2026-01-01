@@ -33,7 +33,7 @@ print(f'\n  ALLOWED_CORE_STAGES ({len(ALLOWED_CORE_STAGES)} authorized stages):'
 for stage in sorted(ALLOWED_CORE_STAGES):
     print(f'    - {stage}')
 print('\n  Depth-4 Validation Tests:')
-tests: Any = [(root / 'AgenticCore/L1_cognition/identity/spiffe_manager_impl.py', 'identity'), (root / 'AgenticCore/L1_cognition/inference/signal_anchoring.py', 'inference'), (root / 'AgenticCore/L2_execution/P5_healing/structural_engineer.py', 'P5_healing'), (root / 'AgenticCore/__init__.py', 'root __init__')]
+tests: Any = [(root / 'agentic_core/L1_cognition/identity/spiffe_manager_impl.py', 'identity'), (root / 'agentic_core/L1_cognition/inference/signal_anchoring.py', 'inference'), (root / 'agentic_core/L2_execution/P5_healing/structural_engineer.py', 'P5_healing'), (root / 'agentic_core/__init__.py', 'root __init__')]
 for file_path, stage in tests:
     if file_path.exists():
         valid, msg = validate_file_location(file_path, root)
@@ -45,7 +45,7 @@ print('\n✓ Patch 2: canon_validator_agentic_v2.py - Unified Async/Sync Wrapper
 print('  Checking telemetry wrapper implementation...')
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

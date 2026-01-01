@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
+core: Any = ROOT / 'agentic_core'
 type_fixes: Any = [(':\\s*STR\\b', ': str'), (':\\s*FLOAT\\b', ': float'), (':\\s*BOOL\\b', ': bool'), ('->\\s*STR\\b', '-> str'), ('->\\s*FLOAT\\b', '-> float'), ('->\\s*BOOL\\b', '-> bool')]
 import_alignments: Any = []
 

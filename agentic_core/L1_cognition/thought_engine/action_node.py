@@ -9,7 +9,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from AgenticCore.action_node_modules import ActionNodeCore, SecureToolsImpl
+from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 Logger: Any = logging.getLogger('ActionNode')
 

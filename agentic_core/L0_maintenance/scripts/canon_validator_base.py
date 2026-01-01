@@ -7,7 +7,7 @@ import os
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
-    from AgenticCore.types import ValidationContext
+    from agentic_core.types import ValidationContext
 
 # NOT_AN_AGENT — base class for agents, not a true agent itself — excluded from agent discovery
 class SubAtomicAgent:

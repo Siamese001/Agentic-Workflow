@@ -5,11 +5,11 @@ Flatten annexed territories to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'AgenticCore'
-required_depth: Any = SOVEREIGN_REGISTRY['AgenticCore']['depth']
+core: Any = ROOT / 'agentic_core'
+required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 annexed_layers: Any = ['config', 'observability', 'prompt_governance', 'schemas']
 
 def flatten_annexed() -> Any:
