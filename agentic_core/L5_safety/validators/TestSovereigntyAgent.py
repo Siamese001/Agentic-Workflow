@@ -29,10 +29,21 @@ class SovereignSeverity(Enum):
 class TestSovereigntyAgent(CanonBaseAgent):
     """L5 specialist — advanced sovereign testing."""
 
-    def __init__(self, ctx=None, *args, **kwargs):
+    def __init__(self, ctx=None, *args, _allow_mock: bool = True, **kwargs):
+        """Initialize TestSovereigntyAgent.
+        
+        Args:
+            ctx: Execution context (optional for testing agents)
+            _allow_mock: If True and ctx is None, use MagicMock (default True for testing agents)
+        
+        Note: Testing agents have ctx optional by design for standalone validation.
+        """
         if ctx is None:
-            from unittest.mock import MagicMock
-            ctx = MagicMock()
+            if _allow_mock:
+                from unittest.mock import MagicMock
+                ctx = MagicMock()
+            else:
+                raise ValueError("ctx is required when _allow_mock=False")
         super().__init__(ctx, *args, **kwargs)
         self.repo_root = Path.cwd()
 

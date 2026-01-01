@@ -18,7 +18,10 @@ class GravityLeakRepairAgent:
     """
     UPWARD_IMPORT_PATTERNS: Any = ['^(\\s*)import\\s+agentic_core\\.L[45]_\\w+', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\s+import', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\.\\w+\\s+import']
 
-    def __init__(self, ctx=None, project_root=None):
+    def __init__(self, ctx, project_root=None):
+        """Initialize with mandatory ctx for sovereign operation."""
+        if ctx is None:
+            raise ValueError("ctx is mandatory for GravityLeakRepairAgent (sovereign agent)")
         self.patterns = [re.compile(p) for p in self.UPWARD_IMPORT_PATTERNS]
         self.ctx = ctx
         self.project_root = project_root
