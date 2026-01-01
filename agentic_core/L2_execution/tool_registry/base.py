@@ -14,9 +14,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+# [PHASE 1] Self-testing mixin for L2 canonical compliance
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+
 
 # NOT_AN_AGENT — Base class for agents, not a true agent itself — excluded from agent discovery
-class SubAtomicAgent:
+class SubAtomicAgent(SubatomicTestingMixin):
     """Base class for all validation agents with async support."""
 
     def __init__(self, context: ValidationContext):
