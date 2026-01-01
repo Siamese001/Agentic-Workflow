@@ -1,35 +1,821 @@
 {
   "summary": {
-    "total_agents": 132,
-    "l2_l4_total": 62,
+    "total_agents": 192,
+    "l2_l4_total": 102,
     "l2_l4_compliant": 62,
-    "l2_l4_non_compliant": 0,
-    "l0_total": 3,
+    "l2_l4_non_compliant": 40,
+    "l0_total": 13,
     "l0_compliant": 3,
-    "l0_non_compliant": 0,
-    "healing_total": 93,
-    "healing_coverage_pct": 70
+    "l0_non_compliant": 10,
+    "healing_total": 123,
+    "healing_coverage_pct": 64
   },
-  "l2_l4_non_compliant": [],
-  "l0_non_compliant": [],
-  "all_agents": [
+  "l2_l4_non_compliant": [
     {
-      "name": "MaintenanceBaseAgent",
-      "file": "agentic_core\\L0_maintenance\\bases\\MaintenanceBaseAgent.py",
-      "layer": "L0",
+      "name": "SovereignRedisOrchestrator",
+      "file": "agentic_core\\L2_execution\\tool_registry\\autonomous_redis_orchestrator.py",
+      "layer": "L2",
       "bases": [
-        "L0DelegationTestingMixin",
-        "L0DelegationMixin",
-        "CanonBaseAgent"
+        "HealerMixin"
       ],
-      "has_self_testing": true,
-      "has_delegation": true,
+      "has_self_testing": false,
+      "has_delegation": false,
       "has_healing": true,
-      "testing_type": "Self",
+      "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
-      "inherits_self_testing": true,
-      "inherits_delegation": true
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\executive_title_composer.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SovereignRedisOrchestrator",
+      "file": "agentic_core\\L2_execution\\tool_registry\\P2_tools_autonomous_redis_orchestrator.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\peer_intelligence_auditor_impl.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafetyExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\rg_contact_research_executor.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\section_scope_integrator.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SprawlInspector",
+      "file": "agentic_core\\L2_execution\\tool_registry\\sprawl_inspector.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\interfaces\\orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "ABC"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CachedOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\cached_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ContextCurator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\context_curator_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DagExecutor",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\dag_executor.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HardenedWorkflowOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\hardened_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "McpRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SovereignMcpRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router_sovereign.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ModelRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\model_router_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "NervousSystemPhaseOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ResumeOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\orchestrate_resume.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SelfRecoveringOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\self_recovering_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SovereignRagOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\sovereign_rag_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SubatomicOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CanonValidator",
+      "file": "agentic_core\\L4_state\\validation_context\\agent_logic_connectivity.py",
+      "layer": "L4",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ReportingAgent",
+      "file": "agentic_core\\observability\\compliance\\ReportingAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "BenchmarkingAgent",
+      "file": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CoordinateObservabilityOperationsAgent",
+      "file": "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DagRuntimeInspector",
+      "file": "agentic_core\\observability\\metrics\\dag_runtime_inspector.py",
+      "layer": "L3",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HierarchyEnforcerAgent",
+      "file": "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "MetricsAgent",
+      "file": "agentic_core\\observability\\metrics\\MetricsAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SignatureVerifierAgent",
+      "file": "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "TokenBudgetInspector",
+      "file": "agentic_core\\observability\\metrics\\token_budget_inspector.py",
+      "layer": "L3",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "TrackObservabilityCostAgent",
+      "file": "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "TelemetryAgent",
+      "file": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "TracingAgent",
+      "file": "agentic_core\\observability\\tracing\\TracingAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ContextAwareValidator",
+      "file": "agentic_core\\patterns\\agent_roles\\context_aware_validator.py",
+      "layer": "L2",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DeadCodeDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DriftDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DriftDetectionDriftDetectorAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DriftDetectorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "GlobalComplianceAggregatorAgent",
+      "file": "agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "NamingAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "NamingLawHealerAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "NamingNormalizationAgent",
+      "file": "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    }
+  ],
+  "l0_non_compliant": [
+    {
+      "name": "GravityComplianceValidator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\gravity_compliance_validator.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "GuardianOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HealingOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HygieneValidator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\hygiene_validator.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "MetricsWitness",
+      "file": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ScriptsPlanningOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_get_info_request_orchestrate_scripts_planning.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "GapClosureArchitect",
+      "file": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
+      "layer": "L0",
+      "bases": [
+        "Agent"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "WorkflowOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_workflow_integration.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SystemCommandExecutor",
+      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
+      "layer": "L0",
+      "bases": [
+        "Protocol"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafeSystemCommandExecutor",
+      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    }
+  ],
+  "all_agents": [
+    {
+      "name": "HierarchyHealer",
+      "file": "agentic_core\\config\\blueprint_sovereign\\hierarchy_healer.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
     },
     {
       "name": "BootstrapAgent",
@@ -52,10 +838,10 @@
       "file": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
       "layer": "L0",
       "bases": [
-        "AdaptiveExecutionMixin",
-        "L0DelegationTestingMixin",
         "AutonomyMixin",
-        "SelfDiagnosisMixin"
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin",
+        "L0DelegationTestingMixin"
       ],
       "has_self_testing": false,
       "has_delegation": true,
@@ -67,12 +853,245 @@
       "inherits_delegation": true
     },
     {
+      "name": "GravityComplianceValidator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\gravity_compliance_validator.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "GuardianOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HealingOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HygieneValidator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\hygiene_validator.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "MetricsWitness",
+      "file": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ScriptsPlanningOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_get_info_request_orchestrate_scripts_planning.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "GapClosureArchitect",
+      "file": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
+      "layer": "L0",
+      "bases": [
+        "Agent"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "WorkflowOrchestrator",
+      "file": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_workflow_integration.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ScriptToAgentClassifier",
+      "file": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
+      "layer": "L0",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin",
+        "L0DelegationTestingMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": true,
+      "has_healing": false,
+      "testing_type": "Delegated",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": true
+    },
+    {
+      "name": "SystemCommandExecutor",
+      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
+      "layer": "L0",
+      "bases": [
+        "Protocol"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafeSystemCommandExecutor",
+      "file": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
+      "layer": "L0",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ReasoningRouter",
+      "file": "agentic_core\\L1_cognition\\reasoning\\reasoning_router.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CanonValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\agent_logic.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SystemArchitect",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
+      "layer": "L1",
+      "bases": [
+        "CanonBaseAgentInterface"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "HealerAgent",
       "file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
       "layer": "L1",
       "bases": [
         "CanonBaseAgentInterface"
       ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "PatternEnforcer",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
+      "layer": "L1",
+      "bases": [],
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": false,
@@ -96,6 +1115,20 @@
       "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": true,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafetyInspector",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_quality.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
       "inherits_delegation": false
     },
     {
@@ -131,8 +1164,22 @@
       "inherits_delegation": false
     },
     {
-      "name": "CanonBaseAgent",
-      "file": "agentic_core\\L1_cognition\\thought_engine\\CognitionCanonBaseAgent.py",
+      "name": "DependencySentinel",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_syntax.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntelligentOrchestrator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_orchestration_manager.py",
       "layer": "L1",
       "bases": [
         "HealerMixin"
@@ -140,6 +1187,148 @@
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "PrintStatementValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "EvalExecValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DebuggerValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "EmptyExceptValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "BareExceptValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ExternalHttpValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "AsyncBlockingValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DangerousBuiltinsValidator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
+      "layer": "L1",
+      "bases": [
+        "CanonASTValidator"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ConcurrencyGuardian",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\concurrency_guardian.py",
+      "layer": "L1",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
       "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
@@ -180,7 +1369,39 @@
       "name": "MetaLearningAgent",
       "file": "agentic_core\\L1_cognition\\thought_engine\\MetaLearningAgent.py",
       "layer": "L1",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ConsolidatedOrchestrator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
+      "layer": "L1",
       "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IOrchestrator",
+      "file": "agentic_core\\L1_cognition\\thought_engine\\planes.py",
+      "layer": "L1",
+      "bases": [
+        "Protocol"
+      ],
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": false,
@@ -207,17 +1428,17 @@
       "inherits_delegation": false
     },
     {
-      "name": "CanonBaseAgent",
-      "file": "agentic_core\\L2_execution\\tool_registry\\canon_base_agent_impl.py",
+      "name": "SovereignRedisOrchestrator",
+      "file": "agentic_core\\L2_execution\\tool_registry\\autonomous_redis_orchestrator.py",
       "layer": "L2",
       "bases": [
-        "CanonBaseAgentInterface"
+        "HealerMixin"
       ],
-      "has_self_testing": true,
+      "has_self_testing": false,
       "has_delegation": false,
-      "has_healing": false,
-      "testing_type": "Self",
-      "self_test_method": true,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -242,6 +1463,22 @@
       "layer": "L2",
       "bases": [
         "CanonBaseAgent"
+      ],
+      "has_self_testing": true,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "Self",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": true,
+      "inherits_delegation": false
+    },
+    {
+      "name": "OmniContext",
+      "file": "agentic_core\\L2_execution\\tool_registry\\context.py",
+      "layer": "L2",
+      "bases": [
+        "SubAtomicAgent"
       ],
       "has_self_testing": true,
       "has_delegation": false,
@@ -333,18 +1570,17 @@
       "inherits_delegation": false
     },
     {
-      "name": "CanonBaseAgent",
-      "file": "agentic_core\\L2_execution\\tool_registry\\ExecutionCanonBaseAgent.py",
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\executive_title_composer.py",
       "layer": "L2",
       "bases": [
-        "ABC",
         "HealerMixin"
       ],
-      "has_self_testing": true,
+      "has_self_testing": false,
       "has_delegation": false,
       "has_healing": true,
-      "testing_type": "Self",
-      "self_test_method": true,
+      "testing_type": "None",
+      "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -463,10 +1699,12 @@
       "name": "IntegrityGateExecutorAgent",
       "file": "agentic_core\\L2_execution\\tool_registry\\IntegrityGateExecutorAgent.py",
       "layer": "L2",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -487,6 +1725,38 @@
       "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": true,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SovereignRedisOrchestrator",
+      "file": "agentic_core\\L2_execution\\tool_registry\\P2_tools_autonomous_redis_orchestrator.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\peer_intelligence_auditor_impl.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
       "inherits_delegation": false
     },
     {
@@ -567,6 +1837,38 @@
       "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": true,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafetyExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\rg_contact_research_executor.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IntegrityGateExecutor",
+      "file": "agentic_core\\L2_execution\\tool_registry\\section_scope_integrator.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
       "inherits_delegation": false
     },
     {
@@ -746,11 +2048,43 @@
       "inherits_delegation": false
     },
     {
+      "name": "SprawlInspector",
+      "file": "agentic_core\\L2_execution\\tool_registry\\sprawl_inspector.py",
+      "layer": "L2",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "StructuralEngineerAgent",
       "file": "agentic_core\\L2_execution\\tool_registry\\StructuralEngineerAgent.py",
       "layer": "L2",
       "bases": [
         "CanonBaseAgent"
+      ],
+      "has_self_testing": true,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "Self",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": true,
+      "inherits_delegation": false
+    },
+    {
+      "name": "L2SelfTestingMixin",
+      "file": "agentic_core\\L2_execution\\tool_registry\\subatomic_testing_mixin.py",
+      "layer": "L2",
+      "bases": [
+        "SubatomicTestingMixin"
       ],
       "has_self_testing": true,
       "has_delegation": false,
@@ -778,13 +2112,11 @@
       "inherits_delegation": false
     },
     {
-      "name": "OrchestrationBaseAgent",
-      "file": "agentic_core\\L3_orchestration\\bases\\OrchestrationBaseAgent.py",
-      "layer": "L3",
+      "name": "SystemArchitect",
+      "file": "agentic_core\\L2_execution\\tool_registry\\system_architect.py",
+      "layer": "L2",
       "bases": [
-        "CanonBaseAgent",
-        "L3SubatomicTestingMixin",
-        "HealerMixin"
+        "CanonBaseAgent"
       ],
       "has_self_testing": true,
       "has_delegation": false,
@@ -796,13 +2128,29 @@
       "inherits_delegation": false
     },
     {
+      "name": "IOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\interfaces\\orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "ABC"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "MetaLearningAgent",
       "file": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
       "layer": "L3",
       "bases": [
-        "AdaptiveExecutionMixin",
         "AutonomyMixin",
-        "SelfDiagnosisMixin"
+        "SelfDiagnosisMixin",
+        "AdaptiveExecutionMixin"
       ],
       "has_self_testing": true,
       "has_delegation": false,
@@ -828,6 +2176,38 @@
       "inherits_delegation": false
     },
     {
+      "name": "CachedOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\cached_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ContextCurator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\context_curator_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "DagEngineAgent",
       "file": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
       "layer": "L3",
@@ -837,6 +2217,22 @@
       "has_healing": false,
       "testing_type": "Self",
       "self_test_method": true,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "DagExecutor",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\dag_executor.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -870,6 +2266,86 @@
       "inherits_delegation": false
     },
     {
+      "name": "HardenedWorkflowOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\hardened_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "McpRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SovereignMcpRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router_sovereign.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ModelRouter",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\model_router_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "NervousSystemPhaseOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "NervousSystemAgent",
       "file": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
       "layer": "L3",
@@ -893,6 +2369,22 @@
       "has_healing": false,
       "testing_type": "Self",
       "self_test_method": true,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ResumeOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\orchestrate_resume.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -926,6 +2418,22 @@
       "inherits_delegation": false
     },
     {
+      "name": "SelfRecoveringOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\self_recovering_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "SemanticGatekeeperAgent",
       "file": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
       "layer": "L3",
@@ -954,6 +2462,22 @@
       "inherits_delegation": false
     },
     {
+      "name": "SovereignRagOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\sovereign_rag_orchestrator.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "SubatomicHopAgent",
       "file": "agentic_core\\L3_orchestration\\workflow_engines\\SubatomicHopAgent.py",
       "layer": "L3",
@@ -963,6 +2487,22 @@
       "has_healing": false,
       "testing_type": "Self",
       "self_test_method": true,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SubatomicOrchestrator",
+      "file": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+      "layer": "L3",
+      "bases": [
+        "HealerMixin"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -996,31 +2536,29 @@
       "inherits_delegation": false
     },
     {
-      "name": "StateBaseAgent",
-      "file": "agentic_core\\L4_state\\bases\\StateBaseAgent.py",
+      "name": "CanonValidator",
+      "file": "agentic_core\\L4_state\\validation_context\\agent_logic_connectivity.py",
       "layer": "L4",
-      "bases": [
-        "L4SubatomicTestingMixin",
-        "CanonBaseAgent",
-        "HealerMixin"
-      ],
-      "has_self_testing": true,
+      "bases": [],
+      "has_self_testing": false,
       "has_delegation": false,
-      "has_healing": true,
-      "testing_type": "Self",
+      "has_healing": false,
+      "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
-      "inherits_self_testing": true,
+      "inherits_self_testing": false,
       "inherits_delegation": false
     },
     {
       "name": "AutonomousCheckpointManagerAgent",
       "file": "agentic_core\\L4_state\\validation_context\\AutonomousCheckpointManagerAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1031,10 +2569,12 @@
       "name": "AutonomousStateGuardianAgent",
       "file": "agentic_core\\L4_state\\validation_context\\AutonomousStateGuardianAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1045,10 +2585,12 @@
       "name": "AutonomousCheckpointManagerAgent",
       "file": "agentic_core\\L4_state\\validation_context\\autonomous_checkpoint_manager.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1059,10 +2601,12 @@
       "name": "AutonomousStateGuardianAgent",
       "file": "agentic_core\\L4_state\\validation_context\\autonomous_state_guardian.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1073,10 +2617,12 @@
       "name": "PineconeSovereignAgent",
       "file": "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1087,10 +2633,12 @@
       "name": "RedisSovereignAgent",
       "file": "agentic_core\\L4_state\\validation_context\\RedisSovereignAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1117,10 +2665,12 @@
       "name": "SovereignPineconeStoreAgent",
       "file": "agentic_core\\L4_state\\validation_context\\SovereignPineconeStoreAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1131,10 +2681,12 @@
       "name": "SubAtomicRegistryAgent",
       "file": "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
       "layer": "L4",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": true,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "Self",
       "self_test_method": true,
       "delegate_method": false,
@@ -1167,22 +2719,6 @@
       "has_healing": true,
       "testing_type": "None",
       "self_test_method": false,
-      "delegate_method": false,
-      "inherits_self_testing": false,
-      "inherits_delegation": false
-    },
-    {
-      "name": "SafetyBaseAgent",
-      "file": "agentic_core\\L5_safety\\bases\\SafetyBaseAgent.py",
-      "layer": "L5",
-      "bases": [
-        "HealerMixin"
-      ],
-      "has_self_testing": true,
-      "has_delegation": false,
-      "has_healing": true,
-      "testing_type": "Self",
-      "self_test_method": true,
       "delegate_method": false,
       "inherits_self_testing": false,
       "inherits_delegation": false
@@ -1271,10 +2807,12 @@
       "name": "BaseAgent",
       "file": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
       "layer": "L5",
-      "bases": [],
+      "bases": [
+        "HealerMixin"
+      ],
       "has_self_testing": false,
       "has_delegation": false,
-      "has_healing": false,
+      "has_healing": true,
       "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
@@ -1474,6 +3012,34 @@
       "inherits_delegation": false
     },
     {
+      "name": "HierarchyHealer",
+      "file": "agentic_core\\L5_safety\\guardrails\\hierarchy_healer.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "InputValidator",
+      "file": "agentic_core\\L5_safety\\guardrails\\input_validator.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "L5IntegrityGateExecutorAgent",
       "file": "agentic_core\\L5_safety\\guardrails\\L5IntegrityGateExecutorAgent.py",
       "layer": "L5",
@@ -1494,14 +3060,28 @@
       "file": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
       "layer": "L5",
       "bases": [
-        "AdaptiveExecutionMixin",
         "AutonomyMixin",
+        "HealerMixin",
         "SelfDiagnosisMixin",
-        "HealerMixin"
+        "AdaptiveExecutionMixin"
       ],
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "SafetyInspector",
+      "file": "agentic_core\\L5_safety\\guardrails\\overseer.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
       "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
@@ -1518,6 +3098,20 @@
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "RedSentinel",
+      "file": "agentic_core\\L5_safety\\guardrails\\red_sentinel.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
       "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
@@ -1621,6 +3215,20 @@
       "inherits_delegation": false
     },
     {
+      "name": "ComplianceOrchestrator",
+      "file": "agentic_core\\L5_safety\\validators\\compliance_orchestrator.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "DocstringComplianceAgent",
       "file": "agentic_core\\L5_safety\\validators\\DocstringComplianceAgent.py",
       "layer": "L5",
@@ -1673,13 +3281,27 @@
       "file": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
       "layer": "L5",
       "bases": [
-        "AdaptiveExecutionMixin",
         "AutonomyMixin",
-        "HealerMixin"
+        "HealerMixin",
+        "AdaptiveExecutionMixin"
       ],
       "has_self_testing": false,
       "has_delegation": false,
       "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "HealValidator",
+      "file": "agentic_core\\L5_safety\\validators\\heal_validator.py",
+      "layer": "L5",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
       "testing_type": "None",
       "self_test_method": false,
       "delegate_method": false,
@@ -1818,7 +3440,7 @@
     {
       "name": "ReportingAgent",
       "file": "agentic_core\\observability\\compliance\\ReportingAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1834,7 +3456,7 @@
     {
       "name": "BenchmarkingAgent",
       "file": "agentic_core\\observability\\metrics\\BenchmarkingAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1850,7 +3472,7 @@
     {
       "name": "CoordinateObservabilityOperationsAgent",
       "file": "agentic_core\\observability\\metrics\\CoordinateObservabilityOperationsAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1864,9 +3486,23 @@
       "inherits_delegation": false
     },
     {
+      "name": "DagRuntimeInspector",
+      "file": "agentic_core\\observability\\metrics\\dag_runtime_inspector.py",
+      "layer": "L3",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "HierarchyEnforcerAgent",
       "file": "agentic_core\\observability\\metrics\\HierarchyEnforcerAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1882,7 +3518,7 @@
     {
       "name": "MetricsAgent",
       "file": "agentic_core\\observability\\metrics\\MetricsAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1898,7 +3534,7 @@
     {
       "name": "PredictiveCostAuditorAgent",
       "file": "agentic_core\\observability\\metrics\\PredictiveCostAuditorAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "SubAtomicAgent"
       ],
@@ -1914,7 +3550,7 @@
     {
       "name": "SignatureVerifierAgent",
       "file": "agentic_core\\observability\\metrics\\SignatureVerifierAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1928,9 +3564,23 @@
       "inherits_delegation": false
     },
     {
+      "name": "TokenBudgetInspector",
+      "file": "agentic_core\\observability\\metrics\\token_budget_inspector.py",
+      "layer": "L3",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "TrackObservabilityCostAgent",
       "file": "agentic_core\\observability\\metrics\\TrackObservabilityCostAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1946,7 +3596,7 @@
     {
       "name": "TelemetryAgent",
       "file": "agentic_core\\observability\\telemetry\\TelemetryAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1962,7 +3612,7 @@
     {
       "name": "TracingAgent",
       "file": "agentic_core\\observability\\tracing\\TracingAgent.py",
-      "layer": "other",
+      "layer": "L3",
       "bases": [
         "HealerMixin"
       ],
@@ -1976,9 +3626,83 @@
       "inherits_delegation": false
     },
     {
+      "name": "ContextAwareValidator",
+      "file": "agentic_core\\patterns\\agent_roles\\context_aware_validator.py",
+      "layer": "L2",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CanonAstValidator",
+      "file": "agentic_core\\runtime\\shared_runtime\\ast_validator.py",
+      "layer": "other",
+      "bases": [
+        "NodeVisitor"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "ImportHealer",
+      "file": "agentic_core\\runtime\\shared_runtime\\import_healer.py",
+      "layer": "other",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "CognitiveContractValidator",
+      "file": "agentic_core\\schemas\\models\\cognitive_contracts.py",
+      "layer": "other",
+      "bases": [],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": false,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
+      "name": "IOrchestrator",
+      "file": "agentic_core\\schemas\\models\\orchestrator.py",
+      "layer": "other",
+      "bases": [
+        "ABC"
+      ],
+      "has_self_testing": false,
+      "has_delegation": false,
+      "has_healing": true,
+      "testing_type": "None",
+      "self_test_method": false,
+      "delegate_method": false,
+      "inherits_self_testing": false,
+      "inherits_delegation": false
+    },
+    {
       "name": "DeadCodeDetectorAgent",
       "file": "agentic_core\\utils\\core_extensions\\DeadCodeDetectorAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -1994,7 +3718,7 @@
     {
       "name": "DriftDetectorAgent",
       "file": "agentic_core\\utils\\core_extensions\\DriftDetectionDriftDetectorAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -2010,7 +3734,7 @@
     {
       "name": "DriftDetectorAgent",
       "file": "agentic_core\\utils\\core_extensions\\DriftDetectorAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -2026,7 +3750,7 @@
     {
       "name": "GlobalComplianceAggregatorAgent",
       "file": "agentic_core\\utils\\core_extensions\\GlobalComplianceAggregatorAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -2042,7 +3766,7 @@
     {
       "name": "NamingAgent",
       "file": "agentic_core\\utils\\core_extensions\\NamingAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -2058,7 +3782,7 @@
     {
       "name": "NamingLawHealerAgent",
       "file": "agentic_core\\utils\\core_extensions\\NamingLawHealerAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],
@@ -2074,7 +3798,7 @@
     {
       "name": "NamingNormalizationAgent",
       "file": "agentic_core\\utils\\core_extensions\\NamingNormalizationAgent.py",
-      "layer": "other",
+      "layer": "L2",
       "bases": [
         "HealerMixin"
       ],

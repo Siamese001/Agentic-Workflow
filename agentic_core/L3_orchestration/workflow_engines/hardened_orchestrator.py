@@ -11,8 +11,9 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class HardenedWorkflowOrchestrator:
+class HardenedWorkflowOrchestrator(HealerMixin):
     """
     Thin wrapper for Hardened Workflow Orchestrator.
     Delegates to ConsolidatedOrchestrator.

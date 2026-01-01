@@ -12,10 +12,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class MetaLearningAgent:
+class MetaLearningAgent(HealerMixin):
     """
     Sovereign meta-learning engine.
     Accumulates mission experience and drives self-evolution.

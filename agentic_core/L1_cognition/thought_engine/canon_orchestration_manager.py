@@ -12,8 +12,9 @@ from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, S
 from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class IntelligentOrchestrator:
+class IntelligentOrchestrator(HealerMixin):
     """Orchestrates all validation agents in dependency order."""
 
     def __init__(self, target: Optional[str]=None):

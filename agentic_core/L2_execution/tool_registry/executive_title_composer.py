@@ -27,11 +27,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
-
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
-class IntegrityGateExecutor:
+class IntegrityGateExecutor(HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def execute_hygiene_scan(self, headline: str): pass

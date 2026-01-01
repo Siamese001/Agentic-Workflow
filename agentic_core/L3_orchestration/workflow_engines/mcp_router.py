@@ -14,9 +14,11 @@ MCP Assignment by Layer:
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger: Any = logging.getLogger(__name__)
 
-class McpRouter:
+class McpRouter(HealerMixin):
     """
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing
     specific layer failures to the appropriate installed MCP.

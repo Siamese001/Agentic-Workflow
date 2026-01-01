@@ -20,8 +20,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger = logging.getLogger(__name__)
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousStateGuardianAgent:
+class AutonomousStateGuardianAgent(HealerMixin):
     """
     L4 State Guardian that autonomously monitors and repairs state corruption.
     

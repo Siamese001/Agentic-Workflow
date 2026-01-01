@@ -9,7 +9,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-class SprawlInspector:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class SprawlInspector(HealerMixin):
     """Brief description of functionality and purpose."""
 
     def __init__(self, target_path='agentic_core'):

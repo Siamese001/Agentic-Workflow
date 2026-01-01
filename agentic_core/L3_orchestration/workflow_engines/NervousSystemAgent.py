@@ -854,7 +854,9 @@ class NervousSystemInterventionManager:
         return None # No intervention required
 
 # NAMING FIXED: NervousSystemPhaseOrchestrator → NervousSystemPhaseOrchestrator
-class NervousSystemPhaseOrchestrator:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class NervousSystemPhaseOrchestrator(HealerMixin):
     """Orchestrates the execution of all phases within a mission cycle."""
 
     def __init__(

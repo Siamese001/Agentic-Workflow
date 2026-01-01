@@ -1,9 +1,11 @@
 """Implementation for ModelRouter."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 Logger: Any = logging.getLogger(__name__)
 
-class ModelRouter:
+class ModelRouter(HealerMixin):
     """Dynamic model router for cost-optimized LLM selection.
 
     Features:

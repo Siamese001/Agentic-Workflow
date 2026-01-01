@@ -111,13 +111,14 @@ _orchestrator: Optional[SubatomicOrchestrator] = None
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: SubatomicOrchestrator → SubatomicOrchestrator
-class SubatomicOrchestrator:
+class SubatomicOrchestrator(HealerMixin):
     """Implementation for SubatomicOrchestrator."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):
         """Initialize the orchestrator.
-
         Args:
             registry: Optional agent registry (uses global if not provided)
         """
