@@ -50,6 +50,9 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
+# [PHASE 2] L0 Delegated Testing
+from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+
 Logger = logging.getLogger(__name__)
 
 
@@ -57,6 +60,7 @@ class FilesystemSSOTReconcilerAgent(
     AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
+    L0DelegationTestingMixin,
 ):
     """
     Filesystem-level SSOT reconciler - updates blueprint when folders change.
