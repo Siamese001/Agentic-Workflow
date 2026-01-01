@@ -30,10 +30,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin",
+      "SelfDiagnosisMixin",
       "L0DelegationTestingMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -104,9 +104,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -135,9 +135,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1924,8 +1924,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
-      "HealerMixin"
+      "HealerMixin",
+      "IActionPlane"
     ],
     "key_methods": [
       "__init__",
@@ -2736,9 +2736,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
+      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3265,7 +3265,9 @@
     "class_name": "TerritoryHealerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\P1CoreTerritoryHealerAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3273,10 +3275,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 12,
+    "loc": 13,
     "class_count": 1,
     "description": "L3 Orchestration: Territory Healing",
     "pascal_compliant": true,
@@ -3286,7 +3288,9 @@
     "class_name": "TerritoryHealerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryHealerAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3299,10 +3303,10 @@
     ],
     "has_tools": true,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 195,
+    "loc": 196,
     "class_count": 1,
     "description": "\n    Enforces exhaustive territory compliance by detecting intra-territory strays.\n    ",
     "pascal_compliant": true,
@@ -4262,9 +4266,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "HealerMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4689,10 +4693,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "HealerMixin"
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
