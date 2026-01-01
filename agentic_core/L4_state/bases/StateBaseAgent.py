@@ -92,6 +92,8 @@ class L4SubatomicTestingMixin:
     def _generate_state_update_tests(self, update: Dict, context: Dict) -> str:
         """L4 Example 1: Unit tests for state update consistency/idempotency."""
         update_json = json.dumps(update) if isinstance(update, dict) else str(update)
+        # Escape for embedding in f-string
+        escaped_update = update_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
@@ -99,13 +101,13 @@ from copy import deepcopy
 
 def test_update_structure():
     """Verify state update has valid structure."""
-    update_json = """{update_json.replace('"', '\\"')}"""
+    update_json = """{escaped_update}"""
     update = json.loads(update_json)
     assert isinstance(update, dict), "Update must be a dictionary"
 
 def test_update_has_operation():
     """Verify update specifies operation type."""
-    update_json = """{update_json.replace('"', '\\"')}"""
+    update_json = """{escaped_update}"""
     update = json.loads(update_json)
     # Update should have action type
     has_op = any(k in update for k in ["add", "update", "delete", "set", "operation", "action"])
@@ -113,7 +115,7 @@ def test_update_has_operation():
 
 def test_idempotency_simulation():
     """Simulate idempotency (apply twice = same result)."""
-    update_json = """{update_json.replace('"', '\\"')}"""
+    update_json = """{escaped_update}"""
     update = json.loads(update_json)
     # Simulated: if update has "set" operation, it should be idempotent
     if "set" in update or "upsert" in update:
@@ -125,7 +127,7 @@ def test_idempotency_simulation():
 
 def test_no_conflicting_keys():
     """Check for obvious conflicts."""
-    update_json = """{update_json.replace('"', '\\"')}"""
+    update_json = """{escaped_update}"""
     update = json.loads(update_json)
     # Can't both add and delete same key
     if "add" in update and "delete" in update:
@@ -138,19 +140,21 @@ def test_no_conflicting_keys():
     def _generate_retrieval_tests(self, retrieval: Dict, context: Dict) -> str:
         """L4 Example 2: Test memory retrieval accuracy/relevance."""
         retrieval_json = json.dumps(retrieval) if isinstance(retrieval, dict) else str(retrieval)
+        # Escape for embedding in f-string
+        escaped_json = retrieval_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
 def test_retrieval_structure():
     """Verify retrieval result structure."""
-    retrieval_json = """{retrieval_json.replace('"', '\\"')}"""
+    retrieval_json = """{escaped_json}"""
     retrieval = json.loads(retrieval_json)
     assert isinstance(retrieval, (dict, list)), "Retrieval must be dict or list"
 
 def test_results_have_content():
     """Verify retrieved items have content."""
-    retrieval_json = """{retrieval_json.replace('"', '\\"')}"""
+    retrieval_json = """{escaped_json}"""
     retrieval = json.loads(retrieval_json)
     if isinstance(retrieval, list):
         for item in retrieval[:5]:  # Check first 5
@@ -161,7 +165,7 @@ def test_results_have_content():
 
 def test_no_duplicates():
     """Check for obvious duplicates."""
-    retrieval_json = """{retrieval_json.replace('"', '\\"')}"""
+    retrieval_json = """{escaped_json}"""
     retrieval = json.loads(retrieval_json)
     if isinstance(retrieval, list):
         # Check for duplicate IDs
@@ -172,7 +176,7 @@ def test_no_duplicates():
 
 def test_relevance_scores_valid():
     """Verify relevance scores are valid if present."""
-    retrieval_json = """{retrieval_json.replace('"', '\\"')}"""
+    retrieval_json = """{escaped_json}"""
     retrieval = json.loads(retrieval_json)
     if isinstance(retrieval, list):
         for item in retrieval:
@@ -186,19 +190,21 @@ def test_relevance_scores_valid():
     def _generate_reflection_tests(self, summary: Dict, context: Dict) -> str:
         """L4 Example 3: Test reflection summary quality/consistency."""
         summary_json = json.dumps(summary) if isinstance(summary, dict) else str(summary)
+        # Escape for embedding in f-string
+        escaped_summary = summary_json.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
 def test_reflection_structure():
     """Verify reflection has valid structure."""
-    summary_json = """{summary_json.replace('"', '\\"')}"""
+    summary_json = """{escaped_summary}"""
     summary = json.loads(summary_json)
     assert isinstance(summary, (dict, str)), "Reflection must be dict or string"
 
 def test_reflection_has_content():
     """Verify reflection has meaningful content."""
-    summary_json = """{summary_json.replace('"', '\\"')}"""
+    summary_json = """{escaped_summary}"""
     summary = json.loads(summary_json)
     if isinstance(summary, dict):
         has_content = any(k in summary for k in ["summary", "insights", "learnings", "text", "content"])
@@ -209,7 +215,7 @@ def test_reflection_has_content():
 
 def test_no_hallucination_markers():
     """Check for obvious hallucination patterns."""
-    summary_json = """{summary_json.replace('"', '\\"')}"""
+    summary_json = """{escaped_summary}"""
     summary_str = str(summary_json)
     # Common hallucination patterns
     hallucination_markers = ["I don't know", "I cannot", "undefined", "null", "N/A"]
@@ -222,7 +228,7 @@ def test_no_hallucination_markers():
 
 def test_balanced_sentiment():
     """Basic check for balanced reflection."""
-    summary_json = """{summary_json.replace('"', '\\"')}"""
+    summary_json = """{escaped_summary}"""
     # Reflection should ideally be balanced
     # This is a soft check - just verify content exists
     assert len(summary_json) > 0
@@ -231,12 +237,14 @@ def test_balanced_sentiment():
     def _generate_generic_state_tests(self, artifact: Dict, context: Dict) -> str:
         """Fallback tests for unknown state types."""
         artifact_str = json.dumps(artifact)[:500] if isinstance(artifact, dict) else str(artifact)[:500]
+        # Escape for embedding in f-string
+        escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
 def test_artifact_exists():
     """Verify artifact is not empty."""
-    artifact = """{artifact_str.replace('"', '\\"')}"""
+    artifact = """{escaped_artifact}"""
     assert artifact is not None
     assert len(str(artifact)) > 0
 '''

@@ -190,9 +190,8 @@ class test_git_kraken_healing_branch_configuration:
         assert config.GITKRAKEN_DEFAULT_REPO is not None
         assert len(config.GITKRAKEN_DEFAULT_REPO) > 0
 
-def run_tests() -> Any:
+def run_tests() -> None:
     """Run all GitKraken healing tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

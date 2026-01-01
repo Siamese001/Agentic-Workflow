@@ -191,9 +191,8 @@ class test_branch_operations:
         assert hasattr(client, 'get_log'), 'Client should have get_log method'
         assert hasattr(client, 'push'), 'Client should have push method'
 
-def run_tests() -> Any:
+def run_tests() -> None:
     """Run all GitKraken MCP integration tests."""
-from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

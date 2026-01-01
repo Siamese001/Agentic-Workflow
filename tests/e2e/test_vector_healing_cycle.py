@@ -1,6 +1,7 @@
 """E2E test for vector healing cycle: diagnosis → heal → verify."""
 import pytest
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch, MagicMock
 import numpy as np
 

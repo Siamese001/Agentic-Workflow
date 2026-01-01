@@ -187,10 +187,9 @@ class test_security_validation:
                 client._validate_path(str(Path.cwd() / sensitive))
 
     @pytest.mark.asyncio
-    async def test_system_directory_access_blocked(self) -> Any:
+    async def test_system_directory_access_blocked(self) -> None:
         """Test access to system directories is blocked."""
-from typing import Any
-        client: Any = get_filesystem_client()
+        client = get_filesystem_client()
         system_dirs: Any = ['/etc/', '/proc/', '/sys/']
         for sys_dir in system_dirs:
             with pytest.raises(PermissionError):
