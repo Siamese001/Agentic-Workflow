@@ -1085,22 +1085,22 @@ class HOPOrchestrator:
         
         # Initialize HOP agents
         self.agents = {
-            "HOP-2": HOP2_ResearchAgent(
+            "HOP-2": HOP2ResearchAgent(
                 self.config,
                 self.memory_store,
                 self.search_client,
                 self.llm_client
             ),
-            "HOP-5": HOP5_GenerationAgent(
+            "HOP-5": HOP5GenerationAgent(
                 self.config,
                 self.llm_client,
                 self.code_tool
             ),
-            "HOP-6": HOP6_ValidationAgent(
+            "HOP-6": HOP6ValidationAgent(
                 self.config,
                 self.validation_toolkit
             ),
-            "HOP-8": HOP8_QAReportAgent(self.config)
+            "HOP-8": HOP8QAReportAgent(self.config)
         }
         
         # Get HOP execution order from config

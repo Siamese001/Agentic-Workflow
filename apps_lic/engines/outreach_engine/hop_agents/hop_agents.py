@@ -582,10 +582,10 @@ class HOPOrchestrator:
         
         # Initialize agents
         self.agents = {
-            "HOP-1": HOP1_ProfileAnalysisAgent(config),
-            "HOP-3": HOP3_SenderGroundingAgent(config),
-            "HOP-4": HOP4_RoutingAgent(config),
-            "HOP-7": HOP7_GateDecisionAgent(config)
+            "HOP-1": HOP1ProfileAnalysisAgent(config),
+            "HOP-3": HOP3SenderGroundingAgent(config),
+            "HOP-4": HOP4RoutingAgent(config),
+            "HOP-7": HOP7GateDecisionAgent(config)
         }
     
     def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
