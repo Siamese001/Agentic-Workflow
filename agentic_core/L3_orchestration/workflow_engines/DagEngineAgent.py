@@ -70,8 +70,10 @@ class DagExecutionResult:
         """Convert to dictionary."""
         return {'success': self.success, 'completed_tasks': self.completed_tasks, 'failed_tasks': self.failed_tasks, 'skipped_tasks': self.skipped_tasks, 'task_results': self.task_results, 'execution_order': self.execution_order, 'metadata': self.metadata}
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
-class DagEngineAgent:
+class DagEngineAgent(HealerMixin):
     """Lightweight DAG engine for workflow execution.
 
     Features:
