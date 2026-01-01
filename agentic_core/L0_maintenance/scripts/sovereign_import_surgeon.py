@@ -12,28 +12,28 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 exclude_dirs: Any = {'.venv', '__pycache', '.git', 'node_modules', 'archives'}
-exclude_files: Any = {'sovereign_import_surgeon.py'}
+exclude_files: Any = {'SovereignImportSurgeon.py'}
 
-class import_violation:
-    """Represents a single import violation."""
+class ImportViolation:
+    """Represents a single import Violation."""
 
-    def __init__(self, file_path: str, line_num: int, line: str, violation_type: str, suggested_fix: str):
+    def __init__(self, file_path: str, line_num: int, line: str, ViolationType: str, suggested_fix: str):
         self.file_path = file_path
         self.line_num = line_num
         self.line = line
-        self.violation_type = violation_type
+        self.ViolationType = ViolationType
         self.suggested_fix = suggested_fix
 
     def __repr__(self):
-        return f'{self.file_path}:{self.line_num} [{self.violation_type}]\n  OLD: {self.line.strip()}\n  NEW: {self.suggested_fix}'
+        return f'{self.file_path}:{self.line_num} [{self.ViolationType}]\n  OLD: {self.line.strip()}\n  NEW: {self.suggested_fix}'
 
-class sovereign_import_surgeon:
+class SovereignImportSurgeon:
     """Scans and fixes import statements across the codebase."""
 
     def __init__(self, root_path: str):
@@ -41,7 +41,7 @@ class sovereign_import_surgeon:
         self.violations: Dict[str, List[ImportViolation]] = defaultdict(list)
         self.import_patterns = [('L0_maintancne', 'L0_maintenance', 'TYPO_FIX')]
         self.test_file_pattern = re.compile('[\\\\/]tests?[\\\\/]|[\\\\/]test_.*\\.py$')
-        self.commented_import_pattern = re.compile('^\\s*#\\s*(from\\s+\\.\\.|from\\s+agentic_core)')
+        self.commented_import_pattern = re.compile('^\\s*#\\s*(from\\s+\\.\\.|from\\s+AgenticCore)')
         self.relative_import_pattern = re.compile('^(\\s*)from\\s+\\.\\.')
         self.apps_shared_pattern = re.compile('from\\s+apps_shared\\s+import')
         self.apps_engines_pattern = re.compile('from\\s+(apps_rg|apps_lic)\\.engines\\s+import')
@@ -113,7 +113,7 @@ class sovereign_import_surgeon:
         by_type: Dict[str, List[ImportViolation]] = defaultdict(list)
         for file_violations in self.violations.values():
             for v in file_violations:
-                by_type[v.violation_type].append(v)
+                by_type[v.ViolationType].append(v)
         report: Any = []
         report.append('=' * 80)
         report.append('SOVEREIGN IMPORT SURGERY - DRY RUN REPORT')
@@ -153,7 +153,7 @@ class sovereign_import_surgeon:
         report.append('')
         for i, file_path in enumerate(sorted(self.violations.keys()), 1):
             count: Any = len(self.violations[file_path])
-            report.append(f"{i:3d}. {file_path} ({count} violation{('s' if count > 1 else '')})")
+            report.append(f"{i:3d}. {file_path} ({count} Violation{('s' if count > 1 else '')})")
         report.append('\n' + '=' * 80)
         report.append('⚠️  DRY RUN COMPLETE - NO CHANGES APPLIED')
         report.append('=' * 80)

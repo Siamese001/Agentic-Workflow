@@ -23,7 +23,7 @@ class GraphOperation(str, Enum):
     """Supported dependency graph operations."""
     BUILD_GRAPH = "build_graph"
     DETECT_CYCLES = "detect_cycles"
-    IMPACT_ANALYSIS = "impact_analysis"
+    IMPACT_ANALYSIS = "ImpactAnalysis"
     UNUSED_IMPORTS = "unused_imports"
     MODULE_DEPENDENCIES = "module_dependencies"
 
@@ -515,7 +515,7 @@ def detect_cycles(graph_data: Dict[str, Any]) -> GraphResult:
     )
 
 
-def impact_analysis(
+def ImpactAnalysis(
     graph_data: Dict[str, Any],
     symbol: str
 ) -> GraphResult:
@@ -537,7 +537,7 @@ def impact_analysis(
         if not matches:
             return GraphResult(
                 success=False,
-                operation="impact_analysis",
+                operation="ImpactAnalysis",
                 error=f"Symbol not found: {symbol}"
             )
         symbol = matches[0]
@@ -566,7 +566,7 @@ def impact_analysis(
     
     return GraphResult(
         success=True,
-        operation="impact_analysis",
+        operation="ImpactAnalysis",
         data={
             "symbol": symbol,
             "direct_dependents": list(direct_dependents),
@@ -740,7 +740,7 @@ def _calculate_risk_level(impact_count: int) -> str:
 # MAIN ENTRY POINT
 # =============================================================================
 
-def dependency_graph(args: DependencyGraphArgs) -> Dict[str, Any]:
+def DependencyGraph(args: DependencyGraphArgs) -> Dict[str, Any]:
     """
     Main entry point for dependency graph operations.
     
@@ -773,8 +773,8 @@ def dependency_graph(args: DependencyGraphArgs) -> Dict[str, Any]:
         if not args.symbol:
             return GraphResult(
                 success=False,
-                operation="impact_analysis",
-                error="symbol required for impact_analysis operation"
+                operation="ImpactAnalysis",
+                error="symbol required for ImpactAnalysis operation"
             ).to_dict()
         
         # First build the graph
@@ -786,7 +786,7 @@ def dependency_graph(args: DependencyGraphArgs) -> Dict[str, Any]:
         if not graph_result.success:
             return graph_result.to_dict()
         
-        result = impact_analysis(graph_result.data, args.symbol)
+        result = ImpactAnalysis(graph_result.data, args.symbol)
     
     elif args.operation == GraphOperation.UNUSED_IMPORTS:
         result = find_unused_imports(args.target_path)
@@ -817,7 +817,7 @@ def quick_cycles(target_path: str) -> List[List[str]]:
         operation=GraphOperation.DETECT_CYCLES,
         target_path=target_path
     )
-    result = dependency_graph(args)
+    result = DependencyGraph(args)
     return result.get("data", {}).get("cycles", [])
 
 
@@ -828,7 +828,7 @@ def quick_impact(target_path: str, symbol: str) -> Dict[str, Any]:
         target_path=target_path,
         symbol=symbol
     )
-    result = dependency_graph(args)
+    result = DependencyGraph(args)
     return result.get("data", {})
 
 
@@ -838,5 +838,5 @@ def quick_unused(target_path: str) -> List[Dict[str, Any]]:
         operation=GraphOperation.UNUSED_IMPORTS,
         target_path=target_path
     )
-    result = dependency_graph(args)
+    result = DependencyGraph(args)
     return result.get("data", {}).get("unused_imports", [])

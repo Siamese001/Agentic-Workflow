@@ -10,7 +10,7 @@ import logging
 from typing import Any, Callable, Dict, List, Optional
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class AgentRole(Enum):
@@ -65,7 +65,7 @@ class AgentRegistry(
         """Initialize the agent registry."""
         self._capabilities: Dict[AgentRole, AgentCapability] = {}
         self._specs: Dict[AgentRole, AgentSpec] = {}
-        logger.info("Initialized AgentRegistry")
+        Logger.info("Initialized AgentRegistry")
 
     def get_capability(self, role: AgentRole) -> Optional[AgentCapability]:
         """Get the capability definition for a role."""
@@ -74,7 +74,7 @@ class AgentRegistry(
     def register_agent(self, spec: AgentSpec) -> None:
         """Register an agent specification."""
         self._specs[spec.role] = spec
-        logger.info(f"Registered agent for role: {spec.role.value}")
+        Logger.info(f"Registered agent for role: {spec.role.value}")
 
     def get_agent_spec(self, role: AgentRole) -> Optional[AgentSpec]:
         """Get a registered agent specification."""

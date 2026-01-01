@@ -17,18 +17,18 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class healing_metrics:
+class HealingMetrics:
     """Metrics for a single healing attempt."""
     file_path: str
     attempt_number: int
@@ -39,7 +39,7 @@ class healing_metrics:
     model_used: str
 
 @dataclass
-class file_audit:
+class FileAudit:
     """Audit record for a single file."""
     file_path: str
     total_attempts: int
@@ -50,10 +50,10 @@ class file_audit:
     average_tokens_per_attempt: float
     is_healing_sink: bool
     sink_severity: str
-    recommendation: str
+    Recommendation: str
 
 @dataclass
-class cost_report:
+class CostReport:
     """Comprehensive cost report."""
     total_files: int
     total_attempts: int
@@ -106,7 +106,7 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
         
         Analyzes healing history and generates cost report.
         """
-        logger.info('💰 Predictive Cost Auditor: Analyzing healing economics...')
+        Logger.info('💰 Predictive Cost Auditor: Analyzing healing economics...')
         self._load_healing_history()
         self._audit_files()
         report: Any = self._generate_cost_report()
@@ -118,7 +118,7 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
     def _load_healing_history(self):
         """Load healing history from context."""
         if not hasattr(self.ctx, 'healing_history'):
-            logger.warning('   No healing history available')
+            Logger.warning('   No healing history available')
             return
         for file_path, history in self.ctx.healing_history.items():
             if file_path not in self.healing_history:
@@ -153,18 +153,18 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
             sink_severity = 'low'
         else:
             sink_severity = 'none'
-        recommendation = self._generate_recommendation(file_path, total_attempts, cost_usd, success_rate, sink_severity)
-        return FileAudit(file_path=file_path, total_attempts=total_attempts, total_tokens=total_tokens, successful_attempts=successful_attempts, failed_attempts=failed_attempts, success_rate=success_rate, average_tokens_per_attempt=avg_tokens, is_healing_sink=is_healing_sink, sink_severity=sink_severity, recommendation=recommendation)
+        Recommendation = self._generate_recommendation(file_path, total_attempts, cost_usd, success_rate, sink_severity)
+        return FileAudit(file_path=file_path, total_attempts=total_attempts, total_tokens=total_tokens, successful_attempts=successful_attempts, failed_attempts=failed_attempts, success_rate=success_rate, average_tokens_per_attempt=avg_tokens, is_healing_sink=is_healing_sink, sink_severity=sink_severity, Recommendation=Recommendation)
 
-    def _generate_recommendation(self, file_path: str, attempts: int, cost_usd: float, success_rate: float, severity: str) -> str:
-        """Generate recommendation for file."""
-        if severity == 'critical':
+    def _generate_recommendation(self, file_path: str, attempts: int, cost_usd: float, success_rate: float, Severity: str) -> str:
+        """Generate Recommendation for file."""
+        if Severity == 'critical':
             return f'CRITICAL: Apply Atomic Fission - ${cost_usd:.2f} spent, {attempts} attempts'
-        elif severity == 'high':
+        elif Severity == 'high':
             return f'HIGH: Consider manual refactoring - ${cost_usd:.2f} spent'
-        elif severity == 'medium':
+        elif Severity == 'medium':
             return f'MEDIUM: Monitor closely - {attempts} failed attempts'
-        elif severity == 'low':
+        elif Severity == 'low':
             return f'LOW: Continue automated healing'
         else:
             return 'GOOD: Efficient healing'
@@ -206,34 +206,34 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
 
     def _display_report(self, report: CostReport):
         """Display cost report."""
-        logger.info(f"\n{'=' * 80}")
-        logger.info('💰 PREDICTIVE COST AUDIT REPORT')
-        logger.info(f"{'=' * 80}")
-        logger.info(f'Total Files Analyzed: {report.total_files}')
-        logger.info(f'Total Healing Attempts: {report.total_attempts}')
-        logger.info(f'Total Tokens Used: {report.total_tokens:,}')
-        logger.info(f'Estimated Cost: ${report.estimated_cost_usd:.2f}')
-        logger.info(f'')
-        logger.info(f'Success Metrics:')
-        logger.info(f'  Successful Files: {report.successful_files}')
-        logger.info(f'  Failed Files: {report.failed_files}')
-        logger.info(f'  Efficiency Score: {report.efficiency_score:.1f}%')
-        logger.info(f'')
-        logger.info(f'Healing Sinks: {len(report.healing_sinks)}')
+        Logger.info(f"\n{'=' * 80}")
+        Logger.info('💰 PREDICTIVE COST AUDIT REPORT')
+        Logger.info(f"{'=' * 80}")
+        Logger.info(f'Total Files Analyzed: {report.total_files}')
+        Logger.info(f'Total Healing Attempts: {report.total_attempts}')
+        Logger.info(f'Total Tokens Used: {report.total_tokens:,}')
+        Logger.info(f'Estimated Cost: ${report.estimated_cost_usd:.2f}')
+        Logger.info(f'')
+        Logger.info(f'Success Metrics:')
+        Logger.info(f'  Successful Files: {report.successful_files}')
+        Logger.info(f'  Failed Files: {report.failed_files}')
+        Logger.info(f'  Efficiency Score: {report.efficiency_score:.1f}%')
+        Logger.info(f'')
+        Logger.info(f'Healing Sinks: {len(report.healing_sinks)}')
         if report.healing_sinks:
-            logger.warning(f'\n[!]  TOP HEALING SINKS (by token usage):')
+            Logger.warning(f'\n[!]  TOP HEALING SINKS (by token usage):')
             for i, sink in enumerate(report.healing_sinks[:10], 1):
                 cost = sink.total_tokens / 1000 * self.TOKEN_COST_PER_1K
-                logger.warning(f'  {i}. {sink.file_path}')
-                logger.warning(f'     Tokens: {sink.total_tokens:,} (${cost:.2f}) | Attempts: {sink.total_attempts} | Success Rate: {sink.success_rate:.0f}%')
-                logger.warning(f'     → {sink.recommendation}')
+                Logger.warning(f'  {i}. {sink.file_path}')
+                Logger.warning(f'     Tokens: {sink.total_tokens:,} (${cost:.2f}) | Attempts: {sink.total_attempts} | Success Rate: {sink.success_rate:.0f}%')
+                Logger.warning(f'     → {sink.Recommendation}')
             if len(report.healing_sinks) > 10:
-                logger.warning(f'  ... and {len(report.healing_sinks) - 10} more sinks')
+                Logger.warning(f'  ... and {len(report.healing_sinks) - 10} more sinks')
         if report.recommendations:
-            logger.info(f'\n[PLAN] RECOMMENDATIONS:')
+            Logger.info(f'\n[PLAN] RECOMMENDATIONS:')
             for rec in report.recommendations:
-                logger.info(f'  {rec}')
-        logger.info(f"{'=' * 80}\n")
+                Logger.info(f'  {rec}')
+        Logger.info(f"{'=' * 80}\n")
 
     def get_thermal_map(self) -> Dict[str, str]:
         """

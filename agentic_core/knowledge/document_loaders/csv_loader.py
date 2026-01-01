@@ -5,7 +5,7 @@ import pandas as pd
 from pathlib import Path
 from typing import List, Dict, Any
 
-class csv_document_loader:
+class CsvDocumentLoader:
     """Sovereign CSV loader using pandas for structured data."""
 
     @staticmethod

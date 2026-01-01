@@ -8,15 +8,15 @@ import logging
 import time
 from typing import Dict
 
-from resume_swarm import ResumeResult, create_resume_swarm
+from ResumeSwarm import ResumeResult, create_resume_swarm
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 def example_basic_batch_generation():
     """Example 1: Basic batch resume generation."""
-    logger.info("=== Example 1: Basic Batch Generation ===")
+    Logger.info("=== Example 1: Basic Batch Generation ===")
 
     # Create swarm with 6 workers
     swarm = create_resume_swarm(num_workers=6, enable_metrics=True)
@@ -25,7 +25,7 @@ def example_basic_batch_generation():
     jobs = [
         {
             "job_id": f"job_{i}",
-            "job_description": f"Senior Python Developer at Company {i}",
+            "JobDescription": f"Senior Python Developer at Company {i}",
             "user_profile": {
                 "name": "John Doe",
                 "skills": ["Python", "AWS", "Docker"]
@@ -35,50 +35,50 @@ def example_basic_batch_generation():
         for i in range(20)
     ]
 
-    logger.info(f"Generating {len(jobs)} resumes with 6 workers...")
+    Logger.info(f"Generating {len(jobs)} resumes with 6 workers...")
 
     # Generate batch
     results = swarm.generate_batch(jobs)
 
     # Display results
-    logger.info(f"\nResults: {len(results)} resumes generated")
+    Logger.info(f"\nResults: {len(results)} resumes generated")
     for result in results[:5]:  # Show first 5
-        logger.info(
+        Logger.info(
             f"  Job {result.job_id}: {result.status} "
             f"(worker: {result.worker_pid}, time: {result.execution_time:.2f}s)"
         )
 
     # Display metrics
     metrics = swarm.get_metrics()
-    logger.info(f"\nMetrics:")
-    logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
-    logger.info(f"  Throughput: {metrics.throughput:.2f} resumes/sec")
-    logger.info(f"  Avg time per resume: {metrics.average_execution_time:.2f}s")
-    logger.info(f"  Total wall time: {metrics.end_time - metrics.start_time:.2f}s")
+    Logger.info(f"\nMetrics:")
+    Logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
+    Logger.info(f"  Throughput: {metrics.throughput:.2f} resumes/sec")
+    Logger.info(f"  Avg time per resume: {metrics.average_execution_time:.2f}s")
+    Logger.info(f"  Total wall time: {metrics.end_time - metrics.start_time:.2f}s")
 
 
 def example_streaming_generation():
     """Example 2: Streaming results as they complete."""
-    logger.info("\n=== Example 2: Streaming Generation ===")
+    Logger.info("\n=== Example 2: Streaming Generation ===")
 
     swarm = create_resume_swarm(num_workers=6)
 
     jobs = [
         {
             "job_id": f"stream_{i}",
-            "job_description": f"Data Scientist role {i}",
+            "JobDescription": f"Data Scientist role {i}",
             "user_profile": {"name": "Jane Smith"},
             "output_format": "pdf"
         }
         for i in range(15)
     ]
 
-    logger.info(f"Streaming {len(jobs)} resume generations...")
+    Logger.info(f"Streaming {len(jobs)} resume generations...")
 
     completed = 0
     for result in swarm.generate_streaming(jobs, chunksize=1):
         completed += 1
-        logger.info(
+        Logger.info(
             f"  [{completed}/{len(jobs)}] {result.job_id}: {result.status} "
             f"(worker: {result.worker_pid})"
         )
@@ -86,7 +86,7 @@ def example_streaming_generation():
 
 def example_error_handling():
     """Example 3: Error handling with mixed payloads."""
-    logger.info("\n=== Example 3: Error Handling ===")
+    Logger.info("\n=== Example 3: Error Handling ===")
 
     # Custom worker function that simulates failures
     def worker_with_failures(payload: Dict) -> ResumeResult:
@@ -135,53 +135,53 @@ def example_error_handling():
     successful = [r for r in results if r.status == "success"]
     failed = [r for r in results if r.status == "failed"]
 
-    logger.info(f"\nResults:")
-    logger.info(f"  Successful: {len(successful)}")
-    logger.info(f"  Failed: {len(failed)}")
+    Logger.info(f"\nResults:")
+    Logger.info(f"  Successful: {len(successful)}")
+    Logger.info(f"  Failed: {len(failed)}")
 
     for result in failed:
-        logger.info(f"  Failed job: {result.job_id} - {result.error}")
+        Logger.info(f"  Failed job: {result.job_id} - {result.error}")
 
 
 def example_performance_comparison():
     """Example 4: Performance comparison - sequential vs parallel."""
-    logger.info("\n=== Example 4: Performance Comparison ===")
+    Logger.info("\n=== Example 4: Performance Comparison ===")
 
     num_jobs = 24
     jobs = [
         {
             "job_id": f"perf_{i}",
-            "job_description": f"Role {i}",
+            "JobDescription": f"Role {i}",
             "user_profile": {"name": "Test User"}
         }
         for i in range(num_jobs)
     ]
 
     # Sequential processing (1 worker)
-    logger.info(f"\nSequential processing ({num_jobs} jobs)...")
+    Logger.info(f"\nSequential processing ({num_jobs} jobs)...")
     swarm_seq = create_resume_swarm(num_workers=1)
     start_seq = time.time()
     swarm_seq.generate_batch(jobs)
     time_seq = time.time() - start_seq
 
-    logger.info(f"  Time: {time_seq:.2f}s")
-    logger.info(f"  Throughput: {num_jobs / time_seq:.2f} jobs/sec")
+    Logger.info(f"  Time: {time_seq:.2f}s")
+    Logger.info(f"  Throughput: {num_jobs / time_seq:.2f} jobs/sec")
 
     # Parallel processing (6 workers)
-    logger.info(f"\nParallel processing ({num_jobs} jobs, 6 workers)...")
+    Logger.info(f"\nParallel processing ({num_jobs} jobs, 6 workers)...")
     swarm_par = create_resume_swarm(num_workers=6)
     start_par = time.time()
     swarm_par.generate_batch(jobs)
     time_par = time.time() - start_par
 
-    logger.info(f"  Time: {time_par:.2f}s")
-    logger.info(f"  Throughput: {num_jobs / time_par:.2f} jobs/sec")
-    logger.info(f"  Speedup: {time_seq / time_par:.2f}x")
+    Logger.info(f"  Time: {time_par:.2f}s")
+    Logger.info(f"  Throughput: {num_jobs / time_par:.2f} jobs/sec")
+    Logger.info(f"  Speedup: {time_seq / time_par:.2f}x")
 
 
 def example_large_batch():
     """Example 5: Large batch processing (100 resumes)."""
-    logger.info("\n=== Example 5: Large Batch Processing ===")
+    Logger.info("\n=== Example 5: Large Batch Processing ===")
 
     swarm = create_resume_swarm(num_workers=6)
 
@@ -189,7 +189,7 @@ def example_large_batch():
     jobs = [
         {
             "job_id": f"batch_{i:03d}",
-            "job_description": f"Position {i}",
+            "JobDescription": f"Position {i}",
             "user_profile": {
                 "name": "Candidate",
                 "experience": ["Python", "ML", "Cloud"]
@@ -199,7 +199,7 @@ def example_large_batch():
         for i in range(100)
     ]
 
-    logger.info(f"Processing {len(jobs)} resumes...")
+    Logger.info(f"Processing {len(jobs)} resumes...")
 
     start_time = time.time()
     results = swarm.generate_batch(jobs, chunksize=10)
@@ -207,23 +207,23 @@ def example_large_batch():
 
     metrics = swarm.get_metrics()
 
-    logger.info(f"\nBatch Complete:")
-    logger.info(f"  Total jobs: {len(jobs)}")
-    logger.info(f"  Successful: {metrics.successful}")
-    logger.info(f"  Failed: {metrics.failed}")
-    logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
-    logger.info(f"  Wall time: {wall_time:.2f}s")
-    logger.info(f"  Throughput: {metrics.throughput:.2f} resumes/sec")
-    logger.info(f"  Avg time per resume: {metrics.average_execution_time:.2f}s")
+    Logger.info(f"\nBatch Complete:")
+    Logger.info(f"  Total jobs: {len(jobs)}")
+    Logger.info(f"  Successful: {metrics.successful}")
+    Logger.info(f"  Failed: {metrics.failed}")
+    Logger.info(f"  Success rate: {swarm.get_success_rate():.1f}%")
+    Logger.info(f"  Wall time: {wall_time:.2f}s")
+    Logger.info(f"  Throughput: {metrics.throughput:.2f} resumes/sec")
+    Logger.info(f"  Avg time per resume: {metrics.average_execution_time:.2f}s")
 
 
 def example_with_real_resume_engine():
     """Example 6: Integration with real resume engine (if available)."""
-    logger.info("\n=== Example 6: Real Resume Engine Integration ===")
+    Logger.info("\n=== Example 6: Real Resume Engine Integration ===")
 
     try:
         # Try to import real resume generator
-        # from apps_rg.resume_engine.resume_generator import generate_single_resume
+        # from apps_rg.resume_engine.ResumeGenerator import generate_single_resume
 
         # Custom worker function using real engine
         def real_resume_worker(payload: Dict) -> ResumeResult:
@@ -268,26 +268,26 @@ def example_with_real_resume_engine():
         jobs = [
             {
                 "job_id": f"real_{i}",
-                "job_description": "Senior Software Engineer",
+                "JobDescription": "Senior Software Engineer",
                 "company": "Tech Corp",
                 "requirements": ["Python", "AWS", "Docker"]
             }
             for i in range(10)
         ]
 
-        logger.info(f"Generating {len(jobs)} real resumes...")
+        Logger.info(f"Generating {len(jobs)} real resumes...")
         results = swarm.generate_batch(jobs)
 
-        logger.info(f"Generated {len(results)} resumes")
-        logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
+        Logger.info(f"Generated {len(results)} resumes")
+        Logger.info(f"Success rate: {swarm.get_success_rate():.1f}%")
 
     except ImportError:
-        logger.warning("Real resume engine not available - skipping this example")
+        Logger.warning("Real resume engine not available - skipping this example")
 
 
 def example_async_with_callback():
     """Example 7: Async generation with progress callback."""
-    logger.info("\n=== Example 7: Async with Callback ===")
+    Logger.info("\n=== Example 7: Async with Callback ===")
 
     swarm = create_resume_swarm(num_workers=6)
 
@@ -297,14 +297,14 @@ def example_async_with_callback():
     def on_complete(results):
         """Callback when batch completes."""
         progress["completed"] = len(results)
-        logger.info(f"Batch complete: {len(results)} resumes generated")
+        Logger.info(f"Batch complete: {len(results)} resumes generated")
 
     jobs = [
-        {"job_id": f"async_{i}", "job_description": f"Role {i}"}
+        {"job_id": f"async_{i}", "JobDescription": f"Role {i}"}
         for i in range(15)
     ]
 
-    logger.info(f"Starting async generation of {len(jobs)} resumes...")
+    Logger.info(f"Starting async generation of {len(jobs)} resumes...")
 
     results = swarm.generate_batch_async(
         jobs,
@@ -312,7 +312,7 @@ def example_async_with_callback():
         chunksize=5
     )
 
-    logger.info(f"Async generation complete: {progress['completed']} resumes")
+    Logger.info(f"Async generation complete: {progress['completed']} resumes")
 
 
 def main():
@@ -325,7 +325,7 @@ def main():
     example_with_real_resume_engine()
     example_async_with_callback()
 
-    logger.info("\n=== All Examples Complete ===")
+    Logger.info("\n=== All Examples Complete ===")
 
 
 if __name__ == "__main__":

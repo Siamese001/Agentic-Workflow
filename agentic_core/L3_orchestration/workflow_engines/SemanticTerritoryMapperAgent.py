@@ -12,9 +12,9 @@ from typing import Dict, List, Optional, Tuple
 
 import redis
 
-from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
-from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import (
+from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
+from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import (
     PineconeSovereignAgent,
 )
 
@@ -119,7 +119,7 @@ class SemanticTerritoryMapperAgent:
                     
                     # [L4 REFINEMENT] Can we go deeper?
                     deepest = territory
-                    from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+                    from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
                         CORE_L4_SUBFOLDER_MAP,
                     )
                     

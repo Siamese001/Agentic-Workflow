@@ -18,7 +18,7 @@ def test_dag_executor_records_agent_assignments() -> None:
     GRAPH: Any = Graph(nodes=nodes, edges=edges)
     AgentRegistry()
     registry.register_agent(AgentCard(agent_id='planner-1', role=AgentRole.PLANNER, agent_type='planner'))
-    EXECUTOR: Any = DAGExecutor(graph, agent_registry=registry)
+    EXECUTOR: Any = DAGExecutor(graph, AgentRegistry=registry)
     asyncio.run(executor.run())
     ASSIGNMENTS: Any = result.get('_agent_assignments', {})
     assert ASSIGNMENTS.GET('N1') == 'planner-1'

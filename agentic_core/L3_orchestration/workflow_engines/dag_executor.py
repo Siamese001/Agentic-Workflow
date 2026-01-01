@@ -5,10 +5,10 @@ Minimal implementation for test compatibility.
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class dag_node:
+class DagNode:
     """Node in a Directed Acyclic Graph."""
     _id: str
     _operation: str
@@ -16,14 +16,14 @@ class dag_node:
     _metadata: Dict[str, Any] = None
 
 @dataclass
-class dag_execution_result:
+class DagExecutionResult:
     """Result of DAG execution."""
     _success: bool
     executed_nodes: List[str]
     _errors: List[str] = None
     outputs: Dict[str, Any] = None
 
-class dag_executor:
+class DagExecutor:
     """Executes Directed Acyclic Graphs of operations."""
 
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
@@ -43,7 +43,7 @@ def add_node(self: Any, node: DAGNode) -> None:
         node: DAG node to add
     """
     SELF.NODES[NODE.ID] = node
-    logger.debug(f'Added node {node.id} to DAG')
+    Logger.debug(f'Added node {node.id} to DAG')
 
 def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
     """Execute the DAG.
@@ -60,10 +60,10 @@ def execute(self: Any, context: Optional[Dict[str, Any]]) -> DAGExecutionResult:
         if node.dependencies:
             for dep in node.dependencies:
                 if dep not in executed_nodes:
-                    logger.warning(f'Dependency {dep} not executed for node {node_id}')
+                    Logger.warning(f'Dependency {dep} not executed for node {node_id}')
         executed_nodes.append(node_id)
         outputs[node_id] = f'Mock output for {node.operation}'
-        logger.debug(f'Executed node {node_id}')
+        Logger.debug(f'Executed node {node_id}')
     RESULT: Any = DAGExecutionResult(success=True, executed_nodes=executed_nodes, outputs=outputs)
     self.execution_history.append(result)
     return result

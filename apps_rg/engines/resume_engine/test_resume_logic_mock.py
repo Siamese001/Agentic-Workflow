@@ -53,7 +53,7 @@ def test_analyze_job_action():
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_missing_parameters():
     """
-    Test error handling for missing parameters.
+    Test error handling for Missing parameters.
     """
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")

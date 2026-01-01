@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
-from agentic_core.L1_cognition.P1_interfaces import (
+from AgenticCore.L1_cognition.P1_interfaces import (
     ActionRequest,
     ExecutionContext,
     ExecutionResult,
@@ -16,46 +16,46 @@ from agentic_core.L1_cognition.P1_interfaces import (
     ICognitivePlane,
     OrchestratorConfig,
 )
-from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
+from AgenticCore.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 if TYPE_CHECKING:
-    from agentic_core.L1_cognition.sovereign_cognitive_plane import (
+    from AgenticCore.L1_cognition.SovereignCognitivePlane import (
         create_sovereign_cognitive_plane,
     )
-    from agentic_core.L2_execution.sovereign_action_plane import (
+    from AgenticCore.L2_execution.sovereign_action_plane import (
         create_sovereign_action_plane,
     )
-    from agentic_core.telepathy import (
+    from AgenticCore.telepathy import (
         InterventionServer,
         check_intervention_required,
         process_telepathy_instructions,
     )
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: NervousSystemCheckpointing → nervous_system_checkpointing
-class nervous_system_checkpointing:
+# NAMING FIXED: NervousSystemCheckpointing → NervousSystemCheckpointing
+class NervousSystemCheckpointing:
     """Handles checkpointing operations for the NervousSystem."""
 
     def __init__(
         self,
-        checkpoint_manager: VerifiableCheckpointManager,
-        signal_ledger: SignalLedger,
+        CheckpointManager: VerifiableCheckpointManager,
+        SignalLedger: SignalLedger,
         session_id: str,
-        logger: logging.Logger,
+        Logger: logging.Logger,
     ):
-        self.checkpoint_manager = checkpoint_manager
-        self.signal_ledger = signal_ledger
+        self.CheckpointManager = CheckpointManager
+        self.SignalLedger = SignalLedger
         self.session_id = session_id
-        self.logger = logger
+        self.Logger = Logger
 
     async def save_phase_checkpoint(
         self,
@@ -69,7 +69,7 @@ class nervous_system_checkpointing:
         scene: Dict[str, Any],
         success_rate: float,
     ) -> None:
-        """Save checkpoint after phase completion.
+        """Save Checkpoint after phase completion.
 
         Args:
             phase_name: Name of the completed phase
@@ -82,7 +82,7 @@ class nervous_system_checkpointing:
             scene: Current scene context
             success_rate: Current mission success rate
         """
-        # Prepare checkpoint state
+        # Prepare Checkpoint state
         checkpoint_state = {
             "phase": phase_name,
             "timestamp": datetime.utcnow().isoformat(),
@@ -97,22 +97,22 @@ class nervous_system_checkpointing:
             "success_rate": success_rate
         }
 
-        # Save checkpoint
+        # Save Checkpoint
         try:
-            await self.checkpoint_manager.save_checkpoint(
+            await self.CheckpointManager.save_checkpoint(
                 session_id=self.session_id,
                 node_id=phase_name,
                 state=checkpoint_state
             )
-            self.logger.info(f"Checkpoint saved for phase: {phase_name}")
+            self.Logger.info(f"Checkpoint saved for phase: {phase_name}")
         except Exception as e:
-            self.logger.error(f"Failed to save checkpoint for phase {phase_name}: {e}")
+            self.Logger.error(f"Failed to save Checkpoint for phase {phase_name}: {e}")
 
     async def find_last_checkpoint(self) -> Optional[Dict[str, Any]]:
-        """Find the most recent checkpoint for this mission.
+        """Find the most recent Checkpoint for this mission.
 
         Returns:
-            Dictionary with checkpoint state or None if not found
+            Dictionary with Checkpoint state or None if not found
         """
         # List all checkpoints for this session
         try:
@@ -123,56 +123,56 @@ class nervous_system_checkpointing:
                 "refinement_parallel", "benchmarking_seq", "optimization_conditional"
             ]
 
-            # Check phases in reverse order to find last checkpoint
+            # Check phases in reverse order to find last Checkpoint
             for phase_name in reversed(phase_order):
-                if await self.checkpoint_manager.checkpoint_exists(self.session_id, phase_name):
-                    checkpoint = await self.checkpoint_manager.load_checkpoint(
+                if await self.CheckpointManager.checkpoint_exists(self.session_id, phase_name):
+                    Checkpoint = await self.CheckpointManager.load_checkpoint(
                         self.session_id,
                         phase_name,
                         verify=True
                     )
-                    if checkpoint:
-                        return checkpoint
+                    if Checkpoint:
+                        return Checkpoint
 
             return None
         except Exception as e:
-            self.logger.error(f"Error finding checkpoint: {e}")
+            self.Logger.error(f"Error finding Checkpoint: {e}")
             return None
 
-    def restore_from_checkpoint(self, checkpoint: Dict[str, Any]) -> (
+    def restore_from_checkpoint(self, Checkpoint: Dict[str, Any]) -> (
         Dict[str, Any], Dict[str, Any], set, set, int, str
     ):
-        """Restore system state from checkpoint.
+        """Restore system state from Checkpoint.
 
         Args:
-            checkpoint: Checkpoint state dictionary
+            Checkpoint: Checkpoint state dictionary
 
         Returns:
             Tuple of (state, results, signals, modified_files, iteration, resume_phase)
         """
         try:
             # Restore state
-            state = checkpoint.get("state", {})
-            iteration = checkpoint.get("iteration", 0)
-            results = checkpoint.get("results", {})
-            signals = set(checkpoint.get("signals", []))
-            modified_files = set(checkpoint.get("modified_files", []))
-            resume_phase = checkpoint.get("phase")
+            state = Checkpoint.get("state", {})
+            iteration = Checkpoint.get("iteration", 0)
+            results = Checkpoint.get("results", {})
+            signals = set(Checkpoint.get("signals", []))
+            modified_files = set(Checkpoint.get("modified_files", []))
+            resume_phase = Checkpoint.get("phase")
 
-            self.logger.info(f"Restored from checkpoint phase: {resume_phase}")
-            self.logger.info(f"Restored state: {len(state)} keys, {len(results)} results")
+            self.Logger.info(f"Restored from Checkpoint phase: {resume_phase}")
+            self.Logger.info(f"Restored state: {len(state)} keys, {len(results)} results")
             return state, results, signals, modified_files, iteration, resume_phase
         except Exception as e:
-            self.logger.error(f"Error restoring from checkpoint: {e}")
+            self.Logger.error(f"Error restoring from Checkpoint: {e}")
             return {}, {}, set(), set(), 0, ""
 
-# NAMING FIXED: NervousSystemResultReporting → nervous_system_result_reporting
-class nervous_system_result_reporting:
+# NAMING FIXED: NervousSystemResultReporting → NervousSystemResultReporting
+class NervousSystemResultReporting:
     """Handles mission result generation and reporting."""
 
-    def __init__(self, config: OrchestratorConfig, logger: logging.Logger):
+    def __init__(self, config: OrchestratorConfig, Logger: logging.Logger):
         self.config = config
-        self.logger = logger
+        self.Logger = Logger
 
     def _is_converged(self, results: Dict[str, Any]) -> bool:
         """Check if all agents have passed (from SwarmScheduler)."""
@@ -182,7 +182,7 @@ class nervous_system_result_reporting:
 
     def _generate_mission_report(self, results: Dict[str, Any], state: Dict[str, Any]):
         """Generate final mission report (from SwarmScheduler)."""
-        self.logger.info("Generating mission report")
+        self.Logger.info("Generating mission report")
 
         total_keys = len(results)
         passed_keys = sum(1 for r in results.values() if r.get("passed", False))
@@ -190,23 +190,23 @@ class nervous_system_result_reporting:
         # Calculate success rate safely
         success_rate = passed_keys / total_keys * 100 if total_keys > 0 else 0
 
-        self.logger.info(f"SUMMARY: Total Keys Checked: {total_keys}, "
+        self.Logger.info(f"SUMMARY: Total Keys Checked: {total_keys}, "
                            f"Keys Passed: {passed_keys}, "
                            f"Keys Failed: {total_keys - passed_keys}, "
                            f"Success Rate: {success_rate:.1f}%")
 
         if self._is_converged(results):
-            self.logger.info("MISSION SUCCESS - Full convergence achieved!")
+            self.Logger.info("MISSION SUCCESS - Full convergence achieved!")
         else:
-            self.logger.warning("MISSION INCOMPLETE - Some issues remain")
+            self.Logger.warning("MISSION INCOMPLETE - Some issues remain")
 
         # Store success rate in state for later retrieval
         state["success_rate"] = success_rate
 
-        self.logger.info("DETAILED RESULTS:")
+        self.Logger.info("DETAILED RESULTS:")
         for key, result in sorted(results.items()):
             status = "PASS" if result.get("passed", False) else "FAIL"
-            self.logger.info(f"Key {key}: {status} - {result.get('agent', 'Unknown')}")
+            self.Logger.info(f"Key {key}: {status} - {result.get('agent', 'Unknown')}")
 
     def _calculate_success_rate(self, results: Dict[str, Any]) -> float:
         """Calculate current success rate based on results.
@@ -253,7 +253,7 @@ class nervous_system_result_reporting:
             }
         )
 
-        self.logger.info("execution_completed",
+        self.Logger.info("execution_completed",
             extra={"success": success,
             "iterations": iteration,
             "execution_time": result.metadata["execution_time_seconds"]})
@@ -269,19 +269,19 @@ class nervous_system_result_reporting:
         state: Dict[str, Any],
     ) -> ExecutionResult:
         """Handle execution error."""
-        self.logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
+        self.Logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
         return ExecutionResult(
             success=False, final_state=state, execution_trace=execution_trace,
             iterations=iteration, errors=[f"Execution failed: {str(error)}"],
             metadata={"execution_time_seconds": time.time() - start_time}
         )
 
-# NAMING FIXED: NervousSystemStateManagement → nervous_system_state_management
-class nervous_system_state_management:
+# NAMING FIXED: NervousSystemStateManagement → NervousSystemStateManagement
+class NervousSystemStateManagement:
     """Handles state persistence and retrieval for the NervousSystem."""
 
-    def __init__(self, logger: logging.Logger):
-        self.logger = logger
+    def __init__(self, Logger: logging.Logger):
+        self.Logger = Logger
 
     def get_state(self, iteration: int, state: Dict[str, Any], config: OrchestratorConfig) -> Dict[str, Any]:
         """Get current orchestrator state.
@@ -309,7 +309,7 @@ class nervous_system_state_management:
         with open(path, 'w') as f:
             json.dump(current_state, f, indent=2, default=str)
 
-        self.logger.info("state_saved", extra={"path": path})
+        self.Logger.info("state_saved", extra={"path": path})
 
     async def load_state(self, path: str) -> Dict[str, Any]:
         """Load orchestrator state from disk.
@@ -323,26 +323,26 @@ class nervous_system_state_management:
         with open(path, 'r') as f:
             loaded_state = json.load(f)
 
-        self.logger.info("state_loaded", extra={"path": path, "iteration": loaded_state.get("iteration", 0)})
+        self.Logger.info("state_loaded", extra={"path": path, "iteration": loaded_state.get("iteration", 0)})
         return loaded_state
 
-# NAMING FIXED: NervousSystemPhaseExecution → nervous_system_phase_execution
-class nervous_system_phase_execution:
+# NAMING FIXED: NervousSystemPhaseExecution → NervousSystemPhaseExecution
+class NervousSystemPhaseExecution:
     """Manages the execution of phases (sequential and parallel) and agent interactions."""
 
     def __init__(
         self,
         brain: ICognitivePlane,
         safety_layer: Any, # Type hint for L5_safety.safety_layer.SafetyLayer
-        signal_ledger: SignalLedger,
+        SignalLedger: SignalLedger,
         modified_files_set: set, # Added
-        logger: logging.Logger,
+        Logger: logging.Logger,
     ):
         self.brain = brain
         self.safety_layer = safety_layer
-        self.signal_ledger = signal_ledger
+        self.SignalLedger = SignalLedger
         self.modified_files_set = modified_files_set # Stored
-        self.logger = logger
+        self.Logger = Logger
         self._phase_failure_counts: Dict[str, int] = {} # Internal to this executor
         self.phases = self._initialize_phases() # Call new method
 
@@ -369,8 +369,8 @@ class nervous_system_phase_execution:
         }
 
         # Create mock agent objects from sovereign registry
-        for agent_info in agents:
-            phase = agent_info.phase
+        for AgentInfo in agents:
+            phase = AgentInfo.phase
 
             # Create a simple mock agent that has execute method
             class MockAgent:
@@ -389,7 +389,7 @@ class nervous_system_phase_execution:
                         "details": f"Agent {self.name} executed successfully"
                     }
 
-            mock_agent = MockAgent(agent_info.name, phase)
+            mock_agent = MockAgent(AgentInfo.name, phase)
 
             if phase in phases:
                 phases[phase].append(mock_agent)
@@ -415,7 +415,7 @@ class nervous_system_phase_execution:
             current_index = phase_order.index(current_phase)
             if current_index > 0:
                 previous_phase = phase_order[current_index - 1]
-                return await self.signal_ledger.get_phase_summary(previous_phase)
+                return await self.SignalLedger.get_phase_summary(previous_phase)
         except ValueError:
             pass
 
@@ -521,8 +521,8 @@ class nervous_system_phase_execution:
         """Execute a phase sequentially (from SwarmScheduler)."""
         # Check circuit breaker before executing phase
         if self._phase_failure_counts.get(phase_name, 0) >= 3:
-            self.logger.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
-            self.logger.error("Entering SAFE MODE - Phase 0")
+            self.Logger.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
+            self.Logger.error("Entering SAFE MODE - Phase 0")
             signals.add("CIRCUIT_BREAKER_TRIPPED")
             return False
 
@@ -536,7 +536,7 @@ class nervous_system_phase_execution:
                 if hasattr(agent, 'check_prerequisites'):
                     prereq_result = await agent.check_prerequisites(context)
                     if not prereq_result.get('satisfied', True):
-                        self.logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
+                        self.Logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
                         # Create a PlanningResult recommending re-run
                         if hasattr(agent, 'create_prereq_failure_result'):
                             result = await agent.create_prereq_failure_result(prereq_result)
@@ -545,7 +545,7 @@ class nervous_system_phase_execution:
                                 'passed': False,
                                 'error': 'Prerequisites not satisfied',
                                 'details': prereq_result.get('message', 'Unknown'),
-                                'recommendation': prereq_result.get('recommendation', 'Re-run prerequisite phase')
+                                'Recommendation': prereq_result.get('Recommendation', 'Re-run prerequisite phase')
                             }
                         results[agent.name] = result
                         # Add signal for prerequisite failure
@@ -568,7 +568,7 @@ class nervous_system_phase_execution:
 
             # Early abort for critical failures in integrity phase
             if phase_name == "integrity_seq" and ("CRITICAL_FAIL" in signals or "PREREQ_FAIL" in signals):
-                self.logger.error(f"Critical failure in {phase_name} - Aborting")
+                self.Logger.error(f"Critical failure in {phase_name} - Aborting")
                 # Update failure count
                 self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
                 return False
@@ -576,12 +576,12 @@ class nervous_system_phase_execution:
         # Update failure count based on phase result
         if not phase_passed:
             self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
-            self.logger.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
+            self.Logger.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
         else:
             # Reset failure count on success
             if phase_name in self._phase_failure_counts:
                 del self._phase_failure_counts[phase_name]
-                self.logger.info(f"Phase {phase_name} succeeded - Resetting failure count")
+                self.Logger.info(f"Phase {phase_name} succeeded - Resetting failure count")
 
         return phase_passed
 
@@ -596,21 +596,21 @@ class nervous_system_phase_execution:
         """Execute a phase in parallel (from SwarmScheduler)."""
         # Check circuit breaker before executing phase
         if self._phase_failure_counts.get(phase_name, 0) >= 3:
-            self.logger.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
-            self.logger.error("Entering SAFE MODE - Phase 0")
+            self.Logger.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
+            self.Logger.error("Entering SAFE MODE - Phase 0")
             signals.add("CIRCUIT_BREAKER_TRIPPED")
             return
 
         # Check memory pressure before parallel execution
-        if hasattr(self.safety_layer, 'cost_governor'):
+        if hasattr(self.safety_layer, 'CostGovernor'):
             try:
-                memory_info = self.safety_layer.cost_governor.check_memory_pressure()
+                memory_info = self.safety_layer.CostGovernor.check_memory_pressure()
                 if not memory_info.get("pressure_ok", True):
-                    self.logger.error(f"Memory pressure too high: {memory_info.get('available_gb', -1):.2f}GB available")
+                    self.Logger.error(f"Memory pressure too high: {memory_info.get('available_gb', -1):.2f}GB available")
                     signals.add("MEMORY_PRESSURE")
                     return
             except Exception as e:
-                self.logger.warning(f"Could not check memory pressure: {e}")
+                self.Logger.warning(f"Could not check memory pressure: {e}")
 
         agents = self.phases.get(phase_name, [])
         if not agents:
@@ -627,12 +627,12 @@ class nervous_system_phase_execution:
                     if hasattr(agent, 'check_prerequisites'):
                         prereq_result = await agent.check_prerequisites(context)
                         if not prereq_result.get('satisfied', True):
-                            self.logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
+                            self.Logger.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
                             result = {
                                 'passed': False,
                                 'error': 'Prerequisites not satisfied',
                                 'details': prereq_result.get('message', 'Unknown'),
-                                'recommendation': prereq_result.get('recommendation', 'Re-run prerequisite phase')
+                                'Recommendation': prereq_result.get('Recommendation', 'Re-run prerequisite phase')
                             }
                             results[agent.name] = result
                             signals.add("PREREQ_FAIL")
@@ -651,8 +651,8 @@ class nervous_system_phase_execution:
                         signals.add("CRITICAL_FAIL")
                     return result
 
-                task = self._rate_limited_retry(lambda a=agent: execute_agent_with_context(a))
-                tasks.append(task)
+                Task = self._rate_limited_retry(lambda a=agent: execute_agent_with_context(a))
+                tasks.append(Task)
 
         # Execute all agents in parallel
         if tasks:
@@ -664,19 +664,19 @@ class nervous_system_phase_execution:
             )
             if not phase_passed:
                 self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
-                self.logger.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
+                self.Logger.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
             else:
                 # Reset failure count on success
                 if phase_name in self._phase_failure_counts:
                     del self._phase_failure_counts[phase_name]
-                    self.logger.info(f"Phase {phase_name} succeeded - Resetting failure count")
+                    self.Logger.info(f"Phase {phase_name} succeeded - Resetting failure count")
 
             # Reconcile signals to detect conflicts
             conflicts = await self._reconcile_signals(results, signals)
             if conflicts.get('has_conflicts'):
-                self.logger.warning(f"Phase {phase_name} conflicts detected: {len(conflicts['conflicts'])}")
+                self.Logger.warning(f"Phase {phase_name} conflicts detected: {len(conflicts['conflicts'])}")
                 for conflict in conflicts['conflicts']:
-                    self.logger.warning(f"  {conflict['description']}")
+                    self.Logger.warning(f"  {conflict['description']}")
                 # Add conflict signal is already handled by _reconcile_signals
 
     async def execute_forced_agents(
@@ -696,7 +696,7 @@ class nervous_system_phase_execution:
         if not hasattr(context, 'forced_agents') or not context.forced_agents:
             return
 
-        self.logger.info(f"🎯 Executing forced agents from telepathy: {', '.join(context.forced_agents)}")
+        self.Logger.info(f"🎯 Executing forced agents from telepathy: {', '.join(context.forced_agents)}")
 
         for agent_name in context.forced_agents:
             try:
@@ -705,7 +705,7 @@ class nervous_system_phase_execution:
                 for phase_name, phase_agents in self.phases.items():
                     for agent in phase_agents:
                         if hasattr(agent, 'name') and agent.name == agent_name:
-                            self.logger.info(f"  → Executing forced agent: {agent_name} (from {phase_name})")
+                            self.Logger.info(f"  → Executing forced agent: {agent_name} (from {phase_name})")
 
                             # Execute the agent
                             result = await agent.execute()
@@ -732,23 +732,23 @@ class nervous_system_phase_execution:
                             break
 
                 if not agent_found:
-                    self.logger.warning(f"  [!]  Forced agent not found: {agent_name}")
+                    self.Logger.warning(f"  [!]  Forced agent not found: {agent_name}")
 
             except Exception as e:
-                self.logger.error(f"  [X] Error executing forced agent {agent_name}: {e}")
+                self.Logger.error(f"  [X] Error executing forced agent {agent_name}: {e}")
                 signals.add(f"{agent_name.upper()}_FORCED_ERROR")
 
         # Clear forced agents after execution
         context.forced_agents.clear()
-        self.logger.info("Forced agents execution complete")
+        self.Logger.info("Forced agents execution complete")
 
-# NAMING FIXED: NervousSystemArchitectureGovernance → nervous_system_architecture_governance
-class nervous_system_architecture_governance:
+# NAMING FIXED: NervousSystemArchitectureGovernance → NervousSystemArchitectureGovernance
+class NervousSystemArchitectureGovernance:
     """Handles architecture validation and impact analysis."""
 
-    def __init__(self, architecture_governor: ArchitectureGovernor, logger: logging.Logger):
-        self.architecture_governor = architecture_governor
-        self.logger = logger
+    def __init__(self, ArchitectureGovernor: ArchitectureGovernor, Logger: logging.Logger):
+        self.ArchitectureGovernor = ArchitectureGovernor
+        self.Logger = Logger
 
     async def get_impact_radius(self, modified_files: List[str] = None, current_modified_files: set = None) -> Dict[str, Any]:
         """
@@ -767,26 +767,26 @@ class nervous_system_architecture_governance:
             return {
                 "modified_count": 0,
                 "total_impacted": 0,
-                "blast_radius": [],
+                "BlastRadius": [],
                 "message": "No modified files to analyze"
             }
 
         # Build dependency graph if needed
-        if not self.architecture_governor.dependency_graph._built:
-            self.architecture_governor.build_graph()
+        if not self.ArchitectureGovernor.DependencyGraph._built:
+            self.ArchitectureGovernor.build_graph()
 
         # Calculate blast radius
-        impact_analysis = self.architecture_governor.get_blast_radius(modified_files)
+        ImpactAnalysis = self.ArchitectureGovernor.get_blast_radius(modified_files)
 
         # Log blast radius
-        self.logger.info(f"☢️ BLAST RADIUS: {impact_analysis['total_impacted']} files in scope")
+        self.Logger.info(f"☢️ BLAST RADIUS: {ImpactAnalysis['total_impacted']} files in scope")
 
         # Add impacted files to modified set for verification
         if current_modified_files is not None:
-            for file_path in impact_analysis["blast_radius"]:
+            for file_path in ImpactAnalysis["BlastRadius"]:
                 current_modified_files.add(file_path)
 
-        return impact_analysis
+        return ImpactAnalysis
 
     def validate_architecture(self, file_paths: List[str] = None) -> Dict[str, Any]:
         """
@@ -798,15 +798,15 @@ class nervous_system_architecture_governance:
         Returns:
             Validation report
         """
-        return self.architecture_governor.validate_architecture(file_paths)
+        return self.ArchitectureGovernor.validate_architecture(file_paths)
 
-# NAMING FIXED: NervousSystemInterventionManager → nervous_system_intervention_manager
-class nervous_system_intervention_manager:
+# NAMING FIXED: NervousSystemInterventionManager → NervousSystemInterventionManager
+class NervousSystemInterventionManager:
     """Manages human intervention requests and approvals."""
 
-    def __init__(self, intervention_server: InterventionServer, logger: logging.Logger):
-        self.intervention_server = intervention_server
-        self.logger = logger
+    def __init__(self, InterventionServer: InterventionServer, Logger: logging.Logger):
+        self.InterventionServer = InterventionServer
+        self.Logger = Logger
 
     async def handle_intervention_if_required(
         self,
@@ -829,28 +829,28 @@ class nervous_system_intervention_manager:
         )
 
         if intervention_required:
-            self.logger.warning(f"High-risk state detected: {risk_factors}")
-            await self.intervention_server.start_server()
+            self.Logger.warning(f"High-risk state detected: {risk_factors}")
+            await self.InterventionServer.start_server()
 
-            approved = await self.intervention_server.request_approval(
+            approved = await self.InterventionServer.request_approval(
                 risk_factors=risk_factors,
                 cycle=cycle,
                 modified_files=modified_files,
                 timeout=timeout
             )
 
-            await self.intervention_server.stop_server() # Stop server regardless of approval
+            await self.InterventionServer.stop_server() # Stop server regardless of approval
 
             if not approved:
-                self.logger.error("Human intervention vetoed - aborting mission")
+                self.Logger.error("Human intervention vetoed - aborting mission")
                 return False
             else:
-                self.logger.info("Human intervention approved - continuing mission")
+                self.Logger.info("Human intervention approved - continuing mission")
                 return True
         return None # No intervention required
 
-# NAMING FIXED: NervousSystemPhaseOrchestrator → nervous_system_phase_orchestrator
-class nervous_system_phase_orchestrator:
+# NAMING FIXED: NervousSystemPhaseOrchestrator → NervousSystemPhaseOrchestrator
+class NervousSystemPhaseOrchestrator:
     """Orchestrates the execution of all phases within a mission cycle."""
 
     def __init__(
@@ -864,7 +864,7 @@ class nervous_system_phase_orchestrator:
         iteration_ref: List[int], # Pass as list to allow modification
         modified_files_set: set, # Direct reference to NervousSystem's _modified_files
         config: OrchestratorConfig,
-        logger: logging.Logger,
+        Logger: logging.Logger,
     ):
         self._phase_execution = phase_execution_manager
         self._checkpointing = checkpointing_manager
@@ -875,7 +875,7 @@ class nervous_system_phase_orchestrator:
         self._iteration_ref = iteration_ref # [self._iteration]
         self._modified_files = modified_files_set # Stored
         self.config = config
-        self.logger = logger
+        self.Logger = Logger
 
     @property
     def _iteration(self):
@@ -911,7 +911,7 @@ class nervous_system_phase_orchestrator:
                 return False
 
         if not should_skip_phase_local(phase_name):
-            self.logger.info(f"Phase {phase_number}: {phase_name.replace('_', ' ').upper()} ({phase_type.capitalize()})")
+            self.Logger.info(f"Phase {phase_number}: {phase_name.replace('_', ' ').upper()} ({phase_type.capitalize()})")
             context.previous_phase_signals = await self._phase_execution._get_previous_phase_signals(phase_name)
 
             phase_passed = True
@@ -925,7 +925,7 @@ class nervous_system_phase_orchestrator:
                  if self._result_reporting._is_converged(self._results):
                     phase_passed = await self._phase_execution.run_sequential(phase_name, context, context.execution_trace, self._results, self._signals)
                  else:
-                    self.logger.info("Skipping optimization - not fully converged")
+                    self.Logger.info("Skipping optimization - not fully converged")
                     return True # Considered passed if skipped due to non-convergence
             
             await self._checkpointing.save_phase_checkpoint(
@@ -934,7 +934,7 @@ class nervous_system_phase_orchestrator:
             )
             return phase_passed
         else:
-            self.logger.info(f"Phase {phase_number}: {phase_name.replace('_', ' ').upper()} (Skipping - already completed)")
+            self.Logger.info(f"Phase {phase_number}: {phase_name.replace('_', ' ').upper()} (Skipping - already completed)")
             return True # Considered passed if skipped
 
     async def execute_all_phases_in_cycle(self, context: ExecutionContext, resume_phase: Optional[str] = None) -> bool:
@@ -982,7 +982,7 @@ class nervous_system_phase_orchestrator:
         errors: List[str] = []
         converged = False
 
-        # Only reset cycle state if not resuming from checkpoint
+        # Only reset cycle state if not resuming from Checkpoint
         if not resume_phase:
             self._iteration = 0 # This will update self._iteration_ref[0]
             self._state.clear()
@@ -992,15 +992,15 @@ class nervous_system_phase_orchestrator:
         self._modified_files.clear() # Reset modified files for the cycle
         self._state.update(context.state) # Update state with context's state
 
-        # If resuming from final checkpoint, check convergence immediately
+        # If resuming from final Checkpoint, check convergence immediately
         if resume_phase == "optimization_conditional" and self._result_reporting._is_converged(self._results):
-            self.logger.info("Resuming from final checkpoint - already converged")
+            self.Logger.info("Resuming from final Checkpoint - already converged")
             converged = True
         else:
             max_cycles = self.config.max_iterations or 10
             for cycle in range(max_cycles):
                 self._iteration = cycle # Update iteration for current cycle
-                self.logger.info(f"Cycle {self._iteration + 1}/{max_cycles}")
+                self.Logger.info(f"Cycle {self._iteration + 1}/{max_cycles}")
                 # Execute all phases (only on first cycle when resuming)
                 if cycle == 0 or not resume_phase:
                     converged = await self.execute_all_phases_in_cycle(context, resume_phase=resume_phase)
@@ -1014,7 +1014,7 @@ class nervous_system_phase_orchestrator:
 
                 # Check for convergence
                 if converged:
-                    self.logger.info("Convergence achieved - all checks passed!")
+                    self.Logger.info("Convergence achieved - all checks passed!")
                     break
                 # Check for critical failures
                 if "CRITICAL_FAIL" in self._signals:
@@ -1057,16 +1057,16 @@ class NervousSystemAgent:
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.00)
 
         # Initialize L4 State Persistence
-        storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
-        self.checkpoint_manager = VerifiableCheckpointManager(storage_adapter)
+        storage_adapter = create_storage_adapter("local", base_path="./AgenticCore")
+        self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)
         self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
-        self.signal_ledger = SignalLedger(storage_adapter, self.session_id)
+        self.SignalLedger = SignalLedger(storage_adapter, self.session_id)
 
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
             safety_layer=self.safety_layer,
-            signal_ledger=self.signal_ledger
+            SignalLedger=self.SignalLedger
         )
         self.config = config or OrchestratorConfig()
 
@@ -1079,28 +1079,28 @@ class NervousSystemAgent:
         self._modified_files: set = set() # This will be passed to context.modified_files
 
         # L5 Intervention Server
-        self.intervention_server = InterventionServer()
+        self.InterventionServer = InterventionServer()
 
         # L6 Architecture Governor
-        self.architecture_governor = ArchitectureGovernor()
+        self.ArchitectureGovernor = ArchitectureGovernor()
 
         # Initialize helper classes
         self._checkpointing = NervousSystemCheckpointing(
-            self.checkpoint_manager, self.signal_ledger, self.session_id, LOGGER
+            self.CheckpointManager, self.SignalLedger, self.session_id, LOGGER
         )
         self._result_reporting = NervousSystemResultReporting(self.config, LOGGER)
         self._state_management = NervousSystemStateManagement(LOGGER)
         self._phase_execution = NervousSystemPhaseExecution(
             self.brain,
-            self.safety_layer, self.signal_ledger, self._modified_files, LOGGER # Pass _modified_files
+            self.safety_layer, self.SignalLedger, self._modified_files, LOGGER # Pass _modified_files
         )
         self.phases = self._phase_execution.phases
 
         self._architecture_governance = NervousSystemArchitectureGovernance(
-            self.architecture_governor, LOGGER
+            self.ArchitectureGovernor, LOGGER
         )
         self._intervention_manager = NervousSystemInterventionManager(
-            self.intervention_server, LOGGER
+            self.InterventionServer, LOGGER
         )
         self._phase_orchestrator = NervousSystemPhaseOrchestrator( # New orchestrator
             self._phase_execution,
@@ -1144,7 +1144,7 @@ class NervousSystemAgent:
         """
         start_time = time.time()
 
-        # Check for existing checkpoint to resume from
+        # Check for existing Checkpoint to resume from
         last_checkpoint = await self._checkpointing.find_last_checkpoint()
         resume_phase = None
         if last_checkpoint:
@@ -1234,7 +1234,7 @@ class NervousSystemAgent:
         # NervousSystem needs to ensure they are correctly initialized or restored
         # before passing to orchestrator.
 
-        # Only reset cycle state if not resuming from checkpoint
+        # Only reset cycle state if not resuming from Checkpoint
         if not resume_phase:
             self._iteration = 0 # Reset NervousSystem's iteration
             self._state = context.state.copy() # Reset NervousSystem's state
@@ -1263,7 +1263,7 @@ class NervousSystemAgent:
                 self._results, self._state, self._iteration, self._signals, self._modified_files
             )
             # Log result to signal ledger
-            await self.signal_ledger.append_result(result)
+            await self.SignalLedger.append_result(result)
             return result
         except Exception as e:
             return self._result_reporting.handle_execution_error(

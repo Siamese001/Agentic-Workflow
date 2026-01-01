@@ -1,5 +1,5 @@
 """
-sovereign_env.py - Eternal Single Source of Truth Gateway to .env
+SovereignEnv.py - Eternal Single Source of Truth Gateway to .env
 
 This module serves as the Constitutional Gateway for ALL environment configuration.
 Every agent and script must pass through here to access environment variables.
@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 from dotenv import load_dotenv
 
-class sovereign_env:
+class SovereignEnv:
     """Sovereign .env loader — fail-fast, type-safe, zero-drift."""
     _instance = None
 
@@ -26,7 +26,7 @@ class sovereign_env:
         """Load and validate all environment configuration from root .env"""
         env_path = project_root / '.env'
         if not env_path.exists():
-            raise FileNotFoundError(f'[L6 CRITICAL] .env missing at {env_path} — Neural Link broken')
+            raise FileNotFoundError(f'[L6 CRITICAL] .env Missing at {env_path} — Neural Link broken')
         load_dotenv(dotenv_path=env_path, override=True)
         self.GEMINI_API_KEY = self._require('GEMINI_API_KEY')
         self.GEMINI_MODEL = self._require('GEMINI_MODEL')
@@ -57,9 +57,9 @@ class sovereign_env:
         if not value or not value.strip():
             raise ValueError(f'[L6 CRITICAL] Missing mandatory .env key: {key}')
         return value.strip()
-_config: Optional[sovereign_env] = None
+_config: Optional[SovereignEnv] = None
 
-def get_env(project_root: Optional[Path]=None) -> sovereign_env:
+def get_env(project_root: Optional[Path]=None) -> SovereignEnv:
     """
     Get the singleton SovereignEnv instance.
     
@@ -71,11 +71,11 @@ def get_env(project_root: Optional[Path]=None) -> sovereign_env:
         
     Raises:
         ValueError: If project_root not provided on first call
-        FileNotFoundError: If .env file missing
+        FileNotFoundError: If .env file Missing
     """
     global _config
     if _config is None:
         if project_root is None:
             project_root: Any = Path.cwd()
-        _config = sovereign_env(project_root)
+        _config = SovereignEnv(project_root)
     return _config

@@ -12,15 +12,15 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 
-# NAMING FIXED: TerritoryWatcher → territory_watcher
-class territory_watcher(FileSystemEventHandler):
+# NAMING FIXED: TerritoryWatcher → TerritoryWatcher
+class TerritoryWatcher(FileSystemEventHandler):
     """Watches the entire territory for changes and feeds L3 Orchestration Executive"""
     
     def __init__(self, core):
@@ -37,37 +37,37 @@ class territory_watcher(FileSystemEventHandler):
         )
 
 
-# NAMING FIXED: AutonomousSovereignCore → autonomous_sovereign_core
-class autonomous_sovereign_core:
+# NAMING FIXED: AutonomousSovereignCore → AutonomousSovereignCore
+class AutonomousSovereignCore:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
         self.event_queue = asyncio.Queue()
         self.running = True
         
         # Import autonomous improvements
-        from agentic_core.L1_cognition.thought_engine.adaptive_learning_engine import (
+        from AgenticCore.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
         )
-        from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+        from AgenticCore.L2_execution.ToolRegistry.ProactiveResourceManager import (
             create_proactive_resource_manager,
         )
-        from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (
+        from AgenticCore.L3_orchestration.workflow_engines.autonomous_execution_engine import (
             create_autonomous_execution_engine,
         )
-        from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
+        from AgenticCore.L3_orchestration.workflow_engines.SelfRecoveringOrchestrator import (
             create_self_recovering_orchestrator,
         )
         # GRAVITY FIXED: Dynamic imports for autonomous components
         try:
-            from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
+            from AgenticCore.L4_state.ValidationContext.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
         except ImportError:
             create_autonomous_checkpoint_manager = lambda: None
         try:
-            from agentic_core.L4_state.validation_context.autonomous_state_guardian import create_autonomous_state_guardian
+            from AgenticCore.L4_state.ValidationContext.autonomous_state_guardian import create_autonomous_state_guardian
         except ImportError:
             create_autonomous_state_guardian = lambda: None
         try:
-            from agentic_core.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
+            from AgenticCore.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine
         except ImportError:
             create_self_updating_safety_engine = lambda: None
 
@@ -111,7 +111,7 @@ class autonomous_sovereign_core:
                         Path(path).read_text(encoding='utf-8', errors='ignore')
                     )
                     if detection.detected:
-                        print(f"   [L5] Threat detected: {detection.threat_level}")
+                        print(f"   [L5] Threat detected: {detection.ThreatLevel}")
                 
                 # Priority 2: L4 Checkpoint
                 await self.l4_checkpoint.auto_checkpoint_if_needed(

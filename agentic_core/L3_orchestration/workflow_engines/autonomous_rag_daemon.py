@@ -13,8 +13,8 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-# NAMING FIXED: TerritoryChangeHandler → territory_change_handler
-class territory_change_handler(FileSystemEventHandler):
+# NAMING FIXED: TerritoryChangeHandler → TerritoryChangeHandler
+class TerritoryChangeHandler(FileSystemEventHandler):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
     def __init__(self, daemon):
         self.daemon = daemon
@@ -35,14 +35,14 @@ class territory_change_handler(FileSystemEventHandler):
                     lambda: asyncio.create_task(self.daemon.trigger_reindex())
                 )
 
-# NAMING FIXED: AutonomousRAGDaemon → autonomous_rag_daemon
-class autonomous_rag_daemon:
+# NAMING FIXED: AutonomousRAGDaemon → AutonomousRagDaemon
+class AutonomousRagDaemon:
     """L3: Self-monitoring RAG system with autonomous health checks"""
     
-    def __init__(self, orchestrator, retriever, historian):
+    def __init__(self, orchestrator, retriever, Historian):
         self.orchestrator = orchestrator
         self.retriever = retriever
-        self.historian = historian
+        self.Historian = Historian
         self.loop = asyncio.get_event_loop()
         self.running = True
         
@@ -59,7 +59,7 @@ class autonomous_rag_daemon:
         print("[DAEMON] Starting Autonomous RAG Daemon...")
         
         # Start file system watcher
-        watch_path = Path("agentic_core")
+        watch_path = Path("AgenticCore")
         self.observer.schedule(self.handler, str(watch_path), recursive=True)
         self.observer.start()
         
@@ -83,7 +83,7 @@ class autonomous_rag_daemon:
                 faithfulness = result.get("faithfulness", 0.0)
                 
                 # Log health metrics
-                self.historian.log_event({
+                self.Historian.log_event({
                     "event": "health_check",
                     "query": query,
                     "faithfulness": faithfulness,

@@ -3,12 +3,12 @@
 # [SSOT] Import from structure_blueprint.py instead of hardcoding
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "agentic_core" / "config" / "P1_core"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "AgenticCore" / "config" / "P1_core"))
 from structure_blueprint import MIN_DEPTH, MAX_DEPTH, MAX_LINES, MIN_LINES, ROOT_WHITELIST
 
 # Law 3: The Law of The Void - Root directory is sacred
 # [SSOT HARDENING] Import derived roots from the Sovereign Enforcer
-from agentic_core.runtime.shared.void_compliance import ALLOWED_ROOT_FOLDERS
+from AgenticCore.runtime.shared.void_compliance import ALLOWED_ROOT_FOLDERS
 ALLOWED_ROOT_FILES = {
     'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
     '.env', 'canon_validator_agentic.py', 'pytest.ini'

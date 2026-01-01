@@ -20,7 +20,7 @@ def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
     for tc in load_golden_inputs():
         _mock_agent_output(tc.input_text)
         evaluate_output(tc, output)
-        results.append(EvalResult(test_id=tc.id, VERDICT=verdict, raw_output=output, reasoning_trace=[]))
+        results.append(EvalResult(test_id=tc.id, VERDICT=Verdict, raw_output=output, reasoning_trace=[]))
     return results
 
 def run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:

@@ -6,7 +6,7 @@ Detects repeated non-compliance and issues territory lockdowns.
 
 from pathlib import Path
 
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+from AgenticCore.L4_state.ValidationContext.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 

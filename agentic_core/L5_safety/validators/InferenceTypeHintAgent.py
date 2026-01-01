@@ -64,7 +64,7 @@ class InferenceTypeHintAgent:
             for target in reversed(targets):
                 prompt: Any = self.PROMPT_TEMPLATE.format(code=target['code'])
                 try:
-                    inferred_code: Any = await ctx.engine.resilient_mutation(file_path=str(file_path), code=target['code'], task=prompt, round_num=1, fission_active=False)
+                    inferred_code: Any = await ctx.engine.resilient_mutation(file_path=str(file_path), code=target['code'], Task=prompt, round_num=1, fission_active=False)
                     if isinstance(inferred_code, str):
                         inferred_code: Any = inferred_code.strip()
                         if inferred_code.startswith('```'):

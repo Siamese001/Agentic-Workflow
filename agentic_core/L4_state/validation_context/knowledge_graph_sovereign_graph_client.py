@@ -8,18 +8,18 @@ complementing Pinecone's vector storage with explicit entity graphs.
 """
 import logging
 from typing import List, Dict, Any, Optional
-from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger('L4.KnowledgeGraph')
+Logger: Any = logging.getLogger('L4.KnowledgeGraph')
 
-class sovereign_graph_client:
+class SovereignGraphClient:
     """
     Client for the Knowledge Graph MCP (Memory MCP).
     Stores and retrieves structured entities and relationships.
@@ -33,16 +33,16 @@ class sovereign_graph_client:
         """Initialize the Knowledge Graph client with sovereign routing."""
         self.router = SovereignMCPRouter(role='memory')
         self.initialized = False
-        logger.info('[L4 KG] Sovereign Graph Client initialized')
+        Logger.info('[L4 KG] Sovereign Graph Client initialized')
 
     async def initialize(self) -> Any:
         """Async initialization of MCP router."""
         try:
             await self.router.initialize()
             self.initialized = True
-            logger.info('[L4 KG] Router initialized successfully')
+            Logger.info('[L4 KG] Router initialized successfully')
         except Exception as e:
-            logger.error(f'[L4 KG] Initialization failed: {e}')
+            Logger.error(f'[L4 KG] Initialization failed: {e}')
             raise
 
     async def _ensure_initialized(self):
@@ -62,15 +62,15 @@ class sovereign_graph_client:
             Result message from MCP
         """
         if not config.KG_MCP_ENABLED:
-            logger.warning('[L4 KG] Knowledge Graph MCP is disabled')
+            Logger.warning('[L4 KG] Knowledge Graph MCP is disabled')
             return 'KG Disabled'
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_create_entities', args={'entities': entities})
-            logger.info(f'[L4 KG] Created {len(entities)} entities')
+            Logger.info(f'[L4 KG] Created {len(entities)} entities')
             return result
         except Exception as e:
-            logger.error(f'[L4 KG] Entity creation failed: {e}')
+            Logger.error(f'[L4 KG] Entity creation failed: {e}')
             return f'Error: {str(e)}'
 
     async def create_relations(self, relations: List[Dict[str, Any]]) -> str:
@@ -89,10 +89,10 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_create_relations', args={'relations': relations})
-            logger.info(f'[L4 KG] Created {len(relations)} relations')
+            Logger.info(f'[L4 KG] Created {len(relations)} relations')
             return result
         except Exception as e:
-            logger.error(f'[L4 KG] Relation creation failed: {e}')
+            Logger.error(f'[L4 KG] Relation creation failed: {e}')
             return f'Error: {str(e)}'
 
     async def read_graph(self) -> Dict[str, Any]:
@@ -107,10 +107,10 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_read_graph', args={})
-            logger.info('[L4 KG] Graph read successfully')
+            Logger.info('[L4 KG] Graph read successfully')
             return result
         except Exception as e:
-            logger.error(f'[L4 KG] Graph read failed: {e}')
+            Logger.error(f'[L4 KG] Graph read failed: {e}')
             return {'entities': [], 'relations': [], 'error': str(e)}
 
     async def search_nodes(self, query: str) -> List[Dict]:
@@ -128,14 +128,14 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_search_nodes', args={'query': query})
-            logger.info(f'[L4 KG] Search completed for: {query}')
+            Logger.info(f'[L4 KG] Search completed for: {query}')
             if isinstance(result, list):
                 return result
             elif isinstance(result, dict) and 'nodes' in result:
                 return result['nodes']
             return []
         except Exception as e:
-            logger.warning(f'[L4 KG] MCP search failed, using client-side filter: {e}')
+            Logger.warning(f'[L4 KG] MCP search failed, using client-side filter: {e}')
             full_graph: Any = await self.read_graph()
             results: Any = []
             if isinstance(full_graph, dict) and 'entities' in full_graph:
@@ -145,7 +145,7 @@ class sovereign_graph_client:
                         results.append(entity)
                     elif any((query_lower in obs.lower() for obs in entity.get('observations', []))):
                         results.append(entity)
-            logger.info(f'[L4 KG] Client-side search found {len(results)} results')
+            Logger.info(f'[L4 KG] Client-side search found {len(results)} results')
             return results
 
     async def add_observations(self, entity_name: str, observations: List[str]) -> str:
@@ -164,10 +164,10 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_add_observations', args={'observations': [{'entityName': entity_name, 'contents': observations}]})
-            logger.info(f'[L4 KG] Added {len(observations)} observations to {entity_name}')
+            Logger.info(f'[L4 KG] Added {len(observations)} observations to {entity_name}')
             return result
         except Exception as e:
-            logger.error(f'[L4 KG] Add observations failed: {e}')
+            Logger.error(f'[L4 KG] Add observations failed: {e}')
             return f'Error: {str(e)}'
 
     async def delete_entities(self, entity_names: List[str]) -> str:
@@ -185,10 +185,10 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_delete_entities', args={'entityNames': entity_names})
-            logger.info(f'[L4 KG] Deleted {len(entity_names)} entities')
+            Logger.info(f'[L4 KG] Deleted {len(entity_names)} entities')
             return result
         except Exception as e:
-            logger.error(f'[L4 KG] Entity deletion failed: {e}')
+            Logger.error(f'[L4 KG] Entity deletion failed: {e}')
             return f'Error: {str(e)}'
 
     async def open_nodes(self, names: List[str]) -> List[Dict]:
@@ -206,14 +206,14 @@ class sovereign_graph_client:
         await self._ensure_initialized()
         try:
             result: Any = await self.router.manager.call_tool(tool_name='mcp7_open_nodes', args={'names': names})
-            logger.info(f'[L4 KG] Opened {len(names)} nodes')
+            Logger.info(f'[L4 KG] Opened {len(names)} nodes')
             if isinstance(result, list):
                 return result
             elif isinstance(result, dict) and 'nodes' in result:
                 return result['nodes']
             return []
         except Exception as e:
-            logger.error(f'[L4 KG] Open nodes failed: {e}')
+            Logger.error(f'[L4 KG] Open nodes failed: {e}')
             return []
 
     async def health_check(self) -> Dict[str, Any]:
@@ -231,7 +231,7 @@ class sovereign_graph_client:
             relation_count: Any = len(graph.get('relations', []))
             return {'status': 'healthy', 'entity_count': entity_count, 'relation_count': relation_count, 'initialized': self.initialized}
         except Exception as e:
-            logger.error(f'[L4 KG] Health check failed: {e}')
+            Logger.error(f'[L4 KG] Health check failed: {e}')
             return {'status': 'unhealthy', 'error': str(e)}
 _graph_client: Optional[SovereignGraphClient] = None
 

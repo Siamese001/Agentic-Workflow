@@ -8,16 +8,16 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class pitch_result:
+class PitchResult:
     """Result from pitch generation."""
     subject: str
     content: str
     metadata: Dict[str, Any]
 
-class pitch_generator:
+class PitchGenerator:
     """Generates personalized outreach pitches."""
 
     def __init__(self, llm_client=None):
@@ -55,7 +55,7 @@ class pitch_generator:
             content = '\n'.join(lines[1:]) if len(lines) > 1 else response.text
             return PitchResult(subject=subject, content=content, metadata={'source': 'llm', 'model': self.llm_client.model_name, 'tokens_used': getattr(response.usage, 'total_tokens', 0), 'timestamp': datetime.now().isoformat()})
         except Exception as e:
-            logger.error(f'LLM pitch generation failed: {e}')
+            Logger.error(f'LLM pitch generation failed: {e}')
             return self._generate_with_template(context, relationships)
 
     def _generate_with_template(self, context: Dict[str, Any], relationships: Dict[str, Any]) -> PitchResult:
@@ -98,7 +98,7 @@ class pitch_generator:
             content = '\n'.join(lines[1:]) if len(lines) > 1 else response.text
             return PitchResult(subject=subject, content=content, metadata={'source': 'llm_refined', 'original_subject': pitch.subject, 'refinement_reason': error_reason, 'timestamp': datetime.now().isoformat()})
         except Exception as e:
-            logger.error(f'LLM pitch refinement failed: {e}')
+            Logger.error(f'LLM pitch refinement failed: {e}')
             return self._refine_with_rules(pitch, error_reason)
 
     def _refine_with_rules(self, pitch: PitchResult, error_reason: str) -> PitchResult:

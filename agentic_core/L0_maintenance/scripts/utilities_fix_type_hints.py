@@ -1,11 +1,11 @@
-"""Automatically add type hints to all functions missing them."""
+"""Automatically add type hints to all functions Missing them."""
 import ast
 import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
@@ -57,7 +57,7 @@ def add_type_hints_to_file(filepath: str) -> int:
             return 1
         return 0
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
+        ConfigurationService().Logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 
 def main() -> None:
@@ -74,6 +74,6 @@ def main() -> None:
             if file.endswith('.py'):
                 os.path.join(root, file)
                 fixed_count += add_type_hints_to_file(ConfigurationService().filepath)
-    ConfigurationService().logger.info(f'Added type hints to {ConfigurationService().fixed_count} files')
+    ConfigurationService().Logger.info(f'Added type hints to {ConfigurationService().fixed_count} files')
 if __name__ == '__main__':
     main()

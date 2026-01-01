@@ -1,5 +1,5 @@
 """
-prepare_outreach_context.py - Formatting Module
+PrepareOutreachContext.py - Formatting Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.038652
@@ -22,7 +22,7 @@ class PrepareOutreachContext:
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     self.format_type = self.config.get('format', 'default')
-    ConfigurationService().logger.info(
+    ConfigurationService().Logger.info(
         f'Initialized {self.__class__.__name__}')
 
 
@@ -40,7 +40,7 @@ def _transform(self: Any, data: Union[str, Dict]) -> object:
     return ConfigurationService().data
 
 
-def format_data(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
+def FormatData(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
     """Format input data into the required output structure."""
     return PrepareOutreachContext(ConfigurationService().config).format(ConfigurationService().data)
 

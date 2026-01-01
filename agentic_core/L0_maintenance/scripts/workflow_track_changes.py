@@ -1,11 +1,11 @@
 """
-SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for canon_validator.py Key 00.
-Writes changes to a tracker file that canon_validator reads.
-ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
+SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidator.py Key 00.
+Writes changes to a tracker file that CanonValidator reads.
+ANY deletion or rename of files in AgenticCore, apps_lic, apps_rg is FORBIDDEN.
 import logging
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 """
 import os
@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
-sovereign_agents: Any = {'agentic_core', 'apps_lic', 'apps_rg'}
+sovereign_agents: Any = {'AgenticCore', 'apps_lic', 'apps_rg'}
 
 def main() -> None:
     """Main entry point for tracking changes."""
@@ -46,19 +46,19 @@ def main() -> None:
         [c for c in changes if '|DELETE' in c]
         [c for c in changes if '|RENAME|' in c]
         if deletes:
-            logger.info('\n  Deletes:')
+            Logger.info('\n  Deletes:')
             for d in deletes[:3]:
-                logger.info(f'    - {d}')
+                Logger.info(f'    - {d}')
             if len(deletes) > 3:
-                logger.info(f'    ... and {len(deletes) - 3} more')
+                Logger.info(f'    ... and {len(deletes) - 3} more')
         if renames:
-            logger.info('\n  Renames:')
+            Logger.info('\n  Renames:')
             for r in renames[:3]:
                 r.split('|')
                 if len(parts) == 2:
-                    logger.info(f'    - {parts[0]} -> {parts[1]}')
+                    Logger.info(f'    - {parts[0]} -> {parts[1]}')
             if len(renames) > 3:
-                logger.info(f'    ... and {len(renames) - 3} more')
+                Logger.info(f'    ... and {len(renames) - 3} more')
     sys.exit(0)
 if __name__ == '__main__':
     main()

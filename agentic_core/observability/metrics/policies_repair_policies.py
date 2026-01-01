@@ -1,8 +1,8 @@
 """AIS repair / mitigation policies.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """
@@ -14,9 +14,9 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 @dataclass
-# NAMING FIXED: RepairAction → repair_action
-class repair_action:
-    """Single AIS repair action recommendation."""
+# NAMING FIXED: RepairAction → RepairAction
+class RepairAction:
+    """Single AIS repair action Recommendation."""
 
     _kind: str  # e.g. "retry", "downgrade", "replan", "escalate"
     _reason: str
@@ -28,11 +28,11 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
 
     actions: List[RepairAction] = []
     for sig in signals or []:
-        if sig.severity == "high":
+        if sig.Severity == "high":
             actions.append(
                 RepairAction(
                     KIND="escalate",
-                    REASON=f"High-severity failure: {sig.code}",
+                    REASON=f"High-Severity failure: {sig.code}",
                     METADATA={"signal": sig},
                 )
             )
@@ -40,7 +40,7 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
             actions.append(
                 RepairAction(
                     KIND="retry",
-                    REASON=f"Medium-severity failure: {sig.code}",
+                    REASON=f"Medium-Severity failure: {sig.code}",
                     METADATA={"signal": sig},
                 )
             )
@@ -48,7 +48,7 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
             actions.append(
                 RepairAction(
                     KIND="observe",
-                    REASON=f"Low-severity failure: {sig.code}",
+                    REASON=f"Low-Severity failure: {sig.code}",
                     METADATA={"signal": sig},
                 )
             )

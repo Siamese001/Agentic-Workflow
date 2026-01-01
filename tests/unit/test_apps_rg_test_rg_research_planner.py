@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-# NAMING FIXED: TestRGResearchPlanner → test_rg_research_planner
-class test_rg_research_planner:
+# NAMING FIXED: TestRGResearchPlanner → TestRgResearchPlanner
+class TestRgResearchPlanner:
     """TestRGResearchPlanner implementation."""
 
 

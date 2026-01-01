@@ -1,7 +1,7 @@
 """
 MetricsWitness – Phase 14 (Dec 30, 2025)
 PascalCase agent responsible for translating raw L6 MetricsAgent data into Sovereign Audit scores.
-Pure read-only – no side effects beyond metric queries.
+Pure read-only – no side effects beyond Metric queries.
 """
 
 from typing import List, Tuple, Optional, Dict, Any
@@ -9,9 +9,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase 35
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class MetricsWitness(
@@ -25,7 +25,7 @@ class MetricsWitness(
     Zero external dependencies beyond MetricsAgent.
 
     Now hardened with:
-      - Proactive metric recalculation on suspected drift
+      - Proactive Metric recalculation on suspected drift
       - Adaptive scoring based on system state
       - Self-diagnosis of MetricsAgent availability
     """
@@ -35,17 +35,17 @@ class MetricsWitness(
         Initialise with project root. Gracefully degrades if MetricsAgent unavailable.
         """
         super().__init__()  # Required for mixins
-        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}")
 
         # Mandatory component for self-diagnosis
         self.MANDATORY_COMPONENTS = ["metrics"]
 
         try:
-            from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
+            from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgentCls
             self.metrics = MetricsAgentCls(project_root)
         except Exception:  # ImportError or instantiation failure
             self.metrics = None
-            self.logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
+            self.Logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
 
     def calculate_structural_ssot_score(self) -> Tuple[float, List[str]]:
         """Structural SSOT dimension: penalises recorded location/hierarchy violations."""
@@ -57,7 +57,7 @@ class MetricsWitness(
         loc_vio = type_vio.get("location", 0) + type_vio.get("hierarchy", 0)
 
         if loc_vio > 0:
-            score = max(0.0, 100.0 - (loc_vio * 5))  # 5-point constitutional penalty per violation
+            score = max(0.0, 100.0 - (loc_vio * 5))  # 5-point constitutional penalty per Violation
             issues.append(f"Metrics record {loc_vio} physical structural violations.")
         else:
             score = 100.0
@@ -94,19 +94,19 @@ class MetricsWitness(
                 "action": "attempt_reinitialization_or_escalate"
             }
 
-        # Optional future enhancement: detect metric staleness via timestamp
+        # Optional future enhancement: detect Metric staleness via timestamp
         return None
 
     # === AdaptiveExecutionMixin Overrides ===
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.info("Conservative mode: returning cached/fallback scores")
+        self.Logger.info("Conservative mode: returning cached/fallback scores")
         return {
             "Structural SSOT": (100.0, ["Conservative mode: no live metrics query"]),
             "Healing Resilience": (100.0, ["Conservative mode: assuming full resilience"])
         }
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.warning("Minimal mode: witness standing by")
+        self.Logger.warning("Minimal mode: witness standing by")
         return {
             "status": "minimal_standby",
             "reason": "resource_preservation"

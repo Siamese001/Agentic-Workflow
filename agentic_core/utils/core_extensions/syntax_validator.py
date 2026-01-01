@@ -4,7 +4,7 @@ import ast
 'Brief description of functionality and purpose.'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-logger: Any = logging.getLogger('CanonValidator')
+Logger: Any = logging.getLogger('CanonValidator')
 
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
     """
@@ -24,9 +24,9 @@ def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
         return (True, None)
     except SyntaxError as e:
         error_msg: Any = f'SyntaxError in {file_path}: {e.msg} at line {e.lineno}'
-        logger.error(error_msg)
+        Logger.error(error_msg)
         return (False, error_msg)
     except Exception as e:
         error_msg: Any = f'Unexpected error validating {file_path}: {str(e)}'
-        logger.error(error_msg)
+        Logger.error(error_msg)
         return (False, error_msg)

@@ -22,13 +22,13 @@ Version: 1.0.0
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 from services.configuration import ConfigurationService
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 __version__ = '1.0.0'
 __author__ = 'Agentic-Workflow Team'
 
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    ConfigurationService().logger.info('Initializing module')
+    ConfigurationService().Logger.info('Initializing module')
     return True
 
 def process(data: Any) -> Any:

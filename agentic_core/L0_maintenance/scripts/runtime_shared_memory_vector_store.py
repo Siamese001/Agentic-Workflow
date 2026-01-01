@@ -6,9 +6,9 @@ Optimized for 8GB hot cache allocation within 32GB WSL2 environment.
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 import chromadb
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class in_memory_vector_cache:
+class InMemoryVectorCache:
     """In-memory vector cache using ChromaDB.
 
     Initializes an ephemeral in-memory ChromaDB instance for ultra-fast
@@ -27,9 +27,9 @@ class in_memory_vector_cache:
         try:
             self.client = chromadb.Client()
             self.collection = self.client.get_or_create_collection(name=collection_name)
-            logger.info(f'Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB')
+            Logger.info(f'Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB')
         except Exception as e:
-            logger.error(f'Failed to initialize InMemoryVectorCache: {e}')
+            Logger.error(f'Failed to initialize InMemoryVectorCache: {e}')
             raise
 
     async def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str], embeddings: List[List[float]]) -> bool:
@@ -55,10 +55,10 @@ class in_memory_vector_cache:
         """
         try:
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
-            logger.debug(f'Added {len(documents)} documents to hot cache (collection: {self.collection_name})')
+            Logger.debug(f'Added {len(documents)} documents to hot cache (collection: {self.collection_name})')
             return True
         except Exception as e:
-            logger.error(f'Failed to add to hot cache: {e}')
+            Logger.error(f'Failed to add to hot cache: {e}')
             return False
 
     async def search(self, query_embeddings: List[List[float]], top_k: int=5, where: Optional[Dict[str, Any]]=None, where_document: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
@@ -82,10 +82,10 @@ class in_memory_vector_cache:
         """
         try:
             results: Any = self.collection.query(query_embeddings=query_embeddings, n_results=top_k, where=where, where_document=where_document)
-            logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
+            Logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
             return results
         except Exception as e:
-            logger.error(f'In-memory search failed: {e}')
+            Logger.error(f'In-memory search failed: {e}')
             return {'ids': [[]], 'documents': [[]], 'metadatas': [[]], 'distances': [[]]}
 
     def get_count(self) -> int:
@@ -97,7 +97,7 @@ class in_memory_vector_cache:
         try:
             return self.collection.count()
         except Exception as e:
-            logger.error(f'Failed to get cache count: {e}')
+            Logger.error(f'Failed to get cache count: {e}')
             return 0
 
     def clear(self) -> bool:
@@ -109,10 +109,10 @@ class in_memory_vector_cache:
         try:
             self.client.reset()
             self.collection = self.client.get_or_create_collection(name=self.collection_name)
-            logger.info(f'Cleared hot cache (collection: {self.collection_name})')
+            Logger.info(f'Cleared hot cache (collection: {self.collection_name})')
             return True
         except Exception as e:
-            logger.error(f'Failed to clear cache: {e}')
+            Logger.error(f'Failed to clear cache: {e}')
             return False
 
     def delete_collection(self) -> bool:
@@ -123,10 +123,10 @@ class in_memory_vector_cache:
         """
         try:
             self.client.delete_collection(name=self.collection_name)
-            logger.info(f'Deleted collection: {self.collection_name}')
+            Logger.info(f'Deleted collection: {self.collection_name}')
             return True
         except Exception as e:
-            logger.error(f'Failed to delete collection: {e}')
+            Logger.error(f'Failed to delete collection: {e}')
             return False
 
     def get_stats(self) -> Dict[str, Any]:
@@ -137,7 +137,7 @@ class in_memory_vector_cache:
         """
         return {'collection_name': self.collection_name, 'document_count': self.get_count(), 'max_memory_gb': self.max_memory_gb, 'type': 'in_memory'}
 
-class tiered_vector_store:
+class TieredVectorStore:
     """Two-tier vector storage: hot in-memory cache + warm disk storage.
 
     Automatically promotes frequently accessed items to hot cache.
@@ -152,7 +152,7 @@ class tiered_vector_store:
         """
         self.hot_cache = hot_cache
         self.warm_store_url = warm_store_url
-        logger.info(f'Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}')
+        Logger.info(f'Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}')
 
     async def search(self, query_embeddings: List[List[float]], top_k: int=10, try_hot_first: bool=True) -> Dict[str, Any]:
         """Search with hot cache fallback to warm storage.
@@ -168,10 +168,10 @@ class tiered_vector_store:
         if try_hot_first:
             hot_results: Any = await self.hot_cache.search(query_embeddings=query_embeddings, top_k=top_k)
             if hot_results.get('ids') and len(hot_results['ids'][0]) >= top_k:
-                logger.debug('Served from hot cache')
+                Logger.debug('Served from hot cache')
                 return hot_results
-            logger.debug('Hot cache miss, falling back to warm storage')
-        logger.warning('Warm storage fallback not yet implemented')
+            Logger.debug('Hot cache miss, falling back to warm storage')
+        Logger.warning('Warm storage fallback not yet implemented')
         return {'ids': [[]], 'documents': [[]], 'metadatas': [[]], 'distances': [[]]}
 
 def create_memory_vector_cache(collection_name: str='hot_cache', max_memory_gb: int=8) -> InMemoryVectorCache:

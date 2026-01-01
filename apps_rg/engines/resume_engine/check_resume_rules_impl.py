@@ -1,4 +1,4 @@
-"""Implementation for check_resume_rules."""
+"""Implementation for CheckResumeRules."""
 
 import logging
 import sys
@@ -9,11 +9,11 @@ from typing import Any, Dict, List, Optional, Union
 
 # Minimal stubs to ensure compilation for type hints and instantiation
 class ProcessingResult:
-    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, ExecutionContext: Any = None, additional_info: Optional[Dict[str, Any]] = None):
         self.success = success
         self.data = data
         self.error_message = error_message
-        self.execution_context = execution_context
+        self.ExecutionContext = ExecutionContext
         self.additional_info = additional_info
 
 class ExecutionContext:
@@ -47,22 +47,22 @@ class CheckResumeRules:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(
+        self.Logger = logging.getLogger(
             f'{__name__}.{self.__class__.__name__}')
-        if not self.logger.handlers:
+        if not self.Logger.handlers:
             executor = logging.StreamHandler(sys.stdout)
             formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
-            self.logger.setLevel(logging.INFO)
+            self.Logger.addHandler(executor)
+            self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
-        missing = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        Missing = [key for key in required_keys if key not in self.config]
+        if Missing:
+            raise ValueError(f'Missing required config keys: {Missing}')
 
     def process(self,
                 payload: Union[str,
@@ -94,12 +94,12 @@ class CheckResumeRules:
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
                                     data=result,
-                                    execution_context=exec_ctx,
+                                    ExecutionContext=exec_ctx,
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
-            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
+            return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(self,
                       data: Union[str,

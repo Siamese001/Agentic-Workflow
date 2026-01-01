@@ -6,7 +6,7 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
-# Ownership: agentic_core / unknown
+# Ownership: AgenticCore / unknown
 # -*- coding: utf-8 -*-
 """Test Planner Scoring Properties - atomic implementation."""
 
@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 
-# NAMING FIXED: TestPlannerScoringProperties → test_planner_scoring_properties
-class test_planner_scoring_properties:
+# NAMING FIXED: TestPlannerScoringProperties → TestPlannerScoringProperties
+class TestPlannerScoringProperties:
     """TestPlannerScoringProperties implementation."""
 
 

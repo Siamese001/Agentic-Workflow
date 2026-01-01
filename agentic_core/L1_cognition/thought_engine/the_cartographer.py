@@ -5,9 +5,9 @@ import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class the_cartographer:
+class TheCartographer:
     """
     Maps codebases into semantic context for architectural queries.
 

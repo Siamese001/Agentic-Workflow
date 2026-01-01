@@ -13,15 +13,15 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 
-# NAMING FIXED: FindEffectiveTemplates → find_effective_templates
-class find_effective_templates:
+# NAMING FIXED: FindEffectiveTemplates → FindEffectiveTemplates
+class FindEffectiveTemplates:
     """FindEffectiveTemplates implementation."""
 
 

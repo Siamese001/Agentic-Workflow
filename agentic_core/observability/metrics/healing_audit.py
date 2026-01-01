@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
-healing_log: Any = Path('agentic_core/L6_observability/logs/healing_audit.jsonl')
+healing_log: Any = Path('AgenticCore/L6_observability/logs/healing_audit.jsonl')
 
 def log_healing_action(action: str, fix: Dict, success: bool, error: Optional[str]=None) -> None:
     """

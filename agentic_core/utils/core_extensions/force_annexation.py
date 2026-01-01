@@ -8,14 +8,14 @@ from datetime import datetime
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 excluded_zones: Any = ['data', 'archives', 'tests', '.git', '.venv', '__pycache__']
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 annexation_plan: Any = {'config': CORE / 'config/P1_core', 'observability': CORE / 'observability/P1_core', 'prompt_governance': CORE / 'prompt_governance/P1_core', 'schemas': CORE / 'schemas/P1_core', 'scripts': CORE / 'L0_maintenance/scripts', 'prompt_templates': CORE / 'prompt_governance/P2_prompts'}
@@ -33,7 +33,7 @@ def force_annexation() -> Any:
             continue
         logging.info(f'  [>] Moving {old_name} contents to {destination.relative_to(ROOT)}...')
         for item in list(old_path.iterdir()):
-            if item.name == 'agentic_core':
+            if item.name == 'AgenticCore':
                 continue
             target_item: Any = destination / item.name
             if target_item.exists():

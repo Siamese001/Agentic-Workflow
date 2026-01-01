@@ -1,13 +1,13 @@
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
-Territory: agentic_core/L0_maintenance/scripts/
+Territory: AgenticCore/L0_maintenance/scripts/
 
 VERSION 2.0 — 2025-12-31
 Updates SSOT blueprint when filesystem structure changes.
 
 Direction: Filesystem → Blueprint (reconciliation)
 Scans: Actual folder structure on disk (L1/L2 depth)
-Detects: When structure_blueprint.py is outdated (missing new folders)
+Detects: When structure_blueprint.py is outdated (Missing new folders)
 Action: Auto-updates blueprint with backup/rollback safety
 
 Responsibilities:
@@ -17,7 +17,7 @@ Responsibilities:
 - Generate reconciliation proposals
 - Auto-update blueprint with safety checks (opt-in)
 
-Mirrors the successful prompt_registry.py pattern:
+Mirrors the successful PromptRegistry.py pattern:
 - Deduplication-safe updates
 - Atomic writes with tempfile + rename
 - Backup before modifications
@@ -46,11 +46,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class FilesystemSSOTReconcilerAgent(
@@ -76,7 +76,7 @@ class FilesystemSSOTReconcilerAgent(
     - Dry-run mode by default (auto_apply=False)
     """
     
-    BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
+    BLUEPRINT_PATH = Path("AgenticCore/config/blueprint_sovereign/structure_blueprint.py")
     
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
@@ -88,7 +88,7 @@ class FilesystemSSOTReconcilerAgent(
         self.actual_signals: Set[str] = set()
         self.drift_detected: List[Dict[str, Any]] = []
         
-        logger.info(f"FilesystemSSOTReconcilerAgent initialized for {self.project_root}")
+        Logger.info(f"FilesystemSSOTReconcilerAgent initialized for {self.project_root}")
     
     # ===================================================================
     # Core Reconciliation Methods
@@ -118,7 +118,7 @@ class FilesystemSSOTReconcilerAgent(
                 "message": Optional[str]
             }
         """
-        logger.info("Starting blueprint reconciliation scan...")
+        Logger.info("Starting blueprint reconciliation scan...")
         
         # 1. Scan actual system state
         await self._scan_filesystem()
@@ -131,25 +131,25 @@ class FilesystemSSOTReconcilerAgent(
         drift = self._detect_drift(current_blueprint)
         
         if not drift:
-            logger.info("No drift detected - blueprint is synchronized")
+            Logger.info("No drift detected - blueprint is synchronized")
             return {
                 "drift_detected": False,
                 "proposals": [],
                 "applied": False
             }
         
-        logger.warning(f"Drift detected: {len(drift)} discrepancies found")
+        Logger.warning(f"Drift detected: {len(drift)} discrepancies found")
         
         # 4. Generate reconciliation proposals
         proposals = self._generate_proposals(drift)
         
         # 5. Phase 2: Interactive approval flow (if not auto-applying)
         if not auto_apply and interactive:
-            logger.info("Interactive mode - requesting user approval")
+            Logger.info("Interactive mode - requesting user approval")
             try:
                 approved = self._request_user_approval(proposals)
                 if not approved:
-                    logger.info("User rejected proposed changes")
+                    Logger.info("User rejected proposed changes")
                     return {
                         "drift_detected": True,
                         "proposals": proposals,
@@ -157,10 +157,10 @@ class FilesystemSSOTReconcilerAgent(
                         "message": "Changes rejected by user"
                     }
                 # If approved, proceed as if auto_apply=True
-                logger.info("User approved changes - proceeding with application")
+                Logger.info("User approved changes - proceeding with application")
                 auto_apply = True
             except KeyboardInterrupt:
-                logger.warning("User aborted reconciliation")
+                Logger.warning("User aborted reconciliation")
                 return {
                     "drift_detected": True,
                     "proposals": proposals,
@@ -170,7 +170,7 @@ class FilesystemSSOTReconcilerAgent(
         
         # 6. Apply if auto_apply enabled (Phase 3) or approved (Phase 2)
         if auto_apply:
-            logger.info("Auto-apply enabled - creating backup and applying proposals")
+            Logger.info("Auto-apply enabled - creating backup and applying proposals")
             backup_path = self._backup_blueprint()
             
             try:
@@ -178,7 +178,7 @@ class FilesystemSSOTReconcilerAgent(
                 
                 # Validate syntax after modifications (Phase 3 safety check)
                 if not self._validate_blueprint_syntax():
-                    logger.error("Blueprint syntax validation failed - rolling back")
+                    Logger.error("Blueprint syntax validation failed - rolling back")
                     self._rollback_to_backup(backup_path)
                     return {
                         "drift_detected": True,
@@ -189,7 +189,7 @@ class FilesystemSSOTReconcilerAgent(
                         "error": "Syntax validation failed, rolled back to backup"
                     }
                 
-                logger.info("Blueprint reconciliation applied successfully")
+                Logger.info("Blueprint reconciliation applied successfully")
                 return {
                     "drift_detected": True,
                     "proposals": proposals,
@@ -197,7 +197,7 @@ class FilesystemSSOTReconcilerAgent(
                     "backup_path": str(backup_path)
                 }
             except Exception as e:
-                logger.error(f"Failed to apply proposals: {e}")
+                Logger.error(f"Failed to apply proposals: {e}")
                 self._rollback_to_backup(backup_path)
                 return {
                     "drift_detected": True,
@@ -208,7 +208,7 @@ class FilesystemSSOTReconcilerAgent(
                     "error": str(e)
                 }
         else:
-            logger.info("Dry-run mode - proposals generated but not applied")
+            Logger.info("Dry-run mode - proposals generated but not applied")
             return {
                 "drift_detected": True,
                 "proposals": proposals,
@@ -218,20 +218,20 @@ class FilesystemSSOTReconcilerAgent(
     
     async def _scan_filesystem(self) -> None:
         """
-        Scan actual folder structure in agentic_core, apps_*, tests.
+        Scan actual folder structure in AgenticCore, apps_*, tests.
         
         Discovers:
-        - L1 subfolders (e.g., agentic_core/L0_maintenance)
-        - L2 subfolders (e.g., agentic_core/L0_maintenance/scripts)
+        - L1 subfolders (e.g., AgenticCore/L0_maintenance)
+        - L2 subfolders (e.g., AgenticCore/L0_maintenance/scripts)
         """
-        logger.info("Scanning filesystem structure...")
+        Logger.info("Scanning filesystem structure...")
         
-        roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
+        roots_to_scan = ["AgenticCore", "apps_shared", "apps_rg", "apps_lic", "tests"]
         
         for root in roots_to_scan:
             root_path = self.project_root / root
             if not root_path.exists():
-                logger.debug(f"Root {root} does not exist - skipping")
+                Logger.debug(f"Root {root} does not exist - skipping")
                 continue
             
             # Scan L1 subfolders
@@ -240,8 +240,8 @@ class FilesystemSSOTReconcilerAgent(
                 if item.is_dir() and not item.name.startswith(('.', '__')):
                     l1_folders.add(item.name)
                     
-                    # For agentic_core, scan L2 subfolders
-                    if root == "agentic_core":
+                    # For AgenticCore, scan L2 subfolders
+                    if root == "AgenticCore":
                         l2_folders = set()
                         for subitem in item.iterdir():
                             if subitem.is_dir() and not subitem.name.startswith(('.', '__')):
@@ -249,12 +249,12 @@ class FilesystemSSOTReconcilerAgent(
                         
                         if l2_folders:
                             self.actual_folders[f"{root}/{item.name}"] = l2_folders
-                            logger.debug(f"Discovered L2 in {root}/{item.name}: {l2_folders}")
+                            Logger.debug(f"Discovered L2 in {root}/{item.name}: {l2_folders}")
             
             self.actual_folders[root] = l1_folders
-            logger.debug(f"Discovered L1 in {root}: {l1_folders}")
+            Logger.debug(f"Discovered L1 in {root}: {l1_folders}")
         
-        logger.info(f"Filesystem scan complete: {len(self.actual_folders)} folder hierarchies discovered")
+        Logger.info(f"Filesystem scan complete: {len(self.actual_folders)} folder hierarchies discovered")
     
     async def _scan_agents(self) -> None:
         """
@@ -264,11 +264,11 @@ class FilesystemSSOTReconcilerAgent(
         - Agent class names (e.g., ImportAgent, LocationAgent)
         - Canonical signals from class names (e.g., "import", "location")
         """
-        logger.info("Scanning agents for canonical signals...")
+        Logger.info("Scanning agents for canonical signals...")
         
-        agentic_core = self.project_root / "agentic_core"
+        AgenticCore = self.project_root / "AgenticCore"
         
-        for py_file in agentic_core.rglob("*agent*.py"):
+        for py_file in AgenticCore.rglob("*agent*.py"):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
                 continue
             
@@ -287,12 +287,12 @@ class FilesystemSSOTReconcilerAgent(
                             name_lower = node.name.replace("Agent", "").lower()
                             if name_lower:
                                 self.actual_signals.add(name_lower)
-                                logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
+                                Logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
                 
             except Exception as e:
-                logger.debug(f"Failed to parse {py_file}: {e}")
+                Logger.debug(f"Failed to parse {py_file}: {e}")
         
-        logger.info(f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered")
+        Logger.info(f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered")
     
     def _load_current_blueprint(self) -> Dict[str, Any]:
         """
@@ -303,7 +303,7 @@ class FilesystemSSOTReconcilerAgent(
         - core_subfolder_map
         - CANON_SIGNALS
         """
-        logger.info("Loading current blueprint configuration...")
+        Logger.info("Loading current blueprint configuration...")
         
         import importlib.util
         spec = importlib.util.spec_from_file_location("blueprint", self.blueprint_file)
@@ -316,7 +316,7 @@ class FilesystemSSOTReconcilerAgent(
             "CANON_SIGNALS": getattr(module, "CANON_SIGNALS", set()),
         }
         
-        logger.info(f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, "
+        Logger.info(f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, "
                    f"{len(blueprint['core_subfolder_map'])} L1 folders, "
                    f"{len(blueprint['CANON_SIGNALS'])} signals")
         
@@ -328,12 +328,12 @@ class FilesystemSSOTReconcilerAgent(
         
         Checks:
         1. sovereign_registry subfolders (L1 depth)
-        2. core_subfolder_map (L2 depth for agentic_core)
+        2. core_subfolder_map (L2 depth for AgenticCore)
         3. CANON_SIGNALS (agent-derived signals)
         """
         drift = []
         
-        logger.info("Detecting drift between actual state and blueprint...")
+        Logger.info("Detecting drift between actual state and blueprint...")
         
         # 1. Check SOVEREIGN_REGISTRY subfolders
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
@@ -345,15 +345,15 @@ class FilesystemSSOTReconcilerAgent(
             blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
             
             # Missing in blueprint
-            missing = actual_subfolders - blueprint_subfolders
-            if missing:
+            Missing = actual_subfolders - blueprint_subfolders
+            if Missing:
                 drift.append({
                     "type": "missing_subfolders",
                     "root": root,
-                    "folders": sorted(list(missing)),
-                    "severity": "high"
+                    "folders": sorted(list(Missing)),
+                    "Severity": "high"
                 })
-                logger.warning(f"Missing subfolders in {root}: {missing}")
+                Logger.warning(f"Missing subfolders in {root}: {Missing}")
             
             # Extra in blueprint (deleted folders)
             extra = blueprint_subfolders - actual_subfolders
@@ -362,15 +362,15 @@ class FilesystemSSOTReconcilerAgent(
                     "type": "orphaned_subfolders",
                     "root": root,
                     "folders": sorted(list(extra)),
-                    "severity": "medium"
+                    "Severity": "medium"
                 })
-                logger.warning(f"Orphaned subfolders in {root}: {extra}")
+                Logger.warning(f"Orphaned subfolders in {root}: {extra}")
         
         # 2. Check CORE_SUBFOLDER_MAP (L2 depth)
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
         
         for key, actual_l2 in self.actual_folders.items():
-            if "/" not in key or not key.startswith("agentic_core/"):
+            if "/" not in key or not key.startswith("AgenticCore/"):
                 continue
             
             l1_folder = key.split("/")[1]
@@ -382,9 +382,9 @@ class FilesystemSSOTReconcilerAgent(
                     "type": "missing_l2_subfolders",
                     "l1_folder": l1_folder,
                     "folders": sorted(list(missing_l2)),
-                    "severity": "high"
+                    "Severity": "high"
                 })
-                logger.warning(f"Missing L2 subfolders in {l1_folder}: {missing_l2}")
+                Logger.warning(f"Missing L2 subfolders in {l1_folder}: {missing_l2}")
         
         # 3. Check CANON_SIGNALS
         blueprint_signals = set(current_blueprint.get("CANON_SIGNALS", set()))
@@ -394,11 +394,11 @@ class FilesystemSSOTReconcilerAgent(
             drift.append({
                 "type": "missing_canon_signals",
                 "signals": sorted(list(missing_signals)),
-                "severity": "low"
+                "Severity": "low"
             })
-            logger.info(f"Missing canonical signals: {missing_signals}")
+            Logger.info(f"Missing canonical signals: {missing_signals}")
         
-        logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
+        Logger.info(f"Drift detection complete: {len(drift)} discrepancies found")
         return drift
     
     def _generate_proposals(self, drift: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -412,7 +412,7 @@ class FilesystemSSOTReconcilerAgent(
         """
         proposals = []
         
-        logger.info("Generating reconciliation proposals...")
+        Logger.info("Generating reconciliation proposals...")
         
         for drift_item in drift:
             if drift_item["type"] == "missing_subfolders":
@@ -438,7 +438,7 @@ class FilesystemSSOTReconcilerAgent(
                     "code_change": f"CANON_SIGNALS.update({set(drift_item['signals'])})"
                 })
         
-        logger.info(f"Generated {len(proposals)} reconciliation proposals")
+        Logger.info(f"Generated {len(proposals)} reconciliation proposals")
         return proposals
     
     def _backup_blueprint(self) -> Path:
@@ -448,7 +448,7 @@ class FilesystemSSOTReconcilerAgent(
         
         shutil.copy2(self.blueprint_file, backup_path)
         
-        logger.info(f"Backup created: {backup_path}")
+        Logger.info(f"Backup created: {backup_path}")
         return backup_path
     
     def _apply_proposals(self, proposals: List[Dict[str, Any]]) -> None:
@@ -458,7 +458,7 @@ class FilesystemSSOTReconcilerAgent(
         Uses string-based updates for safe append-style modifications.
         Atomic write at the end via tempfile + rename.
         """
-        logger.info(f"Applying {len(proposals)} proposals to blueprint...")
+        Logger.info(f"Applying {len(proposals)} proposals to blueprint...")
         
         # Load current content
         content = self.blueprint_file.read_text(encoding='utf-8')
@@ -485,7 +485,7 @@ class FilesystemSSOTReconcilerAgent(
                     proposal["signals"]
                 )
             
-            logger.debug(f"Applied proposal: {action}")
+            Logger.debug(f"Applied proposal: {action}")
         
         # Write back atomically
         with tempfile.NamedTemporaryFile(
@@ -499,7 +499,7 @@ class FilesystemSSOTReconcilerAgent(
             tmp_path = tmp.name
         
         Path(tmp_path).replace(self.blueprint_file)
-        logger.info("Blueprint updated successfully with atomic write")
+        Logger.info("Blueprint updated successfully with atomic write")
     
     def _apply_sovereign_registry_update(self, content: str, root: str, folders: List[str]) -> str:
         """
@@ -507,7 +507,7 @@ class FilesystemSSOTReconcilerAgent(
         
         Strategy: Find the line with the root key and 'subfolders', insert extend() call.
         """
-        logger.debug(f"Updating sovereign_registry for root '{root}' with folders {folders}")
+        Logger.debug(f"Updating sovereign_registry for root '{root}' with folders {folders}")
         
         lines = content.splitlines(keepends=True)
         marker = f"'{root}'"
@@ -523,7 +523,7 @@ class FilesystemSSOTReconcilerAgent(
                 return "".join(lines)
         
         # Fallback: append at end of file
-        logger.warning(f"Could not find exact insertion point for {root}, appending at end")
+        Logger.warning(f"Could not find exact insertion point for {root}, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nsovereign_registry['{root}']['subfolders'].extend({folders})\n"
     
     def _apply_core_map_update(self, content: str, l1_folder: str, folders: List[str]) -> str:
@@ -532,7 +532,7 @@ class FilesystemSSOTReconcilerAgent(
         
         Strategy: Find the line with the l1_folder key, insert extend() call.
         """
-        logger.debug(f"Updating core_subfolder_map for '{l1_folder}' with folders {folders}")
+        Logger.debug(f"Updating core_subfolder_map for '{l1_folder}' with folders {folders}")
         
         lines = content.splitlines(keepends=True)
         marker = f"'{l1_folder}'"
@@ -548,7 +548,7 @@ class FilesystemSSOTReconcilerAgent(
                 return "".join(lines)
         
         # Fallback: append at end
-        logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
+        Logger.warning(f"Could not find exact insertion point for {l1_folder}, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\ncore_subfolder_map['{l1_folder}'].extend({folders})\n"
     
     def _apply_signals_update(self, content: str, signals: List[str]) -> str:
@@ -557,7 +557,7 @@ class FilesystemSSOTReconcilerAgent(
         
         Strategy: Find CANON_SIGNALS definition, insert update() call.
         """
-        logger.debug(f"Updating CANON_SIGNALS with signals {signals}")
+        Logger.debug(f"Updating CANON_SIGNALS with signals {signals}")
         
         lines = content.splitlines(keepends=True)
         
@@ -574,7 +574,7 @@ class FilesystemSSOTReconcilerAgent(
                         return "".join(lines)
         
         # Fallback: append at end
-        logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
+        Logger.warning("Could not find exact insertion point for CANON_SIGNALS, appending at end")
         return content + f"\n# Auto-added by FilesystemSSOTReconcilerAgent\nCANON_SIGNALS.update({set(signals)})\n"
     
     def _request_user_approval(self, proposals: List[Dict[str, Any]]) -> bool:
@@ -620,20 +620,20 @@ class FilesystemSSOTReconcilerAgent(
                 response = input("\nApprove and apply all changes? (yes/no/quit): ").strip().lower()
                 
                 if response in ("yes", "y"):
-                    logger.info("User approved all changes")
+                    Logger.info("User approved all changes")
                     return True
                 elif response in ("no", "n"):
-                    logger.info("User rejected changes")
+                    Logger.info("User rejected changes")
                     return False
                 elif response in ("quit", "q", "exit"):
                     print("\n[ABORT] Blueprint reconciliation aborted by user")
-                    logger.warning("User aborted reconciliation")
+                    Logger.warning("User aborted reconciliation")
                     raise KeyboardInterrupt
                 else:
                     print("Invalid response. Please answer 'yes', 'no', or 'quit'")
             except EOFError:
                 # Handle non-interactive environments
-                logger.warning("Non-interactive environment detected - cannot request approval")
+                Logger.warning("Non-interactive environment detected - cannot request approval")
                 print("\n[ERROR] Cannot request approval in non-interactive environment")
                 return False
     
@@ -647,10 +647,10 @@ class FilesystemSSOTReconcilerAgent(
         try:
             content = self.blueprint_file.read_text(encoding='utf-8')
             compile(content, str(self.blueprint_file), 'exec')
-            logger.info("Blueprint syntax validation passed")
+            Logger.info("Blueprint syntax validation passed")
             return True
         except SyntaxError as e:
-            logger.error(f"Blueprint syntax error after update: {e}")
+            Logger.error(f"Blueprint syntax error after update: {e}")
             return False
     
     def _rollback_to_backup(self, backup_path: Path) -> None:
@@ -661,7 +661,7 @@ class FilesystemSSOTReconcilerAgent(
             backup_path: Path to backup file to restore from
         """
         shutil.copy2(backup_path, self.blueprint_file)
-        logger.warning(f"Rolled back blueprint to {backup_path}")
+        Logger.warning(f"Rolled back blueprint to {backup_path}")
         print(f"\n[ROLLBACK] Blueprint restored from backup: {backup_path}")
     
     # ===================================================================
@@ -701,7 +701,7 @@ class FilesystemSSOTReconcilerAgent(
         
         # Check write permissions
         if not os.access(self.blueprint_file.parent, os.W_OK):
-            issues.append("No write permission to blueprint directory")
+            issues.append("No write Permission to blueprint directory")
         
         # Check if blueprint is valid Python
         try:

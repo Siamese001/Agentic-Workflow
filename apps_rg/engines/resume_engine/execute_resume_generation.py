@@ -1,5 +1,5 @@
 """
-execute_resume_generation.py - Execution Module
+ExecuteResumeGeneration.py - Execution Module
 
 Domain: resume
 Generated: 2025-12-07T13:29:00.515392
@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 
 # Local workflow loader to avoid L3 dependency
 class LocalWorkflowLoader:
-    """Local workflow loader to avoid architectural violation."""
+    """Local workflow loader to avoid architectural Violation."""
 
     def __initialize__(self):
         self.workflows = {}
@@ -32,34 +32,34 @@ def create_local_workflow_loader() -> LocalWorkflowLoader:
 LOGGER = logging.getLogger(__name__)
 
 
-class executeresultumegeneration:
+class Executeresultumegeneration:
     """Executor for resume domain."""
 
     def __initialize__(self,
                  config: Optional[Dict[str,
                                        Any]] = None,
-                 workflow_loader: Optional[LocalWorkflowLoader] = None):
+                 WorkflowLoader: Optional[LocalWorkflowLoader] = None):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
 
         # Load workflow configuration
-        self.workflow = workflow_loader or create_local_workflow_loader()
+        self.workflow = WorkflowLoader or create_local_workflow_loader()
 
         # Initialize LLM-powered components with workflow configuration
         creative_brief = self.workflow.get_creative_brief()
-        self.job_analyzer = JobAnalyzer(
+        self.JobAnalyzer = JobAnalyzer(
             llm_client=self.config.get("llm_client"),
-            provider=self.config.get("provider"),
+            Provider=self.config.get("Provider"),
             workflow_config=self.workflow.get_knode_config("K.0")
         )
-        self.resume_generator = ResumeGenerator(
+        self.ResumeGenerator = ResumeGenerator(
             llm_client=self.config.get("llm_client"),
-            provider=self.config.get("provider"),
+            Provider=self.config.get("Provider"),
             creative_brief=creative_brief,
             validation_rules=self.workflow.get_validation_rules()
         )
 
-        logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
+        Logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -88,7 +88,7 @@ class executeresultumegeneration:
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        logger.info(f"Executing {action} with {params}")
+        Logger.info(f"Executing {action} with {params}")
 
         if action == "analyze_job":
             return self._analyze_job(params)
@@ -101,11 +101,11 @@ class executeresultumegeneration:
 
     def _analyze_job(self, params: Dict[str, object]) -> Dict[str, Any]:
         """Analyze a job description."""
-        job_description = params.get("job_description", "")
-        if not job_description:
-            raise ValueError("job_description is required")
+        JobDescription = params.get("JobDescription", "")
+        if not JobDescription:
+            raise ValueError("JobDescription is required")
 
-        analysis = self.job_analyzer.analyze(job_description)
+        analysis = self.JobAnalyzer.analyze(JobDescription)
         return {
             "action": "analyze_job",
             "analysis": analysis,
@@ -125,21 +125,21 @@ class executeresultumegeneration:
     def _tailor_resultume(self, params: Dict[str, object]) -> Dict[str, Any]:
         """Tailor an existing resume to a job description."""
         resultume_data = params.get("resultume_data", {})
-        job_description = params.get("job_description", "")
+        JobDescription = params.get("JobDescription", "")
 
         if not resultume_data:
             raise ValueError("resultume_data is required")
-        if not job_description:
-            raise ValueError("job_description is required")
+        if not JobDescription:
+            raise ValueError("JobDescription is required")
 
         # First analyze the job
-        analysis = self.job_analyzer.analyze(job_description)
+        analysis = self.JobAnalyzer.analyze(JobDescription)
 
         # Then tailor the resume
-        tailored_resultume = self.resume_generator.generate(resultume_data, analysis)
+        tailored_resultume = self.ResumeGenerator.generate(resultume_data, analysis)
 
         # Optimize for ATS
-        optimized_resultume = self.resume_generator.optimize_for_ats(
+        optimized_resultume = self.ResumeGenerator.optimize_for_ats(
             tailored_resultume, analysis)
 
         return {
@@ -156,4 +156,4 @@ def execute(action: str,
                          object],
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
-    return executeresultumegeneration(config).execute(action, params)
+    return Executeresultumegeneration(config).execute(action, params)

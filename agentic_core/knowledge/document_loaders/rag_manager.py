@@ -1,5 +1,5 @@
 # Sovereign RAG Manager
-# Territory: agentic_core/knowledge (cross-subfolder orchestrator)
+# Territory: AgenticCore/knowledge (cross-subfolder orchestrator)
 # Canon Key 9 - Retrieval-Augmented Generation integration
 
 import json
@@ -8,14 +8,14 @@ from typing import List, Dict, Optional
 
 # Internal imports referencing the mandated structure
 try:
-    from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
-    from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
-    from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
-    from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
-    from agentic_core.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
-    from agentic_core.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
-    from agentic_core.knowledge.research_cache.cache_store import ResearchCache
-    from agentic_core.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
+    from AgenticCore.knowledge.document_loaders.text_loader import TextDocumentLoader
+    from AgenticCore.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
+    from AgenticCore.knowledge.document_loaders.html_loader import HTMLDocumentLoader
+    from AgenticCore.knowledge.document_loaders.csv_loader import CSVDocumentLoader
+    from AgenticCore.knowledge.static_index.action_verbs import ACTION_VERBS, STRONG_VERBS
+    from AgenticCore.knowledge.static_index.skill_taxonomy import SKILL_TAXONOMY, ALL_SKILLS
+    from AgenticCore.knowledge.ResearchCache.cache_store import ResearchCache
+    from AgenticCore.semantic_memory.embeddings.core_embedder import clear_embedding_cache, _embedding_cache
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
@@ -31,13 +31,13 @@ class SovereignRAGManager:
 
     Responsibilities:
     - Aggregate static knowledge from static_index/
-    - Retrieve cached insights from research_cache/
+    - Retrieve cached insights from ResearchCache/
     - Format retrieval results into prompt-ready context strings.
     """
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.cache_dir = project_root / "agentic_core" / "knowledge" / "research_cache"
+        self.cache_dir = project_root / "AgenticCore" / "knowledge" / "ResearchCache"
         self.cache = ResearchCache(self.cache_dir)
         self.static_knowledge = self._load_static_index()
         
@@ -52,17 +52,17 @@ class SovereignRAGManager:
         
         # Optional: Initialize vector store, embedder, and BM25 if available
         try:
-            from agentic_core.semantic_memory.embeddings.gemini_embedder import GeminiEmbedder
-            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
-            from agentic_core.semantic_memory.store.bm25_store import get_bm25_store
+            from AgenticCore.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
+            from AgenticCore.semantic_memory.store.pinecone_store import PineconeVectorStore
+            from AgenticCore.semantic_memory.store.Bm25Store import get_bm25_store
             self.embedder = GeminiEmbedder()
             self.vector_store = PineconeVectorStore()
-            self.bm25_store = get_bm25_store()
+            self.Bm25Store = get_bm25_store()
         except (ImportError, ValueError):
             # Vector search unavailable - will fall back to keyword/static only
             self.embedder = None
             self.vector_store = None
-            self.bm25_store = None
+            self.Bm25Store = None
         
         # Optional: Initialize LLM engine for reranking
         self.engine = None
@@ -107,8 +107,8 @@ class SovereignRAGManager:
                 self.vector_store.upsert(vectors)
             
             # BM25 indexing
-            if self.bm25_store:
-                self.bm25_store.add_documents([
+            if self.Bm25Store:
+                self.Bm25Store.add_documents([
                     {"id": f"{doc_id}_{i}", "text": chunk, "metadata": metadata or {}}
                     for i, chunk in enumerate(text_chunks)
                 ])
@@ -148,8 +148,8 @@ class SovereignRAGManager:
                 print(f"Vector search failed: {e}")
 
         # BM25 Search
-        if self.bm25_store:
-            bm25_candidates = self.bm25_store.query(query, top_k=top_k * 3)
+        if self.Bm25Store:
+            bm25_candidates = self.Bm25Store.query(query, top_k=top_k * 3)
 
         # Static domain boost: Prioritize SSOT taxonomies
         static_boost = []
@@ -222,7 +222,7 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
             response = await self.engine.resilient_mutation(
                 file_path="rag_rerank",
                 code=rerank_prompt,
-                task="Rerank retrieval results",
+                Task="Rerank retrieval results",
                 round_num=1,
                 fission_active=False
             )
@@ -234,12 +234,12 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
             print(f"Reranking failed: {e}")
             return candidates[:top_k]
 
-    def get_context_for_task(self, task: str, domain: str = "general") -> str:
+    def get_context_for_task(self, Task: str, domain: str = "general") -> str:
         """
         Converts raw retrievals into a formatted context block for LLM instructions.
         Ensures agents operate under Sovereign Truth.
         """
-        retrievals = self.retrieve(task, domain=domain)
+        retrievals = self.retrieve(Task, domain=domain)
         if not retrievals:
             return "No relevant sovereign knowledge found."
 

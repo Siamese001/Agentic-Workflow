@@ -1,4 +1,4 @@
-"""Types and models for check_resume_rules."""
+"""Types and models for CheckResumeRules."""
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
 
@@ -36,7 +36,7 @@ class ExecutionContext:
         """Mark execution as started."""
         self.status = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f'Execution started for operation: {self.operation_id}')
+        Logger.info(f'Execution started for operation: {self.operation_id}')
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
@@ -46,9 +46,9 @@ class ExecutionContext:
             self.error_details = {'type': type(error).__name__,
                                   'message': str(error),
                                   'traceback': traceback.format_exc()}
-            logger.error(f'Execution failed: {error}')
+            Logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time: .2f}s')
+            Logger.info(f'Execution completed successfully in {self.end_time - self.start_time: .2f}s')
 
 
 @dataclass
@@ -57,6 +57,6 @@ class ProcessingResult:
     success: bool
     data: Optional[Any] = None
     error_message: Optional[str] = None
-    execution_context: Optional[ExecutionContext] = None
+    ExecutionContext: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
 

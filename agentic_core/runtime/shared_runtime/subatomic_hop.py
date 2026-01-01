@@ -3,9 +3,9 @@ import time
 import uuid
 from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.config.blueprint_sovereign import ConfigurationService
-from agentic_core.runtime.core.telemetry import TelemetryRecorder, TraceEvent
-from agentic_core.schemas.models.core_contracts import AgentPlan
+from AgenticCore.config.blueprint_sovereign import ConfigurationService
+from AgenticCore.runtime.core.telemetry import TelemetryRecorder, TraceEvent
+from AgenticCore.schemas.models.core_contracts import AgentPlan
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class SovereignDependencyError(Exception):
     pass
 
 
-# Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
+# Models migrated to SSOT: AgenticCore/schemas/models/core_contracts.py
 
 
 class SubatomicHop:
@@ -33,15 +33,15 @@ class SubatomicHop:
         # Injected Dependencies (The Sovereign Lego Pattern)
         storage: Optional[Any] = None,
         genealogy: Optional[Any] = None,
-        pii_vault: Optional[Any] = None,
-        cost_governor: Optional[Any] = None,
+        PiiVault: Optional[Any] = None,
+        CostGovernor: Optional[Any] = None,
         overseer: Optional[Any] = None,
         membrane: Optional[Any] = None,
         airlock: Optional[Any] = None,
-        supreme_court: Optional[Any] = None,
+        SupremeCourt: Optional[Any] = None,
         mcp_manager: Optional[Any] = None,
         sandbox: Optional[Any] = None,
-        structured_engine: Optional[Any] = None,
+        StructuredEngine: Optional[Any] = None,
         gatekeeper: Optional[Any] = None,
         telemetry: Optional[Any] = None,
     ) -> None:
@@ -52,20 +52,20 @@ class SubatomicHop:
             config: Configuration dictionary
             storage: LocalDiskAdapter instance (injected)
             genealogy: GenealogyRegistry instance (injected)
-            pii_vault: PIIVault instance (injected)
-            cost_governor: CostGovernor instance (injected)
+            PiiVault: PIIVault instance (injected)
+            CostGovernor: CostGovernor instance (injected)
             overseer: ConstitutionalOverseer instance (injected)
             membrane: InputMembrane instance (injected)
             airlock: AirlockProtocol instance (injected)
-            supreme_court: SupremeCourt instance (injected)
+            SupremeCourt: SupremeCourt instance (injected)
             mcp_manager: MCPConnectionManager instance (injected)
             sandbox: DockerSandbox instance (injected)
-            structured_engine: StructuredEngine instance (injected)
+            StructuredEngine: StructuredEngine instance (injected)
             gatekeeper: SemanticGatekeeper instance (injected)
             telemetry: TelemetryRecorder instance (injected)
             
         Raises:
-            SovereignDependencyError: If required dependencies are missing
+            SovereignDependencyError: If required dependencies are Missing
         """
         self.role = role
         self.id = str(uuid.uuid4())
@@ -74,15 +74,15 @@ class SubatomicHop:
         # Bedrock Validation: Ensure the 'Boss' handed us the tools we need
         self.storage = self._ensure_dep(storage, "LocalDiskAdapter")
         self.genealogy = self._ensure_dep(genealogy, "GenealogyRegistry")
-        self.pii = self._ensure_dep(pii_vault, "PIIVault")
-        self.governor = self._ensure_dep(cost_governor, "CostGovernor")
+        self.pii = self._ensure_dep(PiiVault, "PIIVault")
+        self.governor = self._ensure_dep(CostGovernor, "CostGovernor")
         self.overseer = self._ensure_dep(overseer, "ConstitutionalOverseer")
         self.membrane = self._ensure_dep(membrane, "InputMembrane")
         self.airlock = self._ensure_dep(airlock, "AirlockProtocol")
-        self.supreme_court = self._ensure_dep(supreme_court, "SupremeCourt")
+        self.SupremeCourt = self._ensure_dep(SupremeCourt, "SupremeCourt")
         self.mcp = self._ensure_dep(mcp_manager, "MCPConnectionManager")
         self.sandbox = self._ensure_dep(sandbox, "DockerSandbox")
-        self.structured_engine = self._ensure_dep(structured_engine, "StructuredEngine")
+        self.StructuredEngine = self._ensure_dep(StructuredEngine, "StructuredEngine")
         self.gatekeeper = self._ensure_dep(gatekeeper, "SemanticGatekeeper")
         self.telemetry = self._ensure_dep(telemetry, "TelemetryRecorder")
 
@@ -101,7 +101,7 @@ class SubatomicHop:
         """
         if dep is None:
             raise SovereignDependencyError(
-                f"SubatomicHop missing critical tool: {name}. "
+                f"SubatomicHop Missing critical tool: {name}. "
                 "Orchestration layer must inject this dependency to maintain Gravity Compliance."
             )
         return dep
@@ -140,7 +140,7 @@ class SubatomicHop:
     async def _preflight_checks(self, context: Dict, trace_id: str) -> None:
         """Pre-flight validation and setup."""
         context_hash = str(hash(str(context)))
-        self.genealogy.register_attempt(trace_id, str(context.get('task', '')), context_hash)
+        self.genealogy.register_attempt(trace_id, str(context.get('Task', '')), context_hash)
         await self.mcp.connect(self.role)
         
         sanitized_context = await self._sanitize_input(context, trace_id)
@@ -181,18 +181,18 @@ class SubatomicHop:
 
     async def _execute_think_stage(self, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
-        risk_level = self._assess_task_risk(context.get('task', ''))
-        await self._check_past_failures(context.get('task', ''))
+        risk_level = self._assess_task_risk(context.get('Task', ''))
+        await self._check_past_failures(context.get('Task', ''))
         
         try:
-            verdict = await self.supreme_court.deliberate(
+            Verdict = await self.SupremeCourt.deliberate(
                 CONTEXT=str(context),
-                GOAL=context.get('task', ''),
+                GOAL=context.get('Task', ''),
                 risk_level=risk_level
             )
             plan = AgentPlan(
-                reasoning=verdict.reasoning,
-                tool_calls=[{'name': 'execute_plan', 'args': {'plan': verdict.chosen_plan}}]
+                reasoning=Verdict.reasoning,
+                tool_calls=[{'name': 'execute_plan', 'args': {'plan': Verdict.chosen_plan}}]
             )
             think_cost = self.governor.track('gpt-4', 300, 150)
             
@@ -203,8 +203,8 @@ class SubatomicHop:
                     ROLE=self.role,
                     event_type='CONSENSUS_REACHED',
                     PAYLOAD={
-                        'consensus_score': verdict.consensus_score,
-                        'safe_to_proceed': verdict.safe_to_proceed,
+                        'consensus_score': Verdict.consensus_score,
+                        'safe_to_proceed': Verdict.safe_to_proceed,
                         'cost': think_cost
                     },
                     TIMESTAMP=time.time()
@@ -224,9 +224,9 @@ class SubatomicHop:
             )
             raise
 
-    def _assess_task_risk(self, task: str) -> str:
-        """Assess the risk level of a task."""
-        task_lower = task.lower()
+    def _assess_task_risk(self, Task: str) -> str:
+        """Assess the risk level of a Task."""
+        task_lower = Task.lower()
         high_risk_keywords = ['delete', 'remove', 'drop', 'truncate', 'destroy']
         
         if any(keyword in task_lower for keyword in high_risk_keywords):
@@ -236,7 +236,7 @@ class SubatomicHop:
         else:
             return 'low'
 
-    async def _check_past_failures(self, task: str) -> str:
+    async def _check_past_failures(self, Task: str) -> str:
         """Check telemetry for past failures on similar tasks."""
         try:
             return 'No similar failures found'

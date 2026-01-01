@@ -14,8 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from pydantic import BaseModel, Field
 
-from agentic_core.L5_safety.guardrails.input_validator import InputValidator
-from agentic_core.schemas.models.runtime_models import InjectionMatch
+from AgenticCore.L5_safety.guardrails.input_validator import InputValidator
+from AgenticCore.schemas.models.runtime_models import InjectionMatch
 
 # Compatibility aliases
 class InputSanitizer:
@@ -38,7 +38,7 @@ class SecurityIntegrityError(Exception):
     """Raised when security integrity validation fails."""
     pass
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -100,7 +100,7 @@ You are {role}. Your objective is {objective}.
         # Load custom templates
         self._load_templates()
         
-        logger.info(f"Initialized PromptAssembler (legacy_mode={legacy_mode})")
+        Logger.info(f"Initialized PromptAssembler (legacy_mode={legacy_mode})")
     
     def _load_templates(self) -> None:
         """Load custom XML templates from file."""
@@ -124,10 +124,10 @@ You are {role}. Your objective is {objective}.
                     description="Custom template"
                 )
                 
-                logger.debug(f"Loaded template: {template_name}")
+                Logger.debug(f"Loaded template: {template_name}")
                 
             except Exception as e:
-                logger.error(f"Failed to load template {file_path}: {e}")
+                Logger.error(f"Failed to load template {file_path}: {e}")
     
     def assemble(
         self,
@@ -222,7 +222,7 @@ You are {role}. Your objective is {objective}.
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
             
         except SecurityIntegrityError as e:
-            logger.error(f"Security validation failed during prompt assembly: {e}")
+            Logger.error(f"Security validation failed during prompt assembly: {e}")
             raise
         
         # Format directives from sanitized injections
@@ -267,14 +267,14 @@ You are {role}. Your objective is {objective}.
         try:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
         except SecurityIntegrityError as e:
-            logger.error(f"Tag integrity check failed: {e}")
+            Logger.error(f"Tag integrity check failed: {e}")
             raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
         
         # SECURITY: XML Structure Validation
         try:
             InputSanitizer.validate_xml_structure(prompt)
         except SecurityIntegrityError as e:
-            logger.error(f"XML validation failed: {e}")
+            Logger.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
         
         # Add metadata if provided (with sanitization)
@@ -293,7 +293,7 @@ You are {role}. Your objective is {objective}.
         if not self.legacy_mode:
             prompt = self._add_fencing_notice(prompt)
         
-        logger.debug("Prompt assembled successfully with security hardening")
+        Logger.debug("Prompt assembled successfully with security hardening")
         return prompt
     
     def _format_context_data(self, context: Dict[str, Any]) -> str:
@@ -457,7 +457,7 @@ You are {role}. Your objective is {objective}.
             description=description
         )
         
-        logger.info(f"Created custom template: {name}")
+        Logger.info(f"Created custom template: {name}")
 
 
 # Global assembler instance

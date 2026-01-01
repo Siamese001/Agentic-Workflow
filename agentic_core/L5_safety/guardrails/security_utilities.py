@@ -14,9 +14,9 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class security_status(Enum):
+class SecurityStatus(Enum):
     """Status codes for security checks."""
     PASS: Any = 'PASS'
     FAIL: Any = 'FAIL'
@@ -24,14 +24,14 @@ class security_status(Enum):
     UNKNOWN: Any = 'UNKNOWN'
 
 @dataclass
-class security_result:
+class SecurityResult:
     """Result from a security check."""
     status: SecurityStatus
     reason: str
     details: Dict[str, Any] = None
     confidence: float = 0.0
 
-class prompt_firewall:
+class PromptFirewall:
     """P3: Prompt Firewall for injection detection and prevention."""
     INJECTION_PATTERNS: Any = ['(?i)(ignore|forget|disregard).*previous.*instruction', '(?i)(system|developer|admin|root).*prompt', '(?i)(jailbreak|bypass|override).*restriction', '(?i)(new.*role|act.*as|pretend.*you)', '(?i)(translate|decode|reveal).*hidden', '(?i)(<\\|.*?\\|>|<\\|.*?\\|>)', '(?i)(###.*instruction|```.*prompt)', '(?i)(summarize|repeat|echo).*above']
     SUSPICIOUS_KEYWORDS: Any = {'injection', 'bypass', 'override', 'ignore', 'forget', 'disregard', 'jailbreak', 'root', 'admin', 'system', 'developer', 'prompt', 'instruction', 'roleplay', 'pretend', 'act as', 'translate', 'decode'}
@@ -53,15 +53,15 @@ class prompt_firewall:
             return SecurityResult(status=SecurityStatus.WARNING, reason='Empty input provided')
         for pattern in self.patterns:
             if pattern.search(input_text):
-                logger.warning(f'P3_INJECTION_DETECTED: {pattern.pattern}')
+                Logger.warning(f'P3_INJECTION_DETECTED: {pattern.pattern}')
                 return SecurityResult(status=SecurityStatus.FAIL, reason=f'Injection pattern detected: {pattern.pattern}', details={'pattern': pattern.pattern, 'confidence': 0.95})
         words: Any = input_text.lower().split()
         suspicious_count: Any = sum((1 for word in words if word in self.SUSPICIOUS_KEYWORDS))
         suspicious_ratio: Any = suspicious_count / len(words) if words else 0
         if suspicious_ratio > 0.1:
-            logger.warning(f'P3_SUSPICIOUS_KEYWORDS: {suspicious_ratio:.2%}')
+            Logger.warning(f'P3_SUSPICIOUS_KEYWORDS: {suspicious_ratio:.2%}')
             return SecurityResult(status=SecurityStatus.WARNING, reason=f'High suspicious keyword density: {suspicious_ratio:.2%}', details={'ratio': suspicious_ratio, 'count': suspicious_count})
-        logger.info('P3_SCAN_PASS: No injection detected')
+        Logger.info('P3_SCAN_PASS: No injection detected')
         return SecurityResult(status=SecurityStatus.PASS, reason='Input passed security scan', confidence=0.9)
 
     def sanitize_input(self, input_text: str) -> str:
@@ -80,7 +80,7 @@ class prompt_firewall:
             sanitized: Any = sanitized[:10000] + '...[truncated]'
         return sanitized
 
-class fact_checker:
+class FactChecker:
     """P4: Fact Checker for truth anchor validation."""
 
     def __init__(self, golden_record_path: Optional[str]=None):
@@ -101,10 +101,10 @@ class fact_checker:
                 with open(path, 'r', encoding='utf-8') as f:
                     return json.load(f)
             else:
-                logger.warning(f'Golden record not found at {self.golden_record_path}')
+                Logger.warning(f'Golden record not found at {self.golden_record_path}')
                 return self._create_default_record()
         except Exception as e:
-            logger.error(f'Failed to load golden record: {e}')
+            Logger.error(f'Failed to load golden record: {e}')
             return self._create_default_record()
 
     def _create_default_record(self) -> Dict[str, Any]:
@@ -133,9 +133,9 @@ class fact_checker:
             else:
                 violations.append(f"Skill '{skill}' not found in truth anchors")
         if violations:
-            logger.warning(f'P4_VALIDATION_FAIL: {len(violations)} violations')
+            Logger.warning(f'P4_VALIDATION_FAIL: {len(violations)} violations')
             return SecurityResult(status=SecurityStatus.FAIL, reason=f"Skill validation failed: {'; '.join(violations)}", details={'violations': violations, 'mentioned_skills': mentioned_skills})
-        logger.info('P4_VALIDATION_PASS: All skills verified')
+        Logger.info('P4_VALIDATION_PASS: All skills verified')
         return SecurityResult(status=SecurityStatus.PASS, reason='All skills validated against truth anchors', details={'verified_skills': mentioned_skills})
 
     def _extract_skills(self, text: str) -> Set[str]:
@@ -164,7 +164,7 @@ class fact_checker:
             max_years: Any = max((int(year) for year in matches))
             anchor_years: Any = self.truth_anchors.get('experience', {}).get('years_total', 0)
             if max_years > anchor_years + 2:
-                return SecurityResult(status=SecurityStatus.WARNING, reason=f'Experience claim ({max_years} years) exceeds anchor ({anchor_years} years)')
+                return SecurityResult(status=SecurityStatus.WARNING, reason=f'Experience Claim ({max_years} years) exceeds anchor ({anchor_years} years)')
         return SecurityResult(status=SecurityStatus.PASS, reason='Experience validation passed')
 _prompt_firewall = None
 _fact_checker = None

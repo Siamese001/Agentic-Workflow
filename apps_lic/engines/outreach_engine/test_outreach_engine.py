@@ -91,9 +91,9 @@ def test_lead_vetting():
     # print("🧪 Testing Outreach Engine - Automated Lead Vetting")  # [Security Fix]
     # print("=" * 60)  # [Security Fix]
 
-    # Initialize mock tools and logger
+    # Initialize mock tools and Logger
     mock_tools = MockMCPTools()
-    logger = MockLogger()
+    Logger = MockLogger()
 
     # Pass tools as dictionary
     tools = {
@@ -110,7 +110,7 @@ def test_lead_vetting():
         company_url="https://techcorp.example.com/news",
         user_name="Alice Johnson",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
@@ -121,7 +121,7 @@ def test_lead_vetting():
         company_url="https://invalid.url",
         user_name="Alice Johnson",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
@@ -132,7 +132,7 @@ def test_lead_vetting():
         company_url="https://techcorp.example.com/news",
         user_name="Unknown User",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 

@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
+from AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 
 class SystemArchitect(CanonBaseAgent):
@@ -95,8 +95,8 @@ class SystemArchitect(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
-        from agentic_core.runtime.shared_runtime.void_compliance import (
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from AgenticCore.runtime.shared_runtime.void_compliance import (
             validate_canonical_hierarchy,
         )
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
@@ -124,7 +124,7 @@ class SystemArchitect(CanonBaseAgent):
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
                     # Check L2 subfolders if depth is 4
                     if config["depth"] == 4:
-                        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+                        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
                             CORE_SUBFOLDER_MAP,
                         )
                         l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
@@ -161,7 +161,7 @@ class SystemArchitect(CanonBaseAgent):
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
             # [SSOT] Dynamic depth check from structure_blueprint
-            from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+            from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
                 SOVEREIGN_REGISTRY,
             )
             
@@ -210,10 +210,10 @@ class SystemArchitect(CanonBaseAgent):
         Handles both physical package initialization and logic mutation.
         """
         # 1. Structural Healing: Auto-initialize Python packages (L6 Integrity)
-        # Any violation containing "Missing __init__.py" triggers a physical write.
+        # Any Violation containing "Missing __init__.py" triggers a physical write.
         structural_fixes = [v for v in violations if "Missing __init__.py" in v]
         for fix in structural_fixes:
-            # Extract path from violation string (e.g., 'agentic_core/L1_cognition: Missing __init__.py')
+            # Extract path from Violation string (e.g., 'AgenticCore/L1_cognition: Missing __init__.py')
             folder_rel = fix.split(":")[0].strip()
             folder_path = Path(os.getcwd()) / folder_rel
             if folder_path.exists():
@@ -230,23 +230,23 @@ class SystemArchitect(CanonBaseAgent):
             
         # [KEY 42 HARDENING] Force Fission Surgery
         if key == 42:
-            for violation in remaining_violations:
-                file_path = violation.split(":")[0].strip()
-                await self._smart_fix(file_path, key, [violation])
+            for Violation in remaining_violations:
+                file_path = Violation.split(":")[0].strip()
+                await self._smart_fix(file_path, key, [Violation])
             return
 
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         
         # Group violations by file
         file_violations = {}
-        for violation in remaining_violations[:max_healing_per_file]:
-            if ':' in violation:
-                parts = violation.split(': ', 1)
+        for Violation in remaining_violations[:max_healing_per_file]:
+            if ':' in Violation:
+                parts = Violation.split(': ', 1)
                 if len(parts) >= 1:
                     file_path = parts[0]
                     if file_path not in file_violations:
                         file_violations[file_path] = []
-                    file_violations[file_path].append(violation)
+                    file_violations[file_path].append(Violation)
         
         # Heal each file using LLM resilient mutation
         for file_path, file_viols in file_violations.items():
@@ -268,7 +268,7 @@ class SystemArchitect(CanonBaseAgent):
         
         # [KEY 40] Standardized Header & Test Protocol Injection
         if any(marker in v for marker in ["Missing Canonical Header", "Missing Test Protocol"] for v in violations):
-            task = f"""### ROLE: ARCHITECTURAL_SURGEON
+            Task = f"""### ROLE: ARCHITECTURAL_SURGEON
 ### TASK: Inject Standard Sovereign Header (Key 40).
 FILE: {os.path.basename(file_path)}
 
@@ -282,7 +282,7 @@ INSTRUCTIONS:
 Return ONLY the full code with the new header injected."""
         else:
             violation_details = "\n".join(violations)
-            task = f"Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}"
+            Task = f"Fix Subatomic Canon Key {violation_key}. Violations:\n{violation_details}"
         
         # Multi-round healing
         max_rounds = 5
@@ -294,7 +294,7 @@ Return ONLY the full code with the new header injected."""
             
             # Get mutated code from Gemini
             mutated_code = await self.resilient_mutation(
-                task=task,
+                Task=Task,
                 code=current_code,
                 file_path=file_path,
                 round_num=round_num,

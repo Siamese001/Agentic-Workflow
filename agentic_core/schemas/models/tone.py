@@ -34,7 +34,7 @@ class StyleProfile(BaseModel):
     emoji_frequency: float = Field(default=0.2, ge=0.0, le=1.0, description="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15, ge=5, le=50, description="Target words per sentence")
     vocabulary_complexity: float = Field(default=0.5, ge=0.0, le=1.0, description="Vocabulary complexity")
-    confidence_level: float = Field(default=0.8, ge=0.0, le=1.0, description="Confidence in analysis")
+    ConfidenceLevel: float = Field(default=0.8, ge=0.0, le=1.0, description="Confidence in analysis")
 
     class Config:
         """Pydantic configuration for profile mutability."""

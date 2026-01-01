@@ -3,7 +3,7 @@ from typing import Any, Optional, Protocol, Dict, List
 
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 

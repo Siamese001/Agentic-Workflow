@@ -5,13 +5,13 @@ import shutil
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
+root: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
 quarantine: Any = Path('C:/Git/Agentic-Workflow/quarantine_syntax_errors')
 broken_files: Any = ['L1_cognition/P1_core/rg_validation_gates_impl.py', 'L2_execution/P2_tools/examples.py', 'L2_execution/P4_agents/pattern_retrieval_agent.py', 'L2_execution/P4_agents/quality.py', 'L3_orchestration/S3_vitality/context.py']
 

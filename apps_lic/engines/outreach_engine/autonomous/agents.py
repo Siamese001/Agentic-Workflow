@@ -199,10 +199,10 @@ class CampaignBalanceAgent(OutreachAgent):
 
         # Check campaign has required elements
         if not campaign.get("name"):
-            balance_issues.append("Campaign missing name")
+            balance_issues.append("Campaign Missing name")
 
         if not campaign.get("goal"):
-            balance_issues.append("Campaign missing goal")
+            balance_issues.append("Campaign Missing goal")
 
         if balance_issues:
             self.add_signal("CAMPAIGN_BALANCE_ISSUE")

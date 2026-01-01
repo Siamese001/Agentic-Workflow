@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class SemanticTerritoryMapperAgent:

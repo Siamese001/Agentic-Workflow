@@ -11,23 +11,23 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 # [SSOT] Import sovereign report and metrics witness from scripts/ (constitutional location)
-from agentic_core.L0_maintenance.scripts.sovereign_report import SovereignReport
-from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
+from AgenticCore.L0_maintenance.scripts.sovereign_report import SovereignReport
+from AgenticCore.L0_maintenance.scripts.metrics_witness import MetricsWitness
 
 # [PHASE 15] SSOT-compliant Guardian Orchestrator
-from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
+from AgenticCore.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
 
 # [PHASE 16] Healing Orchestrator – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.healing_orchestrator import HealingOrchestrator
+from AgenticCore.L0_maintenance.scripts.healing_orchestrator import HealingOrchestrator
 
 # [PHASE 17] Script-to-Agent Classifier – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifier
+from AgenticCore.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifier
 
 
 # Add repo root to path for imports
@@ -36,7 +36,7 @@ sys.path.append(str(repo_root))
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import main as check_underscore_fields
+    from AgenticCore.L0_maintenance.scripts.guard_no_underscore_fields import main as check_underscore_fields
 except ImportError:
     check_underscore_fields = None
 
@@ -45,9 +45,9 @@ except ImportError:
 
 try:
     # [NEW] Import L5 Validators for Supreme Court Cross-Examination
-    from agentic_core.L5_safety.validators.LocationAgent import location_agent as LocationAgent
-    from agentic_core.utils.naming.NamingAgent import NamingAgent
-    from agentic_core.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
+    from AgenticCore.L5_safety.validators.LocationAgent import location_agent as LocationAgent
+    from AgenticCore.utils.naming.NamingAgent import NamingAgent
+    from AgenticCore.observability.metrics.MetricsAgent import metrics_agent as MetricsAgent
 except ImportError:
     LocationAgent = None
     NamingAgent = None
@@ -61,7 +61,7 @@ async def main():
     Orchestrates Guardians and consumes L6 Metrics to issue a final Sovereignty Verdict.
     """
     
-    target = Path("agentic_core")
+    target = Path("AgenticCore")
     project_root_path = repo_root
     
     builder = SovereignReport.Builder()
@@ -135,7 +135,7 @@ async def main():
         
         # Check if blueprint drift is contributing to sovereignty degradation
         try:
-            from agentic_core.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+            from AgenticCore.L0_maintenance.scripts.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
             
             print("\n[BLUEPRINT CHECK] Scanning for SSOT drift...")
             reconciler = FilesystemSSOTReconcilerAgent(project_root_path)

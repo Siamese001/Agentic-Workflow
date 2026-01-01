@@ -5,28 +5,28 @@ Provides shared infrastructure services and domain configuration.
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class domain_config:
+class DomainConfig:
     """Domain-specific configuration."""
     engine_type: str
     settings: Dict[str, Any]
     metadata: Dict[str, Any]
 
-class shared_infrastructure:
+class SharedInfrastructure:
     """Shared infrastructure services."""
 
     def __init__(self):
         """Initialize shared infrastructure."""
         self._configs: Dict[str, DomainConfig] = {}
-        logger.debug('SharedInfrastructure initialized')
+        Logger.debug('SharedInfrastructure initialized')
 
     def create_domain_config(self, engine_type: str) -> DomainConfig:
         """Create domain configuration for engine type."""
         config: Any = DomainConfig(engine_type=engine_type, settings={}, metadata={})
         self._configs[engine_type] = config
-        logger.debug(f'Domain config created for: {engine_type}')
+        Logger.debug(f'Domain config created for: {engine_type}')
         return config
 
     def get_domain_config(self, engine_type: str) -> Optional[DomainConfig]:

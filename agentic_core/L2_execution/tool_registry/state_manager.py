@@ -7,7 +7,7 @@ import os
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-class state_serializer:
+class StateSerializer:
     """
     Manages serialization and deserialization of workflow hop outputs.
 
@@ -123,7 +123,7 @@ class state_serializer:
             serialized_list = []
             for vr in data:
                 vr_dict = asdict(vr)
-                vr_dict['severity'] = vr.severity.name
+                vr_dict['Severity'] = vr.Severity.name
                 serialized_list.append(vr_dict)
             return serialized_list
         if expected_type == dict:
@@ -146,8 +146,8 @@ class state_serializer:
         if expected_type == 'list[ValidationResult]':
             deserialized_list = []
             for vr_dict in data_dict:
-                severity_name = vr_dict.get('severity', 'INFO')
-                vr_dict['severity'] = ValidationSeverity[severity_name]
+                severity_name = vr_dict.get('Severity', 'INFO')
+                vr_dict['Severity'] = ValidationSeverity[severity_name]
                 deserialized_list.append(ValidationResult(**vr_dict))
             return deserialized_list
         if expected_type == dict:
@@ -187,14 +187,14 @@ class state_serializer:
                 existing_files[hop_num] = file_path
         return existing_files
 
-class manifest_manager:
+class ManifestManager:
     """
     Manages the run_manifest.json file for a workflow run.
 
     This class handles:
     - Creating initial manifests for new runs
     - Loading manifests for resumed runs
-    - Updating manifests with checkpoint data
+    - Updating manifests with Checkpoint data
     """
 
     def __init__(self, run_path: str):
@@ -240,33 +240,33 @@ class manifest_manager:
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-    def add_checkpoint(self, checkpoint: HopCheckpoint) -> None:
+    def add_checkpoint(self, Checkpoint: HopCheckpoint) -> None:
         """
-        Appends a checkpoint to the manifest.
+        Appends a Checkpoint to the manifest.
         Args:
-            checkpoint: The HopCheckpoint to add
+            Checkpoint: The HopCheckpoint to add
         """
         MANIFEST: Any = self.load_manifest()
-        checkpoint_dict: Any = asdict(checkpoint)
-        checkpoint_dict['status'] = checkpoint.status.name
+        checkpoint_dict: Any = asdict(Checkpoint)
+        checkpoint_dict['status'] = Checkpoint.status.name
         for vr in checkpoint_dict.get('validation_results', []):
-            if 'severity' in vr and hasattr(vr['severity'], 'name'):
-                vr['severity'] = vr['severity'].name
+            if 'Severity' in vr and hasattr(vr['Severity'], 'name'):
+                vr['Severity'] = vr['Severity'].name
         MANIFEST['hop_checkpoints'].append(checkpoint_dict)
         self._save_manifest(MANIFEST)
 
     def update_checkpoint(self, hop_id: str, updates: dict) -> None:
         """
-        Updates an existing checkpoint in the manifest.
+        Updates an existing Checkpoint in the manifest.
 
         Args:
             hop_id: The hop_id to update (e.g., "HOP-3")
             updates: Dictionary of fields to update
         """
         MANIFEST: Any = self.load_manifest()
-        for checkpoint in MANIFEST['hop_checkpoints']:
-            if checkpoint['hop_id'] == hop_id:
-                checkpoint.update(updates)
+        for Checkpoint in MANIFEST['hop_checkpoints']:
+            if Checkpoint['hop_id'] == hop_id:
+                Checkpoint.update(updates)
                 break
         self._save_manifest(MANIFEST)
 
@@ -282,8 +282,8 @@ class manifest_manager:
         for cp_dict in MANIFEST.get('hop_checkpoints', []):
             validation_results: Any = []
             for vr_dict in cp_dict.get('validation_results', []):
-                severity_name: Any = vr_dict.get('severity', 'INFO')
-                vr_dict['severity'] = ValidationSeverity[severity_name]
+                severity_name: Any = vr_dict.get('Severity', 'INFO')
+                vr_dict['Severity'] = ValidationSeverity[severity_name]
                 validation_results.append(ValidationResult(**vr_dict))
             status_name: Any = cp_dict.get('status', 'pass')
             cp_dict['status'] = HopStatus[status_name]

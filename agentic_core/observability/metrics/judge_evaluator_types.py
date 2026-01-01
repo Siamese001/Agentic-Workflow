@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 'Brief description of functionality and purpose.'
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-'Types and models for judge_evaluator.'
+'Types and models for JudgeEvaluator.'
 import logging
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class judgment_criterion(Enum):
+class JudgmentCriterion(Enum):
     """Criteria for judging output quality."""
     ACCURACY: Any = 'accuracy'
     COMPLETENESS: Any = 'completeness'
@@ -18,7 +18,7 @@ class judgment_criterion(Enum):
     SAFETY: Any = 'safety'
     HELPFULNESS: Any = 'helpfulness'
 
-class judgment_score(Enum):
+class JudgmentScore(Enum):
     """Judgment score levels."""
     EXCELLENT: Any = 'excellent'
     GOOD: Any = 'good'
@@ -27,7 +27,7 @@ class judgment_score(Enum):
     UNACCEPTABLE: Any = 'unacceptable'
 
 @dataclass
-class judge_verdict:
+class JudgeVerdict:
     """Verdict from LM-as-a-Judge evaluation."""
     criterion: JudgmentCriterion
     score: JudgmentScore
@@ -41,7 +41,7 @@ class judge_verdict:
         return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.score_value, 'reasoning': self.reasoning, 'evidence': self.evidence, 'suggestions': self.suggestions}
 
 @dataclass
-class judge_evaluation_result:
+class JudgeEvaluationResult:
     """Complete evaluation result from judge."""
     overall_score: float
     verdicts: List[JudgeVerdict]

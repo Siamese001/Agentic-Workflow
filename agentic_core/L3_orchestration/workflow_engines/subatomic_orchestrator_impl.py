@@ -1,4 +1,4 @@
-"""Implementation for subatomic_orchestrator."""
+"""Implementation for SubatomicOrchestrator."""
 
 import asyncio
 import logging
@@ -9,38 +9,38 @@ from typing import Any, Dict, List, Optional, Protocol
 import networkx as nx
 
 
-# NAMING FIXED: AgentRole → agent_role
-class agent_role(Enum):
+# NAMING FIXED: AgentRole → AgentRole
+class AgentRole(Enum):
     '''Brief description of functionality and purpose.'''
     
     CONTEXT_GATHERER = "context_gatherer"
-    STRATEGIC_PLANNER = "strategic_planner"
+    STRATEGIC_PLANNER = "StrategicPlanner"
     RESUME_BUILDER = "resume_builder"
     QUALITY_CRITIC = "quality_critic"
     MESSAGE_CRAFTER = "message_crafter"
     PROTOCOL_ENFORCER = "protocol_enforcer"
-    FACT_CHECKER = "fact_checker"
+    FACT_CHECKER = "FactChecker"
     PERSONALIZER = "personalizer"
     INSIGHT_ANALYZER = "insight_analyzer"
     CONTENT_DRAFTER = "content_drafter"
 
 
-# NAMING FIXED: WorkflowType → workflow_type
-class workflow_type(Enum):
+# NAMING FIXED: WorkflowType → WorkflowType
+class WorkflowType(Enum):
     '''Brief description of functionality and purpose.'''
     
     RESUME_GENERATION = "resume_generation"
     MESSAGE_OUTREACH = "message_outreach"
     CONTENT_CREATION = "content_creation"
 
-# NAMING FIXED: MutationAction → mutation_action
-class mutation_action(Enum):
+# NAMING FIXED: MutationAction → MutationAction
+class MutationAction(Enum):
     '''Brief description of functionality and purpose.'''
     
     SPAWN_PREDECESSOR = "spawn_predecessor"
 
-# NAMING FIXED: WorkflowBlueprint → workflow_blueprint
-class workflow_blueprint:
+# NAMING FIXED: WorkflowBlueprint → WorkflowBlueprint
+class WorkflowBlueprint:
     """Mock WorkflowBlueprint for type hinting."""
     def __init__(self, name, DESCRIPTION, ROLES, EDGES, mutation_hooks=None, parallel_groups=None):
         self.name = name
@@ -50,8 +50,8 @@ class workflow_blueprint:
         self.mutation_hooks = mutation_hooks or {}
         self.parallel_groups = parallel_groups or []
 
-# NAMING FIXED: AgentRegistry → agent_registry
-class agent_registry:
+# NAMING FIXED: AgentRegistry → AgentRegistry
+class AgentRegistry:
     """Mock AgentRegistry for type hinting."""
     pass
 
@@ -59,8 +59,8 @@ def get_agent_registry() -> AgentRegistry:
     """Mock function."""
     return AgentRegistry()
 
-# NAMING FIXED: DAGManager → dag_manager
-class dag_manager:
+# NAMING FIXED: DAGManager → DagManager
+class DagManager:
     """Mock DAGManager for type hinting."""
     def __init__(self):
         self.node_registry = {}
@@ -86,15 +86,15 @@ class dag_manager:
             return MockMutationResult(False)
 
 
-# NAMING FIXED: SubatomicHop → subatomic_hop
-class subatomic_hop:
+# NAMING FIXED: SubatomicHop → SubatomicHop
+class SubatomicHop:
     """Mock SubatomicHop for type hinting."""
     def __init__(self, role, hop_function, CONTEXT, enable_prompt_injection):
         self.config = type('obj', (object,), {'hop_id': role.value})()
         self.run = hop_function
         self.context = CONTEXT
         self.enable_prompt_injection = enable_prompt_injection
-        self.dag_manager = None
+        self.DagManager = None
 
 def create_functional_agent(role, hop_function, CONTEXT, enable_prompt_injection):
     '''Brief description of functionality and purpose.'''
@@ -108,12 +108,12 @@ def validate_no_legacy_code(value, message):
 # Global orchestrator instance
 _orchestrator: Optional[SubatomicOrchestrator] = None
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: SubatomicOrchestrator → subatomic_orchestrator
-class subatomic_orchestrator:
-    """Implementation for subatomic_orchestrator."""
+# NAMING FIXED: SubatomicOrchestrator → SubatomicOrchestrator
+class SubatomicOrchestrator:
+    """Implementation for SubatomicOrchestrator."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):
         """Initialize the orchestrator.
@@ -122,7 +122,7 @@ class subatomic_orchestrator:
             registry: Optional agent registry (uses global if not provided)
         """
         self.REGISTRY = registry or get_agent_registry()
-        self.dag_manager = DAGManager()
+        self.DagManager = DAGManager()
         self.active_graphs: Dict[str, nx.DiGraph] = {}
         self.execution_history: List[Dict[str, Any]] = []
         self._define_standard_workflows()
@@ -178,11 +178,11 @@ class subatomic_orchestrator:
                                                   parallel_groups=[[AgentRole.CONTEXT_GATHERER,
                                                                     AgentRole.INSIGHT_ANALYZER]])
 
-    def build_standard_pipeline(self, workflow_type: WorkflowType, **kwargs) -> nx.DiGraph:
+    def build_standard_pipeline(self, WorkflowType: WorkflowType, **kwargs) -> nx.DiGraph:
         """Build a standard workflow pipeline.
 
         Args:
-            workflow_type: Type of workflow to build
+            WorkflowType: Type of workflow to build
             **kwargs: Additional parameters
 
         Returns:
@@ -192,14 +192,14 @@ class subatomic_orchestrator:
             if isinstance(value, str):
                 validate_no_legacy_code(
                     value, f'build_standard_pipeline parameter {key}')
-        if workflow_type == WorkflowType.RESUME_GENERATION:
+        if WorkflowType == WorkflowType.RESUME_GENERATION:
             BLUEPRINT = self.resume_blueprint
-        elif workflow_type == WorkflowType.MESSAGE_OUTREACH:
+        elif WorkflowType == WorkflowType.MESSAGE_OUTREACH:
             BLUEPRINT = self.message_blueprint
-        elif workflow_type == WorkflowType.CONTENT_CREATION:
+        elif WorkflowType == WorkflowType.CONTENT_CREATION:
             BLUEPRINT = self.content_blueprint
         else:
-            raise ValueError(f'Unknown workflow type: {workflow_type}')
+            raise ValueError(f'Unknown workflow type: {WorkflowType}')
         return self._build_from_blueprint(BLUEPRINT, **kwargs)
 
     def build_custom_pipeline(self,
@@ -243,7 +243,7 @@ class subatomic_orchestrator:
                                                              {}),
                                           enable_prompt_injection=kwargs.get('enable_injections',
                                                                              True))
-            HOP.dag_manager = self.dag_manager
+            HOP.DagManager = self.DagManager
             role_to_hop[role] = HOP
             G.add_node(HOP, role=role)
         for from_role, to_role in blueprint.EDGES:
@@ -322,7 +322,7 @@ class subatomic_orchestrator:
                            'results': {}}
         try:
             for node in graph.nodes():
-                self.dag_manager.add_node(node)
+                self.DagManager.add_node(node)
             ready_nodes = self._get_ready_nodes(
                 graph, execution_state['completed_nodes'])
             while ready_nodes:
@@ -346,7 +346,7 @@ class subatomic_orchestrator:
                         LOGGER.info(f'Node {node.config.hop_id} completed')
                         execution_state['completed_nodes'].add(node)
                         execution_state['results'][node] = result
-                        self.dag_manager.execution_queue.append(node)
+                        self.DagManager.execution_queue.append(node)
                 ready_nodes = self._get_ready_nodes(
                     graph, execution_state['completed_nodes'])
             if len(execution_state['completed_nodes']) == graph.number_of_nodes():
@@ -442,16 +442,16 @@ class subatomic_orchestrator:
         mutation_hooks = node.context['mutation_hooks']
         for action, role in mutation_hooks:
             try:
-                MUTATION = self.dag_manager.create_mutation_request(action=action,
+                MUTATION = self.DagManager.create_mutation_request(action=action,
                                                                     target_hop_id=node.config.hop_id,
                                                                     hop_function=role.value,
                                                                     REASON=f'Node failed: {str(error)}',
                                                                     requester_hop_id=node.config.hop_id)
-                RESULT = self.dag_manager.request_mutation(MUTATION)
+                RESULT = self.DagManager.request_mutation(MUTATION)
                 if RESULT.success:
                     LOGGER.info(
                         f'Successfully applied mutation for {role.value}')
-                    new_hop = self.dag_manager.node_registry.get(role.value)
+                    new_hop = self.DagManager.node_registry.get(role.value)
                     if new_hop:
                         graph.add_node(new_hop, role=role)
                         graph.add_edge(new_hop, node)

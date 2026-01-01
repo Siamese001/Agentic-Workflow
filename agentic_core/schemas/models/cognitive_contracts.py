@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class PlanQualityError(Exception):
@@ -227,10 +227,10 @@ class CognitiveContractValidator:
                 errors.append("Content doesn't appear to implement the described strategy")
         
         # Check if key metrics are present
-        for metric in plan.key_metrics:
-            metric_lower = metric.lower()
+        for Metric in plan.key_metrics:
+            metric_lower = Metric.lower()
             if metric_lower not in content.lower():
-                errors.append(f"Key metric not found in content: {metric}")
+                errors.append(f"Key Metric not found in content: {Metric}")
         
         # Check pre-computation accuracy
         if plan.pre_computation:
@@ -273,7 +273,7 @@ class CognitiveContractManager:
         )
         
         self.active_contracts[contract_id] = contract
-        logger.info(f"Created cognitive contract: {contract_id}")
+        Logger.info(f"Created cognitive contract: {contract_id}")
         
         return contract
     
@@ -391,17 +391,17 @@ CONSTRAINTS TO ACKNOWLEDGE:
             consistency_errors = self.validator.validate_consistency(plan, content)
             if consistency_errors:
                 result["consistency_errors"] = consistency_errors
-                logger.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}")
+                Logger.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}")
             
             contract.stage = ContractStage.CONTRACT_FULFILLED
             result["stage"] = ContractStage.CONTRACT_FULFILLED.value
             
-            logger.info(f"Contract {contract_id} fulfilled successfully")
+            Logger.info(f"Contract {contract_id} fulfilled successfully")
             
             return content, result
             
         except (PlanQualityError, ConsistencyError) as e:
-            logger.error(f"Contract {contract_id} failed: {e}")
+            Logger.error(f"Contract {contract_id} failed: {e}")
             result["error"] = str(e)
             raise
     

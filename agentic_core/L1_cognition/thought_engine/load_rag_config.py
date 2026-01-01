@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -22,8 +22,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-# NAMING FIXED: RAGConfig → rag_config
-class rag_config:
+# NAMING FIXED: RAGConfig → RagConfig
+class RagConfig:
     """Enhanced configuration for resilient web RAG system."""
 
     _model: str = "gemini-1.5-flash"

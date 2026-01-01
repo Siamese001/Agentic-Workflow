@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class script_execution_priority(Enum):
+class ScriptExecutionPriority(Enum):
     """Priority levels for script execution."""
     CRITICAL: Any = 'critical'
     HIGH: Any = 'high'
@@ -19,8 +19,8 @@ class script_execution_priority(Enum):
     LOW: Any = 'low'
 
 @dataclass
-class script_task:
-    """Individual script task definition."""
+class ScriptTask:
+    """Individual script Task definition."""
     id: str
     script_path: str
     dependencies: List[str] = field(default_factory=list)
@@ -31,7 +31,7 @@ class script_task:
     max_retries: int = 3
 
 @dataclass
-class scripts_planning_config:
+class ScriptsPlanningConfig:
     """Configuration for scripts planning orchestrator."""
     max_concurrent_tasks: int = 5
     default_timeout: float = 300.0
@@ -41,7 +41,7 @@ class scripts_planning_config:
     log_level: str = 'INFO'
 
 @dataclass
-class scripts_planning_result:
+class ScriptsPlanningResult:
     """Result of scripts planning operation."""
     success: bool
     execution_plan: List[ScriptTask] = field(default_factory=list)
@@ -51,13 +51,13 @@ class scripts_planning_result:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class scripts_planning_orchestrator:
+class ScriptsPlanningOrchestrator:
     """Orchestrator for planning script execution operations."""
 
     def __init__(self, config: Optional[ScriptsPlanningConfig]=None):
         self.config = config or ScriptsPlanningConfig()
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(self.config.log_level)
+        self.Logger = logging.getLogger(self.__class__.__name__)
+        self.Logger.setLevel(self.config.log_level)
 
     def execute(self, script_tasks: List[ScriptTask]) -> ScriptsPlanningResult:
         """Execute the scripts planning orchestration.
@@ -68,32 +68,32 @@ class scripts_planning_orchestrator:
         Returns:
             ScriptsPlanningResult: Complete planning result with execution order
         """
-        self.logger.info(f'Starting scripts planning for {len(script_tasks)} tasks')
+        self.Logger.info(f'Starting scripts planning for {len(script_tasks)} tasks')
         try:
             self._validate_tasks(script_tasks)
             execution_plan: Any = self._resolve_dependencies(script_tasks)
             resource_requirements: Any = self._calculate_resources(execution_plan)
             total_duration: Any = self._estimate_duration(execution_plan)
             result: Any = ScriptsPlanningResult(success=True, execution_plan=execution_plan, estimated_total_duration=total_duration, resource_requirements=resource_requirements, metadata={'planned_at': datetime.utcnow().isoformat(), 'task_count': len(execution_plan), 'orchestrator': 'ScriptsPlanningOrchestrator'})
-            self.logger.info(f'Successfully planned {len(execution_plan)} tasks')
+            self.Logger.info(f'Successfully planned {len(execution_plan)} tasks')
             return result
         except Exception as e:
-            self.logger.error(f'Scripts planning failed: {str(e)}')
+            self.Logger.error(f'Scripts planning failed: {str(e)}')
             return ScriptsPlanningResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'orchestrator': 'ScriptsPlanningOrchestrator'})
 
     def _validate_tasks(self, tasks: List[ScriptTask]) -> None:
         """Validate script tasks before planning."""
         if not tasks:
             raise ValueError('No script tasks provided')
-        task_ids = {task.id for task in tasks}
+        task_ids = {Task.id for Task in tasks}
         if len(task_ids) != len(tasks):
-            raise ValueError('Duplicate task IDs found')
-        for task in tasks:
-            if not task.script_path:
-                raise ValueError(f'Task {task.id} has no script path')
-            for dep in task.dependencies:
+            raise ValueError('Duplicate Task IDs found')
+        for Task in tasks:
+            if not Task.script_path:
+                raise ValueError(f'Task {Task.id} has no script path')
+            for dep in Task.dependencies:
                 if dep not in task_ids:
-                    raise ValueError(f'Task {task.id} depends on non-existent task {dep}')
+                    raise ValueError(f'Task {Task.id} depends on non-existent Task {dep}')
 
     def _resolve_dependencies(self, tasks: List[ScriptTask]) -> List[ScriptTask]:
         """Resolve dependencies and create execution order."""
@@ -103,22 +103,22 @@ class scripts_planning_orchestrator:
         visiting_nodes = set()
         result = []
 
-        def visit(task: ScriptTask) -> None:
+        def visit(Task: ScriptTask) -> None:
             """Recursively visit tasks for dependency resolution."""
-            if task.id in visiting_nodes:
-                raise ValueError(f'Circular dependency detected involving task {task.id}')
-            if task.id in visited:
+            if Task.id in visiting_nodes:
+                raise ValueError(f'Circular dependency detected involving Task {Task.id}')
+            if Task.id in visited:
                 return
-            visiting_nodes.add(task.id)
-            for dep_id in task.dependencies:
+            visiting_nodes.add(Task.id)
+            for dep_id in Task.dependencies:
                 dep_task = next((t for t in tasks if t.id == dep_id))
                 visit(dep_task)
-            visiting_nodes.remove(task.id)
-            visited.add(task.id)
-            result.append(task)
-        for task in tasks:
-            if task.id not in visited:
-                visit(task)
+            visiting_nodes.remove(Task.id)
+            visited.add(Task.id)
+            result.append(Task)
+        for Task in tasks:
+            if Task.id not in visited:
+                visit(Task)
         return sorted(result, key=lambda t: (t.priority.value, t.id))
 
     def _calculate_resources(self, tasks: List[ScriptTask]) -> Dict[str, Any]:
@@ -130,12 +130,12 @@ class scripts_planning_orchestrator:
     def _estimate_duration(self, tasks: List[ScriptTask]) -> float:
         """Estimate total execution duration."""
         total = 0.0
-        for task in tasks:
-            if task.estimated_duration:
-                total += task.estimated_duration
+        for Task in tasks:
+            if Task.estimated_duration:
+                total += Task.estimated_duration
             else:
                 priority_multipliers = {ScriptExecutionPriority.CRITICAL: 1.5, ScriptExecutionPriority.HIGH: 1.2, ScriptExecutionPriority.NORMAL: 1.0, ScriptExecutionPriority.LOW: 0.8}
-                total += 60.0 * priority_multipliers.get(task.priority, 1.0)
+                total += 60.0 * priority_multipliers.get(Task.priority, 1.0)
         return total
 
 def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dependency_check: bool=True, **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
@@ -144,10 +144,10 @@ def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dep
     return ScriptsPlanningOrchestrator(config)
 
 def plan_script_execution(script_tasks: List[Dict[str, Any]], config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
-    """Plan script execution from simple task definitions.
+    """Plan script execution from simple Task definitions.
 
     Args:
-        script_tasks: List of task dictionaries with keys: id, script_path, dependencies, etc.
+        script_tasks: List of Task dictionaries with keys: id, script_path, dependencies, etc.
         config: Optional configuration overrides
 
     Returns:
@@ -155,10 +155,10 @@ def plan_script_execution(script_tasks: List[Dict[str, Any]], config: Optional[D
     """
     tasks: Any = []
     for task_dict in script_tasks:
-        task: Any = ScriptTask(id=task_dict['id'], script_path=task_dict['script_path'], dependencies=task_dict.get('dependencies', []), priority=ScriptExecutionPriority(task_dict.get('priority', 'normal')), parameters=task_dict.get('parameters', {}), estimated_duration=task_dict.get('estimated_duration'), retry_count=task_dict.get('retry_count', 0), max_retries=task_dict.get('max_retries', 3))
-        tasks.append(task)
-    orchestrator_config: Any = ScriptsPlanningConfig(**config) if config else None
-    orchestrator: Any = ScriptsPlanningOrchestrator(orchestrator_config)
+        Task: Any = ScriptTask(id=task_dict['id'], script_path=task_dict['script_path'], dependencies=task_dict.get('dependencies', []), priority=ScriptExecutionPriority(task_dict.get('priority', 'normal')), parameters=task_dict.get('parameters', {}), estimated_duration=task_dict.get('estimated_duration'), retry_count=task_dict.get('retry_count', 0), max_retries=task_dict.get('max_retries', 3))
+        tasks.append(Task)
+    OrchestratorConfig: Any = ScriptsPlanningConfig(**config) if config else None
+    orchestrator: Any = ScriptsPlanningOrchestrator(OrchestratorConfig)
     result: Any = orchestrator.execute(tasks)
     return {'success': result.success, 'execution_plan': [{'id': t.id, 'script_path': t.script_path, 'dependencies': t.dependencies, 'priority': t.priority.value, 'parameters': t.parameters, 'estimated_duration': t.estimated_duration} for t in result.execution_plan], 'estimated_total_duration': result.estimated_total_duration, 'resource_requirements': result.resource_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
 if __name__ == '__main__':

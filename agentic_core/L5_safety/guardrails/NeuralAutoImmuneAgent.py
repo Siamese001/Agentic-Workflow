@@ -11,10 +11,10 @@ import redis
 import logging
 
 # Sovereign Hardening Mixins – Phase A (High Priority)
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 class NeuralAutoImmuneAgent(
     AutonomyMixin,
@@ -29,7 +29,7 @@ class NeuralAutoImmuneAgent(
     def __init__(self, project_root: Path):
         self.root = project_root
         super().__init__()  # Required for cooperative multiple inheritance
-        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}")
 
         # Experience buffer for learning from past breach patterns
         log_dir = Path("logs") / "immune"
@@ -49,7 +49,7 @@ class NeuralAutoImmuneAgent(
             self.redis = redis.Redis(host=os.getenv('REDIS_HOST', 'localhost'), port=int(os.getenv('REDIS_PORT', 6379)), decode_responses=True)
             self.redis.ping()
         except Exception as e:
-            self.logger.warning(f'Redis connection failed ({e}), using in-memory cache')
+            self.Logger.warning(f'Redis connection failed ({e}), using in-memory cache')
             self.redis = None
             self._memory_cache = {}
         self.breach_threshold = int(os.getenv('IMMUNE_BREACH_THRESHOLD', '5'))
@@ -72,13 +72,13 @@ class NeuralAutoImmuneAgent(
                     cached: Any = json.dumps(self._memory_cache.get(key, {}))
                 if not cached:
                     continue
-                verdict: Any = json.loads(cached)
-                if not verdict.get('compliant', True):
-                    ts: Any = datetime.fromisoformat(verdict.get('timestamp', datetime.now().isoformat()))
+                Verdict: Any = json.loads(cached)
+                if not Verdict.get('compliant', True):
+                    ts: Any = datetime.fromisoformat(Verdict.get('timestamp', datetime.now().isoformat()))
                     if ts > cutoff:
-                        t: Any = verdict.get('territory', 'unknown')
-                        a: Any = verdict.get('source_agent', 'unknown')
-                        breaches[f'{t}:{a}'].append(verdict)
+                        t: Any = Verdict.get('territory', 'unknown')
+                        a: Any = Verdict.get('source_agent', 'unknown')
+                        breaches[f'{t}:{a}'].append(Verdict)
             lockdowns: Any = {}
             for source_id, events in breaches.items():
                 if len(events) >= self.breach_threshold:
@@ -100,7 +100,7 @@ class NeuralAutoImmuneAgent(
         based on change velocity, historical patterns, and complexity.
         """
         predictions = []
-        self.logger.info("Initiating predictive breach analysis")
+        self.Logger.info("Initiating predictive breach analysis")
 
         # 1. Get recent file change velocity (last 24 hours)
         recent_changes = await self._get_recent_file_changes(hours=24)
@@ -127,7 +127,7 @@ class NeuralAutoImmuneAgent(
                         action="immune_intervention",
                         target=str(file_path)
                     ),
-                    "recommendation": "Pre-emptive validation and monitoring",
+                    "Recommendation": "Pre-emptive validation and monitoring",
                     "preventive_actions": [
                         "Run GuardianOrchestrator on this file",
                         "Execute ScriptToAgentClassifier",
@@ -136,7 +136,7 @@ class NeuralAutoImmuneAgent(
                     "justification": f"High churn ({change_count} changes) + historical risk pattern"
                 }
                 predictions.append(prediction)
-                self.logger.warning(f"Predicted breach risk: {file_path} ({risk_score:.0%})")
+                self.Logger.warning(f"Predicted breach risk: {file_path} ({risk_score:.0%})")
 
         return predictions
 
@@ -183,7 +183,7 @@ class NeuralAutoImmuneAgent(
 
     # === Adaptive Execution Modes ===
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
-        self.logger.warning("Minimal mode: immune system on standby")
+        self.Logger.warning("Minimal mode: immune system on standby")
         return {
             "mode": "minimal",
             "status": "standby_resource_preservation",
@@ -191,7 +191,7 @@ class NeuralAutoImmuneAgent(
         }
 
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Dict[str, Any]:
-        self.logger.info("Conservative mode: detection only, no prediction")
+        self.Logger.info("Conservative mode: detection only, no prediction")
         return {
             "detected_breaches": self.detect_repeated_breaches(),
             "mode": "conservative",
@@ -228,7 +228,7 @@ class NeuralAutoImmuneAgent(
         """Run the defense scan with adaptive execution."""
         context = ctx or {}
         self._current_mode = await self.select_execution_mode(context)
-        self.logger.info(f"NeuralAutoImmuneAgent executing in {self._current_mode} mode")
+        self.Logger.info(f"NeuralAutoImmuneAgent executing in {self._current_mode} mode")
 
         # Use adaptive execution
         if self._current_mode == "minimal":

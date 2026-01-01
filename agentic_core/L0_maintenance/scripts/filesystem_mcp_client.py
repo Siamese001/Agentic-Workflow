@@ -7,25 +7,25 @@ import logging
 import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class sovereign_filesystem_mcp_client:
+class SovereignFilesystemMcpClient:
     """Official Filesystem MCP client for sovereign file operations."""
 
     def __init__(self, role: str='maintenance_files'):
         if not config.FILESYSTEM_MCP_ENABLED:
             raise ValueError('Filesystem MCP disabled in sovereign config')
-        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
-        logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
+        Logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
 
     def _validate_path(self, path: str) -> str:
         """L5 safety validation — enforce allowed roots and forbidden patterns."""
@@ -50,10 +50,10 @@ class sovereign_filesystem_mcp_client:
             content: Any = result if isinstance(result, str) else result.get('content', '')
             if len(content.encode(encoding)) > config.FILESYSTEM_MAX_READ_SIZE:
                 raise ValueError(f'File exceeds sovereign read limit of {config.FILESYSTEM_MAX_READ_SIZE} bytes')
-            logger.info(f'[L0 FILESYSTEM] Read access: {safe_path}')
+            Logger.info(f'[L0 FILESYSTEM] Read access: {safe_path}')
             return content
         except Exception as e:
-            logger.error(f'[L0 FILESYSTEM] Read failed for {path}: {e}')
+            Logger.error(f'[L0 FILESYSTEM] Read failed for {path}: {e}')
             raise
 
     async def write_text(self, path: str, content: str, encoding: str='utf-8') -> bool:
@@ -63,10 +63,10 @@ class sovereign_filesystem_mcp_client:
             raise ValueError('Content exceeds sovereign write limit')
         try:
             result: Any = await self.router.manager.call_tool('mcp5_write_file', {'path': safe_path, 'content': content})
-            logger.info(f'[L0 FILESYSTEM] Write access: {safe_path}')
+            Logger.info(f'[L0 FILESYSTEM] Write access: {safe_path}')
             return True
         except Exception as e:
-            logger.error(f'[L0 FILESYSTEM] Write failed for {path}: {e}')
+            Logger.error(f'[L0 FILESYSTEM] Write failed for {path}: {e}')
             return False
 
     async def list_directory(self, path: str) -> List[str]:
@@ -79,7 +79,7 @@ class sovereign_filesystem_mcp_client:
         """Delete file via MCP."""
         safe_path: Any = self._validate_path(path)
         await self.router.manager.call_tool('mcp5_delete_file', {'path': safe_path})
-        logger.warning(f'[L0 FILESYSTEM] DELETE performed: {safe_path}')
+        Logger.warning(f'[L0 FILESYSTEM] DELETE performed: {safe_path}')
         return True
 
     async def get_file_info(self, path: str) -> Dict[str, Any]:
@@ -93,10 +93,10 @@ class sovereign_filesystem_mcp_client:
         safe_path: Any = self._validate_path(path)
         try:
             await self.router.manager.call_tool('mcp5_create_directory', {'path': safe_path})
-            logger.info(f'[L0 FILESYSTEM] Directory created: {safe_path}')
+            Logger.info(f'[L0 FILESYSTEM] Directory created: {safe_path}')
             return True
         except Exception as e:
-            logger.error(f'[L0 FILESYSTEM] Directory creation failed for {path}: {e}')
+            Logger.error(f'[L0 FILESYSTEM] Directory creation failed for {path}: {e}')
             return False
 _filesystem_client: Optional[SovereignFilesystemMCPClient] = None
 

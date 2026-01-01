@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 try:
     import uvicorn
     from fastapi import FastAPI
@@ -26,10 +26,10 @@ try:
     FASTAPI_AVAILABLE: Any = True
 except ImportError:
     FASTAPI_AVAILABLE: Any = False
-    logger.warning('FastAPI not available - intervention server disabled')
+    Logger.warning('FastAPI not available - intervention server disabled')
 
 @dataclass
-class intervention_context:
+class InterventionContext:
     """Context for human intervention decision."""
     workflow_id: str
     cycle: int
@@ -45,7 +45,7 @@ class intervention_context:
         """Convert to dictionary for API response."""
         return {'workflow_id': self.workflow_id, 'cycle': self.cycle, 'reason': self.reason, 'risk_factors': self.risk_factors, 'modified_items': self.modified_items, 'signals': self.signals, 'quality_score': self.quality_score, 'recommendations': self.recommendations, 'timestamp': self.timestamp.isoformat()}
 
-class intervention_server:
+class InterventionServer:
     """
     Human-in-the-Loop intervention server.
 
@@ -83,7 +83,7 @@ class intervention_server:
         self._app: Optional[Any] = None
         if FASTAPI_AVAILABLE:
             self._setup_app()
-        logger.info(f'InterventionServer initialized at {host}:{port}')
+        Logger.info(f'InterventionServer initialized at {host}:{port}')
 
     def _setup_app(self) -> None:
         """Setup FastAPI application with endpoints."""
@@ -142,12 +142,12 @@ class intervention_server:
     async def start_server(self) -> None:
         """Start the intervention server in background."""
         if not FASTAPI_AVAILABLE:
-            logger.warning('FastAPI not available - server not started')
+            Logger.warning('FastAPI not available - server not started')
             return
         config: Any = uvicorn.Config(self._app, host=self.host, port=self.port, log_level='warning')
         server: Any = uvicorn.Server(config)
         self._server_task = asyncio.create_task(server.serve())
-        logger.info(f'🌐 Intervention server started at http://{self.host}:{self.port}')
+        Logger.info(f'🌐 Intervention server started at http://{self.host}:{self.port}')
 
     async def stop_server(self) -> None:
         """Stop the intervention server."""
@@ -158,7 +158,7 @@ class intervention_server:
             except asyncio.CancelledError:
                 pass
             self._server_task = None
-            logger.info('Intervention server stopped')
+            Logger.info('Intervention server stopped')
 
     async def request_intervention(self, context: InterventionContext, timeout: Optional[float]=None) -> bool:
         """
@@ -174,18 +174,18 @@ class intervention_server:
         self.current_context = context
         self.decision = None
         self.approval_event.clear()
-        logger.warning(f'[ALERT] INTERVENTION REQUIRED: {context.reason}')
-        logger.warning(f'   Approval URL: http://{self.host}:{self.port}')
+        Logger.warning(f'[ALERT] INTERVENTION REQUIRED: {context.reason}')
+        Logger.warning(f'   Approval URL: http://{self.host}:{self.port}')
         try:
             if timeout:
                 await asyncio.wait_for(self.approval_event.wait(), timeout=timeout)
             else:
                 await self.approval_event.wait()
             approved: Any = self.decision == 'approved'
-            logger.info(f'Intervention decision: {self.decision} - {self.decision_reason}')
+            Logger.info(f'Intervention decision: {self.decision} - {self.decision_reason}')
             return approved
         except asyncio.TimeoutError:
-            logger.warning('Intervention timeout - defaulting to veto')
+            Logger.warning('Intervention timeout - defaulting to veto')
             self.decision = 'timeout'
             return False
         finally:
@@ -205,10 +205,10 @@ class intervention_server:
         try:
             instructions: Any = self.instructions_path.read_text().strip()
             if instructions:
-                logger.info(f'Telepathy instructions received: {instructions[:100]}...')
+                Logger.info(f'Telepathy instructions received: {instructions[:100]}...')
                 return instructions
         except Exception as e:
-            logger.error(f'Failed to read telepathy file: {e}')
+            Logger.error(f'Failed to read telepathy file: {e}')
         return None
 
     def parse_telepathy_commands(self, instructions: str) -> Dict[str, Any]:

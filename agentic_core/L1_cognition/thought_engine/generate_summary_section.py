@@ -1,5 +1,5 @@
 """
-generate_summary_section.py - Execution Module
+GenerateSummarySection.py - Execution Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.248636
@@ -7,10 +7,10 @@ Generated: 2025-12-07T13:28:54.248636
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class generate_summary_section:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class GenerateSummarySection:
     """Executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

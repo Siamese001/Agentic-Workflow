@@ -1,7 +1,7 @@
 """
 MetricsAgent: Sovereign Observability Metrics Collector
 
-Centralized metric collection for compliance and system health.
+Centralized Metric collection for compliance and system health.
 Supports:
 - Counters (monotonically increasing)
 - Gauges (settable values)
@@ -15,7 +15,7 @@ Designed for integration with:
 Placed in observability/metrics per SSOT semantic registry:
   "Metric collection, counters, gauges, and prometheus exports"
 
-Depth: agentic_core/observability/metrics/metrics_agent.py
+Depth: AgenticCore/observability/metrics/metrics_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
 In-memory only (no persistence) — suitable for runtime missions.
@@ -27,18 +27,18 @@ from threading import Lock
 from datetime import datetime
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class MetricsAgent:
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
-    Thread-safe, in-memory metric store with alerting rule generation.
+    Thread-safe, in-memory Metric store with alerting rule generation.
     """
 
     def __init__(self, project_root: Optional[Path] = None):
         """
-        Initialize metric store and alerting configuration.
+        Initialize Metric store and alerting configuration.
         project_root optional — for future context-aware metrics.
         """
         self.project_root = project_root.resolve() if project_root else None
@@ -63,7 +63,7 @@ class MetricsAgent:
             "CanonHighStructuralViolations": {
                 "expr": 'canon_violations_total{type="final_total"} > 50',
                 "for": "5m",
-                "labels": {"severity": "critical"},
+                "labels": {"Severity": "critical"},
                 "annotations": {
                     "summary": "High violations in canon validator",
                     "description": "Total structural violations > 50. Sovereignty breach."
@@ -72,7 +72,7 @@ class MetricsAgent:
             "ConvergenceFailure": {
                 "expr": "compliance_converged == 0",
                 "for": "15m",
-                "labels": {"severity": "warning"},
+                "labels": {"Severity": "warning"},
                 "annotations": {
                     "summary": "Sovereign convergence failed",
                     "description": "Key 19 behavioral convergence not achieved within mission window."
@@ -86,7 +86,7 @@ class MetricsAgent:
             # Total violations across all scans
             self._counters["compliance.total_violations"] = 0
 
-            # Labeled: violation types
+            # Labeled: Violation types
             self._labeled_counters["compliance.violations_by_type"] = {
                 "location": 0,
                 "hierarchy": 0,
@@ -113,7 +113,7 @@ class MetricsAgent:
         """
         try:
             import redis
-            from agentic_core.config.blueprint_sovereign.sovereign_env import get_redis_connection
+            from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_redis_connection
             
             # Reuse established connection logic from SSOT
             r = get_redis_connection()
@@ -123,12 +123,12 @@ class MetricsAgent:
             self.set_gauge("state_sync.redis_monitor_active", is_active)
             
             if is_active:
-                logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
+                Logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
             else:
-                logger.warning("[MetricsAgent] Redis Monitor sentinel missing from state.")
+                Logger.warning("[MetricsAgent] Redis Monitor sentinel Missing from state.")
         except Exception as e:
             self.set_gauge("state_sync.redis_monitor_active", 0)
-            logger.error(f"[MetricsAgent] State sync probe failed: {e}")
+            Logger.error(f"[MetricsAgent] State sync probe failed: {e}")
 
     # === Counter Operations ===
 
@@ -214,9 +214,9 @@ class MetricsAgent:
             try:
                 self.alerting_rules_file.parent.mkdir(parents=True, exist_ok=True)
                 self.alerting_rules_file.write_text(yaml_str, encoding="utf-8")
-                logger.info(f"[MetricsAgent] Alerting rules synchronized: {self.alerting_rules_file}")
+                Logger.info(f"[MetricsAgent] Alerting rules synchronized: {self.alerting_rules_file}")
             except Exception as e:
-                logger.error(f"[MetricsAgent] Failed to write alerting rules: {e}")
+                Logger.error(f"[MetricsAgent] Failed to write alerting rules: {e}")
 
         return yaml_str
 
@@ -244,7 +244,7 @@ class MetricsAgent:
                 msg_lower = msg.lower()
                 if "location" in msg_lower or "void" in msg_lower:
                     type_counts["location"] += 1
-                elif "hierarchy" in msg_lower or "span" in msg_lower or "depth" in msg_lower:
+                elif "hierarchy" in msg_lower or "Span" in msg_lower or "depth" in msg_lower:
                     type_counts["hierarchy"] += 1
                 elif "naming" in msg_lower or "signal" in msg_lower:
                     type_counts["naming"] += 1
@@ -275,10 +275,10 @@ class MetricsAgent:
         # Refresh the external monitor heartbeat
         self.check_redis_monitor()
         
-        logger.info(f"[MetricsAgent] Recorded compliance scan: {total} violations")
+        Logger.info(f"[MetricsAgent] Recorded compliance scan: {total} violations")
 
     def get_all_metrics(self) -> Dict[str, Any]:
-        """Export full metric snapshot (for debugging or export)."""
+        """Export full Metric snapshot (for debugging or export)."""
         with self._lock:
             return {
                 "counters": self._counters.copy(),

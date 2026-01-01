@@ -1,20 +1,20 @@
 """
-fetch_recipient_interactions.py - Retrieval Module
+FetchRecipientInteractions.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.033410
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class fetch_recipient_interactions:
+class FetchRecipientInteractions:
     """Retrieval engine for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def retrieve(self, query: str, filters: Optional[Dict]=None, LIMIT: int=10) -> RetrievalResult:
         """Docstring."""

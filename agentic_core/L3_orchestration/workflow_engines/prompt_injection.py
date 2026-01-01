@@ -6,13 +6,13 @@ Part of the safety guardrail system for agentic workflows.
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class injection_result:
+class InjectionResult:
     """Result of prompt injection detection."""
     is_injection: bool
-    severity: str
+    Severity: str
     confidence: float
     detected_patterns: List[str]
     rationale: str = ''
@@ -57,31 +57,31 @@ def detect_injection(prompt: str) -> InjectionResult:
         prompt: User input to analyze for injection attempts
 
     Returns:
-        InjectionResult with detection details and severity assessment
+        InjectionResult with detection details and Severity assessment
     """
     LOGGER.debug(f'Analyzing prompt for injection: length={len(prompt)}')
     score, rationale = _score_prompt(prompt)
     if score >= 3 or any((word in prompt.lower() for word in ['exfiltrate', 'secrets', 'policies'])):
-        severity: Any = 'high'
+        Severity: Any = 'high'
         confidence: Any = 0.9
         is_injection: Any = True
     elif score >= 2 or any((word in prompt.lower() for word in ['bypass', 'workflow'])):
-        severity: Any = 'med'
+        Severity: Any = 'med'
         confidence: Any = 0.7
         is_injection: Any = True
     elif score >= 1:
-        severity: Any = 'low'
+        Severity: Any = 'low'
         confidence: Any = 0.5
         is_injection: Any = True
     else:
-        severity: Any = 'low'
+        Severity: Any = 'low'
         confidence: Any = 0.1
         is_injection: Any = False
     detected_patterns: Any = []
     if score > 0:
         detected_patterns: Any = [f'DETECTED: {pattern}' for pattern in rationale.split(': ')[1].split(', ')]
-    LOGGER.debug(f'Injection detection result: is_injection={is_injection}, severity={severity}')
-    return InjectionResult(is_injection=is_injection, severity=severity, confidence=confidence, detected_patterns=detected_patterns, rationale=rationale, metadata={'prompt_length': len(prompt), 'score': score, 'analysis_timestamp': '2025-12-11T09:00:00Z'})
+    LOGGER.debug(f'Injection detection result: is_injection={is_injection}, Severity={Severity}')
+    return InjectionResult(is_injection=is_injection, Severity=Severity, confidence=confidence, detected_patterns=detected_patterns, rationale=rationale, metadata={'prompt_length': len(prompt), 'score': score, 'analysis_timestamp': '2025-12-11T09:00:00Z'})
 
 def validate_safety_threshold(result: InjectionResult, threshold: float=0.8) -> bool:
     """Validate injection result against safety threshold.

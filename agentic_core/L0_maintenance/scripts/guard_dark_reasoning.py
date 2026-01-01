@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 from typing import Any, List, Dict
 reasoning_signals: Any = {'think', 'plan', 'reason', 'decide', 'analyze', 'generate', 'synthesize'}
-observability_signals: Any = {'logger.', 'logging.', 'self.logger.', 'trace(', 'metric('}
+observability_signals: Any = {'Logger.', 'logging.', 'self.Logger.', 'trace(', 'Metric('}
 
-class dark_reasoning_visitor(ast.NodeVisitor):
+class DarkReasoningVisitor(ast.NodeVisitor):
     """AST visitor to detect reasoning functions without observability."""
 
     def __init__(self, filepath: Path):
@@ -33,7 +33,7 @@ class dark_reasoning_visitor(ast.NodeVisitor):
         self.generic_visit(node)
         if self.in_reasoning_function and (not was_reasoning):
             if not self.has_observability:
-                self.issues.append({'line': node.lineno, 'function': self.current_function, 'reason': 'Reasoning function lacks L6 observability footprint', 'suggestion': f"Add logger.info('[REASONING START] {self.current_function}')"})
+                self.issues.append({'line': node.lineno, 'function': self.current_function, 'reason': 'Reasoning function lacks L6 observability footprint', 'suggestion': f"Add Logger.info('[REASONING START] {self.current_function}')"})
             self.in_reasoning_function = False
             self.has_observability = False
 

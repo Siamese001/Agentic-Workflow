@@ -75,7 +75,7 @@ class TestOutreachProactiveScheduler:
         assert len(scheduler._tasks) == 0
 
     def test_identify_tasks_with_lead_quality_signal(self, ctx):
-        """Test task identification with lead quality signal."""
+        """Test Task identification with lead quality signal."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
 
@@ -85,7 +85,7 @@ class TestOutreachProactiveScheduler:
         assert any(t.name == "Lead Quality Remediation" for t in tasks)
 
     def test_identify_tasks_with_compliance_signal(self, ctx):
-        """Test task identification with compliance signal."""
+        """Test Task identification with compliance signal."""
         ctx.add_signal("COMPLIANCE_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
 
@@ -97,7 +97,7 @@ class TestOutreachProactiveScheduler:
         assert compliance_task.auto_execute is False
 
     def test_identify_tasks_missing_schedule(self, ctx):
-        """Test task identification for missing schedule."""
+        """Test Task identification for Missing schedule."""
         ctx.current_campaign = {"name": "Test"}
         scheduler = OutreachProactiveScheduler(ctx)
 
@@ -106,7 +106,7 @@ class TestOutreachProactiveScheduler:
         assert any(t.name == "Add Schedule" for t in tasks)
 
     def test_identify_tasks_large_lead_list(self, ctx):
-        """Test task identification for large lead list."""
+        """Test Task identification for large lead list."""
         ctx.current_campaign = {"name": "Test"}
         ctx.leads = [{"company": f"Company {i}"} for i in range(150)]
         scheduler = OutreachProactiveScheduler(ctx)
@@ -128,7 +128,7 @@ class TestOutreachProactiveScheduler:
             assert pending[0].priority == OutreachTaskPriority.CRITICAL
 
     def test_mark_executed(self, ctx):
-        """Test marking task as executed."""
+        """Test marking Task as executed."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
 
@@ -286,7 +286,7 @@ class TestOutreachCapabilityMonitor:
 
         monitor.record_execution(
             agent_name="TestAgent",
-            task_type="email_send",
+            TaskType="email_send",
             success=True,
             duration_ms=100,
             leads_processed=10,
@@ -385,11 +385,11 @@ class TestIntegration:
         assert len(tasks) >= 1
 
         # Execute tasks
-        for task in scheduler.get_auto_executable_tasks():
-            scheduler.mark_executed(task.task_id)
+        for Task in scheduler.get_auto_executable_tasks():
+            scheduler.mark_executed(Task.task_id)
             monitor.record_execution(
                 agent_name="OutreachProactiveAgent",
-                task_type=task.name,
+                TaskType=Task.name,
                 success=True,
                 duration_ms=100,
                 leads_processed=len(ctx.leads),

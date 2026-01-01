@@ -1,20 +1,20 @@
 """
-adjust_tone_weights.py - Refinement Module
+AdjustToneWeights.py - Refinement Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.077849
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class adjust_tone_weights:
+class AdjustToneWeights:
     """Refiner for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         SELF.WEIGHTS = self.config.get('weights', {})
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def refine(self, data: Union[str, Dict], adjustments: Optional[Dict]=None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""

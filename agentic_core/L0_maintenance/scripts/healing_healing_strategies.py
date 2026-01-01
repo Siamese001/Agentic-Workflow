@@ -9,16 +9,16 @@ from pathlib import Path
 import logging
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: HealingStrategy → healing_strategy
-class healing_strategy:
+# NAMING FIXED: HealingStrategy → HealingStrategy
+class HealingStrategy:
     """Base class for all healing strategies."""
     
     def __init__(self, name: str, priority: int):
@@ -51,8 +51,8 @@ class healing_strategy:
         return False
 
 
-# NAMING FIXED: StructureHealing → structure_healing
-class structure_healing(HealingStrategy):
+# NAMING FIXED: StructureHealing → StructureHealing
+class StructureHealing(HealingStrategy):
     """Heals structural violations (forbidden root folders, directory depth)."""
     
     def __init__(self):
@@ -67,17 +67,17 @@ class structure_healing(HealingStrategy):
                 source = Path(issue.get("file", ""))
                 # Determine target directory based on file type
                 if "legacy" in str(source) or "archive" in str(source):
-                    target_dir = "agentic_core/L0_maintenance/scripts"
+                    target_dir = "AgenticCore/L0_maintenance/scripts"
                 elif "test" in str(source):
                     target_dir = "tests"
                 else:
-                    target_dir = "agentic_core/L0_maintenance/scripts"
+                    target_dir = "AgenticCore/L0_maintenance/scripts"
                 
                 fixes.append({
                     "action": "move",
                     "source": str(source),
                     "target": str(Path(target_dir) / source.name),
-                    "reason": "Forbidden root folder violation",
+                    "reason": "Forbidden root folder Violation",
                     "priority": self.priority,
                     "strategy": self.name
                 })
@@ -98,15 +98,15 @@ class structure_healing(HealingStrategy):
             
             # Execute physical move
             shutil.move(str(source), str(target))
-            logger.info(f"[L0 STRUCTURE] Relocated {source.name} to {target.parent}")
+            Logger.info(f"[L0 STRUCTURE] Relocated {source.name} to {target.parent}")
             return True
         except Exception as e:
-            logger.error(f"[L0 STRUCTURE] Move failed: {e}")
+            Logger.error(f"[L0 STRUCTURE] Move failed: {e}")
             return False
 
 
-# NAMING FIXED: UnderscoreFieldHealing → underscore_field_healing
-class underscore_field_healing(HealingStrategy):
+# NAMING FIXED: UnderscoreFieldHealing → UnderscoreFieldHealing
+class UnderscoreFieldHealing(HealingStrategy):
     """Heals underscore-prefixed fields in SSOT models."""
     
     def __init__(self):
@@ -156,16 +156,16 @@ class underscore_field_healing(HealingStrategy):
             
             if new_content != content:
                 file_path.write_text(new_content, encoding="utf-8")
-                logger.info(f"[L0 SSOT HEALING] Renamed {old_name} -> {new_name} in {file_path}")
+                Logger.info(f"[L0 SSOT HEALING] Renamed {old_name} -> {new_name} in {file_path}")
                 return True
             return False
         except Exception as e:
-            logger.error(f"[L0 SSOT HEALING] Failed: {e}")
+            Logger.error(f"[L0 SSOT HEALING] Failed: {e}")
             return False
 
 
-# NAMING FIXED: DarkReasoningHealing → dark_reasoning_healing
-class dark_reasoning_healing(HealingStrategy):
+# NAMING FIXED: DarkReasoningHealing → DarkReasoningHealing
+class DarkReasoningHealing(HealingStrategy):
     """Heals Dark Reasoning violations by injecting L6 logging."""
     
     def __init__(self):
@@ -181,7 +181,7 @@ class dark_reasoning_healing(HealingStrategy):
                     "action": "inject_logging",
                     "file": issue.get("file", ""),
                     "line": issue.get("line"),
-                    "reason": "Dark Reasoning - missing L6 observability footprint",
+                    "reason": "Dark Reasoning - Missing L6 observability footprint",
                     "priority": self.priority,
                     "strategy": self.name
                 })
@@ -200,19 +200,19 @@ class dark_reasoning_healing(HealingStrategy):
 
             target_line = lines[line_num - 1]
             indent = len(target_line) - len(target_line.lstrip())
-            log_stmt = " " * indent + f'logger.info("[L1 REASONING] Observed: {target_line.strip()}")'
+            log_stmt = " " * indent + f'Logger.info("[L1 REASONING] Observed: {target_line.strip()}")'
             
             lines.insert(line_num, log_stmt)
             file_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-            logger.info(f"[L0 DARK REASONING] Injected log at {file_path}:{line_num}")
+            Logger.info(f"[L0 DARK REASONING] Injected log at {file_path}:{line_num}")
             return True
         except Exception as e:
-            logger.error(f"[L0 DARK REASONING] Failed: {e}")
+            Logger.error(f"[L0 DARK REASONING] Failed: {e}")
             return False
 
 
-# NAMING FIXED: DDDAlignmentHealing → ddd_alignment_healing
-class ddd_alignment_healing(HealingStrategy):
+# NAMING FIXED: DDDAlignmentHealing → DddAlignmentHealing
+class DddAlignmentHealing(HealingStrategy):
     """Heals DDD alignment violations by refactoring imports."""
     
     def __init__(self):
@@ -225,7 +225,7 @@ class ddd_alignment_healing(HealingStrategy):
         for issue in issues:
             description = issue.get("description", "").lower()
             
-            if "context violation" in description or "importing" in description:
+            if "context Violation" in description or "importing" in description:
                 # Extract module being imported
                 if "importing" in description:
                     parts = description.split("importing")
@@ -248,12 +248,12 @@ class ddd_alignment_healing(HealingStrategy):
         try:
             file_path = Path(fix.get("file", ""))
             if not file_path.exists():
-                logger.warning(f"[L0 DDD HEALING] File not found: {file_path}")
+                Logger.warning(f"[L0 DDD HEALING] File not found: {file_path}")
                 return False
             
             module_info = fix.get("module", "")
             if not module_info:
-                logger.warning(f"[L0 DDD HEALING] No module info in fix")
+                Logger.warning(f"[L0 DDD HEALING] No module info in fix")
                 return False
             
             # Read file content
@@ -266,14 +266,14 @@ class ddd_alignment_healing(HealingStrategy):
                 if "import" in line and any(part in line for part in module_info.split()):
                     # Check if already commented
                     if line.strip().startswith("#"):
-                        logger.info(f"[L0 DDD HEALING] Import already commented at line {i+1}")
+                        Logger.info(f"[L0 DDD HEALING] Import already commented at line {i+1}")
                         return True
                     
                     # Comment out the import with explanation
                     indent = len(line) - len(line.lstrip())
                     lines[i] = " " * indent + f"# DDD VIOLATION: {line.lstrip()}"
                     modified = True
-                    logger.info(f"[L0 DDD HEALING] Commented illegal import at {file_path}:{i+1}")
+                    Logger.info(f"[L0 DDD HEALING] Commented illegal import at {file_path}:{i+1}")
                     break
             
             if modified:
@@ -281,16 +281,16 @@ class ddd_alignment_healing(HealingStrategy):
                 file_path.write_text("".join(lines), encoding="utf-8")
                 return True
             else:
-                logger.warning(f"[L0 DDD HEALING] Could not find import to fix in {file_path}")
+                Logger.warning(f"[L0 DDD HEALING] Could not find import to fix in {file_path}")
                 return False
             
         except Exception as e:
-            logger.error(f"[L0 DDD HEALING] Failed to refactor import: {e}")
+            Logger.error(f"[L0 DDD HEALING] Failed to refactor import: {e}")
             return False
 
 
-# NAMING FIXED: ObservabilityHealing → observability_healing
-class observability_healing(HealingStrategy):
+# NAMING FIXED: ObservabilityHealing → ObservabilityHealing
+class ObservabilityHealing(HealingStrategy):
     """Heals observability footprint violations by injecting L6 logging."""
     
     def __init__(self):
@@ -333,8 +333,8 @@ class observability_healing(HealingStrategy):
                     "file": issue.get("file", ""),
                     "line": line_num,
                     "function": function_name,
-                    "insert_start": f'        logger.info("[REASONING START] Entering {function_name}")',
-                    "insert_end": f'        logger.info("[REASONING END] Exiting {function_name}")',
+                    "insert_start": f'        Logger.info("[REASONING START] Entering {function_name}")',
+                    "insert_end": f'        Logger.info("[REASONING END] Exiting {function_name}")',
                     "reason": "Missing L6 observability footprint — bracketed logging required",
                     "strategy": self.name,
                     "priority": self.priority
@@ -347,7 +347,7 @@ class observability_healing(HealingStrategy):
         try:
             file_path = Path(fix.get("file", ""))
             if not file_path.exists():
-                logger.warning(f"[L0 OBSERVABILITY HEALING] File not found: {file_path}")
+                Logger.warning(f"[L0 OBSERVABILITY HEALING] File not found: {file_path}")
                 return False
             
             # Read file content
@@ -356,32 +356,32 @@ class observability_healing(HealingStrategy):
             
             line_num = fix.get("line")
             if not line_num or line_num < 1 or line_num > len(lines):
-                logger.warning(f"[L0 OBSERVABILITY HEALING] Invalid line number: {line_num}")
+                Logger.warning(f"[L0 OBSERVABILITY HEALING] Invalid line number: {line_num}")
                 return False
             
             # Check if logging already exists at this line
             target_line = lines[line_num - 1]
-            if "logger.info" in target_line or "REASONING" in target_line:
-                logger.info(f"[L0 OBSERVABILITY HEALING] Logging already exists at line {line_num}")
+            if "Logger.info" in target_line or "REASONING" in target_line:
+                Logger.info(f"[L0 OBSERVABILITY HEALING] Logging already exists at line {line_num}")
                 return True  # Already fixed
             
             # Insert logging statement before the target line
             indent = len(target_line) - len(target_line.lstrip())
-            log_statement = " " * indent + f'logger.info("[L6_AUDIT] Action at line {line_num}")\n'
+            log_statement = " " * indent + f'Logger.info("[L6_AUDIT] Action at line {line_num}")\n'
             lines.insert(line_num - 1, log_statement)
             
             # Write back to file
             file_path.write_text("".join(lines), encoding="utf-8")
-            logger.info(f"[L0 OBSERVABILITY HEALING] Injected logging at {file_path}:{line_num}")
+            Logger.info(f"[L0 OBSERVABILITY HEALING] Injected logging at {file_path}:{line_num}")
             return True
             
         except Exception as e:
-            logger.error(f"[L0 OBSERVABILITY HEALING] Failed to inject logging: {e}")
+            Logger.error(f"[L0 OBSERVABILITY HEALING] Failed to inject logging: {e}")
             return False
 
 
-# NAMING FIXED: DirectRedisHealing → direct_redis_healing
-class direct_redis_healing(HealingStrategy):
+# NAMING FIXED: DirectRedisHealing → DirectRedisHealing
+class DirectRedisHealing(HealingStrategy):
     """Fixes direct redis-py usage — replaces with SovereignRedisMCPClient"""
     
     def __init__(self):
@@ -413,7 +413,7 @@ class direct_redis_healing(HealingStrategy):
             content = file_path.read_text(encoding="utf-8")
             
             # 1. Replace Imports
-            new_import = "from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client"
+            new_import = "from AgenticCore.L4_state.caching.redis_mcp_client import get_redis_client"
             content = re.sub(r"^\s*import\s+redis.*$", new_import, content, flags=re.MULTILINE)
             content = re.sub(r"^\s*from\s+redis\s+import.*$", new_import, content, flags=re.MULTILINE)
             
@@ -421,15 +421,15 @@ class direct_redis_healing(HealingStrategy):
             content = re.sub(r"redis\.Redis\([^)]*\)", "get_redis_client()", content)
             
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"[L0 REDIS HEALING] Replaced direct redis usage in {file_path}")
+            Logger.info(f"[L0 REDIS HEALING] Replaced direct redis usage in {file_path}")
             return True
         except Exception as e:
-            logger.error(f"[L0 REDIS HEALING] Failed: {e}")
+            Logger.error(f"[L0 REDIS HEALING] Failed: {e}")
             return False
 
 
-# NAMING FIXED: DirectLLMHealing → direct_llm_healing
-class direct_llm_healing(HealingStrategy):
+# NAMING FIXED: DirectLLMHealing → DirectLlmHealing
+class DirectLlmHealing(HealingStrategy):
     """Fixes direct OpenAI/Anthropic calls — routes through LLM Router MCP"""
     
     def __init__(self):
@@ -447,7 +447,7 @@ class direct_llm_healing(HealingStrategy):
                     "file": issue["file"],
                     "sdk": sdk_name,
                     "new_client": "get_llm_router_client()",
-                    "import_path": "from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
+                    "import_path": "from AgenticCore.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client",
                     "reason": "Direct LLM SDK call — bypasses L5 shield",
                     "priority": self.priority,
                     "strategy": self.name
@@ -472,15 +472,15 @@ class direct_llm_healing(HealingStrategy):
             content = re.sub(rf"{sdk}\.[a-zA-Z_]+\(", f"{fix['new_client']}.(", content)
 
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"[L0 LLM HEALING] Routed {fix['sdk']} through L5 MCP in {file_path}")
+            Logger.info(f"[L0 LLM HEALING] Routed {fix['sdk']} through L5 MCP in {file_path}")
             return True
         except Exception as e:
-            logger.error(f"[L0 LLM HEALING] Failed: {e}")
+            Logger.error(f"[L0 LLM HEALING] Failed: {e}")
             return False
 
 
-# NAMING FIXED: FilesystemBypassHealing → filesystem_bypass_healing
-class filesystem_bypass_healing(HealingStrategy):
+# NAMING FIXED: FilesystemBypassHealing → FilesystemBypassHealing
+class FilesystemBypassHealing(HealingStrategy):
     """Fixes direct file I/O — routes through Filesystem MCP"""
     
     def __init__(self):
@@ -498,7 +498,7 @@ class filesystem_bypass_healing(HealingStrategy):
                     "file": issue["file"],
                     "operation": desc,
                     "new_client": "get_filesystem_client()",
-                    "import_path": "from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client",
+                    "import_path": "from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client",
                     "reason": "Direct file I/O — bypasses L5 validation",
                     "priority": self.priority,
                     "strategy": self.name
@@ -532,23 +532,23 @@ class filesystem_bypass_healing(HealingStrategy):
             )
             
             file_path.write_text(content, encoding="utf-8")
-            logger.info(f"[L0 FILESYSTEM HEALING] Flagged direct file I/O in {file_path}")
+            Logger.info(f"[L0 FILESYSTEM HEALING] Flagged direct file I/O in {file_path}")
             return True
         except Exception as e:
-            logger.error(f"[L0 FILESYSTEM HEALING] Failed: {e}")
+            Logger.error(f"[L0 FILESYSTEM HEALING] Failed: {e}")
             return False
 
 
 # Import Phase 17B Vector Healing Strategy
-from agentic_core.L0_maintenance.P1_core.vector_healing_strategy import VectorHealingStrategy
+from AgenticCore.L0_maintenance.P1_core.VectorHealingStrategy import VectorHealingStrategy
 # Import Phase 17C Knowledge Graph Healing Strategy
-from agentic_core.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
+from AgenticCore.L0_maintenance.P1_core.kg_healing_strategy import KnowledgeGraphHealingStrategy
 # Import Phase 17D GitKraken Healing Strategy
-from agentic_core.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
+from AgenticCore.L0_maintenance.P1_core.gitkraken_healing_strategy import GitKrakenHealingStrategy
 # Import Phase 17E DeepWiki Healing Strategy
-from agentic_core.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy
+from AgenticCore.L0_maintenance.P1_core.deepwiki_healing_strategy import DeepWikiHealingStrategy
 # Import Phase 17F L6 Audit Healing Strategy
-from agentic_core.L0_maintenance.P1_core.l6_audit_healing_strategy import L6AuditHealingStrategy
+from AgenticCore.L0_maintenance.P1_core.L6AuditHealingStrategy import L6AuditHealingStrategy
 
 # Registry of all available healing strategies
 # NAMING FIXED: HEALING_STRATEGIES → healing_strategies

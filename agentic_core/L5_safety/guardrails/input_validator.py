@@ -15,7 +15,7 @@ from enum import Enum
 from pydantic import BaseModel, ValidationError, validator
 import math
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class ValidationType(Enum):
@@ -80,7 +80,7 @@ class InputValidator:
         self._rules: Dict[str, ValidationRule] = {}
         self._schemas: Dict[str, Dict[str, Any]] = {}
         
-        logger.debug(f"Initialized InputValidator: {name}")
+        Logger.debug(f"Initialized InputValidator: {name}")
     
     def add_rule(self, field: str, rule: ValidationRule) -> None:
         """Add a validation rule.
@@ -90,7 +90,7 @@ class InputValidator:
             rule: Validation rule
         """
         self._rules[field] = rule
-        logger.debug(f"Added validation rule for field: {field}")
+        Logger.debug(f"Added validation rule for field: {field}")
     
     def add_schema(self, schema_name: str, schema: Dict[str, Any]) -> None:
         """Add a JSON schema.
@@ -100,7 +100,7 @@ class InputValidator:
             schema: JSON schema dictionary
         """
         self._schemas[schema_name] = schema
-        logger.debug(f"Added schema: {schema_name}")
+        Logger.debug(f"Added schema: {schema_name}")
     
     def validate(self, data: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
         """Validate input data.
@@ -142,7 +142,7 @@ class InputValidator:
         if strict:
             for field in data:
                 if field not in self._rules:
-                    logger.warning(f"Unknown field in input: {field}")
+                    Logger.warning(f"Unknown field in input: {field}")
         
         # Raise errors if any
         if errors:

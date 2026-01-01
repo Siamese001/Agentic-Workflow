@@ -104,9 +104,9 @@ def test_cover_letter_generation():
     # print("🧪 Testing Resume Engine - Personalized Cover Letter")  # [Security Fix]
     # print("=" * 60)  # [Security Fix]
 
-    # Initialize mock tools and logger
+    # Initialize mock tools and Logger
     mock_tools = MockMCPTools()
-    logger = MockLogger()
+    Logger = MockLogger()
 
     # Pass tools as dictionary
     tools = {
@@ -124,7 +124,7 @@ def test_cover_letter_generation():
         user_name="John Doe",
         file_path_out="output/cover_letter_john_doe.md",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
@@ -136,7 +136,7 @@ def test_cover_letter_generation():
         user_name="John Doe",
         file_path_out="output/cover_letter_error.md",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
@@ -148,7 +148,7 @@ def test_cover_letter_generation():
         user_name="Unknown User",
         file_path_out="output/cover_letter_unknown.md",
         tools=tools,
-        logger=logger
+        Logger=Logger
     )
     # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 

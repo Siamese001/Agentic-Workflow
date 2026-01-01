@@ -21,8 +21,8 @@ class ValidationProtocol(Protocol):
         """Get the project root path."""
         ...
     
-    def add_violation(self, key: int, message: str, severity: str = "error") -> None:
-        """Add a validation violation."""
+    def add_violation(self, key: int, message: str, Severity: str = "error") -> None:
+        """Add a validation Violation."""
         ...
     
     def get_violations(self) -> List[Dict[str, Any]]:

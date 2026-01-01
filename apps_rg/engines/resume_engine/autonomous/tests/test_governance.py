@@ -79,7 +79,7 @@ def sample_code_with_prompts():
     """Sample code with hardcoded prompts."""
     return '''
 SYSTEM_PROMPT = """
-You are a helpful assistant. Your task is to analyze resumes.
+You are a helpful assistant. Your Task is to analyze resumes.
 Please provide detailed feedback on the content.
 """
 
@@ -98,7 +98,7 @@ class TestDependencyStatus:
         assert DependencyStatus.HEALTHY.value == "healthy"
         assert DependencyStatus.WARNING.value == "warning"
         assert DependencyStatus.CONFLICT.value == "conflict"
-        assert DependencyStatus.MISSING.value == "missing"
+        assert DependencyStatus.MISSING.value == "Missing"
 
 
 class TestDocComplianceLevel:
@@ -133,7 +133,7 @@ class TestDependencyIssue:
             status=DependencyStatus.CONFLICT,
             package="numpy",
             description="Version conflict",
-            recommendation="Update to 1.24.0",
+            Recommendation="Update to 1.24.0",
         )
 
         assert issue.issue_id == "test123"
@@ -144,18 +144,18 @@ class TestDocViolation:
     """Tests for DocViolation dataclass."""
 
     def test_create_violation(self):
-        """Test creating a doc violation."""
-        violation = DocViolation(
+        """Test creating a doc Violation."""
+        Violation = DocViolation(
             file_path="test.py",
             function_name="calculate",
-            violation_type="missing_docstring",
+            ViolationType="missing_docstring",
             missing_args=[],
             missing_return=False,
             line_number=10,
         )
 
-        assert violation.function_name == "calculate"
-        assert violation.violation_type == "missing_docstring"
+        assert Violation.function_name == "calculate"
+        assert Violation.ViolationType == "missing_docstring"
 
 
 class TestPromptIssue:
@@ -186,7 +186,7 @@ class TestCostPrediction:
             estimated_cost=0.05,
             budget_remaining=0.95,
             will_exceed=False,
-            recommendation="Within budget",
+            Recommendation="Within budget",
         )
 
         assert prediction.estimated_tokens == 100000

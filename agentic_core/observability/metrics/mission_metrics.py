@@ -1,7 +1,7 @@
 # mission_metrics.py
 # Prometheus Metrics for Canon Validator Mission
-# PURPOSE: Provides metric definitions and server initialization for mission observability
-# LOCATION: agentic_core/observability/metrics/ (SSOT-compliant)
+# PURPOSE: Provides Metric definitions and server initialization for mission observability
+# LOCATION: AgenticCore/observability/metrics/ (SSOT-compliant)
 
 import os
 from typing import Any
@@ -17,7 +17,7 @@ except ImportError:
 
 class NullMetric:
     """
-    Comprehensive dummy metric to prevent ANY AttributeError downstream.
+    Comprehensive dummy Metric to prevent ANY AttributeError downstream.
     Used when prometheus_client is not available.
     """
     def __getattr__(self, name: str) -> Any:
@@ -34,7 +34,7 @@ def initialize_metrics(verbose: bool = True) -> dict:
         verbose: Whether to print status messages
         
     Returns:
-        Dictionary containing all metric objects:
+        Dictionary containing all Metric objects:
         - violations_total: Counter for structural violations
         - healing_attempts: Counter for healing attempts by agent
         - agent_failures: Counter for agent execution failures
@@ -110,7 +110,7 @@ def get_metrics(verbose: bool = False) -> dict:
         verbose: Whether to print status messages on first initialization
         
     Returns:
-        Dictionary containing all metric objects
+        Dictionary containing all Metric objects
     """
     global _default_metrics
     if _default_metrics is None:

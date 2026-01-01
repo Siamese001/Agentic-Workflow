@@ -10,18 +10,18 @@ try:
 except ImportError:
     GENAI_AVAILABLE: Any = False
     types: Any = None
-from agentic_core.L2_execution.tool_registry.definitions import CreateDirectoryArgs, DeleteFileArgs, ExecuteCommandArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
-from agentic_core.L2_execution.tool_registry.execution import execute_command
-from agentic_core.L2_execution.tool_registry.filesystem import create_directory, delete_file, list_files, move_file, read_file, write_file
+from AgenticCore.L2_execution.ToolRegistry.definitions import CreateDirectoryArgs, DeleteFileArgs, ExecuteCommandArgs, ListFilesArgs, MoveFileArgs, ReadFileArgs, WriteFileArgs
+from AgenticCore.L2_execution.ToolRegistry.execution import execute_command
+from AgenticCore.L2_execution.ToolRegistry.filesystem import create_directory, delete_file, list_files, move_file, read_file, write_file
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-class tool_registry:
+class ToolRegistry:
     """
     Registry for managing tools and generating FunctionDeclarations.
     Ensures Gemini always sees the exact tools available in Python.

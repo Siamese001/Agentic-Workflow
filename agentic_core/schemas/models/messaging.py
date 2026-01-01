@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from agentic_core.schemas.models.base import SovereignBaseModel
+from AgenticCore.schemas.models.base import SovereignBaseModel
 
 # ==========================================
 # Core Message Types

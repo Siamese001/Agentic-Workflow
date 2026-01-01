@@ -11,15 +11,15 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.L4_state.ValidationContext.cached_state_ledger import cached_state_ledger as CachedStateLedger
+from AgenticCore.L4_state.ValidationContext.CachedStateLedger import CachedStateLedger as CachedStateLedger
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class ValidationContext:
@@ -139,10 +139,10 @@ class ValidationContext:
                 return None
             with open(file_path, 'r') as f:
                 data: Any = json.load(f)
-            logger.debug(f'Loaded ValidationContext from {file_path}')
+            Logger.debug(f'Loaded ValidationContext from {file_path}')
             return cls.from_dict(data)
         except Exception as e:
-            logger.error(f'Failed to load ValidationContext: {e}')
+            Logger.error(f'Failed to load ValidationContext: {e}')
             return None
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility

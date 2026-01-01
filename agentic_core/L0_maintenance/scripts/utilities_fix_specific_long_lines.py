@@ -5,15 +5,15 @@ import re
 from services.configuration import ConfigurationService
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 logging.basicConfig(level=logging.INFO)
-logger: Any = logging.getLogger(__name__)
-violations: Any = [('./agentic_core/L1_cognition/consensus.py', 231), ('./agentic_core/L1_cognition/inference/signal_anchoring.py', 163), ('./agentic_core/L1_cognition/inference/signal_anchoring.py', 184), ('./agentic_core/L1_cognition/inference/signal_anchoring.py', 187), ('./agentic_core/L1_cognition/planning/deprecated_full_workflow.py', 46), ('./agentic_core/L1_cognition/planning/deprecated_full_workflow.py', 160), ('./agentic_core/L2_execution/validators/state_promoter.py', 205), ('./agentic_core/L4_state/checkpointing.py', 119), ('./agentic_core/L5_safety/membrane.py', 113), ('./agentic_core/L5_safety/membrane.py', 122), ('./apps_lic/L2_execution/action_call_generator.py', 74), ('./apps_lic/L2_execution/action_call_generator.py', 215), ('./apps_lic/L2_execution/action_call_generator.py', 243), ('./apps_lic/L2_execution/action_call_generator.py', 253), ('./apps_rg/L2_execution/achv_bullet_synthesizer_impl.py', 142), ('./apps_rg/L2_execution/peer_intelligence_auditor_impl.py', 180), ('./apps_rg/L2_execution/specificity_prose_engine.py', 234), ('./apps_rg/L2_execution/specificity_prose_engine.py', 285), ('./apps_shared/examples/autonomous_agent_example.py', 108), ('./apps_shared/examples/autonomous_agent_example.py', 143), ('./apps_shared/examples/autonomous_agent_example.py', 144), ('./apps_shared/examples/autonomous_agent_example.py', 145), ('./apps_shared/examples/autonomous_agent_example.py', 180), ('./apps_shared/examples/autonomous_agent_example.py', 204), ('./apps_shared/examples/autonomous_agent_example.py', 260), ('./apps_shared/examples/autonomous_agent_example.py', 263), ('./apps_shared/examples/autonomous_agent_example.py', 266), ('./apps_shared/examples/autonomous_agent_example.py', 277), ('./apps_shared/examples/autonomous_agent_example.py', 296), ('./observability/runtime_observability_spans.py', 46), ('./observability/runtime/spans/runtime_observability_spans.py', 46), ('./scripts/absolute_canon_fixer.py', 255), ('./scripts/comprehensive_canon_fixer.py', 55), ('./scripts/comprehensive_canon_fixer.py', 93), ('./scripts/find_long_lines.py', 25), ('./scripts/runtime/shared/adaptive_retrieval_gate.py', 35), ('./scripts/runtime/shared/agent_executor.py', 519), ('./scripts/runtime/shared/brand_voice_enforcer.py', 221), ('./scripts/runtime/shared/brand_voice_enforcer.py', 232), ('./scripts/runtime/shared/cultural_decoder_agent.py', 331), ('./scripts/runtime/shared/graphrag_fusion.py', 53), ('./scripts/runtime/shared/query_decomposer.py', 294), ('./scripts/runtime/shared/strategist_biowriter.py', 232), ('./scripts/shared/resilience/error_recovery_impl.py', 156), ('./scripts/utilities/fix_file_sprawl.py', 23), ('./tests/test_titanium_pipeline.py', 351)]
+Logger: Any = logging.getLogger(__name__)
+violations: Any = [('./AgenticCore/L1_cognition/consensus.py', 231), ('./AgenticCore/L1_cognition/inference/signal_anchoring.py', 163), ('./AgenticCore/L1_cognition/inference/signal_anchoring.py', 184), ('./AgenticCore/L1_cognition/inference/signal_anchoring.py', 187), ('./AgenticCore/L1_cognition/planning/deprecated_full_workflow.py', 46), ('./AgenticCore/L1_cognition/planning/deprecated_full_workflow.py', 160), ('./AgenticCore/L2_execution/validators/state_promoter.py', 205), ('./AgenticCore/L4_state/checkpointing.py', 119), ('./AgenticCore/L5_safety/membrane.py', 113), ('./AgenticCore/L5_safety/membrane.py', 122), ('./apps_lic/L2_execution/ActionCallGenerator.py', 74), ('./apps_lic/L2_execution/ActionCallGenerator.py', 215), ('./apps_lic/L2_execution/ActionCallGenerator.py', 243), ('./apps_lic/L2_execution/ActionCallGenerator.py', 253), ('./apps_rg/L2_execution/achv_bullet_synthesizer_impl.py', 142), ('./apps_rg/L2_execution/peer_intelligence_auditor_impl.py', 180), ('./apps_rg/L2_execution/SpecificityProseEngine.py', 234), ('./apps_rg/L2_execution/SpecificityProseEngine.py', 285), ('./apps_shared/examples/autonomous_agent_example.py', 108), ('./apps_shared/examples/autonomous_agent_example.py', 143), ('./apps_shared/examples/autonomous_agent_example.py', 144), ('./apps_shared/examples/autonomous_agent_example.py', 145), ('./apps_shared/examples/autonomous_agent_example.py', 180), ('./apps_shared/examples/autonomous_agent_example.py', 204), ('./apps_shared/examples/autonomous_agent_example.py', 260), ('./apps_shared/examples/autonomous_agent_example.py', 263), ('./apps_shared/examples/autonomous_agent_example.py', 266), ('./apps_shared/examples/autonomous_agent_example.py', 277), ('./apps_shared/examples/autonomous_agent_example.py', 296), ('./observability/runtime_observability_spans.py', 46), ('./observability/runtime/spans/runtime_observability_spans.py', 46), ('./scripts/absolute_canon_fixer.py', 255), ('./scripts/comprehensive_canon_fixer.py', 55), ('./scripts/comprehensive_canon_fixer.py', 93), ('./scripts/find_long_lines.py', 25), ('./scripts/runtime/shared/adaptive_retrieval_gate.py', 35), ('./scripts/runtime/shared/agent_executor.py', 519), ('./scripts/runtime/shared/brand_voice_enforcer.py', 221), ('./scripts/runtime/shared/brand_voice_enforcer.py', 232), ('./scripts/runtime/shared/cultural_decoder_agent.py', 331), ('./scripts/runtime/shared/graphrag_fusion.py', 53), ('./scripts/runtime/shared/query_decomposer.py', 294), ('./scripts/runtime/shared/strategist_biowriter.py', 232), ('./scripts/shared/resilience/error_recovery_impl.py', 156), ('./scripts/utilities/fix_file_sprawl.py', 23), ('./tests/test_titanium_pipeline.py', 351)]
 
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
@@ -21,7 +21,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         with open(ConfigurationService().FILEPATH, 'R', encoding='utf-8') as f:
             lines: Any = f.readlines()
         if ConfigurationService().line_num > len(lines):
-            ConfigurationService().logger.warning(f'Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}')
+            ConfigurationService().Logger.warning(f'Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}')
             return False
         line: Any = lines[ConfigurationService().line_num - 1].rstrip()
         if len(line) <= 100:
@@ -102,7 +102,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             f.writelines(lines)
         return True
     except Exception as e:
-        ConfigurationService().logger.error(f'Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}')
+        ConfigurationService().Logger.error(f'Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}')
         return False
 
 def main() -> None:

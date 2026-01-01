@@ -4,10 +4,10 @@ This module provides tone analysis and adaptation capabilities to humanize AI
 generation by analyzing recipient communication styles and calibrating the agent's
 voice to match, preventing the "Generic AI" voice.
 
-Models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
+Models migrated to SSOT: AgenticCore/schemas/models/core_contracts.py
 """
 import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple
-from agentic_core.schemas.models.core_contracts import ToneType, StyleProfile, GenerationConfig
-logger: Any = logging.getLogger(__name__)
+from AgenticCore.schemas.models.core_contracts import ToneType, StyleProfile, GenerationConfig
+Logger: Any = logging.getLogger(__name__)

@@ -1,27 +1,27 @@
-"""Types and models for autonomic_monitor."""
+"""Types and models for AutonomicMonitor."""
 import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class health_status(Enum):
+class HealthStatus(Enum):
     """Agent health status."""
     HEALTHY: Any = 'healthy'
     DEGRADED: Any = 'degraded'
     CRITICAL: Any = 'critical'
     OFFLINE: Any = 'offline'
 
-class alert_severity(Enum):
-    """Alert severity levels."""
+class AlertSeverity(Enum):
+    """Alert Severity levels."""
     INFO: Any = 'info'
     WARNING: Any = 'warning'
     ERROR: Any = 'error'
     CRITICAL: Any = 'critical'
 
 @dataclass
-class health_metrics:
+class HealthMetrics:
     """Health metrics for an agent."""
     agent_id: str
     success_rate: float
@@ -36,11 +36,11 @@ class health_metrics:
         return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms': self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circuit_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
 
 @dataclass
-class health_alert:
+class HealthAlert:
     """Health alert for degradation detection."""
     alert_id: str
     agent_id: str
-    severity: AlertSeverity
+    Severity: AlertSeverity
     message: str
     metrics: HealthMetrics
     recommended_actions: List[str] = field(default_factory=list)
@@ -48,4 +48,4 @@ class health_alert:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'alert_id': self.alert_id, 'agent_id': self.agent_id, 'severity': self.severity.value, 'message': self.message, 'metrics': self.metrics.to_dict(), 'recommended_actions': self.recommended_actions, 'timestamp': self.timestamp}
+        return {'alert_id': self.alert_id, 'agent_id': self.agent_id, 'Severity': self.Severity.value, 'message': self.message, 'metrics': self.metrics.to_dict(), 'recommended_actions': self.recommended_actions, 'timestamp': self.timestamp}

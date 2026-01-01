@@ -1,5 +1,5 @@
 """
-evaluate_engagement_potential.py - Scoring Module
+EvaluateEngagementPotential.py - Scoring Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.066857
@@ -7,15 +7,15 @@ Generated: 2025-12-07T13:28:54.066857
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class evaluate_engagement_potential:
+class EvaluateEngagementPotential:
     """Scorer for outreach domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     SELF.WEIGHTS = self.config.get('weights', {})
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def score(self: Any, data: Dict[str, object]) -> ScoreResult:
     """Compute score for data."""

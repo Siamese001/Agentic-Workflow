@@ -41,7 +41,7 @@ class SelfDiagnosisMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = logging.getLogger(f"{self.__class__.__name__}.Diagnosis")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}.Diagnosis")
 
     async def self_diagnose(self) -> Dict[str, Any]:
         """
@@ -57,7 +57,7 @@ class SelfDiagnosisMixin:
             "self_repair_attempts": [],
         }
 
-        self.logger.info("Initiating self-diagnosis cycle")
+        self.Logger.info("Initiating self-diagnosis cycle")
 
         # 1. Check mandatory components exist
         for component_name in self.MANDATORY_COMPONENTS:
@@ -71,11 +71,11 @@ class SelfDiagnosisMixin:
                 issue = {
                     "type": "missing_component",
                     "component": component_name,
-                    "severity": "CRITICAL",
-                    "message": f"Mandatory component '{component_name}' is missing",
+                    "Severity": "CRITICAL",
+                    "message": f"Mandatory component '{component_name}' is Missing",
                 }
                 diagnosis["issues"].append(issue)
-                self.logger.error(issue["message"])
+                self.Logger.error(issue["message"])
                 continue
 
             diagnosis["successful_checks"].append(check_result)
@@ -88,11 +88,11 @@ class SelfDiagnosisMixin:
                         issue = {
                             "type": "component_unhealthy",
                             "component": component_name,
-                            "severity": health.get("severity", "HIGH"),
+                            "Severity": health.get("Severity", "HIGH"),
                             "details": health.get("issue", "Unknown health issue"),
                         }
                         diagnosis["issues"].append(issue)
-                        self.logger.warning(f"Component {component_name} reported unhealthy: {health.get('issue')}")
+                        self.Logger.warning(f"Component {component_name} reported unhealthy: {health.get('issue')}")
 
                         # Optional auto-repair attempt
                         if await self._attempt_component_repair(component_name, component):
@@ -104,20 +104,20 @@ class SelfDiagnosisMixin:
                     issue = {
                         "type": "component_diagnosis_failed",
                         "component": component_name,
-                        "severity": "HIGH",
+                        "Severity": "HIGH",
                         "error": str(e),
                     }
                     diagnosis["issues"].append(issue)
-                    self.logger.error(f"Health check failed for {component_name}: {e}", exc_info=True)
+                    self.Logger.error(f"Health check failed for {component_name}: {e}", exc_info=True)
 
         # 3. Overall health assessment
         if diagnosis["issues"]:
-            critical_issues = [i for i in diagnosis["issues"] if i.get("severity") == "CRITICAL"]
+            critical_issues = [i for i in diagnosis["issues"] if i.get("Severity") == "CRITICAL"]
             diagnosis["overall_health"] = "critical" if critical_issues else "degraded"
-            self.logger.warning(f"Self-diagnosis complete: {diagnosis['overall_health']} ({len(diagnosis['issues'])} issues)")
+            self.Logger.warning(f"Self-diagnosis complete: {diagnosis['overall_health']} ({len(diagnosis['issues'])} issues)")
         else:
             diagnosis["overall_health"] = "healthy"
-            self.logger.info("Self-diagnosis complete: fully healthy")
+            self.Logger.info("Self-diagnosis complete: fully healthy")
 
         return diagnosis
 
@@ -127,7 +127,7 @@ class SelfDiagnosisMixin:
         Default: no repair (conservative).
         Override in agents that support self-repair.
         """
-        self.logger.info(f"No repair logic defined for {component_name} — manual intervention required")
+        self.Logger.info(f"No repair logic defined for {component_name} — manual intervention required")
         return False
 
     async def health_check(self) -> Dict[str, Any]:
@@ -139,7 +139,7 @@ class SelfDiagnosisMixin:
         healthy = diagnosis["overall_health"] == "healthy"
         return {
             "healthy": healthy,
-            "severity": "CRITICAL" if diagnosis["overall_health"] == "critical" else "WARNING" if diagnosis["overall_health"] == "degraded" else "OK",
+            "Severity": "CRITICAL" if diagnosis["overall_health"] == "critical" else "WARNING" if diagnosis["overall_health"] == "degraded" else "OK",
             "issue": None if healthy else f"{len(diagnosis['issues'])} component issues detected",
             "full_diagnosis": diagnosis,
         }

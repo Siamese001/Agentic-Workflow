@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Union, Type
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 # ============================================================================

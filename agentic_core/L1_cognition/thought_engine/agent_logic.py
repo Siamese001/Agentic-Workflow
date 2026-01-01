@@ -6,7 +6,7 @@ import logging
 import re
 import time
 try:
-    from core.semantic_gatekeeper import get_gatekeeper
+    from core.SemanticGatekeeper import get_gatekeeper
 except ImportError:
     get_gatekeeper = lambda: None
 try:
@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -27,9 +27,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 @dataclass
-# NAMING FIXED: canon_entry → canon_entry
-class canon_entry:
-    """Local Canon Entry type - moved from schemas to fix gravity violation."""
+# NAMING FIXED: CanonEntry → CanonEntry
+class CanonEntry:
+    """Local Canon Entry type - moved from schemas to fix gravity Violation."""
     id: str
     code_snippet: str
     ast_structure: str
@@ -57,11 +57,11 @@ class canon_entry:
         self.last_used = datetime.now(timezone.utc).isoformat()
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: CanonValidator → canon_validator
-class canon_validator:
+# NAMING FIXED: CanonValidator → CanonValidator
+class CanonValidator:
     """
     The L5 Meta-Learner that validates code against the Canon.
 
@@ -92,7 +92,7 @@ class canon_validator:
         self.promotion_threshold = 3
         self.failure_threshold = 5
 
-        logger.info("CanonValidator initialized with hybrid cache")
+        Logger.info("CanonValidator initialized with hybrid cache")
 
     def _safe_parse_ast(self, code: str) -> Tuple[Optional[str], Optional[str]]:
         """
@@ -108,10 +108,10 @@ class canon_validator:
             # Catching a broader exception for unexpected issues during parsing
             return None, f"Unexpected AST parsing error: {e}"
 
-    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> "canon_entry":
+    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> "CanonEntry":
         """
-        Generates a canon_entry from code and metadata.
-        This helper method encapsulates the logic for creating a canon_entry,
+        Generates a CanonEntry from code and metadata.
+        This helper method encapsulates the logic for creating a CanonEntry,
         including AST parsing and embedding generation.
         """
         ast_representation: str
@@ -119,7 +119,7 @@ class canon_validator:
         if ast_error:
             # Store error message in AST representation if parsing failed
             ast_representation = json.dumps({"error": ast_error})
-            logger.error(f"Error parsing code for canon_entry: {ast_error}")
+            Logger.error(f"Error parsing code for CanonEntry: {ast_error}")
         else:
             ast_representation = ast_dump_str
 
@@ -128,7 +128,7 @@ class canon_validator:
             embedding = self.gatekeeper.embed_text(code)
         except Exception as e:
             embedding = []  # Fallback to empty list if embedding fails
-            logger.error(f"Error generating embedding for canon_entry: {e}")
+            Logger.error(f"Error generating embedding for CanonEntry: {e}")
 
         entry_metadata = metadata or {}
         entry_metadata.update({
@@ -139,7 +139,7 @@ class canon_validator:
         # This ensures uniqueness and consistency across runs/processes.
         entry_id = str(uuid.uuid4())
 
-        return canon_entry(
+        return CanonEntry(
             id=entry_id,
             code_snippet=code,
             embedding=embedding,
@@ -208,10 +208,10 @@ class canon_validator:
         try:
             return json.loads(json_str)
         except json.JSONDecodeError:
-            logger.debug("Malformed JSON string encountered (JSONDecodeError).")
+            Logger.debug("Malformed JSON string encountered (JSONDecodeError).")
             return None
         except Exception as e:
-            logger.debug(f"Unexpected error during JSON parsing: {e}")
+            Logger.debug(f"Unexpected error during JSON parsing: {e}")
             return None
 
     def _extract_ast_error_message(self, ast_str: str) -> Optional[str]:
@@ -240,7 +240,7 @@ class canon_validator:
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "recommendation": f"Syntax error in new code: {new_ast_error}"
+                "Recommendation": f"Syntax error in new code: {new_ast_error}"
             }
 
         existing_ast_error = self._extract_ast_error_message(existing_ast_str)
@@ -249,13 +249,13 @@ class canon_validator:
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
+                "Recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
             }
         return None
     def _validate_ast_match(
         self,
-        new_entry: canon_entry,
-        existing_entry: canon_entry
+        new_entry: CanonEntry,
+        existing_entry: CanonEntry
     ) -> Dict[str, Any]:
         """
         Validate AST structures between two entries.
@@ -295,7 +295,7 @@ class canon_validator:
             "is_match": similarity > 0.7,  # Indicates if ASTs are structurally similar
             "is_valid": is_valid,          # Indicates if the pattern is considered valid based on history
             "confidence": similarity,
-            "recommendation": self._generate_recommendation(similarity, success_rate)
+            "Recommendation": self._generate_recommendation(similarity, success_rate)
         }
 
     def _get_ast_node_types_from_tree(self, tree: ast.AST) -> Set[str]:
@@ -336,14 +336,14 @@ class canon_validator:
             return intersection / union if union > 0 else 0.0
 
         except SyntaxError as e:
-            logger.error(f"Syntax error encountered while parsing code for AST similarity: {e}")
+            Logger.error(f"Syntax error encountered while parsing code for AST similarity: {e}")
             return 0.0
         except Exception as e:
-            logger.error(f"Unexpected error during AST similarity calculation: {e}")
+            Logger.error(f"Unexpected error during AST similarity calculation: {e}")
             return 0.0
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
-        """Generate recommendation based on similarity and success rate."""
+        """Generate Recommendation based on similarity and success rate."""
         if similarity > 0.8 and success_rate > 0.8:
             return "Code matches a highly successful pattern - proceed"
         elif similarity > 0.7 and success_rate > 0.5:
@@ -361,10 +361,10 @@ class canon_validator:
             "matched_pattern": None,
             "source": "no_match",
             "ast_match": False,
-            "recommendation": "Code appears to be new and valid"
+            "Recommendation": "Code appears to be new and valid"
         }
 
-    def _process_l1_match(self, new_entry: canon_entry, best_match: canon_entry) -> Dict[str, Any]:
+    def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
         """Process L1 Redis match and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -374,13 +374,13 @@ class canon_validator:
             "ast_match": validation["is_match"],
             "confidence": validation["confidence"],
             "is_valid": validation["is_valid"],
-            "recommendation": validation["recommendation"]
+            "Recommendation": validation["Recommendation"]
         }
 
-        logger.info(f"L1 match found: {best_match.id}. Is valid: {validation['is_valid']}")
+        Logger.info(f"L1 match found: {best_match.id}. Is valid: {validation['is_valid']}")
         return result
 
-    def _process_l2_match(self, new_entry: canon_entry, best_match: canon_entry) -> Dict[str, Any]:
+    def _process_l2_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
         """Process L2 Qdrant match, promote if valid, and return validation result."""
         validation = self._validate_ast_match(new_entry, best_match)
 
@@ -390,10 +390,10 @@ class canon_validator:
             "ast_match": validation["is_match"],
             "confidence": validation["confidence"],
             "is_valid": validation["is_valid"],
-            "recommendation": validation["recommendation"]
+            "Recommendation": validation["Recommendation"]
         }
 
-        logger.info(f"L2 match found: {best_match.id}. Is valid: {validation['is_valid']}")
+        Logger.info(f"L2 match found: {best_match.id}. Is valid: {validation['is_valid']}")
 
         # Promote to L1 if valid and meets promotion criteria (e.g., sufficient success count)
         # The `promote_to_l2` method in db_manager might handle the actual promotion logic
@@ -406,25 +406,25 @@ class canon_validator:
 
         return result
 
-    def _handle_failure_outcome(self, entry: canon_entry) -> None:
+    def _handle_failure_outcome(self, entry: CanonEntry) -> None:
         """Helper to handle failure outcome for an entry."""
         entry.update_failure()
-        logger.info(f"Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}")
+        Logger.info(f"Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}")
 
         # If too many failures, consider blocking or further action
         if entry.failure_count >= self.failure_threshold:
-            logger.warning(f"Pattern {entry.id} exceeded failure threshold ({self.failure_threshold}).")
+            Logger.warning(f"Pattern {entry.id} exceeded failure threshold ({self.failure_threshold}).")
 
-    def _handle_success_outcome(self, entry: canon_entry) -> None:
+    def _handle_success_outcome(self, entry: CanonEntry) -> None:
         """Helper to handle success outcome for an entry."""
         entry.update_success()
-        logger.info(f"Recorded success for pattern {entry.id}. Success count: {entry.success_count}")
+        Logger.info(f"Recorded success for pattern {entry.id}. Success count: {entry.success_count}")
 
         # Check for promotion to L2 (Qdrant) if it meets the threshold
         # This implies moving it from L1 (Redis) to L2 (Qdrant) or updating its status in L2.
         if entry.success_count >= self.promotion_threshold:
             self.db_manager.promote_to_l2(entry) # This method name is still ambiguous.
-            logger.info(f"Pattern {entry.id} promoted to L2 (Qdrant) due to success threshold ({self.promotion_threshold}).")
+            Logger.info(f"Pattern {entry.id} promoted to L2 (Qdrant) due to success threshold ({self.promotion_threshold}).")
 
     def update_learning(self, entry_id: str, outcome: str, error_trace: Optional[str] = None) -> None:
         """
@@ -439,11 +439,11 @@ class canon_validator:
         entry = self.db_manager.redis.get_entry(entry_id)
 
         if not entry:
-            logger.warning(f"Entry {entry_id} not found in L1 for learning update.")
+            Logger.warning(f"Entry {entry_id} not found in L1 for learning update.")
             # Optionally, try to retrieve from L2 if not found in L1
             # entry = self.db_manager.qdrant.get_entry(entry_id)
             # if not entry:
-            #     logger.warning(f"Entry {entry_id} not found in L2 either.")
+            #     Logger.warning(f"Entry {entry_id} not found in L2 either.")
             return
 
         # Update based on outcome
@@ -452,7 +452,7 @@ class canon_validator:
         elif outcome.upper() == "SUCCESS":
             self._handle_success_outcome(entry)
         else:
-            logger.warning(f"Unknown outcome '{outcome}' for entry {entry_id}. No update performed.")
+            Logger.warning(f"Unknown outcome '{outcome}' for entry {entry_id}. No update performed.")
             return
 
         # Update the entry in Redis (L1)
@@ -471,9 +471,9 @@ class canon_validator:
 
         return stats
 
-    def _format_search_result(self, result: canon_entry) -> Dict[str, Any]:
+    def _format_search_result(self, result: CanonEntry) -> Dict[str, Any]:
         """
-        Helper method to format a single canon_entry into a dictionary
+        Helper method to format a single CanonEntry into a dictionary
         for search results, reducing nesting in search_similar_patterns.
         """
         return {

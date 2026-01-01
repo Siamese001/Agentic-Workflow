@@ -3,7 +3,7 @@ import logging
 
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 # from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive i...

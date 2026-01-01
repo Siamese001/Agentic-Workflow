@@ -17,9 +17,9 @@ from typing import Dict, List, Optional
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 class AutonomousThreatEvolutionAgent:
     """L5: Self-healing security agent"""
-    def __init__(self, safety_engine=None):
-        self.safety = safety_engine
-        # Use relative pathing to stay within the 'agentic_core' root gravity
+    def __init__(self, SafetyEngine=None):
+        self.safety = SafetyEngine
+        # Use relative pathing to stay within the 'AgenticCore' root gravity
         self.log_path = Path("observability/logs/threat_detections.json")
         self.evolution_interval = 3600  
         self.running = True
@@ -108,6 +108,6 @@ class AutonomousThreatEvolutionAgent:
         return 0
 
 # Factory function for L6 coordination
-def create_threat_evolution_agent(safety_engine=None) -> AutonomousThreatEvolution:
+def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolution:
     """Create and configure the threat evolution agent"""
-    return AutonomousThreatEvolution(safety_engine=safety_engine)
+    return AutonomousThreatEvolution(SafetyEngine=SafetyEngine)

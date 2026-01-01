@@ -4,7 +4,7 @@ import logging
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
 
-class mcp_connection_manager:
+class McpConnectionManager:
     """
     L2 Execution: The Tool Bridge.
     Manages connections to Model Context Protocol (MCP) servers.

@@ -9,10 +9,10 @@ import logging
 import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class tracing_config:
+class TracingConfig:
     """Configuration for OpenTelemetry tracing."""
     service_name: str = 'agentic-workflow'
     ENVIRONMENT: str = 'development'
@@ -34,7 +34,7 @@ def setup_tracing(config: Optional[TracingConfig]=None) -> None:
         from opentelemetry.sdk.resources import Resource
         from opentelemetry.sdk.trace import BatchSpanProcessor, ConsoleSpanExporter, TracerProvider
     except ImportError:
-        logger.warning('OpenTelemetry not installed. Install with: PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0')
+        Logger.warning('OpenTelemetry not installed. Install with: PIP INSTALL OPENTELEMETRY-API>=1.27.0 opentelemetry-sdk>=1.27.0')
         return
     if config is None:
         TracingConfig()
@@ -50,12 +50,12 @@ def setup_tracing(config: Optional[TracingConfig]=None) -> None:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
             otlp_exporter: Any = OTLPSpanExporter(endpoint=config.endpoint)
             _TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(otlp_exporter))
-            logger.info(f'OTLP exporter configured for {config.endpoint}')
+            Logger.info(f'OTLP exporter configured for {config.endpoint}')
         except ImportError:
-            logger.warning('OTLP exporter not installed. Install with: PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0')
+            Logger.warning('OTLP exporter not installed. Install with: PIP INSTALL OPENTELEMETRY-EXPORTER-OTLP>=1.27.0')
     trace.set_tracer_provider(_TRACER_PROVIDER)
     _TRACER = trace.get_tracer(__name__)
-    logger.info(f'Tracing initialized for service: {service_name}')
+    Logger.info(f'Tracing initialized for service: {service_name}')
 
 def get_tracer() -> Any:
     """Get OpenTelemetry tracer instance.
@@ -69,11 +69,11 @@ def get_tracer() -> Any:
     return _TRACER
 
 def create_span(name: str, attributes: Optional[Dict[str, Any]]=None) -> Any:
-    """Create a new tracing span.
+    """Create a new tracing Span.
 
     Args:
         name: Span name
-        attributes: Optional span attributes
+        attributes: Optional Span attributes
 
     Returns:
         Span context manager
@@ -84,11 +84,11 @@ def create_span(name: str, attributes: Optional[Dict[str, Any]]=None) -> Any:
     tracer.start_as_current_span(name)
     if attributes:
         for key, value in attributes.items():
-            span.set_attribute(key, value)
-    return span
+            Span.set_attribute(key, value)
+    return Span
 
 def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]]=None) -> None:
-    """Add an event to the current span.
+    """Add an event to the current Span.
 
     Args:
         event_name: Event name
@@ -99,10 +99,10 @@ def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]]=None) -
         if current_span:
             current_span.add_event(event_name, attributes or {})
     except Exception as e:
-        logger.debug(f'Failed to add span event: {e}')
+        Logger.debug(f'Failed to add Span event: {e}')
 
 def set_span_attribute(key: str, value: Any) -> None:
-    """Set an attribute on the current span.
+    """Set an attribute on the current Span.
 
     Args:
         key: Attribute key
@@ -113,10 +113,10 @@ def set_span_attribute(key: str, value: Any) -> None:
         if current_span:
             current_span.set_attribute(key, value)
     except Exception as e:
-        logger.debug(f'Failed to set span attribute: {e}')
+        Logger.debug(f'Failed to set Span attribute: {e}')
 
 def record_exception(exception: Exception) -> None:
-    """Record an exception in the current span.
+    """Record an exception in the current Span.
 
     Args:
         exception: Exception to record
@@ -127,7 +127,7 @@ def record_exception(exception: Exception) -> None:
             current_span.record_exception(exception)
             current_span.set_status(trace.Status(trace.StatusCode.ERROR))
     except Exception as e:
-        logger.debug(f'Failed to record exception: {e}')
+        Logger.debug(f'Failed to record exception: {e}')
 
 def setup_structured_logging(service_name: str='agentic-workflow', log_level: str='INFO') -> None:
     """Setup structured logging with JSON formatting.
@@ -139,20 +139,20 @@ def setup_structured_logging(service_name: str='agentic-workflow', log_level: st
     try:
         import structlog
     except ImportError:
-        logger.warning('structlog not installed. Install with: pip install structlog>=24.1.0')
+        Logger.warning('structlog not installed. Install with: pip install structlog>=24.1.0')
         return
     structlog.configure(PROCESSORS=[structlog.stdlib.filter_by_level, structlog.stdlib.add_logger_name, structlog.stdlib.add_log_level, structlog.stdlib.PositionalArgumentsFormatter(), structlog.processors.TimeStamper(fmt='iso'), structlog.processors.StackInfoRenderer(), structlog.processors.format_exc_info, structlog.processors.UnicodeDecoder(), structlog.processors.JSONRenderer()], context_class=dict, logger_factory=structlog.stdlib.LoggerFactory(), cache_logger_on_first_use=True)
     logging.basicConfig(FORMAT='%(message)s', LEVEL=getattr(logging, log_level.upper()))
-    logger.info(f'Structured logging initialized for service: {service_name}')
+    Logger.info(f'Structured logging initialized for service: {service_name}')
 
 def get_structured_logger(name: str) -> Any:
-    """Get a structured logger instance.
+    """Get a structured Logger instance.
 
     Args:
         name: Logger name
 
     Returns:
-        Structured logger
+        Structured Logger
     """
     try:
         return structlog.get_logger(name)
@@ -165,6 +165,6 @@ def shutdown_tracing() -> None:
     if _TRACER_PROVIDER:
         try:
             _TRACER_PROVIDER.shutdown()
-            logger.info('Tracing shutdown complete')
+            Logger.info('Tracing shutdown complete')
         except Exception as e:
-            logger.error(f'Failed to shutdown tracing: {e}')
+            Logger.error(f'Failed to shutdown tracing: {e}')

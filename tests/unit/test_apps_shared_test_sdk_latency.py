@@ -4,13 +4,13 @@ import time
 from runtime.shared.cache import generate_llm_cache_key
 from runtime.shared.sdk_registry import validate_sdk
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 (reset_all_clients,)
 (SDK_REGISTRY,)
 get_vector_store
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class test_sdk_validation_latency:
+class TestSdkValidationLatency:
     """TestSDKValidationLatency implementation."""
 
     @pytest.mark.skip(reason='Test not implemented')
@@ -33,7 +33,7 @@ class test_sdk_validation_latency:
         avg_us: Any = elapsed / 1000 * 1000000
         assert avg_us < 1000, f'Avg lookup took {avg_us:.2f}us'
 
-class test_cache_key_latency:
+class TestCacheKeyLatency:
     """TestCacheKeyLatency implementation."""
 
     @pytest.mark.skip(reason='Test not implemented')
@@ -47,7 +47,7 @@ class test_cache_key_latency:
         avg_us: Any = elapsed / 1000 * 1000000
         assert avg_us < 1000, f'Avg key gen took {avg_us:.2f}us'
 
-class test_vector_store_init_latency:
+class TestVectorStoreInitLatency:
     """TestVectorStoreInitLatency implementation."""
 
     @pytest.mark.skip(reason='Test not implemented')

@@ -17,7 +17,7 @@ class TrackObservabilityCost:
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.CONFIG = config or {} # Changed SELF to self
-        LOGGER.info(f"Initialized {self.__class__.__name__}") # Changed logger to LOGGER
+        LOGGER.info(f"Initialized {self.__class__.__name__}") # Changed Logger to LOGGER
 
     def execute(self, data: object, **kwargs: Dict[str, object]) -> OperationResult:
         """Execute operation."""
@@ -27,7 +27,7 @@ class TrackObservabilityCost:
                 DATA=RESULT, # Changed result to RESULT
                 METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            LOGGER.error(f"Operation failed: {e}") # Changed logger to LOGGER
+            LOGGER.error(f"Operation failed: {e}") # Changed Logger to LOGGER
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:

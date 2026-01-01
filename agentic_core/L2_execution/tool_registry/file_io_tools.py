@@ -10,9 +10,9 @@ try:
     import PyPDF2
 except ImportError:
     PyPDF2: Any = None
-logger: Any = logging.getLogger('ActionRegistry.FileIO')
+Logger: Any = logging.getLogger('ActionRegistry.FileIO')
 
-class file_io:
+class FileIo:
     """
     Handles file reading and saving operations.
     Tool ID Prefix: ACT-002
@@ -82,7 +82,7 @@ class file_io:
 
     def read_file(self, file_path: str) -> str:
         """
-        Reads text content from agentic_core.txt, .md, or .pdf files.
+        Reads text content from AgenticCore.txt, .md, or .pdf files.
         Tool ID: ACT-002
 
         Args:
@@ -91,7 +91,7 @@ class file_io:
         Returns:
             str: The content of the file or an error message.
         """
-        logger.info(f"📖 Reading file: '{file_path}'")
+        Logger.info(f"📖 Reading file: '{file_path}'")
         if not os.path.exists(file_path):
             return f"Read Error: File not found at '{file_path}'."
         if file_path.endswith('.pdf'):
@@ -111,7 +111,7 @@ class file_io:
         Returns:
             str: A success message or an error message.
         """
-        logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
+        Logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
         try:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:

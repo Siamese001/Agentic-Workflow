@@ -4,7 +4,7 @@ import logging
 'Brief description of functionality and purpose.'
 from typing import Any, Dict
 
-class cost_governor:
+class CostGovernor:
     """
     L5 Safety: The Financial Guardrail.
     Tracks and limits spend across models and tools.

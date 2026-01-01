@@ -4,16 +4,16 @@ import logging
 'Brief description of functionality and purpose.'
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class generate_summary_section:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class GenerateSummarySection:
     """Executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         SELF.TIMEOUT = self.config.get('timeout', 30.0)
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -26,7 +26,7 @@ class generate_summary_section:
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        logger.info(f'Executing {action} with {params}')
+        Logger.info(f'Executing {action} with {params}')
         return {'action': action, 'params': params, 'status': 'completed'}
 
 def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:

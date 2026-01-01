@@ -7,7 +7,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Enforce Outreach Boundaries - atomic execution layer.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def enforce_outreach_boundaries(data: Dict[str, object]) -> Dict[str, object]:

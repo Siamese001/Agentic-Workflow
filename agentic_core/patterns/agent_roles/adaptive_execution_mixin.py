@@ -29,7 +29,7 @@ class AdaptiveExecutionMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = logging.getLogger(f"{self.__class__.__name__}.Adaptive")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}.Adaptive")
         self._current_mode: str = "standard"
 
     @property
@@ -45,24 +45,24 @@ class AdaptiveExecutionMixin:
         # 1. System load check (highest priority — preservation)
         system_load = context.get("system_load", 0.0)
         if system_load > 0.85:
-            self.logger.warning(f"High system load ({system_load:.1%}) → switching to minimal mode")
+            self.Logger.warning(f"High system load ({system_load:.1%}) → switching to minimal mode")
             return "minimal"
 
         # 2. Recent failure rate (safety)
         failure_rate = await self._get_recent_failure_rate(context)
         if failure_rate > 0.35:
-            self.logger.warning(f"High failure rate ({failure_rate:.1%}) → switching to conservative mode")
+            self.Logger.warning(f"High failure rate ({failure_rate:.1%}) → switching to conservative mode")
             return "conservative"
 
         # 3. Urgency flag (performance)
         if context.get("urgent", False) or context.get("time_critical", False):
-            self.logger.info("Urgent context detected → switching to aggressive mode")
+            self.Logger.info("Urgent context detected → switching to aggressive mode")
             return "aggressive"
 
         # 4. Sovereignty health degradation
         health_score = context.get("sovereignty_health", 100.0)
         if health_score < 90:
-            self.logger.info(f"Low sovereignty health ({health_score:.0f}%) → conservative mode")
+            self.Logger.info(f"Low sovereignty health ({health_score:.0f}%) → conservative mode")
             return "conservative"
 
         # Default
@@ -86,7 +86,7 @@ class AdaptiveExecutionMixin:
 
         # Select mode
         self._current_mode = await self.select_execution_mode(full_context)
-        self.logger.info(f"Executing in '{self._current_mode}' mode")
+        self.Logger.info(f"Executing in '{self._current_mode}' mode")
 
         # Dispatch to mode-specific implementation
         mode_method = f"_execute_{self._current_mode}"
@@ -110,7 +110,7 @@ class AdaptiveExecutionMixin:
 
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
         """Safer, more verified execution — e.g., extra validation, smaller steps."""
-        self.logger.info("Conservative mode: adding extra constitutional checks")
+        self.Logger.info("Conservative mode: adding extra constitutional checks")
         # Example: run predictive safety first
         # from prompt_governance.templates import predictive_failure_prevention
         # ... apply extra guards
@@ -118,12 +118,12 @@ class AdaptiveExecutionMixin:
 
     async def _execute_aggressive(self, ctx: Any, **context: Dict[str, Any]) -> Any:
         """Faster execution — e.g., parallelize, skip non-critical checks."""
-        self.logger.info("Aggressive mode: prioritizing speed")
+        self.Logger.info("Aggressive mode: prioritizing speed")
         return await self._execute_standard(ctx, **context)
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
         """Bare minimum — skip non-essential work to preserve resources."""
-        self.logger.warning("Minimal mode: skipping non-critical operations")
+        self.Logger.warning("Minimal mode: skipping non-critical operations")
         return {
             "mode": "minimal",
             "result": "skipped_due_to_load",
@@ -135,4 +135,4 @@ class AdaptiveExecutionMixin:
         if mode not in self.EXECUTION_MODES:
             raise ValueError(f"Invalid mode: {mode}")
         self._current_mode = mode
-        self.logger.warning(f"Execution mode forced to '{mode}' via emergency override")
+        self.Logger.warning(f"Execution mode forced to '{mode}' via emergency override")

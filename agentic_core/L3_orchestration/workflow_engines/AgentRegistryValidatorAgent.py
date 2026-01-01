@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 class AgentRegistryValidatorAgent:
     """
@@ -84,7 +84,7 @@ class AgentRegistryValidatorAgent:
         return {
             'total_agents': sum(len(agents) for agents in registry.values()),
             'found': len(self.found_agents),
-            'missing': len(self.missing_agents),
+            'Missing': len(self.missing_agents),
             'found_agents': self.found_agents,
             'missing_agents': self.missing_agents
         }
@@ -111,12 +111,12 @@ class AgentRegistryValidatorAgent:
         
         # Map keys to layer directories
         layer_map = {
-            12: ['agentic_core.L3_orchestration.P1_core', 'agentic_core.L3_orchestration.S3_vitality'],
-            13: ['agentic_core.L4_state.P1_core', 'agentic_core.L4_state.S1_memory'],
-            19: ['agentic_core.L5_safety.P1_core', 'agentic_core.L5_safety.validators']
+            12: ['AgenticCore.L3_orchestration.P1_core', 'AgenticCore.L3_orchestration.S3_vitality'],
+            13: ['AgenticCore.L4_state.P1_core', 'AgenticCore.L4_state.S1_memory'],
+            19: ['AgenticCore.L5_safety.P1_core', 'AgenticCore.L5_safety.validators']
         }
         
-        base_paths = layer_map.get(key, ['agentic_core.runtime.shared'])
+        base_paths = layer_map.get(key, ['AgenticCore.runtime.shared'])
         return [f"{base}.{module_name}" for base in base_paths]
     
     def run_validation(self, registry: Dict[int, List[str]]) -> bool:
@@ -131,11 +131,11 @@ class AgentRegistryValidatorAgent:
         """
         results = self.validate_registry(registry)
         
-        if results['missing'] > 0:
-            logger.warning(f"Missing {results['missing']} agents from registry")
+        if results['Missing'] > 0:
+            Logger.warning(f"Missing {results['Missing']} agents from registry")
             for agent in self.missing_agents:
-                logger.warning(f"  - {agent['name']} (Key {agent['key']})")
+                Logger.warning(f"  - {agent['name']} (Key {agent['key']})")
             return False
         
-        logger.info(f"All {results['found']} agents validated successfully")
+        Logger.info(f"All {results['found']} agents validated successfully")
         return True

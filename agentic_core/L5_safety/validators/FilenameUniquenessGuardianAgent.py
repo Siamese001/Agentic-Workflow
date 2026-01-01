@@ -6,7 +6,7 @@ centralized into NamingAgent.validate_proposed_name(). This file is kept for
 backward compatibility only.
 
 Use instead:
-    from agentic_core.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
+    from AgenticCore.utils.core_extensions.NamingAgent import NamingAgent, get_naming_agent
     naming = get_naming_agent(project_root)
     is_valid, reason = naming.validate_proposed_name("my_file.py")
     
@@ -20,7 +20,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import shutil
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_ROOT_FOLDERS,
     CORE_SUBFOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
@@ -37,14 +37,14 @@ warnings.warn(
 def get_placement_guidance(content_preview):
     """Bridge function for placement heuristics."""
     if any(x in content_preview for x in ['planner', 'strategy', 'reasoning', 'mission']):
-        return 'agentic_core/L1_cognition'
+        return 'AgenticCore/L1_cognition'
     if 'node' in content_preview.lower() or 'execute' in content_preview:
-        return 'agentic_core/L1_cognition/thought_engine'
+        return 'AgenticCore/L1_cognition/thought_engine'
     if any(x in content_preview for x in ['router', 'orchestrator', 'fission', 'hop']):
-        return 'agentic_core/L3_orchestration'
+        return 'AgenticCore/L3_orchestration'
     if any(x in content_preview for x in ['pinecone', 'redis', 'storage', 'cache']):
-        return 'agentic_core/L4_state'
-    return 'agentic_core/L1_cognition'
+        return 'AgenticCore/L4_state'
+    return 'AgenticCore/L1_cognition'
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
 class FilenameUniquenessGuardianAgent:
@@ -98,10 +98,10 @@ class FilenameUniquenessGuardianAgent:
             preview = file_path.read_text(encoding='utf-8', errors='ignore')[:2048]
             suggested = get_placement_guidance(preview)
             if not suggested or suggested == 'unknown':
-                suggested = 'agentic_core/utils/general_helpers'
+                suggested = 'AgenticCore/utils/general_helpers'
             parts = suggested.split('/')
             l1, l2 = (parts[-2], parts[-1])
-            target_dir = project_root / 'agentic_core' / l1 / l2
+            target_dir = project_root / 'AgenticCore' / l1 / l2
             new_path = target_dir / file_path.name
             stem, suffix = (file_path.stem, file_path.suffix)
             counter = 1

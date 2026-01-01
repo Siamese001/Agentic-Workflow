@@ -450,7 +450,7 @@ class TestPhase4Orchestrator:
         assert orchestrator.ctx == ctx
         assert orchestrator.gitops is not None
         assert orchestrator.mutator is not None
-        assert orchestrator.import_patcher is not None
+        assert orchestrator.ImportPatcher is not None
         assert orchestrator.conversational is not None
 
     @pytest.mark.asyncio
@@ -463,7 +463,7 @@ class TestPhase4Orchestrator:
 
         # This will fail without LLM but should create backup
         result = await orchestrator.heal_with_gitops(
-            task="Add docstring",
+            Task="Add docstring",
             content=content,
             file_path=sample_python_file,
         )
@@ -479,7 +479,7 @@ class TestPhase4Orchestrator:
 
         assert "gitops" in stats
         assert "mutator" in stats
-        assert "import_patcher" in stats
+        assert "ImportPatcher" in stats
         assert "conversational" in stats
 
 

@@ -8,17 +8,17 @@ using DeepWiki's codebase intelligence capabilities.
 import asyncio
 import logging
 from typing import List, Dict, Any
-from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
+from AgenticCore.observability.deepwiki_client_sovereign import SovereignDeepWikiClient
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger('L6.CanonAudit')
+Logger: Any = logging.getLogger('L6.CanonAudit')
 
-class sovereign_canon_auditor:
+class SovereignCanonAuditor:
     """
     Sovereign Canon Auditor using DeepWiki MCP.
     Performs self-verification of critical system components.
@@ -27,7 +27,7 @@ class sovereign_canon_auditor:
     def __init__(self):
         """Initialize the canon auditor."""
         self.client = SovereignDeepWikiClient()
-        self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/sovereign_graph_client.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/strategic_planner.py', 'agentic_core/L2_execution/tool_registry/web_search_tools.py']
+        self.critical_files = ['AgenticCore/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'AgenticCore/L5_safety/guardrails/mcp_sovereign.py', 'AgenticCore/L4_state/semantic_memory/pinecone_mcp_client.py', 'AgenticCore/L4_state/knowledge_graph/SovereignGraphClient.py', 'AgenticCore/L6_observability/deepwiki_client_sovereign.py', 'AgenticCore/L1_cognition/thought_engine/StrategicPlanner.py', 'AgenticCore/L2_execution/ToolRegistry/WebSearchTools.py']
 
     async def audit_core_components(self) -> Dict[str, Any]:
         """
@@ -39,7 +39,7 @@ class sovereign_canon_auditor:
         print('\n' + '=' * 60)
         print('🔍 SOVEREIGN CANON AUDIT - Phase 13E')
         print('=' * 60)
-        results: Any = {'total': len(self.critical_files), 'found': 0, 'missing': 0, 'details': []}
+        results: Any = {'total': len(self.critical_files), 'found': 0, 'Missing': 0, 'details': []}
         for filepath in self.critical_files:
             try:
                 exists: Any = await self.client.verify_file_exists(filepath)
@@ -48,12 +48,12 @@ class sovereign_canon_auditor:
                 if exists:
                     results['found'] += 1
                 else:
-                    results['missing'] += 1
+                    results['Missing'] += 1
                 print(f'{status}: {filepath}')
             except Exception as e:
-                logger.error(f'[CANON AUDIT] Failed to verify {filepath}: {e}')
+                Logger.error(f'[CANON AUDIT] Failed to verify {filepath}: {e}')
                 results['details'].append({'file': filepath, 'exists': False, 'status': '⚠️ ERROR', 'error': str(e)})
-                results['missing'] += 1
+                results['Missing'] += 1
                 print(f'⚠️ ERROR: {filepath} - {e}')
         return results
 
@@ -77,7 +77,7 @@ class sovereign_canon_auditor:
             print(f'A: {answer}')
             return answer
         except Exception as e:
-            logger.error(f'[CANON AUDIT] Insight query failed: {e}')
+            Logger.error(f'[CANON AUDIT] Insight query failed: {e}')
             error_msg: Any = f'Error: {e}'
             print(f'A: {error_msg}')
             return error_msg
@@ -92,7 +92,7 @@ class sovereign_canon_auditor:
         print('\n' + '=' * 60)
         print('🔗 MCP INTEGRATION VERIFICATION')
         print('=' * 60)
-        mcp_components: Any = {'L1 Sequential Thinking': 'strategic_planner.py', 'L2 Web Search': 'web_search_tools.py', 'L4 Pinecone': 'pinecone_mcp_client.py', 'L4 Knowledge Graph': 'sovereign_graph_client.py', 'L6 DeepWiki': 'deepwiki_client_sovereign.py'}
+        mcp_components: Any = {'L1 Sequential Thinking': 'StrategicPlanner.py', 'L2 Web Search': 'WebSearchTools.py', 'L4 Pinecone': 'pinecone_mcp_client.py', 'L4 Knowledge Graph': 'SovereignGraphClient.py', 'L6 DeepWiki': 'deepwiki_client_sovereign.py'}
         results: Any = {'total': len(mcp_components), 'verified': 0, 'failed': 0, 'details': []}
         for component_name, filename in mcp_components.items():
             try:
@@ -107,7 +107,7 @@ class sovereign_canon_auditor:
                     results['failed'] += 1
                 print(f'{status}: {component_name} ({filename})')
             except Exception as e:
-                logger.error(f'[CANON AUDIT] MCP verification failed for {component_name}: {e}')
+                Logger.error(f'[CANON AUDIT] MCP verification failed for {component_name}: {e}')
                 results['details'].append({'component': component_name, 'file': filename, 'uses_mcp': False, 'status': '❌ ERROR', 'error': str(e)})
                 results['failed'] += 1
                 print(f'❌ ERROR: {component_name} - {e}')
@@ -136,7 +136,7 @@ class sovereign_canon_auditor:
         print(f"Components: {component_results['found']}/{component_results['total']} found")
         print(f"MCP Integration: {mcp_results['verified']}/{mcp_results['total']} verified")
         print(f'Insights: {len(insights)} architectural questions answered')
-        overall_status: Any = 'PASS' if component_results['missing'] == 0 and mcp_results['failed'] == 0 else 'FAIL'
+        overall_status: Any = 'PASS' if component_results['Missing'] == 0 and mcp_results['failed'] == 0 else 'FAIL'
         print(f'\n🎯 Overall Status: {overall_status}')
         print('=' * 60 + '\n')
         return {'status': overall_status, 'components': component_results, 'mcp_integration': mcp_results, 'insights': insights, 'timestamp': asyncio.get_event_loop().time()}
@@ -147,7 +147,7 @@ async def audit_core_components() -> Any:
     Compatible with the spec example.
     """
     auditor: Any = SovereignCanonAuditor()
-    critical_files: Any = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py']
+    critical_files: Any = ['AgenticCore/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'AgenticCore/L5_safety/guardrails/mcp_sovereign.py']
     print('--- Starting Sovereign Canon Audit ---')
     for f in critical_files:
         exists: Any = await auditor.client.verify_file_exists(f)

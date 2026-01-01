@@ -4,7 +4,7 @@
 Complexity-based model selection to prevent "Enough Thinking" wall.
 Analyzes AST complexity before healing and routes to appropriate model.
 
-Mission: Stop "Retry Loop Death" by matching model power to task
+Mission: Stop "Retry Loop Death" by matching model power to Task
 Strategy: Right-Sized Intelligence for optimal token usage
 
 Models:
@@ -21,19 +21,19 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: ModelTier → model_tier
-class model_tier(str, Enum):
+# NAMING FIXED: ModelTier → ModelTier
+class ModelTier(str, Enum):
     """Model tiers based on capability and cost."""
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
@@ -41,10 +41,10 @@ class model_tier(str, Enum):
 
 
 @dataclass
-# NAMING FIXED: RoutingDecision → routing_decision
-class routing_decision:
+# NAMING FIXED: RoutingDecision → RoutingDecision
+class RoutingDecision:
     """Model routing decision with rationale."""
-    model_tier: ModelTier
+    ModelTier: ModelTier
     thinking_budget: int
     temperature: float
     rationale: str
@@ -53,8 +53,8 @@ class routing_decision:
 
 
 @dataclass
-# NAMING FIXED: ComplexityProfile → complexity_profile
-class complexity_profile:
+# NAMING FIXED: ComplexityProfile → ComplexityProfile
+class ComplexityProfile:
     """Comprehensive complexity profile for routing."""
     file_path: str
     total_lines: int
@@ -73,7 +73,7 @@ class DynamicModelRouterAgent(SubAtomicAgent):
     The Throttler - Dynamic Model Router
     
     Analyzes file complexity before healing and routes to appropriate model.
-    Prevents "Enough Thinking" wall by matching model power to task complexity.
+    Prevents "Enough Thinking" wall by matching model power to Task complexity.
     
     Routing Strategy:
     - Complexity Score 0-30: Flash Basic (8K budget)
@@ -101,15 +101,15 @@ class DynamicModelRouterAgent(SubAtomicAgent):
         # If they are not present in ctx, they will be None, and a warning will be logged.
         
         self.engine = getattr(self.ctx, 'subatomic_engine', None)
-        self.safety = getattr(self.ctx, 'safety_guardrail', None)
-        self.fission = getattr(self.ctx, 'fission_manager', None)
+        self.safety = getattr(self.ctx, 'SafetyGuardrail', None)
+        self.fission = getattr(self.ctx, 'FissionManager', None)
 
-        # Log a warning if any are missing, similar to the original try-except's intent.
+        # Log a warning if any are Missing, similar to the original try-except's intent.
         # The original code had a single try-except for all three.
         # If any of the three were not successfully initialized and provided by ctx,
         # we log a warning and ensure all related attributes are None to match original behavior.
         if not (self.engine and self.safety and self.fission):
-            logger.warning("One or more Sub-Atomic Engine components (engine, safety, fission) "
+            Logger.warning("One or more Sub-Atomic Engine components (engine, safety, fission) "
                            "were not found in ValidationContext. DynamicModelRouter will operate without them.")
             self.engine = None
             self.safety = None
@@ -139,7 +139,7 @@ class DynamicModelRouterAgent(SubAtomicAgent):
         
         This is called before healing to determine optimal model.
         """
-        logger.info("🎯 Dynamic Model Router: Analyzing complexity for routing...")
+        Logger.info("🎯 Dynamic Model Router: Analyzing complexity for routing...")
         
         # Analyze all files in context
         for file_path in self.ctx.python_files:
@@ -152,7 +152,7 @@ class DynamicModelRouterAgent(SubAtomicAgent):
             
             self.ctx.routing_decisions[file_path] = decision
             
-            logger.info(f"   {file_path}: {decision.model_tier.value} "
+            Logger.info(f"   {file_path}: {decision.ModelTier.value} "
                        f"(complexity: {profile.complexity_score:.1f}, "
                        f"budget: {decision.thinking_budget})")
     
@@ -170,7 +170,7 @@ class DynamicModelRouterAgent(SubAtomicAgent):
             with open(file_path, 'r', encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
-            logger.warning(f"Could not read {file_path}: {e}")
+            Logger.warning(f"Could not read {file_path}: {e}")
             return self._create_default_profile(file_path)
         
         try:
@@ -303,27 +303,27 @@ class DynamicModelRouterAgent(SubAtomicAgent):
         
         if score <= self.BASIC_THRESHOLD:
             # Simple file - use basic Flash
-            model_tier = ModelTier.FLASH_BASIC
+            ModelTier = ModelTier.FLASH_BASIC
             rationale = f"Low complexity ({score:.1f}/100) - simple linting/syntax fixes"
             
         elif score <= self.EXTENDED_THRESHOLD:
             # Medium complexity - use extended Flash
-            model_tier = ModelTier.FLASH_EXTENDED
+            ModelTier = ModelTier.FLASH_EXTENDED
             rationale = f"Medium complexity ({score:.1f}/100) - refactoring needed"
         else:
             # High complexity - use Deep Think
-            model_tier = ModelTier.DEEP_THINK
+            ModelTier = ModelTier.DEEP_THINK
             rationale = f"High complexity ({score:.1f}/100) - deep reasoning required"
         
         # Get budget and temperature
-        thinking_budget = self.BUDGETS[model_tier]
-        temperature = self.TEMPERATURES[model_tier]
+        thinking_budget = self.BUDGETS[ModelTier]
+        temperature = self.TEMPERATURES[ModelTier]
         
         # Estimate token usage (rough heuristic)
         estimated_tokens = int(profile.total_lines * 10 * (score / 100))
         
         return RoutingDecision(
-            model_tier=model_tier,
+            ModelTier=ModelTier,
             thinking_budget=thinking_budget,
             temperature=temperature,
             rationale=rationale,
@@ -375,7 +375,7 @@ class DynamicModelRouterAgent(SubAtomicAgent):
         }
         
         for file_path, decision in decisions.items():
-            by_tier[decision.model_tier].append((file_path, decision))
+            by_tier[decision.ModelTier].append((file_path, decision))
         
         # Generate report
         lines = [

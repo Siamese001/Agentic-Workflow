@@ -7,15 +7,15 @@ import shutil
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path.cwd()
-core: Any = ROOT / 'agentic_core'
-migration_map: Any = {'agentic_core/engines': 'agentic_core/L2_execution/P3_engines', 'agentic_core/interfaces': 'agentic_core/L1_cognition/P1_interfaces', 'agentic_core/security': 'agentic_core/L5_safety/P4_security', 'agentic_core/agentic_workflow': 'agentic_core/L3_orchestration/P5_workflow'}
+core: Any = ROOT / 'AgenticCore'
+migration_map: Any = {'AgenticCore/engines': 'AgenticCore/L2_execution/P3_engines', 'AgenticCore/interfaces': 'AgenticCore/L1_cognition/P1_interfaces', 'AgenticCore/security': 'AgenticCore/L5_safety/P4_security', 'AgenticCore/agentic_workflow': 'AgenticCore/L3_orchestration/P5_workflow'}
 
 def flush_and_align() -> Any:
     """Brief description of functionality and purpose."""
@@ -47,7 +47,7 @@ def flush_and_align() -> Any:
         flush_count += 1
     print(f'  [OK] Flushed {flush_count} __init__.py files')
     print('\n[*] REWIRING IMPORTS...')
-    rewire: Any = [('agentic_core\\.L5_safety\\.P1_red_team\\.analysis', 'agentic_core.L2_execution.tool_registry.analysis')]
+    rewire: Any = [('AgenticCore\\.L5_safety\\.P1_red_team\\.analysis', 'AgenticCore.L2_execution.ToolRegistry.analysis')]
     count: Any = 0
     for py_file in ROOT.rglob('*.py'):
         if any((p in str(py_file) for p in ['legacy_code', '.venv', 'data'])):
@@ -66,6 +66,6 @@ def flush_and_align() -> Any:
         except Exception as e:
             print(f'  [!] Failed to process {py_file}: {e}')
     print(f'\n[OK] CONVERGENCE V2 COMPLETE. {count} files rewired.')
-    print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target agentic_core'")
+    print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target AgenticCore'")
 if __name__ == '__main__':
     flush_and_align()

@@ -30,7 +30,7 @@ class JudgeVerdict:
 class EvalResult:
     """Outcome of running a GoldenStateTestCase through the agent loop."""
     test_id: str
-    verdict: JudgeVerdict
+    Verdict: JudgeVerdict
     raw_output: str
     reasoning_trace: List[Dict[str, Any]] = field(default_factory=list)
 

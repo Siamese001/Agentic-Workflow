@@ -1,7 +1,7 @@
 """Dynamic DAG Mutation Manager - Runtime graph transformation.
 
 This module implements the ability for the DAG to rewrite itself at runtime,
-allowing nodes to spawn new predecessors when they detect missing information.
+allowing nodes to spawn new predecessors when they detect Missing information.
 """
 from __future__ import annotations
 
@@ -14,14 +14,14 @@ from datetime import datetime
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.schemas.models.runtime_models import HopState, MicroStage
-from agentic_core.runtime.shared_runtime.reflection_engine import MutationRequest
+from AgenticCore.schemas.models.runtime_models import HopState, MicroStage
+from AgenticCore.runtime.shared_runtime.reflection_engine import MutationRequest
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agentic_core.runtime.shared_runtime.subatomic_hop import SubatomicHop
+    from AgenticCore.runtime.shared_runtime.SubatomicHop import SubatomicHop
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class GraphTransaction:
@@ -54,7 +54,7 @@ class GraphTransaction:
         # Temporarily switch manager to use transaction graph
         self.manager._transaction_graph = self.transaction_graph
         
-        logger.debug("Entered graph transaction")
+        Logger.debug("Entered graph transaction")
         return self.transaction_graph
         
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -74,7 +74,7 @@ class GraphTransaction:
         if exc_type is not None:
             # ROLLBACK: Restore original state
             self.manager.graph = self.original_graph
-            logger.error(f"DAG Mutation failed. Rolled back state. Error: {exc_val}")
+            Logger.error(f"DAG Mutation failed. Rolled back state. Error: {exc_val}")
             return False  # Propagate error
             
         # COMMIT: Validate and apply changes
@@ -84,12 +84,12 @@ class GraphTransaction:
             
             # Apply transaction graph as the new graph
             self.manager.graph = self.transaction_graph
-            logger.debug("DAG Transaction committed successfully")
+            Logger.debug("DAG Transaction committed successfully")
             
         except Exception as e:
             # Validation failed - rollback
             self.manager.graph = self.original_graph
-            logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
+            Logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False  # Propagate error
             
         return True
@@ -106,12 +106,12 @@ class GraphTransaction:
             
         # Check for disconnected components (optional)
         if not nx.is_weakly_connected(self.transaction_graph):
-            logger.warning("Transaction created disconnected components")
+            Logger.warning("Transaction created disconnected components")
             
         # Validate all nodes have required attributes
         for node in self.transaction_graph.nodes():
             if 'hop_spec' not in self.transaction_graph.nodes[node]:
-                raise ValueError(f"Node {node} missing hop_spec attribute")
+                raise ValueError(f"Node {node} Missing hop_spec attribute")
                 
         # Validate depth ordering
         self._validate_depth_ordering()
@@ -128,7 +128,7 @@ class GraphTransaction:
             # Source should have lower depth than target
             if source_depth >= target_depth:
                 raise ValueError(
-                    f"Depth ordering violation: {source}({source_depth}) -> {target}({target_depth})"
+                    f"Depth ordering Violation: {source}({source_depth}) -> {target}({target_depth})"
                 )
 
 
@@ -235,7 +235,7 @@ class DAGMutator:
                 
                 # Log successful mutation
                 if self.config.enable_mutation_logging:
-                    logger.info(f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
+                    Logger.info(f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
                                f"on {mutation.target_hop_id} - {mutation.reason}")
                 
                 # Store in history
@@ -490,7 +490,7 @@ class DAGManager:
             "replaced_nodes": 0
         }
         
-        logger.info("Initialized DAGManager with dynamic mutation support")
+        Logger.info("Initialized DAGManager with dynamic mutation support")
     
     def register_function(self, name: str, function: Callable) -> None:
         """Register a hop function that can be spawned.
@@ -500,7 +500,7 @@ class DAGManager:
             function: The function to register
         """
         self.function_registry[name] = function
-        logger.debug(f"Registered function: {name}")
+        Logger.debug(f"Registered function: {name}")
     
     def add_node(
         self,
@@ -536,7 +536,7 @@ class DAGManager:
         if not predecessors:
             self.execution_queue.append(hop.config.hop_id)
         
-        logger.info(f"Added node {hop.config.hop_id} to DAG")
+        Logger.info(f"Added node {hop.config.hop_id} to DAG")
     
     def request_mutation(self, mutation: DAGMutation) -> MutationResult:
         """Request a mutation to the DAG.
@@ -629,7 +629,7 @@ class DAGManager:
             hop = self.node_registry[hop_id]
             if hop.state == HopState.RUNNING:
                 hop.state = HopState.PAUSED
-                logger.info(f"Paused node {hop_id}")
+                Logger.info(f"Paused node {hop_id}")
                 return True
         return False
     
@@ -648,7 +648,7 @@ class DAGManager:
                 hop.state = HopState.RUNNING
                 # Add back to queue
                 self.execution_queue.append(hop_id)
-                logger.info(f"Resumed node {hop_id}")
+                Logger.info(f"Resumed node {hop_id}")
                 return True
         return False
     

@@ -48,8 +48,8 @@ class CreativeBrief(
 
 @dataclass
 class ArchetypeTemplate(
-    """Complete template for an archetype."""
-    archetype: str
+    """Complete template for an Archetype."""
+    Archetype: str
     system_instructions: str
     tone: str
     approach: str

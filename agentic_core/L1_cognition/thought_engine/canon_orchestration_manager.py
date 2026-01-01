@@ -6,14 +6,14 @@ Orchestrates all validation agents in dependency order.
 import asyncio
 import re
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.canon_agents_pattern import PatternEnforcer, SemanticMapper, UIValidationAgent
-from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
-from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
-from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
-from agentic_core.runtime.shared.canon_validation_context import ValidationContext
+from AgenticCore.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
+from AgenticCore.canon_agents_pattern import PatternEnforcer, SemanticMapper, UIValidationAgent
+from AgenticCore.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
+from AgenticCore.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
+from AgenticCore.canon_agents_syntax import CodeJanitor, DependencySentinel
+from AgenticCore.runtime.shared.canon_validation_context import ValidationContext
 
-class intelligent_orchestrator:
+class IntelligentOrchestrator:
     """Orchestrates all validation agents in dependency order."""
 
     def __init__(self, target: Optional[str]=None):

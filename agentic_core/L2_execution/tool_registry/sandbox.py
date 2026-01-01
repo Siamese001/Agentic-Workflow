@@ -4,9 +4,9 @@ import logging
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
 import docker
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class docker_sandbox:
+class DockerSandbox:
     """Brief description of functionality and purpose."""
 
     def __initialize__(self: Any, image: str) -> None:
@@ -15,7 +15,7 @@ class docker_sandbox:
 
 def run_code(self: Any, code: str, timeout: int) -> str:
     """Runs python code in an ephemeral container."""
-    WRAPPED: Any = f'try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)'
+    WRAPPED: Any = f'try:\n{self._indent(code)}\nexcept Exception as e:\n    Logger.info(e)'
     try:
         CONTAINER: Any = self.client.containers.run(self.image, COMMAND=['python', '-c', wrapped], mem_limit='512m', network_disabled=True, DETACH=True)
         exit_code: Any = container.wait(timeout=timeout)

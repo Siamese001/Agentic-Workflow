@@ -208,24 +208,24 @@ class StateManager:
     
     def create_checkpoint(self, checkpoint_name: str) -> str:
         """
-        Create a checkpoint of all current state files
+        Create a Checkpoint of all current state files
         
         Args:
-            checkpoint_name: Name for the checkpoint
+            checkpoint_name: Name for the Checkpoint
         
         Returns:
-            Path to checkpoint directory
+            Path to Checkpoint directory
         """
         checkpoint_dir = self.mission_dir / f"checkpoint_{checkpoint_name}"
         checkpoint_dir.mkdir(exist_ok=True)
         
-        # Copy all state files to checkpoint
+        # Copy all state files to Checkpoint
         for state_file in self.list_states():
             src = self.mission_dir / state_file
             dst = checkpoint_dir / state_file
             shutil.copy2(src, dst)
         
-        # Write checkpoint metadata
+        # Write Checkpoint metadata
         metadata = {
             "checkpoint_name": checkpoint_name,
             "created_at": datetime.now().isoformat(),
@@ -236,26 +236,26 @@ class StateManager:
         with open(checkpoint_dir / "checkpoint_metadata.json", 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        print(f"[StateManager] Created checkpoint: {checkpoint_name}")
+        print(f"[StateManager] Created Checkpoint: {checkpoint_name}")
         
         return str(checkpoint_dir)
     
     def restore_checkpoint(self, checkpoint_name: str):
         """
-        Restore state from a checkpoint
+        Restore state from a Checkpoint
         
         Args:
-            checkpoint_name: Name of checkpoint to restore
+            checkpoint_name: Name of Checkpoint to restore
         
         Raises:
-            FileNotFoundError: If checkpoint doesn't exist
+            FileNotFoundError: If Checkpoint doesn't exist
         """
         checkpoint_dir = self.mission_dir / f"checkpoint_{checkpoint_name}"
         
         if not checkpoint_dir.exists():
             raise FileNotFoundError(f"Checkpoint not found: {checkpoint_name}")
         
-        # Read checkpoint metadata
+        # Read Checkpoint metadata
         with open(checkpoint_dir / "checkpoint_metadata.json", 'r') as f:
             metadata = json.load(f)
         
@@ -263,13 +263,13 @@ class StateManager:
         for state_file in self.list_states():
             (self.mission_dir / state_file).unlink()
         
-        # Restore files from checkpoint
+        # Restore files from Checkpoint
         for state_file in metadata["state_files"]:
             src = checkpoint_dir / state_file
             dst = self.mission_dir / state_file
             shutil.copy2(src, dst)
         
-        print(f"[StateManager] Restored checkpoint: {checkpoint_name}")
+        print(f"[StateManager] Restored Checkpoint: {checkpoint_name}")
         print(f"[StateManager] Restored {len(metadata['state_files'])} state files")
     
     def delete_state(self, hop_id: str):
@@ -413,22 +413,22 @@ class StateValidator:
     # Expected schemas for each HOP
     SCHEMAS = {
         "HOP-1": {
-            "required_fields": ["archetype", "confidence", "reasoning", "key_indicators"],
+            "required_fields": ["Archetype", "confidence", "reasoning", "key_indicators"],
             "archetype_values": ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"]
         },
         "HOP-2": {
             "required_fields": ["recipient_insights", "company_context", "rag_results"],
-            "rag_result_fields": ["source", "source_type", "text"]
+            "rag_result_fields": ["source", "SourceType", "text"]
         },
         "HOP-3": {
             "required_fields": ["team_members", "products", "case_studies"],
         },
         "HOP-4": {
-            "required_fields": ["route", "reasoning"],
+            "required_fields": ["Route", "reasoning"],
             "route_values": ["INMAIL", "CONNECTION_REQ", "EMAIL", "FOLLOW_UP"]
         },
         "HOP-4.5": {
-            "required_fields": ["route", "archetype", "sections", "constraints"],
+            "required_fields": ["Route", "Archetype", "sections", "constraints"],
         },
         "HOP-5": {
             "required_fields": ["candidates", "generation_temperature", "generation_attempts"],
@@ -496,7 +496,7 @@ def test_state_manager():
     print("--- Writing test states ---")
     
     manager.write_state("HOP-1", {
-        "archetype": "C_LEVEL",
+        "Archetype": "C_LEVEL",
         "confidence": 0.95,
         "reasoning": "Title indicates CEO",
         "key_indicators": ["ceo"]
@@ -506,12 +506,12 @@ def test_state_manager():
         "recipient_insights": ["Strategic AI leader"],
         "company_context": ["Enterprise AI platform"],
         "rag_results": [
-            {"source": "LinkedIn", "source_type": "RECIPIENT_LINKEDIN_ABOUT", "text": "Profile text"}
+            {"source": "LinkedIn", "SourceType": "RECIPIENT_LINKEDIN_ABOUT", "text": "Profile text"}
         ]
     })
     
     manager.write_state("HOP-4", {
-        "route": "INMAIL",
+        "Route": "INMAIL",
         "reasoning": "Not connected, first message"
     })
     
@@ -519,7 +519,7 @@ def test_state_manager():
     print("\n--- Reading test states ---")
     
     state_1 = manager.read_state("HOP-1")
-    print(f"HOP-1 archetype: {state_1['archetype']}")
+    print(f"HOP-1 Archetype: {state_1['Archetype']}")
     
     state_2 = manager.read_state("HOP-2")
     print(f"HOP-2 insights: {state_2['recipient_insights']}")
@@ -546,8 +546,8 @@ def test_state_manager():
         else:
             print(f"  {hop_id}: ✗ Invalid - {errors}")
     
-    # Create checkpoint
-    print("\n--- Creating checkpoint ---")
+    # Create Checkpoint
+    print("\n--- Creating Checkpoint ---")
     manager.create_checkpoint("before_validation")
     
     # Export archive

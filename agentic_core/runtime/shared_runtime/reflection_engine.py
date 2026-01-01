@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Dict, Any, Optional, List, Union, Callable
 from abc import ABC, abstractmethod
 
-from agentic_core.L4_resilience.circuit_breaker import (
+from AgenticCore.L4_resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,
@@ -22,7 +22,7 @@ from agentic_core.L4_resilience.circuit_breaker import (
 from pydantic import BaseModel, Field, validator
 import asyncio
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class CritiqueResult(BaseModel):
@@ -138,7 +138,7 @@ class ReflectionEngine:
             half_open_max_calls=3
         )
         
-        logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
+        Logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
     
     async def evaluate(
         self,
@@ -166,7 +166,7 @@ class ReflectionEngine:
                 if criterion in self.builtin_criteria:
                     normalized_criteria.append(self.builtin_criteria[criterion])
                 else:
-                    logger.warning(f"Unknown criterion: {criterion}")
+                    Logger.warning(f"Unknown criterion: {criterion}")
             else:
                 normalized_criteria.append(criterion)
         
@@ -190,7 +190,7 @@ class ReflectionEngine:
                 
         except CircuitBreakerOpenError:
             # Circuit is open - return conservative result
-            logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
+            Logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
             result = CritiqueResult(
                 is_valid=True,  # Fail-open strategy
                 confidence_score=0.3,  # Low confidence
@@ -200,7 +200,7 @@ class ReflectionEngine:
             
         except Exception as e:
             # Unexpected error - return conservative result
-            logger.error(f"Reflection evaluation failed: {e}")
+            Logger.error(f"Reflection evaluation failed: {e}")
             result = CritiqueResult(
                 is_valid=True,  # Fail-open to avoid blocking workflow
                 confidence_score=0.2,  # Very low confidence
@@ -267,7 +267,7 @@ class ReflectionEngine:
                 total_weight += criterion.weight
                 
             except Exception as e:
-                logger.error(f"Validation error for {criterion.name}: {e}")
+                Logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
         
         # Calculate overall result
@@ -337,7 +337,7 @@ Respond in JSON format:
             )
             
         except Exception as e:
-            logger.error(f"LLM evaluation failed: {e}")
+            Logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(
                 is_valid=False,

@@ -1,9 +1,9 @@
-"""Implementation for tools_use_a_tool."""
+"""Implementation for ToolsUseATool."""
 import logging
 import sys
 from typing import Any, Dict, List, Optional, Protocol, Union
 
-class tools_use_a_tool:
+class ToolsUseATool:
     """
     Main executor class for tools use a tool operations.
 
@@ -20,19 +20,19 @@ class tools_use_a_tool:
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
         SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
-        if not self.logger.handlers:
+        if not self.Logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
-            self.logger.setLevel(logging.INFO)
+            self.Logger.addHandler(executor)
+            self.Logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
         MISSING = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        if Missing:
+            raise ValueError(f'Missing required config keys: {Missing}')
 
     def process(self, payload: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]=None) -> ProcessingResult:
         """
@@ -52,10 +52,10 @@ class tools_use_a_tool:
                 raise ValueError('Payload cannot be None')
             RESULT: Any = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
-            return ProcessingResult(success=True, DATA=result, execution_context=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
+            return ProcessingResult(success=True, DATA=result, ExecutionContext=exec_ctx, additional_info={'processed_at': time.time(), 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
-            return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
+            return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(self, data: Union[str, int, float, bool, List, Dict], context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""

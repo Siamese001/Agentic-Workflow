@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class MetaLearningAgent:
@@ -26,7 +26,7 @@ class MetaLearningAgent:
         self.experience_key = "meta_learning:experience"
         self.evolution_log = project_root / "logs" / "meta_evolution.jsonl"
         self.evolution_log.parent.mkdir(parents=True, exist_ok=True)
-        logger.info("MetaLearningAgent initialized — self-improvement loop active")
+        Logger.info("MetaLearningAgent initialized — self-improvement loop active")
 
     async def record_mission_outcome(
         self,
@@ -53,7 +53,7 @@ class MetaLearningAgent:
         with open(self.evolution_log, "a") as f:
             f.write(json.dumps(record) + "\n")
 
-        logger.info(f"MetaLearning: recorded mission {mission_id} — success={success}")
+        Logger.info(f"MetaLearning: recorded mission {mission_id} — success={success}")
 
     async def analyze_performance_trends(self, window_days: int = 30) -> Dict[str, Any]:
         """
@@ -91,7 +91,7 @@ class MetaLearningAgent:
             return None
 
         if not llm_client:
-            logger.warning("MetaLearning: LLM client required for prompt evolution")
+            Logger.warning("MetaLearning: LLM client required for prompt evolution")
             return None
 
         improvement_prompt = f"""
@@ -112,10 +112,10 @@ Keep sovereign tone and structure. Output only the improved template.
             )
             improved = response.choices[0].message.content
             if improved and len(improved.strip()) > 50:
-                logger.info(f"MetaLearning: evolved prompt template '{template_name}'")
+                Logger.info(f"MetaLearning: evolved prompt template '{template_name}'")
                 return improved.strip()
         except Exception as e:
-            logger.error(f"MetaLearning: prompt evolution failed: {e}")
+            Logger.error(f"MetaLearning: prompt evolution failed: {e}")
         
         return None
 
@@ -139,13 +139,13 @@ Keep sovereign tone and structure. Output only the improved template.
         """
         Full meta-learning cycle — called periodically or after major missions.
         """
-        logger.info("MetaLearningAgent: starting evolution cycle")
+        Logger.info("MetaLearningAgent: starting evolution cycle")
         trends = await self.analyze_performance_trends()
         actions = []
 
         evolved_prompt = await self.evolve_prompt_template("primary_healing_prompt", llm_client)
         if evolved_prompt and not dry_run:
-            path = self.project_root / "agentic_core" / "prompt_governance" / "templates" / "healing_v2.jinja"
+            path = self.project_root / "AgenticCore" / "prompt_governance" / "templates" / "healing_v2.jinja"
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(evolved_prompt)
             actions.append(f"Evolved primary healing prompt → {path}")

@@ -9,14 +9,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
+from AgenticCore.L3_orchestration.workflow_engines.mcp_manager import (
     MCPConnectionManager,
 )
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
-from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L5_safety.shield.redis_sovereign_shield import redis_shield
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # [SSOT] Sovereign territory boundaries derived from SOVEREIGN_REGISTRY
 # NAMING FIXED: ALLOWED_ROOT_PREFIXES → allowed_root_prefixes
@@ -24,8 +24,8 @@ allowed_root_prefixes = set(SOVEREIGN_REGISTRY.keys()) | {"config"}  # config is
 # NAMING FIXED: FORBIDDEN_PATH_PATTERNS → forbidden_path_patterns
 forbidden_path_patterns = {"..", "/etc", "/root", "~", ".ssh", ".env"}  # Renamed to avoid SSOT conflict
 
-# NAMING FIXED: SovereignFilesystemMCP → sovereign_filesystem_mcp
-class sovereign_filesystem_mcp:
+# NAMING FIXED: SovereignFilesystemMCP → SovereignFilesystemMcp
+class SovereignFilesystemMcp:
     """Ultra-hardened filesystem client — enforcing atomic sovereignty."""
     
     def __init__(self, manager: MCPConnectionManager, mission_id: str):
@@ -56,7 +56,7 @@ class sovereign_filesystem_mcp:
             result = await self.manager.call_tool("read_file", {"path": safe_path})
             return result.get("content", "")
         except Exception as e:
-            logger.error(f"[L4 FS] Read failed: {e}")
+            Logger.error(f"[L4 FS] Read failed: {e}")
             mcp_authority.record_breach(f"FS Read Failure: {safe_path}")
             raise
 
@@ -86,7 +86,7 @@ class sovereign_filesystem_mcp:
             
             return {"status": "fission_complete", "count": len(results)}
         except Exception as e:
-            logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
+            Logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
             mcp_authority.record_breach(f"Fission Write Failure: {monolith_path}")
             raise
 
@@ -101,6 +101,6 @@ class sovereign_filesystem_mcp:
             await self.manager.call_tool("roots_update", {"roots": validated})
             # Persist for continuity
             redis_shield.execute("set", self.roots_key, json.dumps(validated), ex=60*60*24)
-            logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
+            Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
         except Exception as e:
-            logger.warning(f"MCP Server does not support dynamic roots: {e}")
+            Logger.warning(f"MCP Server does not support dynamic roots: {e}")

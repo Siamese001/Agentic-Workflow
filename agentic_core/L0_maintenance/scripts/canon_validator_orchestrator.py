@@ -2,17 +2,17 @@
 🚀 PHASE 5: THIN WRAPPER - SwarmScheduler for Canon Validator
 
 This is now a thin wrapper that delegates to the consolidated orchestrator_main.py
-All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
+All orchestration logic has been moved to AgenticCore/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
 import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+Logger: Any = logging.getLogger(__name__)
+from AgenticCore.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 
-class swarm_scheduler:
+class SwarmScheduler:
     """
     Thin wrapper for Canon Validator SwarmScheduler.
     Delegates to ConsolidatedOrchestrator.
@@ -23,12 +23,12 @@ class swarm_scheduler:
         self.ctx = ValidationContext()
         config = OrchestratorConfig(max_cycles=10, enable_healing=True, enable_intervention=True)
         self.orchestrator = create_orchestrator(config=config, context=self.ctx)
-        logger.info('🔗 SwarmScheduler wrapper initialized (delegates to orchestrator_main)')
+        Logger.info('🔗 SwarmScheduler wrapper initialized (delegates to orchestrator_main)')
 
     async def run_mission(self, target_scope: Optional[str]=None) -> Any:
         """Run the validation mission (delegates to orchestrator_main)."""
-        logger.info(f'🚀 Running Canon Validator mission')
-        results: Any = await self.orchestrator.run_mission(target_path=target_scope, workflow_id='canon_validator')
+        Logger.info(f'🚀 Running Canon Validator mission')
+        results: Any = await self.orchestrator.run_mission(target_path=target_scope, workflow_id='CanonValidator')
         return results
 IntelligentOrchestrator: Any = SwarmScheduler
 

@@ -16,12 +16,12 @@ load_dotenv(dotenv_path=project_root / '.env', override=True)
 from canon_validator_agentic_v2 import run_mission
 from typing import Any
 
-async def execute_sovereign_sweep(target_scope: str='agentic_core') -> Any:
+async def execute_sovereign_sweep(target_scope: str='AgenticCore') -> Any:
     """Brief description of functionality and purpose."""
     print(f"\n{'=' * 70}\n[OBSERVABILITY] STARTING MASTER MISSION: {target_scope}\n{'=' * 70}")
     try:
         engine: Any = SubAtomicEngine()
-        guardrail: Any = safety_guardrail(deletion_limit=110)
+        guardrail: Any = SafetyGuardrail(deletion_limit=110)
         print(f"[OK] Neural Link Active: {os.getenv('GEMINI_MODEL')}")
         print(f'[OK] Safety Guardrail Active (AST Gate Enabled)')
     except Exception as e:

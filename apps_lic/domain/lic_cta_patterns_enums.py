@@ -5,11 +5,11 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: RecipientArchetype → recipient_archetype
-class recipient_archetype(Enum):
-    """Recipient archetype classifications."""
+# NAMING FIXED: RecipientArchetype → RecipientArchetype
+class RecipientArchetype(Enum):
+    """Recipient Archetype classifications."""
 
 
-# NAMING FIXED: CTAStyle → cta_style
-class cta_style(Enum):
+# NAMING FIXED: CTAStyle → CtaStyle
+class CtaStyle(Enum):
     """CTA style types."""

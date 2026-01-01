@@ -6,14 +6,14 @@ from datetime import datetime
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 _logger = logging.getLogger(__name__)
 
-class test_memory_retrieval:
+class TestMemoryRetrieval:
     """Tests for memory retrieval operations."""
 
 def test_retrieve_by_key(self: Any) -> None:

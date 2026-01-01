@@ -15,7 +15,7 @@ from typing import Any, Callable, Dict, List, Optional, Awaitable
 
 from .trace_models import ReasoningTraceModel
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class ReasoningMode(Enum):
@@ -51,7 +51,7 @@ class ReActTrace:
     """
     
     trace_id: str
-    task: str
+    Task: str
     steps: List[ReActStep] = field(default_factory=list)
     final_answer: Optional[str] = None
     success: bool = False
@@ -64,7 +64,7 @@ class ReActTrace:
         """Convert to formal Pydantic ReasoningTraceModel."""
         trace = ReasoningTraceModel(
             trace_id=self.trace_id,
-            task=self.task,
+            Task=self.Task,
             started_at=self.started_at,
             metadata=self.metadata,
         )
@@ -89,13 +89,13 @@ class ReActTrace:
 
 
 class ReActEngine:
-    """ReAct reasoning engine for complex task solving.
+    """ReAct reasoning engine for complex Task solving.
     
     Implements the ReAct (Reasoning and Acting) pattern:
     1. Think: Reason about the current state and what to do next
     2. Act: Execute an action based on reasoning
     3. Observe: Observe the result and update understanding
-    4. Repeat until task is complete
+    4. Repeat until Task is complete
     
     This is the default reasoning model for complex tasks requiring tool use.
     """
@@ -119,7 +119,7 @@ class ReActEngine:
     
     async def run(
         self,
-        task: str,
+        Task: str,
         think_fn: Callable[[str, List[ReActStep]], Awaitable[str]],
         act_fn: Callable[[str, Dict[str, Any]], Awaitable[str]],
         should_continue_fn: Optional[Callable[[List[ReActStep]], bool]] = None,
@@ -128,8 +128,8 @@ class ReActEngine:
         """Run the ReAct reasoning loop.
         
         Args:
-            task: The task to solve
-            think_fn: Async function that generates reasoning given task and history
+            Task: The Task to solve
+            think_fn: Async function that generates reasoning given Task and history
             act_fn: Async function that executes actions and returns observations
             should_continue_fn: Optional function to determine if loop should continue
             context: Optional context dictionary
@@ -138,13 +138,13 @@ class ReActEngine:
             ReActTrace containing all steps and final result
         """
         trace_id = str(uuid.uuid4())
-        trace = ReActTrace(trace_id=trace_id, task=task, metadata=context or {})
+        trace = ReActTrace(trace_id=trace_id, Task=Task, metadata=context or {})
         
-        logger.info("react_start", extra={"trace_id": trace_id, "task": task[:100], "max_steps": self.max_steps})
+        Logger.info("react_start", extra={"trace_id": trace_id, "Task": Task[:100], "max_steps": self.max_steps})
         
         try:
-            await self._execute_reasoning_loop(task, think_fn, act_fn, should_continue_fn, trace, trace_id)
-            trace = await self._finalize_trace(task, think_fn, trace, trace_id)
+            await self._execute_reasoning_loop(Task, think_fn, act_fn, should_continue_fn, trace, trace_id)
+            trace = await self._finalize_trace(Task, think_fn, trace, trace_id)
         except Exception as e:
             self._handle_trace_error(trace, trace_id, e)
         
@@ -152,7 +152,7 @@ class ReActEngine:
     
     async def _execute_reasoning_loop(
         self,
-        task: str,
+        Task: str,
         think_fn: Callable,
         act_fn: Callable,
         should_continue_fn: Optional[Callable],
@@ -161,17 +161,17 @@ class ReActEngine:
     ) -> None:
         """Execute the main reasoning loop."""
         for step_num in range(1, self.max_steps + 1):
-            thought = await think_fn(task, trace.steps)
+            thought = await think_fn(Task, trace.steps)
             
             if not thought or "FINISH" in thought.upper():
-                logger.info("react_finish", extra={"trace_id": trace_id, "step": step_num, "reason": "finish_signal"})
+                Logger.info("react_finish", extra={"trace_id": trace_id, "step": step_num, "reason": "finish_signal"})
                 break
             
             step = await self._execute_step(step_num, thought, act_fn, trace_id)
             trace.steps.append(step)
             
             if should_continue_fn and not should_continue_fn(trace.steps):
-                logger.info("react_stop", extra={"trace_id": trace_id, "step": step_num, "reason": "should_continue_false"})
+                Logger.info("react_stop", extra={"trace_id": trace_id, "step": step_num, "reason": "should_continue_false"})
                 break
             
             if self.enable_self_reflection and step_num % 3 == 0:
@@ -186,23 +186,23 @@ class ReActEngine:
             observation = await act_fn(action, action_input)
             step.observation = observation
         except Exception as e:
-            logger.error("react_action_error", extra={"trace_id": trace_id, "step": step_num, "action": action, "error": str(e)})
+            Logger.error("react_action_error", extra={"trace_id": trace_id, "step": step_num, "action": action, "error": str(e)})
             step.observation = f"Error: {str(e)}"
         
         return step
     
-    async def _finalize_trace(self, task: str, think_fn: Callable, trace: ReActTrace, trace_id: str) -> ReActTrace:
+    async def _finalize_trace(self, Task: str, think_fn: Callable, trace: ReActTrace, trace_id: str) -> ReActTrace:
         """Finalize trace with final answer."""
-        final_thought = await think_fn(f"Based on the reasoning above, provide the final answer to: {task}", trace.steps)
+        final_thought = await think_fn(f"Based on the reasoning above, provide the final answer to: {Task}", trace.steps)
         trace.final_answer = final_thought
         trace.success = True
         trace.completed_at = datetime.now()
-        logger.info("react_complete", extra={"trace_id": trace_id, "steps": len(trace.steps), "success": True})
+        Logger.info("react_complete", extra={"trace_id": trace_id, "steps": len(trace.steps), "success": True})
         return trace
     
     def _handle_trace_error(self, trace: ReActTrace, trace_id: str, error: Exception) -> None:
         """Handle trace execution error."""
-        logger.error("react_error", extra={"trace_id": trace_id, "error": str(error)})
+        Logger.error("react_error", extra={"trace_id": trace_id, "error": str(error)})
         trace.error = str(error)
         trace.success = False
         trace.completed_at = datetime.now()
@@ -249,7 +249,7 @@ class ReActEngine:
             think_fn: Thinking function for reflection
         """
         reflection_prompt = (
-            f"Reflect on the reasoning so far for task: {trace.task}\n"
+            f"Reflect on the reasoning so far for Task: {trace.Task}\n"
             f"Steps taken: {len(trace.steps)}\n"
             "Are we making progress? Should we adjust our approach?"
         )
@@ -257,7 +257,7 @@ class ReActEngine:
         try:
             reflection = await think_fn(reflection_prompt, trace.steps)
             
-            logger.info(
+            Logger.info(
                 "react_reflection",
                 extra={
                     "trace_id": trace.trace_id,
@@ -273,7 +273,7 @@ class ReActEngine:
             })
             
         except Exception as e:
-            logger.warning(
+            Logger.warning(
                 "react_reflection_error",
                 extra={
                     "trace_id": trace.trace_id,

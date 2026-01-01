@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Automated refactoring script to update all agents to use shared Sub-Atomic Engine.
-This script systematically updates all agent files in agentic_core/agents/.
+This script systematically updates all agent files in AgenticCore/agents/.
 """
 
 import logging
@@ -11,15 +11,15 @@ from pathlib import Path
 # NAMING FIXED: AGENT_FILES → agent_files
 agent_files = [
     "memory_architect.py",
-    "context_curator.py", 
+    "ContextCurator.py", 
     "hallucination_hunter.py",
-    "healer_agent.py",
+    "HealerAgent.py",
     "analysis.py",
     "dynamic_model_router.py",
 ]
 
 # NAMING FIXED: AGENTS_DIR → agents_dir
-agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
+agents_dir = Path("c:/Git/Agentic-Workflow/AgenticCore/agents")
 
 def add_subatomic_imports(content: str) -> str:
     """Add Sub-Atomic Engine imports if not present."""
@@ -70,7 +70,7 @@ def add_engine_initialization(content: str, class_name: str) -> str:
                 self.safety = get_safety_guardrail()
                 self.fission = get_fission_manager()
             except Exception as e:
-                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
+                Logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
                 self.engine = None
                 self.safety = None
                 self.fission = None

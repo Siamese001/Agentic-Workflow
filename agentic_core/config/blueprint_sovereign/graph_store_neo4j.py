@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Protocol
 
 
 # NOT_AN_AGENT — data store utility, not a true agent — excluded from agent discovery
-class neo4j_graph_store:
+class Neo4jGraphStore:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
     

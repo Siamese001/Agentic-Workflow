@@ -5,23 +5,23 @@ from dataclasses import dataclass, field
 '\nsort_observability_results.py - Optimization Module\n\nDomain: standard\nGenerated: 2025-12-07T12:07:59.838335\n'
 import logging
 from typing import Any, Callable, Dict, List, Optional, Protocol, TypeVar
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 T: Any = TypeVar('T')
 
 @dataclass
-class optimization_result:
+class OptimizationResult:
     """Result of optimization."""
     items: List[object]
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
 
-class sort_observability_results:
+class SortObservabilityResults:
     """Optimizer for standard domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         SELF.METHOD = self.config.get('method', 'score')
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def optimize(self, items: List[T], key: Optional[Callable[[T], Any]]=None) -> OptimizationResult:
         """Optimize item ordering."""

@@ -3,8 +3,8 @@
 
 import logging
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -17,6 +17,6 @@ about the refactoring that was performed to split the original module.
 """
 
 # Re-export all components for backward compatibility
-# from agentic_core.exceptions_types import *  # Star import removed
+# from AgenticCore.exceptions_types import *  # Star import removed
 
 __all__ = ["*"]  # Re-export all imported names

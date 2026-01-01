@@ -1,7 +1,7 @@
 """
 apps_rg.domain - Resume Generation domain models and configurations.
 
-Contains app-specific domain logic moved from agentic_core for separation of concerns:
+Contains app-specific domain logic moved from AgenticCore for separation of concerns:
 - Creative Brief: RG creative brief models and enums
 - Validation Gates: Domain validation rules
 """

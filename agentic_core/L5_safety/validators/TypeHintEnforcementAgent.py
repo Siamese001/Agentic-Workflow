@@ -1,7 +1,7 @@
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
-# Territory: agentic_core/L2_execution/tool_registry
+# Territory: AgenticCore/L2_execution/ToolRegistry
 # Canon Alignment: Enforces complete type hints for public functions/methods/variables
-# Surgery Scope: Single file — adds basic Any / inferred hints where missing
+# Surgery Scope: Single file — adds basic Any / inferred hints where Missing
 
 import ast
 '''Brief description of functionality and purpose.'''
@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -52,7 +52,7 @@ class TypeHintEnforcementAgent:
 
     async def heal_violation(self, file_path: Path, ctx=None) -> Dict[str, Any]:
         """
-        Per-file healing: add missing type hints via AST transformation.
+        Per-file healing: add Missing type hints via AST transformation.
         """
         ctx = ctx or self.ctx
         try:
@@ -68,7 +68,7 @@ class TypeHintEnforcementAgent:
 
                 if new_source != source:
                     file_path.write_text(new_source + "\n", encoding="utf-8")
-                    message = f"Added {fixer.added_count} missing type hint(s)"
+                    message = f"Added {fixer.added_count} Missing type hint(s)"
                     print(f"      [HEALED] {file_path.name}: {message}")
                     ctx.report(
                         self.__class__.__name__,
@@ -90,10 +90,10 @@ class TypeHintEnforcementAgent:
             return {"healed": False}
 
 
-# NAMING FIXED: TypeHintFixer → type_hint_fixer
-class type_hint_fixer(ast.NodeTransformer):
+# NAMING FIXED: TypeHintFixer → TypeHintFixer
+class TypeHintFixer(ast.NodeTransformer):
     """
-    AST transformer that adds missing type hints to public symbols.
+    AST transformer that adds Missing type hints to public symbols.
     """
 
     def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str):

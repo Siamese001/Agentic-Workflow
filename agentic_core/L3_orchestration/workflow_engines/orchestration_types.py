@@ -1,5 +1,5 @@
 """
-Orchestration Types for agentic_core
+Orchestration Types for AgenticCore
 
 Core types used across orchestration components to avoid circular dependencies.
 """
@@ -8,7 +8,7 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-class execution_phase_signal(Enum):
+class ExecutionPhaseSignal(Enum):
     """Signal enum for phase logic checks."""
     PLANNING: Any = auto()
     EXECUTION: Any = auto()
@@ -16,7 +16,7 @@ class execution_phase_signal(Enum):
     HEALING: Any = auto()
 
 @dataclass
-class execution_phase:
+class ExecutionPhase:
     """Definition of an execution phase - sovereign template for apps to extend."""
     name: str
     agents: List[str]
@@ -32,7 +32,7 @@ class execution_phase:
             self.signal = signal_map.get(self.name.lower(), ExecutionPhaseSignal.PLANNING)
 
 @dataclass
-class workflow_snapshot:
+class WorkflowSnapshot:
     """Snapshot of workflow state for rollback - sovereign core type."""
     cycle: int
     context: Dict[str, Any]

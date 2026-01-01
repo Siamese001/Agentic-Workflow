@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 from temporal_vetting import vet_lead_optimal_time
 
 
-def _get_and_process_current_time(get_current_time_tool: Any, logger: Optional[Any]) -> Optional[str]:
+def _get_and_process_current_time(get_current_time_tool: Any, Logger: Optional[Any]) -> Optional[str]:
     """Helper function to get and process current UTC time."""
     try:
         time_str = get_current_time_tool("UTC")
@@ -21,12 +21,12 @@ def _get_and_process_current_time(get_current_time_tool: Any, logger: Optional[A
         current_utc_time_hm = datetime.fromisoformat(
             time_str.replace('Z', '+00:00')).strftime('%H:%M')
 
-        if logger:
-            logger.info(f"Current UTC time: {current_utc_time_hm}")
+        if Logger:
+            Logger.info(f"Current UTC time: {current_utc_time_hm}")
         return current_utc_time_hm
     except Exception as e:
-        if logger:
-            logger.error(f"Failed to get current time: {e}")
+        if Logger:
+            Logger.error(f"Failed to get current time: {e}")
         return None
 
 
@@ -34,18 +34,18 @@ def _perform_temporal_compliance_check(
     lead_timezone: str,
     current_utc_time_hm: str,
     tools: Dict[str, Any],
-    logger: Optional[Any]
+    Logger: Optional[Any]
 ) -> Dict[str, Any]:
     """Helper function to perform the temporal compliance check."""
     return vet_lead_optimal_time(
-        lead_timezone, current_utc_time_hm, tools, logger)
+        lead_timezone, current_utc_time_hm, tools, Logger)
 
 
 def _send_email_compliantly(
     recipient_email: str,
     pitch_content: str,
     send_email_tool: Any,
-    logger: Optional[Any]
+    Logger: Optional[Any]
 ) -> str:
     """Helper function to send email when compliance is passed."""
     try:
@@ -59,30 +59,30 @@ def _send_email_compliantly(
             body=pitch_content
         )
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ Compliance Passed. Email DISPATCHED. Result: {email_result}")
         return "SENT_COMPLIANT"
 
     except Exception as e:
-        if logger:
-            logger.error(f"❌ Email Dispatch Failed: {e}")
+        if Logger:
+            Logger.error(f"❌ Email Dispatch Failed: {e}")
         return "SENT_FAILED"
 
 
 def _handle_temporal_delay(
     lead_local_time: str,
     lead_timezone: str,
-    logger: Optional[Any]
+    Logger: Optional[Any]
 ) -> Dict[str, Any]:
     """Helper function to handle temporal delay and calculate next send time."""
     next_send_time = calculate_next_business_time(
         lead_local_time, lead_timezone)
 
-    if logger:
-        logger.warning(
+    if Logger:
+        Logger.warning(
             f"⚠️ Temporal Delay. Local Time ({lead_local_time}) is outside business hours. Action DEFERRED.")
-        logger.info(f"💡 Next optimal send time: {next_send_time}")
+        Logger.info(f"💡 Next optimal send time: {next_send_time}")
 
     return {
         "status": "TEMPORAL_DELAY",
@@ -97,7 +97,7 @@ def _log_audit_observation(
     lead_local_time: Optional[str],
     decision: Optional[str],
     add_observations_tool: Optional[Any],
-    logger: Optional[Any]
+    Logger: Optional[Any]
 ) -> None:
     """Helper function to log audit information to L5 MEMemory."""
     if add_observations_tool:
@@ -108,8 +108,8 @@ def _log_audit_observation(
                 "contents": [audit_message]
             }])
         except Exception as e:
-            if logger:
-                logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
+            if Logger:
+                Logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
 
 
 def execute_governed_outreach_sequence(
@@ -117,7 +117,7 @@ def execute_governed_outreach_sequence(
     pitch_content: str,
     recipient_email: str,
     tools: Dict[str, Any],
-    logger: Optional[Any] = None
+    Logger: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Master function for Outreach Engine. Orchestrates temporal compliance check (L4)
@@ -128,13 +128,13 @@ def execute_governed_outreach_sequence(
         pitch_content: Email content to send
         recipient_email: Target email address
         tools: Dictionary containing MCP tools
-        logger: Optional logger instance
+        Logger: Optional Logger instance
 
     Returns:
         Dictionary containing the final status and audit information
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"🚀 Starting Governed Outreach Sequence for {recipient_email}")
 
     # Extract required tools
@@ -154,7 +154,7 @@ def execute_governed_outreach_sequence(
     decision = None
 
     # --- 1. Get Current Time (L4 Time) ---
-    current_utc_time_hm = _get_and_process_current_time(get_current_time_tool, logger)
+    current_utc_time_hm = _get_and_process_current_time(get_current_time_tool, Logger)
     if current_utc_time_hm is None:
         return {
             "status": "ERROR_TIME_FETCH",
@@ -163,7 +163,7 @@ def execute_governed_outreach_sequence(
 
     # --- 2. Temporal Compliance Check (L4 Time, Sequential Thinking) ---
     vetting_result = _perform_temporal_compliance_check(
-        lead_timezone, current_utc_time_hm, tools, logger)
+        lead_timezone, current_utc_time_hm, tools, Logger)
 
     send_allowed = vetting_result['send_now']
     lead_local_time = vetting_result['lead_local_time']
@@ -173,11 +173,11 @@ def execute_governed_outreach_sequence(
     if send_allowed:
         # A. SEND NOW Path (Compliance Passed)
         final_status = _send_email_compliantly(
-            recipient_email, pitch_content, send_email_tool, logger)
+            recipient_email, pitch_content, send_email_tool, Logger)
     else:
         # B. DELAY Path (Compliance Failed)
         delay_result = _handle_temporal_delay(
-            lead_local_time, lead_timezone, logger)
+            lead_local_time, lead_timezone, Logger)
         final_status = delay_result["status"]
         next_send_time = delay_result.get("next_optimal_send_time")
 
@@ -189,7 +189,7 @@ def execute_governed_outreach_sequence(
         lead_local_time,
         decision,
         add_observations_tool,
-        logger
+        Logger
     )
 
     # Build result

@@ -1,18 +1,18 @@
-"""Backward compatibility shim for tools_use_a_tool.
+"""Backward compatibility shim for ToolsUseATool.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
-The original tools_use_a_tool.py contained 6 top-level definitions which
+The original ToolsUseATool.py contained 6 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from agentic_core.tools_use_a_tool_impl import *  # Star import removed
-# from agentic_core.tools_use_a_tool_impl import *  # Star import removed
+# from AgenticCore.tools_use_a_tool_impl import *  # Star import removed
+# from AgenticCore.tools_use_a_tool_impl import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

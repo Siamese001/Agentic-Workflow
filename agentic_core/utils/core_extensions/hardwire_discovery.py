@@ -6,7 +6,7 @@ import re
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
-root: Any = Path('C:/Git/Agentic-Workflow/agentic_core')
+root: Any = Path('C:/Git/Agentic-Workflow/AgenticCore')
 path_redirects: Any = {}
 
 def hardwire_discovery() -> Any:

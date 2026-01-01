@@ -15,7 +15,7 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # CRITICAL ARCHITECTURAL REFACTOR: Removed import from 'apps_shared'.
 # The signal bus functionality is now provided via dependency injection.
@@ -23,28 +23,28 @@ logger = logging.getLogger(__name__)
 # Define a local Protocol for the signal bus interface.
 # This allows dependency injection of a signal bus without direct import
 # from downstream layers like 'apps_shared'.
-# NAMING FIXED: SignalBusInterface → signal_bus_interface
-class signal_bus_interface(Protocol):
+# NAMING FIXED: SignalBusInterface → SignalBusInterface
+class SignalBusInterface(Protocol):
     """
     Protocol for a signal bus emitter.
     An object conforming to this protocol can be injected into the executor
     to enable signal emission.
     """
-    def emit(self, signal_type: Any, message: str, source: str, severity: str) -> None:
+    def emit(self, signal_type: Any, message: str, source: str, Severity: str) -> None:
                     
         ...
 
 # Define local Enum for the specific signal types used by this executor.
 # This replaces the need to import SignalType from 'apps_shared'.
-# NAMING FIXED: L5SignalType → l5_signal_type
-class l5_signal_type(str, Enum):
+# NAMING FIXED: L5SignalType → L5SignalType
+class L5SignalType(str, Enum):
     """Specific signal types emitted by the L5IntegrityGateExecutor."""
     VALIDATION_FAILURE = "validation_failure"
     QUALITY_BELOW_THRESHOLD = "quality_below_threshold"
 
 
-# NAMING FIXED: ValidationSeverity → validation_severity
-class validation_severity(str, Enum):
+# NAMING FIXED: ValidationSeverity → ValidationSeverity
+class ValidationSeverity(str, Enum):
     """Severity levels for validation issues."""
 
     CRITICAL = "critical"  # Blocks output
@@ -54,8 +54,8 @@ class validation_severity(str, Enum):
     INFO = "info"          # Informational only
 
 
-# NAMING FIXED: ValidationCategory → validation_category
-class validation_category(str, Enum):
+# NAMING FIXED: ValidationCategory → ValidationCategory
+class ValidationCategory(str, Enum):
     """Categories of validation checks."""
 
     STRUCTURE = "structure"
@@ -67,12 +67,12 @@ class validation_category(str, Enum):
 
 
 @dataclass
-# NAMING FIXED: ValidationIssue → validation_issue
-class validation_issue:
+# NAMING FIXED: ValidationIssue → ValidationIssue
+class ValidationIssue:
     """A single validation issue."""
 
     category: ValidationCategory
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     message: str
     location: str = ""
     suggestion: str = ""
@@ -80,8 +80,8 @@ class validation_issue:
 
 
 @dataclass
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result:
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult:
     """Result of validation with all issues."""
 
     passed: bool = True
@@ -95,7 +95,7 @@ class validation_result:
     def add_issue(
         self,
         category: ValidationCategory,
-        severity: ValidationSeverity,
+        Severity: ValidationSeverity,
         message: str,
         location: str = "",
         suggestion: str = "",
@@ -104,20 +104,20 @@ class validation_result:
         """Add a validation issue."""
         self.issues.append(ValidationIssue(
             category=category,
-            severity=severity,
+            Severity=Severity,
             message=message,
             location=location,
             suggestion=suggestion,
             pass_detected=pass_detected,
         ))
 
-        # Update passed status based on severity
-        if severity in [ValidationSeverity.CRITICAL, ValidationSeverity.HIGH]:
+        # Update passed status based on Severity
+        if Severity in [ValidationSeverity.CRITICAL, ValidationSeverity.HIGH]:
             self.passed = False
 
-    def get_issues_by_severity(self, severity: ValidationSeverity) -> List[ValidationIssue]:
-        """Get all issues of a specific severity."""
-        return [i for i in self.issues if i.severity == severity]
+    def get_issues_by_severity(self, Severity: ValidationSeverity) -> List[ValidationIssue]:
+        """Get all issues of a specific Severity."""
+        return [i for i in self.issues if i.Severity == Severity]
 
     def get_issues_by_category(self, category: ValidationCategory) -> List[ValidationIssue]:
         """Get all issues of a specific category."""
@@ -125,7 +125,7 @@ class validation_result:
 
     def has_critical_issues(self) -> bool:
         """Check if there are any critical issues."""
-        return any(i.severity == ValidationSeverity.CRITICAL for i in self.issues)
+        return any(i.Severity == ValidationSeverity.CRITICAL for i in self.issues)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -142,7 +142,7 @@ class validation_result:
             "issues": [
                 {
                     "category": i.category.value,
-                    "severity": i.severity.value,
+                    "Severity": i.Severity.value,
                     "message": i.message,
                     "location": i.location,
                     "suggestion": i.suggestion,
@@ -189,7 +189,7 @@ class L5IntegrityGateExecutorAgent:
         "implementation", "solution", "approach", "methodology",
     }
 
-    # Patterns for metric detection
+    # Patterns for Metric detection
     METRIC_PATTERNS = [
         r'\$[\d,]+(?:\.\d+)?[KMB]?',           # Dollar amounts
         r'\d+(?:\.\d+)?%',                      # Percentages
@@ -238,7 +238,7 @@ class L5IntegrityGateExecutorAgent:
         # Otherwise, set to None, effectively disabling signal emission.
         self._signal_bus = signal_bus_emitter if emit_signals else None
 
-        logger.info(
+        Logger.info(
             f"L5IntegrityGateExecutor initialized: "
             f"depth_threshold={min_depth_score}, quality_threshold={min_quality_score}"
             f", signal_emission_enabled={self._signal_bus is not None}"
@@ -262,11 +262,11 @@ class L5IntegrityGateExecutorAgent:
         self._run_fast_checks(content, result)
 
         result.pass1_duration_ms = (datetime.utcnow() - pass1_start).total_seconds() * 1000
-        logger.debug(f"Pass 1 completed in {result.pass1_duration_ms:.1f}ms, found {len(result.issues)} issues")
+        Logger.debug(f"Pass 1 completed in {result.pass1_duration_ms:.1f}ms, found {len(result.issues)} issues")
 
         # Check if we should skip Pass 2
         if self.skip_pass2_on_critical and result.has_critical_issues():
-            logger.info("Skipping Pass 2 due to critical issues in Pass 1")
+            Logger.info("Skipping Pass 2 due to critical issues in Pass 1")
             result.pass2_skipped = True
             self._emit_validation_signal(result)
             return result
@@ -277,7 +277,7 @@ class L5IntegrityGateExecutorAgent:
         self._run_deep_checks(content, result)
 
         result.pass2_duration_ms = (datetime.utcnow() - pass2_start).total_seconds() * 1000
-        logger.debug(f"Pass 2 completed in {result.pass2_duration_ms:.1f}ms")
+        Logger.debug(f"Pass 2 completed in {result.pass2_duration_ms:.1f}ms")
 
         # Calculate final scores
         result.depth_score = self._calculate_depth_score(content)
@@ -310,7 +310,7 @@ class L5IntegrityGateExecutorAgent:
         """
         # Extract text content for checking
         text_content = self._extract_text_content(content)
-        # Check for empty/missing content
+        # Check for empty/Missing content
         self._check_required_fields(content, result)
 
         # Check for fluff language
@@ -318,7 +318,7 @@ class L5IntegrityGateExecutorAgent:
 
         # Check for vague claims without metrics
         self._check_vague_claims_fast(text_content, result)
-        # Check for metric format issues
+        # Check for Metric format issues
         self._check_metric_format_fast(content, result)
 
         # Check for structural issues
@@ -330,7 +330,7 @@ class L5IntegrityGateExecutorAgent:
 
         These are more expensive and involve deeper analysis.
         """
-        # Check metric-evidence binding
+        # Check Metric-evidence binding
         self._check_metric_binding_deep(content, result)
 
         # Check citation coverage
@@ -374,7 +374,7 @@ class L5IntegrityGateExecutorAgent:
                 result.add_issue(
                     ValidationCategory.STRUCTURE,
                     ValidationSeverity.CRITICAL,
-                    f"Required field '{field}' is missing or empty",
+                    f"Required field '{field}' is Missing or empty",
                     location=field,
                 )
 
@@ -414,7 +414,7 @@ class L5IntegrityGateExecutorAgent:
                 end = min(len(text), match.end() + 30)
                 context = text[start:end]
 
-                # Check if there's a metric nearby
+                # Check if there's a Metric nearby
                 has_metric = any(
                     re.search(mp, context) for mp in self.METRIC_PATTERNS
                 )
@@ -423,27 +423,27 @@ class L5IntegrityGateExecutorAgent:
                     result.add_issue(
                         ValidationCategory.METRICS,
                         ValidationSeverity.MEDIUM,
-                        f"Vague claim '{match.group()}' without supporting metric",
+                        f"Vague Claim '{match.group()}' without supporting Metric",
                         location=f"...{context}...",
                         suggestion="Add specific numbers, percentages, or dollar amounts",
                     )
 
     def _check_metric_format_fast(self, content: Dict[str, Any], result: ValidationResult) -> None:
-        """Fast check for metric format issues."""
+        """Fast check for Metric format issues."""
 
         metrics = content.get("metrics", [])
         if isinstance(metrics, list):
-            for metric in metrics:
-                if isinstance(metric, dict):
-                    value = metric.get("value", "")
+            for Metric in metrics:
+                if isinstance(Metric, dict):
+                    value = Metric.get("value", "")
 
                     # Check if value has a number
                     if not any(re.search(p, str(value)) for p in self.METRIC_PATTERNS):
                         result.add_issue(
                             ValidationCategory.METRICS,
                             ValidationSeverity.HIGH,
-                            f"Metric '{metric.get('name', 'unknown')}' has no numeric value",
-                            location=f"metrics.{metric.get('name', '')}",
+                            f"Metric '{Metric.get('name', 'unknown')}' has no numeric value",
+                            location=f"metrics.{Metric.get('name', '')}",
                             suggestion="Add specific numeric value with units",
                         )
 
@@ -478,23 +478,23 @@ class L5IntegrityGateExecutorAgent:
                         )
 
     def _check_metric_binding_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
-        """Deep check for metric-evidence binding."""
+        """Deep check for Metric-evidence binding."""
 
         metrics = content.get("metrics", [])
         evidence = content.get("evidence", {})
 
         if isinstance(metrics, list):
-            for metric in metrics:
-                if isinstance(metric, dict):
-                    evidence_id = metric.get("evidence_id")
+            for Metric in metrics:
+                if isinstance(Metric, dict):
+                    evidence_id = Metric.get("evidence_id")
 
                     if not evidence_id:
                         result.add_issue(
                             ValidationCategory.METRICS,
                             ValidationSeverity.HIGH,
-                            f"Metric '{metric.get('name', 'unknown')}' has no evidence binding",
-                            location=f"metrics.{metric.get('name', '')}",
-                            suggestion="Link metric to specific evidence ID",
+                            f"Metric '{Metric.get('name', 'unknown')}' has no evidence binding",
+                            location=f"metrics.{Metric.get('name', '')}",
+                            suggestion="Link Metric to specific evidence ID",
                             pass_detected=2,
                         )
                     elif evidence_id not in evidence:
@@ -502,7 +502,7 @@ class L5IntegrityGateExecutorAgent:
                             ValidationCategory.METRICS,
                             ValidationSeverity.HIGH,
                             f"Metric references non-existent evidence '{evidence_id}'",
-                            location=f"metrics.{metric.get('name', '')}",
+                            location=f"metrics.{Metric.get('name', '')}",
                             pass_detected=2,
                         )
 
@@ -528,7 +528,7 @@ class L5IntegrityGateExecutorAgent:
     def _check_consistency_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
         """Deep check for consistency across sections."""
 
-        # Check for metric consistency
+        # Check for Metric consistency
         metrics_mentioned = set()
         sections = content.get("sections", {})
 
@@ -541,7 +541,7 @@ class L5IntegrityGateExecutorAgent:
                     matches = re.findall(pattern, section_text)
                     metrics_mentioned.update(matches)
 
-            # Check if same metric appears with different values
+            # Check if same Metric appears with different values
             # (simplified check - real implementation would be more sophisticated)
 
     def _check_orphaned_claims_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
@@ -551,17 +551,17 @@ class L5IntegrityGateExecutorAgent:
         content.get("evidence", {})
 
         if isinstance(claims, list):
-            for claim in claims:
-                if isinstance(claim, dict):
-                    claim_text = claim.get("text", "")
-                    evidence_ids = claim.get("evidence_ids", [])
+            for Claim in claims:
+                if isinstance(Claim, dict):
+                    claim_text = Claim.get("text", "")
+                    evidence_ids = Claim.get("evidence_ids", [])
 
                     if not evidence_ids:
                         result.add_issue(
                             ValidationCategory.CONTENT,
                             ValidationSeverity.MEDIUM,
                             f"Claim has no supporting evidence: '{claim_text[:50]}...'",
-                            suggestion="Link claim to evidence or remove",
+                            suggestion="Link Claim to evidence or remove",
                             pass_detected=2,
                         )
 
@@ -600,13 +600,13 @@ class L5IntegrityGateExecutorAgent:
 
         # Deduct based on issues
         for issue in result.issues:
-            if issue.severity == ValidationSeverity.CRITICAL:
+            if issue.Severity == ValidationSeverity.CRITICAL:
                 score -= 0.3
-            elif issue.severity == ValidationSeverity.HIGH:
+            elif issue.Severity == ValidationSeverity.HIGH:
                 score -= 0.15
-            elif issue.severity == ValidationSeverity.MEDIUM:
+            elif issue.Severity == ValidationSeverity.MEDIUM:
                 score -= 0.05
-            elif issue.severity == ValidationSeverity.LOW:
+            elif issue.Severity == ValidationSeverity.LOW:
                 score -= 0.02
 
         return max(0.0, score)
@@ -623,14 +623,14 @@ class L5IntegrityGateExecutorAgent:
                 L5SignalType.VALIDATION_FAILURE, # Using local L5SignalType
                 f"Critical validation issues: {len(result.get_issues_by_severity(ValidationSeverity.CRITICAL))}",
                 source="L5IntegrityGateExecutor",
-                severity="error"
+                Severity="error"
             )
         elif not result.passed:
             self._signal_bus.emit(
                 L5SignalType.QUALITY_BELOW_THRESHOLD, # Using local L5SignalType
                 f"Quality below threshold: {result.quality_score:.2f}",
                 source="L5IntegrityGateExecutor",
-                severity="warning"
+                Severity="warning"
             )
 
 

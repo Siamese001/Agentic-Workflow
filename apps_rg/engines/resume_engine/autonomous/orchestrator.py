@@ -25,7 +25,7 @@ from .context import ResumeEngineContext
 
 
 async def run_resume_mission(
-    job_description: str,
+    JobDescription: str,
     master_resume: Dict[str, Any],
     user_profile: Optional[Dict[str, Any]] = None,
     max_cycles: int = 5,
@@ -37,7 +37,7 @@ async def run_resume_mission(
     It implements self-healing cycles with strategic planning.
 
     Args:
-        job_description: Target job description
+        JobDescription: Target job description
         master_resume: User's master resume data
         user_profile: Optional user profile for fact-checking
         max_cycles: Maximum healing cycles (default 5)
@@ -55,7 +55,7 @@ async def run_resume_mission(
 
     # Initialize context
     ctx = ResumeEngineContext()
-    ctx.job_description = job_description
+    ctx.JobDescription = JobDescription
     ctx.current_resume = master_resume.copy()
     ctx.user_profile = user_profile or {}
     ctx.max_cycles = max_cycles
@@ -177,7 +177,7 @@ async def run_resume_mission(
     }
 
 
-async def quick_validate(resume: Dict[str, Any], job_description: str = "") -> Dict[str, Any]:
+async def quick_validate(resume: Dict[str, Any], JobDescription: str = "") -> Dict[str, Any]:
     """
     Quick validation without full mission cycle.
 
@@ -185,14 +185,14 @@ async def quick_validate(resume: Dict[str, Any], job_description: str = "") -> D
 
     Args:
         resume: Resume data to validate
-        job_description: Optional job description for ATS check
+        JobDescription: Optional job description for ATS check
 
     Returns:
         Dictionary with validation results
     """
     ctx = ResumeEngineContext()
     ctx.current_resume = resume
-    ctx.job_description = job_description
+    ctx.JobDescription = JobDescription
 
     agents = [
         ContentQualityAgent(ctx),

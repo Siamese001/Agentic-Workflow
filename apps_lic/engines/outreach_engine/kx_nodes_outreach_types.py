@@ -10,7 +10,7 @@ from enum import Enum, auto
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -47,9 +47,9 @@ class OutreachKNode:  # Local Runtime DTO (Allowed)
     node_id: str
     element: str
     node_type: OutreachKNodeType
-    reasoning_strategy: ReasoningStrategy = ReasoningStrategy.COT
-    rag_config: Optional[RAGConfig] = None
-    decoding_params: Optional[DecodingParams] = None
+    ReasoningStrategy: ReasoningStrategy = ReasoningStrategy.COT
+    RagConfig: Optional[RAGConfig] = None
+    DecodingParams: Optional[DecodingParams] = None
     tot_branches: int = 3
     self_consistency_runs: int = 1
     max_chars: Optional[int] = None

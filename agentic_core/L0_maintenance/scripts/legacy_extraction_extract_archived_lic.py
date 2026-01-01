@@ -3,7 +3,7 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Any, Set
-sovereign_roots: Any = {'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
+sovereign_roots: Any = {'AgenticCore', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config', 'data', 'archives'}
 
 def get_existing_files() -> Set[str]:
     """Get set of all Python files in sovereign codebase."""
@@ -16,7 +16,7 @@ def get_existing_files() -> Set[str]:
                 rel_path: Any = py_file.relative_to(repo_root)
                 existing.add(str(rel_path))
     return existing
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""

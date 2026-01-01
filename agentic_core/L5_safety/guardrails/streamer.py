@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 if sys.platform == 'win32':
     sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 try:
     import websockets
     from websockets.server import WebSocketServerProtocol
@@ -32,7 +32,7 @@ except ImportError:
     WEBSOCKETS_AVAILABLE: Any = False
     LOGGER.warning('websockets not available - live browser updates disabled')
 
-class l5_streamer:
+class L5Streamer:
     """
     Live reasoning broadcast system for L5+ autonomy.
 

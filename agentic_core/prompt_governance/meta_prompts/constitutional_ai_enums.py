@@ -2,21 +2,21 @@
 from enum import Enum, auto
 
 
-# NAMING FIXED: RuleType → rule_type
-class rule_type(Enum):
+# NAMING FIXED: RuleType → RuleType
+class RuleType(Enum):
     """Types of constitutional rules."""
 
 
-# NAMING FIXED: RuleSeverity → rule_severity
-class rule_severity(Enum):
+# NAMING FIXED: RuleSeverity → RuleSeverity
+class RuleSeverity(Enum):
     """Severity levels for rule violations."""
 
 
-# NAMING FIXED: ViolationType → violation_type
-class violation_type(Enum):
+# NAMING FIXED: ViolationType → ViolationType
+class ViolationType(Enum):
     """Types of violations."""
 
 
-# NAMING FIXED: RuleAction → rule_action
-class rule_action(Enum):
+# NAMING FIXED: RuleAction → RuleAction
+class RuleAction(Enum):
     """Actions to take on violations."""

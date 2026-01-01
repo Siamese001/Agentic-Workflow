@@ -7,26 +7,26 @@ import hashlib
 import logging
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
-from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.githubusercontent.com', 'readthedocs.io', 'developer.mozilla.org', 'stackoverflow.com', 'pypi.org'}
 chunk_size: Any = 8000
 
-class sovereign_fetch_client:
+class SovereignFetchClient:
     """Ultra-hardened Fetch MCP client — enforcing external knowledge purity."""
 
     def __init__(self, manager, cache: Optional[SovereignSemanticCache]=None):
         self.manager = manager
         self.cache = cache
-        logger.info('[L2 FETCH] Sovereign gateway armed.')
+        Logger.info('[L2 FETCH] Sovereign gateway armed.')
 
     def _validate_url(self, url: str) -> str:
         """L5 sovereignty check: block internal IPs and unapproved domains."""
@@ -49,6 +49,6 @@ class sovereign_fetch_client:
                 await self.cache.cache_file(f'external_doc_{cache_id}.md', content, metadata={'tool': 'fetch', 'url': url, 'type': 'documentation'})
             return content
         except Exception as e:
-            logger.error(f'[L2 FETCH] Retrieval failed for {url}: {e}')
+            Logger.error(f'[L2 FETCH] Retrieval failed for {url}: {e}')
             mcp_authority.record_breach(f'Fetch failure: {url}')
             return ''

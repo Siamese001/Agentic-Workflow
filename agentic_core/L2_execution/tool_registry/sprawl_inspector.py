@@ -9,10 +9,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-class sprawl_inspector:
+class SprawlInspector:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, target_path='agentic_core'):
+    def __init__(self, target_path='AgenticCore'):
         self.root = Path(target_path)
         self.MAX_BREADTH = 7
         self.MIN_FILES = 3
@@ -51,7 +51,7 @@ class sprawl_inspector:
                 print(f"  ... and {len(self.report['flattening_candidates']) - 10} more")
         print('=' * 70)
 if __name__ == '__main__':
-    inspector: Any = SprawlInspector('agentic_core')
+    inspector: Any = SprawlInspector('AgenticCore')
     data: Any = inspector.inspect()
     inspector.print_summary()
     with open('sprawl_report.json', 'w') as f:

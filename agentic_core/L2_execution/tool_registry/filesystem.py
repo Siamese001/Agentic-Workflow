@@ -10,10 +10,10 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 
-from agentic_core.L2_execution.tool_registry.definitions import (
+from AgenticCore.L2_execution.ToolRegistry.definitions import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -74,7 +74,7 @@ def get_project_root() -> Path:
     """Get the project root directory."""
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / 'agentic_core').exists() or (current / '.git').exists():
+        if (current / 'AgenticCore').exists() or (current / '.git').exists():
             return current
         current = current.parent
     return Path.cwd()
@@ -133,7 +133,7 @@ def require_healing_lease(func):
         file_path = kwargs.get('path') or (args[0].path if args else None)
         
         if blackboard and agent_id and file_path:
-            # Removed direct import of AtomicBlackboard to avoid architectural violation.
+            # Removed direct import of AtomicBlackboard to avoid architectural Violation.
             # Instead, check if the provided blackboard object has the required method (duck typing).
             if hasattr(blackboard, 'verify_healing_lease') and callable(blackboard.verify_healing_lease):
                 if not blackboard.verify_healing_lease(agent_id, file_path):
@@ -230,7 +230,7 @@ def write_file(
                             pass
                 
                 raise PreservationViolationError(
-                    f"Preservation violation: New content ({new_lines} lines) is less than 90% "
+                    f"Preservation Violation: New content ({new_lines} lines) is less than 90% "
                     f"of original ({original_lines} lines). Minimum required: {min_lines} lines. "
                     f"This would delete {round((1 - new_lines/original_lines) * 100, 2)}% of the file. "
                     f"Set override_preservation=True if this is intentional (SystemArchitect only)."

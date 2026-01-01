@@ -5,7 +5,7 @@ import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
 
-class genealogy_registry:
+class GenealogyRegistry:
     """
     L4 State: The Decision Ledger.
     Tracks the 'ancestry' of every hop and decision.
@@ -15,8 +15,8 @@ class genealogy_registry:
         self.config = config
         self.history = []
 
-    def register_attempt(self, trace_id: str, task: str, context_hash: str) -> Any:
+    def register_attempt(self, trace_id: str, Task: str, context_hash: str) -> Any:
         """Records a mission attempt in the sovereign ledger."""
-        entry: Any = {'trace_id': trace_id, 'task': task, 'context_hash': context_hash, 'timestamp': time.time()}
+        entry: Any = {'trace_id': trace_id, 'Task': Task, 'context_hash': context_hash, 'timestamp': time.time()}
         self.history.append(entry)
         logging.info(f'Genealogy: Registered hop {trace_id[:8]} in the ledger.')

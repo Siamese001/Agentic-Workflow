@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-# High-severity dangerous patterns (regex-based quick scan)
+# High-Severity dangerous patterns (regex-based quick scan)
 DANGEROUS_PATTERNS = [
     (r'exec\s*\(', 'exec() usage detected'),
     (r'eval\s*\(', 'eval() usage detected'),
@@ -36,7 +36,7 @@ DANGEROUS_PATTERNS = [
     (r'Path\([^)]*\)\.unlink', 'file deletion'),
 ]
 
-# Bandit-equivalent high-severity checks (simplified)
+# Bandit-equivalent high-Severity checks (simplified)
 BANDIT_HIGH_SEVERITY_PATTERNS = [
     'B102',  # exec usage
     'B103',  # set_bad_file_permissions
@@ -97,9 +97,9 @@ class HealValidator:
             self.bandit_manager = bandit_manager
             self.bandit_config = bandit_config
             self.bandit_available = True
-            logger.info("[HealValidator] Bandit static analysis available")
+            Logger.info("[HealValidator] Bandit static analysis available")
         except ImportError:
-            logger.warning("[HealValidator] Bandit not available - using regex fallback")
+            Logger.warning("[HealValidator] Bandit not available - using regex fallback")
     
     def validate_healed_code(
         self, 
@@ -162,7 +162,7 @@ class HealValidator:
         
         result["stage"] = "complete"
         result["details"]["passed_all_stages"] = True
-        logger.info(f"[HealValidator] ✓ {file_path.name} passed all validation stages")
+        Logger.info(f"[HealValidator] ✓ {file_path.name} passed all validation stages")
         return result
     
     def _validate_syntax(self, code: str, file_path: Path) -> Dict[str, any]:
@@ -171,7 +171,7 @@ class HealValidator:
             ast.parse(code)
             return {"valid": True, "reason": ""}
         except SyntaxError as e:
-            logger.error(f"[HealValidator] Syntax error in {file_path.name}:{e.lineno} - {e.msg}")
+            Logger.error(f"[HealValidator] Syntax error in {file_path.name}:{e.lineno} - {e.msg}")
             return {
                 "valid": False,
                 "reason": f"Syntax error at line {e.lineno}: {e.msg}",
@@ -182,7 +182,7 @@ class HealValidator:
                 }
             }
         except Exception as e:
-            logger.error(f"[HealValidator] AST parsing failed for {file_path.name}: {e}")
+            Logger.error(f"[HealValidator] AST parsing failed for {file_path.name}: {e}")
             return {
                 "valid": False,
                 "reason": f"AST parsing error: {str(e)}",
@@ -204,7 +204,7 @@ class HealValidator:
                 })
         
         if detected_patterns:
-            logger.warning(f"[HealValidator] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found")
+            Logger.warning(f"[HealValidator] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found")
             return {
                 "valid": False,
                 "reason": f"Dangerous patterns detected: {', '.join([p['pattern'] for p in detected_patterns[:3]])}",
@@ -214,7 +214,7 @@ class HealValidator:
         return {"valid": True, "reason": ""}
     
     def _validate_static_analysis(self, code: str, file_path: Path) -> Dict[str, any]:
-        """Stage 3: Run Bandit static analysis (high-severity checks only)."""
+        """Stage 3: Run Bandit static analysis (high-Severity checks only)."""
         if not self.bandit_available:
             return {"valid": True, "reason": "Bandit not available"}
         
@@ -225,32 +225,32 @@ class HealValidator:
                 temp_path = Path(f.name)
             
             try:
-                # Initialize Bandit manager with high-severity tests only
+                # Initialize Bandit manager with high-Severity tests only
                 b_mgr = self.bandit_manager.BanditManager(
                     self.bandit_config.BanditConfig(),
                     'file'
                 )
                 
-                # Configure to run only high-severity tests
+                # Configure to run only high-Severity tests
                 b_mgr.discover_files([str(temp_path)])
                 b_mgr.run_tests()
                 
-                # Check for high-severity issues
+                # Check for high-Severity issues
                 high_severity_issues = [
                     issue for issue in b_mgr.results 
-                    if issue.severity == 'HIGH'
+                    if issue.Severity == 'HIGH'
                 ]
                 
                 if high_severity_issues:
-                    logger.warning(f"[HealValidator] Bandit found {len(high_severity_issues)} high-severity issues in {file_path.name}")
+                    Logger.warning(f"[HealValidator] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}")
                     return {
                         "valid": False,
-                        "reason": f"Static analysis found {len(high_severity_issues)} high-severity security issues",
+                        "reason": f"Static analysis found {len(high_severity_issues)} high-Severity security issues",
                         "details": {
                             "issues": [
                                 {
                                     "test_id": issue.test_id,
-                                    "severity": issue.severity,
+                                    "Severity": issue.Severity,
                                     "confidence": issue.confidence,
                                     "line": issue.lineno,
                                     "text": issue.text[:100]
@@ -266,7 +266,7 @@ class HealValidator:
                 temp_path.unlink(missing_ok=True)
                 
         except Exception as e:
-            logger.error(f"[HealValidator] Bandit analysis failed: {e}")
+            Logger.error(f"[HealValidator] Bandit analysis failed: {e}")
             # Don't fail validation if Bandit crashes - fall back to pattern matching
             return {"valid": True, "reason": f"Bandit analysis skipped: {e}"}
     
@@ -280,7 +280,7 @@ class HealValidator:
         diff_size = len(diff)
         
         if diff_size > self.max_diff_lines:
-            logger.warning(f"[HealValidator] Excessive diff in {file_path.name}: {diff_size} lines")
+            Logger.warning(f"[HealValidator] Excessive diff in {file_path.name}: {diff_size} lines")
             return {
                 "valid": False,
                 "reason": f"Diff too large: {diff_size} lines (max: {self.max_diff_lines})",
@@ -294,7 +294,7 @@ class HealValidator:
         if original_loc > 0:
             retention_ratio = healed_loc / original_loc
             if retention_ratio < self.min_code_retention:
-                logger.warning(f"[HealValidator] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained")
+                Logger.warning(f"[HealValidator] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained")
                 return {
                     "valid": False,
                     "reason": f"Excessive code deletion: only {retention_ratio:.1%} of original code retained",
@@ -307,7 +307,7 @@ class HealValidator:
         
         # Check 3: Detect ellipsis truncation (common LLM failure mode)
         if '...' in healed_code and healed_loc < original_loc * 0.8:
-            logger.warning(f"[HealValidator] Truncation detected in {file_path.name}")
+            Logger.warning(f"[HealValidator] Truncation detected in {file_path.name}")
             return {
                 "valid": False,
                 "reason": "LLM truncation detected (ellipsis with significant code loss)",

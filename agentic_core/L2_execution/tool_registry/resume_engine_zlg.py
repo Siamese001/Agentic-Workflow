@@ -17,27 +17,27 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-from agentic_core.L2_execution.knowledge.knowledge_utilities import KnowledgeResult, get_consolidated_knowledge
-from agentic_core.L2_execution.security.security_utilities import SecurityStatus, get_fact_checker, get_prompt_firewall
-from agentic_core.utils.P1_core.core_utilities import DraftGenerator, FileManager, SemanticScorer, log_action, register_process
+from AgenticCore.L2_execution.knowledge.knowledge_utilities import KnowledgeResult, get_consolidated_knowledge
+from AgenticCore.L2_execution.security.security_utilities import SecurityStatus, get_fact_checker, get_prompt_firewall
+from AgenticCore.utils.P1_core.core_utilities import DraftGenerator, FileManager, SemanticScorer, log_action, register_process
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('logs/resume_engine_zlg.log'), logging.StreamHandler()])
-logger: Any = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('logs/ResumeEngineZlg.log'), logging.StreamHandler()])
+Logger: Any = logging.getLogger(__name__)
 
-class engine_status(Enum):
+class EngineStatus(Enum):
     """Status codes for engine operations."""
     SUCCESS: Any = 'SUCCESS'
     FAIL: Any = 'FAIL'
     IN_PROGRESS: Any = 'IN_PROGRESS'
     SHADOW_MODE: Any = 'SHADOW_MODE'
 
-class exit_reason(Enum):
+class ExitReason(Enum):
     """Exit reasons for ZLG termination."""
     P3_INJECTION_BLOCK: Any = 'P3_INJECTION_BLOCK'
     ZLG_MAX_ATTEMPTS: Any = 'ZLG_MAX_ATTEMPTS'
@@ -45,7 +45,7 @@ class exit_reason(Enum):
     CRITICAL_ERROR: Any = 'CRITICAL_ERROR'
 
 @dataclass
-class job_description:
+class JobDescription:
     """Job description data."""
     url: str
     content: str
@@ -53,20 +53,20 @@ class job_description:
     position: Optional[str] = None
 
 @dataclass
-class draft_result:
+class DraftResult:
     """Result from draft generation."""
     content: str
     source: str
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class rewrite_result:
+class RewriteResult:
     """Result from shadow mode rewrite."""
     content: str
     improvements: List[str]
     confidence: float
 
-class shadow_mode_engine:
+class ShadowModeEngine:
     """P10: Shadow Mode for self-correction simulation."""
 
     def __init__(self, llm_client=None):
@@ -89,7 +89,7 @@ class shadow_mode_engine:
         Returns:
             RewriteResult with improved draft
         """
-        logger.info(f'P10_SHADOW_START: Rewriting due to: {error_reason}')
+        Logger.info(f'P10_SHADOW_START: Rewriting due to: {error_reason}')
         if self.llm_client:
             return self._rewrite_with_llm(draft, error_reason)
         else:
@@ -102,7 +102,7 @@ class shadow_mode_engine:
             response = self.llm_client.generate(prompt)
             return RewriteResult(content=response.text, improvements=['Fixed ' + error_reason], confidence=0.8)
         except Exception as e:
-            logger.error(f'P10_LLM_FAILED: {e}')
+            Logger.error(f'P10_LLM_FAILED: {e}')
             return self._rewrite_with_rules(draft, error_reason)
 
     def _rewrite_with_rules(self, draft: str, error_reason: str) -> RewriteResult:
@@ -147,7 +147,7 @@ class shadow_mode_engine:
             improved = improved.replace(old, new)
         return improved
 
-class resume_engine_zlg:
+class ResumeEngineZlg:
     """
     Zero-Loss Generation Resume Engine.
 
@@ -168,11 +168,11 @@ class resume_engine_zlg:
         self.agent_pid = os.getpid()
         self.rewrite_count = 0
         self.last_score = 0.0
-        self.prompt_firewall = get_prompt_firewall()
-        self.fact_checker = get_fact_checker()
+        self.PromptFirewall = get_prompt_firewall()
+        self.FactChecker = get_fact_checker()
         self.knowledge = get_consolidated_knowledge()
-        self.draft_generator = DraftGenerator()
-        self.semantic_scorer = SemanticScorer()
+        self.DraftGenerator = DraftGenerator()
+        self.SemanticScorer = SemanticScorer()
         self.shadow_engine = ShadowModeEngine()
         register_process('ResumeEngine', self.agent_pid)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -186,85 +186,85 @@ class resume_engine_zlg:
             user_id: User identifier for profile
 
         Returns:
-            Tuple of (exit_reason, output_path)
+            Tuple of (ExitReason, output_path)
         """
-        logger.info('=' * 60)
-        logger.info('ZLG ENGINE START: Resume Engine (E2)')
-        logger.info('=' * 60)
+        Logger.info('=' * 60)
+        Logger.info('ZLG ENGINE START: Resume Engine (E2)')
+        Logger.info('=' * 60)
         try:
             log_action('L1_FETCH_START', {'job_url': job_url})
             job_desc: Any = self._fetch_job_description(job_url)
             if not job_desc.content:
-                logger.error('Failed to fetch job description')
+                Logger.error('Failed to fetch job description')
                 return (ExitReason.CRITICAL_ERROR, None)
             log_action('P3_START')
-            p3_result: Any = self.prompt_firewall.scan_input(job_desc.content)
+            p3_result: Any = self.PromptFirewall.scan_input(job_desc.content)
             if p3_result.status == SecurityStatus.FAIL:
-                logger.error('P3_FAIL: Injection detected')
+                Logger.error('P3_FAIL: Injection detected')
                 log_action('P3_INJECTION_BLOCK')
                 return (ExitReason.P3_INJECTION_BLOCK, None)
             log_action('L5_START')
             knowledge: Any = self.knowledge.search_knowledge(query=f'{user_id} cover letter template', types=['profile', 'template'])
             if not knowledge.user_profile or not knowledge.template:
-                logger.error('Failed to retrieve knowledge')
+                Logger.error('Failed to retrieve knowledge')
                 return (ExitReason.CRITICAL_ERROR, None)
             while True:
                 if self.rewrite_count >= self.MAX_REWRITE_ATTEMPTS:
-                    logger.error('ZLG_FAIL: Max rewrite attempts reached')
+                    Logger.error('ZLG_FAIL: Max rewrite attempts reached')
                     log_action('ZLG_FAIL_MAX_ATTEMPTS', {'score': self.last_score})
                     return (ExitReason.ZLG_MAX_ATTEMPTS, None)
                 log_action('DRAFT_START', {'attempt': self.rewrite_count, 'max_attempts': self.MAX_REWRITE_ATTEMPTS})
-                draft_result: Any = self.draft_generator.generate_draft_llm(profile=knowledge.user_profile, job_desc=job_desc.content, template=knowledge.template)
+                DraftResult: Any = self.DraftGenerator.generate_draft_llm(profile=knowledge.user_profile, job_desc=job_desc.content, template=knowledge.template)
                 log_action('P4_START')
-                p4_result: Any = self.fact_checker.validate_skills(draft_result.content)
+                p4_result: Any = self.FactChecker.validate_skills(DraftResult.content)
                 log_action('SCORE_START')
-                score_result: Any = self.semantic_scorer.semantic_score_draft(draft_result.content)
-                self.last_score = score_result['quality']
-                if p4_result.status == SecurityStatus.PASS and score_result['quality'] >= self.MIN_ACCEPTABLE_SCORE:
-                    logger.info('ZLG_SUCCESS: Draft passed all checks')
-                    return self._finalize_output(draft_result, knowledge, score_result)
-                logger.warning(f'VET_FAIL: P4={p4_result.status.value}, Score={self.last_score}')
+                ScoreResult: Any = self.SemanticScorer.semantic_score_draft(DraftResult.content)
+                self.last_score = ScoreResult['quality']
+                if p4_result.status == SecurityStatus.PASS and ScoreResult['quality'] >= self.MIN_ACCEPTABLE_SCORE:
+                    Logger.info('ZLG_SUCCESS: Draft passed all checks')
+                    return self._finalize_output(DraftResult, knowledge, ScoreResult)
+                Logger.warning(f'VET_FAIL: P4={p4_result.status.value}, Score={self.last_score}')
                 self.rewrite_count += 1
                 log_action('P10_START', {'attempt': self.rewrite_count})
                 error_reason: Any = ''
                 if p4_result.status == SecurityStatus.FAIL:
                     error_reason += f'P4: {p4_result.reason}; '
-                if score_result['quality'] < self.MIN_ACCEPTABLE_SCORE:
-                    error_reason += f"Quality: {score_result['reason']}"
-                rewrite_result: Any = self.shadow_engine.rewrite_draft(draft_result.content, error_reason)
-                draft_result.content = rewrite_result.content
-                log_action('P10_SHADOW_REWRITE', {'attempt': self.rewrite_count, 'improvements': rewrite_result.improvements})
+                if ScoreResult['quality'] < self.MIN_ACCEPTABLE_SCORE:
+                    error_reason += f"Quality: {ScoreResult['reason']}"
+                RewriteResult: Any = self.shadow_engine.rewrite_draft(DraftResult.content, error_reason)
+                DraftResult.content = RewriteResult.content
+                log_action('P10_SHADOW_REWRITE', {'attempt': self.rewrite_count, 'improvements': RewriteResult.improvements})
                 continue
         except Exception as e:
-            logger.error(f'Critical error: {e}')
+            Logger.error(f'Critical error: {e}')
             return (ExitReason.CRITICAL_ERROR, None)
 
     def _fetch_job_description(self, url: str) -> JobDescription:
         """Fetch job description from URL."""
         return JobDescription(url=url, content='We are seeking a Senior Software Engineer to join our growing team.\n            The ideal candidate will have experience with Python, JavaScript, and React.\n            You will be responsible for developing and maintaining web applications,\n            working with a team of developers, and ensuring high-quality code delivery.')
 
-    def _finalize_output(self, draft_result: DraftResult, knowledge: KnowledgeResult, score_result: Dict[str, Any]) -> Tuple[ExitReason, str]:
+    def _finalize_output(self, DraftResult: DraftResult, knowledge: KnowledgeResult, ScoreResult: Dict[str, Any]) -> Tuple[ExitReason, str]:
         """Finalize and save successful draft."""
         timestamp = knowledge.user_profile.get('name', 'cover_letter').replace(' ', '_')
         filename = f'{timestamp}_cover_letter.txt'
         output_path = os.path.join(self.output_dir, filename)
-        if FileManager.write_file(output_path, draft_result.content):
-            logger.info(f'ZLG_FINAL_SUCCESS: Cover letter saved to {output_path}')
-            log_action('ZLG_FINAL_SUCCESS', {'output_file': output_path, 'score': self.last_score, 'grade': score_result['grade']})
+        if FileManager.write_file(output_path, DraftResult.content):
+            Logger.info(f'ZLG_FINAL_SUCCESS: Cover letter saved to {output_path}')
+            log_action('ZLG_FINAL_SUCCESS', {'output_file': output_path, 'score': self.last_score, 'grade': ScoreResult['grade']})
             return (ExitReason.ZLG_SUCCESS, output_path)
         else:
-            logger.error('Failed to write output file')
+            Logger.error('Failed to write output file')
             return (ExitReason.CRITICAL_ERROR, None)
 
 def main() -> Any:
     """Main entry point for Resume Engine."""
     engine: Any = ResumeEngineZLG()
-    exit_reason, output_path = engine.generate_cover_letter(job_url='https://example.com/job/123', user_id='default')
+    ExitReason, output_path = engine.generate_cover_letter(job_url='https://example.com/job/123', user_id='default')
     print(f"\n{'=' * 60}")
-    print(f'Resume Engine Exit: {exit_reason.value}')
+    print(f'Resume Engine Exit: {ExitReason.value}')
     if output_path:
         print(f'Output: {output_path}')
     print(f"{'=' * 60}")
-    return 0 if exit_reason == ExitReason.ZLG_SUCCESS else 1
+    return 0 if ExitReason == ExitReason.ZLG_SUCCESS else 1
 if __name__ == '__main__':
     sys.exit(main())

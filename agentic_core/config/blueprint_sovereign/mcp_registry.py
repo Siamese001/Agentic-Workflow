@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
-class mcp_server_mode(str, Enum):
+class McpServerMode(str, Enum):
     """Deployment mode for MCP servers."""
     LOCAL: Any = 'local'
     'Local execution via npx or binary'
@@ -21,7 +21,7 @@ class mcp_server_mode(str, Enum):
     MOCKED: Any = 'mocked'
     'Mock implementation for testing'
 
-class mcp_server_config(BaseModel):
+class McpServerConfig(BaseModel):
     """Configuration for a single MCP server integration."""
     name: str = Field(..., description='Unique MCP server identifier')
     target_layer: str = Field(..., description='Primary L0-L6 layer assignment')
@@ -50,10 +50,10 @@ def validate_mcp_registry() -> List[str]:
         if config.target_layer not in VALID_LAYERS:
             violations.append(f"MCP '{name}' has invalid layer: {config.target_layer}")
         if not config.command:
-            violations.append(f"MCP '{name}' missing command")
+            violations.append(f"MCP '{name}' Missing command")
     return violations
 _violations = validate_mcp_registry()
 if _violations:
     import warnings
-    for violation in _violations:
-        warnings.warn(f'MCP Registry Violation: {violation}')
+    for Violation in _violations:
+        warnings.warn(f'MCP Registry Violation: {Violation}')

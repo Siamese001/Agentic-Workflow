@@ -12,19 +12,19 @@ from urllib.parse import urljoin
 
 import httpx
 
-from agentic_core.L4_state.semantic.semantic_cache_sovereign import (
+from AgenticCore.L4_state.semantic.semantic_cache_sovereign import (
     SovereignSemanticCache,
 )
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Sovereign Figma limits
 # NAMING FIXED: FIGMA_MCP_URL → figma_mcp_url
@@ -32,8 +32,8 @@ figma_mcp_url = "https://mcp.figma.com/mcp"
 # NAMING FIXED: MAX_SELECTION_NODES → max_selection_nodes
 max_selection_nodes = 50
 
-# NAMING FIXED: SovereignFigmaClient → sovereign_figma_client
-class sovereign_figma_client:
+# NAMING FIXED: SovereignFigmaClient → SovereignFigmaClient
+class SovereignFigmaClient:
     """Ultra-hardened Figma client — eliminating design-to-code hallucinations."""
     
     def __init__(self, oauth_token: Optional[str] = None, cache: Optional[SovereignSemanticCache] = None):
@@ -44,7 +44,7 @@ class sovereign_figma_client:
             
         self.cache = cache
         self.client = httpx.AsyncClient(timeout=45.0)
-        logger.info("[L2 FIGMA] Sovereign design client armed.")
+        Logger.info("[L2 FIGMA] Sovereign design client armed.")
 
     def _shield_headers(self) -> Dict[str, str]:
         headers = {"Content-Type": "application/json"}
@@ -77,7 +77,7 @@ class sovereign_figma_client:
                 )
             return data
         except Exception as e:
-            logger.error(f"[L2 FIGMA] Code retrieval failed: {e}")
+            Logger.error(f"[L2 FIGMA] Code retrieval failed: {e}")
             mcp_authority.record_breach(f"Figma API Error: {str(e)}")
             return {"error": str(e)}
 
@@ -100,7 +100,7 @@ class sovereign_figma_client:
                 )
             return data
         except Exception as e:
-            logger.error(f"[L2 FIGMA] Token extraction failed: {e}")
+            Logger.error(f"[L2 FIGMA] Token extraction failed: {e}")
             return {"error": str(e)}
 
     async def close(self):

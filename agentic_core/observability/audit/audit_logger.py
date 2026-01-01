@@ -19,24 +19,24 @@ from difflib import unified_diff
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class AuditLogger:
     """
-    Comprehensive audit logger for all agent actions.
+    Comprehensive audit Logger for all agent actions.
     
     Provides:
     - Structured JSON logging (JSONL format)
     - Before/after code diffs
     - LLM interaction tracking
-    - Agent identity and violation tracking
+    - Agent identity and Violation tracking
     - Forensic analysis support
     """
     
     def __init__(self, project_root: Path):
         """
-        Initialize audit logger.
+        Initialize audit Logger.
         
         Args:
             project_root: Project root directory
@@ -52,7 +52,7 @@ class AuditLogger:
         if not self.log_path.exists():
             self._write_header()
         
-        logger.info(f"[AUDIT] Initialized audit logger: {self.log_path}")
+        Logger.info(f"[AUDIT] Initialized audit Logger: {self.log_path}")
     
     def _write_header(self) -> None:
         """Write header comment to new log file."""
@@ -70,7 +70,7 @@ class AuditLogger:
         self,
         agent_name: str,
         file_path: str,
-        violation_type: str,
+        ViolationType: str,
         original_code: str,
         healed_code: str,
         prompt: Optional[str] = None,
@@ -85,7 +85,7 @@ class AuditLogger:
         Args:
             agent_name: Name of the agent performing the heal
             file_path: Path to file being healed
-            violation_type: Type of violation being fixed
+            ViolationType: Type of Violation being fixed
             original_code: Original code content
             healed_code: Healed code content
             prompt: LLM prompt used (optional)
@@ -120,7 +120,7 @@ class AuditLogger:
             "timestamp": datetime.utcnow().isoformat(),
             "agent": agent_name,
             "file": str(file_path),
-            "violation_type": violation_type,
+            "ViolationType": ViolationType,
             "hashes": {
                 "before": before_hash,
                 "after": after_hash,
@@ -142,9 +142,9 @@ class AuditLogger:
         self._write_entry(entry)
         
         if applied:
-            logger.info(f"[AUDIT] Heal applied: {agent_name} -> {Path(file_path).name}")
+            Logger.info(f"[AUDIT] Heal applied: {agent_name} -> {Path(file_path).name}")
         else:
-            logger.warning(f"[AUDIT] Heal rejected: {agent_name} -> {Path(file_path).name}")
+            Logger.warning(f"[AUDIT] Heal rejected: {agent_name} -> {Path(file_path).name}")
     
     def log_agent_discovery(
         self,
@@ -215,7 +215,7 @@ class AuditLogger:
     def log_security_event(
         self,
         event_type: str,
-        severity: str,
+        Severity: str,
         description: str,
         agent_name: Optional[str] = None,
         file_path: Optional[str] = None,
@@ -226,7 +226,7 @@ class AuditLogger:
         
         Args:
             event_type: Type of security event
-            severity: Severity level (low, medium, high, critical)
+            Severity: Severity level (low, medium, high, critical)
             description: Event description
             agent_name: Agent involved (if applicable)
             file_path: File involved (if applicable)
@@ -236,7 +236,7 @@ class AuditLogger:
             "type": "security_event",
             "timestamp": datetime.utcnow().isoformat(),
             "event_type": event_type,
-            "severity": severity,
+            "Severity": Severity,
             "description": description,
             "agent": agent_name,
             "file": file_path,
@@ -245,8 +245,8 @@ class AuditLogger:
         
         self._write_entry(entry)
         
-        if severity in ['high', 'critical']:
-            logger.error(f"[AUDIT] SECURITY EVENT [{severity.upper()}]: {description}")
+        if Severity in ['high', 'critical']:
+            Logger.error(f"[AUDIT] SECURITY EVENT [{Severity.upper()}]: {description}")
     
     def log_validation_result(
         self,
@@ -269,7 +269,7 @@ class AuditLogger:
             metadata: Additional metadata
         """
         entry = {
-            "type": "validation_result",
+            "type": "ValidationResult",
             "timestamp": datetime.utcnow().isoformat(),
             "validator": validator_name,
             "file": str(file_path),
@@ -336,7 +336,7 @@ class AuditLogger:
                 json.dump(entry, f, ensure_ascii=False)
                 f.write('\n')
         except Exception as e:
-            logger.error(f"[AUDIT] Failed to write log entry: {e}")
+            Logger.error(f"[AUDIT] Failed to write log entry: {e}")
     
     def query_logs(
         self,
@@ -389,7 +389,7 @@ class AuditLogger:
                         continue
         
         except Exception as e:
-            logger.error(f"[AUDIT] Failed to query logs: {e}")
+            Logger.error(f"[AUDIT] Failed to query logs: {e}")
         
         return results
     
@@ -441,8 +441,8 @@ class AuditLogger:
             
             if entry_type == 'security_event':
                 summary['security_events']['total'] += 1
-                severity = entry.get('severity', 'unknown')
-                summary['security_events']['by_severity'][severity] = \
-                    summary['security_events']['by_severity'].get(severity, 0) + 1
+                Severity = entry.get('Severity', 'unknown')
+                summary['security_events']['by_severity'][Severity] = \
+                    summary['security_events']['by_severity'].get(Severity, 0) + 1
         
         return summary

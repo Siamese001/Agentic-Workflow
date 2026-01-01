@@ -12,7 +12,7 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE: Any = False
 
-class text_similarity_calculator:
+class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""
 
     def __init__(self) -> None:

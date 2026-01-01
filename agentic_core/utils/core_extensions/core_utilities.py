@@ -10,16 +10,16 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class draft_result:
+class DraftResult:
     """Result from draft generation."""
     content: str
     source: str
     metadata: Dict[str, Any] = None
 
-class draft_generator:
+class DraftGenerator:
     """Generates cover letter drafts using LLM."""
 
     def __init__(self, llm_client=None):
@@ -55,7 +55,7 @@ class draft_generator:
             response = self.llm_client.generate(prompt)
             return DraftResult(content=response.text, source='llm', metadata={'model': self.llm_client.model_name, 'tokens_used': response.usage.total_tokens, 'timestamp': datetime.now().isoformat()})
         except Exception as e:
-            logger.error(f'LLM generation failed: {e}')
+            Logger.error(f'LLM generation failed: {e}')
             return self._generate_with_template(profile, job_desc, template)
 
     def _generate_with_template(self, profile: Dict[str, Any], job_desc: str, template: Dict[str, Any]) -> DraftResult:
@@ -120,7 +120,7 @@ class draft_generator:
             return 'developed innovative solutions'
         return achievements[0] if achievements else 'developed innovative solutions'
 
-class semantic_scorer:
+class SemanticScorer:
     """Scores draft quality using semantic analysis."""
 
     def __init__(self):
@@ -213,7 +213,7 @@ class semantic_scorer:
             return f'Excellent quality across all metrics'
         return f"Needs improvement in: {', '.join(weak_metrics)}"
 
-class file_manager:
+class FileManager:
     """Handles file operations for drafts."""
 
     @staticmethod
@@ -233,10 +233,10 @@ class file_manager:
             file_path.parent.mkdir(parents=True, exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            logger.info(f'File written successfully: {path}')
+            Logger.info(f'File written successfully: {path}')
             return True
         except Exception as e:
-            logger.error(f'Failed to write file {path}: {e}')
+            Logger.error(f'Failed to write file {path}: {e}')
             return False
 
     @staticmethod
@@ -254,16 +254,16 @@ class file_manager:
             with open(path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
-            logger.error(f'Failed to read file {path}: {e}')
+            Logger.error(f'Failed to read file {path}: {e}')
             return None
 
 def register_process(agent_name: str, pid: int) -> None:
     """Register process for P5 watchdog monitoring."""
-    logger.info(f'P5_REGISTER: {agent_name} (PID: {pid})')
+    Logger.info(f'P5_REGISTER: {agent_name} (PID: {pid})')
 
 def log_action(action: str, details: Optional[Dict]=None) -> None:
     """Log action for P5 compliance."""
     log_entry: Any = f'ACTION: {action}'
     if details:
         log_entry += f' | {details}'
-    logger.info(log_entry)
+    Logger.info(log_entry)

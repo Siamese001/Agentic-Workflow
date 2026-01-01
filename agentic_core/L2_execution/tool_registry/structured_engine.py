@@ -6,9 +6,9 @@ No more "I hope this parses" - the LLM physically cannot output invalid structur
 """
 import logging
 from typing import Any, Dict, List, Literal, Optional, Protocol
-from agentic_core.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
+from AgenticCore.schemas.models.core_contracts import AgentThoughtProcess, CodeGenerationResult, ResearchResult
 from pydantic import BaseModel, Field, field_validator
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 try:
     import instructor
     from openai import AsyncOpenAI
@@ -17,7 +17,7 @@ except ImportError:
     INSTRUCTOR_AVAILABLE: Any = False
     LOGGER.warning('Instructor library not available. Install with: pip install instructor openai')
 
-class structured_engine:
+class StructuredEngine:
     """
     The Hardened Engine that enforces schema compliance at the network layer.
 
@@ -44,7 +44,7 @@ class structured_engine:
 
         Args:
             system_prompt: System instructions for the agent
-            user_prompt: User query or task
+            user_prompt: User query or Task
             max_retries: Maximum number of retry attempts
 
         Returns:
@@ -59,7 +59,7 @@ class structured_engine:
             LOGGER.error(f'Structured inference failed after {max_retries} retries: {e}')
             raise
 
-class structured_engine_factory:
+class StructuredEngineFactory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod

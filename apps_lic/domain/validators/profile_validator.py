@@ -10,7 +10,7 @@ from apps_lic.core.data_models import (
     ValidationSeverity, Route, Archetype, ResearchContext
 )
 import numpy as np
-# from scripts.utilities.format_scripts_context import TfidfVectorizer  # TODO: Replace with sovereign equivalent
+# from scripts.utilities.FormatScriptsContext import TfidfVectorizer  # TODO: Replace with sovereign equivalent
 from sklearn.metrics.pairwise import cosine_similarity
 
 # ============================================================================
@@ -22,75 +22,75 @@ class ErrorCodeRegistry:
     
     CODES = {
         "LIC-E001": {
-            "severity": "CRITICAL",
+            "Severity": "CRITICAL",
             "description": "Placeholder detected in generated message",
             "remediation": "Regenerate with explicit anti-placeholder constraint"
         },
         "LIC-E002": {
-            "severity": "CRITICAL",
-            "description": "Per-claim confidence below threshold (0.70)",
-            "remediation": "Add more RAG sources or remove low-confidence claim"
+            "Severity": "CRITICAL",
+            "description": "Per-Claim confidence below threshold (0.70)",
+            "remediation": "Add more RAG sources or remove low-confidence Claim"
         },
         "LIC-E003": {
-            "severity": "CRITICAL",
-            "description": "Hallucinated claim without supporting evidence",
-            "remediation": "Remove claim or add supporting RAG evidence"
+            "Severity": "CRITICAL",
+            "description": "Hallucinated Claim without supporting evidence",
+            "remediation": "Remove Claim or add supporting RAG evidence"
         },
         "LIC-E004": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Message too similar to previous message (>0.85)",
             "remediation": "Increase temperature or add diversity constraint"
         },
         "LIC-E005": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Job title not in first 50 words",
             "remediation": "Regenerate with job title positioning constraint"
         },
         "LIC-E006": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Company name misspelled",
             "remediation": "Use exact company name from profile"
         },
         "LIC-E007": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Non-ASCII characters detected",
             "remediation": "Replace Unicode with ASCII equivalents"
         },
         "LIC-E008": {
-            "severity": "MEDIUM",
+            "Severity": "MEDIUM",
             "description": "Forbidden corporate verbs detected",
             "remediation": "Regenerate avoiding: spearheaded, leveraged, etc."
         },
         "LIC-E009": {
-            "severity": "MEDIUM",
+            "Severity": "MEDIUM",
             "description": "Weak filler phrases detected",
             "remediation": "Remove: 'I hope', 'I wanted to', 'just reaching out'"
         },
         "LIC-E010": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Metric lacks supporting keyword context from RAG",
-            "remediation": "Add RAG evidence keywords around metric or remove metric"
+            "remediation": "Add RAG evidence keywords around Metric or remove Metric"
         },
         "LIC-E011": {
-            "severity": "HIGH",
+            "Severity": "HIGH",
             "description": "Signal quality score below threshold (0.70)",
             "remediation": "Trigger RAG reflexion for more research"
         },
         "LIC-E012": {
-            "severity": "CRITICAL",
+            "Severity": "CRITICAL",
             "description": "Circuit breaker OPEN - API unavailable",
             "remediation": "Wait for circuit breaker timeout or check API"
         },
         "LIC-E013": {
-            "severity": "CRITICAL",
+            "Severity": "CRITICAL",
             "description": "Constraint pre-flight check failed",
-            "remediation": "Adjust constraints or change route"
+            "remediation": "Adjust constraints or change Route"
         }
     }
     
     @classmethod
     def get_error(cls, code: str) -> Dict[str, str]:
-        return cls.CODES.get(code, {"severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
+        return cls.CODES.get(code, {"Severity": "UNKNOWN", "description": "Unknown error", "remediation": "Contact support"})
 
 # ============================================================================
 # NEW v11.6: CONSTRAINT FEASIBILITY CHECKER (FEATURE 2.1)
@@ -104,8 +104,8 @@ class ConstraintFeasibilityChecker:
     
     def check_feasibility(
         self,
-        route: 'models.Route',
-        archetype: 'models.Archetype',
+        Route: 'models.Route',
+        Archetype: 'models.Archetype',
         required_elements: List[str]
     ) -> Tuple[bool, str]:
         """
@@ -116,19 +116,19 @@ class ConstraintFeasibilityChecker:
         # imports, we'll use hardcoded fallbacks if the import fails.
         try:
             from shared.configuration.config import CONFIG_REGISTRY
-            constraints = CONFIG_REGISTRY.get_route_constraints(route, archetype)
+            constraints = CONFIG_REGISTRY.get_route_constraints(Route, Archetype)
         except ImportError:
-            constraints = {"word_target": 200, "word_range": (150, 250), "route": route}
+            constraints = {"word_target": 200, "word_range": (150, 250), "Route": Route}
         
         # Simple heuristic: check if number of required elements fits in word budget
         word_budget = constraints.get("word_target", constraints["word_range"][1])
         words_per_element = word_budget // (len(required_elements) + 2)  # +2 for greeting/signature
         
         # CONNECTION_REQ requires stricter checking (more constrained format)
-        min_words_per_element = 8 if route.value == "CONNECTION_REQ" else 5
+        min_words_per_element = 8 if Route.value == "CONNECTION_REQ" else 5
         
         if words_per_element < min_words_per_element:
-            return False, f"Too many required elements ({len(required_elements)}) for {route.value} word budget ({word_budget})"
+            return False, f"Too many required elements ({len(required_elements)}) for {Route.value} word budget ({word_budget})"
         
         return True, "Constraints are feasible"
 
@@ -221,7 +221,7 @@ class PlaceholderDetector:
         r'\[INSERT [A-Z]+\]',
         r'\[ADD [A-Z]+\]',
         r'_{3,}',
-        r'\[missing[_ ]?context\]',
+        r'\[Missing[_ ]?context\]',
         r'\[unserializable\]',
     ]
     
@@ -383,7 +383,7 @@ class ValidationAgent:
         if not passed:
             results.append(ValidationResult(
                 passed=False,
-                severity=ValidationSeverity.CRITICAL,
+                Severity=ValidationSeverity.CRITICAL,
                 rule_id="LIC-QA-067",
                 message=msg,
                 details=ErrorCodeRegistry.get_error("LIC-E001")
@@ -396,9 +396,9 @@ class ValidationAgent:
             if not claims_passed:
                 results.append(ValidationResult(
                     passed=False,
-                    severity=ValidationSeverity.CRITICAL,
+                    Severity=ValidationSeverity.CRITICAL,
                     rule_id="LIC-QA-106",
-                    message=f"Per-claim confidence validation failed: {claims_msg}",
+                    message=f"Per-Claim confidence validation failed: {claims_msg}",
                     details=ErrorCodeRegistry.get_error("LIC-E002")
                 ))
         
@@ -407,7 +407,7 @@ class ValidationAgent:
         if not is_diverse:
             results.append(ValidationResult(
                 passed=False,
-                severity=ValidationSeverity.CRITICAL,
+                Severity=ValidationSeverity.CRITICAL,
                 rule_id="LIC-QA-MESSAGE-DIVERSITY",
                 message=f"Message too similar to previous message (similarity: {similarity:.2f})",
                 details=ErrorCodeRegistry.get_error("LIC-E004")
@@ -425,7 +425,7 @@ class ValidationAgent:
             if not sender_teams:
                 results.append(ValidationResult(
                     passed=False,
-                    severity=ValidationSeverity.CRITICAL,
+                    Severity=ValidationSeverity.CRITICAL,
                     rule_id="LIC-QA-105",
                     message="Message contains team claims ('my team', 'we built') but sender has no validated team whitelist",
                     details=ErrorCodeRegistry.get_error("LIC-E003")
@@ -438,17 +438,17 @@ class ValidationAgent:
         message: GeneratedMessage,
         context: ResearchContext
     ) -> List[ValidationResult]:
-        """Validate high severity rules."""
+        """Validate high Severity rules."""
         results = []
         
         # S5.S6_ValidateJobTitlePlacement (GAP 1.6 / LIC-QA-075)
-        if message.route.value == "INMAIL":
+        if message.Route.value == "INMAIL":
             first_50_words = " ".join(message.content.split()[:50]).lower()
             job_title = context.mission_context.get("job_title", "").lower()
             if job_title and job_title not in first_50_words:
                 results.append(ValidationResult(
                     passed=False,
-                    severity=ValidationSeverity.HIGH,
+                    Severity=ValidationSeverity.HIGH,
                     rule_id="LIC-QA-075",
                     message=f"Job title '{job_title}' not mentioned in first 50 words of INMAIL",
                     details=ErrorCodeRegistry.get_error("LIC-E005")
@@ -468,7 +468,7 @@ class ValidationAgent:
                 if not close_match:
                     results.append(ValidationResult(
                         passed=False,
-                        severity=ValidationSeverity.HIGH,
+                        Severity=ValidationSeverity.HIGH,
                         rule_id="LIC-QA-049",
                         message=f"Company name '{company_rag}' not found or misspelled in message",
                         details=ErrorCodeRegistry.get_error("LIC-E006")
@@ -479,7 +479,7 @@ class ValidationAgent:
         if not ascii_passed:
             results.append(ValidationResult(
                 passed=False,
-                severity=ValidationSeverity.HIGH,
+                Severity=ValidationSeverity.HIGH,
                 rule_id="LIC-QA-055",
                 message=ascii_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E007")
@@ -492,7 +492,7 @@ class ValidationAgent:
         message: GeneratedMessage,
         context: ResearchContext
     ) -> List[ValidationResult]:
-        """Validate medium severity rules."""
+        """Validate medium Severity rules."""
         results = []
         
         # S5.S6_BlockCorporateClichés (FEATURE 3.1)
@@ -500,7 +500,7 @@ class ValidationAgent:
         if not verbs_passed:
             results.append(ValidationResult(
                 passed=False,
-                severity=ValidationSeverity.MEDIUM,
+                Severity=ValidationSeverity.MEDIUM,
                 rule_id="LIC-QA-FORBIDDEN-VERBS",
                 message=verbs_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E008")
@@ -511,7 +511,7 @@ class ValidationAgent:
         if not fillers_passed:
             results.append(ValidationResult(
                 passed=False,
-                severity=ValidationSeverity.MEDIUM,
+                Severity=ValidationSeverity.MEDIUM,
                 rule_id="LIC-QA-WEAK-LANGUAGE",
                 message=fillers_msg,
                 details=ErrorCodeRegistry.get_error("LIC-E009")
@@ -526,17 +526,17 @@ class ValidationAgent:
             for rag_result in context.rag_results:
                 rag_keywords.update(rag_result.extracted_keywords)
             
-            for metric in metrics_in_message:
-                metric_context = self._get_context_around_metric(message.content, str(metric))
+            for Metric in metrics_in_message:
+                metric_context = self._get_context_around_metric(message.content, str(Metric))
                 context_words = set(metric_context.lower().split())
                 
                 has_rag_support = bool(context_words & rag_keywords)
                 if not has_rag_support:
                     results.append(ValidationResult(
                         passed=False,
-                        severity=ValidationSeverity.HIGH,
+                        Severity=ValidationSeverity.HIGH,
                         rule_id="LIC-QA-043",
-                        message=f"Metric '{metric}' lacks supporting keyword context from RAG results",
+                        message=f"Metric '{Metric}' lacks supporting keyword context from RAG results",
                         details=ErrorCodeRegistry.get_error("LIC-E010")
                     ))
         
@@ -546,7 +546,7 @@ class ValidationAgent:
             if not self.signal_scorer.validate_minimum_signal(signal_score):
                 results.append(ValidationResult(
                     passed=False,
-                    severity=ValidationSeverity.HIGH,
+                    Severity=ValidationSeverity.HIGH,
                     rule_id="LIC-QA-SIGNAL-QUALITY",
                     message=f"Signal quality score {signal_score:.2f} below threshold 0.70",
                     details=ErrorCodeRegistry.get_error("LIC-E011")
@@ -573,11 +573,11 @@ class ValidationAgent:
         self.status = "COMPLETED"
         return results
     
-    def _get_context_around_metric(self, text: str, metric: str) -> str:
-        """Extract 10 words around a metric for context validation"""
+    def _get_context_around_metric(self, text: str, Metric: str) -> str:
+        """Extract 10 words around a Metric for context validation"""
         words = text.split()
         for i, word in enumerate(words):
-            if metric in word:
+            if Metric in word:
                 start = max(0, i - 5)
                 end = min(len(words), i + 6)
                 return " ".join(words[start:end])

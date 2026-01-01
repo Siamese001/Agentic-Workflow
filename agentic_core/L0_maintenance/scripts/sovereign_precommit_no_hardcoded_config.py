@@ -9,7 +9,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
-exempt: Any = {'agentic_core/config/blueprint_sovereign/environments/sovereign_config.py', 'test_', 'tests/'}
+exempt: Any = {'AgenticCore/config/blueprint_sovereign/environments/sovereign_config.py', 'test_', 'tests/'}
 hardcoded_patterns: Any = [('PRIMARY_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('REASONING_MODEL\\s*=\\s*["\\\']', 'Model selection'), ('MAX_RETRY_ATTEMPTS\\s*=\\s*\\d+', 'Retry configuration'), ('CHECKPOINT_INTERVAL\\s*=\\s*\\d+', 'Checkpoint configuration'), ('SEMANTIC_SIMILARITY_THRESHOLD\\s*=\\s*[\\d.]+', 'Threshold configuration'), ('BASE_GIT_PATH\\s*=\\s*["\\\']', 'Path configuration'), ('gpt-4o["\\\']', 'Hardcoded model name'), ('o1-preview["\\\']', 'Hardcoded model name')]
 
 def check_file(filepath: Any) -> Any:
@@ -32,10 +32,10 @@ def check_file(filepath: Any) -> Any:
         if violations:
             print(f'\n❌ SOVEREIGN GUARD VIOLATION: {filepath}')
             print('=' * 80)
-            for violation in violations:
-                print(f"  Line {violation['line']} ({violation['type']}): {violation['content']}...")
+            for Violation in violations:
+                print(f"  Line {Violation['line']} ({Violation['type']}): {Violation['content']}...")
             print('\n💡 SOLUTION: Centralize this constant in:')
-            print('   agentic_core/config/blueprint_sovereign/environments/sovereign_config.py')
+            print('   AgenticCore/config/blueprint_sovereign/environments/sovereign_config.py')
             print('   Then use: from sovereign_config import config')
             print('=' * 80)
             return False

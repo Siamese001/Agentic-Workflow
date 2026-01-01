@@ -13,11 +13,11 @@ Features:
 [P4 CONSOLIDATION] 2025-12-31:
 File move operations have been centralized into HealerAgent.
 GovernanceAgent now provides DECISION-ONLY functions:
-- check_depth_law() -> Returns violation info, does NOT move files
-- check_atomicity_law() -> Returns violation info, does NOT split files
+- check_depth_law() -> Returns Violation info, does NOT move files
+- check_atomicity_law() -> Returns Violation info, does NOT split files
 
 For file operations, use:
-    from agentic_core.L5_safety.guardrails.HealerAgent import HealerAgent
+    from AgenticCore.L5_safety.guardrails.HealerAgent import HealerAgent
     healer = HealerAgent(project_root)
     healer.heal_file_moves(violations)  # For depth violations
     healer.heal_fission(large_files)    # For atomicity violations
@@ -28,9 +28,9 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class dependency_graph:
+class DependencyGraph:
     """
     Builds a directed graph of imports and class hierarchies.
 
@@ -230,9 +230,9 @@ class GovernanceAgent:
         Initialize the ArchitectureGovernor.
         """
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
-        self.logger = logging.getLogger(__name__)
-        self.dependency_graph = DependencyGraph()
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
+        self.Logger = logging.getLogger(__name__)
+        self.DependencyGraph = DependencyGraph()
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES, SOVEREIGN_REGISTRY
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
         self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
@@ -240,7 +240,7 @@ class GovernanceAgent:
         self.MAX_FUNC_LINES = 50
         self.MAX_NESTING_SPACES = 40
         self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
-        self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
+        self.sovereign_dirs = {'AgenticCore', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
         self.MAX_FILE_LINES = 200
 
     def build_graph(self, file_patterns: List[str]=['**/*.py']) -> Any:
@@ -254,7 +254,7 @@ class GovernanceAgent:
         for pattern in file_patterns:
             all_files.extend(glob.glob(pattern, recursive=True))
         all_files: Any = list(set(all_files))
-        self.dependency_graph.build(all_files, str(self.root_dir))
+        self.DependencyGraph.build(all_files, str(self.root_dir))
 
     def check_root_hygiene(self, auto_sanitize: bool=True) -> List[str]:
         """
@@ -378,7 +378,7 @@ class GovernanceAgent:
             file_path: Path to check
 
         Returns:
-            Suggested target path if violation detected, None if compliant
+            Suggested target path if Violation detected, None if compliant
         """
         import warnings
         warnings.warn(
@@ -389,16 +389,16 @@ class GovernanceAgent:
         )
         
         path: Any = Path(file_path)
-        violation: Any = self.check_depth_law(str(path))
-        if not violation:
+        Violation: Any = self.check_depth_law(str(path))
+        if not Violation:
             return None
         for part in path.parts:
             if part in self.sovereign_dirs:
                 return None
         
         # [P4] Return suggested path only - no actual move
-        if 'shallow' in violation.lower():
-            target_dir: Any = self.root_dir / 'agentic_core' / 'L1_cognition'
+        if 'shallow' in Violation.lower():
+            target_dir: Any = self.root_dir / 'AgenticCore' / 'L1_cognition'
             target: Any = target_dir / path.name
         else:
             target_dir: Any = self.root_dir / 'scripts'
@@ -476,9 +476,9 @@ class GovernanceAgent:
         except Exception as e:
             LOGGER.error(f'Error checking complexity in {file_path}: {e}')
         nesting_violations: Any = self._check_nesting_depth(file_path)
-        for violation in nesting_violations:
-            violation['type'] = 'nesting'
-            violations.append(violation)
+        for Violation in nesting_violations:
+            Violation['type'] = 'nesting'
+            violations.append(Violation)
         return violations
 
     def get_blast_radius(self, modified_files: List[str]) -> Dict[str, Any]:
@@ -491,15 +491,15 @@ class GovernanceAgent:
         Returns:
             Dictionary with impact analysis
         """
-        if not self.dependency_graph._built:
+        if not self.DependencyGraph._built:
             self.build_graph()
         total_impacted: Any = set()
         file_impacts: Any = {}
         for file_path in modified_files:
-            impacted: Any = self.dependency_graph.get_impact_radius(file_path)
+            impacted: Any = self.DependencyGraph.get_impact_radius(file_path)
             total_impacted.update(impacted)
             file_impacts[file_path] = {'direct_count': len(impacted), 'impacted_files': impacted}
-        return {'modified_count': len(modified_files), 'total_impacted': len(total_impacted), 'blast_radius': sorted(list(total_impacted)), 'file_details': file_impacts}
+        return {'modified_count': len(modified_files), 'total_impacted': len(total_impacted), 'BlastRadius': sorted(list(total_impacted)), 'file_details': file_impacts}
 
     def validate_architecture(self, file_paths: List[str]=None, enforce: bool=False) -> Dict[str, Any]:
         """
@@ -512,25 +512,25 @@ class GovernanceAgent:
         Returns:
             Validation report
         """
-        report: Any = {'root_violations': [], 'depth_violations': [], 'atomicity_violations': [], 'complexity_violations': [], 'enforced_actions': [], 'blast_radius': None, 'overall_status': 'PASS'}
+        report: Any = {'root_violations': [], 'depth_violations': [], 'atomicity_violations': [], 'complexity_violations': [], 'enforced_actions': [], 'BlastRadius': None, 'overall_status': 'PASS'}
         report['root_violations'] = self.check_root_hygiene(auto_sanitize=enforce)
         if file_paths:
             for file_path in file_paths:
-                violation: Any = self.check_depth_law(file_path)
-                if violation:
-                    report['depth_violations'].append(violation)
+                Violation: Any = self.check_depth_law(file_path)
+                if Violation:
+                    report['depth_violations'].append(Violation)
                     if enforce:
                         new_path: Any = self.enforce_depth_law(file_path)
                         if new_path:
                             report['enforced_actions'].append(f'Moved {file_path} to {new_path}')
-                violation: Any = self.check_atomicity_law(file_path)
-                if violation:
-                    report['atomicity_violations'].append(violation)
+                Violation: Any = self.check_atomicity_law(file_path)
+                if Violation:
+                    report['atomicity_violations'].append(Violation)
                     complexity_violations: Any = self.check_complexity(file_path)
                     if complexity_violations:
                         report['complexity_violations'].extend(complexity_violations)
         if file_paths:
-            report['blast_radius'] = self.get_blast_radius(file_paths)
+            report['BlastRadius'] = self.get_blast_radius(file_paths)
         if report['root_violations'] or report['depth_violations'] or report['atomicity_violations'] or report['complexity_violations']:
             report['overall_status'] = 'FAIL'
         return report

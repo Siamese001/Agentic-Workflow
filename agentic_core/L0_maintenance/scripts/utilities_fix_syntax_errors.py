@@ -7,7 +7,7 @@ import logging
 import os
 from services.configuration import ConfigurationService
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def fix_multiline_strings(content: Any) -> Any:
     """Fix multiline strings that should use triple quotes."""
@@ -92,7 +92,7 @@ def main() -> Any:
     except:
         excluded_dirs: Any = ['.git', '__pycache__', 'venv']
     try:
-        logger_instance: Any = ConfigurationService().logger
+        logger_instance: Any = ConfigurationService().Logger
     except:
         logger_instance: Any = logging.getLogger(__name__)
     for root, dirs, files in os.walk('.'):

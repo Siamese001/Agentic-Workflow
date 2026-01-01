@@ -51,7 +51,7 @@ def valid_resume():
 def problematic_resume():
     """Create a resume with multiple issues."""
     return {
-        "summary": "I am responsible for doing stuff.",  # Brand violation + too short
+        "summary": "I am responsible for doing stuff.",  # Brand Violation + too short
         "experience": "Worked on things",  # No quantification
         "skills": ["Python"],
         "education": "Some school",
@@ -65,7 +65,7 @@ class TestAgentCoordination:
     async def test_full_agent_pipeline_valid(self, ctx, valid_resume):
         """Test full pipeline with valid resume."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Senior Software Engineer"
+        ctx.JobDescription = "Senior Software Engineer"
 
         agents = [
             ContentQualityAgent(ctx),
@@ -89,7 +89,7 @@ class TestAgentCoordination:
     async def test_full_agent_pipeline_invalid(self, ctx, problematic_resume):
         """Test full pipeline with problematic resume."""
         ctx.current_resume = problematic_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         agents = [
             ContentQualityAgent(ctx),
@@ -315,7 +315,7 @@ class TestEndToEndScenarios:
     async def test_scenario_valid_resume_full_validation(self, ctx, valid_resume):
         """Scenario: Valid resume goes through full validation."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Senior Software Engineer at Tech Company"
+        ctx.JobDescription = "Senior Software Engineer at Tech Company"
         ctx.user_profile = {"skills": ["Python", "JavaScript", "AWS"]}
 
         # Full agent pipeline
@@ -342,7 +342,7 @@ class TestEndToEndScenarios:
     async def test_scenario_problematic_resume_detection(self, ctx, problematic_resume):
         """Scenario: Problematic resume issues are detected."""
         ctx.current_resume = problematic_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         # Run detection agents
         await ContentQualityAgent(ctx).execute()

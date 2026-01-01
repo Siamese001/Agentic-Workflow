@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger('CanonValidator')
+Logger: Any = logging.getLogger('CanonValidator')
 
 def get_current_time(timezone: Optional[str]=None) -> str:
     """Mock for Time MCP: Returns current time or converts timezone."""
@@ -71,7 +71,7 @@ def brave_search(query: str, count: int=5) -> str:
     results: Any = [{'title': f'Result 1 for {query}', 'url': 'https://example.com/1', 'snippet': f'Mock snippet about {query}'}, {'title': f'Result 2 for {query}', 'url': 'https://example.com/2', 'snippet': f'Another result about {query}'}, {'title': f'Result 3 for {query}', 'url': 'https://example.com/3', 'snippet': f'Third result about {query}'}]
     return json.dumps(results[:count])
 
-def execute_cost_controlled_search(query: str, logger: Optional[Any]=None) -> Optional[str]:
+def execute_cost_controlled_search(query: str, Logger: Optional[Any]=None) -> Optional[str]:
     """
     Mock for Brave Search wrapper with rate limiting.
     Returns search results 70% of the time to simulate rate limiting.
@@ -79,12 +79,12 @@ def execute_cost_controlled_search(query: str, logger: Optional[Any]=None) -> Op
     import random
     if random.random() < 0.7:
         results: Any = brave_search(query, count=3)
-        if logger:
-            logger.info('Brave Search (Rate-Limited) returned results')
+        if Logger:
+            Logger.info('Brave Search (Rate-Limited) returned results')
         return results
     else:
-        if logger:
-            logger.info('Brave Search rate limit reached - returning None')
+        if Logger:
+            Logger.info('Brave Search rate limit reached - returning None')
         return None
 
 def get_from_langcache(key: str) -> Optional[str]:
@@ -119,7 +119,7 @@ def read_text_file(path: str) -> str:
     """Mock for Filesystem MCP: Read text file."""
     return "function defaultCodeSample() {\n  return 'Default implementation';\n}"
 
-def semantic_score_draft(draft_content: str, job_description: str) -> float:
+def semantic_score_draft(draft_content: str, JobDescription: str) -> float:
     """
     Simulates semantic analysis score by comparing draft to JD.
     Score is between 0.0 and 1.0.

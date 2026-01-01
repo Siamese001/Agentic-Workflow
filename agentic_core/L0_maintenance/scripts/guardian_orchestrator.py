@@ -10,9 +10,9 @@ from pathlib import Path
 import logging
 
 # Sovereign Hardening Mixins – Phase 34
-from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
-from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
-from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from AgenticCore.patterns.agent_roles.autonomy_mixin import AutonomyMixin
+from AgenticCore.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
+from AgenticCore.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 
 
 class GuardianOrchestrator(
@@ -26,14 +26,14 @@ class GuardianOrchestrator(
     Extensible: new guardians added via _load_guardians().
 
     Now hardened with:
-      - Proactive initiation when guardians become available/missing
+      - Proactive initiation when guardians become available/Missing
       - Adaptive execution based on system load and failure history
       - Self-health monitoring of loaded guardians
     """
 
     def __init__(self, target_path: Path | str):
         self.target_path = Path(target_path)
-        self.logger = logging.getLogger(__name__)
+        self.Logger = logging.getLogger(__name__)
         
         # === Hardening Initialization ===
         super().__init__()  # Required for cooperative inheritance
@@ -50,34 +50,34 @@ class GuardianOrchestrator(
         """Lazy load guardians with constitutional graceful degradation."""
         # DDD Alignment Guardian
         try:
-            from agentic_core.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
+            from AgenticCore.L0_maintenance.scripts.guard_ddd_alignment import validate_ddd_alignment
             self.ddd_guardian: Callable[[str], Tuple[float, List[str]]] = validate_ddd_alignment
         except ImportError:
             self.ddd_guardian = None
-            self.logger.warning("DDD Alignment guardian not available")
+            self.Logger.warning("DDD Alignment guardian not available")
 
         # Observability Footprint Guardian
         # Note: Currently in illegal P1_core — will be healed in future mission
         try:
-            from agentic_core.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint  # TODO: migrate to scripts/
+            from AgenticCore.L0_maintenance.P1_core.guard_observability_footprint import validate_observability_footprint  # TODO: migrate to scripts/
             self.observability_guardian: Callable[[str], Tuple[float, List[str]]] = validate_observability_footprint
         except ImportError:
             self.observability_guardian = None
-            self.logger.warning("Observability Footprint guardian not available")
+            self.Logger.warning("Observability Footprint guardian not available")
 
     # === AutonomyMixin Override ===
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
-        """Proactively re-run guardians if critical ones are missing or system state changed."""
-        missing = []
+        """Proactively re-run guardians if critical ones are Missing or system state changed."""
+        Missing = []
         if self.ddd_guardian is None:
-            missing.append("ddd_guardian")
+            Missing.append("ddd_guardian")
         if self.observability_guardian is None:
-            missing.append("observability_guardian")
+            Missing.append("observability_guardian")
 
-        if missing:
+        if Missing:
             return {
                 "reason": "critical_guardians_unavailable",
-                "missing": missing,
+                "Missing": Missing,
                 "action": "attempt_reload_and_revalidate"
             }
 
@@ -86,14 +86,14 @@ class GuardianOrchestrator(
 
     # === AdaptiveExecutionMixin Overrides ===
     async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.info("Conservative mode: running only high-impact guardians")
+        self.Logger.info("Conservative mode: running only high-impact guardians")
         # Only run DDD guardian — most critical for sovereignty
         return {
             "DDD Alignment": self.execute_ddd_alignment(),
         }
 
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        self.logger.warning("Minimal mode: skipping guardian execution to preserve resources")
+        self.Logger.warning("Minimal mode: skipping guardian execution to preserve resources")
         return {
             "status": "skipped",
             "reason": "high_system_load",

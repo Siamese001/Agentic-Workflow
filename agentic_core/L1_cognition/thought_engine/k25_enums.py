@@ -5,13 +5,13 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: ResearchHopPhase → research_hop_phase
-class research_hop_phase(str, Enum):
+# NAMING FIXED: ResearchHopPhase → ResearchHopPhase
+class ResearchHopPhase(str, Enum):
     """TODO: Add docstring."""
 
     """TODO: Add docstring."""
 
 
-# NAMING FIXED: ValidationRejectionReason → validation_rejection_reason
-class validation_rejection_reason(str, Enum):
+# NAMING FIXED: ValidationRejectionReason → ValidationRejectionReason
+class ValidationRejectionReason(str, Enum):
     """TODO: Add docstring."""

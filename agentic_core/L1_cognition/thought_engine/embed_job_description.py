@@ -13,15 +13,15 @@ _logger = logging.getLogger(__name__)
 from typing import Dict
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 
-# NAMING FIXED: EmbedJobDescription → embed_job_description
-class embed_job_description:
+# NAMING FIXED: EmbedJobDescription → EmbedJobDescription
+class EmbedJobDescription:
     """EmbedJobDescription implementation."""
 
 

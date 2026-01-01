@@ -1,5 +1,5 @@
 """
-evaluate_resume_effectiveness.py - Scoring Module
+EvaluateResumeEffectiveness.py - Scoring Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.223993
@@ -22,7 +22,7 @@ class EvaluateResumeEffectiveness:
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     SELF.WEIGHTS = self.config.get('weights', {})
-    ConfigurationService().logger.info(
+    ConfigurationService().Logger.info(
         f'Initialized {self.__class__.__name__}')
 
 

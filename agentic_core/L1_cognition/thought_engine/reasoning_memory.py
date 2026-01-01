@@ -12,16 +12,16 @@ from typing import Dict, List, Optional
 
 import redis
 
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Sovereign limits enforced at L5
 # NAMING FIXED: MAX_THOUGHT_LENGTH → max_thought_length
@@ -35,8 +35,8 @@ redis_timeout = 5
 # NAMING FIXED: REDIS_CACHE_TTL → redis_cache_ttl
 redis_cache_ttl = 60 * 60 * 24 * 7  # 7-day mission persistence
 
-# NAMING FIXED: SovereignReasoningMemory → sovereign_reasoning_memory
-class sovereign_reasoning_memory:
+# NAMING FIXED: SovereignReasoningMemory → SovereignReasoningMemory
+class SovereignReasoningMemory:
     """Ultra-hardened sovereign manager for cognitive artifacts."""
     
     _instances = {}
@@ -76,9 +76,9 @@ class sovereign_reasoning_memory:
             )
             client = redis.Redis(connection_pool=self.redis_pool)
             client.ping()
-            logger.info("[L1 MEMORY] Eternal Redis link established")
+            Logger.info("[L1 MEMORY] Eternal Redis link established")
         except Exception as e:
-            logger.critical(f"[L1 MEMORY BREACH] Redis link failed: {e}")
+            Logger.critical(f"[L1 MEMORY BREACH] Redis link failed: {e}")
             mcp_authority.record_breach(f"Persistence Failure: {str(e)}")
             raise
     
@@ -122,9 +122,9 @@ class sovereign_reasoning_memory:
                 r.ltrim(self.redis_reasoning_key, -self.max_redis_steps, -1)
             
             r.expire(self.redis_reasoning_key, REDIS_CACHE_TTL)
-            logger.info(f"[L4 REASONING CACHE] Step persisted to Redis: {Path(file_path).name}")
+            Logger.info(f"[L4 REASONING CACHE] Step persisted to Redis: {Path(file_path).name}")
         except Exception as e:
-            logger.critical(f"[L4 REASONING BREACH] Redis cache failed: {e}")
+            Logger.critical(f"[L4 REASONING BREACH] Redis cache failed: {e}")
             mcp_authority.record_breach(f"Redis Reasoning Failure: {str(e)}")
 
     def update_scratchpad(self, file_path: str, content: str):
@@ -156,7 +156,7 @@ class sovereign_reasoning_memory:
                     ]
                 return cached_history
         except Exception as e:
-            logger.warning(f"Redis reasoning recall failed: {e} — falling back to memory")
+            Logger.warning(f"Redis reasoning recall failed: {e} — falling back to memory")
             
         with self.history_lock:
             if file_path or key_id:

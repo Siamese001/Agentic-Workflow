@@ -1,18 +1,18 @@
-"""Types and models for peer_intelligence_auditor."""
+"""Types and models for PeerIntelligenceAuditor."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol, Set
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class keyword_classification(Enum):
+class KeywordClassification(Enum):
     """TODO: Add docstring."""
     TABLE_STAKES: Any = 'TABLE_STAKES'
     DIFFERENTIATOR: Any = 'DIFFERENTIATOR'
     UNKNOWN: Any = 'UNKNOWN'
 
 @dataclass
-class rag_hop:
+class RagHop:
     """Docstring."""
     hop_number: int
     search_queries: List[str]
@@ -20,7 +20,7 @@ class rag_hop:
     keywords_found: Set[str]
 
 @dataclass
-class keyword_analysis:
+class KeywordAnalysis:
     """Docstring."""
     keyword: str
     classification: KeywordClassification
@@ -29,7 +29,7 @@ class keyword_analysis:
     reasoning: str
 
 @dataclass
-class peer_intelligence_config:
+class PeerIntelligenceConfig:
     """Docstring."""
     total_searches: int = 24
     total_hops: int = 3
@@ -37,7 +37,7 @@ class peer_intelligence_config:
     differentiator_threshold: float = 0.3
 
 @dataclass
-class peer_intelligence_result:
+class PeerIntelligenceResult:
     """Docstring."""
     hops: List[RAGHop]
     keyword_analyses: List[KeywordAnalysis]

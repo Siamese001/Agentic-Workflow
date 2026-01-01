@@ -7,9 +7,9 @@ from enum import Enum, auto
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class step_status(Enum):
+class StepStatus(Enum):
     """StepStatus implementation."""
     PENDING: Any = 'pending'
     RUNNING: Any = 'running'
@@ -17,7 +17,7 @@ class step_status(Enum):
     FAILED: Any = 'failed'
 
 @dataclass
-class step_result:
+class StepResult:
     """Result of orchestration step."""
     step_name: str
     status: StepStatus
@@ -26,7 +26,7 @@ class step_result:
     duration_ms: float = 0.0
 
 @dataclass
-class orchestration_result:
+class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)

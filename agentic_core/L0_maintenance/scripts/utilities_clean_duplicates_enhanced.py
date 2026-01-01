@@ -10,7 +10,7 @@ from collections import defaultdict
 from typing import Any, Dict, List, Optional, Protocol
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 def aggressive_cleanup():
     """More aggressive cleanup targeting additional patterns"""
@@ -21,10 +21,10 @@ def aggressive_cleanup():
         if os.path.isdir(item) and item.startswith("test_repo"):
             try:
                 shutil.rmtree(item)
-                logger.info(f"🗑️ PURGED DIRECTORY: {item}")
+                Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
-                logger.error(f"❌ Failed to delete directory {item}: {e}")
+                Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # Remove temporary and cache files
     temp_patterns = ["*.tmp", "*.temp", "*.bak", "*~", ".DS_Store", "Thumbs.db"]
@@ -33,10 +33,10 @@ def aggressive_cleanup():
         for file in glob.glob(pattern, recursive=True):
             try:
                 os.remove(file)
-                logger.info(f"🗑️ Purged temp file: {file}")
+                Logger.info(f"🗑️ Purged temp file: {file}")
                 purged_count += 1
             except Exception as e:
-                logger.error(f"❌ Failed to delete {file}: {e}")
+                Logger.error(f"❌ Failed to delete {file}: {e}")
 
     # Remove __pycache__ directories
     for root, dirs, files in os.walk('.'):
@@ -44,32 +44,32 @@ def aggressive_cleanup():
             pycache_path = os.path.join(root, '__pycache__')
             try:
                 shutil.rmtree(pycache_path)
-                logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
+                Logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
                 purged_count += 1
             except Exception as e:
-                logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
+                Logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
 
     return purged_count
 
 def organize_structure():
     """Reorganize files into proper engine directories"""
-    logger.info("📁 Starting folder reorganization...")
+    Logger.info("📁 Starting folder reorganization...")
 
     # Create main directories if they don't exist
     engines_dir = "/app/engines"
-    subdirs = ["resume_engine", "outreach_engine", "canon_validator"]
+    subdirs = ["resume_engine", "outreach_engine", "CanonValidator"]
 
     for subdir in subdirs:
         path = os.path.join(engines_dir, subdir)
         os.makedirs(path, exist_ok=True)
-        logger.info(f"📁 Created directory: {path}")
+        Logger.info(f"📁 Created directory: {path}")
 
     # Move relevant files to appropriate directories
     file_mappings = {
         "resume": "resume_engine",
         "outreach": "outreach_engine",
-        "canon": "canon_validator",
-        "validator": "canon_validator"
+        "canon": "CanonValidator",
+        "validator": "CanonValidator"
     }
 
     moved_count = 0
@@ -92,12 +92,12 @@ def organize_structure():
                         # Avoid overwriting existing files
                         if not os.path.exists(target_path):
                             shutil.move(file_path, target_path)
-                            logger.info(f"📁 Moved {file} to {target_dir}/")
+                            Logger.info(f"📁 Moved {file} to {target_dir}/")
                             moved_count += 1
                     except Exception as e:
-                        logger.error(f"❌ Failed to move {file}: {e}")
+                        Logger.error(f"❌ Failed to move {file}: {e}")
 
-    logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
+    Logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
     return moved_count
 
 def get_file_hash(filepath):
@@ -132,12 +132,12 @@ def extract_functions(filepath):
 
         return functions
     except Exception as e:
-        logger.error(f"❌ Failed to parse {filepath}: {e}")
+        Logger.error(f"❌ Failed to parse {filepath}: {e}")
         return []
 
 def merge_validator_logic(silos, exclude_dirs, merge_to):
     """Merge duplicate validator logic across silos into a single file"""
-    logger.info("🔀 Starting validator logic merge...")
+    Logger.info("🔀 Starting validator logic merge...")
 
     # Find all Python files in specified silos
     all_files = []
@@ -184,11 +184,11 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set, Tuple
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Fix Windows console encoding
 if sys.platform == "win32":
@@ -210,7 +210,7 @@ excluded_dirs = {
 
 # NAMING FIXED: EXCLUDED_FILES → excluded_files
 excluded_files = {
-    'canon_validator.py',
+    'CanonValidator.py',
     'canon_validator_backup.py',
     'canon_validator_v2_agentic.py',
     'auto_canon.py',
@@ -251,9 +251,9 @@ def is_excluded(path: str) -> bool:
     with open(merge_to, 'w', encoding='utf-8') as f:
         f.write(merged_content)
 
-    logger.info(f"✅ Merged validator logic to {merge_to}")
-    logger.info(f"📊 Processed {len(all_files)} files")
-    logger.info(f"🔀 Merged {len(added_functions)} unique validation functions")
+    Logger.info(f"✅ Merged validator logic to {merge_to}")
+    Logger.info(f"📊 Processed {len(all_files)} files")
+    Logger.info(f"🔀 Merged {len(added_functions)} unique validation functions")
 
     return len(added_functions)
 
@@ -278,10 +278,10 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
         if os.path.isdir(item) and item.startswith("test_repo_1765"):
             try:
                 shutil.rmtree(item)
-                logger.info(f"🗑️ PURGED DIRECTORY: {item}")
+                Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
-                logger.error(f"❌ Failed to delete directory {item}: {e}")
+                Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # 2. Target individual "clean" file clones and reports
     for root, dirs, files in os.walk('.'):
@@ -290,16 +290,16 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
             if "_clean.py" in file or file == "test_report.html":
                 try:
                     os.remove(file_path)
-                    logger.info(f"🗑️ Purged File: {file_path}")
+                    Logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
                 except Exception as e:
-                    logger.error(f"❌ Failed to delete {file_path}: {e}")
+                    Logger.error(f"❌ Failed to delete {file_path}: {e}")
 
     # 3. Aggressive cleanup if requested
     if aggressive:
         purged_count += aggressive_cleanup()
 
-    logger.info(f"\n✨ Aggressive Cleanup Complete. {purged_count} items removed.")
+    Logger.info(f"\n✨ Aggressive Cleanup Complete. {purged_count} items removed.")
 
     # 4. Organize structure if requested
     if organize:
@@ -308,7 +308,7 @@ def purge_everything(aggressive=False, organize=False, merge_logic=False,
     # 5. Merge validator logic if requested
     if merge_logic and merge_to and silos:
         merged_count = merge_validator_logic(silos, exclude or [], merge_to)
-        logger.info(f"\n🔀 Merge Complete. {merged_count} functions merged.")
+        Logger.info(f"\n🔀 Merge Complete. {merged_count} functions merged.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean duplicates and organize code structure")

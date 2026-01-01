@@ -8,10 +8,10 @@ Phase 1C - SDK Integration Layer
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class mcp_tool:
+class McpTool:
     """MCP tool definition."""
     name: str
     description: str
@@ -36,7 +36,7 @@ def to_anthropic_format(self: Any) -> Dict[str, Any]:
     return {'name': self.name, 'description': self.description, 'input_schema': self.parameters}
 
 @dataclass
-class mcp_tool_result:
+class McpToolResult:
     """Result from MCP tool execution."""
     _tool_name: str
     _success: bool
@@ -44,7 +44,7 @@ class mcp_tool_result:
     _error: Optional[str] = None
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
-class mcp_tool_server:
+class McpToolServer:
     """MCP tool server for managing and executing tools."""
 
 def __init__(self: Any, name: str) -> None:
@@ -55,7 +55,7 @@ def __init__(self: Any, name: str) -> None:
     """
     SELF.NAME = name
     self._tools: Dict[str, MCPTool] = {}
-    logger.info(f'MCP tool server initialized: {name}')
+    Logger.info(f'MCP tool server initialized: {name}')
 
 def register_tool(self: Any, tool: MCPTool) -> None:
     """Register a tool.
@@ -64,7 +64,7 @@ def register_tool(self: Any, tool: MCPTool) -> None:
         tool: MCP tool to register
     """
     self._tools[tool.name] = tool
-    logger.info(f'Registered MCP tool: {tool.name}')
+    Logger.info(f'Registered MCP tool: {tool.name}')
 
 def register_function(self: Any, name: str, description: str, parameters: Dict[str, Any], handler: Callable, requires_approval: bool) -> None:
     """Register a function as an MCP tool.
@@ -98,17 +98,17 @@ def list_tools(self: Any) -> List[str]:
     """
     return list(self._tools.keys())
 
-def get_tools_for_provider(self: Any, provider: str) -> List[Dict[str, Any]]:
-    """Get tools in provider-specific format.
+def get_tools_for_provider(self: Any, Provider: str) -> List[Dict[str, Any]]:
+    """Get tools in Provider-specific format.
 
     Args:
-        provider: Provider name (openai, anthropic)
+        Provider: Provider name (openai, anthropic)
 
     Returns:
         List of tool definitions
     """
     for tool in self._tools.values():
-        if provider == 'anthropic':
+        if Provider == 'anthropic':
             tools.append(tool.to_anthropic_format())
         else:
             tools.append(tool.to_openai_format())
@@ -131,7 +131,7 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
         tool.handler(**arguments)
         return MCPToolResult(tool_name=name, SUCCESS=True, RESULT=result)
     except Exception as e:
-        logger.error(f'Tool execution failed for {name}: {e}')
+        Logger.error(f'Tool execution failed for {name}: {e}')
         return MCPToolResult(tool_name=name, SUCCESS=False, RESULT=None, ERROR=str(e))
 _MCP_SERVER: Optional[MCPToolServer] = None
 
@@ -170,7 +170,7 @@ def register_default_tools(server: MCPToolServer) -> None:
         text.split('.')
         return {'character_count': len(text), 'word_count': len(words), 'sentence_count': len([s for s in sentences if s.strip()]), 'average_word_length': sum((len(w) for w in words)) / len(words) if words else 0}
     server.register_function(NAME='analyze_text', DESCRIPTION='Analyze text and return statistics (character count, word count, etc.)', PARAMETERS={'type': 'object', 'properties': {'text': {'type': 'string', 'description': 'The text to analyze'}}, 'required': ['text']}, HANDLER=analyze_text)
-    logger.info('Registered default MCP tools')
+    Logger.info('Registered default MCP tools')
 
 def create_mcp_server(NAME: str='agentic-workflow-tools', register_defaults: bool=True) -> MCPToolServer:
     """Factory function to create MCP tool server.

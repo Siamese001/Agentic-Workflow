@@ -1,14 +1,14 @@
 """
-refine_message_ranking.py - Refinement Module
+RefineMessageRanking.py - Refinement Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.079448
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class refine_message_ranking:
+class RefineMessageRanking:
     """Refiner for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

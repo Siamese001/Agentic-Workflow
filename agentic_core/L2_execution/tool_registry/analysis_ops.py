@@ -6,7 +6,7 @@ import ast
 import logging
 import subprocess
 from typing import Any, Dict, List, Optional, Protocol, Tuple
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
     """
@@ -25,11 +25,11 @@ def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
         return (True, None)
     except SyntaxError as e:
         error_msg: Any = f'SyntaxError in {file_path}: {e.msg} at line {e.lineno}'
-        logger.error(error_msg)
+        Logger.error(error_msg)
         return (False, error_msg)
     except Exception as e:
         error_msg: Any = f'Unexpected error validating {file_path}: {str(e)}'
-        logger.error(error_msg)
+        Logger.error(error_msg)
         return (False, error_msg)
 
 def run_ruff_check(file_path: str, fix: bool=False) -> Tuple[int, str, str]:
@@ -113,7 +113,7 @@ def analyze_ast(file_path: str) -> Dict[str, Any]:
                         analysis['globals'].append(target.id)
         return analysis
     except Exception as e:
-        logger.error(f'AST analysis failed for {file_path}: {e}')
+        Logger.error(f'AST analysis failed for {file_path}: {e}')
         return {'error': str(e)}
 
 def count_lines_of_code(file_path: str) -> Dict[str, int]:
@@ -135,7 +135,7 @@ def count_lines_of_code(file_path: str) -> Dict[str, int]:
         code: Any = total - blank - comments
         return {'total': total, 'code': code, 'comments': comments, 'blank': blank}
     except Exception as e:
-        logger.error(f'Line count failed for {file_path}: {e}')
+        Logger.error(f'Line count failed for {file_path}: {e}')
         return {'error': str(e)}
 
 def detect_security_issues(file_path: str) -> List[Dict[str, Any]]:
@@ -156,16 +156,16 @@ def detect_security_issues(file_path: str) -> List[Dict[str, Any]]:
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Name) and node.func.id == 'eval':
-                    issues.append({'type': 'dangerous_function', 'function': 'eval', 'lineno': node.lineno, 'severity': 'high', 'message': 'Use of eval() is dangerous and should be avoided'})
+                    issues.append({'type': 'dangerous_function', 'function': 'eval', 'lineno': node.lineno, 'Severity': 'high', 'message': 'Use of eval() is dangerous and should be avoided'})
                 elif isinstance(node.func, ast.Name) and node.func.id == 'exec':
-                    issues.append({'type': 'dangerous_function', 'function': 'exec', 'lineno': node.lineno, 'severity': 'high', 'message': 'Use of exec() is dangerous and should be avoided'})
+                    issues.append({'type': 'dangerous_function', 'function': 'exec', 'lineno': node.lineno, 'Severity': 'high', 'message': 'Use of exec() is dangerous and should be avoided'})
                 elif isinstance(node.func, ast.Attribute):
                     if node.func.attr in ['run', 'call', 'Popen']:
                         for keyword in node.keywords:
                             if keyword.arg == 'shell' and isinstance(keyword.value, ast.Constant):
                                 if keyword.value.value is True:
-                                    issues.append({'type': 'shell_injection', 'function': node.func.attr, 'lineno': node.lineno, 'severity': 'high', 'message': 'subprocess with shell=True is vulnerable to injection'})
+                                    issues.append({'type': 'shell_injection', 'function': node.func.attr, 'lineno': node.lineno, 'Severity': 'high', 'message': 'subprocess with shell=True is vulnerable to injection'})
         return issues
     except Exception as e:
-        logger.error(f'Security analysis failed for {file_path}: {e}')
+        Logger.error(f'Security analysis failed for {file_path}: {e}')
         return [{'error': str(e)}]

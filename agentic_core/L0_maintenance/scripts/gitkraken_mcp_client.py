@@ -5,25 +5,25 @@ L3 routed, L5 shielded, L6 observable.
 """
 import logging
 from typing import List, Dict, Any, Optional
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class sovereign_git_kraken_mcp_client:
+class SovereignGitKrakenMcpClient:
     """Official GitKraken MCP client for sovereign version control operations."""
 
     def __init__(self, role: str='governance_git'):
         if not config.GITKRAKEN_MCP_ENABLED:
             raise ValueError('GitKraken MCP disabled in sovereign config')
-        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+        from AgenticCore.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
-        logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')
+        Logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')
 
     async def create_healing_commit(self, files: List[str], message: str) -> Dict[str, Any]:
         """
@@ -39,10 +39,10 @@ class sovereign_git_kraken_mcp_client:
         full_message: Any = f'{config.GITKRAKEN_PR_TITLE_PREFIX} {message}'
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_add_or_commit', {'action': 'commit', 'directory': '.', 'files': files, 'message': full_message})
-            logger.info(f'[L0 GITKRAKEN] Created commit: {message}')
+            Logger.info(f'[L0 GITKRAKEN] Created commit: {message}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Commit failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Commit failed: {e}')
             raise
 
     async def create_pr(self, title: str, description: str, source_branch: Optional[str]=None, target_branch: str='main') -> Dict[str, Any]:
@@ -61,11 +61,11 @@ class sovereign_git_kraken_mcp_client:
         full_title: Any = f'{config.GITKRAKEN_PR_TITLE_PREFIX} {title}'
         source: Any = source_branch or config.GITKRAKEN_HEALING_BRANCH
         try:
-            result: Any = await self.router.manager.call_tool('mcp0_pull_request_create', {'provider': 'github', 'title': full_title, 'body': description, 'source_branch': source, 'target_branch': target_branch, 'repository_name': config.GITKRAKEN_DEFAULT_REPO.split('/')[1], 'repository_organization': config.GITKRAKEN_DEFAULT_REPO.split('/')[0]})
-            logger.info(f'[L0 GITKRAKEN] Created PR: {full_title}')
+            result: Any = await self.router.manager.call_tool('mcp0_pull_request_create', {'Provider': 'github', 'title': full_title, 'body': description, 'source_branch': source, 'target_branch': target_branch, 'repository_name': config.GITKRAKEN_DEFAULT_REPO.split('/')[1], 'repository_organization': config.GITKRAKEN_DEFAULT_REPO.split('/')[0]})
+            Logger.info(f'[L0 GITKRAKEN] Created PR: {full_title}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] PR creation failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] PR creation failed: {e}')
             raise
 
     async def get_status(self, directory: str='.') -> Dict[str, Any]:
@@ -80,10 +80,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_status', {'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Retrieved status for {directory}')
+            Logger.info(f'[L0 GITKRAKEN] Retrieved status for {directory}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Status fetch failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Status fetch failed: {e}')
             return {}
 
     async def create_branch(self, branch_name: str, directory: str='.') -> Dict[str, Any]:
@@ -99,10 +99,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_branch', {'action': 'create', 'branch_name': branch_name, 'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Created branch: {branch_name}')
+            Logger.info(f'[L0 GITKRAKEN] Created branch: {branch_name}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Branch creation failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Branch creation failed: {e}')
             raise
 
     async def checkout_branch(self, branch_name: str, directory: str='.') -> Dict[str, Any]:
@@ -118,10 +118,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_checkout', {'branch': branch_name, 'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Checked out branch: {branch_name}')
+            Logger.info(f'[L0 GITKRAKEN] Checked out branch: {branch_name}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Checkout failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Checkout failed: {e}')
             raise
 
     async def list_branches(self, directory: str='.') -> List[str]:
@@ -136,10 +136,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_branch', {'action': 'list', 'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Listed branches for {directory}')
+            Logger.info(f'[L0 GITKRAKEN] Listed branches for {directory}')
             return result if isinstance(result, list) else []
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Branch listing failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Branch listing failed: {e}')
             return []
 
     async def get_log(self, directory: str='.') -> Dict[str, Any]:
@@ -154,10 +154,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_log_or_diff', {'action': 'log', 'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Retrieved log for {directory}')
+            Logger.info(f'[L0 GITKRAKEN] Retrieved log for {directory}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Log retrieval failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Log retrieval failed: {e}')
             return {}
 
     async def push(self, directory: str='.') -> Dict[str, Any]:
@@ -172,10 +172,10 @@ class sovereign_git_kraken_mcp_client:
         """
         try:
             result: Any = await self.router.manager.call_tool('mcp0_git_push', {'directory': directory})
-            logger.info(f'[L0 GITKRAKEN] Pushed to remote for {directory}')
+            Logger.info(f'[L0 GITKRAKEN] Pushed to remote for {directory}')
             return result
         except Exception as e:
-            logger.error(f'[L0 GITKRAKEN] Push failed: {e}')
+            Logger.error(f'[L0 GITKRAKEN] Push failed: {e}')
             raise
 _git_client: Optional[SovereignGitKrakenMCPClient] = None
 

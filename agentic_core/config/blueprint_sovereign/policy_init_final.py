@@ -1,8 +1,8 @@
 """Backward compatibility shim for init_final.
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -11,7 +11,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from agentic_core.init_v6 import *  # Star import removed
+# from AgenticCore.init_v6 import *  # Star import removed
 import logging
 
 __all__ = ["*"]  # Re-export all imported names

@@ -1,21 +1,21 @@
-"""Types and models for context_curator."""
+"""Types and models for ContextCurator."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class context_priority(Enum):
+class ContextPriority(Enum):
     """Priority levels for context chunks."""
     CRITICAL: Any = 'critical'
     HIGH: Any = 'high'
     MEDIUM: Any = 'medium'
     LOW: Any = 'low'
 
-class context_type(Enum):
+class ContextType(Enum):
     """Types of context chunks."""
     SYSTEM_INSTRUCTION: Any = 'system_instruction'
-    SAFETY_POLICY: Any = 'safety_policy'
+    SAFETY_POLICY: Any = 'SafetyPolicy'
     TASK_DESCRIPTION: Any = 'task_description'
     CONVERSATION_HISTORY: Any = 'conversation_history'
     RETRIEVED_KNOWLEDGE: Any = 'retrieved_knowledge'
@@ -23,7 +23,7 @@ class context_type(Enum):
     EXAMPLE: Any = 'example'
 
 @dataclass
-class context_chunk:
+class ContextChunk:
     """Individual context chunk."""
     id: str
     content: str
@@ -39,7 +39,7 @@ class context_chunk:
         return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priority': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_score, 'pinned': self.pinned, 'metadata': self.metadata}
 
 @dataclass
-class context_window:
+class ContextWindow:
     """Managed context window."""
     chunks: List[ContextChunk]
     total_tokens: int

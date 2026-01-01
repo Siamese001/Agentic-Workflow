@@ -4,7 +4,7 @@ import logging
 'Brief description of functionality and purpose.'
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 try:
     from titanium_rag_pipeline import get_pipeline_stats, get_titanium_search_tool, get_titanium_search_with_sources
     TITANIUM_AVAILABLE: Any = True

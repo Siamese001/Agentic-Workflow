@@ -12,7 +12,7 @@ Phase 2: Dependency Graph Analyzer (DGA) + Diff/Patch Generator (DPG)
 - Reviewable diff generation
 """
 
-from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+from AgenticCore.L2_execution.ToolRegistry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     TransformResult,
@@ -25,22 +25,22 @@ from agentic_core.L2_execution.tool_registry.tools.code_transform import (
     quick_extract,
 )
 
-from agentic_core.L2_execution.tool_registry.tools.dependency_graph import (
+from AgenticCore.L2_execution.ToolRegistry.tools.DependencyGraph import (
     DependencyGraphArgs,
     GraphOperation,
     DependencyGraph,
     GraphResult,
-    dependency_graph,
+    DependencyGraph,
     build_graph,
     detect_cycles,
-    impact_analysis,
+    ImpactAnalysis,
     find_unused_imports,
     quick_cycles,
     quick_impact,
     quick_unused,
 )
 
-from agentic_core.L2_execution.tool_registry.tools.diff_generator import (
+from AgenticCore.L2_execution.ToolRegistry.tools.diff_generator import (
     DiffGeneratorArgs,
     DiffFormat,
     DiffResult,
@@ -72,10 +72,10 @@ __all__ = [
     "GraphOperation",
     "DependencyGraph",
     "GraphResult",
-    "dependency_graph",
+    "DependencyGraph",
     "build_graph",
     "detect_cycles",
-    "impact_analysis",
+    "ImpactAnalysis",
     "find_unused_imports",
     "quick_cycles",
     "quick_impact",

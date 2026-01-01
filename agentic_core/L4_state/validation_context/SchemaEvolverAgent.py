@@ -16,18 +16,18 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class schema_definition:
+class SchemaDefinition:
     """Represents a Pydantic model or database schema."""
     name: str
     file_path: str
@@ -37,7 +37,7 @@ class schema_definition:
     is_pydantic: bool
 
 @dataclass
-class schema_change:
+class SchemaChange:
     """Represents a proposed schema change."""
     schema_name: str
     change_type: str
@@ -47,17 +47,17 @@ class schema_change:
     file_path: str
 
 @dataclass
-class impact_analysis:
+class ImpactAnalysis:
     """Analysis of schema change impact."""
     change: SchemaChange
     affected_files: List[str]
     breaking_change: bool
-    severity: str
+    Severity: str
     transformation_mapping: Optional[str]
     recommendations: List[str]
 
 @dataclass
-class schema_registry:
+class SchemaRegistry:
     """Registry of all schemas in the codebase."""
     schemas: Dict[str, SchemaDefinition] = field(default_factory=dict)
     dependencies: Dict[str, Set[str]] = field(default_factory=dict)
@@ -92,7 +92,7 @@ class SchemaEvolverAgent(SubAtomicAgent):
         """
         super().__init__(ctx)
         self.registry = SchemaRegistry()
-        self.schema_dirs = ['agentic_core/schemas', 'agentic_core/domain', 'apps_shared/schemas']
+        self.schema_dirs = ['AgenticCore/schemas', 'AgenticCore/domain', 'apps_shared/schemas']
 
     async def execute(self) -> Any:
         """
@@ -100,15 +100,15 @@ class SchemaEvolverAgent(SubAtomicAgent):
         
         Discovers schemas, tracks dependencies, and analyzes changes.
         """
-        logger.info('🛡️  Schema Evolver: Monitoring data contracts...')
+        Logger.info('🛡️  Schema Evolver: Monitoring data contracts...')
         self._discover_schemas()
         self._track_dependencies()
         if hasattr(self.ctx, 'pending_schema_changes'):
             for change in self.ctx.pending_schema_changes:
                 impact: Any = self._analyze_impact(change)
                 self._report_impact(impact)
-        logger.info(f'   Monitored {len(self.registry.schemas)} schemas')
-        logger.info(f'   Tracked {sum((len(deps) for deps in self.registry.dependencies.values()))} dependencies')
+        Logger.info(f'   Monitored {len(self.registry.schemas)} schemas')
+        Logger.info(f'   Tracked {sum((len(deps) for deps in self.registry.dependencies.values()))} dependencies')
 
     def _discover_schemas(self):
         """Discover all Pydantic models and database schemas."""
@@ -125,7 +125,7 @@ class SchemaEvolverAgent(SubAtomicAgent):
             with open(file_path, 'r', encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
-            logger.warning(f'Could not read {file_path}: {e}')
+            Logger.warning(f'Could not read {file_path}: {e}')
             return
         try:
             tree = ast.parse(source)
@@ -181,16 +181,16 @@ class SchemaEvolverAgent(SubAtomicAgent):
         affected_files = list(self.registry.dependencies.get(schema_name, set()))
         breaking_change = change.change_type in ['remove_field', 'modify_field']
         if breaking_change and len(affected_files) > 10:
-            severity = 'critical'
+            Severity = 'critical'
         elif breaking_change and len(affected_files) > 5:
-            severity = 'high'
+            Severity = 'high'
         elif breaking_change:
-            severity = 'medium'
+            Severity = 'medium'
         else:
-            severity = 'low'
+            Severity = 'low'
         transformation_mapping = self._generate_transformation_mapping(change)
         recommendations = self._generate_recommendations(change, affected_files)
-        return ImpactAnalysis(change=change, affected_files=affected_files, breaking_change=breaking_change, severity=severity, transformation_mapping=transformation_mapping, recommendations=recommendations)
+        return ImpactAnalysis(change=change, affected_files=affected_files, breaking_change=breaking_change, Severity=Severity, transformation_mapping=transformation_mapping, recommendations=recommendations)
 
     def _generate_transformation_mapping(self, change: SchemaChange) -> Optional[str]:
         """Generate transformation mapping for schema change."""
@@ -226,33 +226,33 @@ class SchemaEvolverAgent(SubAtomicAgent):
     def _report_impact(self, impact: ImpactAnalysis):
         """Report impact analysis to user."""
         change = impact.change
-        logger.info(f"\n{'=' * 80}")
-        logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
-        logger.info(f"{'=' * 80}")
-        logger.info(f'Schema: {change.schema_name}')
-        logger.info(f'Change: {change.change_type} - {change.field_name}')
-        logger.info(f'File: {change.file_path}')
-        logger.info(f'')
-        logger.info(f'Impact:')
-        logger.info(f'  Affected Files: {len(impact.affected_files)}')
-        logger.info(f"  Breaking Change: {('YES' if impact.breaking_change else 'NO')}")
-        logger.info(f'  Severity: {impact.severity.upper()}')
+        Logger.info(f"\n{'=' * 80}")
+        Logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
+        Logger.info(f"{'=' * 80}")
+        Logger.info(f'Schema: {change.schema_name}')
+        Logger.info(f'Change: {change.change_type} - {change.field_name}')
+        Logger.info(f'File: {change.file_path}')
+        Logger.info(f'')
+        Logger.info(f'Impact:')
+        Logger.info(f'  Affected Files: {len(impact.affected_files)}')
+        Logger.info(f"  Breaking Change: {('YES' if impact.breaking_change else 'NO')}")
+        Logger.info(f'  Severity: {impact.Severity.upper()}')
         if impact.breaking_change:
-            logger.warning(f'\n[!]  BREAKING CHANGE DETECTED')
+            Logger.warning(f'\n[!]  BREAKING CHANGE DETECTED')
         if impact.transformation_mapping:
-            logger.info(f'\nTransformation Mapping:')
-            logger.info(f'  {impact.transformation_mapping}')
+            Logger.info(f'\nTransformation Mapping:')
+            Logger.info(f'  {impact.transformation_mapping}')
         if impact.recommendations:
-            logger.info(f'\nRecommendations:')
+            Logger.info(f'\nRecommendations:')
             for i, rec in enumerate(impact.recommendations, 1):
-                logger.info(f'  {i}. {rec}')
+                Logger.info(f'  {i}. {rec}')
         if impact.affected_files:
-            logger.info(f'\nAffected Files (showing first 10):')
+            Logger.info(f'\nAffected Files (showing first 10):')
             for file_path in impact.affected_files[:10]:
-                logger.info(f'  - {file_path}')
+                Logger.info(f'  - {file_path}')
             if len(impact.affected_files) > 10:
-                logger.info(f'  ... and {len(impact.affected_files) - 10} more')
-        logger.info(f"{'=' * 80}\n")
+                Logger.info(f'  ... and {len(impact.affected_files) - 10} more')
+        Logger.info(f"{'=' * 80}\n")
 
     def propose_schema_change(self, schema_name: str, change_type: str, field_name: str, old_value: Optional[str]=None, new_value: Optional[str]=None, file_path: str='') -> ImpactAnalysis:
         """

@@ -1,5 +1,5 @@
 """
-knowledge/research_cache – Sovereign Territory
+knowledge/ResearchCache – Sovereign Territory
 
 Purpose:
     Sovereign territory

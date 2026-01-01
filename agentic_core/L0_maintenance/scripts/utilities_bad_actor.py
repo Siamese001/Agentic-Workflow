@@ -5,8 +5,8 @@ import sys
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 
-# NAMING FIXED: Logger → logger
-class logger(Protocol):
+# NAMING FIXED: Logger → Logger
+class Logger(Protocol):
     """Protocol for a logging mechanism."""
 
     def info(self, message: str) -> None: ...
@@ -19,8 +19,8 @@ class logger(Protocol):
                     
 
 
-# NAMING FIXED: SystemCommandExecutor → system_command_executor
-class system_command_executor(Protocol):
+# NAMING FIXED: SystemCommandExecutor → SystemCommandExecutor
+class SystemCommandExecutor(Protocol):
     """
     Protocol for safely executing system commands.
     This executor enforces security policies and does NOT execute dangerous commands.
@@ -36,9 +36,9 @@ class system_command_executor(Protocol):
 # --- Concrete Implementations of Dependencies ---
 
 
-# NAMING FIXED: ConsoleLogger → console_logger
-class console_logger:
-    """A simple console logger."""
+# NAMING FIXED: ConsoleLogger → ConsoleLogger
+class ConsoleLogger:
+    """A simple console Logger."""
 
     def info(self, message: str) -> None:
                     
@@ -61,8 +61,8 @@ class console_logger:
         pass
 
 
-# NAMING FIXED: SafeSystemCommandExecutor → safe_system_command_executor
-class safe_system_command_executor:
+# NAMING FIXED: SafeSystemCommandExecutor → SafeSystemCommandExecutor
+class SafeSystemCommandExecutor:
     """
     A secure system command executor that prevents destructive actions
     and logs attempts. This simulates the 'ActionNode' whitelist concept
@@ -74,8 +74,8 @@ class safe_system_command_executor:
         # Add other dangerous commands/patterns here in a real system
     ]
 
-    def __init__(self, logger: Logger):
-        self._logger = logger
+    def __init__(self, Logger: Logger):
+        self._logger = Logger
 
     def _is_dangerous(self, command: str) -> bool:
         """Checks if a command is explicitly dangerous."""
@@ -133,7 +133,7 @@ class safe_system_command_executor:
 
 def delete_system(
     *,
-    logger: Logger,
+    Logger: Logger,
     executor: SystemCommandExecutor,
     confirm_destructive_action: bool = False
 ) -> str:
@@ -143,14 +143,14 @@ def delete_system(
     of confirmation, due to Subatomic Gatekeeper Keys.
 
     Args:
-        logger: An object adhering to the Logger protocol for logging events.
+        Logger: An object adhering to the Logger protocol for logging events.
         executor: An object adhering to the SystemCommandExecutor protocol for command execution.
         confirm_destructive_action: A boolean indicating if human confirmation was provided.
 
     Returns:
         A string summarizing the outcome of the attempted operations.
     """
-    logger.info(
+    Logger.info(
         "Initiating request for system deletion actions. These are always blocked by policy.")
 
     # Define dangerous commands as constants for clarity and potential reuse.
@@ -170,18 +170,18 @@ def delete_system(
             timeout=5
         )
         if exit_code != 0:
-            logger.error(
+            Logger.error(
                 f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
             results.append(
                 f"Attempt to delete root: FAILED - {stderr if stderr else 'Security Blocked'}")
         else:
             # This branch implies a simulated success of *blocking* the action.
-            logger.info(
+            Logger.info(
                 f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
             results.append(
                 f"Attempt to delete root: SUCCESS (Simulated/Blocked) - {stdout}")
     except Exception as e:  # Violation 8, 17: Failure Atomicity, Error Propagation
-        logger.critical(
+        Logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         results.append(f"Attempt to delete root: CRITICAL EXCEPTION - {e}")
 
@@ -194,30 +194,30 @@ def delete_system(
             timeout=10
         )
         if exit_code != 0:
-            logger.error(
+            Logger.error(
                 f"Failed to execute '{FORMAT_C_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
             results.append(
                 f"Attempt to format C: FAILED - {stderr if stderr else 'Security Blocked'}")
         else:
-            logger.info(
+            Logger.info(
                 f"Successfully simulated (blocked) '{FORMAT_C_COMMAND}'. Stdout: {stdout}")
             results.append(
                 f"Attempt to format C: SUCCESS (Simulated/Blocked) - {stdout}")
     except Exception as e:  # Violation 8, 17: Failure Atomicity, Error Propagation
-        logger.critical(
+        Logger.critical(
             f"CRITICAL EXCEPTION during '{FORMAT_C_COMMAND}' attempt: {e}", exc_info=True)
         results.append(f"Attempt to format C: CRITICAL EXCEPTION - {e}")
 
     # Violation 7, 34: Observability, Audit Trail - summarized outcome
     final_status: str = "All destructive actions attempted and safely prevented by security policy."
-    logger.info(f"Final status of delete_system operations: {final_status}")
-    logger.info(f"Detailed results: {'; '.join(results)}")
+    Logger.info(f"Final status of delete_system operations: {final_status}")
+    Logger.info(f"Detailed results: {'; '.join(results)}")
     return final_status
 
 
 def run(
     *,
-    logger: Logger,
+    Logger: Logger,
     executor: SystemCommandExecutor,
     confirm_destructive_action: bool = False
 ) -> str:
@@ -227,14 +227,14 @@ def run(
     of confirmation, due to Subatomic Gatekeeper Keys.
 
     Args:
-        logger: An object adhering to the Logger protocol for logging events.
+        Logger: An object adhering to the Logger protocol for logging events.
         executor: An object adhering to the SystemCommandExecutor protocol for command execution.
         confirm_destructive_action: A boolean indicating if human confirmation was provided.
 
     Returns:
         A string summarizing the outcome of the attempted operation.
     """
-    logger.info(
+    Logger.info(
         "Initiating request for a single destructive action. This is always blocked by policy.")
 
     # Define dangerous command as a constant.
@@ -248,15 +248,15 @@ def run(
             timeout=5
         )
         if exit_code != 0:
-            logger.error(
+            Logger.error(
                 f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
             return f"FAILED to run destructive action: {stderr if stderr else 'Security Blocked'}"
         else:
             # This branch implies a simulated success of *blocking* the action.
-            logger.info(
+            Logger.info(
                 f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
             return f"SUCCESS (Simulated/Blocked) running destructive action: {stdout}"
     except Exception as e:
-        logger.critical(
+        Logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         return f"CRITICAL EXCEPTION running destructive action: {e}"

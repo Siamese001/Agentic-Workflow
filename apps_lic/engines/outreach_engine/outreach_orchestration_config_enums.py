@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -16,5 +16,5 @@ class Archetype(str, Enum):
 
 
 class ValidationSeverity(str, Enum):
-    """Validation result severity levels."""
+    """Validation result Severity levels."""
 

@@ -9,12 +9,12 @@ from typing import Any, Dict, List
 
 class HierarchyEnforcerAgent:
     """
-    Enforces the canonical L4 hierarchy across agentic_core.
+    Enforces the canonical L4 hierarchy across AgenticCore.
     Drills down from L2 -> L3 -> L4 to ensure all required directories exist.
     """
     
     def __init__(self, project_root: Path, ctx):
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
             SOVEREIGN_REGISTRY,
@@ -26,7 +26,7 @@ class HierarchyEnforcerAgent:
         self.ctx = ctx
         
         # [DEPTH ARCHIVAL] Where depth-drift goes to die
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import DEPRECATION_ARCHIVE
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import DEPRECATION_ARCHIVE
         self.archive_root = project_root / DEPRECATION_ARCHIVE / "depth_violations"
         self.archive_root.mkdir(parents=True, exist_ok=True)
         
@@ -38,10 +38,10 @@ class HierarchyEnforcerAgent:
         actions = []
         
         # Get L2 structure from CANON_STRUCTURE
-        l2_structure = self.canon_structure["agentic_core"]["subfolders"]
+        l2_structure = self.canon_structure["AgenticCore"]["subfolders"]
         
         for l2_name in l2_structure:
-            l2_path = self.project_root / "agentic_core" / l2_name
+            l2_path = self.project_root / "AgenticCore" / l2_name
             if not l2_path.exists(): 
                 continue
                 
@@ -72,7 +72,7 @@ class HierarchyEnforcerAgent:
         """
         Apps depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         apps_exact_depth = SOVEREIGN_REGISTRY["apps_rg"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
@@ -109,7 +109,7 @@ class HierarchyEnforcerAgent:
         """
         Tests depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
         tests_exact_depth = SOVEREIGN_REGISTRY["tests"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
@@ -143,13 +143,13 @@ class HierarchyEnforcerAgent:
 
     def enforce_universal_depth(self) -> List[str]:
         """
-        Universal depth enforcement for all file types under agentic_core.
+        Universal depth enforcement for all file types under AgenticCore.
         Archives non-Python files that violate depth 4 rule.
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
             SOVEREIGN_REGISTRY,
         )
-        agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
+        agentic_core_exact_depth = SOVEREIGN_REGISTRY["AgenticCore"]["depth"]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
         actions = []
 
         # [UNIVERSAL ENFORCEMENT] Target common data/doc extensions
@@ -162,7 +162,7 @@ class HierarchyEnforcerAgent:
                 continue
 
             rel = file_path.relative_to(self.project_root)
-            if rel.parts[0] == "agentic_core":
+            if rel.parts[0] == "AgenticCore":
                 depth = len(rel.parts)
                 if depth != agentic_core_exact_depth:
                     # [ARCHIVE UNIVERSAL DRIFT]
@@ -191,10 +191,10 @@ class HierarchyEnforcerAgent:
         violations = []
         
         # Get L2 structure from CANON_STRUCTURE
-        l2_structure = self.canon_structure["agentic_core"]["subfolders"]
+        l2_structure = self.canon_structure["AgenticCore"]["subfolders"]
         
         for l2_name in l2_structure:
-            l2_path = self.project_root / "agentic_core" / l2_name
+            l2_path = self.project_root / "AgenticCore" / l2_name
             if not l2_path.exists(): 
                 continue
                 
@@ -211,7 +211,7 @@ class HierarchyEnforcerAgent:
                 if missing_l4:
                     violations.append({
                         "path": f"{l2_name}/{l3_name}",
-                        "missing": list(missing_l4)
+                        "Missing": list(missing_l4)
                     })
         
         return {

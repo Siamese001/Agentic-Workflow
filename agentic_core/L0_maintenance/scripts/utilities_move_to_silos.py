@@ -7,12 +7,12 @@ import os
 import shutil
 from typing import Any
 logging.basicConfig(level=logging.INFO, format='%(message)s')
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def move_files_to_silos() -> Any:
     """Move Python files from root to appropriate sovereign silos"""
-    logger.info('📁 Moving files to sovereign silos...')
-    silo_mappings: Any = {'agentic_core': ['action_node', 'agent_logic', 'cognitive_node', 'consensus_engine', 'core_utils', 'action_registry', 'agent_capabilities'], 'apps_lic': ['canon_validator', 'canon_keys', 'validator', 'canon'], 'apps_rg': ['orchestrator', 'llm_client', 'connection_manager', 'monitor_blackboard'], 'apps_shared': ['db_manager', 'etl_pipeline', 'fact_checker', 'clarity_brevity_filter'], 'scripts': ['clean_duplicates', 'fix_', 'assess_dependencies', 'check_pinecone', 'clear_data', 'canary_monitor', 'bad_actor', 'debug_whitelist'], 'tests': ['test_', 'tests_', '_test']}
+    Logger.info('📁 Moving files to sovereign silos...')
+    silo_mappings: Any = {'AgenticCore': ['ActionNode', 'agent_logic', 'CognitiveNode', 'ConsensusEngine', 'core_utils', 'action_registry', 'agent_capabilities'], 'apps_lic': ['CanonValidator', 'canon_keys', 'validator', 'canon'], 'apps_rg': ['orchestrator', 'llm_client', 'connection_manager', 'monitor_blackboard'], 'apps_shared': ['db_manager', 'etl_pipeline', 'FactChecker', 'clarity_brevity_filter'], 'scripts': ['clean_duplicates', 'fix_', 'assess_dependencies', 'check_pinecone', 'clear_data', 'canary_monitor', 'bad_actor', 'debug_whitelist'], 'tests': ['test_', 'tests_', '_test']}
     moved_count: Any = 0
     root_files: Any = [f for f in os.listdir('/app') if f.endswith('.py') and os.path.isfile(f'/app/{f}')]
     for filename in root_files:
@@ -36,11 +36,11 @@ def move_files_to_silos() -> Any:
         try:
             if not os.path.exists(dst_path):
                 shutil.move(src_path, dst_path)
-                logger.info(f'📁 Moved {filename} -> {target_silo}/')
+                Logger.info(f'📁 Moved {filename} -> {target_silo}/')
                 moved_count += 1
         except Exception as e:
-            logger.error(f'❌ Failed to move {filename}: {e}')
-    logger.info(f'\n✨ Moved {moved_count} files to sovereign silos')
+            Logger.error(f'❌ Failed to move {filename}: {e}')
+    Logger.info(f'\n✨ Moved {moved_count} files to sovereign silos')
     return moved_count
 
 def main() -> Any:
@@ -49,7 +49,7 @@ def main() -> Any:
     parser.add_argument('--dry-run', action='store_true', help='Show what would be moved without actually moving')
     args: Any = parser.parse_args()
     if args.dry_run:
-        logger.info('🔍 DRY RUN - No files will be moved')
+        Logger.info('🔍 DRY RUN - No files will be moved')
     else:
         move_files_to_silos()
 if __name__ == '__main__':

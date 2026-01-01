@@ -10,22 +10,22 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
-from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
-from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from AgenticCore.L4_state.caching.redis_mcp_client import get_redis_client
+from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
+from AgenticCore.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7
 max_redis_entry_size: Any = 1024 * 1024
 redis_timeout: Any = 5
 
-class sovereign_semantic_cache:
+class SovereignSemanticCache:
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
     def __init__(self, mission_id: str, engine=None, pinecone_agent: Optional[PineconeSovereignAgent]=None):
@@ -36,9 +36,9 @@ class sovereign_semantic_cache:
         self.namespace = 'canon-files'
         try:
             self.redis = get_redis_client()
-            logger.info('[L4 REDIS] Sovereign MCP cache armed.')
+            Logger.info('[L4 REDIS] Sovereign MCP cache armed.')
         except Exception as e:
-            logger.critical(f'[L4 REDIS BREACH] MCP cache failed: {e}')
+            Logger.critical(f'[L4 REDIS BREACH] MCP cache failed: {e}')
             mcp_authority.record_breach(f'Redis MCP Cache Failure: {str(e)}')
             self.redis = None
 
@@ -66,7 +66,7 @@ class sovereign_semantic_cache:
             try:
                 cached_data: Any = await self.redis.get(key)
                 if cached_data:
-                    logger.info(f'[L4 HIT] Redis MCP recall for {Path(file_path).name}')
+                    Logger.info(f'[L4 HIT] Redis MCP recall for {Path(file_path).name}')
                     return
             except Exception:
                 pass
@@ -80,9 +80,9 @@ class sovereign_semantic_cache:
                 if len(entry_json.encode()) < MAX_REDIS_ENTRY_SIZE:
                     await self.redis.set(key, entry_json, ttl=REDIS_CACHE_TTL)
             self.pinecone.upsert(index=self.index_name, vectors=[(key, vector, entry['metadata'])], namespace=self.namespace)
-            logger.info(f'[L4 STORE] Dual-sync complete for {Path(file_path).name}')
+            Logger.info(f'[L4 STORE] Dual-sync complete for {Path(file_path).name}')
         except Exception as e:
-            logger.error(f'[L4 CACHE FAILURE] Could not cache {file_path}: {e}')
+            Logger.error(f'[L4 CACHE FAILURE] Could not cache {file_path}: {e}')
 
     async def invalidate(self, file_path: str) -> Any:
         """Purge both stores on fission or physical move."""
@@ -94,6 +94,6 @@ class sovereign_semantic_cache:
                 pass
         try:
             self.pinecone.delete(ids=[key], namespace=self.namespace)
-            logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
+            Logger.info(f'[L4 PURGE] Purged semantic trail for {Path(file_path).name}')
         except Exception:
             pass

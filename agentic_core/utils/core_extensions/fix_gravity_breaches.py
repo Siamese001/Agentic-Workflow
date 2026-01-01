@@ -6,14 +6,14 @@ import shutil
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 moves_back: Any = [(CORE / 'L3_orchestration/P1_core/l5_autonomous_orchestrator.py', ROOT / 'apps_rg/L3_orchestration'), (CORE / 'L3_orchestration/P1_core/l5_orchestrator', ROOT / 'apps_rg/L3_orchestration'), (CORE / 'L2_execution/P3_engines/outreach_engine', ROOT / 'apps_lic/engines'), (CORE / 'L2_execution/P3_engines/resume_engine', ROOT / 'apps_rg/engines')]
 
 def fix_gravity() -> Any:

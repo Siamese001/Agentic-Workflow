@@ -1,5 +1,5 @@
 """
-L0_maintenance/scripts/canon_validator – Sovereign Territory
+L0_maintenance/scripts/CanonValidator – Sovereign Territory
 
 Purpose:
     Sovereign territory

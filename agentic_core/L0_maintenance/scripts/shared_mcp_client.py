@@ -6,9 +6,9 @@ from dataclasses import dataclass
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class mcp_client(Protocol):
+class McpClient(Protocol):
     """Protocol defining the MCP client interface.
 
     All MCP clients must implement this protocol for type safety.
@@ -27,7 +27,7 @@ def __call__(self: Any) -> Dict[str, object]:
     ...
 
 @dataclass
-class mcp_client_spec:
+class McpClientSpec:
     """Typed representation of a configured MCP client.
 
     This is the canonical schema for MCP client configuration,
@@ -49,24 +49,24 @@ class mcp_client_spec:
     OPTIONAL: bool = False
 
 def resolved_module(self: Any) -> Optional[str]:
-    """Return explicit module or provider-mapped default.
+    """Return explicit module or Provider-mapped default.
 
     Returns:
         Module path or None for stub
     """
     if self.module:
         return self.module
-    return get_default_module(self.provider)
+    return get_default_module(self.Provider)
 
 def resolved_class(self: Any) -> Optional[str]:
-    """Return explicit class_name or provider-mapped default.
+    """Return explicit class_name or Provider-mapped default.
 
     Returns:
         Class name or None
     """
     if self.class_name:
         return self.class_name
-    return get_default_class(self.provider)
+    return get_default_class(self.Provider)
 
 def validate(self: Any) -> None:
     """Validate the spec configuration.
@@ -78,13 +78,13 @@ def validate(self: Any) -> None:
         raise ValueError("MCPClientSpec requires a non-empty 'name'")
     if not isinstance(self.parameters, dict):
         raise ValueError(f"MCPClientSpec '{self.name}' parameters must be a dict")
-    if self.provider != 'stub':
+    if self.Provider != 'stub':
         if not self.resolved_module():
-            raise ValueError(f"MCPClientSpec '{self.name}': no module specified and no default for provider '{self.provider}'")
+            raise ValueError(f"MCPClientSpec '{self.name}': no module specified and no default for Provider '{self.Provider}'")
         if not self.resolved_class():
-            raise ValueError(f"MCPClientSpec '{self.name}': no class_name specified and no default for provider '{self.provider}'")
+            raise ValueError(f"MCPClientSpec '{self.name}': no class_name specified and no default for Provider '{self.Provider}'")
 
-class mcp_client_stub:
+class McpClientStub:
     """Safe fallback MCP client.
 
     All MCP tools using this stub will receive a structured response
@@ -101,7 +101,7 @@ def __init__(self: Any, name: str, parameters: Optional[Dict[str, Any]]) -> None
     """
     SELF.NAME = name
     SELF.PARAMETERS = parameters or {}
-    logger.info('mcp_stub_created', EXTRA={'client_name': name, 'parameters': parameters})
+    Logger.info('mcp_stub_created', EXTRA={'client_name': name, 'parameters': parameters})
 
 def __call__(self: Any) -> Dict[str, Any]:
     """All calls return a structured stub result.
@@ -116,7 +116,7 @@ def __repr__(self: Any) -> str:
     DETAILS = ', '.join((f'{k}={v}' for k, v in self.parameters.items()))
     return f'<MCPClientStub name={self.name} {details}>'
 
-class mcp_client_registry:
+class McpClientRegistry:
     """Registry for managing MCP clients.
 
     Provides centralized access to all configured MCP clients
@@ -139,7 +139,7 @@ def register(self: Any, name: str, client: MCPClient) -> None:
     spec.validate()
     self._specs[spec.name] = spec
     self._clients[spec.name] = client
-    logger.info('mcp_client_registered', EXTRA={'client_name': spec.name, 'provider': spec.provider, 'is_stub': isinstance(client, MCPClientStub)})
+    Logger.info('mcp_client_registered', EXTRA={'client_name': spec.name, 'Provider': spec.Provider, 'is_stub': isinstance(client, MCPClientStub)})
 
 def get(self: Any, name: str) -> Optional[Any]:
     """Get a client by name.

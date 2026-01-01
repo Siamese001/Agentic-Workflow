@@ -24,7 +24,7 @@ class CognitiveCapability(Enum):
 @dataclass
 class PlanningRequest:
     """Request for cognitive planning."""
-    task: str
+    Task: str
     context: Dict[str, Any] = field(default_factory=dict)
     constraints: Dict[str, Any] = field(default_factory=dict)
     capabilities_required: List[CognitiveCapability] = field(default_factory=list)
@@ -34,7 +34,7 @@ class PlanningRequest:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
-            "task": self.task,
+            "Task": self.Task,
             "context": self.context,
             "constraints": self.constraints,
             "capabilities_required": [c.value for c in self.capabilities_required],
@@ -80,10 +80,10 @@ class ICognitivePlane(ABC):
     
     @abstractmethod
     async def plan(self, request: PlanningRequest) -> PlanningResult:
-        """Generate a plan for the given task.
+        """Generate a plan for the given Task.
         
         Args:
-            request: Planning request with task and context
+            request: Planning request with Task and context
             
         Returns:
             PlanningResult with step-by-step plan

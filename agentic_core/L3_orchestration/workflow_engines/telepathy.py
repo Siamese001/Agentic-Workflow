@@ -7,9 +7,9 @@ Allows humans to telepathically control mission execution by writing commands.
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class telepathy_interface:
+class TelepathyInterface:
     """
     Human instruction telepathy interface for dynamic mission control.
 
@@ -73,7 +73,7 @@ class telepathy_interface:
         if 'pause' in instructions_lower:
             commands['pause'] = True
             commands['custom_signals'].add('TELEPATHY_PAUSE')
-        agent_mapping: Any = {'test': 'TestPilot', 'style': 'CodeStyleGuardian', 'safety': 'SafetyInspector', 'dependency': 'DependencySentinel', 'architecture': 'ArchitectureGovernor', 'hygiene': 'HygieneGuardian', 'historian': 'Historian', 'sherlock': 'Sherlock', 'reflection': 'ReflectionAgent'}
+        agent_mapping: Any = {'test': 'TestPilot', 'style': 'CodeStyleGuardian', 'safety': 'SafetyInspector', 'dependency': 'DependencySentinel', 'architecture': 'ArchitectureGovernor', 'hygiene': 'HygieneGuardian', 'Historian': 'Historian', 'sherlock': 'Sherlock', 'reflection': 'ReflectionAgent'}
         for keyword, agent in agent_mapping.items():
             if f'force {keyword}' in instructions_lower or f'run {keyword}' in instructions_lower:
                 commands['force_agents'].append(agent)

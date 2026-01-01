@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
@@ -178,7 +178,7 @@ Current date: December 24, 2025
         
         # File needs healing if it violates either rule
         if (is_forbidden or is_low_signal):
-            # Heuristic: Add appropriate suffix based on violation
+            # Heuristic: Add appropriate suffix based on Violation
             if is_forbidden:
                 # Forbidden patterns get sovereign prefix
                 if stem.endswith("_agent"):

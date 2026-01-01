@@ -5,25 +5,25 @@ Rewrites and optimizes resume content based on job analysis results.
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class resume_generator:
+class ResumeGenerator:
     """Generates tailored resumes using LLM based on job analysis."""
 
-    def __init__(self, llm_client: Optional[Any]=None, provider: Optional[Provider]=None, creative_brief: Optional[Any]=None, validation_rules: Optional[Dict[str, Any]]=None):
+    def __init__(self, llm_client: Optional[Any]=None, Provider: Optional[Provider]=None, creative_brief: Optional[Any]=None, validation_rules: Optional[Dict[str, Any]]=None):
         """
         Initialize ResumeGenerator.
 
         Args:
             llm_client: Optional pre-configured LLM client
-            provider: Provider to use if client not supplied (defaults to Google/Gemini)
+            Provider: Provider to use if client not supplied (defaults to Google/Gemini)
         """
-        self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-        SELF.PROVIDER = provider or Provider.GOOGLE
+        self.llm_client = llm_client or get_client(Provider or Provider.GOOGLE)
+        SELF.PROVIDER = Provider or Provider.GOOGLE
         self.creative_brief = creative_brief
         self.validation_rules = validation_rules or {}
         if self.llm_client is None:
-            raise ValueError(f'Failed to initialize LLM client for provider {self.provider}')
+            raise ValueError(f'Failed to initialize LLM client for Provider {self.Provider}')
 
     def generate(self, resume_data: Dict[str, Any], analysis_results: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -47,7 +47,7 @@ class resume_generator:
             tailored_resume['_tailoring_metadata'] = {'target_hard_skills': analysis_results.get('hard_skills', []), 'target_soft_skills': analysis_results.get('soft_skills', []), 'experience_level': analysis_results.get('experience_level', 'unknown'), 'north_star_metric': analysis_results.get('north_star_metric', 'unknown')}
             return tailored_resume
         except Exception as e:
-            logger.error(f'Error generating tailored resume: {e}')
+            Logger.error(f'Error generating tailored resume: {e}')
             resume_data['_tailoring_error'] = str(e)
             return resume_data
 
@@ -56,12 +56,12 @@ class resume_generator:
         word_count_range = '120-140'
         if self.creative_brief and hasattr(self.creative_brief, 'executive_summary_word_count'):
             word_count_range = f'{self.creative_brief.executive_summary_word_count.min_words}-{self.creative_brief.executive_summary_word_count.max_words}'
-        PROMPT = f"Rewrite the following professional summary to align with the target job requirements.\n\nORIGINAL SUMMARY:\n{original_summary}\n\nTARGET REQUIREMENTS:\n- Hard Skills: {', '.join(analysis.get('hard_skills', []))}\n- Soft Skills: {', '.join(analysis.get('soft_skills', []))}\n- North Star Metric: {analysis.get('north_star_metric', 'N/A')}\n\nPlease rewrite the summary to:\n1. Highlight relevant hard skills from the target requirements\n2. Demonstrate the soft skills they're looking for\n3. Align with their key success metric\n4. Keep it within {word_count_range} words\n5. Use active, confident language\n\nReturn ONLY the rewritten summary, no additional text."
+        PROMPT = f"Rewrite the following professional summary to align with the target job requirements.\n\nORIGINAL SUMMARY:\n{original_summary}\n\nTARGET REQUIREMENTS:\n- Hard Skills: {', '.join(analysis.get('hard_skills', []))}\n- Soft Skills: {', '.join(analysis.get('soft_skills', []))}\n- North Star Metric: {analysis.get('north_star_metric', 'N/A')}\n\nPlease rewrite the summary to:\n1. Highlight relevant hard skills from the target requirements\n2. Demonstrate the soft skills they're looking for\n3. Align with their key success Metric\n4. Keep it within {word_count_range} words\n5. Use active, confident language\n\nReturn ONLY the rewritten summary, no additional text."
         try:
             RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
-            logger.error(f'Error tailoring summary: {e}')
+            Logger.error(f'Error tailoring summary: {e}')
             return original_summary
 
     def _tailor_experience(self, experience_list: List[Dict[str, Any]], analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -115,7 +115,7 @@ class resume_generator:
                 RESPONSE = self._generate_response(prompt)
                 tailored_bullets.append(response.strip())
             except Exception as e:
-                logger.error(f'Error tailoring bullet: {e}')
+                Logger.error(f'Error tailoring bullet: {e}')
                 tailored_bullets.append(bullet)
         return tailored_bullets
 
@@ -126,12 +126,12 @@ class resume_generator:
             RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
-            logger.error(f'Error tailoring description: {e}')
+            Logger.error(f'Error tailoring description: {e}')
             return description
 
     def _generate_response(self, prompt: str) -> str:
         """Generate response using the configured LLM."""
-        if self.provider == Provider.GOOGLE:
+        if self.Provider == Provider.GOOGLE:
             return self._generate_with_gemini(prompt)
         else:
             return self._generate_with_generic_client(prompt)

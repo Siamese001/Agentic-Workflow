@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, UTC
 
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class PolicyConfigurationError(Exception):
@@ -29,12 +29,12 @@ class PolicyResult:
     
     @property
     def final_verdict(self) -> Verdict:
-        """Determine the overall verdict based on all policy decisions."""
+        """Determine the overall Verdict based on all policy decisions."""
         if not self.decisions:
             return Verdict.ALLOW
             
-        # Most restrictive verdict wins
-        verdicts = [d.verdict for d in self.decisions]
+        # Most restrictive Verdict wins
+        verdicts = [d.Verdict for d in self.decisions]
         if Verdict.BLOCK in verdicts:
             return Verdict.BLOCK
         elif Verdict.REVIEW in verdicts:
@@ -52,12 +52,12 @@ class PolicyResult:
     @property
     def blocking_findings(self) -> List[SafetyFinding]:
         """Get all findings that would cause a block."""
-        return [f for f in self.all_findings if f.severity >= Severity.HIGH]
+        return [f for f in self.all_findings if f.Severity >= Severity.HIGH]
     
     def to_dict(self) -> Dict[str, object]:
         """Convert to a dictionary for serialization."""
         return {
-            'verdict': self.final_verdict.value,
+            'Verdict': self.final_verdict.value,
             'decisions': [d.to_dict() for d in self.decisions],
             'metadata': self.metadata
         }
@@ -95,13 +95,13 @@ class SafetyEngine:
             )
         
         self._policies[policy.policy_id] = policy
-        logger.info(f"Added policy: {policy.policy_id} - {policy.description}")
+        Logger.info(f"Added policy: {policy.policy_id} - {policy.description}")
     
     def remove_policy(self, policy_id: str) -> None:
         """Remove a policy from the engine."""
         if policy_id in self._policies:
             del self._policies[policy_id]
-            logger.info(f"Removed policy: {policy_id}")
+            Logger.info(f"Removed policy: {policy_id}")
     
     def get_policy(self, policy_id: str) -> Optional[SafetyPolicy]:
         """Get a policy by ID."""
@@ -124,21 +124,21 @@ class SafetyEngine:
             context: The safety context to evaluate
             policy_ids: Optional list of policy IDs to evaluate against.
                       If None, evaluates against all policies.
-            severity_threshold: Minimum severity level to consider for blocking.
+            severity_threshold: Minimum Severity level to consider for blocking.
                              If None, uses the engine's default.
         
         Returns:
             PolicyResult with the combined results of all policy evaluations
         """
         if not self._policies:
-            logger.warning("No policies registered in safety engine")
+            Logger.warning("No policies registered in safety engine")
             return PolicyResult()
         
         threshold = severity_threshold or self._default_severity_threshold
         policies_to_evaluate = self._get_policies_to_evaluate(policy_ids)
         
         if not policies_to_evaluate:
-            logger.warning(f"No matching policies found for IDs: {policy_ids}")
+            Logger.warning(f"No matching policies found for IDs: {policy_ids}")
             return PolicyResult()
         
         decisions: List[PolicyDecision] = []
@@ -148,24 +148,24 @@ class SafetyEngine:
                 decision = policy.evaluate(context)
                 decisions.append(decision)
                 
-                logger.debug(
-                    f"Policy '{policy.policy_id}' returned verdict: {decision.verdict} "
+                Logger.debug(
+                    f"Policy '{policy.policy_id}' returned Verdict: {decision.Verdict} "
                     f"with {len(decision.findings)} findings"
                 )
                 
             except Exception as e:
                 error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
-                logger.error(error_msg, exc_info=True)
+                Logger.error(error_msg, exc_info=True)
                 
                 # Create a blocking decision for the failed policy
                 decisions.append(PolicyDecision(
                     policy_id=policy.policy_id,
-                    verdict=Verdict.BLOCK,
+                    Verdict=Verdict.BLOCK,
                     findings=[
                         SafetyFinding(
                             id=f"error-{uuid.uuid4()}",
                             type="policy",
-                            severity=Severity.CRITICAL,
+                            Severity=Severity.CRITICAL,
                             message=f"Policy evaluation failed: {str(e)}",
                             details={"error": str(e)},
                             location=policy.policy_id
@@ -192,7 +192,7 @@ class SafetyEngine:
             }
         )
         
-        logger.info(
+        Logger.info(
             f"Safety evaluation complete. Verdict: {result.final_verdict}. "
             f"Findings: {len(result.all_findings)} total, "
             f"{len(result.blocking_findings)} blocking"
@@ -213,7 +213,7 @@ class SafetyEngine:
             if pid in self._policies:
                 policies.append(self._policies[pid])
             else:
-                logger.warning(f"Policy not found: {pid}")
+                Logger.warning(f"Policy not found: {pid}")
         
         return policies
     
@@ -232,7 +232,7 @@ class SafetyEngine:
         Args:
             context: The safety context to evaluate
             policy_ids: Optional list of policy IDs to evaluate against
-            severity_threshold: Minimum severity level to consider for blocking
+            severity_threshold: Minimum Severity level to consider for blocking
             
         Returns:
             bool: True if the content is safe, False if it should be blocked

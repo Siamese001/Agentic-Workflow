@@ -13,13 +13,13 @@ import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 
-from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
+from AgenticCore.L4_state.ValidationContext.RedisSovereignAgent import RedisSovereignAgent
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
@@ -86,19 +86,19 @@ class SubAtomicRegistryAgent:
             self.method_index.upsert(vectors=vectors)
             print(f"   [OK] SubAtomicRegistry: Indexed {len(vectors)} methods + Cache Warmed")
 
-    def find_method(self, task: str, top_k: int = 3) -> List[Dict]:
+    def find_method(self, Task: str, top_k: int = 3) -> List[Dict]:
         """Hybrid search for best method — now cache-first"""
-        cache_key = f"method_search:{hashlib.sha256(task.encode()).hexdigest()}_{top_k}"
+        cache_key = f"method_search:{hashlib.sha256(Task.encode()).hexdigest()}_{top_k}"
         try:
             cached = self.redis.get(cache_key)
             if cached:
-                print(f"   [CACHE HIT] Method search for '{task[:30]}...'")
+                print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
         except Exception: pass
 
         results = self.pinecone.hybrid_search(
-            query_text=task,
-            keywords=[w for w in self.pinecone.CANON_SIGNALS if w in task.lower()],
+            query_text=Task,
+            keywords=[w for w in self.pinecone.CANON_SIGNALS if w in Task.lower()],
             top_k=top_k,
             min_score=0.88
         )
@@ -115,7 +115,7 @@ class SubAtomicRegistryAgent:
         """The ultimate sovereign loop: Find it, then do it."""
         matches = self.find_method(task_description, top_k=1)
         if not matches:
-            raise ValueError(f"No method found for task: {task_description}")
+            raise ValueError(f"No method found for Task: {task_description}")
         
         meta = matches[0]['metadata']
         print(f"   [EXECUTE] Invoking {meta['method']} from {Path(meta['path']).name}")

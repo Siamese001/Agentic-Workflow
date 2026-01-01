@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class SovereignBaseModel(BaseModel):
     """Base model for all Sovereign entities with strict config."""
-    model_config = ConfigDict(strict=True, frozen=True)
+    ModelConfig = ConfigDict(strict=True, frozen=True)
 
 # Backward compat alias
 

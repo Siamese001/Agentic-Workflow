@@ -5,9 +5,9 @@ Tool ID Prefix: ACT-010
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger('ActionRegistry.GitTools')
+Logger: Any = logging.getLogger('ActionRegistry.GitTools')
 
-class git_tools:
+class GitTools:
     """
     Provides git operations like commit and status.
     Tool ID Prefix: ACT-010
@@ -28,7 +28,7 @@ class git_tools:
         Returns:
             str: A success message or an error message.
         """
-        logger.info(f"➕ Committing file '{file_path}' with message: '{message}'")
+        Logger.info(f"➕ Committing file '{file_path}' with message: '{message}'")
         try:
             from mcp0_git_add_or_commit import mcp0_git_add_or_commit
             add_result: Any = mcp0_git_add_or_commit(directory='.', action='add', files=[file_path])
@@ -51,7 +51,7 @@ class git_tools:
         Returns:
             str: The git status output or an error message.
         """
-        logger.info('❓ Getting git status.')
+        Logger.info('❓ Getting git status.')
         try:
             from mcp0_git_status import mcp0_git_status
             result: Any = mcp0_git_status(directory='.')

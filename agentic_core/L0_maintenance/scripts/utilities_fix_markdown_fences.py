@@ -25,7 +25,7 @@ def fix_markdown_fences(file_path: str) -> bool:
 
 def main() -> Any:
     """Find and fix all Python files with markdown fences."""
-    root: Any = Path('c:/Git/Agentic-Workflow/agentic_core')
+    root: Any = Path('c:/Git/Agentic-Workflow/AgenticCore')
     fixed_count: Any = 0
     for py_file in root.rglob('*.py'):
         if fix_markdown_fences(str(py_file)):

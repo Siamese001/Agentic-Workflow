@@ -7,5 +7,5 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 import logging
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 __all__ = ['*']

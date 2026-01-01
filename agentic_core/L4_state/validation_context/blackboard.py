@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 @dataclass
-class file_health_score:
+class FileHealthScore:
     """Health score for a single file."""
     file_path: str
     current_violations: int
@@ -37,7 +37,7 @@ class file_health_score:
         return cls(file_path=data['file_path'], current_violations=data['current_violations'], last_healed_timestamp=data['last_healed_timestamp'], healing_attempts=data.get('healing_attempts', 0), last_hash=data.get('last_hash', ''))
 
 @dataclass
-class healing_lease:
+class HealingLease:
     """Represents a healing lease on a file."""
     file_path: str
     agent_name: str
@@ -53,7 +53,7 @@ class healing_lease:
         """Get remaining time in seconds."""
         return max(0, self.expires_at - time.time())
 
-class atomic_blackboard:
+class AtomicBlackboard:
     """
     Thread-safe blackboard for managing validation state.
     
@@ -300,7 +300,7 @@ class atomic_blackboard:
         
         Args:
             violation_key: Canon key that was fixed
-            violation_desc: Description of violation
+            violation_desc: Description of Violation
             fix_code: The successful fix
             success_rate: Success rate of this pattern (0.0-1.0)
         """
@@ -322,7 +322,7 @@ class atomic_blackboard:
         Find similar healing patterns from Pinecone.
         
         Args:
-            violation_desc: Description of current violation
+            violation_desc: Description of current Violation
             top_k: Number of similar patterns to return
             
         Returns:

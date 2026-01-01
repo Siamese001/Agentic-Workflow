@@ -62,7 +62,7 @@ class TestHealingOrchestratorIntegration:
     async def test_orchestrator_valid_resume_converges(self, ctx, valid_resume):
         """Test orchestrator converges with valid resume."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         orchestrator = HealingOrchestrator(ctx, max_cycles=3)
         result = await orchestrator.run()
@@ -76,7 +76,7 @@ class TestHealingOrchestratorIntegration:
     async def test_orchestrator_problematic_resume(self, ctx, problematic_resume):
         """Test orchestrator with problematic resume."""
         ctx.current_resume = problematic_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         orchestrator = HealingOrchestrator(ctx, max_cycles=2)
         result = await orchestrator.run()
@@ -213,7 +213,7 @@ class TestSignalRoutingIntegration:
 
     @pytest.mark.asyncio
     async def test_quality_signals_route_to_quality_agents(self, ctx, valid_resume):
-        """Test quality signals route to quality agents."""
+        """Test quality signals Route to quality agents."""
         ctx.current_resume = valid_resume
         ctx.add_signal("QUALITY_FAILURE")
 
@@ -227,7 +227,7 @@ class TestSignalRoutingIntegration:
 
     @pytest.mark.asyncio
     async def test_compliance_signals_route_to_compliance_agents(self, ctx, valid_resume):
-        """Test compliance signals route to compliance agents."""
+        """Test compliance signals Route to compliance agents."""
         ctx.current_resume = valid_resume
         ctx.add_signal("BRAND_VIOLATION")
 
@@ -313,7 +313,7 @@ class TestHealingResultIntegration:
     async def test_healing_result_completeness(self, ctx, valid_resume):
         """Test HealingResult contains all expected data."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         orchestrator = HealingOrchestrator(ctx, max_cycles=3)
         result = await orchestrator.run()

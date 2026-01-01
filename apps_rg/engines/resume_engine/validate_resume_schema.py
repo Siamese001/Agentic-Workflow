@@ -7,7 +7,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Validate Resume Schema - atomic execution layer.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def validate_resume_schema(data: Dict[str, object]) -> Dict[str, object]:

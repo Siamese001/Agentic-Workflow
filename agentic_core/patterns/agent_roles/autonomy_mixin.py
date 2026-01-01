@@ -18,7 +18,7 @@ class AutonomyMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = logging.getLogger(f"{self.__class__.__name__}.Autonomy")
+        self.Logger = logging.getLogger(f"{self.__class__.__name__}.Autonomy")
 
     async def should_act_proactively(self) -> bool:
         if not self._autonomy_enabled:

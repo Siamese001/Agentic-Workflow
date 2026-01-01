@@ -31,7 +31,7 @@ class ModelProvider(str, Enum):
 class ModelConfig:
     """Configuration for LLM model parameters."""
     
-    provider: ModelProvider = ModelProvider.OPENAI
+    Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4o"
     temperature: float = 0.7
     max_tokens: int = 2000

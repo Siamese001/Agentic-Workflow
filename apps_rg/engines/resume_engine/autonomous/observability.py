@@ -78,4 +78,4 @@ class ExecutionTrace:
 
 @dataclass
 class Metric:
-    """A single metric measurement."""
+    """A single Metric measurement."""

@@ -7,9 +7,9 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class lock_storage_protocol(Protocol):
+class LockStorageProtocol(Protocol):
     """
     Protocol defining the interface for distributed lock storage operations.
     This allows ConcurrencyGuardian to depend on an abstraction, not a concrete implementation.
@@ -76,7 +76,7 @@ max_retry_attempts: Any = int(os.getenv('MAX_RETRY_ATTEMPTS', '3'))
 retry_delay: Any = float(os.getenv('RETRY_DELAY', '0.5'))
 few_shot_concurrency: Any = '\nYou are the ConcurrencyGuardian, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
 
-class lock_info:
+class LockInfo:
     """Information about an active lock."""
 
     def __init__(self, key: str, owner: str, timeout: float):
@@ -94,7 +94,7 @@ class lock_info:
         """Convert to dictionary."""
         return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
-class concurrency_guardian:
+class ConcurrencyGuardian:
     """
     Manages concurrent operations and prevents conflicts.
 
@@ -148,8 +148,8 @@ class concurrency_guardian:
                     self.active_locks.pop(key, None)
             acquired: Any = await acquire_lock(key, timeout)
             if acquired:
-                lock_info: Any = LockInfo(key, owner, timeout)
-                self.active_locks[key] = lock_info
+                LockInfo: Any = LockInfo(key, owner, timeout)
+                self.active_locks[key] = LockInfo
                 self.stats['locks_acquired'] += 1
                 LOGGER.info(f'Lock acquired: {key} by {owner}')
                 return True
@@ -172,9 +172,9 @@ class concurrency_guardian:
             return False
         success: Any = await release_lock(key)
         if success:
-            lock_info: Any = self.active_locks.pop(key, None)
-            if lock_info:
-                self.lock_history.append(lock_info.to_dict())
+            LockInfo: Any = self.active_locks.pop(key, None)
+            if LockInfo:
+                self.lock_history.append(LockInfo.to_dict())
                 if len(self.lock_history) > 100:
                     self.lock_history.pop(0)
             self.stats['locks_released'] += 1

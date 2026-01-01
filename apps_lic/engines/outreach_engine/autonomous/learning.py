@@ -35,7 +35,7 @@ class OutreachConfidenceLevel(Enum):
 class OutreachLearningExample:
     """A learning example from past outreach."""
     example_id: str
-    task_type: str
+    TaskType: str
     input_context: str
     output_result: str
     success: bool
@@ -66,19 +66,19 @@ class OutreachLearningLoop:
 
     async def record_success(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         output_result: str,
         confidence: float = 0.8,
     ):
         """Record a successful outreach pattern."""
         example_id = hashlib.sha256(
-            f"{task_type}:{input_context}:{output_result}".encode()
+            f"{TaskType}:{input_context}:{output_result}".encode()
         ).hexdigest()[:12]
 
         example = OutreachLearningExample(
             example_id=example_id,
-            task_type=task_type,
+            TaskType=TaskType,
             input_context=input_context,
             output_result=output_result,
             success=True,
@@ -86,22 +86,22 @@ class OutreachLearningLoop:
         )
 
         self._examples.append(example)
-        self._update_patterns(task_type, success=True)
+        self._update_patterns(TaskType, success=True)
 
     async def record_failure(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         error: str,
     ):
         """Record a failed outreach attempt."""
         example_id = hashlib.sha256(
-            f"{task_type}:{input_context}:{error}".encode()
+            f"{TaskType}:{input_context}:{error}".encode()
         ).hexdigest()[:12]
 
         example = OutreachLearningExample(
             example_id=example_id,
-            task_type=task_type,
+            TaskType=TaskType,
             input_context=input_context,
             output_result=error,
             success=False,
@@ -109,17 +109,17 @@ class OutreachLearningLoop:
         )
 
         self._examples.append(example)
-        self._update_patterns(task_type, success=False)
+        self._update_patterns(TaskType, success=False)
 
-    def _update_patterns(self, task_type: str, success: bool):
+    def _update_patterns(self, TaskType: str, success: bool):
         """Update pattern tracking."""
-        key = f"{task_type}:{'success' if success else 'failure'}"
+        key = f"{TaskType}:{'success' if success else 'failure'}"
         self._patterns[key] = self._patterns.get(key, 0) + 1
 
-    def get_success_rate(self, task_type: str) -> float:
-        """Get success rate for a task type."""
-        successes = self._patterns.get(f"{task_type}:success", 0)
-        failures = self._patterns.get(f"{task_type}:failure", 0)
+    def get_success_rate(self, TaskType: str) -> float:
+        """Get success rate for a Task type."""
+        successes = self._patterns.get(f"{TaskType}:success", 0)
+        failures = self._patterns.get(f"{TaskType}:failure", 0)
         total = successes + failures
 
         if total == 0:
@@ -127,10 +127,10 @@ class OutreachLearningLoop:
 
         return successes / total
 
-    def get_examples(self, task_type: str = None, limit: int = 10) -> List[OutreachLearningExample]:
+    def get_examples(self, TaskType: str = None, limit: int = 10) -> List[OutreachLearningExample]:
         """Get learning examples."""
-        if task_type:
-            examples = [e for e in self._examples if e.task_type == task_type]
+        if TaskType:
+            examples = [e for e in self._examples if e.TaskType == TaskType]
         else:
             examples = self._examples
 
@@ -244,7 +244,7 @@ class OutreachMemoryPersistence:
         self._save()
 
     def retrieve(self, key: str) -> Optional[Any]:
-        """Retrieve a value from agentic_core.semantic_memory."""
+        """Retrieve a value from AgenticCore.semantic_memory."""
         entry = self._memory.get(key)
         if entry:
             return entry.get("value")
@@ -320,21 +320,21 @@ class OutreachLearningAgent(OutreachAgent):
 
     async def record_success(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         output_result: str,
         confidence: float = 0.8,
     ):
         """Record a successful pattern."""
         await self.learning_loop.record_success(
-            task_type, input_context, output_result, confidence
+            TaskType, input_context, output_result, confidence
         )
 
     async def record_failure(
         self,
-        task_type: str,
+        TaskType: str,
         input_context: str,
         error: str,
     ):
         """Record a failed pattern."""
-        await self.learning_loop.record_failure(task_type, input_context, error)
+        await self.learning_loop.record_failure(TaskType, input_context, error)

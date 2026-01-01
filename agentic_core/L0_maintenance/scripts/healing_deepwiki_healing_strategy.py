@@ -6,18 +6,18 @@ L6 observability self-healing using official DeepWiki MCP.
 import logging
 from typing import List, Dict, Any
 from pathlib import Path
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
-from agentic_core.config.blueprint_sovereign.sovereign_config import config
+from AgenticCore.L0_maintenance.P1_core.filesystem_mcp_client import get_filesystem_client
+from AgenticCore.config.blueprint_sovereign.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class deep_wiki_healing_strategy:
+class DeepWikiHealingStrategy:
     """
     Autonomous healing for DeepWiki documentation drift.
     
@@ -34,7 +34,7 @@ class deep_wiki_healing_strategy:
         self.priority = 3
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
-        logger.info('[L0 DEEPWIKI HEALING] Strategy initialized')
+        Logger.info('[L0 DEEPWIKI HEALING] Strategy initialized')
 
     async def diagnose(self, issues: List[Dict]) -> List[Dict]:
         """
@@ -48,12 +48,12 @@ class deep_wiki_healing_strategy:
         """
         fixes: Any = []
         if not config.DEEPWIKI_HEALING_ENABLED:
-            logger.info('[L0 DEEPWIKI HEALING] DeepWiki healing disabled in config')
+            Logger.info('[L0 DEEPWIKI HEALING] DeepWiki healing disabled in config')
             return fixes
         undocumented: Any = await self._find_undocumented_files()
         for file_path in undocumented:
             fixes.append({'action': 'document_new_file', 'file': str(file_path), 'reason': 'Territory expansion detected: File undocumented in DeepWiki', 'priority': self.priority, 'strategy': self.name})
-        logger.info(f'[L0 DEEPWIKI HEALING] Diagnosed {len(fixes)} undocumented files')
+        Logger.info(f'[L0 DEEPWIKI HEALING] Diagnosed {len(fixes)} undocumented files')
         return fixes
 
     async def _find_undocumented_files(self) -> List[Path]:
@@ -66,7 +66,7 @@ class deep_wiki_healing_strategy:
         try:
             documented_paths = await self._get_documented_paths()
             undocumented = []
-            agentic_core_path = Path('agentic_core')
+            agentic_core_path = Path('AgenticCore')
             if agentic_core_path.exists():
                 for py_file in agentic_core_path.rglob('*.py'):
                     if '__pycache__' in str(py_file):
@@ -76,7 +76,7 @@ class deep_wiki_healing_strategy:
                         undocumented.append(py_file)
             return undocumented[:config.DEEPWIKI_HEALING_BATCH_SIZE]
         except Exception as e:
-            logger.error(f'[L0 DEEPWIKI HEALING] Error finding undocumented files: {e}')
+            Logger.error(f'[L0 DEEPWIKI HEALING] Error finding undocumented files: {e}')
             return []
 
     async def _get_documented_paths(self) -> set:
@@ -87,10 +87,10 @@ class deep_wiki_healing_strategy:
             Set of documented file paths
         """
         try:
-            logger.info(f'[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}')
+            Logger.info(f'[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}')
             return set()
         except Exception as e:
-            logger.error(f'[L0 DEEPWIKI HEALING] Error getting documented paths: {e}')
+            Logger.error(f'[L0 DEEPWIKI HEALING] Error getting documented paths: {e}')
             return set()
 
     async def apply(self, fix: Dict, ctx: Any=None) -> bool:
@@ -105,33 +105,33 @@ class deep_wiki_healing_strategy:
             True if fix applied successfully, False otherwise
         """
         if not config.DEEPWIKI_HEALING_ENABLED:
-            logger.warning('[L0 DEEPWIKI HEALING] DeepWiki healing disabled in config')
+            Logger.warning('[L0 DEEPWIKI HEALING] DeepWiki healing disabled in config')
             return False
         if self.processed_today >= config.DEEPWIKI_HEALING_MAX_DAILY:
-            logger.warning('[L0 DEEPWIKI HEALING] DeepWiki healing daily quota exhausted.')
+            Logger.warning('[L0 DEEPWIKI HEALING] DeepWiki healing daily quota exhausted.')
             return False
         try:
             file_path: Any = fix.get('file')
             if not file_path:
-                logger.error('[L0 DEEPWIKI HEALING] No file path in fix')
+                Logger.error('[L0 DEEPWIKI HEALING] No file path in fix')
                 return False
-            logger.info(f'[L0 DEEPWIKI HEALING] Reading file: {file_path}')
+            Logger.info(f'[L0 DEEPWIKI HEALING] Reading file: {file_path}')
             content: Any = await self.fs_client.read_text(file_path)
             if not content:
-                logger.warning(f'[L0 DEEPWIKI HEALING] Empty content for {file_path}')
+                Logger.warning(f'[L0 DEEPWIKI HEALING] Empty content for {file_path}')
                 return False
             question: Any = f'Analyze the following code from {file_path} and generate comprehensive DeepWiki documentation including purpose, dependencies, and architecture level: \n\n{content[:3000]}'
-            logger.info(f'[L0 DEEPWIKI HEALING] Generating documentation for {file_path}')
+            Logger.info(f'[L0 DEEPWIKI HEALING] Generating documentation for {file_path}')
             result: Any = await self._update_deepwiki(question, file_path)
             if result:
                 self.processed_today += 1
-                logger.info(f'[L0 DEEPWIKI HEALING] DeepWiki updated for: {file_path}')
+                Logger.info(f'[L0 DEEPWIKI HEALING] DeepWiki updated for: {file_path}')
                 return True
             else:
-                logger.error(f'[L0 DEEPWIKI HEALING] Failed to update DeepWiki for {file_path}')
+                Logger.error(f'[L0 DEEPWIKI HEALING] Failed to update DeepWiki for {file_path}')
                 return False
         except Exception as e:
-            logger.error(f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}")
+            Logger.error(f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}")
             return False
 
     async def _update_deepwiki(self, question: str, file_path: str) -> bool:
@@ -146,17 +146,17 @@ class deep_wiki_healing_strategy:
             True if update succeeded, False otherwise
         """
         try:
-            logger.info(f'[L0 DEEPWIKI HEALING] Documentation generated for {file_path}')
-            logger.info(f'[L0 DEEPWIKI HEALING] Repo: {config.DEEPWIKI_DEFAULT_REPO}')
+            Logger.info(f'[L0 DEEPWIKI HEALING] Documentation generated for {file_path}')
+            Logger.info(f'[L0 DEEPWIKI HEALING] Repo: {config.DEEPWIKI_DEFAULT_REPO}')
             return True
         except Exception as e:
-            logger.error(f'[L0 DEEPWIKI HEALING] DeepWiki update failed: {e}')
+            Logger.error(f'[L0 DEEPWIKI HEALING] DeepWiki update failed: {e}')
             return False
 
     def reset_daily_counter(self) -> Any:
         """Reset the daily processing counter (should be called at midnight)."""
         self.processed_today = 0
-        logger.info('[L0 DEEPWIKI HEALING] Daily counter reset')
+        Logger.info('[L0 DEEPWIKI HEALING] Daily counter reset')
 
 async def create_deepwiki_healing_strategy() -> DeepWikiHealingStrategy:
     """

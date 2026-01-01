@@ -8,15 +8,15 @@ from datetime import datetime
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
-approved_root_folders: Any = ['agentic_core', 'apps_rg', 'apps_lic', 'apps_shared', 'tests', 'data', 'archives', '.git', '.venv', '.vscode']
+core: Any = ROOT / 'AgenticCore'
+approved_root_folders: Any = ['AgenticCore', 'apps_rg', 'apps_lic', 'apps_shared', 'tests', 'data', 'archives', '.git', '.venv', '.vscode']
 approved_root_files: Any = ['sovereign_manifest.json', 'canon_validator_v3.py', '.gitignore', 'README.md', 'synapse_hardener.py', 'forge_v4.py']
 catch_all_mapping: Any = {'config': CORE / 'config/P1_core', 'observability': CORE / 'observability/P1_core', 'obs': CORE / 'observability/P1_core', 'prompt': CORE / 'prompt_governance/P1_core', 'schema': CORE / 'schemas/P1_core', 'script': CORE / 'L0_maintenance/scripts', 'test': ROOT / 'tests/unit', 'DEFAULT_LOGIC': CORE / 'utils/P1_core', 'DEFAULT_ADMIN': CORE / 'L0_maintenance/automation'}
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')

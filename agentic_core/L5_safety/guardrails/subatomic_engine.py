@@ -20,17 +20,17 @@ try:
 except ImportError:
     GENAI_AVAILABLE: Any = False
 try:
-    from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+    from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
 try:
-    from agentic_core.prompt_governance.prompt_governor import PromptGovernor
+    from AgenticCore.prompt_governance.prompt_governor import PromptGovernor
     PROMPT_GOVERNOR_AVAILABLE: Any = True
 except ImportError:
     PROMPT_GOVERNOR_AVAILABLE: Any = False
     
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 class SubAtomicEngine:
     """SubAtomicEngine - hardens LLM interaction with token budgets."""
@@ -38,7 +38,7 @@ class SubAtomicEngine:
 
 # Alias for backward compatibility
 
-class sub_atomic_engine_impl:
+class SubAtomicEngineImpl:
     """Hardens the LLM interaction with the 24,576 token budget."""
 
     def __init__(self, gemini_client: Optional[Any]=None, redis_client: Optional[Any]=None, pinecone_index: Optional[Any]=None):
@@ -61,7 +61,7 @@ class sub_atomic_engine_impl:
             if not api_key:
                 api_key = os.getenv('GEMINI_API_KEY')
                 if api_key:
-                    logger.warning('[L5] Using legacy GEMINI_API_KEY. Please migrate to GOOGLE_API_KEY.')
+                    Logger.warning('[L5] Using legacy GEMINI_API_KEY. Please migrate to GOOGLE_API_KEY.')
             if not api_key:
                 raise RuntimeError('No Gemini API key found. Set GOOGLE_API_KEY in your .env file.')
             self._client = genai.Client(api_key=api_key)
@@ -113,7 +113,7 @@ class sub_atomic_engine_impl:
                 data: Any = json.loads(json_match.group())
                 return data if isinstance(data, dict) else {}
         except Exception as e:
-            logger.warning(f'Failed to parse fission output: {e}')
+            Logger.warning(f'Failed to parse fission output: {e}')
         return {}
 
     async def get_embedding(self, text: str) -> List[float]:
@@ -122,7 +122,7 @@ class sub_atomic_engine_impl:
             result: Any = await asyncio.to_thread(self._client.models.embed_content, model='text-embedding-004', contents=text)
             return result.embeddings[0].values
         except Exception as e:
-            logger.error(f'   [MEMORY ERROR] Embedding failed: {e}')
+            Logger.error(f'   [MEMORY ERROR] Embedding failed: {e}')
             return [0.0] * 768
 
     async def resilient_mutation(self, *args, system_prompt: Optional[str]=None, **kwargs) -> str:
@@ -131,8 +131,8 @@ class sub_atomic_engine_impl:
         Scrubs unknown kwargs to prevent Gemini API errors.
         """
         if len(args) >= 2:
-            code, task = (args[0], args[1])
-            prompt: Any = f'### TASK\n{task}\n\n### CODE\n{code}'
+            code, Task = (args[0], args[1])
+            prompt: Any = f'### TASK\n{Task}\n\n### CODE\n{code}'
         elif len(args) == 1:
             prompt: Any = args[0]
         else:
@@ -143,19 +143,19 @@ class sub_atomic_engine_impl:
             prompt: Any = f'[SYSTEM_INSTRUCTION]\n{system_prompt}\n\n[USER_INPUT]\n{prompt}'
         file_path: Any = kwargs.get('file_path', 'unknown_file')
         code: Any = kwargs.get('code', '')
-        task: Any = kwargs.get('task', prompt)
+        Task: Any = kwargs.get('Task', prompt)
         round_num: Any = kwargs.get('round_num', 1)
         fission_active: Any = kwargs.get('fission_active', False)
         scrubbed_kwargs: Any = {k: v for k, v in kwargs.items() if k not in ['stop_sequences', 'top_p', 'response_format']}
-        return await self._resilient_mutation_impl(file_path=file_path, code=code or prompt, task=task, round_num=round_num, fission_active=fission_active, system_prompt=system_prompt, **scrubbed_kwargs)
+        return await self._resilient_mutation_impl(file_path=file_path, code=code or prompt, Task=Task, round_num=round_num, fission_active=fission_active, system_prompt=system_prompt, **scrubbed_kwargs)
 
-    async def _resilient_mutation_impl(self, file_path: str, code: str, task: str, round_num: int=1, fission_active: bool=False, system_prompt: Optional[str]=None, **kwargs) -> str:
+    async def _resilient_mutation_impl(self, file_path: str, code: str, Task: str, round_num: int=1, fission_active: bool=False, system_prompt: Optional[str]=None, **kwargs) -> str:
         """Execute resilient mutation with exponential backoff retry.
         
         Args:
             file_path: Path to the file being mutated
             code: Code content to mutate
-            task: Task description
+            Task: Task description
             round_num: Current round number
             fission_active: Whether fission mode is active
             system_prompt: Optional system prompt override
@@ -163,7 +163,7 @@ class sub_atomic_engine_impl:
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
                 self.pinecone = PineconeSovereignAgent(Path('.'))
                 print('   [OK] SubAtomicEngine: Hybrid routing activated (lazy)')
             except Exception as e:
@@ -177,7 +177,7 @@ class sub_atomic_engine_impl:
             fail_key = f'fail_count:{file_path}'
             current_fails = self.redis_client.get(fail_key)
             if current_fails and int(current_fails) >= 2:
-                logger.warning(f'   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.')
+                Logger.warning(f'   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.')
                 temp_override = 0.8
         # [HARDENING 8] Use PromptGovernor for centralized prompt construction
         if self.prompt_gov:
@@ -189,17 +189,17 @@ class sub_atomic_engine_impl:
                 if self.pinecone and hasattr(self.pinecone, 'semantic_search'):
                     try:
                         context_chunks = await self.pinecone.semantic_search(
-                            query=task,
+                            query=Task,
                             file_path=Path(file_path),
                             top_k=3
                         )
                         if context_chunks:
                             context_str = "\n\n".join(context_chunks)
                     except Exception as e:
-                        logger.warning(f'Vector memory retrieval failed: {e}')
+                        Logger.warning(f'Vector memory retrieval failed: {e}')
                 
                 prompt_dict = self.prompt_gov.build_healing_prompt(
-                    task=task if not system_prompt else system_prompt,
+                    Task=Task if not system_prompt else system_prompt,
                     code=code,
                     file_path=file_path,
                     context=context_str
@@ -210,18 +210,18 @@ class sub_atomic_engine_impl:
         else:
             # Fallback to legacy prompt construction
             if system_prompt:
-                prompt = f'[INSTRUCTION]\n{system_prompt}\n\n[CONTEXT]\nFILE: {file_path}\n\nTASK: {task}\n\nCODE:\n{code}'
+                prompt = f'[INSTRUCTION]\n{system_prompt}\n\n[CONTEXT]\nFILE: {file_path}\n\nTASK: {Task}\n\nCODE:\n{code}'
             elif fission_active:
                 prompt = f'ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}'
             else:
-                prompt = f'HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}'
+                prompt = f'HEAL: Fix violations in {file_path}.\n\nTASK: {Task}\n\nCODE:\n{code}'
         config = self.get_safe_config(is_fission=fission_active)
         config.temperature = temp_override
         chat_key = f'chat_{file_path}'
         if chat_key not in self.chat_sessions:
             model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
             self.chat_sessions[chat_key] = self._client.chats.create(model=model_name, config=config)
-            logger.info(f'   [NEW] Created chat session for {os.path.basename(file_path)}')
+            Logger.info(f'   [NEW] Created chat session for {os.path.basename(file_path)}')
         max_retries = 3
         response = None
         for attempt in range(1, max_retries + 1):
@@ -230,19 +230,19 @@ class sub_atomic_engine_impl:
                 break
             except (ResourceExhausted, InternalServerError, DeadlineExceeded) as e:
                 if attempt == max_retries:
-                    logger.error(f'   [X] Gemini Error (Final): {e}')
+                    Logger.error(f'   [X] Gemini Error (Final): {e}')
                     return code
                 wait = 2 ** attempt + random.uniform(0, 1)
-                logger.warning(f'   [!] Gemini Transient Error ({attempt}/{max_retries}): {e}. Retrying in {wait:.1f}s')
+                Logger.warning(f'   [!] Gemini Transient Error ({attempt}/{max_retries}): {e}. Retrying in {wait:.1f}s')
                 await asyncio.sleep(wait)
             except Exception as e:
-                logger.error(f'   [X] Gemini Fatal Error: {e}')
+                Logger.error(f'   [X] Gemini Fatal Error: {e}')
                 return code
         if response and response.candidates and response.candidates[0].content.parts:
             raw_output = response.candidates[0].content.parts[0].text.strip()
             duration = time.time() - start_time
             if duration < 0.1 and (not raw_output or len(raw_output) < 50):
-                logger.error(f'   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).')
+                Logger.error(f'   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).')
                 return code
             
             # [HARDENING 8] Use PromptGovernor to enforce output format
@@ -250,7 +250,7 @@ class sub_atomic_engine_impl:
                 try:
                     healed_code = self.prompt_gov.enforce_output_format(raw_output)
                 except ValueError as e:
-                    logger.error(f'   [X] Output format validation failed: {e}')
+                    Logger.error(f'   [X] Output format validation failed: {e}')
                     if self.redis_client:
                         self.redis_client.incr(f'fail_count:{file_path}')
                     return code
@@ -262,42 +262,42 @@ class sub_atomic_engine_impl:
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:
                 try:
-                    from agentic_core.L5_safety.validators.heal_validator import HealValidator
+                    from AgenticCore.L5_safety.validators.heal_validator import HealValidator
                     validator = HealValidator(Path('.'))
-                    validation_result = validator.validate_healed_code(code, healed_code, Path(file_path))
+                    ValidationResult = validator.validate_healed_code(code, healed_code, Path(file_path))
                     
-                    if not validation_result['valid']:
-                        logger.error(f"   [X] HEAL REJECTED ({validation_result['stage']}): {validation_result['reason']}")
+                    if not ValidationResult['valid']:
+                        Logger.error(f"   [X] HEAL REJECTED ({ValidationResult['stage']}): {ValidationResult['reason']}")
                         if self.redis_client:
                             self.redis_client.incr(f'fail_count:{file_path}')
                         return code
                     
-                    logger.info(f"   [✓] Heal validated: {os.path.basename(file_path)}")
+                    Logger.info(f"   [✓] Heal validated: {os.path.basename(file_path)}")
                 except ImportError as e:
-                    logger.warning(f'   [!] HealValidator unavailable: {e}')
+                    Logger.warning(f'   [!] HealValidator unavailable: {e}')
                 except Exception as e:
-                    logger.error(f'   [!] Validation failed: {e}')
+                    Logger.error(f'   [!] Validation failed: {e}')
                     return code
             
             output = healed_code
             
             # Legacy truncation check (now redundant with HealValidator but kept for defense-in-depth)
             if not fission_active and '...' in output and (len(output) < len(code) * 0.8):
-                logger.warning('   [X] TRUNCATION DETECTED. Rejecting mutation.')
+                Logger.warning('   [X] TRUNCATION DETECTED. Rejecting mutation.')
                 if self.redis_client:
                     self.redis_client.incr(f'fail_count:{file_path}')
                 return code
             if self.pinecone and hasattr(self.pinecone, 'index'):
                 try:
-                    vector = await self.get_embedding(task)
-                    self.pinecone.index.upsert(vectors=[{'id': f'succ:{os.path.basename(file_path)}', 'values': vector, 'metadata': {'task': task[:200], 'round': round_num, 'type': 'healing_pattern'}}])
+                    vector = await self.get_embedding(Task)
+                    self.pinecone.index.upsert(vectors=[{'id': f'succ:{os.path.basename(file_path)}', 'values': vector, 'metadata': {'Task': Task[:200], 'round': round_num, 'type': 'HealingPattern'}}])
                     print(f'   [MEMORY] Stored healing pattern for {os.path.basename(file_path)}')
                 except Exception as e:
                     print(f'   [!] Failed to store pattern in Pinecone: {e}')
             if self.redis_client:
                 self.redis_client.delete(f'fail_count:{file_path}')
             return output
-        logger.warning('   [!] Malformed response from Gemini')
+        Logger.warning('   [!] Malformed response from Gemini')
         return code
 
     def route_mission(self, mission: str) -> Dict:
@@ -306,14 +306,14 @@ class sub_atomic_engine_impl:
         """
         if self.pinecone is None and PINECONE_AVAILABLE:
             try:
-                from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+                from AgenticCore.L4_state.ValidationContext.PineconeSovereignAgent import PineconeSovereignAgent
                 self.pinecone = PineconeSovereignAgent(Path('.'))
             except Exception as e:
                 print(f'   [!] Routing failed to initialize Pinecone: {e}')
                 self.pinecone = None
         if not self.pinecone:
-            return {'route': 'fallback', 'reason': 'Hybrid routing offline', 'confidence': 0.0}
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
+            return {'Route': 'fallback', 'reason': 'Hybrid routing offline', 'confidence': 0.0}
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         keywords: Any = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
         if hasattr(self.pinecone, 'hybrid_search'):
             try:
@@ -324,7 +324,7 @@ class sub_atomic_engine_impl:
         else:
             results: Any = None
         if not results or not results.get('matches'):
-            return {'route': 'unknown', 'reason': 'No high-confidence matches', 'confidence': 0.0}
+            return {'Route': 'unknown', 'reason': 'No high-confidence matches', 'confidence': 0.0}
         territories: Any = {}
         agents: Any = set()
         for match in results.get('matches', []):
@@ -338,7 +338,7 @@ class sub_atomic_engine_impl:
                 if file_stem.endswith('_agent'):
                     agents.add(file_stem.replace('_', ' ').title().replace(' ', ''))
         if not territories:
-            return {'route': 'unknown', 'reason': 'No territory data found', 'confidence': 0.0}
+            return {'Route': 'unknown', 'reason': 'No territory data found', 'confidence': 0.0}
         best_territory: Any = max(territories, key=territories.get)
         confidence: Any = territories[best_territory] / sum(territories.values())
         routing_plan: Any = {'primary_territory': best_territory, 'confidence': round(confidence, 3), 'relevant_agents': list(agents)[:3], 'top_matches': [{'path': m['metadata'].get('path'), 'score': round(m['score'], 3)} for m in results.get('matches', [])[:3]], 'recommended_action': f"Deploy {(list(agents)[0] if agents else 'Agent')} to {best_territory}"}

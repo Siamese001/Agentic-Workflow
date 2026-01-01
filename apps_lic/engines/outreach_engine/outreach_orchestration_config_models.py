@@ -11,13 +11,13 @@ from typing import Any
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
 @dataclass
 class CharLimitConstraint:  # Local Runtime DTO (Allowed)
-    """Character limit constraint for a route."""
+    """Character limit constraint for a Route."""
     min: Optional[int] = None
     max: Optional[int] = None
 
@@ -33,7 +33,7 @@ def validate(self: Any, count: int) -> bool:
 
 @dataclass
 class WordLimitConstraint:  # Local Runtime DTO (Allowed)
-    """Word limit constraint for a route."""
+    """Word limit constraint for a Route."""
     min: Optional[int] = None
     max: Optional[int] = None
 
@@ -49,8 +49,8 @@ def validate(self: Any, count: int) -> bool:
 
 @dataclass
 class RouteConfig:  # Local Runtime DTO (Allowed)
-    """Configuration for a message route."""
-    route: Route
+    """Configuration for a message Route."""
+    Route: Route
     char_limit: Optional[CharLimitConstraint] = None
     word_limit: Optional[WordLimitConstraint] = None
     k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
@@ -64,8 +64,8 @@ class RouteConfig:  # Local Runtime DTO (Allowed)
 
 @dataclass
 class ArchetypeConfig:  # Local Runtime DTO (Allowed)
-    """Configuration for recipient archetype."""
-    archetype: Archetype
+    """Configuration for recipient Archetype."""
+    Archetype: Archetype
     temperature: float = 0.7
     rag_enabled: bool = True
     rag_hops: int = 2
@@ -83,7 +83,7 @@ class ValidationRule:  # Local Runtime DTO (Allowed)
     rule_id: str
     name: str
     phase: str
-    severity: ValidationSeverity
+    Severity: ValidationSeverity
     description: str
     enforcement: str
     validation_method: str

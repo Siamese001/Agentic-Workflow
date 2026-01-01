@@ -10,8 +10,8 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: Neo4jGraphStore → neo4j_graph_store
-class neo4j_graph_store:
+# NAMING FIXED: Neo4jGraphStore → Neo4jGraphStore
+class Neo4jGraphStore:
     """
     L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
     """

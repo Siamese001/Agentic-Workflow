@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
 # MCP Hardening
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from AgenticCore.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # PDF parsing
 try:
@@ -210,7 +210,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                     
                     if priorities:
                         results.append({
-                            "source_type": "STRATEGIC_BRIEF",
+                            "SourceType": "STRATEGIC_BRIEF",
                             "source_url": item.get("link", ""),
                             "title": item.get("title", ""),
                             "content": content,
@@ -250,7 +250,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                     content = self._extract_search_result_content(item)
                     
                     results.append({
-                        "source_type": "NEWS_ARTICLE_COMPANY",
+                        "SourceType": "NEWS_ARTICLE_COMPANY",
                         "source_url": item.get("link", ""),
                         "title": item.get("title", ""),
                         "content": content,
@@ -288,7 +288,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                     content = self._extract_search_result_content(item)
                     
                     results.append({
-                        "source_type": "COMPANY_BLOG_ANNOUNCEMENT",
+                        "SourceType": "COMPANY_BLOG_ANNOUNCEMENT",
                         "source_url": item.get("link", ""),
                         "title": item.get("title", ""),
                         "content": content,
@@ -326,7 +326,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                     content = self._extract_search_result_content(item)
                     
                     results.append({
-                        "source_type": "RECIPIENT_LINKEDIN_ABOUT",
+                        "SourceType": "RECIPIENT_LINKEDIN_ABOUT",
                         "source_url": item.get("link", ""),
                         "title": item.get("title", ""),
                         "content": content,
@@ -366,7 +366,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                     content = self._extract_search_result_content(item)
                     
                     results.append({
-                        "source_type": "RECIPIENT_RECENT_POST",
+                        "SourceType": "RECIPIENT_RECENT_POST",
                         "source_url": item.get("link", ""),
                         "title": item.get("title", ""),
                         "content": content,
@@ -404,7 +404,7 @@ class IntelligenceLibrarian(MCPHardenedMixin):
                 content = self._extract_search_result_content(item)
                 
                 results.append({
-                    "source_type": "CONFERENCE_TALK",
+                    "SourceType": "CONFERENCE_TALK",
                     "source_url": item.get("link", ""),
                     "title": item.get("title", ""),
                     "content": content,
@@ -499,12 +499,12 @@ Output ONLY the JSON array, no explanation."""
                 embedding = genai.embed_content(
                     model=self.embedding_model,
                     content=text_to_embed,
-                    task_type="retrieval_document"
+                    TaskType="retrieval_document"
                 )["embedding"]
                 
                 # Store in vector database
                 metadata = {
-                    "source_type": source["source_type"],
+                    "SourceType": source["SourceType"],
                     "source_url": source["source_url"],
                     "title": source["title"],
                     "age_days": source["age_days"],

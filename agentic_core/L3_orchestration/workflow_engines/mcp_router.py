@@ -14,9 +14,9 @@ MCP Assignment by Layer:
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class mcp_router:
+class McpRouter:
     """
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing
     specific layer failures to the appropriate installed MCP.
@@ -37,7 +37,7 @@ class mcp_router:
         """
         self.tui = tui_handle
         self.registry = {'L1': ['sequential_thinking'], 'L2': ['brave_search', 'deepwiki', 'fetch'], 'L3': ['redis', 'playwright'], 'L4': ['pinecone', 'memory', 'filesystem'], 'L5': ['sequential_thinking', 'gitkraken']}
-        logger.info('[OK] MCP Router initialized with L1-L5 registry')
+        Logger.info('[OK] MCP Router initialized with L1-L5 registry')
 
     async def resolve_failure(self, layer: str, error_context: str) -> Dict[str, Any]:
         """
@@ -50,23 +50,23 @@ class mcp_router:
         Returns:
             Resolution result from MCP
         """
-        logger.info(f'🔀 MCP Router: Resolving {layer} failure')
+        Logger.info(f'🔀 MCP Router: Resolving {layer} failure')
         if layer == 'L1':
-            logger.info(f'   → Routing to Sequential Thinking for reasoning breakdown')
+            Logger.info(f'   → Routing to Sequential Thinking for reasoning breakdown')
             return await self.call_mcp('sequential_thinking', {'query': error_context, 'purpose': 'Break down complex reasoning into atomic steps'})
         if layer == 'L2':
-            logger.info(f'   → Routing to Brave Search for documentation')
+            Logger.info(f'   → Routing to Brave Search for documentation')
             return await self.call_mcp('brave_search', {'query': f'python fix {error_context}', 'purpose': 'Find documentation or fixes for syntax errors'})
         if layer == 'L3':
-            logger.info(f'   → Routing to Redis for state recovery')
+            Logger.info(f'   → Routing to Redis for state recovery')
             return await self.call_mcp('redis', {'action': 'get', 'key': f'state:{error_context}', 'purpose': 'Recover orchestration state'})
         if layer == 'L4':
-            logger.info(f'   → Routing to Pinecone for structural patterns')
+            Logger.info(f'   → Routing to Pinecone for structural patterns')
             return await self.call_mcp('pinecone', {'query': error_context, 'top_k': 1, 'purpose': 'Find last known good structural pattern'})
         if layer == 'L5':
-            logger.info(f'   → Routing to GitKraken for version control verification')
+            Logger.info(f'   → Routing to GitKraken for version control verification')
             return await self.call_mcp('gitkraken', {'action': 'status', 'file': error_context, 'purpose': 'Verify git history before override'})
-        logger.warning(f'   [!]  Unknown layer: {layer}')
+        Logger.warning(f'   [!]  Unknown layer: {layer}')
         return {'status': 'error', 'message': f'Unknown layer: {layer}'}
 
     async def call_mcp(self, mcp_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
@@ -82,8 +82,8 @@ class mcp_router:
         """
         if self.tui:
             self.tui.update_state(file='MCP_ROUTER', key='ROUTING', round_num=0, tokens=0, log_msg=f'📡 Invoking {mcp_name}...')
-        logger.info(f'   📡 Calling MCP: {mcp_name}')
-        logger.debug(f'      Parameters: {params}')
+        Logger.info(f'   📡 Calling MCP: {mcp_name}')
+        Logger.debug(f'      Parameters: {params}')
         return {'status': 'success', 'mcp': mcp_name, 'params': params, 'result': f'Mock response from {mcp_name}'}
 
     def get_available_mcps(self, layer: Optional[str]=None) -> Dict[str, list]:
@@ -114,7 +114,7 @@ class mcp_router:
                     result: Any = await self.call_mcp(mcp, {'action': 'health_check'})
                     health[mcp] = result.get('status') == 'success'
                 except Exception as e:
-                    logger.warning(f'   [!]  MCP {mcp} health check failed: {e}')
+                    Logger.warning(f'   [!]  MCP {mcp} health check failed: {e}')
                     health[mcp] = False
         return health
 

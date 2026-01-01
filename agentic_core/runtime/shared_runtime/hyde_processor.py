@@ -8,11 +8,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: ExpansionStrategy → expansion_strategy
-class expansion_strategy(str, Enum):
+# NAMING FIXED: ExpansionStrategy → ExpansionStrategy
+class ExpansionStrategy(str, Enum):
     '''Brief description of functionality and purpose.'''
     
     ARCHETYPE_SPECIFIC = 'archetype_specific'
@@ -22,12 +22,12 @@ class expansion_strategy(str, Enum):
 
 
 @dataclass
-# NAMING FIXED: HyDEDocument → hy_de_document
-class hy_de_document:
+# NAMING FIXED: HyDEDocument → HyDeDocument
+class HyDeDocument:
     '''Brief description of functionality and purpose.'''
     
     content: str
-    archetype: str
+    Archetype: str
     industry: str
     strategy: ExpansionStrategy
     word_count: int
@@ -40,8 +40,8 @@ class hy_de_document:
 
 
 @dataclass
-# NAMING FIXED: HyDEResult → hy_de_result
-class hy_de_result:
+# NAMING FIXED: HyDEResult → HyDeResult
+class HyDeResult:
     '''Brief description of functionality and purpose.'''
     
     original_query: str
@@ -52,8 +52,8 @@ class hy_de_result:
     error_message: Optional[str] = None
 
 
-# NAMING FIXED: HyDEProcessor → hy_de_processor
-class hy_de_processor:
+# NAMING FIXED: HyDEProcessor → HyDeProcessor
+class HyDeProcessor:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, llm_client: Optional[Any] = None, default_industry: str = 'Technology', max_retries: int = 2, fallback_enabled: bool = True):
@@ -62,10 +62,10 @@ class hy_de_processor:
         self.max_retries = max_retries
         self.fallback_enabled = fallback_enabled
 
-    def expand_query(self, original_query: str, archetype: str, industry: Optional[str] = None) -> HyDEResult:
+    def expand_query(self, original_query: str, Archetype: str, industry: Optional[str] = None) -> HyDEResult:
                     
         return HyDEResult(original_query=original_query, expanded_query=original_query, hypothetical_doc=None, success=False, fallback_used=True, error_message='Stub mode')
 
-    def generate_hypothetical_doc(self, query: str, archetype: str, industry: str) -> Optional[HyDEDocument]:
+    def generate_hypothetical_doc(self, query: str, Archetype: str, industry: str) -> Optional[HyDEDocument]:
                     
         return None

@@ -12,28 +12,28 @@ import sys
 from pathlib import Path
 
 # Anchor to project root to allow imports
-project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> agentic_core -> project_root
+project_root = Path(__file__).resolve().parents[3]  # Go up 3 levels: scripts -> L0_maintenance -> AgenticCore -> project_root
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP
 )
 
-core_root = project_root / "agentic_core"
+core_root = project_root / "AgenticCore"
 
 # Layer-specific high-signal content
 LAYER_BEST_PRACTICES = {
     "L1_cognition": {
         "default": "Pure reasoning and thought generation. No side effects. Immutable inputs → deterministic outputs.",
         "thought_engine": "Chain-of-thought, tree-of-thought, ReAct pattern implementations. Reference: Yao et al. (2022) ReAct paper.",
-        "planning": "Hierarchical task decomposition. HTN, BDI patterns. Reference: Ghallab et al. 'PDDL'.",
+        "planning": "Hierarchical Task decomposition. HTN, BDI patterns. Reference: Ghallab et al. 'PDDL'.",
         "knowledge": "Static, curated eternal truth. No dynamic retrieval here — use semantic_memory for runtime.",
         "static_index": "Permanent store of vetted research papers, prompt constitutions, tool schemas. Indexed at embed time."
     },
     "L2_execution": {
         "default": "Safe, sandboxed tool interaction. All tools must be registered and validated.",
-        "tool_registry": "Single source of truth for all available tools. Each tool: schema + implementation + safety policy.",
+        "ToolRegistry": "Single source of truth for all available tools. Each tool: schema + implementation + safety policy.",
         "sandbox": "Isolated execution environment. No direct system access outside approved tools."
     },
     "L3_orchestration": {
@@ -42,7 +42,7 @@ LAYER_BEST_PRACTICES = {
     },
     "L4_state": {
         "default": "Persistent, auditable state management. Redis-backed ledger.",
-        "validation_context": "Checkpointing, session persistence, drift detection.",
+        "ValidationContext": "Checkpointing, session persistence, drift detection.",
         "persistence_layer": "Single interface to Redis/Pinecone/filesystem — abstraction only."
     },
     "L5_safety": {
@@ -113,7 +113,7 @@ def main():
         return
 
     # Iterate over SSOT structure
-    l1_folders = SOVEREIGN_REGISTRY.get("agentic_core", {}).get("subfolders", [])
+    l1_folders = SOVEREIGN_REGISTRY.get("AgenticCore", {}).get("subfolders", [])
     
     for l1 in l1_folders:
         l1_path = core_root / l1

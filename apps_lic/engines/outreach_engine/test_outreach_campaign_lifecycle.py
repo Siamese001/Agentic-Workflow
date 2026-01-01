@@ -67,7 +67,7 @@ def test_dynamic_personalization():
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_personalization_fallbacks():
     """
-    E2E: Fallback values used when data missing.
+    E2E: Fallback values used when data Missing.
     """
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")

@@ -1,21 +1,21 @@
-# hierarchy_healer.py
+# HierarchyHealer.py
 # L5 Hierarchy Healing Agent
 # PURPOSE: Heals hierarchy violations by relocating files and removing empty folders
-# LOCATION: agentic_core/L5_safety/guardrails/ (SSOT-compliant)
+# LOCATION: AgenticCore/L5_safety/guardrails/ (SSOT-compliant)
 
 import shutil
 import time
 from pathlib import Path
 from typing import Any, Dict, Set
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_PROTECTED_FILES,
     ALLOWED_DUPLICATE_FILENAMES,
 )
-from agentic_core.utils.general_helpers.mission_utils import (
+from AgenticCore.utils.general_helpers.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
@@ -58,10 +58,10 @@ class HierarchyHealer:
         
         print("\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
         
-        # Get approved L1 folders for agentic_core from SSOT
-        approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])
+        # Get approved L1 folders for AgenticCore from SSOT
+        approved_l1 = set(SOVEREIGN_REGISTRY["AgenticCore"]["subfolders"])
         
-        agentic_core_path = self.project_root / "agentic_core"
+        agentic_core_path = self.project_root / "AgenticCore"
         if not agentic_core_path.exists():
             return results
         
@@ -210,7 +210,7 @@ class HierarchyHealer:
                 if list(path.iterdir()):
                     print(f"   [!] Failed to remove {path} - still contains files after purge")
                 else:
-                    print(f"   [!] rmdir failed on empty {path} - permission/filesystem issue")
+                    print(f"   [!] rmdir failed on empty {path} - Permission/filesystem issue")
 
     def update_gitignore_for_purge(self) -> None:
         """
@@ -279,7 +279,7 @@ class HierarchyHealer:
         errors = []
 
         # Define allowed sovereign roots from SSOT
-        allowed_roots = {"agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"}
+        allowed_roots = {"AgenticCore", "apps_shared", "apps_rg", "apps_lic", "tests"}
 
         print("   [L6 PURGE] Scanning for orphaned assets outside sovereign territory...")
 

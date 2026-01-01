@@ -13,7 +13,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 _event_handlers: list = []
 
@@ -50,13 +50,13 @@ def emit_event(
         "source": source,
     }
 
-    logger.info(f"[SOVEREIGN_EVENT] {json.dumps(event)}")
+    Logger.info(f"[SOVEREIGN_EVENT] {json.dumps(event)}")
 
     for handler in _event_handlers:
         try:
             handler(event_type, event)
         except Exception as e:
-            logger.warning(f"[SOVEREIGN_EVENT] Handler failed: {e}")
+            Logger.warning(f"[SOVEREIGN_EVENT] Handler failed: {e}")
 
 
 def emit_mcp_connect(

@@ -15,9 +15,9 @@ try:
     from schemas_connectivity import CanonEntry, CanonMetadata
 except ImportError:
     CanonEntry = CanonMetadata = type('Stub', (), {})
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class canon_validator:
+class CanonValidator:
     """
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
@@ -74,7 +74,7 @@ class canon_validator:
         self.manifest_cache = self._load_manifest_data()
         self.manifest_lookup = self._build_manifest_lookup(self.manifest_cache)
         self.last_manifest_load = new_mtime
-        logger.debug('Manifest reloaded for cache coherence.')
+        Logger.debug('Manifest reloaded for cache coherence.')
 
     def _refresh_manifest(self):
         """
@@ -84,12 +84,12 @@ class canon_validator:
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
         except FileNotFoundError:
-            logger.warning('Manifest not found. Cache invalidation may be disabled.')
+            Logger.warning('Manifest not found. Cache invalidation may be disabled.')
             self.manifest_cache = {}
             self.manifest_lookup = {}
             return
         except Exception as e:
-            logger.error(f'Error refreshing manifest: {e}')
+            Logger.error(f'Error refreshing manifest: {e}')
             self.manifest_cache = {}
             self.manifest_lookup = {}
             return
@@ -140,7 +140,7 @@ class canon_validator:
             try:
                 entry.embedding = self.embedding_fn(entry.code_snippet)
             except Exception as e:
-                logger.error(f'Embedding generation failed: {e}')
+                Logger.error(f'Embedding generation failed: {e}')
                 return {'status': 'error', 'message': str(e)}
         l1_match: Any = self._check_l1_cache(entry)
         if l1_match:
@@ -159,7 +159,7 @@ class canon_validator:
         try:
             embedding: Any = self.embedding_fn(code)
         except Exception as e:
-            logger.error(f'Embedding generation failed: {e}')
+            Logger.error(f'Embedding generation failed: {e}')
             return {'status': 'error', 'message': str(e)}
         project_context_val: Any = 'default'
         canon_rule_id_val: Any = 'unknown'
@@ -190,13 +190,13 @@ class canon_validator:
         try:
             cached_data = self.redis_client.get(cache_key)
         except Exception as e:
-            logger.error(f'Redis lookup failed: {e}')
-            logger.info('Reasoning cache miss due to Redis error.')
+            Logger.error(f'Redis lookup failed: {e}')
+            Logger.info('Reasoning cache miss due to Redis error.')
             return None
         if cached_data:
-            logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
+            Logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
             return json.loads(cached_data)
-        logger.info('Reasoning cache miss - Code version may have changed.')
+        Logger.info('Reasoning cache miss - Code version may have changed.')
         return None
 
     def upsert_l1_cache(self, entry: CanonEntry, result: Dict[str, Any]) -> Any:
@@ -209,7 +209,7 @@ class canon_validator:
         try:
             self.redis_client.setex(cache_key, self.REDIS_CACHE_EXPIRY_SECONDS, json.dumps(result))
         except Exception as e:
-            logger.error(f'Redis upsert failed: {e}')
+            Logger.error(f'Redis upsert failed: {e}')
 
     def _process_pinecone_match(self, best_match: Dict[str, Any], score: float) -> Optional[Dict[str, Any]]:
         """
@@ -226,16 +226,16 @@ class canon_validator:
         Queries Pinecone for semantic similarity.
         """
         try:
-            logger.info(f'Querying Pinecone with embedding dimension: {len(entry.embedding)}')
+            Logger.info(f'Querying Pinecone with embedding dimension: {len(entry.embedding)}')
             results = self.pinecone_index.query(vector=entry.embedding, top_k=1, include_metadata=True)
-            logger.info(f'Pinecone raw response: {results}')
+            Logger.info(f'Pinecone raw response: {results}')
             if results and results.get('matches'):
                 best_match = results['matches'][0]
                 score = best_match['score']
-                logger.info(f"Best match: ID={best_match['id']}, score={score}")
+                Logger.info(f"Best match: ID={best_match['id']}, score={score}")
                 return self._process_pinecone_match(best_match, score)
         except Exception as e:
-            logger.error(f'Pinecone query failed: {e}')
+            Logger.error(f'Pinecone query failed: {e}')
         return None
 
     def _ingest_new_entry(self, entry: CanonEntry, start_time: float) -> Dict[str, Any]:
@@ -245,23 +245,23 @@ class canon_validator:
         """
         file_path = entry.metadata.file_path if entry.metadata else None
         if not (file_path and self._is_file_in_manifest(file_path)):
-            logger.warning(f"[!]  Skipping indexing for non-manifest file: {file_path or 'N/A'}")
+            Logger.warning(f"[!]  Skipping indexing for non-manifest file: {file_path or 'N/A'}")
             skipped_result = {'status': 'skipped', 'is_valid': False, 'confidence': 0.0, 'source': 'not_in_manifest', 'matched_pattern': None, 'processing_time': time.time() - start_time, 'message': 'File not in active manifest - indexing skipped'}
             return skipped_result
         try:
             current_hash = self._get_file_hash(file_path) if file_path else 'unknown'
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
-            logger.info(f'[OK] Stored new pattern in Redis: {entry.id}')
+            Logger.info(f'[OK] Stored new pattern in Redis: {entry.id}')
             pinecone_record = entry.to_pinecone_record()
             metadata = pinecone_record.setdefault('metadata', {})
             metadata['content_hash'] = current_hash
             metadata['file_path'] = file_path
             self.pinecone_index.upsert(vectors=[pinecone_record])
-            logger.info(f"[OK] Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})")
-            return {'status': 'ingested', 'is_valid': True, 'confidence': 1.0, 'source': 'no_match', 'matched_pattern': None, 'ast_match': False, 'recommendation': 'New code pattern - stored in Canon', 'pattern_id': entry.id, 'query_time_ms': (time.time() - start_time) * 1000}
+            Logger.info(f"[OK] Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})")
+            return {'status': 'ingested', 'is_valid': True, 'confidence': 1.0, 'source': 'no_match', 'matched_pattern': None, 'ast_match': False, 'Recommendation': 'New code pattern - stored in Canon', 'pattern_id': entry.id, 'query_time_ms': (time.time() - start_time) * 1000}
         except Exception as e:
-            logger.error(f'Ingestion failed: {e}')
+            Logger.error(f'Ingestion failed: {e}')
             return {'status': 'error', 'is_valid': False, 'confidence': 0.0, 'message': f'Ingestion failed: {str(e)}', 'query_time_ms': (time.time() - start_time) * 1000}
 
     def query_semantic_memory(self, query: str, context_file: Optional[str]=None, top_k: int=5) -> Optional[Dict[str, Any]]:
@@ -277,7 +277,7 @@ class canon_validator:
             results: Any = self.pinecone_index.query(vector=query_vector, filter=metadata_filter, top_k=top_k, include_metadata=True)
             return results
         except Exception as e:
-            logger.error(f'Semantic query failed: {e}')
+            Logger.error(f'Semantic query failed: {e}')
             return None
 
     def update_learning(self, pattern_id: str, is_valid: bool) -> Any:
@@ -285,7 +285,7 @@ class canon_validator:
         Stub method for updating learning based on validation results.
         TODO: Implement actual learning mechanism.
         """
-        logger.info(f"Learning update: Pattern {pattern_id} is {('valid' if is_valid else 'invalid')}")
+        Logger.info(f"Learning update: Pattern {pattern_id} is {('valid' if is_valid else 'invalid')}")
 
     def get_stats(self) -> Dict[str, Any]:
         """
@@ -300,4 +300,4 @@ class canon_validator:
         """
         status = 'duplicate' if source == 'l1_exact_match' else 'similar'
         content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
-        return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
+        return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}

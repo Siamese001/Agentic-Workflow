@@ -6,14 +6,14 @@ import logging
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 'Immutable staging buffer for HOP-4.'
 
-class staging_buffer_error(Exception):
+class StagingBufferError(Exception):
     """Custom exception for staging buffer operations."""
     pass
 
-class immutable_staging_buffer:
+class ImmutableStagingBuffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""
 
     def __init__(self: Any) -> None:

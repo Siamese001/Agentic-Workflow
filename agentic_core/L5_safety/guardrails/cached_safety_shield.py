@@ -56,14 +56,14 @@ class cached_safety_shield_impl:
         except Exception:
             return None
 
-    def store_verdict(self, category: str, identifier: str, verdict: Dict, ttl: int=86400) -> Any:
-        """Warm the cache with a fresh safety verdict."""
+    def store_verdict(self, category: str, identifier: str, Verdict: Dict, ttl: int=86400) -> Any:
+        """Warm the cache with a fresh safety Verdict."""
         key: Any = f'l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}'
         try:
-            verdict['timestamp'] = __import__('datetime').datetime.now().isoformat()
+            Verdict['timestamp'] = __import__('datetime').datetime.now().isoformat()
             if self.redis:
-                self.redis.set(key, json.dumps(verdict), ex=ttl)
+                self.redis.set(key, json.dumps(Verdict), ex=ttl)
             else:
-                self._memory_cache[key] = verdict
+                self._memory_cache[key] = Verdict
         except Exception:
             pass

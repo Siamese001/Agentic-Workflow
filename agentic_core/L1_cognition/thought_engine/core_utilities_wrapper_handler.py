@@ -1,14 +1,14 @@
 """
 Core Utils - Thin Wrapper
-Delegates to consolidated tools in agentic_core/tools/
+Delegates to consolidated tools in AgenticCore/tools/
 
 This is a backward compatibility shim. All new code should import directly from:
-    from agentic_core.tools import *
+    from AgenticCore.tools import *
 
 """
 
 # Analysis Operations
-from agentic_core.tools.analysis_ops import (
+from AgenticCore.tools.analysis_ops import (
     analyze_ast,
     count_lines_of_code,
     detect_security_issues,
@@ -18,13 +18,13 @@ from agentic_core.tools.analysis_ops import (
 )
 
 # Filesystem Operations
-from agentic_core.tools.filesystem import read_file as read_text_file
-from agentic_core.tools.filesystem import (
+from AgenticCore.tools.filesystem import read_file as read_text_file
+from AgenticCore.tools.filesystem import (
     write_file,
 )
 
 # Network Operations
-from agentic_core.tools.network_ops import (
+from AgenticCore.tools.network_ops import (
     brave_search,
     browser_click,
     browser_navigate,

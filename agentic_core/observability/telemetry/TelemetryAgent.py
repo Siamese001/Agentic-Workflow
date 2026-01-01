@@ -4,7 +4,7 @@ TelemetryAgent: Sovereign Structured Event Emitter
 Emits structured telemetry events for observability and auditing.
 Events cover:
 - Compliance mission lifecycle (start, completion)
-- Individual violation detection
+- Individual Violation detection
 - Agent actions and outcomes
 - System health signals
 
@@ -16,7 +16,7 @@ Designed for integration with:
 Placed in observability/telemetry per SSOT semantic registry:
   "Distributed telemetry, event emission, and structured observability events"
 
-Depth: agentic_core/observability/telemetry/telemetry_agent.py
+Depth: AgenticCore/observability/telemetry/telemetry_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
 In-memory buffer + optional file persistence.
@@ -29,7 +29,7 @@ import json
 import logging
 from threading import Lock
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class TelemetryAgent:
@@ -81,7 +81,7 @@ class TelemetryAgent:
 
         Args:
             event_type: Dot-separated event identifier (e.g., "compliance.scan_started")
-            level: Event severity (DEBUG, INFO, WARNING, ERROR)
+            level: Event Severity (DEBUG, INFO, WARNING, ERROR)
             agent: Source agent name
             details: Additional structured data
         """
@@ -108,16 +108,16 @@ class TelemetryAgent:
         if self.log_file:
             self._write_to_file(event)
 
-        # Also emit to standard logger
+        # Also emit to standard Logger
         log_msg = f"[{event_type}] {agent}: {details}"
         if level == "ERROR":
-            logger.error(log_msg)
+            Logger.error(log_msg)
         elif level == "WARNING":
-            logger.warning(log_msg)
+            Logger.warning(log_msg)
         elif level == "DEBUG":
-            logger.debug(log_msg)
+            Logger.debug(log_msg)
         else:
-            logger.info(log_msg)
+            Logger.info(log_msg)
 
     def _write_to_file(self, event: Dict[str, Any]) -> None:
         """Append event to log file (JSONL format)."""
@@ -125,7 +125,7 @@ class TelemetryAgent:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event) + "\n")
         except Exception as e:
-            logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
+            Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 
     def get_events(
         self,
@@ -168,7 +168,7 @@ class TelemetryAgent:
         """Clear in-memory event buffer."""
         with self._lock:
             self._events.clear()
-        logger.info("[TelemetryAgent] Event buffer cleared")
+        Logger.info("[TelemetryAgent] Event buffer cleared")
 
     # === Compliance-Specific Helpers ===
 
@@ -197,18 +197,18 @@ class TelemetryAgent:
     def emit_violation_detected(
         self,
         file_path: str,
-        violation_type: str,
+        ViolationType: str,
         message: str,
         agent: str
     ) -> None:
-        """Emit individual violation detection event."""
+        """Emit individual Violation detection event."""
         self.emit(
             event_type="compliance.violation_detected",
             level="WARNING",
             agent=agent,
             details={
                 "file": file_path,
-                "violation_type": violation_type,
+                "ViolationType": ViolationType,
                 "message": message
             }
         )
@@ -244,9 +244,9 @@ class TelemetryAgent:
             with open(output_path, "w", encoding="utf-8") as f:
                 for event in events:
                     f.write(json.dumps(event) + "\n")
-            logger.info(f"[TelemetryAgent] Exported {len(events)} events to {output_path}")
+            Logger.info(f"[TelemetryAgent] Exported {len(events)} events to {output_path}")
         except Exception as e:
-            logger.error(f"[TelemetryAgent] Failed to export events: {e}")
+            Logger.error(f"[TelemetryAgent] Failed to export events: {e}")
 
 
 # PascalCase is now the canonical name

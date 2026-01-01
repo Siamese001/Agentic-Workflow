@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 '\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n'
 from typing import Optional
 
-class safety_executor:
+class SafetyExecutor:
     """
     Executes resume safety validation with optimal model selection.
 
@@ -31,7 +31,7 @@ def execute_safety(self: Any, prompt: str) -> str:
     """
     try:
         MODEL: Any = self.routing_policy.select_model(TASK='safety_execution', COMPLEXITY=ComplexityLevel.MEDIUM, meta_profile=self.meta_profile)
-        record_event('safety_execution_start', {'task': 'safety_execution'})
+        record_event('safety_execution_start', {'Task': 'safety_execution'})
         RESULT: Any = invoke_model(MODEL=model, PROMPT=prompt, SANDBOX=self.sandbox)
         record_event('safety_execution_success', {'result_length': len(result)})
         return result

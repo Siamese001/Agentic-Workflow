@@ -79,7 +79,7 @@ class ResearchResult(BaseModel):
         description="List of sources with 'url' and 'relevance' keys"
     )
     key_findings: List[str] = Field(..., description="Main findings from the research")
-    confidence_level: Literal["high", "medium", "low"] = Field(
+    ConfidenceLevel: Literal["high", "medium", "low"] = Field(
         ...,
         description="Confidence in the research results"
     )

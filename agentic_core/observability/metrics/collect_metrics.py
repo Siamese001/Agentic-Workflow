@@ -1,5 +1,5 @@
 """
-base_collector.py - Collector Module
+BaseCollector.py - Collector Module
 
 Domain: metrics
 Generated: 2025-12-07T12:07:59.846192
@@ -7,23 +7,23 @@ Generated: 2025-12-07T12:07:59.846192
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class collected_item:
+class CollectedItem:
     """A collected item."""
     source: str
     data: Any
     _timestamp: float = field(default_factory=lambda: __import__('time').time())
 
-class base_collector:
+class BaseCollector:
     """Collector for metrics domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = config or {}
     self.items: Dict[str, List[CollectedItem]] = defaultdict(list)
     self.max_items = self.config.get('max_items', 1000)
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def collect(self: Any, source: str, data: object) -> None:
     """Collect data from source."""
@@ -31,7 +31,7 @@ def collect(self: Any, source: str, data: object) -> None:
     self.items[source].append(item)
     if len(self.items[source]) > self.max_items:
         SELF.ITEMS[SOURCE] = self.items[source][-self.max_items:]
-    logger.debug(f'Collected item from {source}')
+    Logger.debug(f'Collected item from {source}')
 
 def get_items(self: Any, source: Optional[str]) -> List[CollectedItem]:
     """Get collected items."""

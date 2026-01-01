@@ -10,15 +10,15 @@ import re
 import subprocess
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L0_maintenance.scripts.canon_validator_config import (
+from AgenticCore.L0_maintenance.scripts.canon_validator_config import (
     MAX_DEPTH,
     MAX_LINES,
     MIN_DEPTH,
 )
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -108,11 +108,11 @@ class ArchitectureGovernorAgent(SubAtomicAgent):
             
             # L5 SAFETY THRESHOLD: 200 lines triggers fission blueprint
             if loc > 200:
-                # Generate fission blueprint instead of simple violation report
+                # Generate fission blueprint instead of simple Violation report
                 blueprint = await self._generate_fission_blueprint(file_path, content, loc)
                 
                 if blueprint:
-                    # Store blueprint in context for fission_manager to execute
+                    # Store blueprint in context for FissionManager to execute
                     if not hasattr(self.ctx, 'fission_blueprints'):
                         self.ctx.fission_blueprints = {}
                     self.ctx.fission_blueprints[file_path] = blueprint
@@ -155,7 +155,7 @@ You are analyzing a monolithic Python file that exceeds the L5 Safety Threshold 
 FILE: {file_name}
 LINES: {loc}
 
-Your task is to generate a FISSION BLUEPRINT that splits this file into smaller, atomic modules.
+Your Task is to generate a FISSION BLUEPRINT that splits this file into smaller, atomic modules.
 
 RULES:
 1. Each sub-module should be <100 lines
@@ -182,7 +182,7 @@ OUTPUT FORMAT (JSON):
 Generate the blueprint now:"""
 
             # Call Gemini with safe config
-            from agentic_core.L5_safety.guardrails.subatomic_engine import (
+            from AgenticCore.L5_safety.guardrails.subatomic_engine import (
                 SubAtomicEngine,
             )
             config = SubAtomicEngine.get_safe_config(is_fission=True)
@@ -235,7 +235,7 @@ Generate the blueprint now:"""
         """Enforce System Root Hygiene (Keys 40, 41)."""
         v = []
         if os.sep not in file_path:
-            v.append(f"{file_path}: Root hygiene violation (Key 41)")
+            v.append(f"{file_path}: Root hygiene Violation (Key 41)")
         return v
 
     def _calculate_mccabe(self, node: ast.AST) -> int:
@@ -339,7 +339,7 @@ class DependencySentinelAgent(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
                     for i, line in enumerate(lines, 1):
-                        if re.search(r"# [INCOMPLETE IMPORT] from agentic_core.* import \*", line):
+                        if re.search(r"# [INCOMPLETE IMPORT] from AgenticCore.* import \*", line):
                             violations.append(f"{file_path}:{i}")
             except Exception:
                 continue

@@ -6,12 +6,12 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 _logger = logging.getLogger(__name__)
-# from agentic_core.models_enums import *  # Star import removed
+# from AgenticCore.models_enums import *  # Star import removed
 
 
 @dataclass
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result:
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult:
     """Result of a validation rule execution."""
 
     _rule_id: str
@@ -23,8 +23,8 @@ class validation_result:
 
 
 @dataclass
-# NAMING FIXED: ThematicAnalysis → thematic_analysis
-class thematic_analysis:
+# NAMING FIXED: ThematicAnalysis → ThematicAnalysis
+class ThematicAnalysis:
     """Analysis of thematic content in text."""
 
     _themes: List[str] = field(default_factory=list)
@@ -34,8 +34,8 @@ class thematic_analysis:
 
 
 @dataclass
-# NAMING FIXED: RAGState → rag_state
-class rag_state:
+# NAMING FIXED: RAGState → RagState
+class RagState:
     """State of RAG (Retrieval-Augmented Generation) process."""
 
     _query: str = ""
@@ -48,8 +48,8 @@ class rag_state:
 
 
 @dataclass
-# NAMING FIXED: ImmutableStagingBuffer → immutable_staging_buffer
-class immutable_staging_buffer:
+# NAMING FIXED: ImmutableStagingBuffer → ImmutableStagingBuffer
+class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
 
     _data: Dict[str, Any] = field(default_factory=dict)

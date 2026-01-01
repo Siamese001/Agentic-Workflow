@@ -4,19 +4,19 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 try:
-    from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
+    from AgenticCore.L1_cognition.identity.spiffe_manager_types import AgentIdentity
 except ImportError:
     AgentIdentity = type('AgentIdentity', (), {})
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class permission_scope(Enum):
+class PermissionScope(Enum):
     """Permission scopes."""
     TOOL_EXECUTION: Any = 'tool_execution'
     DATA_ACCESS: Any = 'data_access'
@@ -24,7 +24,7 @@ class permission_scope(Enum):
     SYSTEM_CONFIGURATION: Any = 'system_configuration'
     CODE_EXECUTION: Any = 'code_execution'
 
-class permission_action(Enum):
+class PermissionAction(Enum):
     """Permission actions."""
     READ: Any = 'read'
     WRITE: Any = 'write'
@@ -33,15 +33,15 @@ class permission_action(Enum):
     ADMIN: Any = 'admin'
 
 @dataclass
-class permission:
-    """Individual permission."""
-    scope: "permission_scope"
-    action: "permission_action"
+class Permission:
+    """Individual Permission."""
+    scope: "PermissionScope"
+    action: "PermissionAction"
     resource: str
     conditions: Dict[str, Any] = field(default_factory=dict)
 
-    def matches(self, scope: "permission_scope", action: "permission_action", resource: str) -> bool:
-        """Check if permission matches request.
+    def matches(self, scope: "PermissionScope", action: "PermissionAction", resource: str) -> bool:
+        """Check if Permission matches request.
 
         Args:
             scope: Requested scope
@@ -52,7 +52,7 @@ class permission:
             True if matches
         """
         scope_match: Any = self.scope == scope
-        action_match: Any = self.action == action or self.action == permission_action.ADMIN
+        action_match: Any = self.action == action or self.action == PermissionAction.ADMIN
         resource_match: Any = self.resource == resource or self.resource == '*'
         return scope_match and action_match and resource_match
 
@@ -61,14 +61,14 @@ class permission:
         return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
 
 @dataclass
-class permission_check:
-    """Result of permission check."""
+class PermissionCheck:
+    """Result of Permission check."""
     allowed: bool
     identity: AgentIdentity
-    permission: Optional["permission"] = None
+    Permission: Optional["Permission"] = None
     reason: str = ''
     safety_decision: Optional[Any] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'allowed': self.allowed, 'identity': self.identity.to_dict(), 'permission': self.permission.to_dict() if self.permission else None, 'reason': self.reason, 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
+        return {'allowed': self.allowed, 'identity': self.identity.to_dict(), 'Permission': self.Permission.to_dict() if self.Permission else None, 'reason': self.reason, 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}

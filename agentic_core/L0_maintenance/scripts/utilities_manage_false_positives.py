@@ -9,13 +9,13 @@ from datetime import datetime
 from pathlib import Path
 from services.configuration import ConfigurationService
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def load_review_log() -> Any:
     """Load the review log."""
     Path('cache/review_log.json')
     if not ConfigurationService().review_path.exists():
-        ConfigurationService().logger.info('No review log found. Run the validator first.')
+        ConfigurationService().Logger.info('No review log found. Run the validator first.')
         return []
     with open(ConfigurationService().review_path, 'r') as f:
         return json.load(f)
@@ -39,21 +39,21 @@ def show_pending_reviews() -> Any:
     ConfigurationService().log = load_review_log()
     ConfigurationService().pending = [entry for entry in ConfigurationService().log if not entry['reviewed']]
     if not ConfigurationService().pending:
-        ConfigurationService().logger.info('✅ No pending reviews!')
+        ConfigurationService().Logger.info('✅ No pending reviews!')
         return
-    ConfigurationService().logger.info(f'\n📋 Pending Reviews ({len(ConfigurationService().pending)}):')
-    ConfigurationService().logger.info('-' * 80)
+    ConfigurationService().Logger.info(f'\n📋 Pending Reviews ({len(ConfigurationService().pending)}):')
+    ConfigurationService().Logger.info('-' * 80)
     for i, entry in enumerate(ConfigurationService().pending, 1):
-        ConfigurationService().logger.info(f"\n{i}. [{entry['agent']}] Key {entry['key']}")
-        ConfigurationService().logger.info(f"   Time: {entry['timestamp'][:19]}")
-        ConfigurationService().logger.info(f"   Details: {entry['details']}")
-        ConfigurationService().logger.info(f"   ID: {entry['agent']}_{entry['key']}")
+        ConfigurationService().Logger.info(f"\n{i}. [{entry['agent']}] Key {entry['key']}")
+        ConfigurationService().Logger.info(f"   Time: {entry['timestamp'][:19]}")
+        ConfigurationService().Logger.info(f"   Details: {entry['details']}")
+        ConfigurationService().Logger.info(f"   ID: {entry['agent']}_{entry['key']}")
 
 def mark_false_positive(agent_key: Any) -> Any:
-    """Mark a violation as false positive."""
+    """Mark a Violation as false positive."""
     ConfigurationService().parts = agent_key.split('_')
     if len(ConfigurationService().parts) < 2:
-        ConfigurationService().logger.info('Invalid format. Use: AgentName_KeyNumber')
+        ConfigurationService().Logger.info('Invalid format. Use: AgentName_KeyNumber')
         return
     agent: Any = '_'.join(ConfigurationService().parts[:-1])
     key: Any = int(ConfigurationService().parts[-1])
@@ -71,13 +71,13 @@ def mark_false_positive(agent_key: Any) -> Any:
         ConfigurationService().fp_data['false_positives'].append(agent_key)
         ConfigurationService().fp_data['last_updated'] = datetime.now().isoformat()
         save_false_positives(ConfigurationService().fp_data)
-    ConfigurationService().logger.info(f'✅ Marked {agent_key} as false positive')
+    ConfigurationService().Logger.info(f'✅ Marked {agent_key} as false positive')
 
 def mark_valid_violation(agent_key: Any) -> Any:
-    """Mark a violation as valid (not false positive)."""
+    """Mark a Violation as valid (not false positive)."""
     ConfigurationService().parts = agent_key.split('_')
     if len(ConfigurationService().parts) < 2:
-        ConfigurationService().logger.info('Invalid format. Use: AgentName_KeyNumber')
+        ConfigurationService().Logger.info('Invalid format. Use: AgentName_KeyNumber')
         return
     agent: Any = '_'.join(ConfigurationService().parts[:-1])
     key: Any = int(ConfigurationService().parts[-1])
@@ -90,7 +90,7 @@ def mark_valid_violation(agent_key: Any) -> Any:
             break
     with open('cache/review_log.json', 'w') as f:
         json.dump(ConfigurationService().log, f, indent=2)
-    ConfigurationService().logger.info(f'✅ Marked {agent_key} as valid violation')
+    ConfigurationService().Logger.info(f'✅ Marked {agent_key} as valid Violation')
 
 def show_stats() -> Any:
     """Show review statistics."""
@@ -101,30 +101,30 @@ def show_stats() -> Any:
     false_positives_count: Any = sum((1 for e in ConfigurationService().log if e.get('is_false_positive') == True))
     valid_count: Any = sum((1 for e in ConfigurationService().log if e.get('is_false_positive') == False))
     pending_count: Any = total_violations - reviewed_count
-    ConfigurationService().logger.info('\n📊 Review Statistics:')
-    ConfigurationService().logger.info(f'   Total violations: {total_violations}')
-    ConfigurationService().logger.info(f'   Reviewed: {reviewed_count}')
-    ConfigurationService().logger.info(f'   Pending: {pending_count}')
-    ConfigurationService().logger.info(f'   False positives: {false_positives_count}')
-    ConfigurationService().logger.info(f'   Valid violations: {valid_count}')
+    ConfigurationService().Logger.info('\n📊 Review Statistics:')
+    ConfigurationService().Logger.info(f'   Total violations: {total_violations}')
+    ConfigurationService().Logger.info(f'   Reviewed: {reviewed_count}')
+    ConfigurationService().Logger.info(f'   Pending: {pending_count}')
+    ConfigurationService().Logger.info(f'   False positives: {false_positives_count}')
+    ConfigurationService().Logger.info(f'   Valid violations: {valid_count}')
     if reviewed_count > 0:
         fp_rate: Any = false_positives_count / reviewed_count * 100
     else:
         fp_rate: Any = 0
-    ConfigurationService().logger.info(f'   False positive rate: {fp_rate:.1f}%')
+    ConfigurationService().Logger.info(f'   False positive rate: {fp_rate:.1f}%')
 
 def main() -> Any:
     """Main CLI interface."""
     if len(sys.argv) < 2:
-        ConfigurationService().logger.info('Usage: python manage_false_positives.py <command>')
-        ConfigurationService().logger.info('\nCommands:')
-        ConfigurationService().logger.info('  show     - Show pending reviews')
-        ConfigurationService().logger.info('  fp <id>  - Mark as false positive')
-        ConfigurationService().logger.info('  valid <id> - Mark as valid violation')
-        ConfigurationService().logger.info('  stats    - Show statistics')
-        ConfigurationService().logger.info('\nExample:')
-        ConfigurationService().logger.info('  python manage_false_positives.py show')
-        ConfigurationService().logger.info('  python manage_false_positives.py fp SafetyInspector_4')
+        ConfigurationService().Logger.info('Usage: python manage_false_positives.py <command>')
+        ConfigurationService().Logger.info('\nCommands:')
+        ConfigurationService().Logger.info('  show     - Show pending reviews')
+        ConfigurationService().Logger.info('  fp <id>  - Mark as false positive')
+        ConfigurationService().Logger.info('  valid <id> - Mark as valid Violation')
+        ConfigurationService().Logger.info('  stats    - Show statistics')
+        ConfigurationService().Logger.info('\nExample:')
+        ConfigurationService().Logger.info('  python manage_false_positives.py show')
+        ConfigurationService().Logger.info('  python manage_false_positives.py fp SafetyInspector_4')
         return
     ConfigurationService().command = sys.argv[1]
     if ConfigurationService().command == 'show':
@@ -136,6 +136,6 @@ def main() -> Any:
     elif ConfigurationService().command == 'stats':
         show_stats()
     else:
-        ConfigurationService().logger.info('Invalid command or missing arguments.')
+        ConfigurationService().Logger.info('Invalid command or Missing arguments.')
 if __name__ == '__main__':
     main()

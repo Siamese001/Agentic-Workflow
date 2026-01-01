@@ -7,10 +7,10 @@ import os
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
-    from agentic_core.types import ValidationContext
+    from AgenticCore.types import ValidationContext
 
 # NOT_AN_AGENT — base class for agents, not a true agent itself — excluded from agent discovery
-class sub_atomic_agent:
+class SubAtomicAgent:
     """Base class for all validation agents with async support."""
 
     def __init__(self, context: 'ValidationContext'):
@@ -36,7 +36,7 @@ class sub_atomic_agent:
             await self.ctx.broadcast({'type': 'agent_error', 'agent': self.name, 'error': str(e)[:200], 'timestamp': time.time()})
             raise
 
-class import_patcher:
+class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
     ctx: 'ValidationContext'
 

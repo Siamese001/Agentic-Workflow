@@ -47,7 +47,7 @@ def problematic_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -71,10 +71,10 @@ class TestRunResumeMission:
     """Tests for run_resume_mission orchestrator."""
 
     @pytest.mark.asyncio
-    async def test_mission_with_valid_resume(self, valid_resume, job_description):
+    async def test_mission_with_valid_resume(self, valid_resume, JobDescription):
         """Test mission completes successfully with valid resume."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -86,10 +86,10 @@ class TestRunResumeMission:
         assert "stats" in result
 
     @pytest.mark.asyncio
-    async def test_mission_with_problematic_resume(self, problematic_resume, job_description):
+    async def test_mission_with_problematic_resume(self, problematic_resume, JobDescription):
         """Test mission detects issues with problematic resume."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=problematic_resume,
             max_cycles=2,
         )
@@ -104,7 +104,7 @@ class TestRunResumeMission:
         assert len(stats["signals"]) > 0 or not result["converged"]
 
     @pytest.mark.asyncio
-    async def test_mission_with_user_profile(self, valid_resume, job_description):
+    async def test_mission_with_user_profile(self, valid_resume, JobDescription):
         """Test mission with user profile for fact-checking."""
         user_profile = {
             "skills": ["Python", "JavaScript", "AWS", "Docker", "Kubernetes"],
@@ -115,7 +115,7 @@ class TestRunResumeMission:
         }
 
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             user_profile=user_profile,
             max_cycles=3,
@@ -125,10 +125,10 @@ class TestRunResumeMission:
         assert result["converged"] is True
 
     @pytest.mark.asyncio
-    async def test_mission_respects_max_cycles(self, problematic_resume, job_description):
+    async def test_mission_respects_max_cycles(self, problematic_resume, JobDescription):
         """Test that mission respects max_cycles limit."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=problematic_resume,
             max_cycles=1,
         )
@@ -136,10 +136,10 @@ class TestRunResumeMission:
         assert result["cycles_used"] == 1
 
     @pytest.mark.asyncio
-    async def test_mission_tracks_budget(self, valid_resume, job_description):
+    async def test_mission_tracks_budget(self, valid_resume, JobDescription):
         """Test that mission tracks budget usage."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -153,11 +153,11 @@ class TestQuickValidate:
     """Tests for quick_validate function."""
 
     @pytest.mark.asyncio
-    async def test_quick_validate_valid_resume(self, valid_resume, job_description):
+    async def test_quick_validate_valid_resume(self, valid_resume, JobDescription):
         """Test quick validation of valid resume."""
         result = await quick_validate(
             resume=valid_resume,
-            job_description=job_description,
+            JobDescription=JobDescription,
         )
 
         assert result["valid"] is True
@@ -169,7 +169,7 @@ class TestQuickValidate:
         """Test quick validation of invalid resume."""
         result = await quick_validate(
             resume=problematic_resume,
-            job_description="Software Engineer",
+            JobDescription="Software Engineer",
         )
 
         assert result["valid"] is False
@@ -180,7 +180,7 @@ class TestQuickValidate:
         """Test quick validation without job description."""
         result = await quick_validate(
             resume=valid_resume,
-            job_description="",
+            JobDescription="",
         )
 
         assert "valid" in result
@@ -191,10 +191,10 @@ class TestSelfHealingCycles:
     """Tests for self-healing cycle behavior."""
 
     @pytest.mark.asyncio
-    async def test_early_convergence(self, valid_resume, job_description):
+    async def test_early_convergence(self, valid_resume, JobDescription):
         """Test that mission converges early when possible."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=5,
         )
@@ -204,11 +204,11 @@ class TestSelfHealingCycles:
         assert result["cycles_used"] <= 2
 
     @pytest.mark.asyncio
-    async def test_signal_based_routing(self, valid_resume, job_description):
+    async def test_signal_based_routing(self, valid_resume, JobDescription):
         """Test that signals influence agent routing."""
         # This is tested implicitly through the mission
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -222,10 +222,10 @@ class TestEdgeCases:
     """Tests for edge cases and error handling."""
 
     @pytest.mark.asyncio
-    async def test_empty_resume(self, job_description):
+    async def test_empty_resume(self, JobDescription):
         """Test handling of empty resume."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume={},
             max_cycles=2,
         )
@@ -237,7 +237,7 @@ class TestEdgeCases:
     async def test_empty_job_description(self, valid_resume):
         """Test handling of empty job description."""
         result = await run_resume_mission(
-            job_description="",
+            JobDescription="",
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -247,7 +247,7 @@ class TestEdgeCases:
         assert "resume" in result
 
     @pytest.mark.asyncio
-    async def test_minimal_resume(self, job_description):
+    async def test_minimal_resume(self, JobDescription):
         """Test handling of minimal but valid resume."""
         minimal_resume = {
             "summary": "Software engineer with 5 years of experience in Python development. Built systems serving 100K users.",
@@ -256,7 +256,7 @@ class TestEdgeCases:
         }
 
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=minimal_resume,
             max_cycles=3,
         )
@@ -269,10 +269,10 @@ class TestStatisticsAndReporting:
     """Tests for statistics and reporting."""
 
     @pytest.mark.asyncio
-    async def test_stats_completeness(self, valid_resume, job_description):
+    async def test_stats_completeness(self, valid_resume, JobDescription):
         """Test that stats are complete."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -289,10 +289,10 @@ class TestStatisticsAndReporting:
         assert "failed_agents" in stats
 
     @pytest.mark.asyncio
-    async def test_budget_stats_accuracy(self, valid_resume, job_description):
+    async def test_budget_stats_accuracy(self, valid_resume, JobDescription):
         """Test budget stats are accurate."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -309,12 +309,12 @@ class TestResumePreservation:
     """Tests for resume data preservation."""
 
     @pytest.mark.asyncio
-    async def test_original_resume_not_modified(self, valid_resume, job_description):
+    async def test_original_resume_not_modified(self, valid_resume, JobDescription):
         """Test that original resume is not modified."""
         original_copy = valid_resume.copy()
 
         await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -323,10 +323,10 @@ class TestResumePreservation:
         assert valid_resume == original_copy
 
     @pytest.mark.asyncio
-    async def test_resume_sections_preserved(self, valid_resume, job_description):
+    async def test_resume_sections_preserved(self, valid_resume, JobDescription):
         """Test that all resume sections are preserved."""
         result = await run_resume_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )

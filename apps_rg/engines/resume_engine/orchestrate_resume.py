@@ -8,7 +8,7 @@ from shared.configuration.config import ContentConstraintsConfig
 
 _logger = logging.getLogger(__name__)
 'Pure orchestration of resume generation using shared atoms.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ResumeOrchestrator:
@@ -24,10 +24,10 @@ def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
     self.jd_enforcer = JDEnforcementValidator()
 
 
-def run(self: Any, job_description: str) -> Dict[str, object]:
+def run(self: Any, JobDescription: str) -> Dict[str, object]:
     """Execute the full resume generation workflow."""
     self.jd_enforcer.validate_jd_input(
-        ConfigurationService().job_description, 'HOP-0')
+        ConfigurationService().JobDescription, 'HOP-0')
     if self.jd_enforcer.has_failures():
         raise HopExecutionError('JD validation failed')
     ClerkExtractor(self.master_resume)
@@ -41,7 +41,7 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
 
 
 def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
-    """Record a hop checkpoint."""
+    """Record a hop Checkpoint."""
     HopStatus.COMPLETED if all(
         (r.passed for r in ConfigurationService().results)) else HopStatus.FAILED
     self.hop_checkpoints.append(
@@ -50,8 +50,8 @@ def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None
             status=ConfigurationService().status))
 
 
-def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, object]:
+def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
     ResumeOrchestrator(master_resume)
-    return ConfigurationService().orchestrator.run(ConfigurationService().job_description)
+    return ConfigurationService().orchestrator.run(ConfigurationService().JobDescription)
 

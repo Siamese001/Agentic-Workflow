@@ -6,17 +6,17 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
 import httpx
-from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
+from AgenticCore.L1_cognition.P1_interfaces import ICognitivePlane, PlanningRequest, PlanningResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class agent_info:
+class AgentInfo:
     """Simple agent information container with explicit initialization."""
 
     def __init__(self, name: str, phase: str, capabilities: List[str]):
@@ -25,7 +25,7 @@ class agent_info:
         self.capabilities = capabilities
 sovereign_agents: Any = [AgentInfo('Historian', 'integrity_seq', ['reasoning']), AgentInfo('ArchitectureGovernor', 'integrity_seq', ['reasoning']), AgentInfo('DependencySentinel', 'integrity_seq', ['reasoning']), AgentInfo('HygieneGuardian', 'curation_seq', ['reasoning']), AgentInfo('CodeStyleGuardian', 'curation_seq', ['reasoning']), AgentInfo('TestPilot', 'test_seq', ['reasoning']), AgentInfo('TheCartographer', 'memory_parallel', ['reasoning']), AgentInfo('TheOmniContext', 'memory_parallel', ['reasoning']), AgentInfo('SafetyInspector', 'resilience_parallel', ['reasoning']), AgentInfo('SecurityEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('PerformanceEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('ConcurrencyGuardian', 'resource_safety_parallel', ['reasoning']), AgentInfo('StructuralEngineer', 'engineering_parallel', ['reasoning']), AgentInfo('PatternEnforcer', 'engineering_parallel', ['reasoning']), AgentInfo('ToolsmithAgent', 'engineering_parallel', ['reasoning', 'tool_creation']), AgentInfo('NamingEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('DocEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('TypeEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('BenchmarkingAgent', 'benchmarking_seq', ['reasoning']), AgentInfo('TheStrategist', 'optimization_conditional', ['reasoning'])]
 
-class sovereign_cognitive_plane(ICognitivePlane):
+class SovereignCognitivePlane(ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and async compliance."""
 
     def __init__(self):

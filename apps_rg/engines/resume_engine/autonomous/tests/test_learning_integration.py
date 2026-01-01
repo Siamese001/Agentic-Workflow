@@ -64,7 +64,7 @@ class TestLearningLoopIntegration:
 
         # Simulate a successful healing cycle
         await learning.record_success(
-            task_type="quality_fix",
+            TaskType="quality_fix",
             input_context="Resume with weak summary",
             output_result="Resume with strong metrics-driven summary",
             confidence=0.9,
@@ -83,7 +83,7 @@ class TestLearningLoopIntegration:
 
         # Record some examples
         await learning.record_success(
-            task_type="ats_optimization",
+            TaskType="ats_optimization",
             input_context="Resume with special characters and formatting issues",
             output_result="Clean ATS-friendly resume without special characters",
             confidence=0.85,
@@ -92,7 +92,7 @@ class TestLearningLoopIntegration:
         # Try to recall similar
         examples = await learning.recall_similar(
             "ATS compatibility special characters",
-            task_type="ats_optimization",
+            TaskType="ats_optimization",
         )
 
         # May or may not find matches depending on algorithm
@@ -279,7 +279,7 @@ class TestResumeLearningAgentIntegration:
         # Record the success if converged
         if result.converged:
             await learning_agent.record_success(
-                task_type="full_diagnostic",
+                TaskType="full_diagnostic",
                 input_context=str(valid_resume),
                 output_result="Validation passed",
                 confidence=0.9,
@@ -322,7 +322,7 @@ class TestResumeLearningAgentIntegration:
 
         # Record some examples
         await learning_agent.record_success(
-            task_type="summary_improvement",
+            TaskType="summary_improvement",
             input_context="Weak summary without metrics",
             output_result="Strong summary with 3 quantified achievements",
             confidence=0.95,
@@ -331,7 +331,7 @@ class TestResumeLearningAgentIntegration:
         # Get few-shot context
         context = await learning_agent.get_few_shot_context(
             "Improve summary with metrics",
-            task_type="summary_improvement",
+            TaskType="summary_improvement",
         )
 
         # May or may not have context depending on matching
@@ -374,7 +374,7 @@ class TestCrossComponentIntegration:
             # 6. If successful, record for learning
             if passed and confidence.level in [ConfidenceLevel.HIGH, ConfidenceLevel.MEDIUM]:
                 await learning.record_success(
-                    task_type="content_quality",
+                    TaskType="content_quality",
                     input_context=valid_resume["summary"],
                     output_result="Validation passed",
                     confidence=confidence.score,
@@ -388,7 +388,7 @@ class TestCrossComponentIntegration:
     async def test_orchestrator_with_learning(self, ctx, valid_resume):
         """Test orchestrator integration with learning components."""
         ctx.current_resume = valid_resume
-        ctx.job_description = "Software Engineer"
+        ctx.JobDescription = "Software Engineer"
 
         # Create learning agent
         learning_agent = ResumeLearningAgent(ctx)
@@ -406,7 +406,7 @@ class TestCrossComponentIntegration:
         # Record outcome
         if result.success:
             await learning_agent.record_success(
-                task_type="full_healing",
+                TaskType="full_healing",
                 input_context=f"Resume with {len(valid_resume)} sections",
                 output_result=f"Converged in {result.convergence_cycle} cycles",
                 confidence=0.9,

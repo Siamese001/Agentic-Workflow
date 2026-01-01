@@ -7,16 +7,16 @@ from typing import Any, Dict, List, Optional, Protocol
 
 import duckdb
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
-# NAMING FIXED: TraceEvent → trace_event
-class trace_event:
+# NAMING FIXED: TraceEvent → TraceEvent
+class TraceEvent:
     '''Brief description of functionality and purpose.'''
     
     trace_id: str
@@ -27,8 +27,8 @@ class trace_event:
     timestamp: float
 
 
-# NAMING FIXED: TelemetryRecorder → telemetry_recorder
-class telemetry_recorder:
+# NAMING FIXED: TelemetryRecorder → TelemetryRecorder
+class TelemetryRecorder:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self: Any, db_path: Any) -> None:

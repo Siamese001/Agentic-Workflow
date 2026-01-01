@@ -44,15 +44,15 @@ class ExperienceBuffer:
         self.path = Path(path)
         self.max_entries = max_entries
         self.similarity_keys = similarity_keys or []
-        self.logger = logging.getLogger(f"{__name__}.{self.path.stem}")
+        self.Logger = logging.getLogger(f"{__name__}.{self.path.stem}")
 
         # Ensure directory exists
         self.path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Initialize file if missing
+        # Initialize file if Missing
         if not self.path.exists():
             self.path.write_text("")  # Empty JSONL file
-            self.logger.info(f"Created new experience buffer at {self.path}")
+            self.Logger.info(f"Created new experience buffer at {self.path}")
 
     def record(self, entry: Dict[str, Any]) -> None:
         """
@@ -71,7 +71,7 @@ class ExperienceBuffer:
         self._enforce_size_limit()
 
         outcome = "success" if entry.get("success", False) else "failure"
-        self.logger.debug(f"Recorded {outcome}: {entry.get('action')} on {entry.get('target')}")
+        self.Logger.debug(f"Recorded {outcome}: {entry.get('action')} on {entry.get('target')}")
 
     def _enforce_size_limit(self) -> None:
         """Trim file to max_entries by keeping newest lines."""
@@ -83,16 +83,16 @@ class ExperienceBuffer:
             with self.path.open("r", encoding="utf-8") as f:
                 lines = f.readlines()
         except Exception as e:
-            self.logger.error(f"Failed to read experience buffer: {e}")
+            self.Logger.error(f"Failed to read experience buffer: {e}")
             return
 
         if len(lines) > self.max_entries:
             kept = lines[-self.max_entries:]
             try:
                 self.path.write_text("".join(kept), encoding="utf-8")
-                self.logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
+                self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             except Exception as e:
-                self.logger.error(f"Failed to trim buffer: {e}")
+                self.Logger.error(f"Failed to trim buffer: {e}")
 
     def load_all(self) -> List[Dict[str, Any]]:
         """Load all entries (newest first)."""
@@ -106,7 +106,7 @@ class ExperienceBuffer:
             # Return newest first
             return list(reversed(entries))
         except Exception as e:
-            self.logger.error(f"Failed to load experience buffer: {e}")
+            self.Logger.error(f"Failed to load experience buffer: {e}")
             return []
 
     def find_similar(

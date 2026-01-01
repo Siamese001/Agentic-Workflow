@@ -67,11 +67,11 @@ class SovereignReport:
 
         def build(self) -> 'SovereignReport':
             """Constructs the sealed report and emits L6 observability event."""
-            logger = logging.getLogger(__name__)
+            Logger = logging.getLogger(__name__)
 
             overall = sum(d["score"] for d in self._dimensions.values()) / len(self._dimensions)
             status = "SOVEREIGN" if overall >= 95 else "VULNERABLE"
-            logger.info(
+            Logger.info(
                 f"[L6_AUDIT] Report Sealed: {self._report_id} | Health: {overall:.1f}% | {status}"
             )
 
@@ -119,7 +119,7 @@ class SovereignReport:
 
     def print_summary(self) -> float:
         """
-        Human-readable sovereignty verdict.
+        Human-readable sovereignty Verdict.
         Returns overall score for programmatic use.
         """
         print("\n" + "="*60)

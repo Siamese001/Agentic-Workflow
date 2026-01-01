@@ -59,7 +59,7 @@ class ModelProvider(Enum):
 
 @dataclass
 class ModelConfig:
-    provider: ModelProvider = ModelProvider.OPENAI
+    Provider: ModelProvider = ModelProvider.OPENAI
     model_name: str = "gpt-4-turbo"
     api_key: Optional[str] = None
     temperature: float = DEFAULT_GENERATION_TEMPERATURE

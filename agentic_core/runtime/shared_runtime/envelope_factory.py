@@ -6,11 +6,11 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, Optional
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class envelope:
-    """Data envelope for pipeline processing."""
+class Envelope:
+    """Data Envelope for pipeline processing."""
     id: str
     data: Any
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -23,27 +23,27 @@ class envelope:
 
     def mark_stage_start(self, stage_name: str) -> None:
         """Mark stage as started."""
-        logger.debug(f'Stage started: {stage_name}')
+        Logger.debug(f'Stage started: {stage_name}')
 
     def mark_stage_complete(self, stage_name: str) -> None:
         """Mark stage as completed."""
         self.completed_stages.add(stage_name)
-        logger.debug(f'Stage completed: {stage_name}')
+        Logger.debug(f'Stage completed: {stage_name}')
 
     def mark_stage_skipped(self, stage_name: str, reason: str) -> None:
         """Mark stage as skipped."""
-        logger.debug(f'Stage skipped: {stage_name} - {reason}')
+        Logger.debug(f'Stage skipped: {stage_name} - {reason}')
 
-class envelope_factory:
+class EnvelopeFactory:
     """Factory for creating envelopes."""
 
     @staticmethod
     def create_envelope(data: Any, metadata: Optional[Dict[str, Any]]=None, envelope_id: Optional[str]=None) -> Envelope:
-        """Create a new envelope."""
+        """Create a new Envelope."""
         import uuid
         envelope_id: Any = envelope_id or str(uuid.uuid4())
         metadata: Any = metadata or {}
-        envelope: Any = Envelope(id=envelope_id, data=data, metadata=metadata)
-        logger.debug(f'Envelope created: {envelope_id}')
-        return envelope
+        Envelope: Any = Envelope(id=envelope_id, data=data, metadata=metadata)
+        Logger.debug(f'Envelope created: {envelope_id}')
+        return Envelope
 __all__ = ['Envelope', 'EnvelopeFactory']

@@ -61,12 +61,12 @@ class PhaseType(Enum):
 class SecurityIssue:
     """A security issue found during scanning."""
     issue_id: str
-    severity: str
+    Severity: str
     category: str
     file_path: str
     line_number: Optional[int]
     description: str
-    recommendation: str
+    Recommendation: str
 
 
 @dataclass
@@ -168,12 +168,12 @@ class SecurityHardener:
                     if re.search(pattern, line, re.IGNORECASE):
                         issue = SecurityIssue(
                             issue_id=hashlib.sha256(f"{file_path}:{i}:{category}".encode()).hexdigest()[:12],
-                            severity=self._get_severity(category),
+                            Severity=self._get_severity(category),
                             category=category,
                             file_path=file_path,
                             line_number=i,
                             description=f"Potential {category.replace('_', ' ')} detected",
-                            recommendation=self._get_recommendation(category),
+                            Recommendation=self._get_recommendation(category),
                         )
                         issues.append(issue)
                         self._issues.append(issue)
@@ -203,17 +203,17 @@ class SecurityHardener:
 
         resume_str = json.dumps(resume)
 
-        for pii_type, pattern in pii_patterns.items():
+        for PiiType, pattern in pii_patterns.items():
             matches = re.findall(pattern, resume_str)
             if matches:
                 issue = SecurityIssue(
-                    issue_id=hashlib.sha256(f"resume:{pii_type}".encode()).hexdigest()[:12],
-                    severity="warning",
-                    category=f"pii_{pii_type}",
+                    issue_id=hashlib.sha256(f"resume:{PiiType}".encode()).hexdigest()[:12],
+                    Severity="warning",
+                    category=f"pii_{PiiType}",
                     file_path="resume",
                     line_number=None,
-                    description=f"Found {len(matches)} potential {pii_type.upper()} value(s)",
-                    recommendation=f"Consider redacting {pii_type.upper()} before sharing",
+                    description=f"Found {len(matches)} potential {PiiType.upper()} value(s)",
+                    Recommendation=f"Consider redacting {PiiType.upper()} before sharing",
                 )
                 issues.append(issue)
                 self._issues.append(issue)
@@ -221,7 +221,7 @@ class SecurityHardener:
         return issues
 
     def _get_severity(self, category: str) -> str:
-        """Get severity level for a category."""
+        """Get Severity level for a category."""
         high_severity = {"hardcoded_secret", "sql_injection", "command_injection"}
         medium_severity = {"path_traversal"}
 
@@ -232,7 +232,7 @@ class SecurityHardener:
         return "low"
 
     def _get_recommendation(self, category: str) -> str:
-        """Get recommendation for a category."""
+        """Get Recommendation for a category."""
         recommendations = {
             "hardcoded_secret": "Use environment variables or a secrets manager",
             "sql_injection": "Use parameterized queries",
@@ -246,9 +246,9 @@ class SecurityHardener:
         """Get all security issues found."""
         return self._issues
 
-    def get_issues_by_severity(self, severity: str) -> List[SecurityIssue]:
-        """Get issues filtered by severity."""
-        return [i for i in self._issues if i.severity == severity]
+    def get_issues_by_severity(self, Severity: str) -> List[SecurityIssue]:
+        """Get issues filtered by Severity."""
+        return [i for i in self._issues if i.Severity == Severity]
 
     def get_stats(self) -> Dict[str, Any]:
         """Get security scanning statistics."""
@@ -256,9 +256,9 @@ class SecurityHardener:
             "scans_performed": self._scans_performed,
             "total_issues": len(self._issues),
             "by_severity": {
-                "high": sum(1 for i in self._issues if i.severity == "high"),
-                "medium": sum(1 for i in self._issues if i.severity == "medium"),
-                "low": sum(1 for i in self._issues if i.severity == "low"),
+                "high": sum(1 for i in self._issues if i.Severity == "high"),
+                "medium": sum(1 for i in self._issues if i.Severity == "medium"),
+                "low": sum(1 for i in self._issues if i.Severity == "low"),
             },
             "security_level": self.level.value,
         }
@@ -515,13 +515,13 @@ class StrategicAdvisor:
 
         return proposals
 
-    def get_ats_recommendations(self, resume: Dict[str, Any], job_description: str = "") -> List[str]:
+    def get_ats_recommendations(self, resume: Dict[str, Any], JobDescription: str = "") -> List[str]:
         """
         Get ATS optimization recommendations.
 
         Args:
             resume: Resume dictionary
-            job_description: Optional job description for keyword matching
+            JobDescription: Optional job description for keyword matching
 
         Returns:
             List of recommendations
@@ -542,17 +542,17 @@ class StrategicAdvisor:
                 recommendations.append(f"Add standard section: {header.title()}")
 
         # Keyword matching if job description provided
-        if job_description:
-            jd_words = set(job_description.lower().split())
+        if JobDescription:
+            jd_words = set(JobDescription.lower().split())
             resume_words = set(resume_str.split())
 
-            # Find missing keywords
+            # Find Missing keywords
             important_keywords = {"python", "javascript", "aws", "docker", "kubernetes", "agile", "scrum"}
             jd_keywords = jd_words & important_keywords
-            missing = jd_keywords - resume_words
+            Missing = jd_keywords - resume_words
 
-            if missing:
-                recommendations.append(f"Consider adding keywords: {', '.join(missing)}")
+            if Missing:
+                recommendations.append(f"Consider adding keywords: {', '.join(Missing)}")
 
         if not recommendations:
             recommendations.append("Resume appears ATS-optimized")
@@ -712,7 +712,7 @@ class UnifiedOrchestrator:
     async def run_mission(
         self,
         resume: Dict[str, Any],
-        job_description: str = "",
+        JobDescription: str = "",
         max_cycles: int = 3,
     ) -> Dict[str, Any]:
         """
@@ -720,7 +720,7 @@ class UnifiedOrchestrator:
 
         Args:
             resume: Resume to analyze
-            job_description: Optional job description
+            JobDescription: Optional job description
             max_cycles: Maximum optimization cycles
 
         Returns:
@@ -758,7 +758,7 @@ class UnifiedOrchestrator:
                 PhaseType.PARALLEL,
                 [
                     ("StrategicAdvisor", lambda: self.strategic.analyze_structure(resume)),
-                    ("ATSOptimizer", lambda: self.strategic.get_ats_recommendations(resume, job_description)),
+                    ("ATSOptimizer", lambda: self.strategic.get_ats_recommendations(resume, JobDescription)),
                 ],
             )
 
@@ -822,7 +822,7 @@ class UnifiedOrchestrator:
 
     def _check_convergence(self) -> bool:
         """Check if mission has converged."""
-        # Converged if no high-severity security issues and all phases passed
+        # Converged if no high-Severity security issues and all phases passed
         high_security = self.security.get_issues_by_severity("high")
         all_phases_passed = all(p.success for p in self._phase_results)
 
@@ -867,14 +867,14 @@ class Phase6Orchestrator:
     async def analyze_resume(
         self,
         resume: Dict[str, Any],
-        job_description: str = "",
+        JobDescription: str = "",
     ) -> Dict[str, Any]:
         """
         Perform comprehensive resume analysis.
 
         Args:
             resume: Resume dictionary
-            job_description: Optional job description
+            JobDescription: Optional job description
 
         Returns:
             Comprehensive analysis results
@@ -906,7 +906,7 @@ class Phase6Orchestrator:
 
         # Strategic analysis
         proposals = self.strategic.analyze_structure(resume)
-        ats_recs = self.strategic.get_ats_recommendations(resume, job_description)
+        ats_recs = self.strategic.get_ats_recommendations(resume, JobDescription)
 
         results["strategic"] = {
             "proposals": len(proposals),
@@ -922,7 +922,7 @@ class Phase6Orchestrator:
     async def run_full_mission(
         self,
         resume: Dict[str, Any],
-        job_description: str = "",
+        JobDescription: str = "",
         max_cycles: int = 3,
     ) -> Dict[str, Any]:
         """
@@ -930,13 +930,13 @@ class Phase6Orchestrator:
 
         Args:
             resume: Resume dictionary
-            job_description: Optional job description
+            JobDescription: Optional job description
             max_cycles: Maximum cycles
 
         Returns:
             Mission results
         """
-        return await self.unified.run_mission(resume, job_description, max_cycles)
+        return await self.unified.run_mission(resume, JobDescription, max_cycles)
 
     def search_context(self, query: str) -> List[SemanticMatch]:
         """Search the context for relevant content."""

@@ -1,5 +1,5 @@
 """
-Sovereign Event Contracts - SSOT for all event types and severity levels.
+Sovereign Event Contracts - SSOT for all event types and Severity levels.
 Modularized from core_contracts.py for DDD bounded context isolation.
 """
 import logging
@@ -8,13 +8,13 @@ from typing import List, Dict
 
 # === SOVEREIGN SEVERITY LEVELS ===
 class SovereignSeverity(str, Enum):
-    """Canonical SSOT for event severity levels with observability log mapping."""
+    """Canonical SSOT for event Severity levels with observability log mapping."""
     
     CRITICAL = "CRITICAL"
     """Immediate threat to sovereignty — system may be compromised"""
     
     ERROR = "ERROR"
-    """Healing required — constitutional violation detected"""
+    """Healing required — constitutional Violation detected"""
     
     WARNING = "WARNING"
     """Degradation risk — attention needed but not blocking"""

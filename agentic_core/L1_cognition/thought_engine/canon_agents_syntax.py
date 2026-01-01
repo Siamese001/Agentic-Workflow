@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -21,7 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NOT_AN_AGENT — legacy L1 class, true agent is CodeJanitorAgent in L2 — excluded from discovery
-class code_janitor:
+class CodeJanitor:
     """
     KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
     ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
@@ -60,10 +60,10 @@ class code_janitor:
             else:
                 print("      [OK] Trailing whitespace fixed successfully.")
 
-        # Check and fix missing final newlines (Key 12)
+        # Check and fix Missing final newlines (Key 12)
         passed, details = self.check_key_12_no_missing_newline()
         if not passed:
-            print("      [+] Auto-fixing missing final newlines...")
+            print("      [+] Auto-fixing Missing final newlines...")
             for file_path in details:
                 try:
                     with open(file_path, "a", encoding="utf-8") as f:
@@ -146,7 +146,7 @@ class code_janitor:
 
     def check_key_12_no_missing_newline(self) -> Tuple[bool, List[str]]:
         """
-        Checks if files are missing a final newline character (PEP 8).
+        Checks if files are Missing a final newline character (PEP 8).
         Reports file paths.
         """
         violations = []
@@ -298,7 +298,7 @@ class code_janitor:
 
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
-class dependency_sentinel:
+class DependencySentinel:
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
@@ -416,7 +416,7 @@ class dependency_sentinel:
 
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """
-        Checks for relative imports (e.g., 'from agentic_core. import module', 'from agentic_core. import package').
+        Checks for relative imports (e.g., 'from AgenticCore. import module', 'from AgenticCore. import package').
         Reports file paths and line numbers.
         """
         violations = []
@@ -462,7 +462,7 @@ class dependency_sentinel:
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
+                        module_name = node.module if node.module else "" # Handle 'from AgenticCore. import x' where module is None
                         for alias in node.names:
                             name = alias.asname if alias.asname else alias.name
                             imported_names_with_lines[name] = node.lineno
@@ -523,7 +523,7 @@ class dependency_sentinel:
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
+                        module_name = node.module if node.module else "" # Handle 'from AgenticCore. import x' where module is None
                         for alias in node.names:
                             imported_name = alias.asname if alias.asname else alias.name
                             import_tuple = (module_name, imported_name)

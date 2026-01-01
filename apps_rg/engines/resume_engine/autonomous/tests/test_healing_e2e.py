@@ -46,7 +46,7 @@ def problematic_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -70,10 +70,10 @@ class TestRunSelfHealingMission:
     """Tests for run_self_healing_mission function."""
 
     @pytest.mark.asyncio
-    async def test_mission_with_valid_resume(self, valid_resume, job_description):
+    async def test_mission_with_valid_resume(self, valid_resume, JobDescription):
         """Test mission completes successfully with valid resume."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -85,10 +85,10 @@ class TestRunSelfHealingMission:
         assert "summary" in result.final_resume
 
     @pytest.mark.asyncio
-    async def test_mission_with_problematic_resume(self, problematic_resume, job_description):
+    async def test_mission_with_problematic_resume(self, problematic_resume, JobDescription):
         """Test mission with problematic resume."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=problematic_resume,
             max_cycles=2,
         )
@@ -100,7 +100,7 @@ class TestRunSelfHealingMission:
             assert len(result.final_signals) > 0
 
     @pytest.mark.asyncio
-    async def test_mission_with_user_profile(self, valid_resume, job_description):
+    async def test_mission_with_user_profile(self, valid_resume, JobDescription):
         """Test mission with user profile for fact-checking."""
         user_profile = {
             "skills": ["Python", "JavaScript", "AWS", "Docker", "Kubernetes"],
@@ -111,7 +111,7 @@ class TestRunSelfHealingMission:
         }
 
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             user_profile=user_profile,
             max_cycles=3,
@@ -120,10 +120,10 @@ class TestRunSelfHealingMission:
         assert result.success is True
 
     @pytest.mark.asyncio
-    async def test_mission_respects_max_cycles(self, problematic_resume, job_description):
+    async def test_mission_respects_max_cycles(self, problematic_resume, JobDescription):
         """Test that mission respects max_cycles limit."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=problematic_resume,
             max_cycles=1,
         )
@@ -131,10 +131,10 @@ class TestRunSelfHealingMission:
         assert result.total_cycles == 1
 
     @pytest.mark.asyncio
-    async def test_mission_tracks_all_cycles(self, valid_resume, job_description):
+    async def test_mission_tracks_all_cycles(self, valid_resume, JobDescription):
         """Test that mission tracks all cycle results."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -143,10 +143,10 @@ class TestRunSelfHealingMission:
         assert len(result.cycle_results) == result.total_cycles
 
     @pytest.mark.asyncio
-    async def test_mission_with_reflection(self, valid_resume, job_description):
+    async def test_mission_with_reflection(self, valid_resume, JobDescription):
         """Test mission with reflection enabled."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
             enable_reflection=True,
@@ -155,10 +155,10 @@ class TestRunSelfHealingMission:
         assert result.success is True
 
     @pytest.mark.asyncio
-    async def test_mission_without_reflection(self, valid_resume, job_description):
+    async def test_mission_without_reflection(self, valid_resume, JobDescription):
         """Test mission with reflection disabled."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
             enable_reflection=False,
@@ -171,10 +171,10 @@ class TestSelfHealingCycles:
     """Tests for self-healing cycle behavior."""
 
     @pytest.mark.asyncio
-    async def test_early_convergence(self, valid_resume, job_description):
+    async def test_early_convergence(self, valid_resume, JobDescription):
         """Test that mission converges early when possible."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=5,
         )
@@ -184,10 +184,10 @@ class TestSelfHealingCycles:
         assert result.convergence_cycle <= 2
 
     @pytest.mark.asyncio
-    async def test_cycle_strategies_evolve(self, valid_resume, job_description):
+    async def test_cycle_strategies_evolve(self, valid_resume, JobDescription):
         """Test that cycle strategies evolve based on signals."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -197,10 +197,10 @@ class TestSelfHealingCycles:
         assert result.cycle_results[0].strategy == HealingStrategy.FULL_DIAGNOSTIC
 
     @pytest.mark.asyncio
-    async def test_signals_tracked_per_cycle(self, valid_resume, job_description):
+    async def test_signals_tracked_per_cycle(self, valid_resume, JobDescription):
         """Test that signals are tracked per cycle."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )
@@ -214,10 +214,10 @@ class TestEdgeCases:
     """Tests for edge cases and error handling."""
 
     @pytest.mark.asyncio
-    async def test_empty_resume(self, job_description):
+    async def test_empty_resume(self, JobDescription):
         """Test handling of empty resume."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume={},
             max_cycles=2,
         )
@@ -229,7 +229,7 @@ class TestEdgeCases:
     async def test_empty_job_description(self, valid_resume):
         """Test handling of empty job description."""
         result = await run_self_healing_mission(
-            job_description="",
+            JobDescription="",
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -238,7 +238,7 @@ class TestEdgeCases:
         assert isinstance(result, HealingResult)
 
     @pytest.mark.asyncio
-    async def test_minimal_resume(self, job_description):
+    async def test_minimal_resume(self, JobDescription):
         """Test handling of minimal but valid resume."""
         minimal_resume = {
             "summary": "Software engineer with 5 years of experience in Python development. Built systems serving 100K users.",
@@ -247,7 +247,7 @@ class TestEdgeCases:
         }
 
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=minimal_resume,
             max_cycles=3,
         )
@@ -255,10 +255,10 @@ class TestEdgeCases:
         assert isinstance(result, HealingResult)
 
     @pytest.mark.asyncio
-    async def test_single_cycle_limit(self, valid_resume, job_description):
+    async def test_single_cycle_limit(self, valid_resume, JobDescription):
         """Test with single cycle limit."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=1,
         )
@@ -270,10 +270,10 @@ class TestHealingResultDetails:
     """Tests for HealingResult details."""
 
     @pytest.mark.asyncio
-    async def test_result_contains_timing(self, valid_resume, job_description):
+    async def test_result_contains_timing(self, valid_resume, JobDescription):
         """Test that result contains timing information."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -283,10 +283,10 @@ class TestHealingResultDetails:
             assert cycle_result.duration_ms > 0
 
     @pytest.mark.asyncio
-    async def test_result_contains_agent_details(self, valid_resume, job_description):
+    async def test_result_contains_agent_details(self, valid_resume, JobDescription):
         """Test that result contains agent execution details."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -297,10 +297,10 @@ class TestHealingResultDetails:
             assert isinstance(cycle_result.failed_agents, list)
 
     @pytest.mark.asyncio
-    async def test_result_preserves_resume(self, valid_resume, job_description):
+    async def test_result_preserves_resume(self, valid_resume, JobDescription):
         """Test that result preserves final resume state."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -314,12 +314,12 @@ class TestResumePreservation:
     """Tests for resume data preservation during healing."""
 
     @pytest.mark.asyncio
-    async def test_original_resume_not_modified(self, valid_resume, job_description):
+    async def test_original_resume_not_modified(self, valid_resume, JobDescription):
         """Test that original resume is not modified."""
         original_copy = valid_resume.copy()
 
         await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -328,10 +328,10 @@ class TestResumePreservation:
         assert valid_resume == original_copy
 
     @pytest.mark.asyncio
-    async def test_resume_sections_preserved(self, valid_resume, job_description):
+    async def test_resume_sections_preserved(self, valid_resume, JobDescription):
         """Test that all resume sections are preserved."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=2,
         )
@@ -345,10 +345,10 @@ class TestBudgetManagement:
     """Tests for budget management during healing."""
 
     @pytest.mark.asyncio
-    async def test_budget_not_exhausted_normally(self, valid_resume, job_description):
+    async def test_budget_not_exhausted_normally(self, valid_resume, JobDescription):
         """Test that budget is not exhausted under normal conditions."""
         result = await run_self_healing_mission(
-            job_description=job_description,
+            JobDescription=JobDescription,
             master_resume=valid_resume,
             max_cycles=3,
         )

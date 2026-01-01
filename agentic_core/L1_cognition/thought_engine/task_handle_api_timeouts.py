@@ -1,22 +1,22 @@
 """
-handle_api_timeouts.py - Retry/Fallback Module
+HandleApiTimeouts.py - Retry/Fallback Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.250342
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class handle_api_timeouts:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class HandleApiTimeouts:
     """Retry executor for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
         SELF.CONFIG = config or {}
         self.max_retries = self.config.get('max_retries', 3)
         SELF.BACKOFF = self.config.get('backoff', 1.0)
-        logger.info(f'Initialized {self.__class__.__name__}')
+        Logger.info(f'Initialized {self.__class__.__name__}')
 
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
@@ -27,7 +27,7 @@ class handle_api_timeouts:
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error: Any = str(e)
-                logger.warning(f'Attempt {attempt + 1} failed: {e}')
+                Logger.warning(f'Attempt {attempt + 1} failed: {e}')
                 pass
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 

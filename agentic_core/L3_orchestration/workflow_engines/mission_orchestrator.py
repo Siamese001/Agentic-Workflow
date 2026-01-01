@@ -1,5 +1,5 @@
 # Sovereign Mission Orchestrator
-# Territory: agentic_core/L3_orchestration
+# Territory: AgenticCore/L3_orchestration
 # Canon Key 4 - Multi-agent mission coordination with RAG enrichment
 
 import asyncio
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Optional, List, Dict, Tuple
 
 # [SOVEREIGN IMPORTS]
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY, MISSION_CONFIG, HEALING_CONFIG, 
     AGENT_RESILIENCE_CONFIG, CANON_KEY_TO_FOLDER_MAP, 
     SCOPE_SUMMARY_EXCLUSIONS, PROTECTED_FOLDERS, GRAVITY_SURGERY_ENABLED,
@@ -24,14 +24,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # [L0 IMPORTS]
-from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight
+from AgenticCore.L0_maintenance.sovereign_enforcement import run_l6_preflight
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
-from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, SOVEREIGN_EXCLUDED_FOLDERS
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import ROOT_WHITELIST, SOVEREIGN_EXCLUDED_FOLDERS
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 def enforce_void_compliance(files, project_root):
     """Bridge to LocationAgent."""
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+    from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
     return LocationAgent(project_root).enforce_void_compliance(files)
 
 def get_folder_scope_summary(project_root):
@@ -46,11 +46,11 @@ def get_folder_scope_summary(project_root):
 
 def check_import_waterfall_violations(file_path, project_root):
     """Bridge to ImportAgent."""
-    from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+    from AgenticCore.L5_safety.gravity.ImportAgent import ImportAgent
     return ImportAgent(project_root).check_waterfall_violations(file_path)
 
 # [L2 KNOWLEDGE]
-from agentic_core.knowledge.rag_manager import get_rag_manager
+from AgenticCore.knowledge.rag_manager import get_rag_manager
 
 # [HELPERS]
 def dynamic_import(module_path, class_name):
@@ -64,7 +64,7 @@ def dynamic_import(module_path, class_name):
 
 async def run_sovereign_mission(
     project_root: Path,
-    target_scope: str = "agentic_core",
+    target_scope: str = "AgenticCore",
     RUN_HIERARCHY_HEALING: bool = False,
     MAX_HEALING_ROUNDS: int = 10
 ):
@@ -86,16 +86,16 @@ async def run_sovereign_mission(
     print("\n[PHASE 0] Pre-flight Structural Validation")
     preflight_results = run_l6_preflight(project_root)
     
-    if preflight_results["span"] > 0 or preflight_results["hierarchy"] > 0:
+    if preflight_results["Span"] > 0 or preflight_results["hierarchy"] > 0:
         print(f"\n[!] Structural violations detected:")
-        print(f"    - Span violations: {preflight_results['span']}")
+        print(f"    - Span violations: {preflight_results['Span']}")
         print(f"    - Hierarchy violations: {preflight_results['hierarchy']}")
         if not RUN_HIERARCHY_HEALING:
             print("\n[!] Enable RUN_HIERARCHY_HEALING to auto-fix these issues")
     
     # === INITIALIZE CONTEXT ===
     # Dynamic load of ValidationContext to avoid circular deps
-    ValidationContext = dynamic_import('agentic_core.L4_state.validation_context.validation_context', 'ValidationContext')
+    ValidationContext = dynamic_import('AgenticCore.L4_state.ValidationContext.ValidationContext', 'ValidationContext')
     if ValidationContext:
         ctx = ValidationContext()
         ctx.project_root = project_root

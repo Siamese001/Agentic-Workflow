@@ -7,21 +7,21 @@ from typing import Dict, Any, Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 # Import for semantic deduplication awareness
-from agentic_core.prompt_governance.version_registry.prompt_registry import get_prompt_registry, DuplicatePromptError
+from AgenticCore.prompt_governance.version_registry.PromptRegistry import get_prompt_registry, DuplicatePromptError
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using LocationAgent
 def validate_file_location(file_path, project_root):
     """Bridge to LocationAgent."""
-    from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+    from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
     return LocationAgent(project_root).validate_file_location(file_path)
 
-class sovereign_prompt_renderer:
+class SovereignPromptRenderer:
     """
     Sovereign renderer for instructional prompt templates.
 
@@ -31,7 +31,7 @@ class sovereign_prompt_renderer:
     - Enforce sovereignty: no inline prompt strings > 50 lines outside this layer
     - Provide typed context injection for downstream agents
     """
-    TEMPLATE_ROOT: Any = Path('C:\\Git\\Agentic-Workflow\\agentic_core\\prompt_governance\\templates')
+    TEMPLATE_ROOT: Any = Path('C:\\Git\\Agentic-Workflow\\AgenticCore\\prompt_governance\\templates')
 
     def __init__(self):
         if not self.TEMPLATE_ROOT.exists():
@@ -74,9 +74,9 @@ class sovereign_prompt_renderer:
     @staticmethod
     def list_available_templates() -> list[str]:
         """Utility for introspection and MCP routing."""
-        root: Any = sovereign_prompt_renderer.TEMPLATE_ROOT
+        root: Any = SovereignPromptRenderer.TEMPLATE_ROOT
         return [p.relative_to(root).as_posix() for p in root.rglob('*.jinja') if p.is_file()]
 
-def get_sovereign_prompt_renderer() -> sovereign_prompt_renderer:
+def get_sovereign_prompt_renderer() -> SovereignPromptRenderer:
     """Brief description of functionality and purpose."""
-    return sovereign_prompt_renderer()
+    return SovereignPromptRenderer()

@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SEMANTIC_L2_REGISTRY
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SEMANTIC_L2_REGISTRY
 
 # [GRAVITY] Resolve project root for relative path calculation
 try:
@@ -12,8 +12,8 @@ try:
 except IndexError:
     project_root = Path.cwd()
 
-# NAMING FIXED: ASTRelocator → ast_relocator
-class ast_relocator(ast.NodeVisitor):
+# NAMING FIXED: ASTRelocator → AstRelocator
+class AstRelocator(ast.NodeVisitor):
     """
     [L6 SURGERY] AST-based code relocation engine.
     Surgically extracts classes/functions and calculates their sovereign coordinates.

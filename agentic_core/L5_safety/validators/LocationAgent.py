@@ -24,9 +24,9 @@ import re
 import shutil
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,                    # = set(sovereign_registry.keys())
     FORBIDDEN_ROOT_FOLDERS,
     FORBIDDEN_FOLDER_PATTERN,          # ^\\d+_
@@ -34,14 +34,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_PROTECTED_FILES,
     TESTS_ROOT_FILE_WHITELIST,
 )
-from agentic_core.prompt_governance.version_registry.prompt_registry import registers_prompt
+from AgenticCore.prompt_governance.version_registry.PromptRegistry import registers_prompt
 
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def is_excepted_from_key(key_id: int, file_path, line_content: str = '') -> bool:
     """Check if file/line is excepted from key validation."""
     import fnmatch
     import re
-    from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+    from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
     exceptions = CANON_KEY_EXCEPTIONS.get(key_id, {})
     if not exceptions:
         return False
@@ -121,8 +121,8 @@ class LocationAgent:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
             return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
 
-        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
-        if root_folder == "agentic_core":
+        # Special strict depth for AgenticCore (Canon Key 3/12 hardening)
+        if root_folder == "AgenticCore":
             if len(parts) != 4:
                 return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
 
@@ -157,7 +157,7 @@ class LocationAgent:
     def run(self, files: List[Path] = None) -> List[Tuple[Path, str]]:
         """
         Full location compliance scan.
-        Returns all violations (missing roots + per-file).
+        Returns all violations (Missing roots + per-file).
         Suitable as first-stage gatekeeper in orchestrator.
         """
         all_violations: List[Tuple[Path, str]] = []
@@ -204,7 +204,7 @@ class LocationAgent:
         backup_path = backup_dir / rel
         backup_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(file_path, backup_path)
-        logger.info(f"[LocationAgent] Backed up: {rel}")
+        Logger.info(f"[LocationAgent] Backed up: {rel}")
         return backup_path
 
     def cleanup_violations(
@@ -233,28 +233,28 @@ class LocationAgent:
         
         for i, (file_path, msg) in enumerate(violations):
             if i >= max_actions:
-                logger.warning(f"[LocationAgent] Cleanup budget exhausted ({max_actions} actions).")
+                Logger.warning(f"[LocationAgent] Cleanup budget exhausted ({max_actions} actions).")
                 break
             
             # [BUG FIX 2025-12-31] Skip files that are already archived
             # Prevents infinite loop: file.py → file.py.archived → file.py.archived.archived...
             archive_markers = ('.archived', '.backup', '.old', '.copy')
             if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
-                logger.debug(f"[LocationAgent] Skipping already-archived file: {file_path.name}")
+                Logger.debug(f"[LocationAgent] Skipping already-archived file: {file_path.name}")
                 continue
             if any(marker in file_path.name.lower() for marker in archive_markers):
-                logger.debug(f"[LocationAgent] Skipping file with archive marker: {file_path.name}")
+                Logger.debug(f"[LocationAgent] Skipping file with archive marker: {file_path.name}")
                 continue
                 
             action = {
                 "type": "LOCATION_CLEANUP",
                 "file": str(file_path),
-                "violation": msg,
+                "Violation": msg,
                 "applied": False,
                 "action_taken": "",
             }
             
-            # Determine archive target based on violation type
+            # Determine archive target based on Violation type
             if "VOID VIOLATION" in msg or "GRAVITY ERROR" in msg:
                 target_subdir = archives_root / "void_violations"
             elif "DEPTH VIOLATION" in msg:
@@ -284,7 +284,7 @@ class LocationAgent:
                     file_path.rename(target_path)
                     action["applied"] = True
                     action["action_taken"] = f"ARCHIVED: {target_path.relative_to(self.project_root)}"
-                    logger.info(f"[LocationAgent] Archived: {file_path.name}")
+                    Logger.info(f"[LocationAgent] Archived: {file_path.name}")
                 except Exception as e:
                     action["error"] = str(e)
                     
@@ -303,7 +303,7 @@ class LocationAgent:
             dry_run: If True, only preview cleanup actions
             
         Returns:
-            Dict with violation count, actions applied, and details
+            Dict with Violation count, actions applied, and details
         """
         violations = self.run(files)
         cleanup_results = self.cleanup_violations(violations, dry_run=dry_run) if violations else []

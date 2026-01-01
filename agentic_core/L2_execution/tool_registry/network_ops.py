@@ -5,7 +5,7 @@ Consolidated from core_utils.py, network_utils.py, and security_utils.py
 import json
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def string_get(key: str) -> Optional[str]:
     """
@@ -104,7 +104,7 @@ def execute_cost_controlled_search(query: str, logger_instance: Optional[Any]=No
     
     Args:
         query: Search query
-        logger_instance: Optional logger instance
+        logger_instance: Optional Logger instance
         
     Returns:
         JSON string of results or None if rate limited

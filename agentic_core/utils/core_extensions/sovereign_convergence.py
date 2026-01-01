@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 root: Any = Path.cwd()
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 migration_map: Any = {}
 
 def align_territory() -> Any:
@@ -51,6 +51,6 @@ def align_territory() -> Any:
         except Exception as e:
             print(f'  [!] Failed to process {py_file}: {e}')
     print(f'\n[OK] CONVERGENCE COMPLETE. {count} files rewired.')
-    print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target agentic_core'")
+    print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target AgenticCore'")
 if __name__ == '__main__':
     align_territory()

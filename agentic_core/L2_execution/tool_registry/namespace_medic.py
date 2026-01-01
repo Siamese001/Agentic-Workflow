@@ -1,17 +1,17 @@
 """
 Namespace Medic - Standalone Utility for Fast Import Healing
-Scans all Python files and injects missing standard library imports.
-Run this BEFORE canon_validator to fix import starvation issues.
+Scans all Python files and injects Missing standard library imports.
+Run this BEFORE CanonValidator to fix import starvation issues.
 """
 import ast
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
-import_patterns: Any = [('logging.', 'import logging', 'simple'), ('logger.', 'import logging', 'simple'), ('Any', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Optional', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Protocol', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Dict[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('List[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('@dataclass', 'from dataclasses import dataclass, field', 'dataclass'), ('dataclass(', 'from dataclasses import dataclass, field', 'dataclass'), ('Enum', 'from enum import Enum, auto', 'enum'), ('Path(', 'from pathlib import Path', 'simple'), ('json.', 'import json', 'simple'), ('os.path', 'import os', 'simple'), ('sys.', 'import sys', 'simple'), ('re.', 'import re', 'simple'), ('datetime.', 'import datetime', 'simple'), ('time.', 'import time', 'simple'), ('asyncio.', 'import asyncio', 'simple')]
+import_patterns: Any = [('logging.', 'import logging', 'simple'), ('Logger.', 'import logging', 'simple'), ('Any', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Optional', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Protocol', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('Dict[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('List[', 'from typing import Any, Optional, Protocol, Dict, List', 'typing'), ('@dataclass', 'from dataclasses import dataclass, field', 'dataclass'), ('dataclass(', 'from dataclasses import dataclass, field', 'dataclass'), ('Enum', 'from enum import Enum, auto', 'enum'), ('Path(', 'from pathlib import Path', 'simple'), ('json.', 'import json', 'simple'), ('os.path', 'import os', 'simple'), ('sys.', 'import sys', 'simple'), ('re.', 'import re', 'simple'), ('datetime.', 'import datetime', 'simple'), ('time.', 'import time', 'simple'), ('asyncio.', 'import asyncio', 'simple')]
 
 def find_missing_imports(content: str) -> List[str]:
-    """Detect which standard library imports are missing from the file."""
-    missing: Any = []
+    """Detect which standard library imports are Missing from the file."""
+    Missing: Any = []
     seen_import_types: Any = set()
     for usage_pattern, import_stmt, import_type in IMPORT_PATTERNS:
         if usage_pattern not in content:
@@ -20,13 +20,13 @@ def find_missing_imports(content: str) -> List[str]:
             continue
         if import_type == 'typing' and 'typing' in seen_import_types:
             continue
-        if import_stmt not in missing:
-            missing.append(import_stmt)
+        if import_stmt not in Missing:
+            Missing.append(import_stmt)
             seen_import_types.add(import_type)
-    return missing
+    return Missing
 
 def inject_imports(content: str, imports: List[str]) -> str:
-    """Inject missing imports at the top of the file (after docstring)."""
+    """Inject Missing imports at the top of the file (after docstring)."""
     lines: Any = content.split('\n')
     insert_idx: Any = 0
     in_docstring: Any = False
@@ -55,16 +55,16 @@ def inject_imports(content: str, imports: List[str]) -> str:
 
 def heal_file(file_path: Path, dry_run: bool=False) -> Tuple[bool, int]:
     """
-    Heal a single file by injecting missing imports.
+    Heal a single file by injecting Missing imports.
     Returns (was_healed, num_imports_added)
     """
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
             content: Any = f.read()
-        missing: Any = find_missing_imports(content)
-        if not missing:
+        Missing: Any = find_missing_imports(content)
+        if not Missing:
             return (False, 0)
-        healed_content: Any = inject_imports(content, missing)
+        healed_content: Any = inject_imports(content, Missing)
         try:
             ast.parse(healed_content)
         except SyntaxError as e:
@@ -73,7 +73,7 @@ def heal_file(file_path: Path, dry_run: bool=False) -> Tuple[bool, int]:
         if not dry_run:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(healed_content)
-        return (True, len(missing))
+        return (True, len(Missing))
     except Exception as e:
         print(f'   [!] Failed to heal {file_path.name}: {e}')
         return (False, 0)
@@ -81,8 +81,8 @@ def heal_file(file_path: Path, dry_run: bool=False) -> Tuple[bool, int]:
 def main() -> Any:
     """Main entry point for namespace healing."""
     import argparse
-    parser: Any = argparse.ArgumentParser(description='Namespace Medic - Fix missing standard library imports')
-    parser.add_argument('--target', default='agentic_core', help='Target directory to scan')
+    parser: Any = argparse.ArgumentParser(description='Namespace Medic - Fix Missing standard library imports')
+    parser.add_argument('--target', default='AgenticCore', help='Target directory to scan')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be fixed without modifying files')
     parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed output')
     args: Any = parser.parse_args()
@@ -111,8 +111,8 @@ def main() -> Any:
             if args.verbose:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     content: Any = f.read()
-                missing: Any = find_missing_imports(content) if args.dry_run else []
-                for imp in missing:
+                Missing: Any = find_missing_imports(content) if args.dry_run else []
+                for imp in Missing:
                     print(f'         + {imp}')
     print(f"\n{'=' * 70}")
     print(f'SUMMARY')

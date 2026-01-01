@@ -1,5 +1,5 @@
 """
-retrieve_outreach_history.py - Retrieval Module
+RetrieveOutreachHistory.py - Retrieval Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.035640
@@ -17,7 +17,7 @@ class RetrieveOutreachHistory:
     def __init__(self, config: Optional[Dict[str, object]] = None):
         SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f"Initialized {self.__class__.__name__}")
+        Logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
                  query: str,

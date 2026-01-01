@@ -49,7 +49,7 @@ def valid_resume():
 
 
 @pytest.fixture
-def job_description():
+def JobDescription():
     """Sample job description."""
     return """
     Senior Software Engineer
@@ -144,11 +144,11 @@ class TestStrategicWithOptimization:
         # Should have some recommendations
         assert len(recs) > 0
 
-    def test_strategic_with_job_matching(self, ctx, valid_resume, job_description):
+    def test_strategic_with_job_matching(self, ctx, valid_resume, JobDescription):
         """Test strategic analysis with job matching."""
         advisor = StrategicAdvisor(ctx)
 
-        recs = advisor.get_ats_recommendations(valid_resume, job_description)
+        recs = advisor.get_ats_recommendations(valid_resume, JobDescription)
 
         # Should provide job-specific recommendations
         assert isinstance(recs, list)
@@ -197,11 +197,11 @@ class TestUnifiedOrchestratorWithPipeline:
         assert len(result["phases"]) >= 4
 
     @pytest.mark.asyncio
-    async def test_unified_with_job_description(self, ctx, valid_resume, job_description):
+    async def test_unified_with_job_description(self, ctx, valid_resume, JobDescription):
         """Test unified orchestrator with job description."""
         orchestrator = UnifiedOrchestrator(ctx)
 
-        result = await orchestrator.run_mission(valid_resume, job_description)
+        result = await orchestrator.run_mission(valid_resume, JobDescription)
 
         assert "success" in result
 
@@ -243,7 +243,7 @@ class TestPhase6WithPreviousPhases:
 
         # Record learning
         await learning_agent.record_success(
-            task_type="phase6_analysis",
+            TaskType="phase6_analysis",
             input_context=str(valid_resume),
             output_result=str(result),
             confidence=0.9,
@@ -252,10 +252,10 @@ class TestPhase6WithPreviousPhases:
         assert len(ctx.instructions) > 0
 
     @pytest.mark.asyncio
-    async def test_phase6_with_healing(self, ctx, valid_resume, job_description):
+    async def test_phase6_with_healing(self, ctx, valid_resume, JobDescription):
         """Test Phase 6 with healing orchestrator."""
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase6 = Phase6Orchestrator(ctx)
 
@@ -275,10 +275,10 @@ class TestCrossComponentIntegration:
     """Tests for integration across multiple Phase 6 components."""
 
     @pytest.mark.asyncio
-    async def test_full_phase6_workflow(self, ctx, valid_resume, job_description):
+    async def test_full_phase6_workflow(self, ctx, valid_resume, JobDescription):
         """Test complete Phase 6 workflow."""
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         phase6 = Phase6Orchestrator(ctx)
 
@@ -293,23 +293,23 @@ class TestCrossComponentIntegration:
 
         # 4. Strategic analysis
         proposals = phase6.strategic.analyze_structure(valid_resume)
-        ats_recs = phase6.strategic.get_ats_recommendations(valid_resume, job_description)
+        ats_recs = phase6.strategic.get_ats_recommendations(valid_resume, JobDescription)
 
         # 5. Run full mission
-        mission_result = await phase6.run_full_mission(valid_resume, job_description)
+        MissionResult = await phase6.run_full_mission(valid_resume, JobDescription)
 
         # Verify all components worked
         assert isinstance(security_issues, list)
         assert "overall_score" in semantic_result
         assert isinstance(proposals, list)
         assert isinstance(ats_recs, list)
-        assert "success" in mission_result
+        assert "success" in MissionResult
 
     @pytest.mark.asyncio
-    async def test_all_phases_integration(self, ctx, valid_resume, job_description, tmp_path):
+    async def test_all_phases_integration(self, ctx, valid_resume, JobDescription, tmp_path):
         """Test integration of all phases."""
         ctx.current_resume = valid_resume
-        ctx.job_description = job_description
+        ctx.JobDescription = JobDescription
 
         # Initialize all phase orchestrators
         phase4 = Phase4Orchestrator(ctx)
@@ -331,7 +331,7 @@ class TestCrossComponentIntegration:
 
         # Phase 6: Intelligence
         step_id = phase5.track_agent("Phase6Orchestrator", "analyze")
-        analysis = await phase6.analyze_resume(valid_resume, job_description)
+        analysis = await phase6.analyze_resume(valid_resume, JobDescription)
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing

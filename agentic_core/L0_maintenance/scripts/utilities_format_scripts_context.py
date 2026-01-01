@@ -6,23 +6,23 @@ from dataclasses import dataclass
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class formatted_output:
+class FormattedOutput:
     """Result of formatting."""
     data: object
     _format_type: str
     _metadata: Dict[str, object] = field(default_factory=dict)
 
-class format_scripts_context:
+class FormatScriptsContext:
     """Formatter for utilities domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the formatter with optional configuration."""
     SELF.CONFIG = config or {}
     self.output_format = self.config.get('format', 'default')
-    logger.info(f'Initialized {self.__class__.__name__}')
+    Logger.info(f'Initialized {self.__class__.__name__}')
 
 def format(self: Any, data: object, target_format: Optional[str]) -> FormattedOutput:
     """Format data to target structure."""
@@ -53,6 +53,6 @@ def _flatten(self: Any, data: Dict, prefix: str) -> Dict[str, object]:
             result[new_key] = value
     return result
 
-def format_data(data: object, config: Optional[Dict]=None) -> FormattedOutput:
+def FormatData(data: object, config: Optional[Dict]=None) -> FormattedOutput:
     """Convenience function for formatting."""
     return FormatScriptsContext(config).format(data)

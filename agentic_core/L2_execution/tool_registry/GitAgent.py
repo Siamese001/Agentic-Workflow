@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 class GitAgent:
     """
@@ -35,11 +35,11 @@ class GitAgent:
         self.remote_repo = os.getenv('CANON_REMOTE_REPO')
         self.git_cmd = ['git', '-C', str(self.repo_root)]
         if not self._is_git_repo():
-            logger.warning(f'Not in a git repository: {self.repo_root}')
+            Logger.warning(f'Not in a git repository: {self.repo_root}')
             self.enabled = False
         else:
             self.enabled = True
-            logger.info(f'GitAgent initialized for {self.repo_root}')
+            Logger.info(f'GitAgent initialized for {self.repo_root}')
 
     def _is_git_repo(self) -> bool:
         """Check if current directory is a git repository."""
@@ -61,8 +61,8 @@ class GitAgent:
             result = subprocess.run(cmd, capture_output=True, text=True, check=check)
             return result
         except subprocess.CalledProcessError as e:
-            logger.error(f"Git command failed: {' '.join(cmd)}")
-            logger.error(f'Error: {e.stderr}')
+            Logger.error(f"Git command failed: {' '.join(cmd)}")
+            Logger.error(f'Error: {e.stderr}')
             raise
 
     def _generate_git_metadata(self, cycle_id: int) -> Dict[str, str]:
@@ -93,7 +93,7 @@ class GitAgent:
                         modified.append(Path(file_path))
             return modified
         except Exception as e:
-            logger.error(f'Failed to get modified files: {e}')
+            Logger.error(f'Failed to get modified files: {e}')
             return []
 
     def _check_for_secrets(self, file_paths: List[Path]) -> List[str]:
@@ -133,15 +133,15 @@ class GitAgent:
             True if successful
         """
         if not self.enabled:
-            logger.warning('Git not enabled')
+            Logger.warning('Git not enabled')
             return False
         try:
             for file_path in file_paths:
                 self._run_git(['add', str(file_path)])
-            logger.info(f'Staged {len(file_paths)} files')
+            Logger.info(f'Staged {len(file_paths)} files')
             return True
         except Exception as e:
-            logger.error(f'Failed to stage files: {e}')
+            Logger.error(f'Failed to stage files: {e}')
             return False
 
     def create_branch(self, branch_name: str) -> bool:
@@ -157,10 +157,10 @@ class GitAgent:
             return False
         try:
             self._run_git(['checkout', '-b', branch_name])
-            logger.info(f'Created branch: {branch_name}')
+            Logger.info(f'Created branch: {branch_name}')
             return True
         except Exception as e:
-            logger.error(f'Failed to create branch: {e}')
+            Logger.error(f'Failed to create branch: {e}')
             return False
 
     def commit_changes(self, message: str) -> bool:
@@ -182,10 +182,10 @@ class GitAgent:
             except:
                 pass
             self._run_git(['commit', '-m', message])
-            logger.info('Changes committed')
+            Logger.info('Changes committed')
             return True
         except Exception as e:
-            logger.error(f'Failed to commit: {e}')
+            Logger.error(f'Failed to commit: {e}')
             return False
 
     def push_to_remote(self, branch_name: str=None) -> bool:
@@ -199,7 +199,7 @@ class GitAgent:
             True if successful
         """
         if not self.enabled or not self.remote_repo:
-            logger.warning('Remote repository not configured')
+            Logger.warning('Remote repository not configured')
             return False
         try:
             try:
@@ -210,10 +210,10 @@ class GitAgent:
                 self._run_git(['push', '-u', 'origin', branch_name])
             else:
                 self._run_git(['push', '-u', 'origin', 'HEAD'])
-            logger.info(f'Pushed to remote: {self.remote_repo}')
+            Logger.info(f'Pushed to remote: {self.remote_repo}')
             return True
         except Exception as e:
-            logger.error(f'Failed to push to remote: {e}')
+            Logger.error(f'Failed to push to remote: {e}')
             return False
 
     def commit_healing_cycle(self, cycle_id: int, modified_files: List[Path]) -> bool:
@@ -228,15 +228,15 @@ class GitAgent:
             True if successful
         """
         if not modified_files:
-            logger.info('No files to commit')
+            Logger.info('No files to commit')
             return True
         metadata: Any = self._generate_git_metadata(cycle_id)
         suspicious: Any = self._check_for_secrets(modified_files)
         if suspicious:
-            logger.warning(f'Found potential secrets in: {suspicious}')
+            Logger.warning(f'Found potential secrets in: {suspicious}')
             modified_files: Any = [f for f in modified_files if str(f) not in suspicious]
         if not modified_files:
-            logger.error('No safe files to commit')
+            Logger.error('No safe files to commit')
             return False
         try:
             if not self.create_branch(metadata['branch_name']):
@@ -247,10 +247,10 @@ class GitAgent:
                 return False
             if self.remote_repo:
                 self.push_to_remote(metadata['branch_name'])
-            logger.info(f'Successfully committed healing cycle {cycle_id}')
+            Logger.info(f'Successfully committed healing cycle {cycle_id}')
             return True
         except Exception as e:
-            logger.error(f'Failed to commit healing cycle: {e}')
+            Logger.error(f'Failed to commit healing cycle: {e}')
             return False
 
     def get_repo_status(self) -> Dict[str, Any]:
@@ -274,7 +274,7 @@ class GitAgent:
             remotes: Any = remote_result.stdout.strip() if remote_result.returncode == 0 else ''
             return {'enabled': True, 'current_branch': current_branch, 'modified_files': modified_files, 'remotes': remotes, 'remote_configured': bool(self.remote_repo)}
         except Exception as e:
-            logger.error(f'Failed to get repo status: {e}')
+            Logger.error(f'Failed to get repo status: {e}')
             return {'status': 'error', 'error': str(e)}
 _git_agent: Optional["GitAgent"] = None
 
@@ -297,9 +297,9 @@ def initialize_git_agent(repo_root: Path=None) -> Any:
     global _git_agent
     _git_agent = GitAgent(repo_root)
     if _git_agent.enabled:
-        logger.info('GitAgent initialized successfully')
+        Logger.info('GitAgent initialized successfully')
     else:
-        logger.warning('GitAgent disabled - not in a git repository')
+        Logger.warning('GitAgent disabled - not in a git repository')
 
 def commit_healing_cycle(cycle_id: int, modified_files: List[Path]) -> bool:
     """

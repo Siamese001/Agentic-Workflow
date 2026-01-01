@@ -49,7 +49,7 @@ def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) ->
     return fetch_tool(url=url, max_length=max_length)
 
 
-def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Implements the 'Automated Lead Vetting & Contact' use case, integrating L1 (Fetch),
     L3 (Pinecone), and L5 (MEMemory) to perform context-aware outreach.
@@ -57,8 +57,8 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
     # 1. Register PID for the Watchdog
     register_process()
 
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"🚀 Starting Automated Lead Vetting for {company_url} (User: {user_name})...")
 
     # Extract tools from the tools dictionary
@@ -75,8 +75,8 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
     try:
         # Fetch the company's latest news or press releases with egress filtering
         company_news = _fetch_company_content(company_url, fetch, max_length=1000)
-        if logger:
-            logger.info(f"✅ Fetched company content from {company_url}")
+        if Logger:
+            Logger.info(f"✅ Fetched company content from {company_url}")
     except Exception as e:
         return {"status": "error", "message": f"Fetch MCP failed to retrieve company data: {e}"}
 
@@ -93,8 +93,8 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
             if 'CEO' in entity.get('title', '') or 'Manager' in entity.get('title', ''):
                 target_contacts.append(entity)
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ Found {len(target_contacts)} key contacts in MEMemory")
     except Exception as e:
         return {"status": "error", "message": f"MEMemory MCP failed to retrieve contacts: {e}"}
@@ -111,14 +111,14 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
         if not outreach_template:
             outreach_template = "I hope this message finds you well. I wanted to reach out regarding..."
 
-        if logger:
-            logger.info("✅ Retrieved L3 outreach template from Pinecone.")
+        if Logger:
+            Logger.info("✅ Retrieved L3 outreach template from Pinecone.")
 
     except Exception as e:
         # Fallback to generic template if Pinecone fails
         outreach_template = "I hope this message finds you well. I wanted to reach out regarding potential collaboration opportunities."
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ Pinecone lookup failed, using fallback template: {e}")
 
     # --- Step 4: Synthesize Personalized Pitch ---
@@ -158,9 +158,9 @@ Context: Automated lead vetting based on recent company activity
     try:
         # --- HARDENING PROTOCOL 10: SHADOW MODE EXECUTION ---
         if SHADOW_MODE_ACTIVE:
-            if logger:
-                logger.warning(f"👻 SHADOW MODE: Email to {primary_contact.get('email', 'contact@company.com')} blocked.")
-                logger.warning(f"Email content saved to shadow_output/email_{primary_contact.get('email', 'contact@company.com')}.txt")
+            if Logger:
+                Logger.warning(f"👻 SHADOW MODE: Email to {primary_contact.get('email', 'contact@company.com')} blocked.")
+                Logger.warning(f"Email content saved to shadow_output/email_{primary_contact.get('email', 'contact@company.com')}.txt")
             email_result = {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
         else:
             email_result = send_email(
@@ -173,8 +173,8 @@ Context: Automated lead vetting based on recent company activity
         # Log action for watchdog
         log_action("SEND_EMAIL", f"Sent to {primary_contact.get('email', 'contact@company.com')}")
 
-        if logger:
-            logger.info(f"✅ Email sent to {primary_contact.get('email')}")
+        if Logger:
+            Logger.info(f"✅ Email sent to {primary_contact.get('email')}")
 
     except Exception as e:
         return {"status": "error", "message": f"Failed to send email: {e}"}
@@ -193,12 +193,12 @@ Context: Automated lead vetting based on recent company activity
         add_observations = tools.get('add_observations')
         if add_observations:
             add_observations(observations=memory_update)
-            if logger:
-                logger.info("✅ MEMemory updated with outreach activity")
+            if Logger:
+                Logger.info("✅ MEMemory updated with outreach activity")
 
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ Memory update failed (non-critical): {e}")
+        if Logger:
+            Logger.warning(f"⚠️ Memory update failed (non-critical): {e}")
 
     return {
         "status": "success",
@@ -210,13 +210,13 @@ Context: Automated lead vetting based on recent company activity
     }
 
 
-def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Leverages the Time MCP (L4) and MEMemory (L5) to determine the best time to contact a lead,
     and then sends the initial email using the Send Email MCP.
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"⏰ Starting optimal contact time vetting for {lead_email} in {lead_timezone}.")
 
     # Extract Time MCP tools
@@ -239,8 +239,8 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
             system_time_str.replace('Z', '+00:00'))
         current_time_hhmm = system_time.strftime('%H:%M')
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ Retrieved agent's current time: {current_time_hhmm}")
     except Exception as e:
         return {"status": "error", "message": f"Time MCP (get_current_time) failed: {e}"}
@@ -259,8 +259,8 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
             converted_time_str.replace('Z', '+00:00'))
         lead_local_time = lead_local_time_obj.strftime('%H:%M')
 
-        if logger:
-            logger.info(f"✅ Lead's current local time: {lead_local_time}")
+        if Logger:
+            Logger.info(f"✅ Lead's current local time: {lead_local_time}")
 
     except Exception as e:
         return {"status": "error", "message": f"Time MCP (convert_time) failed: {e}"}
@@ -276,8 +276,8 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
         decision = "Off-Hours: Defer outreach until next business day (Requires Calendar MCP)."
         send_now = False
 
-    if logger:
-        logger.info(f"🧠 Decision: {decision}")
+    if Logger:
+        Logger.info(f"🧠 Decision: {decision}")
 
     # --- Step 4: Execute Action (Send Email MCP) ---
     if send_now:
@@ -299,8 +299,8 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
                 if add_observations:
                     add_observations(observations=memory_update)
             except Exception as mem_e:
-                if logger:
-                    logger.warning(
+                if Logger:
+                    Logger.warning(
                         f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
 
             return {"status": "contacted", "message": f"Email dispatched at optimal time. {send_result}"}
@@ -323,20 +323,20 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
             if add_observations:
                 add_observations(observations=memory_update)
         except Exception as mem_e:
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
 
         return {"status": "deferred", "message": f"Outreach deferred. Local time {lead_local_time} is outside business hours. Requires Calendar MCP for auto-scheduling."}
 
 
-def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name: str, pitch_topic: str, expected_title: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name: str, pitch_topic: str, expected_title: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Refined 'Lead Snapshot Vetting' (Outreach Engine). Uses L2 Playwright for efficient, verified context capture
     before committing to the outreach action, adhering to the 22/100 connection budget.
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"📸 Starting efficient L2 Snapshot Vetting for {lead_email} (Budget: 78 remaining connections).")
 
     snapshot_file_path = f"snapshots/{lead_email.split('@')[0]}_profile.png"
@@ -351,8 +351,8 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
 
     # --- Step 1: Capture and Verify Live Context (L2 Playwright) ---
     try:
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"L2 Playwright: Navigating and verifying content at {lead_profile_url}.")
 
         # 1. Navigate (Necessary connection step)
@@ -367,13 +367,13 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
         # Filename parameter used for saving
         browser_snapshot(filename=snapshot_file_path)
 
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ Playwright connection successful. Verified '{expected_title}' and snapshot saved.")
 
     except Exception as e:
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ Playwright L2 failed (Connection Budget Protected: {e}). Falling back to static context.")
         snapshot_file_path = "N/A (L2 connection failed or verification failed)"
 
@@ -393,8 +393,8 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
             'text', 'Placeholder pitch content.')
 
     except Exception as e:
-        if logger:
-            logger.error(f"Context retrieval failed: {e}")
+        if Logger:
+            Logger.error(f"Context retrieval failed: {e}")
         canonical_pitch = "Context system failure."
 
     # --- Step 4: Dispatch Action (Send Email MCP) ---
@@ -426,13 +426,13 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
         return {"status": "error", "message": f"Send Email MCP failed: {e}"}
 
 
-def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: Dict[str, Any], Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Executes the multi-layer job application flow using L2 (Playwright) for interaction,
-    L4 (Redis) for state, L1 (GitKraken) for artifact submission, and L5 (MEMemory) for logging.
+    L4 (Redis) for state, L1 (GitKraken) for Artifact submission, and L5 (MEMemory) for logging.
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"🤖 Starting autonomous application for {user_name} at {app_url}...")
 
     # Define paths for required components
@@ -459,11 +459,11 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
             default_profile = '{"email": "user@example.com", "name": "Jane Doe"}'
             string_set(key=f"user_profile:{user_name}", value=default_profile)
             cached_profile = default_profile
-            if logger:
-                logger.info("✅ L4 Redis: Created default user profile")
+            if Logger:
+                Logger.info("✅ L4 Redis: Created default user profile")
         user_data = json.loads(cached_profile)
-        if logger:
-            logger.info(
+        if Logger:
+            Logger.info(
                 f"✅ L4 Redis: Retrieved profile for {user_data['name']}")
     except Exception as e:
         return {"status": "error", "message": f"Redis L4 failed during profile retrieval: {e}"}
@@ -471,48 +471,48 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
     # 2. Navigate and Interact (L2 Playwright)
     try:
         browser_navigate(url=app_url)
-        if logger:
-            logger.info(f"✅ L2 Playwright: Navigated to {app_url}")
+        if Logger:
+            Logger.info(f"✅ L2 Playwright: Navigated to {app_url}")
 
         # Fill name field (L2 Interaction)
         browser_type(element="Name input field",
                      ref="[#name]", text=user_data['name'])
-        if logger:
-            logger.info("✅ L2 Playwright: Filled name field")
+        if Logger:
+            Logger.info("✅ L2 Playwright: Filled name field")
 
         # Fill email field
         browser_type(element="Email input field",
                      ref="[#email]", text=user_data['email'])
-        if logger:
-            logger.info("✅ L2 Playwright: Filled email field")
+        if Logger:
+            Logger.info("✅ L2 Playwright: Filled email field")
 
         # Store intermediate state in Redis (L4 Redis)
         string_set(key=app_state_key, value="FORM_FILLED")
-        if logger:
-            logger.info("✅ L4 Redis: Stored intermediate state")
+        if Logger:
+            Logger.info("✅ L4 Redis: Stored intermediate state")
 
     except Exception as e:
         return {"status": "error", "message": f"Playwright L2 interaction failed: {e}"}
 
     # 3. Submit Code Artifact (L1 GitKraken)
     try:
-        # Commit the code sample artifact required by the application
+        # Commit the code sample Artifact required by the application
         commit_message = f"Job Application Submission: {app_url} - Code Artifact"
         commit_result = commit(path=code_sample_path, message=commit_message)
-        if logger:
-            logger.info("✅ L1 GitKraken: Committed code sample artifact")
+        if Logger:
+            Logger.info("✅ L1 GitKraken: Committed code sample Artifact")
     except Exception as e:
         # Non-fatal if Git submission is optional; we log and continue to form submit
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ GitKraken L1 commit failed for code sample: {e}")
         commit_result = "Submission skipped."
 
     # 4. Final Form Submission (L2 Playwright)
     try:
         browser_click(element="Submit button", ref="[#submit_button]")
-        if logger:
-            logger.info("✅ L2 Playwright: Submitted application form")
+        if Logger:
+            Logger.info("✅ L2 Playwright: Submitted application form")
 
         # 5. Log Action (L5 MEMemory)
         add_observations(observations=[{
@@ -524,13 +524,13 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
                     commit_result) > 50 else commit_result
             ]
         }])
-        if logger:
-            logger.info("✅ L5 MEMemory: Logged application action")
+        if Logger:
+            Logger.info("✅ L5 MEMemory: Logged application action")
 
         # 6. Final Redis State (L4 Redis)
         string_set(key=app_state_key, value="COMPLETED_SUBMITTED")
-        if logger:
-            logger.info("✅ L4 Redis: Updated final state")
+        if Logger:
+            Logger.info("✅ L4 Redis: Updated final state")
 
         return {
             "status": "application_complete",
@@ -542,14 +542,14 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
         return {"status": "error", "message": f"Final Playwright submit/L5 log failed: {e}"}
 
 
-def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> Dict[str, Any]:
+def adaptive_browser_session(target_url: str, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Iteratively attempts to establish a stable Playwright session, adapting configuration
     (e.g., proxies) based on L4 Redis state, maximizing the use of limited L2 connections.
     (Sequential Thinking leveraged through adaptive retries.)
     """
-    if logger:
-        logger.info(f"🔌 Starting Adaptive Browser Session for {target_url}...")
+    if Logger:
+        Logger.info(f"🔌 Starting Adaptive Browser Session for {target_url}...")
 
     CONNECTION_STATE_KEY = "browser:last_working_proxy"
     max_retries = 3
@@ -563,8 +563,8 @@ def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> D
 
         # NOTE: A real Playwright wrapper would apply this config before connecting.
         if i > 1 and proxy_config:
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     f"Attempt {i}: Initial connection failed. Applying cached proxy from L4 Redis...")
 
         # 2. Attempt Connection (L2 Playwright)
@@ -591,20 +591,20 @@ def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> D
                     ]
                 }])
             except Exception as mem_e:
-                if logger:
-                    logger.warning(
+                if Logger:
+                    Logger.warning(
                         f"⚠️ Failed to log success to MEMemory: {mem_e}")
 
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     f"✅ L2 Playwright: Successfully connected on attempt {i}")
 
             return {"status": "connected", "attempts": i, "proxy_used": proxy_config or "none"}
 
         except Exception as e:
             if i < max_retries:
-                if logger:
-                    logger.warning(
+                if Logger:
+                    Logger.warning(
                         f"L2 Playwright failed on attempt {i} ({e}). Retrying...")
                 # Add exponential backoff delay
                 time.sleep(2 ** (i - 1))
@@ -620,8 +620,8 @@ def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> D
                         ]
                     }])
                 except Exception as mem_e:
-                    if logger:
-                        logger.warning(
+                    if Logger:
+                        Logger.warning(
                             f"⚠️ Failed to log failure to MEMemory: {mem_e}")
 
                 return {
@@ -635,13 +635,13 @@ def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> D
     return {"status": "failed", "attempts": 0, "message": "Loop logic error."}
 
 
-def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_resilient_application_pipeline(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Executes a hardened, multi-stage application pipeline with iterative connection attempts,
     L3 fallbacks, and an immutable audit trail. (Sequential Thinking Maximized)
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"🛡️ Starting RESILIENT Application Pipeline for {user_name} at {app_url}...")
 
     CONNECTION_STATE_KEY = "browser:last_working_proxy"
@@ -654,8 +654,8 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
         proxy_config = string_get(CONNECTION_STATE_KEY)
 
         if i > 1 and proxy_config:
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     f"Attempt {i}: Applying cached config from L4 Redis: {proxy_config}.")
             # NOTE: In a real system, the browser_navigate wrapper would apply this config.
 
@@ -664,21 +664,21 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
 
             # Connection Success: Break loop and cache the current configuration
             string_set(CONNECTION_STATE_KEY, "proxy:success_config_applied")
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     f"✅ Stable L2 connection established on attempt {i}.")
             break
 
         except Exception as e:
             if i < max_retries:
-                if logger:
-                    logger.warning(
+                if Logger:
+                    Logger.warning(
                         f"L2 connection failed on attempt {i}. Retrying...")
                 # Add exponential backoff
                 time.sleep(2 ** (i - 1))
             else:
-                if logger:
-                    logger.error(
+                if Logger:
+                    Logger.error(
                         "L2 connection failed permanently. Aborting pipeline.")
                 string_set(APP_STATUS_KEY, "FAILED_ABORTED_NOCONNECT")
                 return {"status": "failed_connection", "message": "Failed to establish stable browser session after retries."}
@@ -695,35 +695,35 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
         search_result = json.loads(search_result_str)
         code_artifact_content = search_result[0].get(
             'content', code_artifact_content)
-        if logger:
-            logger.info(
-                "✅ L3 Pinecone artifact retrieved successfully (High-Quality RAG).")
+        if Logger:
+            Logger.info(
+                "✅ L3 Pinecone Artifact retrieved successfully (High-Quality RAG).")
 
     except Exception as e:
         # Hardening: Fallback to L1 Filesystem if L3 fails
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ L3 Pinecone failed ({e}). Falling back to L1 Filesystem cache.")
         try:
             # Mock read_text_file function
             with open(CODE_FALLBACK_PATH, 'r') as f:
                 code_artifact_content = f.read()
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     "✅ L1 Filesystem fallback successful (Resilience maintained).")
         except Exception:
             pass
-        if logger:
-            logger.error(
+        if Logger:
+            Logger.error(
                 "L1 Filesystem fallback failed. Using hardcoded default.")
 
     # --- 3. Core Interaction & Final Commit (L2 Playwright, L1 GitKraken) ---
 
-    # Commit artifact for audit trail purposes (L1 GitKraken)
+    # Commit Artifact for audit trail purposes (L1 GitKraken)
     try:
-        # Simulate creating/updating the artifact file before committing
+        # Simulate creating/updating the Artifact file before committing
         code_file_path = f"artifacts/{user_name}_code_sample.js"
-        # Write the code artifact to filesystem
+        # Write the code Artifact to filesystem
         with open(code_file_path, 'w') as f:
             f.write(code_artifact_content)
 
@@ -734,12 +734,12 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
             "status": "success"
         }
         git_commit_id = commit_result.get("commit_id", "N/A")
-        if logger:
-            logger.info(
-                f"✅ L1 GitKraken: Committed artifact with ID {git_commit_id}")
+        if Logger:
+            Logger.info(
+                f"✅ L1 GitKraken: Committed Artifact with ID {git_commit_id}")
     except Exception as e:
-        if logger:
-            logger.warning(f"L1 GitKraken failed to commit artifact: {e}")
+        if Logger:
+            Logger.warning(f"L1 GitKraken failed to commit Artifact: {e}")
         git_commit_id = "FAILED_NO_COMMIT"
 
     # Final Form Interaction (L2 Playwright)
@@ -750,11 +750,11 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
                      ref="[#code_path]", text=code_file_path)
         browser_click(element="Final Submit button", ref="[#submit]")
         application_status = "SUCCESS"
-        if logger:
-            logger.info("✅ L2 Playwright: Application submitted successfully")
+        if Logger:
+            Logger.info("✅ L2 Playwright: Application submitted successfully")
     except Exception as e:
-        if logger:
-            logger.error(f"L2 Playwright final interaction failed: {e}")
+        if Logger:
+            Logger.error(f"L2 Playwright final interaction failed: {e}")
 
     # --- 4. Immutable Audit Trail (L4 Time, L5 MEMemory) ---
 
@@ -777,11 +777,11 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
                 f"Artifact source: {'Pinecone L3' if 'Pinecone' in str(code_artifact_content) else 'Filesystem L1'}"
             ]
         }])
-        if logger:
-            logger.info("✅ L5 MEMemory: Immutable audit trail created")
+        if Logger:
+            Logger.info("✅ L5 MEMemory: Immutable audit trail created")
     except Exception as e:
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
     return {
@@ -794,13 +794,13 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
     }
 
 
-def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, logger: Optional[Any] = None) -> Dict[str, Any]:
+def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str, max_retries: int = 3, Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Final Hardened Pipeline: Combines Iterative L2 Connection with Atomic L3 Context Retrieval
     and Immutable Auditing across 10 MCPs.
     """
-    if logger:
-        logger.info(
+    if Logger:
+        Logger.info(
             f"✨ Starting ZERO-LOSS Hardened Pipeline for {user_name} at {app_url}...")
 
     # --- Setup Keys ---
@@ -819,17 +819,17 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
             browser_navigate(url=app_url)
             # L4 Redis Write
             string_set(CONNECTION_STATE_KEY, "proxy:success_config_applied")
-            if logger:
-                logger.info(f"✅ L2 Connection established on attempt {i}.")
+            if Logger:
+                Logger.info(f"✅ L2 Connection established on attempt {i}.")
             break
         except Exception:
             if i == max_retries:
-                if logger:
-                    logger.error(
+                if Logger:
+                    Logger.error(
                         "L2 Connection failed permanently. Aborting pipeline.")
                 return {"status": "failed_connection", "message": "Failed to establish stable browser session."}
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     f"L2 failed on attempt {i}. Retrying with adaptive config...")
             time.sleep(1)
 
@@ -839,12 +839,12 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
 
     try:
         # Check Cache (L4 Redis) - The read-through portion
-        cached_artifact = string_get(f"artifact:{job_hash}")
+        cached_artifact = string_get(f"Artifact:{job_hash}")
         if cached_artifact:
             code_artifact_content = json.loads(cached_artifact).get(
                 'content', code_artifact_content)
-            if logger:
-                logger.info("✅ L4 Redis Cache Hit for artifact.")
+            if Logger:
+                Logger.info("✅ L4 Redis Cache Hit for Artifact.")
         else:
             # L3 Retrieval with L1 Fallback
             search_result_str = search_records(
@@ -855,27 +855,27 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
 
             # Atomic Write (L4 Redis Transaction Hardening)
             start_transaction()
-            watch_key(f"artifact:{job_hash}")
-            transaction_set_with_ttl(f"artifact:{job_hash}", json.dumps(
+            watch_key(f"Artifact:{job_hash}")
+            transaction_set_with_ttl(f"Artifact:{job_hash}", json.dumps(
                 {"content": code_artifact_content}), 86400)
             commit_transaction()
-            if logger:
-                logger.info("✅ L4 Redis: Atomic transaction committed.")
+            if Logger:
+                Logger.info("✅ L4 Redis: Atomic transaction committed.")
 
     except Exception as e:
         # L3 Pinecone/L4 Redis failure: Fallback to L1 Filesystem
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ L3/L4 Context failed: {e}. Falling back to L1 Filesystem.")
         try:
             code_artifact_content = read_text_file(
                 path=CODE_FALLBACK_PATH)  # L1 Filesystem Read
-            if logger:
-                logger.info("✅ L1 Filesystem fallback successful.")
+            if Logger:
+                Logger.info("✅ L1 Filesystem fallback successful.")
         except Exception:
             pass
-        if logger:
-            logger.error(
+        if Logger:
+            Logger.error(
                 "L1 Filesystem fallback failed. Using hardcoded default.")
 
     # --- PHASE 2: Core Action and Immutable Audit Trail (L1/L2/L4/L5) ---
@@ -883,7 +883,7 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
     # 2a. Commit Artifact (L1 GitKraken)
     try:
         code_file_path = f"artifacts/{user_name}_code_sample.js"
-        # Write the code artifact to filesystem
+        # Write the code Artifact to filesystem
         with open(code_file_path, 'w') as f:
             f.write(code_artifact_content)
 
@@ -894,9 +894,9 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
             "status": "success"
         }
         git_commit_id = commit_result.get("commit_id", "FAILED_NO_COMMIT")
-        if logger:
-            logger.info(
-                f"✅ L1 GitKraken: Committed artifact with ID {git_commit_id}")
+        if Logger:
+            Logger.info(
+                f"✅ L1 GitKraken: Committed Artifact with ID {git_commit_id}")
     except Exception:
         git_commit_id = "FAILED_NO_COMMIT"
 
@@ -908,11 +908,11 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
                      ref="[#code_path]", text=code_file_path)
         browser_click(element="Final Submit button", ref="[#submit]")
         application_status = "SUCCESS"
-        if logger:
-            logger.info("✅ L2 Playwright: Application submitted successfully")
+        if Logger:
+            Logger.info("✅ L2 Playwright: Application submitted successfully")
     except Exception as e:
-        if logger:
-            logger.error(f"L2 Playwright final interaction failed: {e}")
+        if Logger:
+            Logger.error(f"L2 Playwright final interaction failed: {e}")
 
     # 2c. Immutable Audit (L4 Time, L5 MEMemory)
     audit_timestamp_str = get_current_time(timezone="UTC")  # L4 Time
@@ -935,11 +935,11 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
                 f"Artifact source: {'Pinecone L3' if 'Pinecone' in str(code_artifact_content) else 'Filesystem L1'}"
             ]
         }])
-        if logger:
-            logger.info("✅ L5 MEMemory: Immutable audit trail created")
+        if Logger:
+            Logger.info("✅ L5 MEMemory: Immutable audit trail created")
     except Exception as e:
-        if logger:
-            logger.warning(
+        if Logger:
+            Logger.warning(
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
     return {
@@ -953,22 +953,22 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
     }
 
 
-def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "default", logger: Optional[Any] = None) -> Dict[str, Any]:
+def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "default", Logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Outreach sequence with brand compliance and cost-controlled search.
     Integrates Figma (L2) for brand guidelines and rate-limited Brave Search (L1/L3).
     """
-    if logger:
-        logger.info(f"🎨 Starting Brand-Compliant Outreach for {company_url}")
+    if Logger:
+        Logger.info(f"🎨 Starting Brand-Compliant Outreach for {company_url}")
 
     # 1. Retrieve brand guidelines from Figma (L2)
     try:
-        brand_guidelines = get_brand_style_guide(brand_id, logger=logger)
-        if logger:
-            logger.info(f"✅ Retrieved brand guidelines for {brand_id}")
+        brand_guidelines = get_brand_style_guide(brand_id, Logger=Logger)
+        if Logger:
+            Logger.info(f"✅ Retrieved brand guidelines for {brand_id}")
     except Exception as e:
-        if logger:
-            logger.warning(f"⚠️ Failed to retrieve brand guidelines: {e}")
+        if Logger:
+            Logger.warning(f"⚠️ Failed to retrieve brand guidelines: {e}")
         brand_guidelines = {
             "colors": ["#000000", "#FFFFFF"],
             "tone": "professional",
@@ -979,22 +979,22 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
     try:
         research_query = f"{company_url} company information executives"
         search_results = execute_cost_controlled_search(
-            research_query, logger=logger)
+            research_query, Logger=Logger)
 
         if search_results:
             results = json.loads(search_results)
             company_info = results[0] if results else {}
-            if logger:
-                logger.info(
+            if Logger:
+                Logger.info(
                     f"✅ Retrieved company information via rate-limited search")
         else:
             company_info = {}
-            if logger:
-                logger.warning(
+            if Logger:
+                Logger.warning(
                     "⚠️ Search budget exhausted - using minimal info")
     except Exception as e:
-        if logger:
-            logger.error(f"❌ Company research failed: {e}")
+        if Logger:
+            Logger.error(f"❌ Company research failed: {e}")
         company_info = {}
 
     # 3. Generate brand-compliant outreach content
@@ -1015,7 +1015,7 @@ Best regards,
     compliance_result = ensure_brand_compliance(
         content=outreach_content,
         brand_guidelines=brand_guidelines,
-        logger=logger
+        Logger=Logger
     )
 
     # 5. Log compliance check to MEMory (L5)

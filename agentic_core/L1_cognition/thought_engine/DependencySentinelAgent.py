@@ -10,14 +10,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 # [SSOT DERIVED] Layer names from CORE_SUBFOLDER_MAP
 LAYER_NAMES = [k for k in CORE_SUBFOLDER_MAP.keys() if k.startswith("L")]
 
-class import_analyzer(ast.NodeVisitor):
+class ImportAnalyzer(ast.NodeVisitor):
     """AST visitor to extract import information."""
 
     def __init__(self, file_path: Path):
@@ -47,11 +47,11 @@ class import_analyzer(ast.NodeVisitor):
             self.from_imports.append({'module': node.module, 'names': [alias.name for alias in node.names], 'level': node.level, 'line': node.lineno, 'type': 'from_import'})
         self.generic_visit(node)
 
-class dependency_violation:
-    """Represents a dependency rule violation."""
+class DependencyViolation:
+    """Represents a dependency rule Violation."""
 
-    def __init__(self, violation_type: str, file_path: Path, line: int, message: str, details: Dict=None):
-        self.type = violation_type
+    def __init__(self, ViolationType: str, file_path: Path, line: int, message: str, details: Dict=None):
+        self.type = ViolationType
         self.file_path = file_path
         self.line = line
         self.message = message
@@ -104,14 +104,14 @@ class DependencySentinelAgent:
             analyzer: Any = ImportAnalyzer(file_path)
             analyzer.visit(tree)
             for imp in analyzer.imports:
-                violation: Any = self._check_import(analyzer, imp['module'], imp['line'])
-                if violation:
-                    violations.append(violation)
+                Violation: Any = self._check_import(analyzer, imp['module'], imp['line'])
+                if Violation:
+                    violations.append(Violation)
             for imp in analyzer.from_imports:
                 for name in imp['names']:
-                    violation: Any = self._check_import(analyzer, imp['module'], imp['line'], name)
-                    if violation:
-                        violations.append(violation)
+                    Violation: Any = self._check_import(analyzer, imp['module'], imp['line'], name)
+                    if Violation:
+                        violations.append(Violation)
         except SyntaxError as e:
             violations.append(DependencyViolation('syntax_error', file_path, e.lineno or 0, f'Syntax error: {e}'))
         except Exception as e:
@@ -135,9 +135,9 @@ class DependencySentinelAgent:
             return None
         if self._is_circular_import(analyzer.file_path, module):
             return DependencyViolation('circular_import', analyzer.file_path, line, f'Circular import detected: {module}')
-        violation = self._check_cross_layer_violation(analyzer, module, line)
-        if violation:
-            return violation
+        Violation = self._check_cross_layer_violation(analyzer, module, line)
+        if Violation:
+            return Violation
         if self._violates_depth_law(analyzer.file_path, module):
             return DependencyViolation('depth_violation', analyzer.file_path, line, f'Import violates depth law: {module}')
         return None
@@ -218,10 +218,10 @@ class DependencySentinelAgent:
     def get_violation_summary(self) -> Dict:
         """Get summary of all violations."""
         summary: Any = {'total_violations': len(self.violations), 'by_type': {}, 'by_file': {}}
-        for violation in self.violations:
-            vtype: Any = violation.type
+        for Violation in self.violations:
+            vtype: Any = Violation.type
             summary['by_type'][vtype] = summary['by_type'].get(vtype, 0) + 1
-            file: Any = str(violation.file_path)
+            file: Any = str(Violation.file_path)
             summary['by_file'][file] = summary['by_file'].get(file, 0) + 1
         return summary
 _dependency_sentinel: Optional[DependencySentinel] = None

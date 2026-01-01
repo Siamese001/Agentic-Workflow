@@ -5,7 +5,7 @@ Provides core functionality and exports for the Security Controls module.
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 __version__: str = '1.0.0'
 __author__: str = 'Agentic Workflow'
 __description__: str = 'Core Security Controls functionality'

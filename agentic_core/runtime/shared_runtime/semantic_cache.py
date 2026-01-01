@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 
 try:
-    from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
+    from AgenticCore.semantic_memory.embeddings.core_embedder import get_embedding
 except ImportError:
     # Fallback: define a stub if embedder not available
     def get_embedding(text: str, model: str = None, dimensions: int = None):
@@ -21,7 +21,7 @@ except ImportError:
         warnings.warn("get_embedding not available, semantic matching disabled")
         return [0.0] * 1536
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 SIMILARITY_THRESHOLD = 0.92  # Tunable cosine threshold for semantic matches
 EMBEDDING_MODEL = 'text-embedding-3-small'  # Or whatever model is configured in core_embedder
@@ -158,7 +158,7 @@ class SemanticCache:
                     matched_entry.hit_count += 1
                     self._semantic_hit_count += 1
                     if self.enable_logging:
-                        logger.info(
+                        Logger.info(
                             'semantic_cache_hit',
                             extra={
                                 'similarity_score': score,
@@ -203,7 +203,7 @@ class SemanticCache:
         )
         self._cache[key] = entry
         if self.enable_logging:
-            logger.debug(f'Cached entry: {key[:10]}... (semantic: {self.enable_semantic_matching})')
+            Logger.debug(f'Cached entry: {key[:10]}... (semantic: {self.enable_semantic_matching})')
 
     def _evict_oldest(self) -> None:
         """Evict the least recently accessed entry."""
@@ -214,14 +214,14 @@ class SemanticCache:
         if oldest_key in self._embedding_index:
             del self._embedding_index[oldest_key]
         if self.enable_logging:
-            logger.info(f'Evicted oldest cache entry: {oldest_key[:10]}...')
+            Logger.info(f'Evicted oldest cache entry: {oldest_key[:10]}...')
 
     def clear(self) -> None:
         """Clear all cache entries."""
         self._cache.clear()
         self._embedding_index.clear()
         if self.enable_logging:
-            logger.info('cache_cleared')
+            Logger.info('cache_cleared')
 
     def get_stats(self) -> Dict[str, Any]:
         """Get detailed cache statistics."""
@@ -251,7 +251,7 @@ class SemanticCache:
             if key in self._embedding_index:
                 del self._embedding_index[key]
         if self.enable_logging and expired_keys:
-            logger.info('cache_pruned', extra={'removed_count': len(expired_keys)})
+            Logger.info('cache_pruned', extra={'removed_count': len(expired_keys)})
         return len(expired_keys)
 
 

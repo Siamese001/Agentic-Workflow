@@ -6,7 +6,7 @@ L0-L5 + Observability Sovereign Stack Hierarchy established.
 from typing import List, Dict, Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -18,37 +18,37 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # Note: Paths are derived from SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP
 BOUNDED_CONTEXTS: Dict[str, Dict[str, Any]] = {
     "L0_Governance": {
-        "path": "agentic_core/L0_maintenance",
+        "path": "AgenticCore/L0_maintenance",
         "rank": 0,
         "role": "Metacognition: The Law, Auditors, and Healers"
     },
     "L1_Cognition": {
-        "path": "agentic_core/L1_cognition",
+        "path": "AgenticCore/L1_cognition",
         "rank": 1,
         "role": "Strategic Reasoning: Planning and Consensus"
     },
     "L2_Execution": {
-        "path": "agentic_core/L2_execution",
+        "path": "AgenticCore/L2_execution",
         "rank": 2,
         "role": "Action: Tool Implementation and Agent Realization"
     },
     "L3_Orchestration": {
-        "path": "agentic_core/L3_orchestration",
+        "path": "AgenticCore/L3_orchestration",
         "rank": 3,
         "role": "Workflow: Task Fission and Fusion"
     },
     "L4_State": {
-        "path": "agentic_core/L4_state",
+        "path": "AgenticCore/L4_state",
         "rank": 4,
         "role": "Memory: Persistence and Semantic Caching"
     },
     "L5_Safety": {
-        "path": "agentic_core/L5_safety",
+        "path": "AgenticCore/L5_safety",
         "rank": 5,
         "role": "Membrane: Input/Output Sanitization"
     },
     "Observability": {
-        "path": "agentic_core/observability",  # [SSOT] Per structure_blueprint.py
+        "path": "AgenticCore/observability",  # [SSOT] Per structure_blueprint.py
         "rank": 6,
         "role": "Truth: Telemetry, Logging, and Audit Trails"
     },

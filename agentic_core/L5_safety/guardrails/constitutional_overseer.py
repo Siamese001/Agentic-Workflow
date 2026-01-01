@@ -6,8 +6,8 @@ import logging
 from typing import Any, Dict
 
 
-# NAMING FIXED: ConstitutionalOverseer → constitutional_overseer
-class constitutional_overseer:
+# NAMING FIXED: ConstitutionalOverseer → ConstitutionalOverseer
+class ConstitutionalOverseer:
     """
     L5 Safety: The Ethical Guardrail.
     Verifies that the final output aligns with the system's constitution.

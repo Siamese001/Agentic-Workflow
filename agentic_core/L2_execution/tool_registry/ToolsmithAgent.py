@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 class ToolSpec(
@@ -62,11 +62,11 @@ class ToolsmithAgent:
         self.templates: Dict[str, str] = {}
         self.categories = {'file': 'File manipulation tools', 'network': 'Network and API tools', 'data': 'Data processing tools', 'validation': 'Validation and checking tools', 'utility': 'General utility tools'}
         self._load_templates()
-        logger.info('ToolsmithAgent initialized')
+        Logger.info('ToolsmithAgent initialized')
 
     def _load_templates(self):
         """Load tool generation templates."""
-        self.templates.update({'file_reader': tool_template.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': tool_template.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': tool_template.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
+        self.templates.update({'file_reader': tool_template.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': tool_template.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        Logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': tool_template.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
 
     def create_tool_from_spec(self, spec: "ToolSpec") -> "GeneratedTool":
         """
@@ -87,7 +87,7 @@ class ToolsmithAgent:
         test_code: Any = self._generate_test_code(spec)
         tool: Any = GeneratedTool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
         self.tools[spec.name] = tool
-        logger.info(f'Created tool: {spec.name}')
+        Logger.info(f'Created tool: {spec.name}')
         return tool
 
     def _is_simple_function(self, spec: "ToolSpec") -> bool:
@@ -131,11 +131,11 @@ class ToolsmithAgent:
         if template_key in self.templates:
             return self.templates[template_key].split('Implementation:\n')[-1].strip()
         if 'read' in spec.name.lower():
-            return '    # Read operation\n    try:\n        result = await perform_read_operation()\n        return result\n    except Exception as e:\n        logger.error(f"Read failed: {e}")\n        raise'
+            return '    # Read operation\n    try:\n        result = await perform_read_operation()\n        return result\n    except Exception as e:\n        Logger.error(f"Read failed: {e}")\n        raise'
         elif 'write' in spec.name.lower():
-            return '    # Write operation\n    try:\n        result = await perform_write_operation()\n        return result\n    except Exception as e:\n        logger.error(f"Write failed: {e}")\n        raise'
+            return '    # Write operation\n    try:\n        result = await perform_write_operation()\n        return result\n    except Exception as e:\n        Logger.error(f"Write failed: {e}")\n        raise'
         elif 'validate' in spec.name.lower():
-            return '    # Validation logic\n    try:\n        # Perform validation\n        is_valid = check_validity()\n        return {"valid": is_valid}\n    except Exception as e:\n        logger.error(f"Validation failed: {e}")\n        return {"valid": False, "error": str(e)}'
+            return '    # Validation logic\n    try:\n        # Perform validation\n        is_valid = check_validity()\n        return {"valid": is_valid}\n    except Exception as e:\n        Logger.error(f"Validation failed: {e}")\n        return {"valid": False, "error": str(e)}'
         else:
             return '    # TODO: Implement tool logic\n    raise NotImplementedError("Tool implementation pending")'
 
@@ -255,13 +255,13 @@ class ToolsmithAgent:
 
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
     TERRITORY_SEED_CONTENT: Dict[str, Dict[str, str]] = {
-        'agentic_core/prompt_governance/meta_prompts': {
+        'AgenticCore/prompt_governance/meta_prompts': {
             'convergence_planning.jinja': '{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n'
         },
-        'agentic_core/prompt_governance/rendering': {
-            'sovereign_prompt_renderer.py': '# sovereign_prompt_renderer - Dynamic Assembly\nclass sovereign_prompt_renderer:\n    def render(self, template_name, context=None):\n        pass\n'
+        'AgenticCore/prompt_governance/rendering': {
+            'SovereignPromptRenderer.py': '# SovereignPromptRenderer - Dynamic Assembly\nclass SovereignPromptRenderer:\n    def render(self, template_name, context=None):\n        pass\n'
         },
-        'agentic_core/schemas/models': {
+        'AgenticCore/schemas/models': {
             'base_models.py': 'from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n'
         },
     }
@@ -307,7 +307,7 @@ class ToolsmithAgent:
                     try:
                         file_path.write_text(content, encoding='utf-8')
                         results['seeded'].append(str(file_path.relative_to(project_root)))
-                        logger.info(f"Seeded: {file_path.relative_to(project_root)}")
+                        Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
                     except IOError as e:
                         results['errors'].append(f"{filename}: {e}")
                         
@@ -326,7 +326,7 @@ def get_toolsmith_agent() -> "ToolsmithAgent":
 def initialize_toolsmith_agent() -> Any:
     """Initialize the ToolsmithAgent system."""
     get_toolsmith_agent()
-    logger.info('ToolsmithAgent system initialized')
+    Logger.info('ToolsmithAgent system initialized')
 
 def create_file_tool(name: str, operation: str) -> "GeneratedTool":
     """Create a file manipulation tool."""

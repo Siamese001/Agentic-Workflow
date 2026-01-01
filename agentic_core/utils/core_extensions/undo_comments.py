@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -39,7 +39,7 @@ def undo_gravity_comments(file_path: Path) -> Any:
 def undo_all_comments() -> Any:
     """Brief description of functionality and purpose."""
     print('[*] UNDOING GRAVITY FIX COMMENTS...')
-    files_to_fix: Any = ['agentic_core/L1_cognition/agent_logic.py', 'agentic_core/L3_orchestration/mission_runner.py', 'agentic_core/L2_execution/P4_agents/analysis.py', 'apps_shared/verify_hardening.py', 'scripts/validation/dry_run_signal_failure_test.py', 'scripts/validation/test_l5_infrastructure.py', 'scripts/workflow/dry_run_l5_verification.py']
+    files_to_fix: Any = ['AgenticCore/L1_cognition/agent_logic.py', 'AgenticCore/L3_orchestration/mission_runner.py', 'AgenticCore/L2_execution/P4_agents/analysis.py', 'apps_shared/verify_hardening.py', 'scripts/validation/dry_run_signal_failure_test.py', 'scripts/validation/test_l5_infrastructure.py', 'scripts/workflow/dry_run_l5_verification.py']
     count: Any = 0
     for file_rel in files_to_fix:
         file_path: Any = ROOT / file_rel

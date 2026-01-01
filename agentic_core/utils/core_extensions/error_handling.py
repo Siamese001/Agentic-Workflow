@@ -8,13 +8,13 @@ import time
 from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple
 
 
-# NAMING FIXED: MCPError → mcp_error
-class mcp_error(Exception):
+# NAMING FIXED: MCPError → McpError
+class McpError(Exception):
     """Base exception for MCP-related errors."""
 
 
-# NAMING FIXED: CircuitBreakerOpenError → circuit_breaker_open_error
-class circuit_breaker_open_error(MCPError):
+# NAMING FIXED: CircuitBreakerOpenError → CircuitBreakerOpenError
+class CircuitBreakerOpenError(MCPError):
     """Raised when circuit breaker is open."""
 
 

@@ -19,7 +19,7 @@ import threading
 
 from .secure_error import SecurityError, ConfigurationError
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class SecureConfigManager:
@@ -53,7 +53,7 @@ class SecureConfigManager:
         self._config = self._load_config()
         self._keys = self._load_keys()
         
-        logger.info(f"Initialized SecureConfigManager with config dir: {self.config_dir}")
+        Logger.info(f"Initialized SecureConfigManager with config dir: {self.config_dir}")
     
     def _init_encryption(self, master_password: Optional[str]) -> None:
         """Initialize encryption keys.
@@ -121,7 +121,7 @@ class SecureConfigManager:
             decrypted_data = self._decrypt_data(encrypted_data)
             return json.loads(decrypted_data)
         except Exception as e:
-            logger.error(f"Failed to load config: {e}")
+            Logger.error(f"Failed to load config: {e}")
             raise ConfigurationError(f"Configuration load failed: {e}")
     
     def _save_config(self) -> None:
@@ -137,7 +137,7 @@ class SecureConfigManager:
             temp_file.replace(self.config_file)
             
         except Exception as e:
-            logger.error(f"Failed to save config: {e}")
+            Logger.error(f"Failed to save config: {e}")
             raise ConfigurationError(f"Configuration save failed: {e}")
     
     def _load_keys(self) -> Dict[str, Dict[str, Any]]:
@@ -156,7 +156,7 @@ class SecureConfigManager:
             decrypted_data = self._decrypt_data(encrypted_data)
             return json.loads(decrypted_data)
         except Exception as e:
-            logger.error(f"Failed to load keys: {e}")
+            Logger.error(f"Failed to load keys: {e}")
             return {}
     
     def _save_keys(self) -> None:
@@ -172,7 +172,7 @@ class SecureConfigManager:
             temp_file.replace(self.keys_file)
             
         except Exception as e:
-            logger.error(f"Failed to save keys: {e}")
+            Logger.error(f"Failed to save keys: {e}")
             raise ConfigurationError(f"Keys save failed: {e}")
     
     def get(self, key: str, default: Any = None) -> Any:
@@ -210,7 +210,7 @@ class SecureConfigManager:
             self._config[key] = value
             self._save_config()
             
-            logger.debug(f"Set config: {key} (sensitive: {sensitive})")
+            Logger.debug(f"Set config: {key} (sensitive: {sensitive})")
     
     def generate_key(self, key_name: str, rotation_days: int = 90) -> str:
         """Generate and store an encryption key.
@@ -236,7 +236,7 @@ class SecureConfigManager:
             }
             
             self._save_keys()
-            logger.info(f"Generated encryption key: {key_name}")
+            Logger.info(f"Generated encryption key: {key_name}")
             
             return key_b64
     
@@ -256,7 +256,7 @@ class SecureConfigManager:
             
             # Check if key needs rotation
             if self._key_needs_rotation(key_data):
-                logger.warning(f"Key {key_name} needs rotation")
+                Logger.warning(f"Key {key_name} needs rotation")
             
             return key_data["key"]
     
@@ -281,7 +281,7 @@ class SecureConfigManager:
             archive_name = f"{key_name}_archived_{int(time.time())}"
             self._keys[archive_name] = old_key_data.copy()
             
-            logger.info(f"Rotated key: {key_name}")
+            Logger.info(f"Rotated key: {key_name}")
             return new_key
     
     def _key_needs_rotation(self, key_data: Dict[str, Any]) -> bool:
@@ -326,7 +326,7 @@ class SecureConfigManager:
         for key, spec in schema.items():
             if spec.get("required", False) and key not in self._config:
                 if not os.getenv(f"{self.env_prefix}{key.upper()}"):
-                    errors.append(f"Required configuration missing: {key}")
+                    errors.append(f"Required configuration Missing: {key}")
             
             if key in self._config:
                 value = self._config[key]
@@ -405,7 +405,7 @@ class SecureConfigManager:
             
             if keys_to_remove:
                 self._save_keys()
-                logger.info(f"Cleaned up {len(keys_to_remove)} old keys")
+                Logger.info(f"Cleaned up {len(keys_to_remove)} old keys")
             
             return len(keys_to_remove)
 

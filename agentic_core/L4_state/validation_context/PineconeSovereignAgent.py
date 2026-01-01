@@ -16,11 +16,11 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 
-from agentic_core.config.blueprint_sovereign.sovereign_env import get_env
-from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
+from AgenticCore.config.blueprint_sovereign.SovereignEnv import get_env
+from AgenticCore.L4_state.ValidationContext.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
+from AgenticCore.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 
 class PineconeSovereignAgent:
@@ -37,7 +37,7 @@ class PineconeSovereignAgent:
         api_key = os.getenv("PINECONE_API_KEY")
         if not api_key:
             self.status = "DEGRADED (Missing API Key)"
-            print(f"   [!] PineconeSovereignAgent: API key missing.")
+            print(f"   [!] PineconeSovereignAgent: API key Missing.")
             return
         
         try:
@@ -78,7 +78,7 @@ class PineconeSovereignAgent:
             self.pc.create_index(
                 name=self.index_name,
                 dimension=self.dimension,
-                metric="dotproduct",  # Required for hybrid sparse/dense
+                Metric="dotproduct",  # Required for hybrid sparse/dense
                 spec={"serverless": {"cloud": self.cloud, "region": self.region}}
             )
             print(f"   [OK] PineconeSovereignAgent: Created new index '{self.index_name}'")
@@ -117,7 +117,7 @@ class PineconeSovereignAgent:
         try:
             response = await self.gemini.resilient_mutation(
                 code=user_prompt,
-                task=system_prompt,  # Swap: task=system, code=user for resilient_mutation signature
+                Task=system_prompt,  # Swap: Task=system, code=user for resilient_mutation signature
                 file_path="embedding_request",
                 fission_active=False
             )
@@ -190,7 +190,7 @@ class PineconeSovereignAgent:
 
     def _get_sparse_vector(self, text: str) -> Dict[str, Any]:
         """Extracts keywords from blueprint signals for hybrid search"""
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_SIGNALS
         text_low = text.lower()
         # Simple TF-based sparse vector
         indices = []
@@ -227,7 +227,7 @@ class PineconeSovereignAgent:
         Syncs the index with the structure_blueprint.py constants.
         Safe to run multiple times (uses upsert).
         """
-        from agentic_core.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
+        from AgenticCore.config.blueprint_sovereign.structure_blueprint import TERRITORY_EXAMPLES
         
         vectors = []
         for territory, example in TERRITORY_EXAMPLES.items():
@@ -311,13 +311,13 @@ class PineconeSovereignAgent:
         namespace = "default"
         if file_path:
             try:
-                # Extract layer from path (e.g., agentic_core/L5_safety/... -> L5_safety)
-                rel_path = file_path.relative_to(self.project_root / 'agentic_core')
+                # Extract layer from path (e.g., AgenticCore/L5_safety/... -> L5_safety)
+                rel_path = file_path.relative_to(self.project_root / 'AgenticCore')
                 if len(rel_path.parts) > 0:
                     layer = rel_path.parts[0]
                     namespace = f"layer_{layer}"
             except (ValueError, IndexError):
-                # File outside agentic_core - use default namespace
+                # File outside AgenticCore - use default namespace
                 pass
         
         q_emb = await self.get_embedding(query)

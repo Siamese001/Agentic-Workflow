@@ -4,7 +4,7 @@ Code Transformation Engine (CTE) — Deterministic AST-Based Transforms
 Phase 1 Tool: Enables agents to perform safe, deterministic code transformations
 without LLM overhead. Supports rename, extract, inline, and move operations.
 
-LAYER: L2_execution/tool_registry/tools
+LAYER: L2_execution/ToolRegistry/tools
 CATEGORY: code_manipulation
 PRIORITY: Critical (★★★★★)
 """
@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class TransformOperation(str, Enum):
@@ -516,7 +516,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
     Returns:
         Dict with transformation results
     """
-    logger.info(f"CTE: Executing {args.operation} on target '{args.target}'")
+    Logger.info(f"CTE: Executing {args.operation} on target '{args.target}'")
     
     result: TransformResult
     
@@ -583,7 +583,7 @@ def code_transform(args: CodeTransformArgs) -> Dict[str, Any]:
             error=f"Operation '{args.operation}' not yet implemented"
         )
     
-    logger.info(f"CTE: {args.operation} {'succeeded' if result.success else 'failed'}")
+    Logger.info(f"CTE: {args.operation} {'succeeded' if result.success else 'failed'}")
     return result.to_dict()
 
 

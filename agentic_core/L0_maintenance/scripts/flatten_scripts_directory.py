@@ -5,16 +5,16 @@ Flatten scripts directory to SSOT-compliant depth.
 import os
 import shutil
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 scripts_dir: Any = CORE / 'L0_maintenance/scripts'
-required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
+required_depth: Any = SOVEREIGN_REGISTRY['AgenticCore']['depth']
 
 def flatten_scripts() -> Any:
     """Brief description of functionality and purpose."""

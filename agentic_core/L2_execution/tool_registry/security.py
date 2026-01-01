@@ -1,5 +1,5 @@
 """
-apps_shared/security/domain/safety_inspector.py
+apps_shared/security/domain/SafetyInspector.py
 Depth: 5
 Role: Enforces security protocols, concurrency safety, and intelligent remediation.
 """
@@ -9,10 +9,10 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 import httpx
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -102,7 +102,7 @@ class SafetyInspectorAgent(SubAtomicAgent):
         with open(file_path, "r", encoding="utf-8") as f:
             return f.read()
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
-        """Ask LLM to verify if an issue is actually a violation using async httpx."""
+        """Ask LLM to verify if an issue is actually a Violation using async httpx."""
         try:
             await asyncio.to_thread(self._read_file_sync, file_path)
             # Example implementation using httpx for async intelligence check

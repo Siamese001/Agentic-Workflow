@@ -4,11 +4,11 @@ import logging
 'Brief description of functionality and purpose.'
 import re
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger('ConsensusEngine')
+Logger: Any = logging.getLogger('ConsensusEngine')
 if not logging.root.handlers:
     logging.basicConfig(level=logging.INFO)
 
-class consensus_engine:
+class ConsensusEngine:
     """
     The ConsensusEngine orchestrates a "jury" of high-reasoning AI models
     to evaluate artifacts (e.g., code, text) and propose fixes.
@@ -30,31 +30,31 @@ class consensus_engine:
 
     def _get_model_specific_verdict(self, model_name: str, artifact_lower: str) -> Dict[str, str]:
         """
-        Helper to determine model-specific verdict and reason.
+        Helper to determine model-specific Verdict and reason.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
 
         Args:
             model_name: The name of the AI model.
-            artifact_lower: The artifact content converted to lowercase.
+            artifact_lower: The Artifact content converted to lowercase.
 
         Returns:
-            A dictionary with "verdict" ("NO" or "YES") and a "reason" string.
+            A dictionary with "Verdict" ("NO" or "YES") and a "reason" string.
         """
-        model_config = ConsensusEngine.MODEL_CHECK_CONFIG.get(model_name)
-        if not model_config:
+        ModelConfig = ConsensusEngine.MODEL_CHECK_CONFIG.get(model_name)
+        if not ModelConfig:
             verdict_data = {}
-            verdict_data['verdict'] = 'YES'
+            verdict_data['Verdict'] = 'YES'
             verdict_data['reason'] = 'Compliance verified.'
             return verdict_data
-        has_violating_keyword = any((keyword in artifact_lower for keyword in model_config['keywords']))
+        has_violating_keyword = any((keyword in artifact_lower for keyword in ModelConfig['keywords']))
         if has_violating_keyword:
             verdict_data = {}
-            verdict_data['verdict'] = 'NO'
-            verdict_data['reason'] = model_config['reason']
+            verdict_data['Verdict'] = 'NO'
+            verdict_data['reason'] = ModelConfig['reason']
             return verdict_data
         else:
             verdict_data = {}
-            verdict_data['verdict'] = 'YES'
+            verdict_data['Verdict'] = 'YES'
             verdict_data['reason'] = 'Compliance verified.'
             return verdict_data
 
@@ -63,41 +63,41 @@ class consensus_engine:
         Helper to check for universal critical keywords.
 
         Args:
-            artifact_lower: The artifact content converted to lowercase.
+            artifact_lower: The Artifact content converted to lowercase.
 
         Returns:
-            True if a critical violation is found, False otherwise.
+            True if a critical Violation is found, False otherwise.
         """
         for keyword in ConsensusEngine.CRITICAL_KEYWORDS:
             if keyword in artifact_lower:
                 return True
         return False
 
-    def _call_juror(self, model_name: str, artifact: str, prompt: str) -> Dict[str, Any]:
+    def _call_juror(self, model_name: str, Artifact: str, prompt: str) -> Dict[str, Any]:
         """
-        Simulates calling a specific High-Reasoning AI model API to get its verdict.
+        Simulates calling a specific High-Reasoning AI model API to get its Verdict.
         To address strict linter depth counting for dictionary literals, dictionaries are built incrementally.
 
         Args:
             model_name: The name of the AI model (juror).
-            artifact: The content to be analyzed.
+            Artifact: The content to be analyzed.
             prompt: The prompt used for the analysis.
 
         Returns:
-            A dictionary containing the model's name, verdict ("YES" or "NO"), and reason.
+            A dictionary containing the model's name, Verdict ("YES" or "NO"), and reason.
         """
-        logger.info(f"⚖️  Juror '{model_name}' is analyzing...")
-        artifact_lower = artifact.lower()
+        Logger.info(f"⚖️  Juror '{model_name}' is analyzing...")
+        artifact_lower = Artifact.lower()
         if self._check_critical_violation(artifact_lower):
             result = {}
             result['model'] = model_name
-            result['verdict'] = 'NO'
+            result['Verdict'] = 'NO'
             result['reason'] = 'Safety Protocols Triggered during analysis.'
             return result
         model_verdict = self._get_model_specific_verdict(model_name, artifact_lower)
         result = {}
         result['model'] = model_name
-        result['verdict'] = model_verdict['verdict']
+        result['Verdict'] = model_verdict['Verdict']
         result['reason'] = model_verdict['reason']
         return result
 
@@ -111,23 +111,23 @@ class consensus_engine:
         Returns:
             The total count of 'YES' votes.
         """
-        return sum((1 for vote in votes if vote['verdict'] == 'YES'))
+        return sum((1 for vote in votes if vote['Verdict'] == 'YES'))
 
     def judge_artifact(self, artifact_content: str, context: str='Code Review') -> Dict[str, Any]:
         """
         Orchestrates the voting process among the configured AI model providers.
 
         Args:
-            artifact_content: The content of the artifact to be judged.
+            artifact_content: The content of the Artifact to be judged.
             context: Additional context for the AI models during their analysis.
 
         Returns:
             A dictionary containing the overall status ("PASS" or "FAIL"),
             the consensus score, and a list of individual juror votes.
         """
-        logger.info(f"🔔 Convening Supreme Court ({', '.join(self.providers)})...")
+        Logger.info(f"🔔 Convening Supreme Court ({', '.join(self.providers)})...")
         votes: Any = []
-        prompt: Any = f'Context: {context}.\nAnalyze the following artifact. Use your full reasoning capabilities to detect subtle logic bugs, security vulnerabilities, or hallucinations.\nArtifact:\n---\n{artifact_content}\n---\nVerdict (YES/NO)?'
+        prompt: Any = f'Context: {context}.\nAnalyze the following Artifact. Use your full reasoning capabilities to detect subtle logic bugs, security vulnerabilities, or hallucinations.\nArtifact:\n---\n{artifact_content}\n---\nVerdict (YES/NO)?'
         for model in self.providers:
             response: Any = self._call_juror(model, artifact_content, prompt)
             votes.append(response)
@@ -137,7 +137,7 @@ class consensus_engine:
         status: Any = 'FAIL'
         if score >= self.threshold:
             status: Any = 'PASS'
-        logger.info(f'📝 Jury Verdict: {status} ({yes_count}/{total_votes} votes)')
+        Logger.info(f'📝 Jury Verdict: {status} ({yes_count}/{total_votes} votes)')
         return {'status': status, 'score': score, 'votes': votes}
 
     def _fix_indentation(self, code: str) -> str:
@@ -185,7 +185,7 @@ class consensus_engine:
             A dictionary with "status" ("SUCCESS" or "FAILED") and "fixed_code" if successful,
             or "error" if no fix could be generated.
         """
-        logger.info(f'[+] Consensus Engine: Proposing fix for error: {error_message[:100]}...')
+        Logger.info(f'[+] Consensus Engine: Proposing fix for error: {error_message[:100]}...')
         fixed_code: Any = code
         error_lower: Any = error_message.lower()
         if 'syntax error' in error_lower:

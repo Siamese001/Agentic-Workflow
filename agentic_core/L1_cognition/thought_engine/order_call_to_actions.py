@@ -1,5 +1,5 @@
 """
-order_call_to_actions.py - Execution Module
+OrderCallToActions.py - Execution Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.050458
@@ -7,10 +7,10 @@ Generated: 2025-12-07T13:28:54.050458
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-# NOT_AN_AGENT — task service executor, not a true agent — excluded from agent discovery
-class order_call_to_actions:
+# NOT_AN_AGENT — Task service executor, not a true agent — excluded from agent discovery
+class OrderCallToActions:
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):

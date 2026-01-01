@@ -1,4 +1,4 @@
-"""MCP provider mappings and defaults.
+"""MCP Provider mappings and defaults.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
@@ -8,7 +8,7 @@ from typing import Dict, Optional
 
 
 class ProviderType(Enum):
-    """Supported MCP provider types."""
+    """Supported MCP Provider types."""
     STUB = "stub"
     REDIS = "redis"
     CHROMADB = "chromadb"
@@ -47,41 +47,41 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
 }
 
 
-def get_default_module(provider: str) -> Optional[str]:
-    """Get default module name for a provider.
+def get_default_module(Provider: str) -> Optional[str]:
+    """Get default module name for a Provider.
     
     Args:
-        provider: Provider type string
+        Provider: Provider type string
         
     Returns:
         Module name or None if stub
     """
-    return DEFAULT_PROVIDER_MODULES.get(provider.lower())
+    return DEFAULT_PROVIDER_MODULES.get(Provider.lower())
 
 
-def get_default_class(provider: str) -> Optional[str]:
-    """Get default class name for a provider.
+def get_default_class(Provider: str) -> Optional[str]:
+    """Get default class name for a Provider.
     
     Args:
-        provider: Provider type string
+        Provider: Provider type string
         
     Returns:
         Class name or None
     """
-    return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
+    return DEFAULT_PROVIDER_CLASSES.get(Provider.lower())
 
 
 def register_provider(
-    provider: str,
+    Provider: str,
     module: str,
     class_name: str,
 ) -> None:
-    """Register a custom provider mapping.
+    """Register a custom Provider mapping.
     
     Args:
-        provider: Provider identifier
+        Provider: Provider identifier
         module: Python module path
         class_name: Class name within module
     """
-    DEFAULT_PROVIDER_MODULES[provider.lower()] = module
-    DEFAULT_PROVIDER_CLASSES[provider.lower()] = class_name
+    DEFAULT_PROVIDER_MODULES[Provider.lower()] = module
+    DEFAULT_PROVIDER_CLASSES[Provider.lower()] = class_name

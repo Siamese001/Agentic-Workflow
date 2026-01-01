@@ -1,7 +1,7 @@
 # PromptRegistry - Sovereign Version Registry
-# Territory: agentic_core/prompt_governance/version_registry
+# Territory: AgenticCore/prompt_governance/version_registry
 # Canon Alignment: Prompt versioning, active template management, backward compatibility
-# SSOT Integration: Used by sovereign_prompt_renderer and mission logging
+# SSOT Integration: Used by SovereignPromptRenderer and mission logging
 
 import json
 '''Brief description of functionality and purpose.'''
@@ -13,17 +13,17 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 import numpy as np
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 # Semantic deduplication imports
 try:
-    from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
+    from AgenticCore.semantic_memory.embeddings.core_embedder import get_embedding
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -44,13 +44,13 @@ class DuplicatePromptError(Exception):
 def validate_file_location(path: Path, root: Path) -> tuple[bool, str]:
     """Bridge to LocationAgent."""
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from AgenticCore.L5_safety.validators.LocationAgent import LocationAgent
         return LocationAgent(root).validate_file_location(path)
     except ImportError:
         return True, "Bootstrap"
 
-# NAMING FIXED: PromptRegistry → prompt_registry
-class prompt_registry:
+# NAMING FIXED: PromptRegistry → PromptRegistry
+class PromptRegistry:
     """
     Sovereign registry for all prompt templates and meta-prompts.
 
@@ -73,7 +73,7 @@ class prompt_registry:
         is_valid, reason = validate_file_location(Path(__file__), Path.cwd())
         if not is_valid:
              # Non-breaking warning for deployment; critical in validation missions
-             print(f"[!] PromptRegistry placement violation: {reason}")
+             print(f"[!] PromptRegistry placement Violation: {reason}")
 
         self._load_registry()
 
@@ -119,7 +119,7 @@ class prompt_registry:
             Path(tmp_path).replace(self.REGISTRY_FILE)
             
         except IOError as e:
-            logger.error(f"PromptRegistry: Critical persistence failure: {e}")
+            Logger.error(f"PromptRegistry: Critical persistence failure: {e}")
             print(f"[!] PromptRegistry: Critical persistence failure: {e}")
 
     def _hash_content(self, content: Optional[str]) -> Optional[str]:
@@ -138,7 +138,7 @@ class prompt_registry:
             norm = np.linalg.norm(vec)
             return vec / norm if norm != 0 else vec
         except Exception as e:
-            logger.warning(f"Failed to compute embedding: {e}")
+            Logger.warning(f"Failed to compute embedding: {e}")
             return None
 
     def _find_similar_prompts(self, new_emb: np.ndarray, template_name: str) -> List[Dict]:
@@ -218,7 +218,7 @@ class prompt_registry:
             ):
                 # Identical entry found
                 if existing_entry["active"] == active:
-                    logger.debug(
+                    Logger.debug(
                         f"Skipping duplicate registration: {template_name} {version} "
                         f"(author={author}, purpose={purpose[:30]}...)"
                     )
@@ -227,7 +227,7 @@ class prompt_registry:
                     # Same entry but different active state - update it
                     existing_entry["active"] = active
                     self._save_registry()
-                    logger.info(f"Updated active state for {template_name} {version}")
+                    Logger.info(f"Updated active state for {template_name} {version}")
                     return
 
         # Build new entry
@@ -253,7 +253,7 @@ class prompt_registry:
         # Append new entry and persist
         self.registry[template_name].append(entry)
         self._save_registry()
-        logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
+        Logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
         print(f"    [REGISTERED] {template_name} {version} (Territory: {territory})")
 
     def get_active_version(self, template_name: str) -> Optional[Dict[str, Any]]:
@@ -267,13 +267,13 @@ class prompt_registry:
         return [name for name, versions in self.registry.items() if any(v.get("active") for v in versions)]
 
 # Singleton Management
-_global_registry: Optional[prompt_registry] = None
+_global_registry: Optional[PromptRegistry] = None
 
-def get_prompt_registry() -> prompt_registry:
+def get_prompt_registry() -> PromptRegistry:
     """Factory for singleton access. Bootstraps known templates on first call."""
     global _global_registry
     if _global_registry is None:
-        _global_registry = prompt_registry()
+        _global_registry = PromptRegistry()
         
         # ===================================================================
         # Canonical Template Registry - FULLY MIGRATED TO AGENT-DRIVEN SSOT
@@ -353,7 +353,7 @@ def registers_prompt(
         cls._registered_prompt = template_name
         cls._prompt_version = version
         
-        logger.debug(f"Decorator registered prompt {template_name} for {cls.__name__}")
+        Logger.debug(f"Decorator registered prompt {template_name} for {cls.__name__}")
         return cls
     
     return decorator

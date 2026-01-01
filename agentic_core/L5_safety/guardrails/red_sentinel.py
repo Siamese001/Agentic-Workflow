@@ -13,14 +13,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class red_sentinel:
+class RedSentinel:
     """
     Active defense system that generates hostile inputs for testing.
 
@@ -65,9 +65,9 @@ class red_sentinel:
             result: Any = await self._test_with_input(func_name, input_data)
             if result['crashed']:
                 results['crashes'].append({'input': input_data, 'error': result['error'], 'traceback': result['traceback']})
-                results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'severity': 'HIGH'})
+                results['vulnerabilities'].append({'type': 'crash', 'input': input_data, 'Severity': 'HIGH'})
             elif result['unexpected_behavior']:
-                results['vulnerabilities'].append({'type': 'unexpected_behavior', 'input': input_data, 'behavior': result['behavior'], 'severity': 'MEDIUM'})
+                results['vulnerabilities'].append({'type': 'unexpected_behavior', 'input': input_data, 'behavior': result['behavior'], 'Severity': 'MEDIUM'})
         await self._log_fuzz_results(results)
         return {'enabled': True, 'inputs_generated': len(hostile_inputs), 'vulnerabilities_found': len(results['vulnerabilities']), 'crashes': len(results['crashes']), 'details': results}
 
@@ -84,7 +84,7 @@ class red_sentinel:
             List of hostile input dictionaries
         """
         try:
-            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            from AgenticCore.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
             llm_router = get_llm_router_client()
             prompt = f'\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
             result_dict = await llm_router.validate_content(prompt, validation_type='red_team')

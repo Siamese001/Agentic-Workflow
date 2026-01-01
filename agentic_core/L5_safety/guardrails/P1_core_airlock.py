@@ -92,7 +92,7 @@ class AirlockProtocol:
                                 args: Dict,
                                 risk_score: Optional[int] = None) -> bool:
         """
-        Request permission to execute a potentially dangerous action.
+        Request Permission to execute a potentially dangerous action.
 
         Args:
             tool_name: Name of the tool being called

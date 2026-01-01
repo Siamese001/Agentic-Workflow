@@ -4,14 +4,14 @@ import logging
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 _logger = logging.getLogger(__name__)
 
-class test_workflow_state_inspection:
+class TestWorkflowStateInspection:
     """Tests for inspecting workflow state."""
 
 def test_inspect_workflow_progress(self: Any) -> None:

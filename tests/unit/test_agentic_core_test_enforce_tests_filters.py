@@ -6,7 +6,7 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 
 _logger = logging.getLogger(__name__)
-# Ownership: agentic_core / unknown
+# Ownership: AgenticCore / unknown
 # -*- coding: utf-8 -*-
 """Test Enforce Tests Filters - atomic execution layer."""
 

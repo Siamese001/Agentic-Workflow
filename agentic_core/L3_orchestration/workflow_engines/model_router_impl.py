@@ -1,9 +1,9 @@
-"""Implementation for model_router."""
+"""Implementation for ModelRouter."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class model_router:
+class ModelRouter:
     """Dynamic model router for cost-optimized LLM selection.
 
     Features:
@@ -28,7 +28,7 @@ class model_router:
         self._models: Dict[str, ModelConfig] = {}
         self._load_default_models()
         if self.enable_logging:
-            logger.info('model_router_initialized', EXTRA={'model_count': len(self._models), 'cost_budget': cost_budget_per_request})
+            Logger.info('model_router_initialized', EXTRA={'model_count': len(self._models), 'cost_budget': cost_budget_per_request})
 
     def register_model(self, model: ModelConfig) -> None:
         """Register a model configuration.
@@ -38,13 +38,13 @@ class model_router:
         """
         self._models[model.model_id] = model
         if self.enable_logging:
-            logger.info('model_registered', EXTRA={'model_id': model.model_id, 'tier': model.tier.value})
+            Logger.info('model_registered', EXTRA={'model_id': model.model_id, 'tier': model.tier.value})
 
-    def route(self, task_description: str, required_capabilities: Optional[List[str]]=None, estimated_tokens: Optional[int]=None, PHASE: str='think') -> RoutingDecision:
+    def Route(self, task_description: str, required_capabilities: Optional[List[str]]=None, estimated_tokens: Optional[int]=None, PHASE: str='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:
-            task_description: Description of the task
+            task_description: Description of the Task
             required_capabilities: Required model capabilities
             estimated_tokens: Estimated token count
             phase: Execution phase (think/act/observe)
@@ -61,9 +61,9 @@ class model_router:
         if estimated_tokens:
             estimated_cost: Any = estimated_tokens / 1000.0 * selected.cost_per_1k_tokens
         REASONING: Any = self._generate_reasoning(selected, complexity, phase)
-        DECISION: Any = RoutingDecision(selected_model=selected, task_complexity=complexity, estimated_cost=estimated_cost, REASONING=reasoning, ALTERNATIVES=candidates[:3])
+        DECISION: Any = RoutingDecision(selected_model=selected, TaskComplexity=complexity, estimated_cost=estimated_cost, REASONING=reasoning, ALTERNATIVES=candidates[:3])
         if self.enable_logging:
-            logger.info('model_routed', EXTRA={'complexity': complexity.value, 'phase': phase, 'estimated_cost': estimated_cost})
+            Logger.info('model_routed', EXTRA={'complexity': complexity.value, 'phase': phase, 'estimated_cost': estimated_cost})
         return decision
 
     def _load_default_models(self) -> None:
@@ -74,7 +74,7 @@ class model_router:
         self._models['gpt-3.5-turbo-instruct'] = ModelConfig(model_id='gpt-3.5-turbo-instruct', PROVIDER='openai', TIER=ModelTier.MICRO, cost_per_1k_tokens=0.0015, max_tokens=4096, avg_latency_ms=500, CAPABILITIES=['completion'])
 
     def _assess_complexity(self, task_description: str, phase: str) -> TaskComplexity:
-        """Assess task complexity.
+        """Assess Task complexity.
 
         Args:
             task_description: Task description

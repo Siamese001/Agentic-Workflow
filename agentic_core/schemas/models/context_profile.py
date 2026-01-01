@@ -1,6 +1,6 @@
 """
 LEGACY MIGRATION COMPLETE: Phase 2B
-All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
+All models centralized in sovereign SSOT: AgenticCore/schemas/models/core_contracts.py
 
 Note: This file originally contained incomplete/broken ContextProfile model.
 The model has been removed as it referenced non-existent ContextBudget.

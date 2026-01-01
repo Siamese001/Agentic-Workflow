@@ -5,11 +5,11 @@ from enum import Enum, auto
 _logger = logging.getLogger(__name__)
 
 
-# NAMING FIXED: HopStatus → hop_status
-class hop_status(Enum):
+# NAMING FIXED: HopStatus → HopStatus
+class HopStatus(Enum):
     """Status of a workflow hop."""
 
 
-# NAMING FIXED: GateDecision → gate_decision
-class gate_decision(Enum):
+# NAMING FIXED: GateDecision → GateDecision
+class GateDecision(Enum):
     """Decision from a validation gate."""

@@ -1,8 +1,8 @@
 """Executive Title Composer Agent - Headline Generator (K.4)
 
 
-# NAMING FIXED: LOGGER → logger
-logger = logging.getLogger(__name__)
+# NAMING FIXED: LOGGER → Logger
+Logger = logging.getLogger(__name__)
 This agent generates resume headlines with industry-first validation.
 Enforces GICS sector precedence and strict character limits.
 
@@ -23,15 +23,15 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 
 
-# NAMING FIXED: IntegrityGateExecutor → integrity_gate_executor
-class integrity_gate_executor:
+# NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
+class IntegrityGateExecutor:
     '''Brief description of functionality and purpose.'''
     
     def execute_hygiene_scan(self, headline: str): pass
@@ -39,8 +39,8 @@ class integrity_gate_executor:
     def execute_industry_first_gate(self, HEADLINE: str, valid_industries: set, gate_id: str): pass
                     
     results = []
-# NAMING FIXED: ValidationResult → validation_result
-class validation_result:
+# NAMING FIXED: ValidationResult → ValidationResult
+class ValidationResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None): pass
@@ -48,8 +48,8 @@ class validation_result:
     gate_id = ""
     message = ""
     details = {}
-# NAMING FIXED: AdaptiveRecoveryLoop → adaptive_recovery_loop
-class adaptive_recovery_loop:
+# NAMING FIXED: AdaptiveRecoveryLoop → AdaptiveRecoveryLoop
+class AdaptiveRecoveryLoop:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, initial_temperature: float): pass
@@ -68,8 +68,8 @@ float = float
 
 
 @dataclass
-# NAMING FIXED: TitleComposerConfig → title_composer_config
-class title_composer_config:
+# NAMING FIXED: TitleComposerConfig → TitleComposerConfig
+class TitleComposerConfig:
     """TODO: Add docstring."""
 
     min_words: int = 8
@@ -79,8 +79,8 @@ class title_composer_config:
     max_attempts: int = 3
 
 @dataclass
-# NAMING FIXED: TitleComposerResult → title_composer_result
-class title_composer_result:
+# NAMING FIXED: TitleComposerResult → TitleComposerResult
+class TitleComposerResult:
     """Docstring."""
     headline: str
     segments: List[str]
@@ -91,8 +91,8 @@ class title_composer_result:
     success: bool
     attempts: int
 
-# NAMING FIXED: ExecutiveTitleComposer → executive_title_composer
-class executive_title_composer:
+# NAMING FIXED: ExecutiveTitleComposer → ExecutiveTitleComposer
+class ExecutiveTitleComposer:
     """
     K.4 - Headline Generator
 
@@ -282,7 +282,7 @@ class executive_title_composer:
             return ValidationResult(
                 gate_id='VG_HEADLINE_LENGTH',
                 passed=False, # Changed PASSED to passed
-                severity='BLOCK', # Changed SEVERITY to severity
+                Severity='BLOCK', # Changed SEVERITY to Severity
                 message=f"BLOCKED: {len(violations)} length violations", # Changed MESSAGE to message
                 details={
                     'violations': violations,
@@ -293,7 +293,7 @@ class executive_title_composer:
         return ValidationResult(
             gate_id='VG_HEADLINE_LENGTH',
             passed=True, # Changed PASSED to passed
-            severity='INFO', # Changed SEVERITY to severity
+            Severity='INFO', # Changed SEVERITY to Severity
             message=f"Length compliant: {word_count} words, {char_count} chars", # Changed MESSAGE to message
             signature=f"LENGTH:OK:{hash(headline) % 10000}" # Changed SIGNATURE to signature
         )
@@ -307,7 +307,7 @@ class executive_title_composer:
             return ValidationResult(
                 gate_id='VG_NOT_TECH_FIRST',
                 passed=False, # Changed PASSED to passed
-                severity='BLOCK', # Changed SEVERITY to severity
+                Severity='BLOCK', # Changed SEVERITY to Severity
                 message="BLOCKED: No segments found in headline" # Changed MESSAGE to message
             )
 
@@ -317,7 +317,7 @@ class executive_title_composer:
             return ValidationResult(
                 gate_id='VG_NOT_TECH_FIRST',
                 passed=False, # Changed PASSED to passed
-                severity='BLOCK', # Changed SEVERITY to severity
+                Severity='BLOCK', # Changed SEVERITY to Severity
                 message=f"BLOCKED: First segment '{first_segment}' is a technology keyword", # Changed MESSAGE to message
                 details={
                     'first_segment': first_segment,
@@ -328,7 +328,7 @@ class executive_title_composer:
         return ValidationResult(
             gate_id='VG_NOT_TECH_FIRST',
             passed=True, # Changed PASSED to passed
-            severity='INFO', # Changed SEVERITY to severity
+            Severity='INFO', # Changed SEVERITY to Severity
             message=f"Not tech-first: '{first_segment}' is industry/role", # Changed MESSAGE to message
             signature=f"NOTTECH:OK:{hash(first_segment) % 10000}" # Changed SIGNATURE to signature
         )

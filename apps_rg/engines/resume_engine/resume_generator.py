@@ -20,7 +20,7 @@ class ResumeGenerator:
 
     def __init__(self,
                  llm_client: Optional[Any] = None,
-                 provider: Optional[Provider] = None,
+                 Provider: Optional[Provider] = None,
                  creative_brief: Optional[Any] = None,
                  validation_rules: Optional[Dict[str,
                                                  Any]] = None):
@@ -29,16 +29,16 @@ class ResumeGenerator:
 
         Args:
             llm_client: Optional pre-configured LLM client
-            provider: Provider to use if client not supplied (defaults to Google/Gemini)
+            Provider: Provider to use if client not supplied (defaults to Google/Gemini)
         """
-        self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-        self.provider = provider or Provider.GOOGLE # Fixed SELF.PROVIDER to self.provider
+        self.llm_client = llm_client or get_client(Provider or Provider.GOOGLE)
+        self.Provider = Provider or Provider.GOOGLE # Fixed SELF.PROVIDER to self.Provider
         self.creative_brief = creative_brief  # Store creative brief configuration
         self.validation_rules = validation_rules or {}  # Store validation rules
 
         if self.llm_client is None:
             raise ValueError(
-                f"Failed to initialize LLM client for provider {self.provider}")
+                f"Failed to initialize LLM client for Provider {self.Provider}")
 
     def generate(self,
                  # Removed: """Docstring.""" - This was the syntax error at line 39
@@ -92,7 +92,7 @@ class ResumeGenerator:
 
         except Exception as e:
             pass # Fixed indentation
-            LOGGER.error(f"Error generating tailored resume: {e}") # Fixed indentation and logger name
+            LOGGER.error(f"Error generating tailored resume: {e}") # Fixed indentation and Logger name
             # Return original with error note
             resume_data["_tailoring_error"] = str(e)
             return resume_data
@@ -117,7 +117,7 @@ TARGET REQUIREMENTS:
 Please rewrite the summary to:
 1. Highlight relevant hard skills from the target requirements
 2. Demonstrate the soft skills they're looking for
-3. Align with their key success metric
+3. Align with their key success Metric
 4. Keep it within {word_count_range} words
 5. Use active, confident language
 
@@ -128,7 +128,7 @@ Return ONLY the rewritten summary, no additional text."""
             return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
             pass # Fixed indentation
-            LOGGER.error(f"Error tailoring summary: {e}") # Fixed indentation and logger name
+            LOGGER.error(f"Error tailoring summary: {e}") # Fixed indentation and Logger name
             return original_summary
 
     def _tailor_experience(self,
@@ -196,7 +196,7 @@ Return ONLY the rewritten summary, no additional text."""
         # Add matching hard skills first
         final_skills.extend(hard_skills[:5])
 
-        # Add any missing target hard skills
+        # Add any Missing target hard skills
         for target in target_hard_skills:
             if target not in [s.lower() for s in final_skills]:
                 final_skills.append(target)
@@ -245,7 +245,7 @@ Return ONLY the rewritten bullet, no additional text."""
                 tailored_bullets.append(RESPONSE.strip()) # Fixed variable name case
             except Exception as e:
                 pass # Fixed indentation
-                LOGGER.error(f"Error tailoring bullet: {e}") # Fixed indentation and logger name
+                LOGGER.error(f"Error tailoring bullet: {e}") # Fixed indentation and Logger name
                 tailored_bullets.append(bullet)
 
         return tailored_bullets
@@ -272,12 +272,12 @@ Return ONLY the rewritten description, no additional text."""
             return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
             pass # Fixed indentation
-            LOGGER.error(f"Error tailoring description: {e}") # Fixed indentation and logger name
+            LOGGER.error(f"Error tailoring description: {e}") # Fixed indentation and Logger name
             return description
 
     def _generate_response(self, prompt: str) -> str:
         """Generate response using the configured LLM."""
-        if self.provider == Provider.GOOGLE:
+        if self.Provider == Provider.GOOGLE:
             return self._generate_with_gemini(prompt)
         else:
             return self._generate_with_generic_client(prompt)

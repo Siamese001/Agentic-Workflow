@@ -35,11 +35,11 @@ def fix_indentation_errors():
     content = re.sub(pattern2, replace_pattern2, content)
 
     # Fix pattern 3: except Exception as e: followed by misaligned pass/pass/if
-    pattern3 = r'(\s+except Exception as e:\n)\s+pass\npass\nif logger:'
+    pattern3 = r'(\s+except Exception as e:\n)\s+pass\npass\nif Logger:'
     def replace_pattern3(match):
                     
         except_line = match.group(1)
-        return f"{except_line}        if logger:"
+        return f"{except_line}        if Logger:"
 
     content = re.sub(pattern3, replace_pattern3, content)
 

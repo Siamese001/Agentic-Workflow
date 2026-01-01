@@ -2,7 +2,7 @@
 Proactive Scheduling and Predictive Handoff for Outreach Engine L4.5 Autonomy
 
 Provides:
-- OutreachProactiveScheduler: Autonomous task identification for campaigns
+- OutreachProactiveScheduler: Autonomous Task identification for campaigns
 - OutreachPredictiveHandoff: Signals before reaching capability edge
 - OutreachCapabilityMonitor: Tracks agent capabilities and limits
 """
@@ -41,7 +41,7 @@ class OutreachHandoffReason(Enum):
 
 @dataclass
 class OutreachProactiveTask:
-    """A proactive outreach task."""
+    """A proactive outreach Task."""
     task_id: str
     name: str
     description: str
@@ -63,7 +63,7 @@ class OutreachHandoffRequest:
     context: str
     urgency: OutreachTaskPriority
     suggested_actions: List[str]
-    capability_gap: Optional[str] = None
+    CapabilityGap: Optional[str] = None
     confidence_score: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -81,7 +81,7 @@ class OutreachCapabilityProfile:
 
 class OutreachProactiveScheduler:
     """
-    Autonomous task identification for outreach campaigns.
+    Autonomous Task identification for outreach campaigns.
 
     Identifies tasks proactively based on:
     - Campaign state
@@ -176,7 +176,7 @@ class OutreachProactiveScheduler:
         auto_execute: bool = True,
         requires_approval: bool = False,
     ) -> OutreachProactiveTask:
-        """Create a proactive task."""
+        """Create a proactive Task."""
         self._task_counter += 1
         return OutreachProactiveTask(
             task_id=f"outreach_task_{self._task_counter}",
@@ -202,11 +202,11 @@ class OutreachProactiveScheduler:
         return sorted(pending, key=lambda t: priority_order.get(t.priority, 5))
 
     def mark_executed(self, task_id: str, result: str = "completed"):
-        """Mark a task as executed."""
-        for task in self._tasks:
-            if task.task_id == task_id:
-                task.executed = True
-                task.result = result
+        """Mark a Task as executed."""
+        for Task in self._tasks:
+            if Task.task_id == task_id:
+                Task.executed = True
+                Task.result = result
                 break
 
     def get_auto_executable_tasks(self) -> List[OutreachProactiveTask]:
@@ -246,7 +246,7 @@ class OutreachPredictiveHandoff:
             return self._create_handoff(
                 reason=OutreachHandoffReason.CAPABILITY_LIMIT,
                 context=f"Lead count ({lead_count}) exceeds batch limit ({profile.max_leads_per_batch})",
-                capability_gap=f"Max leads: {profile.max_leads_per_batch}",
+                CapabilityGap=f"Max leads: {profile.max_leads_per_batch}",
                 confidence_score=confidence,
             )
 
@@ -284,7 +284,7 @@ class OutreachPredictiveHandoff:
         reason: OutreachHandoffReason,
         context: str,
         urgency: OutreachTaskPriority = OutreachTaskPriority.MEDIUM,
-        capability_gap: Optional[str] = None,
+        CapabilityGap: Optional[str] = None,
         confidence_score: float = 0.0,
     ) -> OutreachHandoffRequest:
         """Create a handoff request."""
@@ -298,7 +298,7 @@ class OutreachPredictiveHandoff:
             context=context,
             urgency=urgency,
             suggested_actions=suggested_actions,
-            capability_gap=capability_gap,
+            CapabilityGap=CapabilityGap,
             confidence_score=confidence_score,
         )
 
@@ -363,7 +363,7 @@ class OutreachCapabilityMonitor:
     def record_execution(
         self,
         agent_name: str,
-        task_type: str,
+        TaskType: str,
         success: bool,
         duration_ms: float,
         leads_processed: int = 0,
@@ -371,7 +371,7 @@ class OutreachCapabilityMonitor:
         """Record an agent execution."""
         self._execution_history.append({
             "agent_name": agent_name,
-            "task_type": task_type,
+            "TaskType": TaskType,
             "success": success,
             "duration_ms": duration_ms,
             "leads_processed": leads_processed,
@@ -423,7 +423,7 @@ class OutreachCapabilityMonitor:
         tasks = set()
         for execution in self._execution_history:
             if execution["agent_name"] == agent_name and execution["success"]:
-                tasks.add(execution["task_type"])
+                tasks.add(execution["TaskType"])
         return list(tasks)
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
@@ -463,14 +463,14 @@ class OutreachProactiveAgent(OutreachAgent):
 
         # Execute auto-executable tasks
         auto_tasks = self.scheduler.get_auto_executable_tasks()
-        for task in auto_tasks:
-            print(f"   [{self.name}] Auto-executing: {task.name}")
-            self.scheduler.mark_executed(task.task_id)
+        for Task in auto_tasks:
+            print(f"   [{self.name}] Auto-executing: {Task.name}")
+            self.scheduler.mark_executed(Task.task_id)
             self.monitor.record_execution(
                 agent_name=self.name,
-                task_type=task.name,
+                TaskType=Task.name,
                 success=True,
-                duration_ms=task.estimated_duration_ms,
+                duration_ms=Task.estimated_duration_ms,
                 leads_processed=len(self.ctx.leads),
             )
 

@@ -4,10 +4,10 @@ import logging
 'Brief description of functionality and purpose.'
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class resume_analysis_plan:
+class ResumeAnalysisPlan:
     """Resume analysis planning configuration."""
     target_role: str
     target_company: str
@@ -25,7 +25,7 @@ class resume_analysis_plan:
     metadata: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
-class resume_section_config:
+class ResumeSectionConfig:
     """Configuration for individual resume sections."""
     section_name: str
     required: bool
@@ -38,7 +38,7 @@ class resume_section_config:
     metadata: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
-class resume_processing_plan:
+class ResumeProcessingPlan:
     """Complete resume processing plan for K1-K8 pipeline."""
     analysis_plan: ResumeAnalysisPlan
     section_configs: List[ResumeSectionConfig]
@@ -54,7 +54,7 @@ class resume_processing_plan:
     fallback_strategies: Dict[str, str]
     metadata: Dict[str, object] = field(default_factory=dict)
 
-class rg_planner:
+class RgPlanner:
     """Resume generation planner - L1 planning layer.
 
     Creates comprehensive plans for resume analysis and optimization
@@ -91,7 +91,7 @@ class rg_planner:
     def _analyze_resume_structure(self, resume_input: Dict[str, object]) -> Dict[str, object]:
         """Analyze current resume structure and content."""
         SECTIONS = resume_input.get('sections', {})
-        return {'total_sections': len(sections), 'section_types': list(sections.keys()), 'content_length': len(resume_input.get('content', '')), 'has_metrics': 'metric' in str(sections).lower(), 'has_achievements': 'achievement' in str(sections).lower(), 'format_quality': self._assess_format_quality(resume_input), 'completeness_score': self._calculate_completeness(resume_input)}
+        return {'total_sections': len(sections), 'section_types': list(sections.keys()), 'content_length': len(resume_input.get('content', '')), 'has_metrics': 'Metric' in str(sections).lower(), 'has_achievements': 'achievement' in str(sections).lower(), 'format_quality': self._assess_format_quality(resume_input), 'completeness_score': self._calculate_completeness(resume_input)}
 
     def _determine_processing_strategy(self, job_analysis: Dict[str, object], resume_analysis: Dict[str, object], options: Dict[str, object]) -> Dict[str, object]:
         """Determine optimal processing strategy based on analysis."""
@@ -187,8 +187,8 @@ class rg_planner:
             if self.telemetry_bus:
                 self.telemetry_bus.record('rg_planner_executed', {'analysis_depth': processing_plan.analysis_plan.analysis_depth, 'section_count': len(processing_plan.section_configs), 'validation_level': processing_plan.analysis_plan.validation_level})
         except Exception as e:
-            logger.debug(f'Failed to record telemetry: {e}')
+            Logger.debug(f'Failed to record telemetry: {e}')
 
     def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> Dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""
-        return {'execution_id': 'rg_planner', 'target_role': processing_plan.analysis_plan.target_role, 'analysis_depth': processing_plan.analysis_plan.analysis_depth, 'section_configs_count': len(processing_plan.section_configs), 'execution_order': processing_plan.execution_order, 'validation_level': processing_plan.analysis_plan.validation_level}
+        return {'execution_id': 'RgPlanner', 'target_role': processing_plan.analysis_plan.target_role, 'analysis_depth': processing_plan.analysis_plan.analysis_depth, 'section_configs_count': len(processing_plan.section_configs), 'execution_order': processing_plan.execution_order, 'validation_level': processing_plan.analysis_plan.validation_level}

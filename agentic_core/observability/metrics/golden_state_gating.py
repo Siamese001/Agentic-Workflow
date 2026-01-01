@@ -3,7 +3,7 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:
     """Return True if the experiment meets or exceeds baseline.

@@ -3,7 +3,7 @@ Standalone Key 49 Depth Violation Checker
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 from pathlib import Path
-from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from typing import Any
 
 def check_key_49_depth() -> Any:

@@ -12,7 +12,7 @@ class CanonBaseAgentInterface(ABC):
 
 # Alias for backward compatibility
 
-class canon_base_agent_interface_impl(ABC):
+class CanonBaseAgentInterfaceImpl(ABC):
     """Sovereign interface for all canon agents — shared across contexts."""
     
     @abstractmethod

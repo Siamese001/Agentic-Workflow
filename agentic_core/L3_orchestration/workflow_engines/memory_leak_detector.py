@@ -10,12 +10,12 @@ import tracemalloc
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 memory_threshold_mb: Any = 100
 snapshot_interval: Any = 60
 max_snapshots: Any = 100
 
-class memory_snapshot:
+class MemorySnapshot:
     """A snapshot of memory usage at a point in time."""
 
     def __init__(self, label: str=''):
@@ -48,7 +48,7 @@ class memory_snapshot:
         """Convert to dictionary for serialization."""
         return {'label': self.label, 'timestamp': self.timestamp.isoformat(), 'total_allocated_mb': self.get_size_mb(self.total_allocated), 'total_peaked_mb': self.get_size_mb(self.total_peaked), 'current_allocated_mb': self.get_size_mb(self.current_allocated), 'current_peaked_mb': self.get_size_mb(self.current_peaked), 'top_allocations': [{'file': str(stat.traceback[0].filename), 'line': stat.traceback[0].lineno, 'size_mb': self.get_size_mb(stat.size), 'count': stat.count} for stat in self.top_allocations[:5]]}
 
-class memory_leak_detector:
+class MemoryLeakDetector:
     """
     Detects memory leaks in the agentic system.
 

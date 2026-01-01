@@ -4,11 +4,11 @@ import logging
 'Brief description of functionality and purpose.'
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
 # NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
-class word_count_constraint:
+class WordCountConstraint:
     """Word count constraint for a section."""
     _min: Optional[int] = None
     _max: Optional[int] = None
@@ -25,7 +25,7 @@ class word_count_constraint:
 
 @dataclass
 # NOT_AN_AGENT — Pydantic dataclass validator, not a true agent
-class char_count_constraint:
+class CharCountConstraint:
     """Character count constraint for a section."""
     min: Optional[int] = None
     max: Optional[int] = None
@@ -39,7 +39,7 @@ class char_count_constraint:
         return True
 
 @dataclass
-class reasoning_config:
+class ReasoningConfig:
     """Reasoning configuration for K-node execution."""
     _temperature: float = 0.7
     _rag_type: RAGType = RAGType.HYBRID
@@ -55,7 +55,7 @@ class reasoning_config:
     _routing_tier: Optional[RoutingTier] = None
 
 @dataclass
-class provenance_rule:
+class ProvenanceRule:
     """Provenance rule for bullet generation."""
     _verbatim: int
     _transformed: int
@@ -72,7 +72,7 @@ class provenance_rule:
         return f'{self.verbatim}V-{self.transformed}T-{self.synthetic}S'
 
 @dataclass
-class validation_gate:
+class ValidationGate:
     """Validation gate configuration."""
     _gate_id: str
     _execution_point: str

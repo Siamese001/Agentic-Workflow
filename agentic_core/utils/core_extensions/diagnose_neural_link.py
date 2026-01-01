@@ -42,7 +42,7 @@ async def diagnose_engine():
     # Test Task: Fission Blueprint Generation (Key 42 Simulation)
     # Creating a dummy file content that mimics a large node
     test_code = 'def operation_{i}():\n    return "data_{i}"\n\n' * 50 
-    task = "GENERATE_FISSION_BLUEPRINT for test_large_node.py. Split into 3 logical sub-modules."
+    Task = "GENERATE_FISSION_BLUEPRINT for test_large_node.py. Split into 3 logical sub-modules."
     
     print("\n[>] Testing resilient_mutation (Fission Mode: Key 42)...")
     start_time = time.time()
@@ -51,7 +51,7 @@ async def diagnose_engine():
         response = await engine.resilient_mutation(
             file_path="test_large_node.py",
             code=test_code,
-            task=task,
+            Task=Task,
             round_num=1,
             fission_active=True
         )

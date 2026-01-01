@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 
 class MCPGuardianAgent:
@@ -63,17 +63,17 @@ class MCPGuardianAgent:
         # Check for hardcoded credentials
         if self._has_hardcoded_credentials(config):
             violations.append({
-                "severity": "CRITICAL",
+                "Severity": "CRITICAL",
                 "type": "HARDCODED_CREDENTIALS",
                 "operation": operation,
                 "client": client_name,
                 "message": "Hardcoded credentials detected in MCP call"
             })
         
-        # Check for missing timeout
+        # Check for Missing timeout
         if "timeout" not in config and "timeout_seconds" not in config:
             violations.append({
-                "severity": "MEDIUM",
+                "Severity": "MEDIUM",
                 "type": "MISSING_TIMEOUT",
                 "operation": operation,
                 "client": client_name,
@@ -84,7 +84,7 @@ class MCPGuardianAgent:
         if client_name.lower() in ["redis", "neo4j"]:
             if not config.get("ssl", False) and not config.get("use_ssl", False):
                 violations.append({
-                    "severity": "HIGH",
+                    "Severity": "HIGH",
                     "type": "SSL_NOT_ENFORCED",
                     "operation": operation,
                     "client": client_name,
@@ -127,14 +127,14 @@ class MCPGuardianAgent:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             
             file_violations = []
-            for pattern, violation_type in hardcoded_patterns:
+            for pattern, ViolationType in hardcoded_patterns:
                 matches = re.finditer(pattern, content, re.IGNORECASE)
                 for match in matches:
                     file_violations.append({
                         "file": str(py_file.relative_to(self.project_root)),
                         "line": content[:match.start()].count("\n") + 1,
-                        "type": violation_type,
-                        "severity": "CRITICAL",
+                        "type": ViolationType,
+                        "Severity": "CRITICAL",
                         "match": match.group(0)
                     })
             
@@ -172,17 +172,17 @@ class MCPGuardianAgent:
         Emit CRITIQUE for MCP violations.
         
         Args:
-            violations: List of violation dictionaries
+            violations: List of Violation dictionaries
         """
-        for violation in violations:
-            logger.critical(
-                f"[MCP GUARDIAN CRITIQUE] {violation['severity']}: "
-                f"{violation['type']} in {violation.get('client', 'unknown')} "
-                f"operation {violation.get('operation', 'unknown')}"
+        for Violation in violations:
+            Logger.critical(
+                f"[MCP GUARDIAN CRITIQUE] {Violation['Severity']}: "
+                f"{Violation['type']} in {Violation.get('client', 'unknown')} "
+                f"operation {Violation.get('operation', 'unknown')}"
             )
         
         try:
-            from agentic_core.observability.telemetry.sovereign_events import emit_event
+            from AgenticCore.observability.telemetry.sovereign_events import emit_event
             emit_event(
                 "MCP_GUARDIAN_CRITIQUE",
                 {
@@ -215,12 +215,12 @@ class MCPGuardianAgent:
         if scan_results['violations']:
             report.append("VIOLATIONS:")
             report.append("-" * 80)
-            for violation in scan_results['violations']:
+            for Violation in scan_results['violations']:
                 report.append(
-                    f"[{violation['severity']}] {violation['type']} in "
-                    f"{violation['file']}:{violation['line']}"
+                    f"[{Violation['Severity']}] {Violation['type']} in "
+                    f"{Violation['file']}:{Violation['line']}"
                 )
-                report.append(f"  Match: {violation['match']}")
+                report.append(f"  Match: {Violation['match']}")
                 report.append("")
         else:
             report.append("✅ NO VIOLATIONS FOUND - MCP SOVEREIGNTY MAINTAINED")

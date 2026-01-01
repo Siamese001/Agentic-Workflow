@@ -6,7 +6,7 @@ import re
 import fnmatch
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from agentic_core.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import CANON_KEY_EXCEPTIONS
 try:
     project_root: Any = Path(__file__).resolve().parents[3]
 except IndexError:
@@ -35,7 +35,7 @@ def is_excepted_from_key(key_id: int, file_path: Path, line_content: str='') -> 
                 return True
     return False
 
-class canon_ast_validator(ast.NodeVisitor):
+class CanonAstValidator(ast.NodeVisitor):
     """
     [L6 INFRASTRUCTURE] Base AST visitor for Canon keys.
     Provides automatic Type-Checking suppression and Exception Ledger integration.
@@ -49,7 +49,7 @@ class canon_ast_validator(ast.NodeVisitor):
         self.in_type_checking = False
 
     def report(self, msg: str, node: ast.AST) -> Any:
-        """Register a violation with automatic exception filtering."""
+        """Register a Violation with automatic exception filtering."""
         if hasattr(node, 'lineno'):
             line_no: Any = node.lineno
             line_content: Any = self.content_lines[line_no - 1] if line_no <= len(self.content_lines) else ''

@@ -3,7 +3,7 @@ import asyncio
 
 'Brief description of functionality and purpose.'
 import logging
-from agentic_core.runtime.P1_core.runtime_bootstrapper import RuntimeBootstrapper
+from AgenticCore.runtime.P1_core.RuntimeBootstrapper import RuntimeBootstrapper
 from typing import Any
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
@@ -15,7 +15,7 @@ async def main() -> Any:
     bootstrapper: Any = RuntimeBootstrapper(config)
     try:
         hop: Any = bootstrapper.assemble_hop(role='principal_architect')
-        mission: Any = {'task': 'Review the L5 safety guardrails for potential bypasses.', 'trace_id': 'SOVEREIGN-BETA-001'}
+        mission: Any = {'Task': 'Review the L5 safety guardrails for potential bypasses.', 'trace_id': 'SOVEREIGN-BETA-001'}
         print('\n🚀 [SYSTEM ONLINE] - Executing Sovereign Hop...\n')
         final_output: Any = await hop.run(mission)
         print(f'\n✅ [MISSION COMPLETE]\nOutput: {final_output}')

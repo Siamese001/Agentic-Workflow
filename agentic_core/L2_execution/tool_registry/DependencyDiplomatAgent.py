@@ -20,25 +20,25 @@ try:
     REDIS_AVAILABLE: Any = True
 except ImportError:
     REDIS_AVAILABLE: Any = False
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from AgenticCore.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class import_node:
+class ImportNode:
     """Represents a file in the import graph."""
     file_path: str
     imports: Set[str] = field(default_factory=set)
     imported_by: Set[str] = field(default_factory=set)
 
 @dataclass
-class blast_radius:
+class BlastRadius:
     """Blast radius analysis for a modified file."""
     modified_file: str
     direct_dependents: List[str]
@@ -75,9 +75,9 @@ class DependencyDiplomatAgent(SubAtomicAgent):
             try:
                 self.redis = redis.Redis(host='localhost', port=6379, decode_responses=True)
                 self.redis.ping()
-                logger.info('[OK] Dependency Diplomat connected to Redis')
+                Logger.info('[OK] Dependency Diplomat connected to Redis')
             except Exception as e:
-                logger.warning(f'[!]  Could not connect to Redis: {e}')
+                Logger.warning(f'[!]  Could not connect to Redis: {e}')
                 self.redis_available = False
         self.graph: Dict[str, ImportNode] = {}
 
@@ -87,16 +87,16 @@ class DependencyDiplomatAgent(SubAtomicAgent):
         
         Builds import graph and provides blast radius analysis.
         """
-        logger.info('🔗 Dependency Diplomat: Building import graph...')
+        Logger.info('🔗 Dependency Diplomat: Building import graph...')
         await self._build_graph()
         if hasattr(self.ctx, 'modified_files') and self.ctx.modified_files:
             for file_path in self.ctx.modified_files:
-                blast_radius: Any = self._calculate_blast_radius(file_path)
-                self._report_blast_radius(blast_radius)
+                BlastRadius: Any = self._calculate_blast_radius(file_path)
+                self._report_blast_radius(BlastRadius)
                 if not hasattr(self.ctx, 'blast_radii'):
                     self.ctx.blast_radii = {}
-                self.ctx.blast_radii[file_path] = blast_radius
-        logger.info(f'   Graph contains {len(self.graph)} nodes')
+                self.ctx.blast_radii[file_path] = BlastRadius
+        Logger.info(f'   Graph contains {len(self.graph)} nodes')
 
     async def _build_graph(self):
         """Build import dependency graph."""
@@ -114,9 +114,9 @@ class DependencyDiplomatAgent(SubAtomicAgent):
             self._persist_to_redis()
 
     def _find_python_files(self) -> List[str]:
-        """Find all Python files in agentic_core."""
+        """Find all Python files in AgenticCore."""
         python_files = []
-        for py_file in Path('agentic_core').rglob('*.py'):
+        for py_file in Path('AgenticCore').rglob('*.py'):
             python_files.append(str(py_file))
         return python_files
 
@@ -153,9 +153,9 @@ class DependencyDiplomatAgent(SubAtomicAgent):
                 self.redis.delete(key)
                 if node.imported_by:
                     self.redis.sadd(key, *node.imported_by)
-            logger.info('   Graph persisted to Redis with deps:forward: and deps:reverse: keys')
+            Logger.info('   Graph persisted to Redis with deps:forward: and deps:reverse: keys')
         except Exception as e:
-            logger.warning(f'Could not persist to Redis: {e}')
+            Logger.warning(f'Could not persist to Redis: {e}')
 
     def _calculate_blast_radius(self, modified_file: str, max_depth: int=5) -> BlastRadius:
         """
@@ -191,29 +191,29 @@ class DependencyDiplomatAgent(SubAtomicAgent):
                     queue.append((dependent, depth + 1))
         return BlastRadius(modified_file=modified_file, direct_dependents=direct_dependents, indirect_dependents=indirect_dependents, total_affected=len(direct_dependents) + len(indirect_dependents), depth=max_depth_reached)
 
-    def _report_blast_radius(self, blast_radius: BlastRadius):
+    def _report_blast_radius(self, BlastRadius: BlastRadius):
         """Report blast radius analysis."""
-        logger.info(f"\n{'=' * 80}")
-        logger.info(f'🔗 BLAST RADIUS ANALYSIS')
-        logger.info(f"{'=' * 80}")
-        logger.info(f'Modified File: {blast_radius.modified_file}')
-        logger.info(f'Direct Dependents: {len(blast_radius.direct_dependents)}')
-        logger.info(f'Indirect Dependents: {len(blast_radius.indirect_dependents)}')
-        logger.info(f'Total Affected: {blast_radius.total_affected}')
-        logger.info(f'Max Depth: {blast_radius.depth}')
-        if blast_radius.direct_dependents:
-            logger.info(f'\nDirect Dependents (showing first 10):')
-            for dep in blast_radius.direct_dependents[:10]:
-                logger.info(f'  - {dep}')
-            if len(blast_radius.direct_dependents) > 10:
-                logger.info(f'  ... and {len(blast_radius.direct_dependents) - 10} more')
-        if blast_radius.indirect_dependents:
-            logger.info(f'\nIndirect Dependents (showing first 10):')
-            for dep in blast_radius.indirect_dependents[:10]:
-                logger.info(f'  - {dep}')
-            if len(blast_radius.indirect_dependents) > 10:
-                logger.info(f'  ... and {len(blast_radius.indirect_dependents) - 10} more')
-        logger.info(f"{'=' * 80}\n")
+        Logger.info(f"\n{'=' * 80}")
+        Logger.info(f'🔗 BLAST RADIUS ANALYSIS')
+        Logger.info(f"{'=' * 80}")
+        Logger.info(f'Modified File: {BlastRadius.modified_file}')
+        Logger.info(f'Direct Dependents: {len(BlastRadius.direct_dependents)}')
+        Logger.info(f'Indirect Dependents: {len(BlastRadius.indirect_dependents)}')
+        Logger.info(f'Total Affected: {BlastRadius.total_affected}')
+        Logger.info(f'Max Depth: {BlastRadius.depth}')
+        if BlastRadius.direct_dependents:
+            Logger.info(f'\nDirect Dependents (showing first 10):')
+            for dep in BlastRadius.direct_dependents[:10]:
+                Logger.info(f'  - {dep}')
+            if len(BlastRadius.direct_dependents) > 10:
+                Logger.info(f'  ... and {len(BlastRadius.direct_dependents) - 10} more')
+        if BlastRadius.indirect_dependents:
+            Logger.info(f'\nIndirect Dependents (showing first 10):')
+            for dep in BlastRadius.indirect_dependents[:10]:
+                Logger.info(f'  - {dep}')
+            if len(BlastRadius.indirect_dependents) > 10:
+                Logger.info(f'  ... and {len(BlastRadius.indirect_dependents) - 10} more')
+        Logger.info(f"{'=' * 80}\n")
 
     def calculate_impact_scope(self, modified_files: List[str], max_depth: int=2) -> List[str]:
         """
@@ -230,7 +230,7 @@ class DependencyDiplomatAgent(SubAtomicAgent):
         Returns:
             List of files that need healing/testing (surgical target list)
         """
-        logger.info(f'🔗 Calculating impact scope for {len(modified_files)} modified files...')
+        Logger.info(f'🔗 Calculating impact scope for {len(modified_files)} modified files...')
         impact_scope: Any = set(modified_files)
         queue: Any = [(file, 0) for file in modified_files]
         visited: Any = set(modified_files)
@@ -246,7 +246,7 @@ class DependencyDiplomatAgent(SubAtomicAgent):
                         impact_scope.add(dependent)
                         queue.append((dependent, depth + 1))
         result: Any = list(impact_scope)
-        logger.info(f'   Impact scope: {len(result)} files (depth limit: {max_depth})')
+        Logger.info(f'   Impact scope: {len(result)} files (depth limit: {max_depth})')
         return result
 
     def get_surgical_target_list(self, modified_files: List[str]) -> List[str]:
@@ -263,7 +263,7 @@ class DependencyDiplomatAgent(SubAtomicAgent):
         """
         return self.calculate_impact_scope(modified_files, max_depth=2)
 
-    def export_graph_visualization(self, output_file: str='dependency_graph.json') -> Any:
+    def export_graph_visualization(self, output_file: str='DependencyGraph.json') -> Any:
         """Export graph for visualization."""
         graph_data: Any = {'nodes': [], 'edges': []}
         for file_path, node in self.graph.items():
@@ -272,7 +272,7 @@ class DependencyDiplomatAgent(SubAtomicAgent):
                 graph_data['edges'].append({'from': file_path, 'to': imported_file})
         with open(output_file, 'w') as f:
             json.dump(graph_data, f, indent=2)
-        logger.info(f'Graph exported to {output_file}')
+        Logger.info(f'Graph exported to {output_file}')
 _dependency_diplomat = None
 
 def get_dependency_diplomat(ctx: Any) -> DependencyDiplomat:

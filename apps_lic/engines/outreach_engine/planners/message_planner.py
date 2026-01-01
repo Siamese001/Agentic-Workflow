@@ -1,6 +1,6 @@
 """Message Planner - L1 planning for comprehensive message structure and content.
 
-Incorporated from L1 message_planning.py to provide archetype-specific message
+Incorporated from L1 message_planning.py to provide Archetype-specific message
 structure planning with section templates, temperature adjustments, and
 constraint management for maximizing executive reply rates.
 
@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import logging
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -31,8 +31,8 @@ class MessageSection:
 
 @dataclass
 class MessagePlan:
-    """Complete message structure plan with archetype-specific parameters."""
-    archetype: str
+    """Complete message structure plan with Archetype-specific parameters."""
+    Archetype: str
     sections: Dict[str, MessageSection]
     temperature_schedule: Dict[str, float]
     constraints: List[str]
@@ -56,17 +56,17 @@ class MessageContent:
 
 
 class MessagePlanner:
-    """Structures messages with archetype-specific parameters to increase reply probability.
+    """Structures messages with Archetype-specific parameters to increase reply probability.
     
     Generates deterministic message plans using section templates, temperature
-    adjustments, and archetype-specific constraints.
+    adjustments, and Archetype-specific constraints.
     """
     
     def __init__(self, telemetry_bus: Optional[Any] = None) -> None:
-        """Initialize message planner with archetype-specific templates."""
+        """Initialize message planner with Archetype-specific templates."""
         self.telemetry_bus = telemetry_bus
         
-        # Temperature adjustments by archetype
+        # Temperature adjustments by Archetype
         self.temperature_adjustments = {
             "RECRUITER": {
                 "subject": -0.1,  # More formal
@@ -175,8 +175,8 @@ class MessagePlanner:
         self,
         *,
         content: MessageContent,
-        archetype: str,
-        persona_plan: Optional[Any] = None,
+        Archetype: str,
+        PersonaPlan: Optional[Any] = None,
         grounding_plan: Optional[Any] = None,
         fusion_plan: Optional[Any] = None,
         outreach_context: Dict[str, object] = None,
@@ -185,8 +185,8 @@ class MessagePlanner:
         
         Args:
             content: Message content signals and requirements
-            archetype: Target archetype for message optimization
-            persona_plan: Optional persona planning results
+            Archetype: Target Archetype for message optimization
+            PersonaPlan: Optional persona planning results
             grounding_plan: Optional grounding analysis results
             fusion_plan: Optional fusion planning results
             outreach_context: Additional context for planning
@@ -196,38 +196,38 @@ class MessagePlanner:
         """
         outreach_context = outreach_context or {}
         
-        # 1. Plan sections with archetype-specific content
-        sections = self._plan_sections(content, archetype, persona_plan, grounding_plan, fusion_plan)
+        # 1. Plan sections with Archetype-specific content
+        sections = self._plan_sections(content, Archetype, PersonaPlan, grounding_plan, fusion_plan)
         
-        # 2. Calculate temperature schedule for archetype
-        temperature_schedule = self._calculate_temperature_schedule(archetype)
+        # 2. Calculate temperature schedule for Archetype
+        temperature_schedule = self._calculate_temperature_schedule(Archetype)
         
-        # 3. Determine archetype-specific constraints
-        constraints = self._determine_constraints(content, archetype, grounding_plan)
+        # 3. Determine Archetype-specific constraints
+        constraints = self._determine_constraints(content, Archetype, grounding_plan)
         
         # 4. Set section priority order
-        priority_order = self._determine_priority_order(archetype, outreach_context)
+        priority_order = self._determine_priority_order(Archetype, outreach_context)
         
         # 5. Calculate total target length
         total_target_length = sum(section.max_length for section in sections.values())
         
         # 6. Calculate confidence score
-        confidence_score = self._calculate_confidence_score(sections, content, archetype)
+        confidence_score = self._calculate_confidence_score(sections, content, Archetype)
         
         # 7. Build metadata
         metadata = {
-            "archetype": archetype,
+            "Archetype": Archetype,
             "section_count": len(sections),
             "constraint_count": len(constraints),
             "total_target_length": total_target_length,
-            "persona_integration": persona_plan is not None,
+            "persona_integration": PersonaPlan is not None,
             "grounding_integration": grounding_plan is not None,
             "fusion_integration": fusion_plan is not None
         }
         
         # 8. Create message plan
         plan = MessagePlan(
-            archetype=archetype,
+            Archetype=Archetype,
             sections=sections,
             temperature_schedule=temperature_schedule,
             constraints=constraints,
@@ -245,12 +245,12 @@ class MessagePlanner:
     def _plan_sections(
         self, 
         content: MessageContent, 
-        archetype: str,
-        persona_plan: Optional[Any] = None,
+        Archetype: str,
+        PersonaPlan: Optional[Any] = None,
         grounding_plan: Optional[Any] = None,
         fusion_plan: Optional[Any] = None
     ) -> Dict[str, MessageSection]:
-        """Plan individual message sections with archetype-specific parameters."""
+        """Plan individual message sections with Archetype-specific parameters."""
         sections = {}
         
         for section_name, template in self.section_templates.items():
@@ -262,12 +262,12 @@ class MessagePlanner:
                 optional_elements=template["optional_elements"],
                 style_guidelines=template["style_guidelines"],
                 word_count_target=template["word_count_target"],
-                temperature_adjustment=self.temperature_adjustments.get(archetype, {}).get(section_name, 0.0)
+                temperature_adjustment=self.temperature_adjustments.get(Archetype, {}).get(section_name, 0.0)
             )
             
             # Apply persona-based refinements
-            if persona_plan:
-                section = self._apply_persona_refinements(section, persona_plan, archetype)
+            if PersonaPlan:
+                section = self._apply_persona_refinements(section, PersonaPlan, Archetype)
             
             # Apply grounding-based constraints
             if grounding_plan:
@@ -277,28 +277,28 @@ class MessagePlanner:
             if fusion_plan:
                 section = self._apply_fusion_strategy(section, fusion_plan, section_name)
             
-            # Apply archetype-specific content strategy
-            section.content_strategy = self._determine_content_strategy(section_name, archetype)
+            # Apply Archetype-specific content strategy
+            section.content_strategy = self._determine_content_strategy(section_name, Archetype)
             
             sections[section_name] = section
         
         return sections
     
-    def _apply_persona_refinements(self, section: MessageSection, persona_plan: object, archetype: str) -> MessageSection:
+    def _apply_persona_refinements(self, section: MessageSection, PersonaPlan: object, Archetype: str) -> MessageSection:
         """Apply persona-based refinements to section."""
         # Adjust based on persona parameters
-        if hasattr(persona_plan, 'detail_level'):
-            if persona_plan.detail_level == "high" and section.section_type == "value":
+        if hasattr(PersonaPlan, 'detail_level'):
+            if PersonaPlan.detail_level == "high" and section.section_type == "value":
                 section.max_length = int(section.max_length * 1.2)  # Allow more detail
                 section.word_count_target = int(section.word_count_target * 1.2)
-            elif persona_plan.detail_level == "low" and section.section_type in ["hook", "value"]:
+            elif PersonaPlan.detail_level == "low" and section.section_type in ["hook", "value"]:
                 section.max_length = int(section.max_length * 0.8)  # Be more concise
                 section.word_count_target = int(section.word_count_target * 0.8)
         
-        if hasattr(persona_plan, 'communication_style'):
-            if persona_plan.communication_style == "formal" and section.section_type == "subject":
+        if hasattr(PersonaPlan, 'communication_style'):
+            if PersonaPlan.communication_style == "formal" and section.section_type == "subject":
                 section.style_guidelines.append("formal_tone")
-            elif persona_plan.communication_style == "technical" and section.section_type == "value":
+            elif PersonaPlan.communication_style == "technical" and section.section_type == "value":
                 section.optional_elements.append("technical_details")
         
         return section
@@ -337,8 +337,8 @@ class MessagePlanner:
         
         return section
     
-    def _determine_content_strategy(self, section_name: str, archetype: str) -> str:
-        """Determine content strategy for section based on archetype."""
+    def _determine_content_strategy(self, section_name: str, Archetype: str) -> str:
+        """Determine content strategy for section based on Archetype."""
         strategies = {
             "RECRUITER": {
                 "subject": "job_focus",
@@ -370,10 +370,10 @@ class MessagePlanner:
             }
         }
         
-        return strategies.get(archetype, {}).get(section_name, "standard")
+        return strategies.get(Archetype, {}).get(section_name, "standard")
     
-    def _calculate_temperature_schedule(self, archetype: str) -> Dict[str, float]:
-        """Calculate temperature schedule for archetype."""
+    def _calculate_temperature_schedule(self, Archetype: str) -> Dict[str, float]:
+        """Calculate temperature schedule for Archetype."""
         base_schedule = {
             "subject": 0.7,
             "hook": 0.8,
@@ -382,8 +382,8 @@ class MessagePlanner:
             "signature": 0.5
         }
         
-        # Apply archetype adjustments
-        adjustments = self.temperature_adjustments.get(archetype, {})
+        # Apply Archetype adjustments
+        adjustments = self.temperature_adjustments.get(Archetype, {})
         schedule = {}
         
         for section, base_temp in base_schedule.items():
@@ -392,9 +392,9 @@ class MessagePlanner:
         
         return schedule
     
-    def _determine_constraints(self, content: MessageContent, archetype: str, grounding_plan: Optional[Any] = None) -> List[str]:
-        """Determine archetype-specific constraints."""
-        base_constraints = self.constraint_mappings.get(archetype, []).copy()
+    def _determine_constraints(self, content: MessageContent, Archetype: str, grounding_plan: Optional[Any] = None) -> List[str]:
+        """Determine Archetype-specific constraints."""
+        base_constraints = self.constraint_mappings.get(Archetype, []).copy()
         
         # Add content-specific constraints
         if content.constraints:
@@ -415,17 +415,17 @@ class MessagePlanner:
         
         return unique_constraints
     
-    def _determine_priority_order(self, archetype: str, context: Dict[str, object]) -> List[str]:
-        """Determine section priority order based on archetype and context."""
+    def _determine_priority_order(self, Archetype: str, context: Dict[str, object]) -> List[str]:
+        """Determine section priority order based on Archetype and context."""
         base_order = self.default_priority.copy()
         
-        # Adjust based on archetype
-        if archetype == "C_LEVEL":
+        # Adjust based on Archetype
+        if Archetype == "C_LEVEL":
             # Move value proposition earlier for C-level
             if "value" in base_order:
                 base_order.remove("value")
                 base_order.insert(2, "value")  # After hook
-        elif archetype == "RECRUITER":
+        elif Archetype == "RECRUITER":
             # Move CTA earlier for recruiters
             if "cta" in base_order:
                 base_order.remove("cta")
@@ -437,7 +437,7 @@ class MessagePlanner:
         
         return base_order
     
-    def _calculate_confidence_score(self, sections: Dict[str, MessageSection], content: MessageContent, archetype: str) -> float:
+    def _calculate_confidence_score(self, sections: Dict[str, MessageSection], content: MessageContent, Archetype: str) -> float:
         """Calculate overall confidence score for message plan."""
         base_score = 0.7
         
@@ -445,8 +445,8 @@ class MessagePlanner:
         if content.value_proposition and content.key_points:
             base_score += 0.1
         
-        # Boost for archetype match
-        if archetype in ["EXECUTIVE", "C_LEVEL", "SENIOR_TA", "RECRUITER"]:
+        # Boost for Archetype match
+        if Archetype in ["EXECUTIVE", "C_LEVEL", "SENIOR_TA", "RECRUITER"]:
             base_score += 0.1
         
         # Adjust based on section completeness
@@ -460,19 +460,19 @@ class MessagePlanner:
         try:
             if self.telemetry_bus:
                 self.telemetry_bus.record("message_plan_created", {
-                    "archetype": plan.archetype,
+                    "Archetype": plan.Archetype,
                     "section_count": len(plan.sections),
                     "constraint_count": len(plan.constraints),
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+            Logger.debug(f"Failed to record telemetry: {e}")
     
     def get_message_summary(self, plan: MessagePlan) -> Dict[str, object]:
         """Get a summary of the message plan for debugging/telemetry."""
         return {
-            "plan_id": f"message_{plan.archetype}_{plan.confidence_score:.2f}",
-            "archetype": plan.archetype,
+            "plan_id": f"message_{plan.Archetype}_{plan.confidence_score:.2f}",
+            "Archetype": plan.Archetype,
             "section_count": len(plan.sections),
             "constraint_count": len(plan.constraints),
             "total_target_length": plan.total_target_length,
@@ -489,7 +489,7 @@ class MessagePlanner:
         """Validate message plan and return warnings."""
         warnings = []
         
-        # Check for missing required sections
+        # Check for Missing required sections
         required_sections = ["subject", "hook", "value", "cta", "signature"]
         missing_sections = [s for s in required_sections if s not in plan.sections]
         if missing_sections:

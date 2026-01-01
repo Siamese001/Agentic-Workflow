@@ -6,7 +6,7 @@ from typing import Any, List, Dict, Optional
 import json
 from pathlib import Path
 
-class bm25_store:
+class Bm25Store:
     """In-memory BM25 index for fast keyword retrieval."""
 
     def __init__(self):
@@ -40,8 +40,8 @@ class bm25_store:
             doc: Any = self.documents[idx]
             results.append({'source': 'bm25', 'content': doc['text'], 'score': float(score), 'id': doc['id'], 'metadata': doc.get('metadata', {})})
         return results
-bm25_store: Any = BM25Store()
+Bm25Store: Any = BM25Store()
 
 def get_bm25_store() -> BM25Store:
     """Brief description of functionality and purpose."""
-    return bm25_store
+    return Bm25Store

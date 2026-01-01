@@ -2,7 +2,7 @@
 Proactive Scheduling and Predictive Handoff for L4.5 Autonomy
 
 Provides:
-- ProactiveScheduler: Autonomous task identification and initiation
+- ProactiveScheduler: Autonomous Task identification and initiation
 - PredictiveHandoff: Signals before reaching capability edge
 - CapabilityMonitor: Tracks agent capabilities and limits
 """
@@ -41,7 +41,7 @@ class HandoffReason(Enum):
 
 @dataclass
 class ProactiveTask:
-    """A task identified proactively."""
+    """A Task identified proactively."""
     task_id: str
     name: str
     description: str
@@ -63,7 +63,7 @@ class HandoffRequest:
     context: str
     urgency: TaskPriority
     suggested_actions: List[str]
-    capability_gap: Optional[str] = None
+    CapabilityGap: Optional[str] = None
     confidence_score: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -81,7 +81,7 @@ class CapabilityProfile:
 
 class ProactiveScheduler:
     """
-    Autonomous task identification and scheduling.
+    Autonomous Task identification and scheduling.
 
     Identifies tasks proactively based on:
     - Current context state
@@ -117,13 +117,13 @@ class ProactiveScheduler:
                 auto_execute=True,
             ))
 
-        # Check for missing sections
+        # Check for Missing sections
         resume = self.ctx.current_resume
         if resume:
             if not resume.get("summary"):
                 tasks.append(self._create_task(
                     name="Generate Summary",
-                    description="Generate missing summary section",
+                    description="Generate Missing summary section",
                     priority=TaskPriority.HIGH,
                     auto_execute=True,
                 ))
@@ -157,7 +157,7 @@ class ProactiveScheduler:
         auto_execute: bool = True,
         requires_approval: bool = False,
     ) -> ProactiveTask:
-        """Create a proactive task."""
+        """Create a proactive Task."""
         self._task_counter += 1
         return ProactiveTask(
             task_id=f"task_{self._task_counter}",
@@ -183,11 +183,11 @@ class ProactiveScheduler:
         return sorted(pending, key=lambda t: priority_order.get(t.priority, 5))
 
     def mark_executed(self, task_id: str, result: str = "completed"):
-        """Mark a task as executed."""
-        for task in self._tasks:
-            if task.task_id == task_id:
-                task.executed = True
-                task.result = result
+        """Mark a Task as executed."""
+        for Task in self._tasks:
+            if Task.task_id == task_id:
+                Task.executed = True
+                Task.result = result
                 break
 
     def get_auto_executable_tasks(self) -> List[ProactiveTask]:
@@ -216,18 +216,18 @@ class PredictiveHandoff:
     def predict_handoff_need(
         self,
         agent_name: str,
-        task_complexity: int,
+        TaskComplexity: int,
         confidence: float,
     ) -> Optional[HandoffRequest]:
         """Predict if handoff will be needed."""
         profile = self._capability_profiles.get(agent_name)
 
         # Check complexity limit
-        if profile and task_complexity > profile.max_complexity:
+        if profile and TaskComplexity > profile.max_complexity:
             return self._create_handoff(
                 reason=HandoffReason.CAPABILITY_LIMIT,
-                context=f"Task complexity ({task_complexity}) exceeds {agent_name} limit ({profile.max_complexity})",
-                capability_gap=f"Max complexity: {profile.max_complexity}",
+                context=f"Task complexity ({TaskComplexity}) exceeds {agent_name} limit ({profile.max_complexity})",
+                CapabilityGap=f"Max complexity: {profile.max_complexity}",
                 confidence_score=confidence,
             )
 
@@ -255,7 +255,7 @@ class PredictiveHandoff:
         reason: HandoffReason,
         context: str,
         urgency: TaskPriority = TaskPriority.MEDIUM,
-        capability_gap: Optional[str] = None,
+        CapabilityGap: Optional[str] = None,
         confidence_score: float = 0.0,
     ) -> HandoffRequest:
         """Create a handoff request."""
@@ -270,7 +270,7 @@ class PredictiveHandoff:
             context=context,
             urgency=urgency,
             suggested_actions=suggested_actions,
-            capability_gap=capability_gap,
+            CapabilityGap=CapabilityGap,
             confidence_score=confidence_score,
         )
 
@@ -281,7 +281,7 @@ class PredictiveHandoff:
         """Get suggested actions for a handoff reason."""
         actions = {
             HandoffReason.CAPABILITY_LIMIT: [
-                "Review and simplify the task",
+                "Review and simplify the Task",
                 "Break into smaller subtasks",
                 "Provide additional context",
             ],
@@ -338,7 +338,7 @@ class CapabilityMonitor:
     def record_execution(
         self,
         agent_name: str,
-        task_type: str,
+        TaskType: str,
         success: bool,
         duration_ms: float,
         complexity: int = 1,
@@ -346,7 +346,7 @@ class CapabilityMonitor:
         """Record an agent execution."""
         self._execution_history.append({
             "agent_name": agent_name,
-            "task_type": task_type,
+            "TaskType": TaskType,
             "success": success,
             "duration_ms": duration_ms,
             "complexity": complexity,
@@ -400,7 +400,7 @@ class CapabilityMonitor:
         tasks = set()
         for execution in self._execution_history:
             if execution["agent_name"] == agent_name and execution["success"]:
-                tasks.add(execution["task_type"])
+                tasks.add(execution["TaskType"])
         return list(tasks)
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
@@ -439,7 +439,7 @@ class ProactiveAgent(ResumeAgent):
         # Check for handoff needs
         handoff = self.handoff.predict_handoff_need(
             agent_name=self.name,
-            task_complexity=len(tasks),
+            TaskComplexity=len(tasks),
             confidence=0.8,
         )
 
@@ -449,14 +449,14 @@ class ProactiveAgent(ResumeAgent):
 
         # Execute auto-executable tasks
         auto_tasks = self.scheduler.get_auto_executable_tasks()
-        for task in auto_tasks:
-            print(f"   [{self.name}] Auto-executing: {task.name}")
-            self.scheduler.mark_executed(task.task_id)
+        for Task in auto_tasks:
+            print(f"   [{self.name}] Auto-executing: {Task.name}")
+            self.scheduler.mark_executed(Task.task_id)
             self.monitor.record_execution(
                 agent_name=self.name,
-                task_type=task.name,
+                TaskType=Task.name,
                 success=True,
-                duration_ms=task.estimated_duration_ms,
+                duration_ms=Task.estimated_duration_ms,
             )
 
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")

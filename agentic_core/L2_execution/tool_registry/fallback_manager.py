@@ -7,17 +7,17 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class fallback_strategy(Enum):
+class FallbackStrategy(Enum):
     """Fallback strategies."""
     SEQUENTIAL: Any = 'sequential'
     PARALLEL: Any = 'parallel'
     WEIGHTED: Any = 'weighted'
 
 @dataclass
-class tool_provider:
-    """Tool provider configuration."""
+class ToolProvider:
+    """Tool Provider configuration."""
     name: str
     execute_fn: Callable[[Dict[str, Any]], Awaitable[Any]]
     priority: int = 0
@@ -25,7 +25,7 @@ class tool_provider:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_available(self) -> bool:
-        """Check if provider is available.
+        """Check if Provider is available.
 
         Returns:
             True if available (circuit not open)
@@ -39,7 +39,7 @@ class tool_provider:
         return {'name': self.name, 'priority': self.priority, 'available': self.is_available(), 'circuit_state': self.circuit_breaker.state if self.circuit_breaker else 'N/A', 'metadata': self.metadata}
 
 @dataclass
-class fallback_result:
+class FallbackResult:
     """Result from fallback execution."""
     success: bool
     provider_used: str
@@ -52,13 +52,13 @@ class fallback_result:
         """Convert to dictionary."""
         return {'success': self.success, 'provider_used': self.provider_used, 'output': self.output, 'error': self.error, 'attempts': self.attempts, 'metadata': self.metadata}
 
-class fallback_manager:
+class FallbackManager:
     """Manages automatic fallback chains for tool providers.
 
     Features:
-    - Ordered provider sequences (e.g., Google → Bing → DuckDuckGo)
+    - Ordered Provider sequences (e.g., Google → Bing → DuckDuckGo)
     - Circuit breaker integration
-    - Automatic retry with next provider
+    - Automatic retry with next Provider
     - Fallback strategy selection
     - Execution tracking
     """
@@ -105,11 +105,11 @@ class fallback_manager:
         max_attempts: Any = max_attempts or len(providers)
         attempts: Any = []
         self._log_fallback_start(tool_name, providers)
-        for i, provider in enumerate(providers[:max_attempts]):
-            if not provider.is_available():
-                self._handle_unavailable_provider(tool_name, provider, attempts)
+        for i, Provider in enumerate(providers[:max_attempts]):
+            if not Provider.is_available():
+                self._handle_unavailable_provider(tool_name, Provider, attempts)
                 continue
-            result: Any = await self._try_provider(tool_name, provider, parameters, i, attempts)
+            result: Any = await self._try_provider(tool_name, Provider, parameters, i, attempts)
             if result:
                 return result
         return self._handle_all_providers_failed(tool_name, attempts)
@@ -119,30 +119,30 @@ class fallback_manager:
         if self.enable_logging:
             LOGGER.info('executing_with_fallback', extra={'tool_name': tool_name, 'provider_count': len(providers)})
 
-    def _handle_unavailable_provider(self, tool_name: str, provider, attempts: List) -> None:
-        """Handle unavailable provider."""
-        attempts.append({'provider': provider.name, 'skipped': True, 'reason': 'Circuit breaker open'})
+    def _handle_unavailable_provider(self, tool_name: str, Provider, attempts: List) -> None:
+        """Handle unavailable Provider."""
+        attempts.append({'Provider': Provider.name, 'skipped': True, 'reason': 'Circuit breaker open'})
         if self.enable_logging:
-            LOGGER.warning('provider_skipped', extra={'tool_name': tool_name, 'provider': provider.name, 'reason': 'circuit_breaker_open'})
+            LOGGER.warning('provider_skipped', extra={'tool_name': tool_name, 'Provider': Provider.name, 'reason': 'circuit_breaker_open'})
 
-    async def _try_provider(self, tool_name: str, provider, parameters: Dict, attempt_num: int, attempts: List) -> Optional[FallbackResult]:
-        """Try executing with a provider."""
+    async def _try_provider(self, tool_name: str, Provider, parameters: Dict, attempt_num: int, attempts: List) -> Optional[FallbackResult]:
+        """Try executing with a Provider."""
         try:
             if self.enable_logging:
-                LOGGER.debug('trying_provider', extra={'tool_name': tool_name, 'provider': provider.name, 'attempt': attempt_num + 1})
-            output = await provider.execute_fn(parameters)
-            attempts.append({'provider': provider.name, 'success': True, 'output': output})
-            if provider.circuit_breaker:
-                provider.circuit_breaker.record_success()
+                LOGGER.debug('trying_provider', extra={'tool_name': tool_name, 'Provider': Provider.name, 'attempt': attempt_num + 1})
+            output = await Provider.execute_fn(parameters)
+            attempts.append({'Provider': Provider.name, 'success': True, 'output': output})
+            if Provider.circuit_breaker:
+                Provider.circuit_breaker.record_success()
             if self.enable_logging:
-                LOGGER.info('provider_succeeded', extra={'tool_name': tool_name, 'provider': provider.name, 'attempt': attempt_num + 1})
-            return FallbackResult(success=True, provider_used=provider.name, output=output, attempts=attempts, metadata={'total_attempts': len(attempts), 'fallback_used': attempt_num > 0})
+                LOGGER.info('provider_succeeded', extra={'tool_name': tool_name, 'Provider': Provider.name, 'attempt': attempt_num + 1})
+            return FallbackResult(success=True, provider_used=Provider.name, output=output, attempts=attempts, metadata={'total_attempts': len(attempts), 'fallback_used': attempt_num > 0})
         except Exception as e:
-            attempts.append({'provider': provider.name, 'success': False, 'error': str(e)})
-            if provider.circuit_breaker:
-                provider.circuit_breaker.record_failure()
+            attempts.append({'Provider': Provider.name, 'success': False, 'error': str(e)})
+            if Provider.circuit_breaker:
+                Provider.circuit_breaker.record_failure()
             if self.enable_logging:
-                LOGGER.warning('provider_failed', extra={'tool_name': tool_name, 'provider': provider.name, 'error': str(e), 'attempt': attempt_num + 1})
+                LOGGER.warning('provider_failed', extra={'tool_name': tool_name, 'Provider': Provider.name, 'error': str(e), 'attempt': attempt_num + 1})
             return None
 
     def _handle_all_providers_failed(self, tool_name: str, attempts: List) -> FallbackResult:

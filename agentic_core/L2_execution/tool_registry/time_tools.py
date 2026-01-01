@@ -6,9 +6,9 @@ Tool ID Prefix: ACT-008
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger('ActionRegistry.TimeTools')
+Logger: Any = logging.getLogger('ActionRegistry.TimeTools')
 
-class time_tools:
+class TimeTools:
     """
     Provides time-related functionalities, including current time and conversion.
     Tool ID Prefix: ACT-008
@@ -55,12 +55,12 @@ class time_tools:
         Returns:
             str: The current time in ISO 8601 format or an error message.
         """
-        logger.info(f"⏰ Getting current time for timezone: '{timezone}'")
+        Logger.info(f"⏰ Getting current time for timezone: '{timezone}'")
         try:
             from mcp_time_client import get_current_time as mcp_get_time
             return mcp_get_time(timezone)
         except ImportError:
-            logger.warning('MCP Time client not found, falling back to local time calculation.')
+            Logger.warning('MCP Time client not found, falling back to local time calculation.')
             return self._get_current_time_fallback(timezone)
         except Exception as e:
             return f'Error with MCP Time client for get_current_time: {e}'
@@ -78,7 +78,7 @@ class time_tools:
         Returns:
             str: The converted time string in ISO 8601 format or an error message.
         """
-        logger.info(f"[~] Converting time '{time}' from '{source_timezone}' to '{target_timezone}'")
+        Logger.info(f"[~] Converting time '{time}' from '{source_timezone}' to '{target_timezone}'")
         try:
             from mcp_time_client import convert_time as mcp_convert_time
             return mcp_convert_time(source_timezone, time, target_timezone)

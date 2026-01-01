@@ -5,9 +5,9 @@ import ast
 import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class truth_keeper:
+class TruthKeeper:
     """
     Agent that ensures semantic consistency between docstrings and code.
 
@@ -48,8 +48,8 @@ class truth_keeper:
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef) and (not node.name.startswith('_')):
                     result: Any = await self._check_function_consistency(file_path, node, content)
-                    if result.get('violation'):
-                        violations.append(result['violation'])
+                    if result.get('Violation'):
+                        violations.append(result['Violation'])
                     if result.get('fixed_docstring'):
                         fixes.append({'function': node.name, 'line': node.lineno, 'old_docstring': result.get('old_docstring'), 'new_docstring': result['fixed_docstring']})
         except SyntaxError as e:
@@ -68,12 +68,12 @@ class truth_keeper:
             content: Full file content
 
         Returns:
-            Dictionary with violation info and potential fix
+            Dictionary with Violation info and potential fix
         """
         [arg.arg for arg in node.args.args]
         docstring = ast.get_docstring(node) or ''
         func_lines = content.split('\n')[node.lineno - 1:node.end_lineno]
         func_code = '\n'.join(func_lines)
         if not docstring:
-            return {'violation': {'type': 'missing_docstring', 'function': node.name, 'line': node.lineno, 'message': f"Function '{node.name}' missing docstring"}, 'fixed_docstring': None, 'old_docstring': None}
-        return {'violation': None, 'fixed_docstring': None, 'old_docstring': docstring}
+            return {'Violation': {'type': 'missing_docstring', 'function': node.name, 'line': node.lineno, 'message': f"Function '{node.name}' Missing docstring"}, 'fixed_docstring': None, 'old_docstring': None}
+        return {'Violation': None, 'fixed_docstring': None, 'old_docstring': docstring}

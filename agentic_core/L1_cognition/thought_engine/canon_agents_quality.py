@@ -7,12 +7,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_validators_ast import validate_print_statements, validate_debugger, validate_empty_except, validate_bare_except, validate_eval_exec
+    from AgenticCore.L1_cognition.thought_engine.canon_validators_ast import validate_print_statements, validate_debugger, validate_empty_except, validate_bare_except, validate_eval_exec
 except ImportError:
     validate_print_statements = validate_debugger = validate_empty_except = validate_bare_except = validate_eval_exec = lambda *a, **k: (True, [])
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -24,7 +24,7 @@ class SubAtomicAgent:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
 # NOT_AN_AGENT — legacy L1 class, true agent is SafetyInspectorAgent in L2 — excluded from discovery
-class safety_inspector:
+class SafetyInspector:
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance. Emits SECURE signal.
@@ -198,7 +198,7 @@ class safety_inspector:
         return (len(violations) == 0, violations)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DocEnforcerAgent in L2 — excluded from discovery
-class documentation_agent(SubAtomicAgent):
+class DocumentationAgent(SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
     ROLE: Pure focus on Docstrings.
@@ -206,18 +206,18 @@ class documentation_agent(SubAtomicAgent):
 
     def execute(self) -> None:
         """
-        Executes the documentation check, specifically for missing docstrings.
+        Executes the documentation check, specifically for Missing docstrings.
         """
         print(f'\n[>>>] {self.agent.name} ACTIVATED: Documentation Check...')
         passed, details = self.check_key_21_no_missing_docstrings()
         self.agent.ctx.report(self.agent.name, 21, passed, details)
 
     def _has_missing_docstring(self, node: ast.AST) -> bool:
-        """Helper to determine if a node (FunctionDef or ClassDef) has a missing docstring."""
+        """Helper to determine if a node (FunctionDef or ClassDef) has a Missing docstring."""
         return not ast.get_docstring(node)
 
     def _find_missing_docstring_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
-        """Helper to find missing docstrings in an AST tree."""
+        """Helper to find Missing docstrings in an AST tree."""
         file_violations = []
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and self._has_missing_docstring(node):
@@ -226,7 +226,7 @@ class documentation_agent(SubAtomicAgent):
 
     def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """
-        Checks for missing docstrings in classes and functions using AST parsing.
+        Checks for Missing docstrings in classes and functions using AST parsing.
         """
         violations: Any = []
         for fp in self.agent.ctx.python_files:
@@ -244,7 +244,7 @@ class SubAtomicAgent:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
 # NOT_AN_AGENT — legacy L1 class, true agent is NamingEnforcerAgent in L2 — excluded from discovery
-class naming_agent(SubAtomicAgent):
+class NamingAgent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
     ROLE: Enforces Snake_Case/PascalCase.

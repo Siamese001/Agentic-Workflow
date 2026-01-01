@@ -6,8 +6,8 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: ValidationRejectionReason → validation_rejection_reason
-class validation_rejection_reason(Enum):
+# NAMING FIXED: ValidationRejectionReason → ValidationRejectionReason
+class ValidationRejectionReason(Enum):
     '''Brief description of functionality and purpose.'''
     
     INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
@@ -16,16 +16,16 @@ class validation_rejection_reason(Enum):
     ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
     MISSING_CITATIONS = "MISSING_CITATIONS"
 
-# NAMING FIXED: Violation → violation
-class violation:
+# NAMING FIXED: Violation → Violation
+class Violation:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, reason: ValidationRejectionReason, message: str):
         self.reason = reason
         self.message = message
 
-# NAMING FIXED: IntegrityGateResult → integrity_gate_result
-class integrity_gate_result:
+# NAMING FIXED: IntegrityGateResult → IntegrityGateResult
+class IntegrityGateResult:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, passed: bool, depth_score: float):
@@ -39,8 +39,8 @@ class integrity_gate_result:
         self.violations.append(Violation(reason, message))
 
 # Nested types for DeepResearchOutput
-# NAMING FIXED: FinancialProofPoint → financial_proof_point
-class financial_proof_point:
+# NAMING FIXED: FinancialProofPoint → FinancialProofPoint
+class FinancialProofPoint:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, metric_name: str, value: str, source_citation: str = None):
@@ -48,8 +48,8 @@ class financial_proof_point:
         self.value = value
         self.source_citation = source_citation
 
-# NAMING FIXED: KeyTechnology → key_technology
-class key_technology:
+# NAMING FIXED: KeyTechnology → KeyTechnology
+class KeyTechnology:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None):
@@ -57,15 +57,15 @@ class key_technology:
         self.implementation_details = implementation_details
         self.source_citation = source_citation
 
-# NAMING FIXED: KeyExecutive → key_executive
-class key_executive:
+# NAMING FIXED: KeyExecutive → KeyExecutive
+class KeyExecutive:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, name: str):
         self.name = name
 
-# NAMING FIXED: StrategicLayer → strategic_layer
-class strategic_layer:
+# NAMING FIXED: StrategicLayer → StrategicLayer
+class StrategicLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]):
@@ -73,43 +73,43 @@ class strategic_layer:
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
 
-# NAMING FIXED: TechnicalLayer → technical_layer
-class technical_layer:
+# NAMING FIXED: TechnicalLayer → TechnicalLayer
+class TechnicalLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]):
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
-# NAMING FIXED: LeadershipLayer → leadership_layer
-class leadership_layer:
+# NAMING FIXED: LeadershipLayer → LeadershipLayer
+class LeadershipLayer:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, key_executives: List[KeyExecutive]):
         self.key_executives = key_executives
 
-# NAMING FIXED: CitationMap → citation_map
-class citation_map:
+# NAMING FIXED: CitationMap → CitationMap
+class CitationMap:
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, citations: List[Any]): # Type of citation not specified, just its count is used
         self.citations = citations
 
-# NAMING FIXED: DeepResearchOutput → deep_research_output
-class deep_research_output:
+# NAMING FIXED: DeepResearchOutput → DeepResearchOutput
+class DeepResearchOutput:
     '''Brief description of functionality and purpose.'''
     
     def __init__(
         self,
-        strategic_layer: StrategicLayer,
-        technical_layer: TechnicalLayer,
-        leadership_layer: LeadershipLayer,
-        citation_map: CitationMap
+        StrategicLayer: StrategicLayer,
+        TechnicalLayer: TechnicalLayer,
+        LeadershipLayer: LeadershipLayer,
+        CitationMap: CitationMap
     ):
-        self.strategic_layer = strategic_layer
-        self.technical_layer = technical_layer
-        self.leadership_layer = leadership_layer
-        self.citation_map = citation_map
+        self.StrategicLayer = StrategicLayer
+        self.TechnicalLayer = TechnicalLayer
+        self.LeadershipLayer = LeadershipLayer
+        self.CitationMap = CitationMap
 
 # --- End Inlined Type Definitions ---
 
@@ -167,16 +167,16 @@ class IntegrityGateExecutorAgent:
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
-        for metric in research_output.strategic_layer.financial_proof_points:
-            if not metric.source_citation:
+        for Metric in research_output.StrategicLayer.financial_proof_points:
+            if not Metric.source_citation:
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
-                    f"Metric '{metric.metric_name}' has no source citation"
+                    f"Metric '{Metric.metric_name}' has no source citation"
                 )
-            if not self._has_specific_value(metric.value):
+            if not self._has_specific_value(Metric.value):
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
-                    f"Metric '{metric.metric_name}' has vague value: '{metric.value}'"
+                    f"Metric '{Metric.metric_name}' has vague value: '{Metric.value}'"
                 )
 
     def _check_fluff_language(
@@ -185,11 +185,11 @@ class IntegrityGateExecutorAgent:
         result: IntegrityGateResult
     ) -> None:
         text_to_check = [
-            research_output.strategic_layer.core_thesis,
-            research_output.technical_layer.implementation_summary or "",
+            research_output.StrategicLayer.core_thesis,
+            research_output.TechnicalLayer.implementation_summary or "",
         ]
 
-        for tech in research_output.technical_layer.key_technologies:
+        for tech in research_output.TechnicalLayer.key_technologies:
             text_to_check.append(tech.implementation_details)
 
         for text in text_to_check:
@@ -213,9 +213,9 @@ class IntegrityGateExecutorAgent:
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
-        INITIATIVES = research_output.strategic_layer.strategic_initiatives
-        TECHNOLOGIES = [t.technology_name for t in research_output.technical_layer.key_technologies]
-        EXECUTIVES = [e.name for e in research_output.leadership_layer.key_executives]
+        INITIATIVES = research_output.StrategicLayer.strategic_initiatives
+        TECHNOLOGIES = [t.technology_name for t in research_output.TechnicalLayer.key_technologies]
+        EXECUTIVES = [e.name for e in research_output.LeadershipLayer.key_executives]
 
         for initiative in INITIATIVES:
             has_tech_link = any(tech.lower() in initiative.lower() for tech in TECHNOLOGIES)
@@ -232,18 +232,18 @@ class IntegrityGateExecutorAgent:
         research_output: DeepResearchOutput,
         result: IntegrityGateResult
     ) -> None:
-        if len(research_output.citation_map.citations) < 3:
+        if len(research_output.CitationMap.citations) < 3:
             result.add_violation(
                 ValidationRejectionReason.MISSING_CITATIONS,
-                f"Only {len(research_output.citation_map.citations)} citations (minimum 3 required)"
+                f"Only {len(research_output.CitationMap.citations)} citations (minimum 3 required)"
             )
 
         financial_citations = sum(
-            1 for m in research_output.strategic_layer.financial_proof_points
+            1 for m in research_output.StrategicLayer.financial_proof_points
             if m.source_citation
         )
         technical_citations = sum(
-            1 for t in research_output.technical_layer.key_technologies
+            1 for t in research_output.TechnicalLayer.key_technologies
             if t.source_citation
         )
 
@@ -263,29 +263,29 @@ class IntegrityGateExecutorAgent:
         SCORES = []
 
         financial_score = min(
-            len(research_output.strategic_layer.financial_proof_points) / 4.0,
+            len(research_output.StrategicLayer.financial_proof_points) / 4.0,
             1.0
         )
         SCORES.append(financial_score)
         technical_score = min(
-            len(research_output.technical_layer.key_technologies) / 3.0,
+            len(research_output.TechnicalLayer.key_technologies) / 3.0,
             1.0
         )
         SCORES.append(technical_score)
 
         leadership_score = min(
-            len(research_output.leadership_layer.key_executives) / 3.0,
+            len(research_output.LeadershipLayer.key_executives) / 3.0,
             1.0
         )
         SCORES.append(leadership_score)
 
         citation_score = min(
-            len(research_output.citation_map.citations) / 5.0,
+            len(research_output.CitationMap.citations) / 5.0,
             1.0
         )
         SCORES.append(citation_score)
 
-        thesis_score = 1.0 if len(research_output.strategic_layer.core_thesis) > 50 else 0.5
+        thesis_score = 1.0 if len(research_output.StrategicLayer.core_thesis) > 50 else 0.5
         SCORES.append(thesis_score)
 
         return sum(SCORES) / len(SCORES)

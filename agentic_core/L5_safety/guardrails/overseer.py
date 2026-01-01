@@ -7,24 +7,24 @@ import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+from AgenticCore.L1_cognition.P1_interfaces import ActionRequest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
-class violation_check:
-    """Result of a safety violation check."""
+class ViolationCheck:
+    """Result of a safety Violation check."""
 
     def __init__(self, is_violation: bool, reason: str=''):
         self.is_violation = is_violation
         self.reason = reason
 
-class constitutional_overseer:
+class ConstitutionalOverseer:
     """Overseer that validates ActionRequests against safety rules."""
 
     def __init__(self):
@@ -56,18 +56,18 @@ class constitutional_overseer:
         tool_path = request.parameters.get('tool_path', '')
         args = request.parameters.get('args', [])
         if tool_path:
-            violation = self._check_forbidden_patterns(tool_path)
-            if violation:
-                return violation
+            Violation = self._check_forbidden_patterns(tool_path)
+            if Violation:
+                return Violation
         for arg in args:
-            violation = self._check_forbidden_patterns(str(arg))
-            if violation:
-                return violation
+            Violation = self._check_forbidden_patterns(str(arg))
+            if Violation:
+                return Violation
         if 'shell' in request.parameters.get('execution_mode', ''):
             shell_cmd = request.parameters.get('shell_command', '')
-            violation = self._check_forbidden_patterns(shell_cmd)
-            if violation:
-                return violation
+            Violation = self._check_forbidden_patterns(shell_cmd)
+            if Violation:
+                return Violation
         return ViolationCheck(False, 'Action validated - SAFE')
 
     async def _validate_file_operations(self, request: ActionRequest) -> ViolationCheck:
@@ -91,7 +91,7 @@ class constitutional_overseer:
             text: Text to check
 
         Returns:
-            ViolationCheck if violation found, None if safe
+            ViolationCheck if Violation found, None if safe
         """
         for pattern in self._compiled_patterns:
             if pattern.search(text):
@@ -120,12 +120,12 @@ class constitutional_overseer:
         """
         return self._forbidden_commands.copy()
 
-class safety_inspector:
+class SafetyInspector:
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
-    ROLE: Security Compliance with intelligent violation verification.
+    ROLE: Security Compliance with intelligent Violation verification.
     """
 
     def __init__(self, enable_socratic_judge: bool=True):
@@ -152,7 +152,7 @@ class safety_inspector:
             file_path: Path to the file to scan
 
         Returns:
-            Dictionary mapping violation types to list of violations
+            Dictionary mapping Violation types to list of violations
         """
         violations: Any = {'secrets': [], 'todos': [], 'prints': [], 'debuggers': [], 'empty_except': [], 'bare_except': [], 'evals': []}
         try:
@@ -206,7 +206,7 @@ class safety_inspector:
 
     async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
         """
-        Ask LLM Router MCP to verify if an issue is actually a violation.
+        Ask LLM Router MCP to verify if an issue is actually a Violation.
         Phase 16B: Replaced direct google.generativeai with sovereign LLM Router.
 
         Args:
@@ -215,14 +215,14 @@ class safety_inspector:
             question: Specific question about the issue
 
         Returns:
-            "YES" if it's a real violation, "NO" if it's a false positive
+            "YES" if it's a real Violation, "NO" if it's a false positive
         """
         try:
-            from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
+            from AgenticCore.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
             llm_router = get_llm_router_client()
             with open(file_path, 'r', encoding='utf-8') as f:
                 code_snippet = f.read()
-            prompt = f"""\nRole: Socratic Judge - Expert Code Security Reviewer\n\nContext: Analyzing potential code violation in {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet:\n{code_snippet[:2000]}  # Limit to first 2000 chars\n```\n\nInstructions:\n1. Analyze the code context carefully\n2. Determine if this is a REAL security violation or just:\n   - Test data/example code\n   - Placeholder/mock value\n   - Documentation comment\n   - Safe usage of a potentially dangerous function\n\n3. Consider:\n   - Is the code in a test file?\n   - Is the value obviously fake (e.g., "xxx", "test", "example")?\n   - Is this a demonstration or documentation?\n   - Is the usage actually safe in this context?\n\nAnswer with ONLY "YES" if it's a real violation or "NO" if it's a false positive.\n"""
+            prompt = f"""\nRole: Socratic Judge - Expert Code Security Reviewer\n\nContext: Analyzing potential code Violation in {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet:\n{code_snippet[:2000]}  # Limit to first 2000 chars\n```\n\nInstructions:\n1. Analyze the code context carefully\n2. Determine if this is a REAL security Violation or just:\n   - Test data/example code\n   - Placeholder/mock value\n   - Documentation comment\n   - Safe usage of a potentially dangerous function\n\n3. Consider:\n   - Is the code in a test file?\n   - Is the value obviously fake (e.g., "xxx", "test", "example")?\n   - Is this a demonstration or documentation?\n   - Is the usage actually safe in this context?\n\nAnswer with ONLY "YES" if it's a real Violation or "NO" if it's a false positive.\n"""
             result_dict = await llm_router.validate_content(prompt, validation_type='socratic_judge')
             if isinstance(result_dict, dict):
                 response_text = result_dict.get('response', result_dict.get('reason', ''))
@@ -230,7 +230,7 @@ class safety_inspector:
                 response_text = str(result_dict)
             result = response_text.strip().upper()
             if 'YES' in result[:10]:
-                LOGGER.info(f'Socratic Judge (MCP): REAL violation in {file_path}')
+                LOGGER.info(f'Socratic Judge (MCP): REAL Violation in {file_path}')
                 return 'YES'
             elif 'NO' in result[:10]:
                 LOGGER.info(f'Socratic Judge (MCP): False positive in {file_path}')

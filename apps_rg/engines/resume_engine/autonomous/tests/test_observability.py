@@ -83,7 +83,7 @@ class TestMetricType:
     """Tests for MetricType enum."""
 
     def test_metric_types(self):
-        """Test metric type values."""
+        """Test Metric type values."""
         assert MetricType.COUNTER.value == "counter"
         assert MetricType.GAUGE.value == "gauge"
         assert MetricType.HISTOGRAM.value == "histogram"
@@ -94,7 +94,7 @@ class TestValidationSeverity:
     """Tests for ValidationSeverity enum."""
 
     def test_severity_levels(self):
-        """Test severity level values."""
+        """Test Severity level values."""
         assert ValidationSeverity.INFO.value == "info"
         assert ValidationSeverity.WARNING.value == "warning"
         assert ValidationSeverity.ERROR.value == "error"
@@ -140,16 +140,16 @@ class TestMetric:
     """Tests for Metric dataclass."""
 
     def test_create_metric(self):
-        """Test creating a metric."""
-        metric = Metric(
+        """Test creating a Metric."""
+        Metric = Metric(
             name="test_metric",
             value=42.0,
             metric_type=MetricType.GAUGE,
         )
 
-        assert metric.name == "test_metric"
-        assert metric.value == 42.0
-        assert metric.metric_type == MetricType.GAUGE
+        assert Metric.name == "test_metric"
+        assert Metric.value == 42.0
+        assert Metric.metric_type == MetricType.GAUGE
 
 
 class TestValidationIssue:
@@ -159,7 +159,7 @@ class TestValidationIssue:
         """Test creating a validation issue."""
         issue = ValidationIssue(
             rule_id="TEST_RULE",
-            severity=ValidationSeverity.WARNING,
+            Severity=ValidationSeverity.WARNING,
             file_path="summary",
             line_number=None,
             message="Test issue",
@@ -167,7 +167,7 @@ class TestValidationIssue:
         )
 
         assert issue.rule_id == "TEST_RULE"
-        assert issue.severity == ValidationSeverity.WARNING
+        assert issue.Severity == ValidationSeverity.WARNING
 
 
 class TestExecutionTracer:
@@ -376,7 +376,7 @@ class TestValidationAgent:
         issues = validator.validate_resume(valid_resume)
 
         # Valid resume should have few or no issues
-        errors = [i for i in issues if i.severity == ValidationSeverity.ERROR]
+        errors = [i for i in issues if i.Severity == ValidationSeverity.ERROR]
         assert len(errors) == 0
 
     def test_validate_invalid_resume(self, ctx, invalid_resume):
@@ -427,13 +427,13 @@ class TestValidationAgent:
         assert len(error_issues) == 1
 
     def test_get_issues_by_severity(self, ctx, invalid_resume):
-        """Test getting issues by severity."""
+        """Test getting issues by Severity."""
         validator = ValidationAgent(ctx)
         validator.validate_resume(invalid_resume)
 
         errors = validator.get_issues_by_severity(ValidationSeverity.ERROR)
 
-        assert all(i.severity == ValidationSeverity.ERROR for i in errors)
+        assert all(i.Severity == ValidationSeverity.ERROR for i in errors)
 
     def test_get_stats(self, ctx, invalid_resume):
         """Test getting validation statistics."""

@@ -21,7 +21,7 @@ import asyncio
 import logging
 from typing import Any, Callable, Dict, Optional
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 
 class MCPHardenedMixin:
@@ -109,7 +109,7 @@ class MCPHardenedMixin:
                 delay: float = min(
                     self.BASE_DELAY * (2**attempt), self.MAX_DELAY
                 )
-                logger.warning(
+                Logger.warning(
                     f"[MCP] {operation} attempt {attempt + 1} failed, "
                     f"retrying in {delay:.1f}s: {last_error}"
                 )
@@ -131,13 +131,13 @@ class MCPHardenedMixin:
             data: Event data dictionary
         """
         try:
-            from agentic_core.observability.telemetry.sovereign_events import (
+            from AgenticCore.observability.telemetry.sovereign_events import (
                 emit_event,
             )
 
             emit_event(event_type, data)
         except ImportError:
-            logger.debug(f"[MCP] {event_type}: {data}")
+            Logger.debug(f"[MCP] {event_type}: {data}")
 
     def _emit_critique(self, operation: str, error: str) -> None:
         """
@@ -147,9 +147,9 @@ class MCPHardenedMixin:
             operation: Name of the failed operation
             error: Error message
         """
-        logger.critical(f"[CRITIQUE] MCP {operation} exhausted: {error}")
+        Logger.critical(f"[CRITIQUE] MCP {operation} exhausted: {error}")
         try:
-            from agentic_core.observability.telemetry.sovereign_events import (
+            from AgenticCore.observability.telemetry.sovereign_events import (
                 emit_event,
             )
 

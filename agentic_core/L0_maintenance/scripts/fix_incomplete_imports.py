@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
@@ -22,13 +22,13 @@ def fix_imports_in_file(file_path: Path) -> int:
         lines: Any = content.split('\n')
         fixed_lines: Any = []
         for line in lines:
-            if '# [INCOMPLETE IMPORT] from agentic_core.' in line:
-                match: Any = re.search('# \\[INCOMPLETE IMPORT\\] from agentic_core\\.(.+?) import (.+)', line)
+            if '# [INCOMPLETE IMPORT] from AgenticCore.' in line:
+                match: Any = re.search('# \\[INCOMPLETE IMPORT\\] from AgenticCore\\.(.+?) import (.+)', line)
                 if match:
                     module_part: Any = match.group(1)
                     import_part: Any = match.group(2)
                     module_part: Any = module_part.replace('..', '.')
-                    module_mapping: Any = {'canon_base_agent': 'agentic_core.L2_execution.tool_registry.canon_base_agent', 'base': 'agentic_core.L2_execution.tool_registry.base', 'L2_execution.P4_agents': 'agentic_core.L2_execution.tool_registry', 'L2_execution.P2_tools': 'agentic_core.L2_execution.tool_registry', 'L2_execution.P3_engines': 'agentic_core.L2_execution.tool_registry', 'L5_safety.P1_core': 'agentic_core.L5_safety.guardrails', 'L5_safety.policy': 'agentic_core.L5_safety.guardrails', 'L4_state.cache': 'agentic_core.L4_state.validation_context', 'L4_state.vector': 'agentic_core.L4_state.validation_context', 'shared.constants': 'agentic_core.L0_maintenance.scripts.canon_validator_config'}
+                    module_mapping: Any = {'CanonBaseAgent': 'AgenticCore.L2_execution.ToolRegistry.CanonBaseAgent', 'base': 'AgenticCore.L2_execution.ToolRegistry.base', 'L2_execution.P4_agents': 'AgenticCore.L2_execution.ToolRegistry', 'L2_execution.P2_tools': 'AgenticCore.L2_execution.ToolRegistry', 'L2_execution.P3_engines': 'AgenticCore.L2_execution.ToolRegistry', 'L5_safety.P1_core': 'AgenticCore.L5_safety.guardrails', 'L5_safety.policy': 'AgenticCore.L5_safety.guardrails', 'L4_state.cache': 'AgenticCore.L4_state.ValidationContext', 'L4_state.vector': 'AgenticCore.L4_state.ValidationContext', 'shared.constants': 'AgenticCore.L0_maintenance.scripts.canon_validator_config'}
                     for old_path, new_path in module_mapping.items():
                         if module_part.startswith(old_path):
                             module_part: Any = module_part.replace(old_path, new_path)
@@ -55,7 +55,7 @@ def main() -> Any:
     """Fix all incomplete imports in the codebase."""
     fixed_count: Any = 0
     total_files: Any = 0
-    for py_file in Path('agentic_core').rglob('*.py'):
+    for py_file in Path('AgenticCore').rglob('*.py'):
         if py_file.name in ['__init__.py']:
             continue
         total_files += 1

@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple, TypedDict
 
-class execute_command_args(TypedDict):
+class ExecuteCommandArgs(TypedDict):
     """Brief description of functionality and purpose."""
     command: str
     args: List[str]
@@ -54,10 +54,10 @@ def validate_sandbox(path: str) -> Path:
         raise ValueError(f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.")
     return abs_path
 
-class execution_timeout_error(Exception):
+class ExecutionTimeoutError(Exception):
     """Raised when command execution exceeds timeout."""
 
-class execution_error(Exception):
+class ExecutionError(Exception):
     """Raised when command execution fails."""
 ALLOWED_COMMANDS: Dict[str, List[str]] = {'python': [sys.executable, 'python', 'python3'], 'isort': ['isort'], 'autoflake': ['autoflake'], 'black': ['black'], 'flake8': ['flake8'], 'mypy': ['mypy'], 'pytest': ['pytest'], 'pip': ['pip', 'pip3']}
 DANGEROUS_COMMANDS: List[str] = ['rm', 'del', 'rmdir', 'format', 'dd', 'mkfs', 'fdisk', 'shutdown', 'reboot', 'halt', 'poweroff', 'init']

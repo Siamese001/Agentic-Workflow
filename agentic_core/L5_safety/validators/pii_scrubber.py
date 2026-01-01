@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 class PIIType(Enum):
@@ -28,7 +28,7 @@ class PIIType(Enum):
 @dataclass
 class PIIMatch:
     """Single PII detection match."""
-    pii_type: PIIType
+    PiiType: PIIType
     original: str
     redaction_token: str
     position: Tuple[int, int]
@@ -50,7 +50,7 @@ class PIIResult:
     
     def get_pii_types(self) -> List[PIIType]:
         """Get list of detected PII types."""
-        return list(set(match.pii_type for match in self.detected_pii))
+        return list(set(match.PiiType for match in self.detected_pii))
 
 
 class PIIScrubber:
@@ -102,31 +102,31 @@ class PIIScrubber:
         detected_pii: List[PIIMatch] = []
         scrubbed_text = text
         
-        for pii_type, pattern in self.pii_patterns.items():
+        for PiiType, pattern in self.pii_patterns.items():
             matches = re.finditer(pattern, scrubbed_text, re.IGNORECASE)
             
             for match in matches:
                 original = match.group()
-                redaction_token = self._create_redaction_token(pii_type, original)
+                redaction_token = self._create_redaction_token(PiiType, original)
                 
-                pii_match = PIIMatch(
-                    pii_type=pii_type,
+                PiiMatch = PIIMatch(
+                    PiiType=PiiType,
                     original=original,
                     redaction_token=redaction_token,
-                    position=match.span(),
+                    position=match.Span(),
                 )
                 
-                detected_pii.append(pii_match)
+                detected_pii.append(PiiMatch)
                 scrubbed_text = scrubbed_text.replace(original, redaction_token)
         
         is_compliant = len(detected_pii) == 0
         
         if self.enable_logging and detected_pii:
-            logger.warning(
+            Logger.warning(
                 "pii_detected",
                 extra={
                     "pii_count": len(detected_pii),
-                    "pii_types": [m.pii_type.value for m in detected_pii],
+                    "pii_types": [m.PiiType.value for m in detected_pii],
                 }
             )
         
@@ -138,18 +138,18 @@ class PIIScrubber:
             is_compliant=is_compliant,
         )
     
-    def _create_redaction_token(self, pii_type: PIIType, original: str) -> str:
+    def _create_redaction_token(self, PiiType: PIIType, original: str) -> str:
         """Create a redaction token for detected PII.
         
         Args:
-            pii_type: Type of PII
+            PiiType: Type of PII
             original: Original PII value
             
         Returns:
             Redaction token string
         """
         self.redaction_counter += 1
-        redaction_token = f"[{pii_type.value.upper()}_{self.redaction_counter}]"
+        redaction_token = f"[{PiiType.value.upper()}_{self.redaction_counter}]"
         self.redaction_map[redaction_token] = original
         return redaction_token
     

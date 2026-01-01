@@ -11,7 +11,7 @@ Action: Reports violations to validation pipeline
 
 Drastically reduced false positives through:
 - AST-based string literal detection (not line scanning)
-- Only flags FULL PATH patterns (e.g., "agentic_core/L5_safety")
+- Only flags FULL PATH patterns (e.g., "AgenticCore/L5_safety")
 - Ignores single folder names (too common in legitimate code)
 - Context-aware filtering for imports, docstrings, comments
 - Whitelist for known safe patterns
@@ -25,21 +25,21 @@ import re
 from pathlib import Path
 from typing import List, Dict, Any, Set, Tuple
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 # Only flag these HIGH-CONFIDENCE patterns (full paths, not single segments)
 # These are the ONLY patterns that indicate true SSOT drift
 DRIFT_PATTERNS = [
     # Full layer paths - these should use SSOT constants
-    r'agentic_core/L\d+_\w+',
-    r'agentic_core\\L\d+_\w+',
+    r'AgenticCore/L\d+_\w+',
+    r'AgenticCore\\L\d+_\w+',
     # App paths with subfolders
     r'apps_rg/\w+',
     r'apps_lic/\w+', 
     r'apps_shared/\w+',
     # Hardcoded root + subfolder combinations
-    r'"agentic_core".*"L\d+_',
-    r"'agentic_core'.*'L\d+_",
+    r'"AgenticCore".*"L\d+_',
+    r"'AgenticCore'.*'L\d+_",
 ]
 
 # Compile patterns for performance
@@ -49,7 +49,7 @@ DRIFT_REGEX = [re.compile(p) for p in DRIFT_PATTERNS]
 SKIP_PATHS = {
     "structure_blueprint.py",
     "sovereign_config.py",
-    "sovereign_env.py",
+    "SovereignEnv.py",
     "__pycache__",
     ".git",
     "archives",
@@ -69,7 +69,7 @@ class CodeSSOTEnforcerAgent:
     instead of hard-coded path strings.
     
     Only detects TRUE violations:
-    - Hard-coded full paths like "agentic_core/L5_safety/validators"
+    - Hard-coded full paths like "AgenticCore/L5_safety/validators"
     - String literals that bypass SSOT imports
     
     Does NOT flag:
@@ -81,7 +81,7 @@ class CodeSSOTEnforcerAgent:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
-        self.ssot_file = self.project_root / "agentic_core" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
+        self.ssot_file = self.project_root / "AgenticCore" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
 
     def _should_skip_file(self, py_file: Path) -> bool:
         """Check if file should be skipped entirely."""
@@ -147,7 +147,7 @@ class CodeSSOTEnforcerAgent:
         ctx_lower = context.lower()
         
         # Allow imports from structure_blueprint
-        if "structure_blueprint" in context or "from agentic_core.config" in context:
+        if "structure_blueprint" in context or "from AgenticCore.config" in context:
             return True
         
         # Allow __file__ based paths
@@ -159,7 +159,7 @@ class CodeSSOTEnforcerAgent:
             return True
         
         # Allow logging/print statements (informational)
-        if context.strip().startswith(("logger.", "print(", "logging.")):
+        if context.strip().startswith(("Logger.", "print(", "logging.")):
             return True
         
         # Allow comments
@@ -211,13 +211,13 @@ class CodeSSOTEnforcerAgent:
                 if self._is_legitimate_context(context):
                     continue
                 
-                # This is a TRUE violation - hard-coded path in string literal
+                # This is a TRUE Violation - hard-coded path in string literal
                 violations.append({
                     "file": str(py_file.relative_to(self.project_root)),
                     "line": lineno,
                     "value": value[:100],  # Truncate long strings
                     "context": context[:150],
-                    "severity": "high",
+                    "Severity": "high",
                     "suggestion": "Replace with SSOT import from structure_blueprint.py"
                 })
         

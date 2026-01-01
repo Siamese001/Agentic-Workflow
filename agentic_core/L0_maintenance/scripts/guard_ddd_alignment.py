@@ -14,10 +14,10 @@ from typing import List, Tuple, Dict
 
 def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
     """
-    [NEW] Detailed DDD violation detector — structured output for L0 healing/forensics.
+    [NEW] Detailed DDD Violation detector — structured output for L0 healing/forensics.
     
     Returns:
-        List of dicts with keys: file, line, type, description, severity
+        List of dicts with keys: file, line, type, description, Severity
     """
     violations: List[Dict] = []
     root = Path(root_path)
@@ -51,7 +51,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                 "line": 1,
                 "type": "Parse Error",
                 "description": f"Invalid syntax: {e}",
-                "severity": "LOW"
+                "Severity": "LOW"
             })
             continue
         except Exception as e:
@@ -60,7 +60,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                 "line": 1,
                 "type": "Read Error",
                 "description": f"Failed to read/parse: {e}",
-                "severity": "LOW"
+                "Severity": "LOW"
             })
             continue
         
@@ -132,8 +132,8 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                     class_name_lower.endswith("_event") or
                     class_name_lower.endswith("_message") or
                     class_name_lower.endswith("_model") or
-                    class_name_lower == "provider" or
-                    class_name_lower == "execution_phase" or
+                    class_name_lower == "Provider" or
+                    class_name_lower == "ExecutionPhase" or
                     "result" in class_name_lower or
                     "bundle" in class_name_lower or
                     "type" in class_name_lower or
@@ -148,18 +148,18 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "line": node.lineno,
                         "type": "Anemic Domain Model",
                         "description": f"Class '{node.name}' has {total_attrs} attributes but only {total_methods} behaviors — probable data holder without domain logic",
-                        "severity": "HIGH"
+                        "Severity": "HIGH"
                     })
             
             # 2. God Class Detection
-            # Excessive methods indicate SRP violation
+            # Excessive methods indicate SRP Violation
             if total_methods > 25:
                 violations.append({
                     "file": str(relative_path),
                     "line": node.lineno,
                     "type": "God Class",
-                    "description": f"Class '{node.name}' has {total_methods} methods — potential violation of Single Responsibility Principle",
-                    "severity": "MEDIUM"
+                    "description": f"Class '{node.name}' has {total_methods} methods — potential Violation of Single Responsibility Principle",
+                    "Severity": "MEDIUM"
                 })
             
             # 3. Mutable Value Object Detection
@@ -180,7 +180,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "line": node.lineno,
                         "type": "Mutable Value Object",
                         "description": f"Value Object '{node.name}' contains mutating methods ({[m.name for m in setters_or_mutators]}) — VOs must be immutable",
-                        "severity": "CRITICAL"
+                        "Severity": "CRITICAL"
                     })
             
             # 4. Service Layer Bloat (heuristic)
@@ -200,7 +200,7 @@ def get_ddd_violations_detailed(root_path: str) -> List[Dict]:
                         "line": node.lineno,
                         "type": "Fat Service",
                         "description": f"Service '{node.name}' has {complex_methods} complex methods — likely containing domain logic instead of orchestration",
-                        "severity": "MEDIUM"
+                        "Severity": "MEDIUM"
                     })
     
     return violations
@@ -213,12 +213,12 @@ def validate_ddd_alignment(root_path: str) -> Tuple[float, List[str]]:
     """
     detailed_violations = get_ddd_violations_detailed(root_path)
     
-    # Scoring: 5 points per violation, clamped to 0-100
+    # Scoring: 5 points per Violation, clamped to 0-100
     base_score = 100.0
     penalty_per_violation = 5.0
     
     # [SOVEREIGN SCORING] Critical violations hit harder
-    critical_count = sum(1 for v in detailed_violations if v['severity'] == 'CRITICAL')
+    critical_count = sum(1 for v in detailed_violations if v['Severity'] == 'CRITICAL')
     penalty_per_violation += (critical_count * 10.0) # Bonus penalty for criticals
 
     score = max(0.0, base_score - len(detailed_violations) * penalty_per_violation)
@@ -227,6 +227,6 @@ def validate_ddd_alignment(root_path: str) -> Tuple[float, List[str]]:
     issues: List[str] = []
     for v in detailed_violations:
         line_info = f"line {v['line']}" if v['line'] > 0 else ""
-        issues.append(f"{v['file']}:{line_info} [{v['severity']}] {v['type']}: {v['description']}")
+        issues.append(f"{v['file']}:{line_info} [{v['Severity']}] {v['type']}: {v['description']}")
     
     return score, issues

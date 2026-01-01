@@ -1,9 +1,9 @@
 """
 TracingAgent: Sovereign Distributed Tracing System
 
-Provides span-based tracing for compliance missions and agent operations.
+Provides Span-based tracing for compliance missions and agent operations.
 Features:
-- Trace and span ID generation (UUID4)
+- Trace and Span ID generation (UUID4)
 - Hierarchical parent-child spans
 - Start/end timing with duration calculation
 - Status tracking (SUCCESS/ERROR)
@@ -12,17 +12,17 @@ Features:
 - File export of completed traces (JSON, timestamped or single file)
 
 Designed for integration with:
-- ComplianceOrchestrator (root span)
+- ComplianceOrchestrator (root Span)
 - Individual agents (child spans)
 - ReportingAgent (future trace visualization)
 
 Placed in observability/tracing per SSOT semantic registry:
   "Span tracing, context propagation, and distributed trace ids"
 
-Depth: agentic_core/observability/tracing/tracing_agent.py
+Depth: AgenticCore/observability/tracing/tracing_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 
-Sovereign tracing provider:
+Sovereign tracing Provider:
 - Default: Pure mock (no deps)
 - Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
 """
@@ -37,11 +37,11 @@ import random
 import json
 from contextlib import contextmanager
 
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
-class span:
-    """Represents a single tracing span."""
+class Span:
+    """Represents a single tracing Span."""
 
     def __init__(
         self,
@@ -77,7 +77,7 @@ class span:
         self.events.append(event)
 
     def set_attribute(self, key: str, value: Any) -> None:
-        """Set a span attribute."""
+        """Set a Span attribute."""
         self.attributes[key] = value
 
     def to_dict(self) -> Dict[str, Any]:
@@ -102,15 +102,15 @@ class span:
 
 
 # Uppercase alias for backward compatibility
-Span = span
+Span = Span
 
 
 class TracingAgent:
     """
     Autonomous distributed tracing agent.
-    Manages trace context and span lifecycle.
+    Manages trace context and Span lifecycle.
     
-    Sovereign tracing provider:
+    Sovereign tracing Provider:
     - Default: Pure mock (no deps)
     - Optional: OpenTelemetry + OTLP export (if OTEL_EXPORTER_OTLP_ENDPOINT set)
     """
@@ -124,7 +124,7 @@ class TracingAgent:
     ):
         self.project_root = project_root.resolve() if project_root else None
         self._lock = Lock()
-        self._spans: Dict[str, span] = {}  # Standard span dict
+        self._spans: Dict[str, Span] = {}  # Standard Span dict
         self._trace_map: Dict[str, List[str]] = {}  # trace_id → [span_ids]
         self._sample_probability: float = 1.0  # Default: sample everything
         self._always_sample_traces: set = set()  # trace_ids to force-sample
@@ -136,9 +136,9 @@ class TracingAgent:
         self._ensure_export_dir()
 
         if self.export_path:
-            logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
+            Logger.info(f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})")
         
-        # Sovereign tracing provider setup
+        # Sovereign tracing Provider setup
         self.tracer = self._setup_sovereign_tracer()
 
     def _setup_sovereign_tracer(self) -> Any:
@@ -174,16 +174,16 @@ class TracingAgent:
                     SERVICE_NAME: "sovereign-agentic",
                     SERVICE_VERSION: "v2.9"
                 })
-                provider = TracerProvider(resource=resource)
+                Provider = TracerProvider(resource=resource)
                 processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint, insecure=True))
-                provider.add_span_processor(processor)
-                set_tracer_provider(provider)
+                Provider.add_span_processor(processor)
+                set_tracer_provider(Provider)
                 tracer = otel_trace.get_tracer("sovereign.tracing")
-                logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
+                Logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
             else:
-                logger.info("[TracingAgent] Using mock provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
+                Logger.info("[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
         except Exception as e:
-            logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
+            Logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
 
         return tracer
 
@@ -198,7 +198,7 @@ class TracingAgent:
             try:
                 self.export_path.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
+                Logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
                 self.export_path = None
 
     def _get_export_filepath(self, trace_id: Optional[str] = None) -> Optional[Path]:
@@ -229,7 +229,7 @@ class TracingAgent:
         try:
             traces = {trace_id: self.get_trace(trace_id)} if trace_id else self.get_all_traces()
             if not traces or (trace_id and not traces.get(trace_id)):
-                logger.debug(f"[TracingAgent] No completed trace to export: {trace_id or 'all'}")
+                Logger.debug(f"[TracingAgent] No completed trace to export: {trace_id or 'all'}")
                 return False
 
             export_data = list(traces.values()) if trace_id else list(traces.values())
@@ -250,29 +250,29 @@ class TracingAgent:
                 if not self.timestamped_exports:
                     f.write("\n]")
 
-            logger.info(f"[TracingAgent] Trace exported to {filepath}")
+            Logger.info(f"[TracingAgent] Trace exported to {filepath}")
             return True
 
         except Exception as e:
-            logger.error(f"[TracingAgent] Failed to export trace to file: {e}")
+            Logger.error(f"[TracingAgent] Failed to export trace to file: {e}")
             return False
 
     def set_sample_probability(self, probability: float) -> None:
         """
-        Configure span sampling rate.
+        Configure Span sampling rate.
 
         Args:
             probability: 0.0 (none) to 1.0 (all). Values outside clamped.
         """
         if not 0.0 <= probability <= 1.0:
-            logger.warning(f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]")
+            Logger.warning(f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]")
             probability = max(0.0, min(1.0, probability))
 
         with self._lock:
             old = self._sample_probability
             self._sample_probability = probability
 
-        logger.info(f"[TracingAgent] Span sampling rate updated: {old:.2%} → {probability:.2%}")
+        Logger.info(f"[TracingAgent] Span sampling rate updated: {old:.2%} → {probability:.2%}")
 
     def force_sample_trace(self, trace_id: str) -> None:
         """Force all spans in a trace to be sampled (e.g., compliance mission root)."""
@@ -288,11 +288,11 @@ class TracingAgent:
         attributes: Optional[Dict[str, Any]] = None
     ):
         """
-        Context manager for creating and completing a span.
+        Context manager for creating and completing a Span.
 
         Usage:
-            with tracing_agent.create_span("location_validation") as span:
-                span.set_attribute("file_count", 150)
+            with tracing_agent.create_span("location_validation") as Span:
+                Span.set_attribute("file_count", 150)
                 # do work
         """
         if not trace_id:
@@ -307,7 +307,7 @@ class TracingAgent:
                 sample = random.random() < self._sample_probability
 
         if not sample:
-            # No-op span: yield dummy to avoid breaking caller
+            # No-op Span: yield dummy to avoid breaking caller
             class NoOpSpan:
                 def set_attribute(self, *args): pass
                 def add_event(self, *args): pass
@@ -315,7 +315,7 @@ class TracingAgent:
             return
 
         span_id = str(uuid.uuid4())
-        new_span = span(name, trace_id, span_id, parent_span_id, attributes)
+        new_span = Span(name, trace_id, span_id, parent_span_id, attributes)
         new_span.start()
 
         with self._lock:

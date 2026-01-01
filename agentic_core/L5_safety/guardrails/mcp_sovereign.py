@@ -5,13 +5,13 @@ import logging
 from datetime import datetime
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from AgenticCore.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 
 class mcp_sovereign_authority:
     """Monitors the health and authorization of the MCP nervous system."""
@@ -31,11 +31,11 @@ class mcp_sovereign_authority:
         """Log a tool failure or unauthorized access attempt."""
         self.violation_count += 1
         self.breach_log.append({'timestamp': datetime.now().isoformat(), 'error': error_msg})
-        logger.warning(f'[L5 MCP BREACH] Violation recorded. Count: {self.violation_count}')
+        Logger.warning(f'[L5 MCP BREACH] Violation recorded. Count: {self.violation_count}')
 
     def authorize_tool_call(self, tool_name: str, args: dict) -> None:
         """L5 Audit: Log every physical tool call before execution."""
-        logger.info(f"[L5 MCP AUDIT] Authorizing call to '{tool_name}' with args: {args}")
+        Logger.info(f"[L5 MCP AUDIT] Authorizing call to '{tool_name}' with args: {args}")
         forbidden_sdks: Any = {'openai', 'anthropic', 'cohere', 'mistral'}
         if tool_name in forbidden_sdks:
             self.record_breach(f'FORBIDDEN SDK CALL: {tool_name}')
@@ -56,11 +56,11 @@ class mcp_sovereign_authority:
             max_steps: Any = args.get('max_steps', 0)
             if max_steps > 15:
                 raise ValueError(f'Sequential thinking request exceeds sovereign safety limit (15 steps).')
-            task: Any = args.get('task') or args.get('violation', '')
-            if len(str(task)) > 2000:
+            Task: Any = args.get('Task') or args.get('Violation', '')
+            if len(str(Task)) > 2000:
                 raise ValueError(f'L1 cognitive tool input too long — reasoning overflow risk.')
             risks: Any = ['system prompt', 'jailbreak', 'override instructions', 'ignore all previous']
-            if any((risk in str(task).lower() for risk in risks)):
+            if any((risk in str(Task).lower() for risk in risks)):
                 raise PermissionError(f'L1 tool input contains forbidden cognitive patterns — blocked by shield.')
         if tool_name in {'l0_cleanup', 'l0_diagnostics'}:
             target: Any = args.get('target') or args.get('scope', '')
@@ -93,7 +93,7 @@ class mcp_sovereign_authority:
                 raise PermissionError('DeepWiki question contains potential credential leaks.')
         if tool_name in {'write_file', 'edit_file', 'move_file', 'create_directory'}:
             path: Any = args.get('path', '')
-            allowed_roots: Any = ['agentic_core', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'config']
+            allowed_roots: Any = ['AgenticCore', 'apps_shared', 'apps_rg', 'apps_lic', 'tests', 'config']
             if path and (not any((str(path).startswith(p) for p in allowed_roots))):
                 raise PermissionError(f'L4 Breach: Attempted write outside sovereign roots: {path}')
         if not self.is_authorized():

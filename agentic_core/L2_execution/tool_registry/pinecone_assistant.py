@@ -23,7 +23,7 @@ pc: Any = Pinecone(api_key=pinecone_api_key)
 print('Pinecone client initialized.')
 if not pc.has_index(INDEX_NAME):
     print(f"Creating new index: '{INDEX_NAME}'...")
-    pc.create_index(name=INDEX_NAME, dimension=INDEX_DIMENSION, metric=INDEX_METRIC, spec=ServerlessSpec(cloud=CLOUD_PROVIDER, region=CLOUD_REGION))
+    pc.create_index(name=INDEX_NAME, dimension=INDEX_DIMENSION, Metric=INDEX_METRIC, spec=ServerlessSpec(cloud=CLOUD_PROVIDER, region=CLOUD_REGION))
     print(f"Index '{INDEX_NAME}' created successfully.")
 else:
     print(f"Using existing index: '{INDEX_NAME}'.")

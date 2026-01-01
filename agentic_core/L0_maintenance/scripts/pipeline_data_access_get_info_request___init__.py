@@ -22,14 +22,14 @@ License: Internal Use Only
 import logging
 from services.configuration import ConfigurationService
 from typing import Any
-logger: Any = logging.getLogger(__name__)
+Logger: Any = logging.getLogger(__name__)
 module_version: Any = '1.0.0'
 module_author: Any = 'Agentic-Workflow Team'
 __all__ = []
 
 def _initialize_module() -> None:
     """Initialize module with required setup."""
-    ConfigurationService().logger.debug(f'Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}')
+    ConfigurationService().Logger.debug(f'Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}')
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR

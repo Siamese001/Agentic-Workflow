@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 root: Any = Path('C:/Git/Agentic-Workflow')
-core: Any = ROOT / 'agentic_core'
+core: Any = ROOT / 'AgenticCore'
 quarantine: Any = ROOT / 'quarantine_syntax_errors'
 
 def quarantine_all_broken() -> Any:
