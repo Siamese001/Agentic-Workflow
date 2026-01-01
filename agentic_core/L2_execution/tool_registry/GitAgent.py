@@ -276,17 +276,16 @@ class GitAgent:
         except Exception as e:
             logger.error(f'Failed to get repo status: {e}')
             return {'status': 'error', 'error': str(e)}
-_git_agent: Optional["git_agent"] = None
+_git_agent: Optional["GitAgent"] = None
 
-def get_git_agent() -> "git_agent":
+def get_git_agent() -> "GitAgent":
     """Get or create the global GitAgent instance."""
     global _git_agent
     if _git_agent is None:
-        _git_agent = git_agent()
+        _git_agent = GitAgent()
     return _git_agent
 
 # Alias for discovery
-GitAgent = git_agent
 
 def initialize_git_agent(repo_root: Path=None) -> Any:
     """

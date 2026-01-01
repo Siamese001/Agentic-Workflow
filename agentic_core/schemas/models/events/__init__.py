@@ -7,7 +7,7 @@ from enum import Enum
 from typing import List, Dict
 
 # === SOVEREIGN SEVERITY LEVELS ===
-class sovereign_severity(str, Enum):
+class SovereignSeverity(str, Enum):
     """Canonical SSOT for event severity levels with observability log mapping."""
     
     CRITICAL = "CRITICAL"
@@ -26,20 +26,19 @@ class sovereign_severity(str, Enum):
     """Detailed internal diagnostics — verbose"""
 
 # Backward compatibility alias
-SovereignSeverity = sovereign_severity
 
 # Registry for validation and observability mapping
-sovereign_severities = {e.value for e in sovereign_severity}
+sovereign_severities = {e.value for e in SovereignSeverity}
 severity_log_levels = {
-    sovereign_severity.CRITICAL: logging.CRITICAL,
-    sovereign_severity.ERROR: logging.ERROR,
-    sovereign_severity.WARNING: logging.WARNING,
-    sovereign_severity.INFO: logging.INFO,
-    sovereign_severity.DEBUG: logging.DEBUG,
+    SovereignSeverity.CRITICAL: logging.CRITICAL,
+    SovereignSeverity.ERROR: logging.ERROR,
+    SovereignSeverity.WARNING: logging.WARNING,
+    SovereignSeverity.INFO: logging.INFO,
+    SovereignSeverity.DEBUG: logging.DEBUG,
 }
 
 # === SOVEREIGN EVENT TYPE REGISTRY ===
-class sovereign_event_type(str, Enum):
+class SovereignEventType(str, Enum):
     """Canonical SSOT for all SovereignEvent types with human-readable intent."""
     
     # === GOVERNANCE ===
@@ -96,70 +95,69 @@ class sovereign_event_type(str, Enum):
     MCP_INTEGRATION_FAILED = "MCP_INTEGRATION_FAILED"
 
 # Backward compatibility alias
-SovereignEventType = sovereign_event_type
 
 # === CATEGORY MAPPING FOR ANALYTICS ===
-sovereign_event_categories: Dict[str, List[sovereign_event_type]] = {
+sovereign_event_categories: Dict[str, List[SovereignEventType]] = {
     "GOVERNANCE": [
-        sovereign_event_type.AUDIT_STARTED, 
-        sovereign_event_type.AUDIT_COMPLETED,
-        sovereign_event_type.SOVEREIGNTY_COMPROMISED, 
-        sovereign_event_type.SOVEREIGNTY_RESTORED,
-        sovereign_event_type.SOVEREIGNTY_ACHIEVED,
-        sovereign_event_type.SOVEREIGNTY_PERFECT
+        SovereignEventType.AUDIT_STARTED, 
+        SovereignEventType.AUDIT_COMPLETED,
+        SovereignEventType.SOVEREIGNTY_COMPROMISED, 
+        SovereignEventType.SOVEREIGNTY_RESTORED,
+        SovereignEventType.SOVEREIGNTY_ACHIEVED,
+        SovereignEventType.SOVEREIGNTY_PERFECT
     ],
     "GUARDIAN": [
-        sovereign_event_type.GUARDIAN_BLOCKED_COMMIT, 
-        sovereign_event_type.GUARDIAN_VIOLATION,
-        sovereign_event_type.GUARDIAN_CLEAN
+        SovereignEventType.GUARDIAN_BLOCKED_COMMIT, 
+        SovereignEventType.GUARDIAN_VIOLATION,
+        SovereignEventType.GUARDIAN_CLEAN
     ],
     "HEALING": [
-        sovereign_event_type.HEALING_CYCLE_STARTED,
-        sovereign_event_type.HEALING_ACTION_APPLIED, 
-        sovereign_event_type.HEALING_ACTION_FAILED,
-        sovereign_event_type.HEALING_TRANSACTION_START, 
-        sovereign_event_type.HEALING_TRANSACTION_COMMIT,
-        sovereign_event_type.HEALING_TRANSACTION_ROLLBACK,
-        sovereign_event_type.HEALING_FIX_APPLIED,
-        sovereign_event_type.HEALING_FIX_REVERTED,
-        sovereign_event_type.HEALING_CYCLE_COMPLETE
+        SovereignEventType.HEALING_CYCLE_STARTED,
+        SovereignEventType.HEALING_ACTION_APPLIED, 
+        SovereignEventType.HEALING_ACTION_FAILED,
+        SovereignEventType.HEALING_TRANSACTION_START, 
+        SovereignEventType.HEALING_TRANSACTION_COMMIT,
+        SovereignEventType.HEALING_TRANSACTION_ROLLBACK,
+        SovereignEventType.HEALING_FIX_APPLIED,
+        SovereignEventType.HEALING_FIX_REVERTED,
+        SovereignEventType.HEALING_CYCLE_COMPLETE
     ],
     "REASONING": [
-        sovereign_event_type.REASONING_START, 
-        sovereign_event_type.REASONING_END,
-        sovereign_event_type.REASONING_STEP, 
-        sovereign_event_type.HYPOTHESIS_FORMED,
-        sovereign_event_type.HYPOTHESIS_VALIDATED, 
-        sovereign_event_type.HYPOTHESIS_REJECTED,
-        sovereign_event_type.DARK_REASONING_DETECTED
+        SovereignEventType.REASONING_START, 
+        SovereignEventType.REASONING_END,
+        SovereignEventType.REASONING_STEP, 
+        SovereignEventType.HYPOTHESIS_FORMED,
+        SovereignEventType.HYPOTHESIS_VALIDATED, 
+        SovereignEventType.HYPOTHESIS_REJECTED,
+        SovereignEventType.DARK_REASONING_DETECTED
     ],
     "VIOLATION": [
-        sovereign_event_type.VIOLATION_DETECTED, 
-        sovereign_event_type.SSOT_INLINE_MODEL,
-        sovereign_event_type.SSOT_RAW_PROMPT, 
-        sovereign_event_type.SSOT_HARDCODED_CONFIG,
-        sovereign_event_type.SSOT_UNDERSCORE_FIELD, 
-        sovereign_event_type.DDD_VIOLATION,
-        sovereign_event_type.DDD_AGGREGATE_BYPASS, 
-        sovereign_event_type.DDD_UBIQUITOUS_LANGUAGE_MISSING,
-        sovereign_event_type.LAYER_CROSS_IMPORT
+        SovereignEventType.VIOLATION_DETECTED, 
+        SovereignEventType.SSOT_INLINE_MODEL,
+        SovereignEventType.SSOT_RAW_PROMPT, 
+        SovereignEventType.SSOT_HARDCODED_CONFIG,
+        SovereignEventType.SSOT_UNDERSCORE_FIELD, 
+        SovereignEventType.DDD_VIOLATION,
+        SovereignEventType.DDD_AGGREGATE_BYPASS, 
+        SovereignEventType.DDD_UBIQUITOUS_LANGUAGE_MISSING,
+        SovereignEventType.LAYER_CROSS_IMPORT
     ],
     "SYSTEM": [
-        sovereign_event_type.SYSTEM_BOOT,
-        sovereign_event_type.CONSTITUTION_LOAD
+        SovereignEventType.SYSTEM_BOOT,
+        SovereignEventType.CONSTITUTION_LOAD
     ],
     "MCP": [
-        sovereign_event_type.MCP_INTEGRATION_STARTED,
-        sovereign_event_type.MCP_INTEGRATION_SUCCESS,
-        sovereign_event_type.MCP_INTEGRATION_FAILED
+        SovereignEventType.MCP_INTEGRATION_STARTED,
+        SovereignEventType.MCP_INTEGRATION_SUCCESS,
+        SovereignEventType.MCP_INTEGRATION_FAILED
     ]
 }
 
 # Public exports
 __all__ = [
     # Snake case (canonical)
-    "sovereign_severity",
-    "sovereign_event_type", 
+    "SovereignSeverity",
+    "SovereignEventType", 
     "sovereign_severities",
     "severity_log_levels",
     "sovereign_event_categories",

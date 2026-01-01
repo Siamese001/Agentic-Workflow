@@ -20,7 +20,7 @@ logger: Any = logging.getLogger(__name__)
 logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-class agent_permission_manager:
+class AgentPermissionManager(
     """Manages agent permissions with Control Plane integration.
 
     Provides:
@@ -148,15 +148,14 @@ class agent_permission_manager:
         self._default_permissions[IdentityType.HUMAN_OPERATOR] = [Permission(scope=PermissionScope.DATA_ACCESS, ACTION=PermissionAction.READ, RESOURCE='*')]
 
 # Alias for backward compatibility
-AgentPermissionManager = agent_permission_manager
 
-def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "agent_permission_manager":
+def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "AgentPermissionManager":
     """Factory function to create permission manager.
 
     Args:
         control_plane: Optional Control Plane instance
 
     Returns:
-        agent_permission_manager instance
+        AgentPermissionManager instance
     """
-    return agent_permission_manager(control_plane=control_plane)
+    return AgentPermissionManager(control_plane=control_plane)

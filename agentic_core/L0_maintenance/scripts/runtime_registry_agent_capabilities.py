@@ -28,7 +28,7 @@ class AgentRole(Enum):
 
 
 @dataclass
-class agent_capability:
+class AgentCapability(
     """Defines the capability of an agent role."""
     role: AgentRole
     display_name: str = ""
@@ -42,7 +42,7 @@ class agent_capability:
     legacy_k_nodes: List[str] = field(default_factory=list)
 
 
-class agent_spec:
+class AgentSpec(
     """Specification for creating an agent instance."""
 
     def __init__(self, role: AgentRole, hop_function: Callable = None, config: Any = None, **kwargs) -> None:
@@ -58,25 +58,25 @@ class agent_spec:
 
 
 # NOT_AN_AGENT — registry utility class, not a true agent — excluded from agent discovery
-class agent_registry:
+class AgentRegistry(
     """Registry for managing agent capabilities and specifications."""
 
     def __init__(self) -> None:
         """Initialize the agent registry."""
-        self._capabilities: Dict[AgentRole, agent_capability] = {}
-        self._specs: Dict[AgentRole, agent_spec] = {}
+        self._capabilities: Dict[AgentRole, AgentCapability] = {}
+        self._specs: Dict[AgentRole, AgentSpec] = {}
         logger.info("Initialized AgentRegistry")
 
-    def get_capability(self, role: AgentRole) -> Optional[agent_capability]:
+    def get_capability(self, role: AgentRole) -> Optional[AgentCapability]:
         """Get the capability definition for a role."""
         return self._capabilities.get(role)
 
-    def register_agent(self, spec: agent_spec) -> None:
+    def register_agent(self, spec: AgentSpec) -> None:
         """Register an agent specification."""
         self._specs[spec.role] = spec
         logger.info(f"Registered agent for role: {spec.role.value}")
 
-    def get_agent_spec(self, role: AgentRole) -> Optional[agent_spec]:
+    def get_agent_spec(self, role: AgentRole) -> Optional[AgentSpec]:
         """Get a registered agent specification."""
         return self._specs.get(role)
 
@@ -94,6 +94,3 @@ class agent_registry:
 
 
 # Aliases for discovery
-AgentRegistry = agent_registry
-AgentSpec = agent_spec
-AgentCapability = agent_capability

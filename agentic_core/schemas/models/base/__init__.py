@@ -6,15 +6,14 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, ConfigDict
 
 
-class sovereign_base_model(BaseModel):
+class SovereignBaseModel(BaseModel):
     """Base model for all Sovereign entities with strict config."""
     model_config = ConfigDict(strict=True, frozen=True)
 
 # Backward compat alias
-SovereignBaseModel = sovereign_base_model
 
 
-class territory(sovereign_base_model):
+class Territory(SovereignBaseModel):
     """Brief description of functionality and purpose."""
     name: str
     depth: int
@@ -22,10 +21,9 @@ class territory(sovereign_base_model):
     canon_key: Optional[int] = None
 
 # Backward compat alias
-Territory = territory
 
 
-class agent_message(sovereign_base_model):
+class AgentMessage(SovereignBaseModel):
     """Brief description of functionality and purpose."""
     source: str
     destination: str
@@ -33,15 +31,14 @@ class agent_message(sovereign_base_model):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 # Backward compat alias
-AgentMessage = agent_message
 
 
 # Public exports
 __all__ = [
     # Snake case (canonical)
-    "sovereign_base_model",
-    "territory",
-    "agent_message",
+    "SovereignBaseModel",
+    "Territory",
+    "AgentMessage",
     # PascalCase aliases (backward compat)
     "SovereignBaseModel",
     "Territory",

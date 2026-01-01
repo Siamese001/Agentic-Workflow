@@ -38,7 +38,6 @@ try:
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
-    FileSystemEventHandler = object
     Observer = None
 
 # L5 Live Reasoning Stream: WebSockets

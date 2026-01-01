@@ -1,4 +1,4 @@
-"""Implementation for agent_gym."""
+"""Implementation for AgentGym."""
 import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 logger: Any = logging.getLogger(__name__)
 
-class agent_gym:
+class AgentGym(
     """Agent Gym for self-evolution and benchmarking.
 
     Features:
@@ -241,15 +241,14 @@ class agent_gym:
         return areas
 
 # Alias for backward compatibility
-AgentGym = agent_gym
 
-def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> "agent_gym":
+def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> "AgentGym":
     """Factory function to create Agent Gym.
 
     Args:
         golden_evaluator: Optional golden state evaluator
 
     Returns:
-        agent_gym instance
+        AgentGym instance
     """
-    return agent_gym(golden_evaluator=golden_evaluator)
+    return AgentGym(golden_evaluator=golden_evaluator)

@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Literal
 from pydantic import BaseModel, Field, field_validator
 
 
-class agent_thought_process(BaseModel):
+class AgentThoughtProcess(BaseModel):
     """
     Forces the agent to show its work before acting.
     This is the "Physics" of your Agent - the schema it must follow.
@@ -49,10 +49,9 @@ class agent_thought_process(BaseModel):
         return v
 
 # Backward compat alias
-AgentThoughtProcess = agent_thought_process
 
 
-class code_generation_result(BaseModel):
+class CodeGenerationResult(BaseModel):
     """Schema for code generation tasks."""
     reasoning: str = Field(..., description="Why this code solves the problem")
     code: str = Field(..., description="The generated Python code")
@@ -70,10 +69,9 @@ class code_generation_result(BaseModel):
     )
 
 # Backward compat alias
-CodeGenerationResult = code_generation_result
 
 
-class research_result(BaseModel):
+class ResearchResult(BaseModel):
     """Schema for research tasks."""
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: List[Dict[str, str]] = Field(
@@ -91,10 +89,9 @@ class research_result(BaseModel):
     )
 
 # Backward compat alias
-ResearchResult = research_result
 
 
-class consensus_verdict(BaseModel):
+class ConsensusVerdict(BaseModel):
     """Result of a consensus deliberation."""
     chosen_plan: str
     consensus_score: float  # 0.0 to 1.0
@@ -103,10 +100,9 @@ class consensus_verdict(BaseModel):
     safe_to_proceed: bool
 
 # Backward compat alias
-ConsensusVerdict = consensus_verdict
 
 
-class model_opinion(BaseModel):
+class ModelOpinion(BaseModel):
     """Individual model's opinion on a plan."""
     model_name: str
     plan: str
@@ -115,27 +111,25 @@ class model_opinion(BaseModel):
     confidence: float  # 0.0 to 1.0
 
 # Backward compat alias
-ModelOpinion = model_opinion
 
 
-class agent_plan(BaseModel):
+class AgentPlan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
     reasoning: str
     tool_calls: list[dict]
 
 # Backward compat alias
-AgentPlan = agent_plan
 
 
 # Public exports
 __all__ = [
     # Snake case (canonical)
-    "agent_thought_process",
-    "code_generation_result",
-    "research_result",
-    "consensus_verdict",
-    "model_opinion",
-    "agent_plan",
+    "AgentThoughtProcess",
+    "CodeGenerationResult",
+    "ResearchResult",
+    "ConsensusVerdict",
+    "ModelOpinion",
+    "AgentPlan",
     # PascalCase aliases (backward compat)
     "AgentThoughtProcess",
     "CodeGenerationResult",

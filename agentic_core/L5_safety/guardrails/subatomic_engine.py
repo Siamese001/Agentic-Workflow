@@ -32,11 +32,10 @@ except ImportError:
     
 logger: Any = logging.getLogger(__name__)
 
-class sub_atomic_engine:
+class SubAtomicEngine(
     pass
 
 # Alias for backward compatibility
-SubAtomicEngine = sub_atomic_engine
 
 class sub_atomic_engine_impl:
     """Hardens the LLM interaction with the 24,576 token budget."""

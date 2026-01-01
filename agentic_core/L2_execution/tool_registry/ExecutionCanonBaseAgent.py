@@ -404,54 +404,52 @@ class SubatomicTestingMixin:
 
     def _generate_code_tests(self, code: str, context: Dict) -> str:
         """L2 Example 1: Unit tests for generated Python code."""
-        # Basic syntax validation test
+        # Escape code for embedding in test string
+        escaped_code = code.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import ast
 import pytest
 
+CODE_UNDER_TEST = """{escaped_code}"""
+
 def test_syntax_valid():
     """Verify generated code has valid Python syntax."""
-    code = """{code.replace('"', '\\"')}"""
     try:
-        ast.parse(code)
+        ast.parse(CODE_UNDER_TEST)
         assert True
     except SyntaxError as e:
         pytest.fail(f"Syntax error: {{e}}")
 
 def test_no_undefined_names():
     """Check for obvious undefined name patterns."""
-    code = """{code.replace('"', '\\"')}"""
-    # Basic check - real execution would catch more
-    assert "undefined" not in code.lower() or "# undefined" in code.lower()
+    assert "undefined" not in CODE_UNDER_TEST.lower() or "# undefined" in CODE_UNDER_TEST.lower()
 
 def test_no_placeholder_code():
     """Ensure no placeholder patterns remain."""
-    code = """{code.replace('"', '\\"')}"""
-    placeholders = ["# TODO:", "# FIXME:", "pass  # placeholder", "raise NotImplementedError"]
-    # Allow some TODOs but flag pure placeholders
-    assert "pass  # placeholder" not in code
+    assert "pass  # placeholder" not in CODE_UNDER_TEST
 '''
 
     def _generate_json_tests(self, json_str: str, context: Dict) -> str:
         """L2 Example 2: Validate tool call JSON structure."""
         expected_keys = context.get("expected_keys", [])
+        escaped_json = json_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import json
 import pytest
 
+JSON_UNDER_TEST = """{escaped_json}"""
+
 def test_json_valid():
     """Verify JSON is parseable."""
-    json_str = """{json_str.replace('"', '\\"')}"""
     try:
-        data = json.loads(json_str)
+        data = json.loads(JSON_UNDER_TEST)
         assert isinstance(data, (dict, list))
     except json.JSONDecodeError as e:
         pytest.fail(f"Invalid JSON: {{e}}")
 
 def test_required_keys():
     """Check required keys are present."""
-    json_str = """{json_str.replace('"', '\\"')}"""
-    data = json.loads(json_str)
+    data = json.loads(JSON_UNDER_TEST)
     expected = {expected_keys}
     if isinstance(data, dict):
         for key in expected:
@@ -460,32 +458,35 @@ def test_required_keys():
 
     def _generate_file_tests(self, content: str, context: Dict) -> str:
         """L2 Example 3: Test written file content."""
+        escaped_content = content[:500].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
+CONTENT_UNDER_TEST = """{escaped_content}"""
+
 def test_content_not_empty():
     """Verify file content is not empty."""
-    content = """{content[:500].replace('"', '\\"')}"""
-    assert len(content.strip()) > 0
+    assert len(CONTENT_UNDER_TEST.strip()) > 0
 
 def test_no_corrupted_markers():
     """Check for corruption markers."""
-    content = """{content[:500].replace('"', '\\"')}"""
     corruption_markers = ["\\x00", "\\xff\\xfe"]
     for marker in corruption_markers:
-        assert marker not in content
+        assert marker not in CONTENT_UNDER_TEST
 '''
 
     def _generate_generic_tests(self, artifact: str, context: Dict) -> str:
         """Fallback tests for unknown artifact types."""
+        escaped_artifact = str(artifact)[:200].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
 
+ARTIFACT_UNDER_TEST = """{escaped_artifact}"""
+
 def test_artifact_exists():
     """Verify artifact is not empty."""
-    artifact = """{str(artifact)[:200].replace('"', '\\"')}"""
-    assert artifact is not None
-    assert len(str(artifact)) > 0
+    assert ARTIFACT_UNDER_TEST is not None
+    assert len(str(ARTIFACT_UNDER_TEST)) > 0
 '''
 
     def _run_sandbox_tests(self, tests: str, artifact: str) -> Dict:

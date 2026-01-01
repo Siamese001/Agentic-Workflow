@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional, Protocol
 logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class tool_spec:
+class ToolSpec(
     """Specification for a tool."""
     name: str
     description: str
@@ -29,9 +29,9 @@ class tool_spec:
         return {'name': self.name, 'description': self.description, 'parameters': self.parameters, 'category': self.category, 'version': self.version, 'created_at': self.created_at.isoformat()}
 
 @dataclass
-class generated_tool:
+class GeneratedTool(
     """A dynamically generated tool."""
-    spec: "tool_spec"
+    spec: "ToolSpec"
     code: str
     imports: List[str]
     dependencies: List[str]
@@ -58,7 +58,7 @@ class ToolsmithAgent:
 
     def __init__(self):
         """Initialize the ToolsmithAgent."""
-        self.tools: Dict[str, "generated_tool"] = {}
+        self.tools: Dict[str, "GeneratedTool"] = {}
         self.templates: Dict[str, str] = {}
         self.categories = {'file': 'File manipulation tools', 'network': 'Network and API tools', 'data': 'Data processing tools', 'validation': 'Validation and checking tools', 'utility': 'General utility tools'}
         self._load_templates()
@@ -68,7 +68,7 @@ class ToolsmithAgent:
         """Load tool generation templates."""
         self.templates.update({'file_reader': tool_template.FUNCTION_TEMPLATE.format(name='read_file', params="file_path: str, encoding: str = 'utf-8'", return_type='str', description='Read contents of a file', param_docs='        file_path: Path to the file\n        encoding: File encoding', return_description='File contents as string', implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()"), 'file_writer': tool_template.FUNCTION_TEMPLATE.format(name='write_file', params="file_path: str, content: str, encoding: str = 'utf-8'", return_type='bool', description='Write content to a file', param_docs='        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding', return_description='True if successful', implementation='    try:\n        with open(file_path, \'w\', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        logger.error(f"Failed to write file: {e}")\n        return False'), 'json_validator': tool_template.FUNCTION_TEMPLATE.format(name='validate_json', params='data: Any, schema: Dict', return_type='Dict[str, Any]', description='Validate data against JSON schema', param_docs='        data: Data to validate\n        schema: JSON schema', return_description='Validation result', implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}')})
 
-    def create_tool_from_spec(self, spec: "tool_spec") -> "generated_tool":
+    def create_tool_from_spec(self, spec: "ToolSpec") -> "GeneratedTool":
         """
         Create a tool from a specification.
 
@@ -85,16 +85,16 @@ class ToolsmithAgent:
         imports: Any = self._extract_imports(code)
         dependencies: Any = self._identify_dependencies(code)
         test_code: Any = self._generate_test_code(spec)
-        tool: Any = generated_tool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
+        tool: Any = GeneratedTool(spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code)
         self.tools[spec.name] = tool
         logger.info(f'Created tool: {spec.name}')
         return tool
 
-    def _is_simple_function(self, spec: "tool_spec") -> bool:
+    def _is_simple_function(self, spec: "ToolSpec") -> bool:
         """Check if tool should be a simple function."""
         return len(spec.parameters) <= 5 and spec.category != 'complex'
 
-    def _generate_function_code(self, spec: "tool_spec") -> str:
+    def _generate_function_code(self, spec: "ToolSpec") -> str:
         """Generate function code for a tool."""
         params = []
         param_docs = []
@@ -111,7 +111,7 @@ class ToolsmithAgent:
         implementation = self._get_implementation(spec)
         return tool_template.FUNCTION_TEMPLATE.format(name=spec.name, params=param_str, return_type=spec.parameters.get('return', {}).get('type', 'Any'), description=spec.description, param_docs=param_doc_str, return_description=spec.parameters.get('return', {}).get('description', 'Result'), implementation=implementation)
 
-    def _generate_class_code(self, spec: "tool_spec") -> str:
+    def _generate_class_code(self, spec: "ToolSpec") -> str:
         """Generate class code for a complex tool."""
         init_params = []
         init_body = []
@@ -125,7 +125,7 @@ class ToolsmithAgent:
         method_param_docs = ''
         return tool_template.CLASS_TEMPLATE.format(name=spec.name, description=spec.description, init_params=init_param_str, init_body=init_body_str, method_params=method_params, method_param_docs=method_param_docs, return_type=spec.parameters.get('return', {}).get('type', 'Any'), return_description=spec.parameters.get('return', {}).get('description', 'Result'), method_implementation='pass  # TODO: Implement')
 
-    def _get_implementation(self, spec: "tool_spec") -> str:
+    def _get_implementation(self, spec: "ToolSpec") -> str:
         """Get implementation code based on tool category and name."""
         template_key = f'{spec.category}_{spec.name}'
         if template_key in self.templates:
@@ -160,12 +160,12 @@ class ToolsmithAgent:
                     dependencies.append(lib)
         return dependencies
 
-    def _generate_test_code(self, spec: "tool_spec") -> str:
+    def _generate_test_code(self, spec: "ToolSpec") -> str:
         """Generate test code for the tool."""
         test_name = f'test_{spec.name}'
         return f'\nasync def {test_name}():\n    """Test the {spec.name} tool."""\n    # TODO: Implement test\n    pass\n'
 
-    def create_file_tool(self, name: str, operation: str) -> "generated_tool":
+    def create_file_tool(self, name: str, operation: str) -> "GeneratedTool":
         """
         Create a file manipulation tool.
 
@@ -176,10 +176,10 @@ class ToolsmithAgent:
         Returns:
             Generated tool
         """
-        spec: Any = tool_spec(name=f'{operation}_{name}', description=f'{operation.capitalize()} {name} file', parameters={'file_path': {'type': 'str', 'description': 'Path to the file', 'required': True}}, function=lambda x: x, category='file')
+        spec: Any = ToolSpec(name=f'{operation}_{name}', description=f'{operation.capitalize()} {name} file', parameters={'file_path': {'type': 'str', 'description': 'Path to the file', 'required': True}}, function=lambda x: x, category='file')
         return self.create_tool_from_spec(spec)
 
-    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> "generated_tool":
+    def create_api_tool(self, name: str, endpoint: str, method: str='GET') -> "GeneratedTool":
         """
         Create an API interaction tool.
 
@@ -191,10 +191,10 @@ class ToolsmithAgent:
         Returns:
             Generated tool
         """
-        spec: Any = tool_spec(name=f'{method.lower()}_{name}', description=f'Make {method} request to {endpoint}', parameters={'url': {'type': 'str', 'description': 'Request URL', 'required': True}, 'headers': {'type': 'Dict[str, str]', 'description': 'Request headers', 'required': False}, 'data': {'type': 'Any', 'description': 'Request data', 'required': False}}, function=lambda x: x, category='network')
+        spec: Any = ToolSpec(name=f'{method.lower()}_{name}', description=f'Make {method} request to {endpoint}', parameters={'url': {'type': 'str', 'description': 'Request URL', 'required': True}, 'headers': {'type': 'Dict[str, str]', 'description': 'Request headers', 'required': False}, 'data': {'type': 'Any', 'description': 'Request data', 'required': False}}, function=lambda x: x, category='network')
         return self.create_tool_from_spec(spec)
 
-    def get_tool(self, name: str) -> Optional["generated_tool"]:
+    def get_tool(self, name: str) -> Optional["GeneratedTool"]:
         """Get a registered tool by name."""
         return self.tools.get(name)
 
@@ -312,18 +312,15 @@ class ToolsmithAgent:
                         results['errors'].append(f"{filename}: {e}")
                         
         return results
-_toolsmith_agent: Optional["toolsmith_agent"] = None
+_toolsmith_agent: Optional["ToolsmithAgent"] = None
 
 # Aliases for discovery
-ToolsmithAgent = toolsmith_agent
-ToolSpec = tool_spec
-GeneratedTool = generated_tool
 
-def get_toolsmith_agent() -> "toolsmith_agent":
+def get_toolsmith_agent() -> "ToolsmithAgent":
     """Get or create the global ToolsmithAgent instance."""
     global _toolsmith_agent
     if _toolsmith_agent is None:
-        _toolsmith_agent = toolsmith_agent()
+        _toolsmith_agent = ToolsmithAgent()
     return _toolsmith_agent
 
 def initialize_toolsmith_agent() -> Any:
@@ -331,12 +328,12 @@ def initialize_toolsmith_agent() -> Any:
     get_toolsmith_agent()
     logger.info('ToolsmithAgent system initialized')
 
-def create_file_tool(name: str, operation: str) -> "generated_tool":
+def create_file_tool(name: str, operation: str) -> "GeneratedTool":
     """Create a file manipulation tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_file_tool(name, operation)
 
-def create_api_tool(name: str, endpoint: str, method: str='GET') -> "generated_tool":
+def create_api_tool(name: str, endpoint: str, method: str='GET') -> "GeneratedTool":
     """Create an API interaction tool."""
     agent: Any = get_toolsmith_agent()
     return agent.create_api_tool(name, endpoint, method)

@@ -7,7 +7,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field, validator
 
 
-class read_file_args(BaseModel):
+class ReadFileArgs(BaseModel):
     """Arguments for reading a file."""
     path: str = Field(..., description="Relative path to the file to read")
     
@@ -18,10 +18,9 @@ class read_file_args(BaseModel):
         return v
 
 # Backward compat alias
-ReadFileArgs = read_file_args
 
 
-class write_file_args(BaseModel):
+class WriteFileArgs(BaseModel):
     """Arguments for writing to a file."""
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
@@ -34,10 +33,9 @@ class write_file_args(BaseModel):
         return v
 
 # Backward compat alias
-WriteFileArgs = write_file_args
 
 
-class move_file_args(BaseModel):
+class MoveFileArgs(BaseModel):
     """Arguments for moving/renaming a file."""
     source: str = Field(..., description="Relative path to the source file")
     destination: str = Field(..., description="Relative path to the destination")
@@ -50,10 +48,9 @@ class move_file_args(BaseModel):
         return v
 
 # Backward compat alias
-MoveFileArgs = move_file_args
 
 
-class list_files_args(BaseModel):
+class ListFilesArgs(BaseModel):
     """Arguments for listing files in a directory."""
     path: str = Field(default=".", description="Relative path to the directory to list")
     pattern: Optional[str] = Field(default=None, description="Glob pattern to filter files (e.g., '*.py')")
@@ -66,10 +63,9 @@ class list_files_args(BaseModel):
         return v
 
 # Backward compat alias
-ListFilesArgs = list_files_args
 
 
-class execute_command_args(BaseModel):
+class ExecuteCommandArgs(BaseModel):
     """Arguments for executing a shell command."""
     command: str = Field(..., description="Command to execute")
     args: List[str] = Field(default_factory=list, description="Command arguments")
@@ -92,10 +88,9 @@ class execute_command_args(BaseModel):
         return v
 
 # Backward compat alias
-ExecuteCommandArgs = execute_command_args
 
 
-class delete_file_args(BaseModel):
+class DeleteFileArgs(BaseModel):
     """Arguments for deleting a file."""
     path: str = Field(..., description="Relative path to the file to delete")
     
@@ -106,10 +101,9 @@ class delete_file_args(BaseModel):
         return v
 
 # Backward compat alias
-DeleteFileArgs = delete_file_args
 
 
-class create_directory_args(BaseModel):
+class CreateDirectoryArgs(BaseModel):
     """Arguments for creating a directory."""
     path: str = Field(..., description="Relative path to the directory to create")
     parents: bool = Field(default=True, description="Create parent directories if needed")
@@ -121,19 +115,18 @@ class create_directory_args(BaseModel):
         return v
 
 # Backward compat alias
-CreateDirectoryArgs = create_directory_args
 
 
 # Public exports
 __all__ = [
     # Snake case (canonical)
-    "read_file_args",
-    "write_file_args",
-    "move_file_args",
-    "list_files_args",
-    "execute_command_args",
-    "delete_file_args",
-    "create_directory_args",
+    "ReadFileArgs",
+    "WriteFileArgs",
+    "MoveFileArgs",
+    "ListFilesArgs",
+    "ExecuteCommandArgs",
+    "DeleteFileArgs",
+    "CreateDirectoryArgs",
     # PascalCase aliases (backward compat)
     "ReadFileArgs",
     "WriteFileArgs",
