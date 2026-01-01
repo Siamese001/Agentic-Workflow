@@ -27,12 +27,18 @@ class tool_definition:
     usage_count: int = 0
     success_rate: float = 1.0
 
+# Alias for consistency
+ToolDefinition = tool_definition
+
 @dataclass
 class tool_match:
     """A matched tool for a task."""
     tool: ToolDefinition
     relevance_score: float
     reason: str
+
+# Alias for consistency
+ToolMatch = tool_match
 
 class tool_registry:
     """
@@ -223,7 +229,59 @@ class tool_registry:
         for tool in self.tools.values():
             categories_count[tool.category] = categories_count.get(tool.category, 0) + 1
         return {'total_tools': len(self.tools), 'categories': categories_count, 'most_used': max(self.tools.values(), key=lambda t: t.usage_count).name if self.tools else None, 'avg_success_rate': np.mean([t.success_rate for t in self.tools.values()]) if self.tools else 0.0}
+
 predefined_tool_categories: Any = {'filesystem': 'File and directory operations', 'network': 'Network and API communication', 'analysis': 'Data analysis and processing', 'utility': 'General utility functions', 'mcp': 'Model Context Protocol tools', 'ai': 'AI/ML related tools'}
+
+def ast_analysis(code: str, mode: str = "audit_classes") -> Dict[str, Any]:
+    """AST tool — analyze Python code for patterns (e.g., snake_case classes).
+    
+    Args:
+        code: Python source code to analyze
+        mode: Analysis mode - "audit_classes", "extract_names", "check_snake_case"
+        
+    Returns:
+        Dict with analysis results based on mode
+    """
+    import ast
+    
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return {"error": "syntax_error", "message": "Invalid Python syntax"}
+    
+    if mode == "audit_classes":
+        # Count snake_case vs PascalCase classes
+        snake_classes = sum(
+            1 for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and (node.name[0].islower() or '_' in node.name)
+        )
+        pascal_classes = sum(
+            1 for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and node.name[0].isupper() and '_' not in node.name
+        )
+        return {
+            "snake_classes": snake_classes,
+            "pascal_classes": pascal_classes,
+            "total_classes": snake_classes + pascal_classes
+        }
+    
+    elif mode == "extract_names":
+        # Extract all class names
+        class_names = [
+            node.name for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef)
+        ]
+        return {"class_names": class_names, "count": len(class_names)}
+    
+    elif mode == "check_snake_case":
+        # Check if any snake_case classes exist
+        has_violations = any(
+            isinstance(node, ast.ClassDef) and (node.name[0].islower() or '_' in node.name)
+            for node in ast.walk(tree)
+        )
+        return {"has_snake_case": has_violations}
+    
+    return {"error": "invalid_mode", "message": f"Unknown mode: {mode}"}
 
 def create_tool_registry(embedder: Any, enable_caching: bool=True) -> ToolRegistry:
     """
