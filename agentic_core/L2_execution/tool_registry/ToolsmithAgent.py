@@ -46,7 +46,9 @@ class tool_template:
     FUNCTION_TEMPLATE: Any = '\nasync def {name}({params}) -> {return_type}:\n    """\n    {description}\n\n    Args:\n{param_docs}\n    Returns:\n        {return_description}\n    """\n    # Implementation\n    {implementation}\n'
     CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}):\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
 
-class ToolsmithAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class ToolsmithAgent(HealerMixin):
     """
     Creates and manages tools dynamically.
     Features:
