@@ -11,8 +11,8 @@ from agentic_core.style import FEW_SHOT_HYGIENE, FEW_SHOT_STYLE
 from agentic_core.testing import FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_TESTPILOT
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
