@@ -16,7 +16,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-class AgentGym:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class AgentGym(HealerMixin):
     """Agent Gym for self-evolution and benchmarking.
 
     Features:

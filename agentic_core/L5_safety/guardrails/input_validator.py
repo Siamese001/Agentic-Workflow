@@ -66,8 +66,9 @@ class InputValidationError(Exception):
         self.value = value
         super().__init__(f"Validation failed for {field}: {message}")
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class InputValidator:
+class InputValidator(HealerMixin):
     """Validates input data against schema and rules."""
     
     def __init__(self, name: str = "default"):

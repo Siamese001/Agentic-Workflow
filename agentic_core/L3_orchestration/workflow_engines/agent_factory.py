@@ -52,11 +52,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 # NAMING FIXED: AgentFactory → AgentFactory
-class AgentFactory:
+class AgentFactory(HealerMixin):
     """
     Centralized factory for sovereign agent injection.
     
