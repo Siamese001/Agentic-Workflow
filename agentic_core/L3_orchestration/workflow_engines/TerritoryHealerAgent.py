@@ -13,9 +13,10 @@ Examples:
 
 from pathlib import Path
 from typing import Dict, List, Optional
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class TerritoryHealerAgent:
+class TerritoryHealerAgent(HealerMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """

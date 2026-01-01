@@ -6,11 +6,12 @@ Heals territorial violations and ensures proper folder hierarchy.
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class TerritoryHealerAgent:
+class TerritoryHealerAgent(HealerMixin):
     """L3 Orchestration: Territory Healing"""
     
     def __init__(self, project_root: Path = None):
