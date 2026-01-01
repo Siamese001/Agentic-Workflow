@@ -57,7 +57,7 @@ def start_watchdog() -> Any:
             proc: Any = subprocess.Popen([sys.executable, 'watchdog_sidecar.py'], creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:
             proc: Any = subprocess.Popen([sys.executable, 'watchdog_sidecar.py'])
-        WATCHDOG_PID: Any = proc.pid
+        WATCHDOG_PID = proc.pid
         logger.info(f'✅ Watchdog active (PID: {WATCHDOG_PID})')
         time.sleep(1)
     except Exception as e:
