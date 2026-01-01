@@ -13,7 +13,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
-class GitAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class GitAgent(HealerMixin):
     """
     Agent for managing git operations and remote synchronization.
 
