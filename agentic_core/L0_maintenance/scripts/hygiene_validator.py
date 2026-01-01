@@ -34,6 +34,18 @@ class HygieneValidator:
             "conftest.py",
             "__main__.py",
         }
+        # [PHASE 2] L0 Delegated Testing - manual safe call
+        self._run_delegated_tests_safe()
+    
+    def _run_delegated_tests_safe(self):
+        """Manual delegation for validators (no inheritance conflict)."""
+        try:
+            from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+            mixin = L0DelegationTestingMixin()
+            if not mixin._delegate_tests_safe():
+                print(f"WARNING: {self.__class__.__name__} delegated tests soft-failed")
+        except Exception:
+            pass  # Validators should not halt boot
 
     def scan(self):
         """Builds file list and import graph."""
