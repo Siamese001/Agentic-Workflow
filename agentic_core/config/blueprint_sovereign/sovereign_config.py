@@ -8,7 +8,7 @@ from typing import Any, Optional, Dict, List
 
 # NOT_AN_AGENT — config dataclass, not a true agent — excluded from agent discovery
 @dataclass(frozen=True)
-class sovereign_config:
+class SovereignConfig(
     """Brief description of functionality and purpose."""
     PINECONE_API_KEY: Optional[str] = os.getenv('PINECONE_API_KEY')
     PINECONE_ENV: str = os.getenv('PINECONE_ENV', 'us-east-1')
@@ -127,5 +127,4 @@ class sovereign_config:
         if errors:
             raise ValueError('\n'.join(errors))
 # Alias for backward compatibility
-SovereignConfig = sovereign_config
-config: Any = sovereign_config()
+config: Any = SovereignConfig()

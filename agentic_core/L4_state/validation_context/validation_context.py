@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.L4_state.validation_context.cached_state_ledger import cached_state_ledger as CachedStateLedger
+from agentic_core.L4_state.ValidationContext.cached_state_ledger import cached_state_ledger as CachedStateLedger
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -22,7 +22,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class validation_context:
+class ValidationContext(
     """
     Context for a validation cycle.
 
@@ -155,9 +155,8 @@ class validation_context:
             return None
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
-ValidationContext = validation_context
 
-class validation_context_manager:
+class ValidationContextManager(
     """
     Manages ValidationContext persistence and history.
     """
@@ -255,7 +254,6 @@ class validation_context_manager:
         return {}
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
-ValidationContextManager = validation_context_manager
 
 _context_manager: Optional[ValidationContextManager] = None
 

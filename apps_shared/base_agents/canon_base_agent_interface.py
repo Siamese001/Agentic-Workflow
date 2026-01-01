@@ -6,12 +6,11 @@ Phase 9: DDD Remediation (Dec 26, 2025)
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-# NAMING FIXED: CanonBaseAgentInterface → canon_base_agent_interface
-class canon_base_agent_interface(ABC):
+# NAMING FIXED: CanonBaseAgentInterface → CanonBaseAgentInterface
+class CanonBaseAgentInterface(ABC):
     pass
 
 # Alias for backward compatibility
-CanonBaseAgentInterface = canon_base_agent_interface
 
 class canon_base_agent_interface_impl(ABC):
     """Sovereign interface for all canon agents — shared across contexts."""

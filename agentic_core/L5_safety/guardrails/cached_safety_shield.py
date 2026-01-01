@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 import redis
 
-class cached_safety_shield:
+class CachedSafetyShield(
     def __init__(self, project_root=None, session_id: str='l5_global'):
         from pathlib import Path
         self.root = project_root or Path('.')
@@ -25,7 +25,6 @@ class cached_safety_shield:
         self.prefix_policy = f'l5_policy:{session_id}' 
 
 # Alias for backward compatibility
-CachedSafetyShield = cached_safety_shield
 
 class cached_safety_shield_impl:
     """

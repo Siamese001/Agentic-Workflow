@@ -5,12 +5,11 @@ import os
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
-# NAMING FIXED: SubAtomicAgent → sub_atomic_agent
-class sub_atomic_agent:
+# NAMING FIXED: SubAtomicAgent → SubAtomicAgent
+class SubAtomicAgent(
     pass
 
 # Alias for backward compatibility
-SubAtomicAgent = sub_atomic_agent
 
 # NOT_AN_AGENT — base implementation class, not a true agent — excluded from discovery
 class sub_atomic_agent_impl:

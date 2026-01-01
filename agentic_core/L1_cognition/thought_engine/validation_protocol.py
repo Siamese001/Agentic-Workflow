@@ -5,8 +5,8 @@ Defines the interface L1 needs without depending on L4 implementation.
 from typing import Any, Dict, List, Optional, Protocol
 
 
-# NAMING FIXED: ValidationProtocol → validation_protocol
-class validation_protocol(Protocol):
+# NAMING FIXED: ValidationProtocol → ValidationProtocol
+class ValidationProtocol(Protocol):
     """Protocol defining the validation context interface needed by L1.
     
     This inverts the L1 → L4 dependency by defining the interface in L1
@@ -50,4 +50,3 @@ class validation_protocol(Protocol):
         ...
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
-ValidationProtocol = validation_protocol

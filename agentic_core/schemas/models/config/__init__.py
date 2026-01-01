@@ -8,7 +8,7 @@ from typing import Dict, List, Set
 
 
 @dataclass
-class file_paths_config:
+class FilePathsConfig(
     """File paths for data files used by the workflow."""
     master_resume: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / 'config' / 'P1_core' / 'data' / 'master_resume.json')
     hyphenation_rules: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / 'config' / 'P1_core' / 'data' / 'hyphenation_rules.json')
@@ -19,22 +19,20 @@ class file_paths_config:
     prompts: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / 'config' / 'P1_core' / 'data' / 'prompts.json')
 
 # Backward compat alias
-FilePathsConfig = file_paths_config
 
 
 @dataclass
-class artist_config:
+class ArtistConfig(
     """Configuration for the Artist Generator (resume content generation)."""
     provenance_split_targets: Dict = field(default_factory=dict)
     bullet_word_count_ranges: Dict = field(default_factory=dict)
     narrative_config: Dict = field(default_factory=dict)
 
 # Backward compat alias
-ArtistConfig = artist_config
 
 
 @dataclass
-class validator_config:
+class ValidatorConfig(
     """Configuration for validation rules and constraints."""
     forbidden_verbs: List[str] = field(default_factory=list)
     required_sections: Set[str] = field(default_factory=set)
@@ -43,11 +41,10 @@ class validator_config:
     pipeline_status_enum: List[str] = field(default_factory=list)
 
 # Backward compat alias
-ValidatorConfig = validator_config
 
 
 @dataclass
-class prompts_config:
+class PromptsConfig(
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
     
@@ -64,11 +61,10 @@ class prompts_config:
             raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
 
 # Backward compat alias
-PromptsConfig = prompts_config
 
 
 @dataclass
-class web_rag_config:
+class WebRagConfig(
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
     peers_by_industry: Dict = field(default_factory=lambda: {
         'Financial Technology': ['JPMorgan', 'Goldman Sachs', 'Morgan Stanley', 'Stripe', 'Square'],
@@ -79,11 +75,10 @@ class web_rag_config:
     })
 
 # Backward compat alias
-WebRagConfig = web_rag_config
 
 
 @dataclass
-class enricher_config:
+class EnricherConfig(
     """Configuration for data enrichment."""
     canonical_verbs: Dict = field(default_factory=lambda: {
         'led': ['led', 'lead', 'leading'],
@@ -99,11 +94,10 @@ class enricher_config:
     })
 
 # Backward compat alias
-EnricherConfig = enricher_config
 
 
 @dataclass
-class enforcement_rag_config:
+class EnforcementRAGConfig(
     """Configuration for RAG system."""
     MODEL: str = 'gemini-2.5-pro'
     max_tokens: int = 8192
@@ -132,11 +126,10 @@ class enforcement_rag_config:
     })
 
 # Backward compat alias
-EnforcementRAGConfig = enforcement_rag_config
 
 
 @dataclass
-class enforcement_reasoning_config:
+class EnforcementReasoningConfig(
     """Configuration for reasoning strategies."""
     cot_min_paths: int = 2
     tot_branches: int = 3
@@ -146,11 +139,10 @@ class enforcement_reasoning_config:
     max_reflexion_loops: int = 3
 
 # Backward compat alias
-EnforcementReasoningConfig = enforcement_reasoning_config
 
 
 @dataclass
-class content_constraints_config:
+class ContentConstraintsConfig(
     """Content-level constraints for word counts, sentence counts, etc."""
     TOTAL_WORD_COUNT_MIN: int = 870
     TOTAL_WORD_COUNT_MAX: int = 1030
@@ -187,58 +179,54 @@ class content_constraints_config:
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
 # Backward compat alias
-ContentConstraintsConfig = content_constraints_config
 
 
 @dataclass
-class signal_control_config:
+class SignalControlConfig(
     """Signal control thresholds for quality and relevance."""
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
 
 # Backward compat alias
-SignalControlConfig = signal_control_config
 
 
 @dataclass
-class prompt_addendum_config:
+class PromptAddendumConfig(
     """Configuration for reasoning prompt addendums."""
     HEADER: str = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n'
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
 
 # Backward compat alias
-PromptAddendumConfig = prompt_addendum_config
 
 
 @dataclass
-class app_config:
+class AppConfig(
     """Master application configuration containing all sub-configs."""
-    paths: file_paths_config = field(default_factory=file_paths_config)
-    content_constraints: content_constraints_config = field(default_factory=content_constraints_config)
-    signal_constraints: signal_control_config = field(default_factory=signal_control_config)
-    web_rag: web_rag_config = field(default_factory=web_rag_config)
-    enricher: enricher_config = field(default_factory=enricher_config)
+    paths: FilePathsConfig = field(default_factory=FilePathsConfig)
+    content_constraints: ContentConstraintsConfig = field(default_factory=ContentConstraintsConfig)
+    signal_constraints: SignalControlConfig = field(default_factory=SignalControlConfig)
+    web_rag: WebRagConfig = field(default_factory=WebRagConfig)
+    enricher: EnricherConfig = field(default_factory=EnricherConfig)
 
 # Backward compat alias
-AppConfig = app_config
 
 
 # Public exports
 __all__ = [
     # Snake case (canonical)
-    "file_paths_config",
-    "artist_config",
-    "validator_config",
-    "prompts_config",
-    "web_rag_config",
-    "enricher_config",
-    "enforcement_rag_config",
-    "enforcement_reasoning_config",
-    "content_constraints_config",
-    "signal_control_config",
-    "prompt_addendum_config",
-    "app_config",
+    "FilePathsConfig",
+    "ArtistConfig",
+    "ValidatorConfig",
+    "PromptsConfig",
+    "WebRagConfig",
+    "EnricherConfig",
+    "EnforcementRAGConfig",
+    "EnforcementReasoningConfig",
+    "ContentConstraintsConfig",
+    "SignalControlConfig",
+    "PromptAddendumConfig",
+    "AppConfig",
     # PascalCase aliases (backward compat)
     "FilePathsConfig",
     "ArtistConfig",
