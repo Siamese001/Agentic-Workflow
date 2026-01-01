@@ -6,7 +6,7 @@ Eternal PascalCase SSOT Enforcer.
 - Updates references repo-wide
 - Subatomic hops with self-validation (integrated test cases)
 - All test cases must pass before commit
-- Delegates advanced testing to TestSovereigntyAgent
+- Optional strict_mode: Delegate advanced to TestSovereigntyAgent
 - AST-precise audit, layer-incremental purge
 """
 from __future__ import annotations
@@ -16,20 +16,30 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+from enum import Enum
 
 from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
 
 
+class SovereignSeverity(Enum):
+    """Sovereign event severity levels."""
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
 class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
     """L5 Safety agent — enforces PascalCase as eternal sole SSOT."""
 
-    def __init__(self, ctx: Any, dry_run: bool = False, _allow_mock: bool = False):
-        """Initialize with mandatory ctx for sovereign operation.
+    def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False):
+        """Ultra init — ctx mandatory, strict_mode configurable.
         
         Args:
             ctx: Execution context (mandatory for production)
             dry_run: If True, audit only without making changes
+            strict_mode: If True, delegate to TestSovereigntyAgent for deep validation
             _allow_mock: Internal flag for testing - allows MagicMock ctx
         """
         if ctx is None:
@@ -37,11 +47,12 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
                 from unittest.mock import MagicMock
                 ctx = MagicMock()
             else:
-                raise ValueError("ctx is mandatory for PascalSovereigntyEnforcerAgent (sovereign agent)")
+                raise ValueError("ctx mandatory — full runtime required for sovereign enforcement")
         super().__init__(ctx)
         self.repo_root = Path.cwd()
         self.branch_name = "refactor/eternal-pascal-sovereignty-2026"
         self.dry_run = dry_run
+        self.strict_mode = strict_mode  # False = basic fast, True = specialist deep
         # Sovereign scope
         self.target_prefixes = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
         # Incremental layer order (from audit priority — schemas first)
@@ -55,8 +66,8 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
         return [1, 2, 3]  # Naming, structure, sovereignty keys
 
     async def execute(self, scope: str = "schemas") -> Dict:
-        """Subatomic entrypoint — audit + purge with testing."""
-        self._emit_event("INFO", "PASCAL_PURGE_INITIATED")
+        """Subatomic entrypoint — audit + purge with configurable testing."""
+        self._emit_event(SovereignSeverity.INFO, "PASCAL_PURGE_INITIATED")
 
         if not self.dry_run:
             # Safe branch creation
@@ -87,14 +98,15 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
         if all(r["status"] in ["purged", "no_change"] for r in results) and not self.dry_run:
             subprocess.run(["git", "add", "-A"], check=False)
             subprocess.run(["git", "commit", "-m", "refactor: Eternal PascalCase SSOT — purge snake_case + aliases"], check=False)
-            self._emit_event("INFO", "PASCAL_SOVEREIGNTY_ACHIEVED")
+            self._emit_event(SovereignSeverity.INFO, "PASCAL_SOVEREIGNTY_ACHIEVED")
 
         return {"audit": audit, "results": results, "dry_run": self.dry_run}
 
     async def _purge_layer(self, layer_files: List[Path]) -> List[Dict]:
-        """Purge one layer — atomic with testing."""
+        """Purge one layer — atomic with configurable testing."""
         layer_results = []
-        for file_path in layer_files:
+        for i, file_path in enumerate(layer_files, 1):
+            print(f"  [{i}/{len(layer_files)}] {file_path.name}")
             original_content = Path(file_path).read_text(encoding='utf-8')
             purged_content = self._purge_snake_case(original_content)
             if purged_content == original_content:
@@ -104,17 +116,35 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
             if not self.dry_run:
                 Path(file_path).write_text(purged_content, encoding='utf-8')
 
-            # Hop 3: CRITIQUE - Integrated + specialist testing
+            # Hop 3: CRITIQUE - Basic mandatory + optional specialist
             test_result = await self._run_critique_tests()
-            if not test_result["all_passed"]:
+            if not test_result["basic_passed"]:
                 if not self.dry_run:
                     Path(file_path).write_text(original_content, encoding='utf-8')
                     subprocess.run(["git", "restore", str(file_path)], check=False)
-                layer_results.append({"file": str(file_path), "status": "failed_critique", "tests": test_result})
-                self._emit_event("ERROR", "PASCAL_PURGE_CRITIQUE_FAILED")
+                layer_results.append({"file": str(file_path), "status": "failed_basic", "tests": test_result})
+                self._emit_event(SovereignSeverity.ERROR, "PASCAL_PURGE_CRITIQUE_FAILED")
                 continue
 
-            layer_results.append({"file": str(file_path), "status": "purged", "tests": test_result})
+            # Optional strict specialist
+            advanced_passed = True
+            advanced_result = None
+            if self.strict_mode:
+                try:
+                    specialist = TestSovereigntyAgent()
+                    advanced_result = await specialist.execute({"artifact": purged_content, "type": "advanced"})
+                    advanced_passed = advanced_result["passed"]
+                    if not advanced_passed:
+                        if not self.dry_run:
+                            Path(file_path).write_text(original_content, encoding='utf-8')
+                            subprocess.run(["git", "restore", str(file_path)], check=False)
+                        layer_results.append({"file": str(file_path), "status": "failed_strict", "advanced": advanced_result})
+                        self._emit_event(SovereignSeverity.ERROR, "PASCAL_STRICT_FAILED")
+                        continue
+                except Exception as e:
+                    print(f"    [!] Specialist error (non-blocking): {e}")
+
+            layer_results.append({"file": str(file_path), "status": "purged", "tests": test_result, "advanced": advanced_result})
 
         return layer_results
 
@@ -195,36 +225,55 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
         return content
 
     async def _run_critique_tests(self) -> Dict:
-        """Ultra CRITIQUE: Basic self-tests + specialist delegation."""
+        """Ultra CRITIQUE: Mandatory basic self-tests (expanded)."""
         tests = []
 
-        # Test 1: Basic purge
+        # Test 1: Basic purge + alias removal
         input_content = """
-class SovereignSeverity(str, Enum):
+class sovereign_severity(str, Enum):
     CRITICAL = "CRITICAL"
+SovereignSeverity = sovereign_severity
 """
         expected = """
 class SovereignSeverity(str, Enum):
     CRITICAL = "CRITICAL"
 """
         result = self._purge_snake_case(input_content).strip()
-        tests.append({"name": "basic_purge", "passed": result == expected.strip()})
+        tests.append({"name": "basic_purge_alias", "passed": result == expected.strip()})
 
-        # Test 2: Multiple + references
+        # Test 2: References + member access
         input_content = """
-class ToneType(str, Enum):
+class tone_type(str, Enum):
     AUTHORITATIVE = "authoritative"
-severity = ToneType.AUTHORITATIVE
+ToneType = tone_type
+severity = tone_type.AUTHORITATIVE
+obj = tone_type()
 """
         expected = """
 class ToneType(str, Enum):
     AUTHORITATIVE = "authoritative"
 severity = ToneType.AUTHORITATIVE
+obj = ToneType()
 """
         result = self._purge_snake_case(input_content).strip()
-        tests.append({"name": "references", "passed": result == expected.strip()})
+        tests.append({"name": "references_member", "passed": result == expected.strip()})
 
-        # Test 3: No change clean
+        # Test 3: Dataclass + purge
+        input_content = """
+@dataclass
+class hard_state:
+    id: str
+HardState = hard_state
+"""
+        expected = """
+@dataclass
+class HardState:
+    id: str
+"""
+        result = self._purge_snake_case(input_content).strip()
+        tests.append({"name": "dataclass_purge", "passed": result == expected.strip()})
+
+        # Test 4: Clean file (no change)
         input_content = """
 class SovereignEvent(BaseModel):
     pass
@@ -232,16 +281,15 @@ class SovereignEvent(BaseModel):
         result = self._purge_snake_case(input_content)
         tests.append({"name": "clean_no_change", "passed": result.strip() == input_content.strip()})
 
-        # Specialist validation skipped — basic self-tests are sufficient for purge validation
-        # TestSovereigntyAgent can be run separately for full repo validation
-        tests.append({"name": "specialist_validation", "passed": True, "skipped": "basic_tests_sufficient"})
+        basic_passed = all(t["passed"] for t in tests)
+        return {
+            "tests": tests,
+            "basic_passed": basic_passed,
+            "all_passed": basic_passed  # Strict mode checked in _purge_layer
+        }
 
-        # Basic self-tests must pass (first 3), specialist is advisory
-        basic_passed = all(t["passed"] for t in tests[:3])
-        return {"tests": tests, "all_passed": basic_passed}
-
-    def _emit_event(self, severity: str, event_type: str, payload: Optional[Dict] = None) -> None:
+    def _emit_event(self, severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Telemetry for observability."""
-        print(f"[SOVEREIGN EVENT] {severity} | {event_type}")
+        print(f"[SOVEREIGN EVENT] {severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")

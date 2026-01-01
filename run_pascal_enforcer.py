@@ -10,15 +10,20 @@ from agentic_core.L5_safety.validators.PascalSovereigntyEnforcerAgent import Pas
 
 async def main():
     dry_run = "--live" not in sys.argv  # Default safe dry-run
+    strict_mode = "--strict" in sys.argv  # Optional deep validation
     scope = sys.argv[sys.argv.index("--scope") + 1] if "--scope" in sys.argv else "all"
     
+    mode_str = "DRY RUN (SAFE)" if dry_run else "LIVE EXECUTION"
+    if strict_mode:
+        mode_str += " | STRICT MODE (Deep Validation)"
+    
     print(f"\n{'='*80}")
-    print(f"PASCAL SOVEREIGNTY ENFORCER — {'DRY RUN (SAFE)' if dry_run else 'LIVE EXECUTION'} | Scope: {scope}")
+    print(f"PASCAL SOVEREIGNTY ENFORCER — {mode_str} | Scope: {scope}")
     print('='*80)
     
     # ctx mock only in dry-run — live requires full runtime ctx
     ctx = MagicMock() if dry_run else None  # Pass real ctx in live orchestrator
-    agent = PascalSovereigntyEnforcerAgent(ctx=ctx, dry_run=dry_run, _allow_mock=True)
+    agent = PascalSovereigntyEnforcerAgent(ctx=ctx, dry_run=dry_run, strict_mode=strict_mode, _allow_mock=True)
     
     # Run full AST audit first
     print("\n[PHASE 1] AST Audit...")
