@@ -20,6 +20,9 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 
+# [PHASE 2] L0 Delegated Testing Mixin
+from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+
 
 class L0SovereignSeverity(Enum):
     """Sovereign event Severity levels for L0 delegation."""
@@ -151,7 +154,7 @@ class L0DelegationMixin:
 
 
 @dataclass
-class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin):
+class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin, L0DelegationTestingMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
     
     L0 Table Decision:
