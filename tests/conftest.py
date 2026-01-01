@@ -10,14 +10,11 @@ from unittest.mock import mock_open
 
 # Sovereignty Injection: Ensure project root and stubs are at the top of the path
 project_root = Path(__file__).parent.parent
-agentic_core_dir = project_root / "agentic_core"
-if agentic_core_dir.exists():
-    sys.path.insert(0, str(agentic_core_dir))
 stubs_path = project_root / "stubs"
 
-# Insert project root first, then stubs as a fallback
-sys.path.insert(1, str(project_root))
-sys.path.insert(2, str(stubs_path))
+# Insert project root first (for agentic_core imports), then stubs as a fallback
+sys.path.insert(0, str(project_root))
+sys.path.insert(1, str(stubs_path))
 
 @pytest.fixture(autouse=True)
 def stub_environment_warning():

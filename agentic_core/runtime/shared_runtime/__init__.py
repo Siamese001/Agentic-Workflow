@@ -23,7 +23,18 @@ Future Curation Roadmap:
 """
 
 # Public API surface — expose only what's intended
-__all__ = []
+from .reflection_engine import ReflectionEngine, CritiqueResult, ValidationCriterion, ReflectionConfig, MutationRequest
+from .signal_enhancer import SignalEnhancer, SignalQuality, SignalAssessment, QualityThresholds, ClaimAnalysis
 
-# Example placeholder (replace when populated)
-# from .core_module import CoreImplementation
+__all__ = [
+    "ReflectionEngine",
+    "CritiqueResult",
+    "ValidationCriterion",
+    "ReflectionConfig",
+    "MutationRequest",
+    "SignalEnhancer",
+    "SignalQuality",
+    "SignalAssessment",
+    "QualityThresholds",
+    "ClaimAnalysis",
+]

@@ -23,7 +23,52 @@ Future Curation Roadmap:
 """
 
 # Public API surface — expose only what's intended
-__all__ = []
+from .cognitive_contracts import (
+    CognitiveContract,
+    CognitiveContractManager,
+    CognitiveContractValidator,
+    ContractStage,
+    Constraint,
+    Plan,
+    PlanQualityError,
+    ConsistencyError,
+)
+from .runtime_models import (
+    MicroStage,
+    HopState,
+    RetryPolicy,
+    MicroCheckpoint,
+    StageTransition,
+    InjectionType,
+    InjectionScope,
+    InjectionPattern,
+    InjectionMatch,
+    InjectionConfig,
+    ValidationResult,
+    ExecutionResult,
+)
 
-# Example placeholder (replace when populated)
-# from .core_module import CoreImplementation
+__all__ = [
+    # Cognitive contracts
+    "CognitiveContract",
+    "CognitiveContractManager",
+    "CognitiveContractValidator",
+    "ContractStage",
+    "Constraint",
+    "Plan",
+    "PlanQualityError",
+    "ConsistencyError",
+    # Runtime models
+    "MicroStage",
+    "HopState",
+    "RetryPolicy",
+    "MicroCheckpoint",
+    "StageTransition",
+    "InjectionType",
+    "InjectionScope",
+    "InjectionPattern",
+    "InjectionMatch",
+    "InjectionConfig",
+    "ValidationResult",
+    "ExecutionResult",
+]
