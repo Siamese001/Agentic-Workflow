@@ -332,6 +332,92 @@ def code_transform_tool(args: CodeTransformArgs) -> Dict[str, Any]:
 predefined_tool_categories['code_manipulation'] = 'AST-based code transformation tools'
 
 
+# =============================================================================
+# DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
+# =============================================================================
+from agentic_core.L2_execution.tool_registry.tools.dependency_graph import (
+    DependencyGraphArgs,
+    GraphOperation,
+    dependency_graph,
+    quick_cycles,
+    quick_impact,
+)
+
+
+def dependency_graph_tool(args: DependencyGraphArgs) -> Dict[str, Any]:
+    """
+    Dependency graph analysis tool for import/call relationships.
+    
+    Enables agents to analyze code dependencies for:
+    - Cycle detection (circular imports)
+    - Impact analysis (what breaks if X changes)
+    - Unused import detection
+    
+    Args:
+        args: DependencyGraphArgs with operation details
+            - operation: "build_graph", "detect_cycles", "impact_analysis", etc.
+            - target_path: File or directory to analyze
+            - symbol: Symbol name for impact analysis
+            
+    Returns:
+        Dict with graph data, cycles, or impact analysis results
+        
+    Example:
+        >>> args = DependencyGraphArgs(
+        ...     operation=GraphOperation.DETECT_CYCLES,
+        ...     target_path="agentic_core/"
+        ... )
+        >>> result = dependency_graph_tool(args)
+        >>> result["data"]["has_cycles"]
+        False
+    """
+    return dependency_graph(args)
+
+
+# Add DGA to predefined categories
+predefined_tool_categories['analysis'] = 'Code analysis and dependency tools'
+
+
+# =============================================================================
+# DIFF/PATCH GENERATOR (DPG) — Phase 2 Tool
+# =============================================================================
+from agentic_core.L2_execution.tool_registry.tools.diff_generator import (
+    DiffGeneratorArgs,
+    DiffFormat,
+    generate_diff,
+    apply_patch,
+    validate_patch,
+)
+
+
+def diff_generator_tool(args: DiffGeneratorArgs) -> Dict[str, Any]:
+    """
+    Diff/patch generation tool for reviewable changes.
+    
+    Enables agents to generate human-reviewable diffs before applying changes,
+    supporting human-in-loop validation for high-risk operations.
+    
+    Args:
+        args: DiffGeneratorArgs with diff parameters
+            - original: Original code/text
+            - modified: Modified code/text
+            - format: "unified", "context", "html", "ndiff"
+            
+    Returns:
+        Dict with diff text, stats, and patch applicability
+        
+    Example:
+        >>> args = DiffGeneratorArgs(
+        ...     original="def foo(): pass",
+        ...     modified="def bar(): pass",
+        ...     format=DiffFormat.UNIFIED
+        ... )
+        >>> result = diff_generator_tool(args)
+        >>> print(result["diff"])
+    """
+    return generate_diff(args)
+
+
 def create_tool_registry(embedder: Any, enable_caching: bool=True) -> ToolRegistry:
     """
     Factory function to create a tool registry.
