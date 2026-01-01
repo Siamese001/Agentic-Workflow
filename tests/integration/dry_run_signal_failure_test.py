@@ -212,8 +212,8 @@ async def mock_personalization_enhancer(context: Dict[str, Any]) -> Dict[str, An
 # Verification Results Tracking
 # =============================================================================
 
-# NAMING FIXED: VerificationResults → verification_results
-class verification_results:
+# Define VerificationResults class
+class VerificationResults:
     """Track verification results."""
 
     def __init__(self, engine_name: str):
