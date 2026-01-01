@@ -6,12 +6,16 @@ from pathlib import Path
 tests_dir = Path('tests')
 fixed = 0
 
+# Pattern to detect Any usage - check word boundary
+any_usage_pattern = re.compile(r'\bAny\b')
+
 for py_file in tests_dir.rglob('*.py'):
     try:
         content = py_file.read_text(encoding='utf-8')
         # Check if file uses Any but doesn't import it
-        if ': Any' in content or '-> Any' in content:
-            if 'from typing import Any' in content:
+        uses_any = bool(any_usage_pattern.search(content))
+        if uses_any:
+            if 'from typing import Any' in content or 'import Any' in content:
                 continue  # Already has import
             if 'from typing import' in content:
                 # Add Any to existing typing import

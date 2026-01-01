@@ -193,6 +193,7 @@ class test_branch_operations:
 
 def run_tests() -> None:
     """Run all GitKraken MCP integration tests."""
+from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

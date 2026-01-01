@@ -7,7 +7,7 @@ This extracts test function names and creates clean files with the same tests.
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Any, Dict, List, Set
 
 
 # NAMING FIXED: TestStubGenerator → test_stub_generator
