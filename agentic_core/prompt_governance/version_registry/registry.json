@@ -1,6 +1,6 @@
 {
   "sovereign_version": "1.0",
-  "generated_date": "2025-12-31",
+  "generated_date": "2026-01-01",
   "prompts": {
     "reasoning_chain.jinja": [
       {
@@ -219,9 +219,25 @@
         "version": "v1",
         "purpose": "Gravity leak dynamic import fix",
         "territory": "templates",
-        "active": true,
+        "active": false,
         "author": "SovereignOrchestrator",
         "registered_date": "2025-12-29"
+      },
+      {
+        "version": "v1",
+        "purpose": "Fixes import violations and gravity conventions",
+        "territory": "templates",
+        "active": true,
+        "author": "ImportAgent",
+        "registered_date": "2026-01-01"
+      },
+      {
+        "version": "v1",
+        "purpose": "Runtime sync for ImportAgent",
+        "territory": "templates",
+        "active": true,
+        "author": "ImportAgent",
+        "registered_date": "2026-01-01"
       }
     ],
     "code_healing.jinja": [
@@ -378,6 +394,14 @@
         "active": true,
         "author": "LocationAgent",
         "registered_date": "2025-12-31"
+      },
+      {
+        "version": "v1",
+        "purpose": "Runtime sync for LocationAgent",
+        "territory": "templates",
+        "active": true,
+        "author": "LocationAgent",
+        "registered_date": "2026-01-01"
       }
     ],
     "sovereign_convergence_orchestrator.jinja": [
@@ -523,9 +547,25 @@
         "version": "v1",
         "purpose": "",
         "territory": "meta_prompts",
-        "active": true,
+        "active": false,
         "author": "SovereignOrchestrator",
         "registered_date": "2025-12-29"
+      },
+      {
+        "version": "v1",
+        "purpose": "Red team evaluation and governance enforcement for adversarial testing",
+        "territory": "templates",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-01-01"
+      },
+      {
+        "version": "v1",
+        "purpose": "Runtime sync for RedTeamAgent",
+        "territory": "templates",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-01-01"
       }
     ],
     "jailbreak_classic.jinja": [
@@ -597,9 +637,17 @@
         "version": "v1",
         "purpose": "Adversarial safety probing",
         "territory": "templates",
-        "active": true,
+        "active": false,
         "author": "SovereignOrchestrator",
         "registered_date": "2025-12-29"
+      },
+      {
+        "version": "v1",
+        "purpose": "Classic jailbreak prompt testing and hardening for safety validation",
+        "territory": "templates",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-01-01"
       }
     ]
   }
