@@ -20,6 +20,7 @@ from enum import Enum
 
 from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 
 
 class SovereignSeverity(Enum):
@@ -30,8 +31,11 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class PascalSovereigntyEnforcerAgent(CanonBaseAgent):
-    """L5 Safety agent — enforces PascalCase as eternal sole SSOT."""
+class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin):
+    """L5 Safety agent — enforces PascalCase as eternal sole SSOT.
+    
+    Uses ASTEnforcementMixin for ultra-precise AST analysis.
+    """
 
     def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False):
         """Ultra init — ctx mandatory, strict_mode configurable.
