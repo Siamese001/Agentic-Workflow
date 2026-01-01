@@ -1,0 +1,114 @@
+ownership_matrix:
+  prompt_categories:
+    outreach_engine_prompts:
+      feedback_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - ux_designer
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - user_experience_lead
+      rewriting_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - technical_lead
+        - content_specialist
+        stakeholders:
+        - product_manager
+        - communication_specialist
+      scoring_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - data_scientist
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - analytics_lead
+      summarization_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - data_scientist
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - analytics_lead
+      system_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - technical_lead
+        - communication_specialist
+        stakeholders:
+        - product_manager
+        - compliance_officer
+    resume_engine_prompts:
+      feedback_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - ux_designer
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - user_experience_lead
+      rewriting_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - technical_lead
+        - content_specialist
+        stakeholders:
+        - product_manager
+        - subject_matter_expert
+      scoring_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - data_scientist
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - analytics_lead
+      summarization_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - data_scientist
+        - technical_lead
+        stakeholders:
+        - product_manager
+        - analytics_lead
+      system_prompts:
+        approvers:
+        - technical_lead
+        - quality_assurance_lead
+        primary_owner: prompt_engineer
+        secondary_owners:
+        - technical_lead
+        - subject_matter_expert
+        stakeholders:
+        - product_manager
+        - compliance_officer

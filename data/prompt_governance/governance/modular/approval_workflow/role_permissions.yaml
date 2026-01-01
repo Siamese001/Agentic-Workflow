@@ -1,0 +1,73 @@
+role_permissions:
+  business_stakeholder:
+    can_approve:
+    - business_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: false
+  compliance_officer:
+    can_approve:
+    - compliance_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: false
+  ethics_reviewer:
+    can_approve:
+    - compliance_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: false
+  governance_committee:
+    can_approve:
+    - final_approval
+    can_deploy: true
+    can_review: true
+    can_rollback: true
+    can_submit: false
+  product_manager:
+    can_approve:
+    - business_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: true
+  prompt_engineer:
+    can_approve:
+    - initial_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: true
+  quality_assurance:
+    can_approve:
+    - technical_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: false
+  release_manager:
+    can_approve:
+    - final_approval
+    can_deploy: true
+    can_review: true
+    can_rollback: true
+    can_submit: false
+  subject_matter_expert:
+    can_approve:
+    - initial_review
+    - technical_review
+    can_deploy: false
+    can_review: true
+    can_rollback: false
+    can_submit: false
+  technical_lead:
+    can_approve:
+    - technical_review
+    - final_approval
+    can_deploy: true
+    can_review: true
+    can_rollback: true
+    can_submit: true

@@ -1,0 +1,33 @@
+component_versioning:
+  evaluation_components:
+    eval_sets: 1.0.0
+    regression_tests: 1.0.0
+    rubric: 1.0.0
+    style_checks: 1.0.0
+  governance_components:
+    approval_workflow: 1.0.0
+    change_history: 1.0.0
+    ownership: 1.0.0
+    semantic_versioning: 1.0.0
+  prompt_engines:
+    outreach_engine:
+      components:
+        feedback: 1.0.0
+        rewriting: 1.0.0
+        scoring: 1.0.0
+        summarization: 1.0.0
+        system_prompts: 1.0.0
+      current_version: 1.0.0
+      versioning_strategy: semantic
+    resume_engine:
+      components:
+        feedback: 1.0.0
+        rewriting: 1.0.0
+        scoring: 1.0.0
+        summarization: 1.0.0
+        system_prompts: 1.0.0
+      current_version: 1.0.0
+      versioning_strategy: semantic
+  template_components:
+    outreach_templates: 1.0.0
+    resume_templates: 1.0.0

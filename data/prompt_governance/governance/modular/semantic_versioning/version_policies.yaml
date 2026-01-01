@@ -1,0 +1,28 @@
+version_policies:
+  deprecation_policy:
+    deprecation_timeline:
+    - 'Announcement: 6 months before deprecation'
+    - 'Warning period: 3 months before end-of-life'
+    - 'End-of-life: No further support or updates'
+    - 'Archive: Documentation and code preserved'
+    migration_support:
+    - Migration guides provided
+    - Support during transition period
+    - Tools for version migration
+    - Training for new versions
+  support_policy:
+    extended_support:
+      availability: Enterprise agreements only
+      description: Extended support for enterprise customers
+      duration: 36 months
+      support_level: Full maintenance support
+    lts_support:
+      description: Long-term support versions
+      duration: 24 months
+      selection_criteria: Major releases with high adoption
+      support_level: Security patches and critical bug fixes
+    standard_support:
+      coverage: All minor and patch releases
+      description: Standard support versions
+      duration: 12 months
+      support_level: All bug fixes and security patches

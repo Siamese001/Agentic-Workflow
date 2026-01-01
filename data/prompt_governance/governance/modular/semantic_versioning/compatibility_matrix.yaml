@@ -1,0 +1,29 @@
+compatibility_matrix:
+  backward_compatibility:
+    major_compatibility:
+      description: Breaking changes, migration required
+      examples:
+      - 1.x.x not compatible with 2.x.x
+      - 2.x.x not compatible with 3.x.x
+      migration_required: mandatory
+    minor_compatibility:
+      description: Generally backward compatible
+      examples:
+      - 1.0.x compatible with 1.1.x
+      - 1.1.x compatible with 1.2.x
+      migration_required: optional
+    patch_compatibility:
+      description: Fully backward compatible
+      examples:
+      - 1.0.0 compatible with 1.0.1
+      - 1.0.1 compatible with 1.0.2
+      migration_required: false
+  dependency_compatibility:
+    engine_dependencies:
+    - Template versions must match engine versions
+    - Evaluation components compatible within major version
+    - Governance components require exact version match
+    integration_dependencies:
+    - Cross-engine compatibility within same major version
+    - API compatibility maintained within minor version
+    - Data format compatibility within patch version

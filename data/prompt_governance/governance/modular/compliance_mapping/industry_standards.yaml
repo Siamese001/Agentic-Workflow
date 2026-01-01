@@ -1,0 +1,81 @@
+industry_standards:
+  iso27001:
+    applicability: Information security management systems
+    clause_mappings:
+      clause_a_12_operations_security:
+        compliance_evidence:
+        - Change management procedures
+        - Vulnerability scan reports
+        - Malware protection logs
+        governance_components:
+        - change_history.yaml - Change management
+        - semantic_versioning.yaml - Version control
+        - evaluations/regression_tests.yaml - Vulnerability management
+      clause_a_14_system_acquisition:
+        compliance_evidence:
+        - Security requirements documentation
+        - Development security procedures
+        - Acceptance testing reports
+        governance_components:
+        - approval_workflow.yaml - Security requirements
+        - evaluations/rubric.yaml - Security evaluation
+        - change_history.yaml - Development security
+      clause_a_9_access_control:
+        compliance_evidence:
+        - Access control policy
+        - User access reviews
+        - Privileged access management
+        governance_components:
+        - access_control.yaml - Complete access control framework
+        - ownership.yaml - Access control responsibilities
+        - approval_workflow.yaml - Access approval procedures
+    name: ISO/IEC 27001 Information Security Management
+  nist_csf:
+    applicability: Critical infrastructure cybersecurity
+    function_mappings:
+      detect:
+        compliance_evidence:
+        - Detection procedures
+        - Monitoring logs
+        - Analysis capabilities
+        governance_components:
+        - change_history.yaml - Anomalous activity detection
+        - evaluations/regression_tests.yaml - Security monitoring
+        - ownership.yaml - Detection processes
+      identify:
+        compliance_evidence:
+        - Asset inventory
+        - Risk assessment reports
+        - Supply chain risk management
+        governance_components:
+        - ownership.yaml - Asset management
+        - access_control.yaml - Risk assessment
+        - change_history.yaml - Risk management
+      protect:
+        compliance_evidence:
+        - Identity management policies
+        - Data security procedures
+        - Protective technology documentation
+        governance_components:
+        - access_control.yaml - Identity management and access control
+        - semantic_versioning.yaml - Data security
+        - approval_workflow.yaml - Protective technology
+      recover:
+        compliance_evidence:
+        - Recovery plan documentation
+        - Recovery testing results
+        - Improvement procedures
+        governance_components:
+        - semantic_versioning.yaml - Recovery planning
+        - change_history.yaml - Recovery procedures
+        - ownership.yaml - Recovery coordination
+      respond:
+        compliance_evidence:
+        - Response plan documentation
+        - Incident response logs
+        - Communication procedures
+        governance_components:
+        - approval_workflow.yaml - Response planning
+        - change_history.yaml - Incident response
+        - ownership.yaml - Response coordination
+    name: NIST Cybersecurity Framework

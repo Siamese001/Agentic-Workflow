@@ -1,0 +1,29 @@
+compliance_requirements:
+  industry_standards:
+    iso27001:
+      access_control: formal
+      compliance_monitoring: continuous
+      information_security: certified
+      risk_management: systematic
+    nist_csf:
+      detect: implemented
+      identify: implemented
+      protect: implemented
+      recover: implemented
+      respond: implemented
+  regulatory_standards:
+    gdpr:
+      consent_management: required
+      data_portability: supported
+      data_protection: strict
+      right_to_erasure: implemented
+    hipaa:
+      access_logging: complete
+      audit_trails: detailed
+      encryption_requirements: aes_256
+      phi_protection: enhanced
+    soc2:
+      access_controls: certified
+      audit_logging: comprehensive
+      encryption_standards: industry_standard
+      security_monitoring: 24/7

@@ -1,0 +1,23 @@
+compliance_monitoring:
+  continuous_monitoring:
+    automated_checks:
+    - Access control compliance validation
+    - Data protection measure verification
+    - Security control effectiveness monitoring
+    - Privacy requirement compliance checking
+    manual_reviews:
+    - Quarterly compliance assessments
+    - Annual regulatory compliance audits
+    - Bi-annual policy reviews
+    - Monthly control effectiveness reviews
+  reporting_framework:
+    compliance_dashboards:
+    - Real-time compliance status overview
+    - Regulatory requirement tracking
+    - Control effectiveness metrics
+    - Exception and violation tracking
+    compliance_reports:
+    - Monthly compliance status reports
+    - Quarterly regulatory compliance summaries
+    - Annual compliance certification reports
+    - Ad-hoc compliance investigation reports

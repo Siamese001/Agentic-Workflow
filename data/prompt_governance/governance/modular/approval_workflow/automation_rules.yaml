@@ -1,0 +1,33 @@
+automation_rules:
+  automatic_transitions:
+  - action: advance_to_next_stage
+    conditions: all_approvers_approved
+    trigger: stage_approved
+  - action: return_to_submitter
+    conditions: any_rejection
+    trigger: stage_rejected
+  - action: escalate_to_manager
+    conditions: timeout_hours_exceeded
+    trigger: timeout_exceeded
+  notifications:
+    stage_approved:
+      recipients:
+      - submitter
+      - next_stage_approvers
+      template: stage_approval_notification
+    stage_rejected:
+      recipients:
+      - submitter
+      - rejection_approvers
+      template: rejection_notification
+    submission_received:
+      recipients:
+      - submitter
+      - initial_review_approvers
+      template: submission_notification
+    workflow_completed:
+      recipients:
+      - submitter
+      - all_approvers
+      - release_team
+      template: workflow_completion_notification

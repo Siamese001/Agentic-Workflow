@@ -1,0 +1,60 @@
+ownership_structure:
+  functional_areas:
+    compliance_ownership:
+    - authority_level: compliance
+      description: Regulatory and ethical compliance
+      responsibilities:
+      - Regulatory compliance monitoring
+      - Ethical guidelines enforcement
+      - Audit preparation and response
+      - Risk assessment
+      role: compliance_officer
+    quality_ownership:
+    - authority_level: quality
+      description: Quality standards and testing
+      responsibilities:
+      - Quality assurance processes
+      - Testing strategy and execution
+      - Quality metrics definition
+      - Defect management
+      role: quality_assurance_lead
+    technical_ownership:
+    - authority_level: technical
+      description: Technical implementation and architecture
+      responsibilities:
+      - Technical architecture decisions
+      - Code quality standards
+      - Performance optimization
+      - Security implementation
+      role: technical_lead
+  organizational_levels:
+    executive_level:
+    - authority_level: strategic
+      decision_scope: organization_wide
+      description: Overall governance and strategic oversight
+      responsibilities:
+      - Set strategic direction for prompt governance
+      - Approve major policy changes
+      - Ensure regulatory compliance
+      - Manage high-risk decisions
+      role: governance_committee
+    management_level:
+    - authority_level: tactical
+      decision_scope: department_wide
+      description: Day-to-day governance management
+      responsibilities:
+      - Implement governance policies
+      - Manage approval workflows
+      - Coordinate cross-functional teams
+      - Monitor compliance metrics
+      role: prompt_governance_manager
+    operational_level:
+    - authority_level: operational
+      decision_scope: team_wide
+      description: Prompt development and maintenance
+      responsibilities:
+      - Develop and maintain prompts
+      - Ensure technical quality standards
+      - Implement testing procedures
+      - Document prompt changes
+      role: prompt_engineer

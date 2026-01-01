@@ -1,0 +1,34 @@
+increment_rules:
+  major_increment:
+    conditions:
+    - Breaking changes to prompt structure
+    - Removal of existing prompt categories
+    - Major governance policy changes
+    - Incompatible API changes
+    process:
+    - Requires governance committee approval
+    - Comprehensive impact assessment
+    - Migration planning required
+    - Extended testing period
+  minor_increment:
+    conditions:
+    - New prompt categories added
+    - New governance features
+    - Enhanced functionality additions
+    - New evaluation criteria
+    process:
+    - Requires technical lead approval
+    - Standard testing procedures
+    - Documentation updates
+    - Stakeholder notification
+  patch_increment:
+    conditions:
+    - Bug fixes and corrections
+    - Documentation improvements
+    - Performance optimizations
+    - Minor text improvements
+    process:
+    - Requires prompt engineer approval
+    - Focused testing on changes
+    - Change log updates
+    - Standard deployment

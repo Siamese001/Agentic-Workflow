@@ -1,0 +1,28 @@
+evidence_management:
+  evidence_retention:
+    retention_periods:
+      audit_evidence: 5 years
+      operational_evidence: 3 years
+      regulatory_evidence: 7 years
+      training_evidence: 2 years
+    storage_requirements:
+    - Immutable storage for audit evidence
+    - Encrypted storage for sensitive evidence
+    - Access-controlled evidence repositories
+    - Regular evidence integrity verification
+  evidence_types:
+    documentary_evidence:
+    - Policies and procedures
+    - Training materials and records
+    - Agendas and minutes of meetings
+    - Risk assessment reports
+    technical_evidence:
+    - System configuration documentation
+    - Access control logs
+    - Security monitoring logs
+    - Audit trail documentation
+    testimonial_evidence:
+    - Management attestations
+    - Staff interviews and statements
+    - Third-party assessments
+    - Customer testimonials

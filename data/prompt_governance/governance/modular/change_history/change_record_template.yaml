@@ -1,0 +1,28 @@
+change_record_template:
+  approval_information:
+    approval_timestamp: approval_completion_time
+    approvers: list_of_approvers
+    rejection_reasons: rejection_justifications
+    workflow_id: approval_workflow_identifier
+  change_details:
+    dependencies: related_changes
+    description: detailed_change_description
+    rationale: change_justification
+    scope: affected_components
+  impact_assessment:
+    compliance_impact: regulatory_compliance_impact
+    performance_impact: performance_metrics_impact
+    risk_assessment: risk_level_and_mitigation
+    user_impact: user_experience_impact
+  implementation:
+    implementation_date: deployment_timestamp
+    implementer: deployment_user_id
+    monitoring_plan: post_deployment_monitoring
+    rollback_plan: rollback_procedures
+  metadata:
+    category: change_category
+    change_id: unique_identifier
+    severity: change_severity
+    submitter: user_id
+    timestamp: ISO_8601_timestamp
+    version: semantic_version

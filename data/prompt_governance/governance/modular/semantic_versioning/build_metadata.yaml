@@ -1,0 +1,9 @@
+build_metadata:
+  build_rules:
+  - Build metadata ignored for version precedence
+  - Used for build identification and debugging
+  - Can contain dot-separated identifiers
+  examples:
+  - 1.0.0+20130313144700
+  - 1.0.0-beta+exp.sha.5114f85
+  format: MAJOR.MINOR.PATCH+BUILD

@@ -1,0 +1,31 @@
+historical_changes:
+  change_entry_template:
+    approval_information:
+      approval_timestamp: '2024-01-01T14:30:00Z'
+      approvers:
+      - prompt_engineer
+      - technical_lead
+      rejection_reasons: []
+      workflow_id: WF-2024-01-01-001
+    category: prompt_modification
+    change_details:
+      dependencies:
+      - CHANGE-2024-01-01-001
+      description: Modified executive summary prompt for better clarity
+      rationale: User feedback indicated ambiguity in career transition guidance
+      scope: resume_engine/system_prompts.yaml
+    change_id: CHANGE-YYYY-MM-DD-NNN
+    impact_assessment:
+      compliance_impact: No compliance impact
+      performance_impact: Minimal performance impact (< 2% increase)
+      risk_assessment: Low risk with comprehensive monitoring
+      user_impact: Improved clarity for career transition users
+    implementation:
+      implementation_date: '2024-01-01T16:00:00Z'
+      implementer: release_manager@example.com
+      monitoring_plan: Monitor user satisfaction scores for 30 days
+      rollback_plan: Revert to version 1.0.0 using version control
+    severity: medium
+    submitter: user@example.com
+    timestamp: '2024-01-01T12:00:00Z'
+    version: 1.0.1

@@ -1,0 +1,124 @@
+regulatory_frameworks:
+  gdpr:
+    applicability: All EU personal data processing
+    article_mappings:
+      article_25_data_protection_by_design:
+        compliance_evidence:
+        - Privacy by design documentation
+        - Security architecture reviews
+        - Data protection impact assessments
+        governance_components:
+        - semantic_versioning.yaml - Secure development lifecycle
+        - change_history.yaml - Change management procedures
+        - evaluations/style_checks.yaml - Quality assurance processes
+      article_32_security_of_processing:
+        compliance_evidence:
+        - Security policies and procedures
+        - Encryption documentation
+        - Incident response plans
+        governance_components:
+        - access_control.yaml - Security measures
+        - approval_workflow.yaml - Security approvals
+        - change_history.yaml - Security incident tracking
+      article_33_notification_of_data_breach:
+        compliance_evidence:
+        - Breach notification procedures
+        - Incident response logs
+        - Communication templates
+        governance_components:
+        - change_history.yaml - Incident tracking
+        - approval_workflow.yaml - Emergency procedures
+        - ownership.yaml - Incident response responsibilities
+      article_5_data_protection_principles:
+        compliance_evidence:
+        - Data protection impact assessments
+        - Lawful basis documentation
+        - Data minimization procedures
+        governance_components:
+        - ownership.yaml - Data classification and handling
+        - access_control.yaml - Data access controls
+        - approval_workflow.yaml - Data processing approvals
+    jurisdiction: European Union
+    name: General Data Protection Regulation
+  hipaa:
+    applicability: Protected health information processing
+    hipaa_rules:
+      administrative_safeguards:
+        compliance_evidence:
+        - Security officer documentation
+        - Workforce training records
+        - Security management policies
+        governance_components:
+        - ownership.yaml - Security officer responsibilities
+        - access_control.yaml - Workforce security
+        - approval_workflow.yaml - Security management procedures
+      physical_safeguards:
+        compliance_evidence:
+        - Facility access logs
+        - Physical security policies
+        - Device and media controls
+        governance_components:
+        - access_control.yaml - Facility access controls
+        - ownership.yaml - Physical security responsibilities
+        - change_history.yaml - Physical access logging
+      technical_safeguards:
+        compliance_evidence:
+        - Access control logs
+        - Encryption documentation
+        - Audit control procedures
+        governance_components:
+        - access_control.yaml - Access controls and audit controls
+        - semantic_versioning.yaml - Transmission security
+        - change_history.yaml - Integrity controls
+    jurisdiction: United States
+    name: Health Insurance Portability and Accountability Act
+  soc2:
+    applicability: Service organizations handling customer data
+    jurisdiction: United States
+    name: Service Organization Control 2
+    trust_services_criteria:
+      availability_common_criteria_1:
+        compliance_evidence:
+        - Availability monitoring
+        - Disaster recovery plans
+        - Performance metrics
+        governance_components:
+        - change_history.yaml - Change management
+        - semantic_versioning.yaml - Version control
+        - approval_workflow.yaml - Availability procedures
+      confidentiality_common_criteria_6:
+        compliance_evidence:
+        - Confidentiality agreements
+        - Data classification procedures
+        - Encryption documentation
+        governance_components:
+        - access_control.yaml - Data confidentiality
+        - ownership.yaml - Confidential data handling
+        - approval_workflow.yaml - Confidentiality approvals
+      privacy_common_criteria_6:
+        compliance_evidence:
+        - Privacy policies
+        - Consent management procedures
+        - Data subject request processes
+        governance_components:
+        - ownership.yaml - Privacy responsibilities
+        - access_control.yaml - Privacy access controls
+        - change_history.yaml - Privacy impact assessments
+      processing_integrity_common_criteria_8:
+        compliance_evidence:
+        - Processing accuracy logs
+        - Quality control procedures
+        - Error handling documentation
+        governance_components:
+        - evaluations/rubric.yaml - Quality criteria
+        - evaluations/regression_tests.yaml - Testing procedures
+        - change_history.yaml - Change validation
+      security_common_criteria_6:
+        compliance_evidence:
+        - Access control policies
+        - Security awareness training
+        - System monitoring logs
+        governance_components:
+        - access_control.yaml - Logical access controls
+        - ownership.yaml - Security responsibilities
+        - approval_workflow.yaml - Security change management

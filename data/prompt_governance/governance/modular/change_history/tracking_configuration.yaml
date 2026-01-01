@@ -1,0 +1,53 @@
+tracking_configuration:
+  change_categories:
+  - approval_required: true
+    description: Creation of new prompts
+    documentation_required: true
+    impact_level: medium
+    name: prompt_creation
+  - approval_required: true
+    description: Modifications to existing prompts
+    documentation_required: true
+    impact_level: variable
+    name: prompt_modification
+  - approval_required: true
+    description: Deprecation of prompts
+    documentation_required: true
+    impact_level: high
+    name: prompt_deprecation
+  - approval_required: true
+    description: Version upgrades of prompts
+    documentation_required: true
+    impact_level: medium
+    name: version_upgrade
+  - approval_required: true
+    description: Emergency fixes to prompts
+    documentation_required: true
+    impact_level: high
+    name: emergency_fix
+  - approval_required: true
+    description: Updates to governance policies
+    documentation_required: true
+    impact_level: high
+    name: governance_update
+  change_severity:
+    critical:
+      approval_workflow: emergency_approval
+      description: Changes affecting system stability or compliance
+      notification_level: immediate
+      rollback_required: true
+    high:
+      approval_workflow: full_approval
+      description: Significant changes with broad impact
+      notification_level: high_priority
+      rollback_required: true
+    low:
+      approval_workflow: simplified_approval
+      description: Minor changes with minimal impact
+      notification_level: low
+      rollback_required: false
+    medium:
+      approval_workflow: standard_approval
+      description: Moderate changes with limited impact
+      notification_level: standard
+      rollback_required: false

@@ -1,0 +1,20 @@
+audit_trail:
+  compliance_reporting:
+    monthly_reports:
+    - approval_cycle_times: Average time per approval stage
+    - rejection_rates: Rejection rates by stage and reason
+    - emergency_usage: Emergency procedure usage statistics
+    quarterly_reports:
+    - compliance_metrics: Overall compliance metrics
+    - process_efficiency: Workflow efficiency analysis
+    - risk_assessment: Risk assessment and mitigation
+  required_events:
+  - workflow_initiated: Who initiated workflow and when
+  - stage_approvals: All approval decisions with timestamps
+  - rejections: All rejections with reasons
+  - escalations: All escalations and their resolutions
+  - emergency_actions: All emergency approvals and rollbacks
+  retention_policy:
+    approval_documents: 5 years
+    audit_data_retention: 7 years
+    emergency_records: 10 years

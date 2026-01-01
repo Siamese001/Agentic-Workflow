@@ -1,0 +1,29 @@
+governance_policies:
+  change_authorization:
+    authorization_matrix:
+      emergency_fix:
+      - technical_lead_submit
+      - governance_committee_approve
+      prompt_creation:
+      - prompt_engineer_submit
+      - technical_lead_approve
+      prompt_deprecation:
+      - technical_lead_submit
+      - governance_committee_approve
+      prompt_modification:
+      - prompt_engineer_submit
+      - technical_lead_approve
+    authorized_roles:
+    - prompt_engineer: Can submit changes for review
+    - technical_lead: Can approve technical changes
+    - compliance_officer: Can approve compliance-related changes
+    - governance_committee: Can approve high-impact changes
+  change_constraints:
+    resource_constraints:
+    - maximum_concurrent_changes: Maximum 5 changes per team
+    - testing_requirements: All changes require comprehensive testing
+    - documentation_requirements: All changes require complete documentation
+    time_constraints:
+    - standard_changes: Maximum 14 days from submission to implementation
+    - high_severity_changes: Maximum 7 days from submission to implementation
+    - emergency_changes: Maximum 24 hours from submission to implementation

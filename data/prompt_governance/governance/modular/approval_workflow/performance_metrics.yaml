@@ -1,0 +1,16 @@
+performance_metrics:
+  compliance_metrics:
+  - policy_adherence: Adherence to approval policies
+  - audit_compliance: Compliance with audit requirements
+  - regulatory_alignment: Alignment with regulatory requirements
+  - ethical_standards: Adherence to ethical guidelines
+  efficiency_metrics:
+  - average_cycle_time: Average time from submission to final approval
+  - stage_efficiency: Efficiency metrics for each approval stage
+  - bottlenecks: Identification of workflow bottlenecks
+  - escalation_rates: Frequency and reasons for escalations
+  quality_metrics:
+  - rejection_rates: Rejection rates by category and stage
+  - approval_accuracy: Accuracy of approval decisions
+  - post_deployment_issues: Issues detected post-deployment
+  - rollback_frequency: Frequency of emergency rollbacks

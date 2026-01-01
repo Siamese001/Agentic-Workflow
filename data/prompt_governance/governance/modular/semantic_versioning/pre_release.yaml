@@ -1,0 +1,10 @@
+pre_release:
+  format: MAJOR.MINOR.PATCH-PRERELEASE
+  identifiers:
+  - alpha: Internal testing, not feature-complete
+  - beta: External testing, feature-complete
+  - rc: Release candidate, final testing phase
+  pre_release_rules:
+  - Pre-release versions have lower precedence than final versions
+  - Multiple pre-release identifiers separated by dots
+  - Numeric identifiers have higher precedence than alphanumeric

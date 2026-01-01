@@ -1,0 +1,43 @@
+data_access:
+  data_classification:
+    confidential:
+      access_level: authorized_personnel
+      description: Sensitive business information
+      restrictions: need_to_know + encryption
+    internal:
+      access_level: employees_only
+      description: Internal processes and documentation
+      restrictions: company_network
+    public:
+      access_level: all_users
+      description: Public documentation and approved content
+      restrictions: none
+    restricted:
+      access_level: executive_approval
+      description: Highly sensitive or regulated data
+      restrictions: strict_access_control + audit
+  sensitive_data:
+    business_confidential:
+      access_roles:
+      - governance_committee
+      - prompt_governance_manager
+      - product_manager
+      audit_access: true
+      encryption_required: true
+      retention_policy: 5 years
+    personal_information:
+      access_roles:
+      - compliance_officer
+      - data_protection_officer
+      - governance_committee
+      audit_access: true
+      encryption_required: true
+      retention_policy: 7 years
+    technical_specifications:
+      access_roles:
+      - technical_lead
+      - prompt_engineer
+      - quality_assurance_lead
+      audit_access: true
+      encryption_required: false
+      retention_policy: 3 years

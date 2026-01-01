@@ -1,0 +1,31 @@
+version_scheme:
+  description: Semantic versioning for prompt governance components
+  format: MAJOR.MINOR.PATCH
+  version_components:
+    major:
+      approval_required: governance_committee
+      description: Incompatible API changes or major architectural changes
+      impact_level: high
+      increment_triggers:
+      - Breaking changes to prompt structure
+      - Major architectural redesign
+      - Removal of deprecated features
+      - Significant governance policy changes
+    minor:
+      approval_required: technical_lead
+      description: New features in backward-compatible manner
+      impact_level: medium
+      increment_triggers:
+      - New prompt categories or types
+      - New governance features
+      - Enhanced functionality additions
+      - New evaluation criteria
+    patch:
+      approval_required: prompt_engineer
+      description: Backward-compatible bug fixes and improvements
+      impact_level: low
+      increment_triggers:
+      - Bug fixes and error corrections
+      - Documentation improvements
+      - Performance optimizations
+      - Minor text improvements

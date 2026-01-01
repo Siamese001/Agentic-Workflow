@@ -1,0 +1,34 @@
+resource_management:
+  support:
+    administrative_support:
+    - Ownership record management
+    - Meeting coordination and documentation
+    - Communication distribution
+    - Process automation support
+    technical_support:
+    - System and tool support
+    - Technical consultation
+    - Performance optimization
+    - Security and compliance assistance
+  tools:
+    documentation:
+    - Document management systems
+    - Knowledge base platforms
+    - Version control systems
+    - Template and guideline repositories
+    ownership_tracking:
+    - Ownership matrix management system
+    - Responsibility assignment software
+    - Performance monitoring dashboards
+    - Communication and collaboration platforms
+  training:
+    onboarding:
+    - Ownership framework training
+    - Role-specific responsibility training
+    - Tool and system training
+    - Process and procedure training
+    ongoing_development:
+    - Advanced ownership practices
+    - Leadership and management skills
+    - Technical skill enhancement
+    - Compliance and regulatory training

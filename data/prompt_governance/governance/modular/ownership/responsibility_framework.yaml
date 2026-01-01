@@ -1,0 +1,50 @@
+responsibility_framework:
+  approver_responsibilities:
+    review_process:
+    - Conduct thorough reviews of changes
+    - Ensure compliance with governance policies
+    - Validate technical and quality standards
+    - Provide timely approval decisions
+    risk_assessment:
+    - Assess risks associated with changes
+    - Ensure appropriate mitigation strategies
+    - Validate rollback procedures
+    - Monitor post-implementation impact
+  primary_owner_responsibilities:
+    development:
+    - Lead prompt development and implementation
+    - Ensure technical quality and standards
+    - Coordinate with secondary owners
+    - Manage development timeline
+    documentation:
+    - Maintain comprehensive documentation
+    - Update change logs
+    - Create user guides
+    - Document technical decisions
+    maintenance:
+    - Perform regular maintenance and updates
+    - Monitor prompt performance
+    - Address bugs and issues
+    - Implement improvements
+  secondary_owner_responsibilities:
+    expertise_provision:
+    - Provide domain-specific expertise
+    - Review technical implementations
+    - Validate industry standards
+    - Contribute specialized knowledge
+    quality_assurance:
+    - Review and validate prompt quality
+    - Ensure compliance with standards
+    - Provide feedback on improvements
+    - Participate in testing processes
+  stakeholder_responsibilities:
+    input_provision:
+    - Provide requirements and feedback
+    - Participate in design reviews
+    - Validate business value
+    - Ensure user needs are met
+    support:
+    - Support implementation efforts
+    - Provide resources and expertise
+    - Facilitate cross-functional coordination
+    - Champion prompt initiatives

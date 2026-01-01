@@ -1,0 +1,16 @@
+automation_tools:
+  compliance_monitoring:
+  - Automated policy compliance checking
+  - Real-time control effectiveness monitoring
+  - Automated evidence collection
+  - Compliance violation detection
+  evidence_management:
+  - Automated evidence collection and tagging
+  - Evidence retention and disposition
+  - Evidence integrity verification
+  - Audit trail maintenance
+  reporting_automation:
+  - Automated compliance report generation
+  - Dashboard updates and alerts
+  - Exception reporting and escalation
+  - Trend analysis and insights

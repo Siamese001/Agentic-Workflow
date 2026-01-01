@@ -1,0 +1,87 @@
+rbac_framework:
+  roles:
+    auditor:
+      access_level: read_only
+      description: Audit and inspection access
+      permissions:
+      - read_all_audit_logs
+      - access_compliance_reports
+      - view_governance_records
+      - generate_audit_reports
+    compliance_officer:
+      access_level: compliance
+      description: Regulatory and ethical compliance
+      permissions:
+      - approve_compliance_changes
+      - audit_compliance
+      - access_compliance_reports
+      - define_compliance_standards
+      - emergency_compliance_actions
+    governance_committee:
+      access_level: executive
+      description: Strategic oversight and major decision authority
+      permissions:
+      - approve_major_changes
+      - set_governance_policies
+      - override_approvals
+      - emergency_authorization
+      - audit_access
+    product_manager:
+      access_level: business
+      description: Product strategy and stakeholder management
+      permissions:
+      - define_requirements
+      - approve_business_changes
+      - access_business_metrics
+      - manage_stakeholder_communication
+    prompt_engineer:
+      access_level: operational
+      description: Prompt development and maintenance
+      permissions:
+      - create_prompts
+      - modify_prompts
+      - submit_for_review
+      - access_development_tools
+      - view_documentation
+    prompt_governance_manager:
+      access_level: management
+      description: Day-to-day governance management
+      permissions:
+      - manage_approval_workflows
+      - coordinate_reviews
+      - monitor_compliance
+      - escalate_issues
+      - team_management
+    quality_assurance_lead:
+      access_level: quality
+      description: Quality standards and testing oversight
+      permissions:
+      - approve_quality_standards
+      - manage_test_suites
+      - access_quality_metrics
+      - define_quality_criteria
+      - audit_quality_processes
+    subject_matter_expert:
+      access_level: consultation
+      description: Domain expertise and validation
+      permissions:
+      - review_domain_specific_content
+      - provide_expert_feedback
+      - access_domain_tools
+      - validate_industry_standards
+    technical_lead:
+      access_level: technical
+      description: Technical implementation and architecture oversight
+      permissions:
+      - approve_technical_changes
+      - deploy_prompts
+      - rollback_deployments
+      - access_technical_metrics
+      - security_configuration
+    viewer:
+      access_level: read_only
+      description: Read-only access for stakeholders
+      permissions:
+      - view_approved_content
+      - access_public_documentation
+      - read_status_reports

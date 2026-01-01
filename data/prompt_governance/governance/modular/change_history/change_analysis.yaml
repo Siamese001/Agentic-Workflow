@@ -1,0 +1,25 @@
+change_analysis:
+  impact_analysis:
+    business_impact:
+    - cost_impact: Financial impact of changes
+    - productivity_impact: Impact on team productivity
+    - risk_impact: Changes in risk exposure
+    compliance_impact:
+    - regulatory_compliance: Impact on regulatory compliance
+    - audit_findings: Audit-related changes and findings
+    - policy_adherence: Adherence to internal policies
+    performance_impact:
+    - response_time_changes: Impact on prompt response times
+    - quality_score_changes: Impact on output quality metrics
+    - user_satisfaction_impact: Impact on user satisfaction scores
+  trend_analysis:
+    metrics:
+    - change_frequency: Number of changes per time period
+    - change_distribution: Distribution by category and severity
+    - approval_cycle_time: Time from submission to approval
+    - implementation_success_rate: Success rate of implemented changes
+    reporting_periods:
+      daily: Daily change activity summary
+      monthly: Monthly comprehensive change report
+      quarterly: Quarterly strategic change analysis
+      weekly: Weekly trend analysis and insights

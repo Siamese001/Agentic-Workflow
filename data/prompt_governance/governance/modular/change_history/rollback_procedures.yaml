@@ -1,0 +1,22 @@
+rollback_procedures:
+  rollback_process:
+    immediate_rollback:
+    - trigger: Critical production issues
+    - authority: Technical lead or release manager
+    - process: Immediate rollback to previous stable version
+    - notification: Immediate notification to all stakeholders
+    scheduled_rollback:
+    - trigger: Non-critical issues identified
+    - authority: Governance committee approval
+    - process: Scheduled rollback during maintenance window
+    - notification: Advance notification to affected users
+  rollback_triggers:
+  - performance_degradation: Performance metrics below threshold
+  - user_complaints: Significant user complaints or issues
+  - compliance_violations: Regulatory compliance violations
+  - security_vulnerabilities: Security issues identified
+  rollback_validation:
+  - pre_rollback_testing: Test rollback procedures in staging
+  - post_rollback_verification: Verify system stability after rollback
+  - impact_assessment: Assess rollback impact on users and systems
+  - documentation_update: Update documentation with rollback details

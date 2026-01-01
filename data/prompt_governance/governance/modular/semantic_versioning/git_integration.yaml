@@ -1,0 +1,29 @@
+git_integration:
+  branching_strategy:
+    development_branch: develop
+    feature_branches: feature/DESCRIPTION
+    hotfix_branches: hotfix/VERSION
+    main_branch: main
+    release_branches: release/VERSION
+  commit_conventions:
+    conventional_commits:
+      format: 'type(scope): description'
+      types:
+      - 'feat: New features (minor increment)'
+      - 'fix: Bug fixes (patch increment)'
+      - 'BREAKING CHANGE: Breaking changes (major increment)'
+      - 'docs: Documentation changes (patch increment)'
+      - 'style: Code style changes (patch increment)'
+      - 'refactor: Code refactoring (patch increment)'
+      - 'test: Test additions (patch increment)'
+      - 'chore: Maintenance tasks (patch increment)'
+  version_tags:
+    examples:
+    - v1.0.0
+    - v1.1.0
+    - v1.0.1
+    format: vMAJOR.MINOR.PATCH
+    tagging_rules:
+    - Tag only final releases, not pre-releases
+    - Annotated tags with release notes
+    - Sign tags for security

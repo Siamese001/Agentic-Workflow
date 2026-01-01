@@ -1,0 +1,34 @@
+communication_framework:
+  escalation_communications:
+    urgent_issues:
+    - Immediate notification of critical issues
+    - Emergency change notifications
+    - Security incident reporting
+    - Compliance violation alerts
+  regular_communications:
+    monthly_reports:
+    - Comprehensive ownership performance reports
+    - Stakeholder feedback summaries
+    - Compliance and audit status
+    - Strategic initiative progress
+    quarterly_reviews:
+    - Ownership effectiveness assessments
+    - Organizational impact analysis
+    - Resource allocation reviews
+    - Strategic planning updates
+    weekly_updates:
+    - Status updates on prompt development
+    - Issue and risk reporting
+    - Performance metric updates
+    - Upcoming change notifications
+  stakeholder_communications:
+    business_stakeholders:
+    - Business impact reports
+    - Strategic initiative updates
+    - Risk and compliance status
+    - Resource requirement notifications
+    technical_stakeholders:
+    - Technical architecture updates
+    - Performance and quality metrics
+    - Security and compliance status
+    - Development roadmap updates

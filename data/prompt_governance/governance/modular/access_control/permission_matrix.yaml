@@ -1,0 +1,72 @@
+permission_matrix:
+  resource_access:
+    approval_workflows:
+      approve:
+      - technical_lead
+      - quality_assurance_lead
+      - compliance_officer
+      - governance_committee
+      initiate:
+      - prompt_engineer
+      - technical_lead
+      - prompt_governance_manager
+      reject:
+      - technical_lead
+      - quality_assurance_lead
+      - compliance_officer
+      - governance_committee
+      review:
+      - technical_lead
+      - quality_assurance_lead
+      - compliance_officer
+      - subject_matter_expert
+    compliance_management:
+      audit:
+      - compliance_officer
+      - auditor
+      - governance_committee
+      enforce:
+      - compliance_officer
+      - governance_committee
+      report:
+      - compliance_officer
+      - prompt_governance_manager
+      - governance_committee
+    deployment_operations:
+      deploy:
+      - technical_lead
+      - release_manager
+      monitor:
+      - technical_lead
+      - quality_assurance_lead
+      - prompt_governance_manager
+      rollback:
+      - technical_lead
+      - release_manager
+      - governance_committee
+    prompt_development:
+      create:
+      - prompt_engineer
+      - technical_lead
+      delete:
+      - technical_lead
+      - governance_committee
+      read:
+      - prompt_engineer
+      - technical_lead
+      - quality_assurance_lead
+      - subject_matter_expert
+      update:
+      - prompt_engineer
+      - technical_lead
+    system_configuration:
+      configure:
+      - technical_lead
+      - system_administrator
+      maintain:
+      - technical_lead
+      - system_administrator
+      monitor:
+      - technical_lead
+      - quality_assurance_lead
+      - prompt_governance_manager

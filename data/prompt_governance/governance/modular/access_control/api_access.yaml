@@ -1,0 +1,39 @@
+api_access:
+  authentication:
+    api_keys:
+      description: API key-based authentication for system access
+      ip_whitelisting: true
+      rotation_period: 90 days
+      scope_limitation: true
+    oauth_tokens:
+      description: OAuth 2.0 tokens for user authentication
+      expiration: 1 hour
+      refresh_tokens: true
+      scope_based_access: true
+  endpoint_security:
+    admin_endpoints:
+      authentication: admin_required
+      endpoints:
+      - POST /api/v1/admin/*
+      - DELETE /api/v1/admin/*
+      rate_limit: per_admin
+    authenticated_endpoints:
+      authentication: required
+      endpoints:
+      - GET /api/v1/user/*
+      - POST /api/v1/submissions
+      rate_limit: per_user
+    public_endpoints:
+      authentication: none
+      endpoints:
+      - GET /api/v1/public/*
+      rate_limit: per_ip
+  rate_limiting:
+    per_api_key:
+      requests_per_day: 50000
+      requests_per_hour: 5000
+      requests_per_minute: 500
+    per_user:
+      requests_per_day: 10000
+      requests_per_hour: 1000
+      requests_per_minute: 100

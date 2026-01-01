@@ -1,0 +1,33 @@
+access_monitoring:
+  audit_events:
+    authentication_events:
+    - login_success
+    - login_failure
+    - password_change
+    - mfa_challenge
+    - session_expiration
+    authorization_events:
+    - permission_granted
+    - permission_denied
+    - role_assignment
+    - privilege_escalation
+    - access_revocation
+    data_access_events:
+    - data_read
+    - data_write
+    - data_delete
+    - data_export
+    - sensitive_data_access
+  monitoring_rules:
+    security_alerts:
+    - brute_force_attempts
+    - unauthorized_api_access
+    - data_exfiltration_attempts
+    - privilege_abuse
+    - policy_violations
+    suspicious_activity:
+    - multiple_failed_logins
+    - unusual_access_patterns
+    - privilege_escalation_attempts
+    - data_access_anomalies
+    - off_hours_access

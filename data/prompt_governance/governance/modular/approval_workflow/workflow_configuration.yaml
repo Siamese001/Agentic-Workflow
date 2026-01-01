@@ -1,0 +1,48 @@
+workflow_configuration:
+  approval_stages:
+  - approver_roles:
+    - prompt_engineer
+    - subject_matter_expert
+    auto_approve: false
+    description: Initial review of prompt proposal
+    name: initial_review
+    required_approvers: 1
+    timeout_hours: 48
+  - approver_roles:
+    - technical_lead
+    - quality_assurance
+    auto_approve: false
+    description: Technical implementation and quality review
+    name: technical_review
+    required_approvers: 2
+    timeout_hours: 72
+  - approver_roles:
+    - compliance_officer
+    - ethics_reviewer
+    auto_approve: false
+    description: Compliance and ethical review
+    name: compliance_review
+    required_approvers: 1
+    timeout_hours: 96
+  - approver_roles:
+    - product_manager
+    - business_stakeholder
+    auto_approve: false
+    description: Business impact and strategy review
+    name: business_review
+    required_approvers: 1
+    timeout_hours: 48
+  - approver_roles:
+    - governance_committee
+    - release_manager
+    auto_approve: false
+    description: Final approval for deployment
+    name: final_approval
+    required_approvers: 1
+    timeout_hours: 24
+  workflow_rules:
+    emergency_expedite: critical_fixes can skip business_review
+    parallel_processing: true
+    rollback_authority: technical_lead + release_manager
+    sequential_dependencies:
+    - technical_review -> compliance_review -> final_approval

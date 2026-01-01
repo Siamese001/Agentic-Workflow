@@ -1,0 +1,56 @@
+approval_criteria:
+  business_review:
+    rejection_reasons:
+    - Insufficient business value
+    - Stakeholder misalignment
+    - Inadequate resource planning
+    - Unacceptable risks
+    requirements:
+    - business_value: Clear business value proposition
+    - stakeholder_alignment: Stakeholder requirements aligned
+    - resource_planning: Resource requirements planned
+    - risk_assessment: Risks identified and mitigated
+  compliance_review:
+    rejection_reasons:
+    - Regulatory compliance violations
+    - Ethical concerns
+    - Privacy issues
+    - Accessibility barriers
+    requirements:
+    - regulatory_compliant: Meets all regulatory requirements
+    - ethical_standards: Ethical guidelines compliance
+    - data_privacy: Privacy requirements satisfied
+    - accessibility_met: Accessibility standards met
+  final_approval:
+    rejection_reasons:
+    - Previous stage not approved
+    - Not deployment ready
+    - Insufficient monitoring plan
+    - Inadequate rollback procedures
+    requirements:
+    - all_previous_approved: All previous stages approved
+    - deployment_ready: Ready for production deployment
+    - monitoring_planned: Post-deployment monitoring planned
+    - rollback_ready: Rollback procedures prepared
+  initial_review:
+    rejection_reasons:
+    - Unclear or ambiguous objectives
+    - Scope creep or inappropriate scope
+    - Insufficient documentation
+    - Missing or inadequate test cases
+    requirements:
+    - prompt_objective_clear: Clear and specific prompt objective
+    - scope_appropriate: Scope appropriate for intended use
+    - documentation_complete: Comprehensive documentation provided
+    - test_cases_defined: Adequate test cases defined
+  technical_review:
+    rejection_reasons:
+    - Technical implementation flaws
+    - Performance below standards
+    - Security vulnerabilities
+    - Integration issues
+    requirements:
+    - implementation_correct: Technically sound implementation
+    - performance_acceptable: Meets performance benchmarks
+    - security_compliant: Security requirements met
+    - integration_ready: Integration points validated
