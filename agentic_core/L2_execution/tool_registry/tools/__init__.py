@@ -25,7 +25,7 @@ from agentic_core.L2_execution.tool_registry.tools.code_transform import (
     quick_extract,
 )
 
-from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
+from agentic_core.L2_execution.tool_registry.tools.dependency_graph import (
     DependencyGraphArgs,
     GraphOperation,
     DependencyGraph,
