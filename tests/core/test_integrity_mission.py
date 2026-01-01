@@ -25,6 +25,7 @@ def test_integrity_mission_placeholder() -> Any:
 
 async def run_integrity_mission() -> None:
     """
+from typing import Any
     Executes an integrity mission using the Agentic Core Nervous System.
 
     This mission performs a Phase 1 integrity check, configures the orchestrator,

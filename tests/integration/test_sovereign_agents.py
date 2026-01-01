@@ -15,6 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 @pytest.fixture
 def mock_canon(tmp_path: Any) -> Any:
     """Brief description of functionality and purpose."""
+from typing import Any
     root: Any = tmp_path / 'root'
     (root / 'agentic_core/L3_orchestration/scripts').mkdir(parents=True)
     return root

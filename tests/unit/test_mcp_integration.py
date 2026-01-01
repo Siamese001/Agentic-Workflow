@@ -257,6 +257,7 @@ class mcp_integration_tests:
 
 async def main() -> Any:
     """Main test runner."""
+from typing import Any
     tests: Any = MCPIntegrationTests()
     success: Any = await tests.run_all_tests()
     sys.exit(0 if success else 1)

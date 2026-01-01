@@ -39,6 +39,7 @@ def test_egress_filter_blocks_unauthorized_exfil() -> Any:
 @pytest.mark.skip(reason='Test not implemented')
 def test_egress_filter_allows_linkedin() -> Any:
     """Verify that a non-API host from the list passes."""
+from typing import Any
     try:
         safe_fetch('https://www.linkedin.com/jobs')
     except requests.exceptions.RequestException:

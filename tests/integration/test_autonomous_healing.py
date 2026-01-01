@@ -243,6 +243,7 @@ class test_healing_mcp_integration:
     @pytest.mark.asyncio
     async def test_healing_uses_gitkraken_mcp(self) -> Any:
         """Test healing uses GitKraken MCP for version control."""
+from typing import Any
         engine: Any = SovereignHealingEngine()
         assert engine.git_client is not None
         assert hasattr(engine.git_client, 'add_and_commit')

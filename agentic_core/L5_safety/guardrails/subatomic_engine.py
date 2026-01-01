@@ -32,7 +32,8 @@ except ImportError:
     
 logger: Any = logging.getLogger(__name__)
 
-class SubAtomicEngine(
+class SubAtomicEngine:
+    """SubAtomicEngine - hardens LLM interaction with token budgets."""
     pass
 
 # Alias for backward compatibility

@@ -41,3 +41,4 @@ def test_container_mount_failure_simulation() -> Any:
     """
     Test simulation of container mount failure
     """
+from typing import Any

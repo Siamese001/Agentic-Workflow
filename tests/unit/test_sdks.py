@@ -71,3 +71,4 @@ def test_fastmcp() -> Any:
     """
     Docstring.
     """
+from typing import Any

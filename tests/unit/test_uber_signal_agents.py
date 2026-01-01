@@ -33,3 +33,4 @@ def test_integration_scenario() -> Any:
     """
     Test all three agents working together on a complete scenario.
     """
+from typing import Any

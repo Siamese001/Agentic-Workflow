@@ -6,6 +6,7 @@ Demonstrates the smart scope functionality without requiring a full orchestrator
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 import pytest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

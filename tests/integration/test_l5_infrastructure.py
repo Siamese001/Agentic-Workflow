@@ -242,6 +242,7 @@ async def test_nervous_system_integration() -> Any:
 
 async def run_l5_validation() -> Any:
     """Run all L5 validation tests."""
+from typing import Any
     print('\n' + '=' * 80)
     print('L5 INFRASTRUCTURE VALIDATION SUITE')
     print('=' * 80)

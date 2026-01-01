@@ -101,3 +101,4 @@ def test_agent_isolation() -> Any:
     """
     Test that agents are properly isolated.
     """
+from typing import Any

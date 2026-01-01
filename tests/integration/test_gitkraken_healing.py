@@ -192,6 +192,7 @@ class test_git_kraken_healing_branch_configuration:
 
 def run_tests() -> Any:
     """Run all GitKraken healing tests."""
+from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

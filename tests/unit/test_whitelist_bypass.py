@@ -11,3 +11,4 @@ def test_whitelist_bypass() -> Any:
     """
     Test if the whitelist bypass works
     """
+from typing import Any

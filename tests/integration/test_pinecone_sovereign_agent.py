@@ -64,6 +64,7 @@ def test_live_vector_lifecycle(real_agent: Any) -> Any:
 
 def test_batch_operations_live(real_agent: Any) -> Any:
     """Test batch upsert operations with live Pinecone."""
+from typing import Any
     test_files: Any = [(Path('batch1.py'), 'batch_territory'), (Path('batch2.py'), 'batch_territory'), (Path('batch3.py'), 'batch_territory')]
     for file_path, territory in test_files:
         real_agent.upsert_file_vector(file_path, territory)

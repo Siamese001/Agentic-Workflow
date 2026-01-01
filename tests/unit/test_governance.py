@@ -37,6 +37,7 @@ def test_governor_enforces_min_depth(mock_context: Any) -> Any:
 
 def test_governor_enforces_max_lines(mock_context: Any) -> Any:
     """Law: Max Lines = 200 (Subatomic)."""
+from typing import Any
     huge_content: Any = '\n'.join(['print(i)' for i in range(201)])
     with patch.object(mock_context, 'request_mutation') as mock_gemini:
         mock_gemini.return_value = 'SPLIT_PROPOSAL'

@@ -8,7 +8,7 @@ in "dark" (internal monologue) reasoning chains before execution.
 import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 @dataclass
 class thought_step:

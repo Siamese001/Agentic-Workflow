@@ -125,3 +125,4 @@ def test_sanitize_whitespace() -> Any:
     """
     Nominal: Excessive whitespace is normalized.
     """
+from typing import Any

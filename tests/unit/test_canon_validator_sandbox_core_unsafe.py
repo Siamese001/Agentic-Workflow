@@ -2,6 +2,7 @@
 Sandbox file with intentional Key 0 violation.
 Key 0: No hardcoded secrets or API keys.
 """
+from typing import Any
 api_key: Any = 'sk-test-val-123'
 aws_secret: Any = 'AKIAIOSFODNN7EXAMPLE'
 database_password: Any = 'SuperSecret123!'

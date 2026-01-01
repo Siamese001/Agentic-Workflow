@@ -116,6 +116,7 @@ class test_cvu004:
 
         def mock_add_observations(observations: Any) -> Any:
             """Simulate MEMemory logging function"""
+from typing import Any
             captured_payloads.append(observations)
             return {'status': 'success'}
         mock_payload: Any = [{'entityName': 'special_chars_violation', 'contents': [json.dumps(special_chars_violation, ensure_ascii=False)], 'corpusNames': ['canon_validator'], 'tags': ['violation', 'special_chars', 'l5']}]

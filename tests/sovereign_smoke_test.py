@@ -14,6 +14,7 @@ def test_registry_uniqueness() -> Any:
 @pytest.mark.sovereign
 def test_pydantic_purity() -> Any:
     """Ensure key models are Pydantic BaseModels, not dataclasses."""
+from typing import Any
     assert hasattr(RetryPolicy, 'model_dump'), 'RetryPolicy must be a Pydantic model'
 
 @pytest.mark.sovereign

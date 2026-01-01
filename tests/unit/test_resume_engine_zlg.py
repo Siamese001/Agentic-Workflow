@@ -210,6 +210,7 @@ class test_shadow_mode_engine(unittest.TestCase):
 
     def test_shadow_mode_fix_skill_claims(self) -> Any:
         """Test fixing exaggerated skill claims."""
+from typing import Any
         engine: Any = ShadowModeEngine()
         draft: Any = 'I am a world-class expert in Python.'
         improved: Any = engine._fix_skill_claims(draft)

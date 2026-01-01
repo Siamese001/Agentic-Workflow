@@ -35,3 +35,4 @@ def test_logging_queue_overflow_handling() -> Any:
     """
     Test handling of logging queue overflow
     """
+from typing import Any

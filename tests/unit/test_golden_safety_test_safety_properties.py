@@ -41,3 +41,4 @@ def test_severity_determinism() -> Any:
     """
     Docstring.
     """
+from typing import Any

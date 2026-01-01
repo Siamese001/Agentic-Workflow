@@ -95,3 +95,4 @@ def test_scheduled_maintenance_window() -> Any:
     """
     E2E: Maintenance window is scheduled.
     """
+from typing import Any

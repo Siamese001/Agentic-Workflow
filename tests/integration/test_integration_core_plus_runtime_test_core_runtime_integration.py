@@ -91,3 +91,4 @@ def test_rate_limiting_integration() -> Any:
     """
     Integration: Rate limiting integrates with runtime.
     """
+from typing import Any

@@ -22,6 +22,7 @@ def test_detect_injection_safe_path() -> None:
 
 def test_detect_injection_medium_severity() -> None:
     """TODO: Add docstring."""
+from typing import Any
     FINDING: Any = detect_injection('Please bypass the normal workflow')
     assert finding.is_injection
     'TODO: Add docstring.'

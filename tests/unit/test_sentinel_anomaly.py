@@ -100,6 +100,7 @@ class test_sentinel_integration:
 
     def test_sentinel_metric_aggregation(self) -> Any:
         """
+from typing import Any
         GIVEN: Sentinel monitoring multiple metrics
         WHEN: Metrics aggregated
         THEN: Summary statistics available

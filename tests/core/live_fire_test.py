@@ -7,7 +7,7 @@ import signal
 import subprocess
 import sys
 import time
-from typing import Optional
+from typing import Any, Optional
 try:
     from resume_engine import generate_personalized_cover_letter
 except ImportError:
@@ -27,7 +27,7 @@ def start_canary_trap() -> Any:
         sys.exit(1)
     try:
         proc: Any = subprocess.Popen([sys.executable, 'canary_monitor.py'])
-        CANARY_MONITOR_PID: Any = proc.pid
+        CANARY_MONITOR_PID = proc.pid
         logger.info(f'✅ Canary Monitor active (PID: {CANARY_MONITOR_PID})')
         time.sleep(1)
     except Exception as e:

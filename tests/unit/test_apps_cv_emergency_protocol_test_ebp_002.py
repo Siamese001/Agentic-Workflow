@@ -41,3 +41,4 @@ def test_rollback_completion_logging() -> Any:
     """
     Test that rollback completion is properly logged
     """
+from typing import Any

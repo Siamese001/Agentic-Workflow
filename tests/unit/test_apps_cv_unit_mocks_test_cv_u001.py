@@ -74,6 +74,7 @@ class test_cvu001:
 
         def mock_commit_mock_change(**kwargs) -> Any:
             """Simulate commit function with empty message handling"""
+from typing import Any
             if 'message' in kwargs:
                 message: Any = kwargs['message']
                 if not message or message.strip() == '':

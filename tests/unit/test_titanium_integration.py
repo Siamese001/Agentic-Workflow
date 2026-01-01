@@ -48,5 +48,6 @@ def test_hardened_orchestrator_integration() -> Any:
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_dispatch_tools() -> Any:
     """
+from typing import Any
     Test dispatch_resume_tools with Titanium integration.
     """

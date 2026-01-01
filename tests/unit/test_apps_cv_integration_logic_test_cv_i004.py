@@ -42,3 +42,4 @@ def test_transaction_isolation() -> Any:
     """
     Test that transactions are properly isolated
     """
+from typing import Any

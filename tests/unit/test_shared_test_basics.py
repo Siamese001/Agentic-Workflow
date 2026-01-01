@@ -4,6 +4,7 @@ from apps_shared.utils.text_processing import clean_llm_code
 
 def test_clean_llm_code_strips_markdown() -> Any:
     """Test that clean_llm_code correctly strips markdown code blocks."""
+from typing import Any
     input_text: Any = "```python\nprint('hello world')\n```"
     expected: Any = "print('hello world')"
     assert clean_llm_code(input_text) == expected

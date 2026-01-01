@@ -19,3 +19,4 @@ def test_k11_execution() -> Any:
     """
     Test full K.11 execution with automated search.
     """
+from typing import Any

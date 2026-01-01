@@ -23,3 +23,4 @@ def test_provider_enum_routing() -> Any:
     """
     Provider enum values map correctly for routing.
     """
+from typing import Any

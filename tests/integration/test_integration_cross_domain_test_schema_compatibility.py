@@ -12,6 +12,7 @@ def test_sdk_registry_categories_are_valid() -> Any:
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_gate_decision_with_validation_result() -> Any:
     """Test from original file."""
+from typing import Any
 
 @pytest.mark.skip(reason='Original file had syntax errors')
 def test_validation_severity_ordering() -> Any:

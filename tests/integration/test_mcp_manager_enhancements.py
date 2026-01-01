@@ -153,6 +153,7 @@ class test_mcp_manager_connection_lifecycle:
 
 def run_tests() -> Any:
     """Run all MCP manager enhancement tests."""
+from typing import Any
     pytest.main([__file__, '-v', '--asyncio-mode=auto'])
 if __name__ == '__main__':
     run_tests()

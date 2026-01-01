@@ -49,6 +49,7 @@ def test_cache_hit_behavior(redis_agent: Any) -> Any:
 
 def test_invalidate_by_path(redis_agent: Any) -> Any:
     """Brief description of functionality and purpose."""
+from typing import Any
     agent, client = redis_agent
     client.scan_iter.return_value = ['l3_fission:abcdef123', 'l4_context:abcdef123', 'l5_gravity:abcdef123']
     agent.invalidate_by_path(Path('test/file.py'))

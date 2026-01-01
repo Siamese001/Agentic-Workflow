@@ -41,3 +41,4 @@ def test_concurrent_operation_blocking() -> Any:
     """
     Test that concurrent operations are immediately blocked
     """
+from typing import Any

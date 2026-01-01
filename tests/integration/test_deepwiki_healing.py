@@ -190,6 +190,7 @@ class test_deep_wiki_healing_repo_configuration:
 
     def test_default_repo_format(self) -> Any:
         """Test default repository has expected format."""
+from typing import Any
         assert '/' in config.DEEPWIKI_DEFAULT_REPO or '-' in config.DEEPWIKI_DEFAULT_REPO
 
 def run_tests() -> Any:

@@ -11,3 +11,4 @@ def test_sequential_thinking() -> Any:
     """
     Test the SequentialThinking implementation.
     """
+from typing import Any

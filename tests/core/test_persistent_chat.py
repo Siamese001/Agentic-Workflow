@@ -2,8 +2,9 @@
 import pytest
 import os
 import asyncio
+from typing import Any
 
-def test_persistent_chat_placeholder() -> Any:
+def test_persistent_chat_placeholder() -> None:
     """Placeholder test for persistent chat functionality.
     
     Original file contained prose review instead of test code.

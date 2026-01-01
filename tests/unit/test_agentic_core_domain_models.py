@@ -190,6 +190,7 @@ class test_missing_class:
 
     def test_missing_repr(self) -> Any:
         """
+from typing import Any
         GIVEN: Missing instance
         WHEN: repr() called
         THEN: Returns descriptive string

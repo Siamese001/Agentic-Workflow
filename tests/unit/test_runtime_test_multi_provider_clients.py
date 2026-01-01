@@ -71,3 +71,4 @@ def test_custom() -> Any:
     """
     Docstring.
     """
+from typing import Any

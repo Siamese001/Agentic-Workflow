@@ -43,6 +43,7 @@ class test_nervous_system_reflex:
         THEN: Returns health check dict
         """
         from agentic_core.L3_orchestration.nervous_system import NervousSystem
+from typing import Any
         ns: Any = NervousSystem()
         status: Any = ns.get_status()
         assert isinstance(status, dict)

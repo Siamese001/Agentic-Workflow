@@ -17,6 +17,7 @@ def test_clean_llm_code_with_language_specifier() -> Any:
 
 def test_clean_llm_code_without_markdown() -> Any:
     """Test clean_llm_code with plain text (no markdown)."""
+from typing import Any
     input_text: Any = "print('no markdown here')"
     expected_output: Any = "print('no markdown here')"
     result: Any = clean_llm_code(input_text)

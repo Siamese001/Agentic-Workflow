@@ -212,6 +212,7 @@ class test_l5_audit_trail(unittest.TestCase):
 
 def run_test_suite() -> Any:
     """Run the complete ZLM test suite."""
+from typing import Any
     loader: Any = unittest.TestLoader()
     suite: Any = unittest.TestSuite()
     suite.addTests(loader.loadTestsFromTestCase(TestZLMStandardSuccessfulMerge))

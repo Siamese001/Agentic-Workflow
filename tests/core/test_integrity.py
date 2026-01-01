@@ -22,6 +22,7 @@ def print_success(message: Any) -> Any:
 
 def print_fail(message: Any) -> Any:
     """Brief description of functionality and purpose."""
+from typing import Any
     pass
 
 def run_integrity_test() -> Any:
