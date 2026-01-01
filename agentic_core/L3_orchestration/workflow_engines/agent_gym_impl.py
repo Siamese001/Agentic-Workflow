@@ -16,7 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-class AgentGym(
+class AgentGym:
     """Agent Gym for self-evolution and benchmarking.
 
     Features:

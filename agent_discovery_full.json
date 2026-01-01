@@ -31,9 +31,9 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
       "AutonomyMixin",
-      "L0DelegationTestingMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -105,8 +105,8 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -136,8 +136,8 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2730,8 +2730,8 @@
     "layer": "L3",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4255,9 +4255,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
+      "AutonomyMixin",
       "HealerMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4683,9 +4683,9 @@
     "layer": "L5",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
+      "AutonomyMixin",
       "HealerMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
