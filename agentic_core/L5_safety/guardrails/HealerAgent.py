@@ -46,6 +46,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
 )
 from agentic_core.utils.core_extensions.NamingAgent import NamingAgent
+from agentic_core.utils.general_helpers.change_tracker import ChangeTracker
 
 # [HARDENING 9] Import audit Logger for comprehensive action tracking
 try:
@@ -115,6 +116,9 @@ class HealerAgent:
         
         self.moves_applied = self.fissions_applied = self.fusions_applied = self.imports_cleaned = 0
         self.NamingAgent = NamingAgent(self.project_root)
+        
+        # [CANON COMPLIANCE] ChangeTracker for sovereign healing audit trail
+        self.change_tracker = ChangeTracker()
         
         # Tree-sitter setup for AST-based diff application
         self.ts_parser = None
@@ -437,6 +441,13 @@ class HealerAgent:
                     self.moves_applied += 1
                     Logger.info(f"[HEALED] Moved {file_path.name} -> {target_str}/")
                     
+                    # [CANON COMPLIANCE] Track change for sovereign audit trail
+                    self.change_tracker.record(
+                        agent="HealerAgent — File Mover",
+                        file_path=target_path,
+                        description=f"Moved from {file_path} (reason: {msg[:50]}...)"
+                    )
+                    
                     # [HARDENING 9] Log structural change
                     if self.audit:
                         self.audit.log_structural_change(
@@ -495,6 +506,13 @@ class HealerAgent:
                         file_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
                         action["applied"] = True
                         self.imports_cleaned += len(action["removed"])
+                        
+                        # [CANON COMPLIANCE] Track change for sovereign audit trail
+                        self.change_tracker.record(
+                            agent="HealerAgent — Import Cleaner",
+                            file_path=file_path,
+                            description=f"Removed {len(action['removed'])} unused imports"
+                        )
 
                 except Exception as e:
                     action["reason"] = str(e)
@@ -721,6 +739,13 @@ class HealerAgent:
                     action["applied"] = True
                     self.deletions_applied += 1
                     Logger.info(f"[DELETED] Pruned dead file: {file_path.name}")
+                    
+                    # [CANON COMPLIANCE] Track change for sovereign audit trail
+                    self.change_tracker.record(
+                        agent="HealerAgent — Dead Code Pruner",
+                        file_path=file_path,
+                        description="Deleted confirmed dead file (no imports, no traces)"
+                    )
                 except Exception as e:
                     action["reason"] = str(e)
             
@@ -1007,6 +1032,19 @@ class HealerAgent:
                     self.fissions_applied += 1
                     Logger.info(f"[FISSION] Split {file_path.name} into {len(valid_splits)} modules")
                     
+                    # [CANON COMPLIANCE] Track change for sovereign audit trail
+                    self.change_tracker.record(
+                        agent="HealerAgent — Fission Surgeon",
+                        file_path=file_path,
+                        description=f"Split into {len(valid_splits)} modules (exceeded {MAX_LINES_PER_FILE} LOC)"
+                    )
+                    for new_file in new_files_created:
+                        self.change_tracker.record(
+                            agent="HealerAgent — Fission Surgeon",
+                            file_path=new_file,
+                            description=f"Created as fission fragment from {file_path.name}"
+                        )
+                    
                     # [HARDENING 9] Log structural change
                     if self.audit:
                         self.audit.log_structural_change(
@@ -1074,6 +1112,15 @@ class HealerAgent:
             if Span:
                 Span.set_attribute("actions_applied", results["total_actions"])
                 Span.set_status("SUCCESS" if results["total_actions"] > 0 else "OK")
+
+            # [CANON COMPLIANCE] Generate and persist sovereign healing report
+            if len(self.change_tracker) > 0:
+                report = self.change_tracker.generate_markdown_report()
+                report_path = self.project_root / "last_sovereign_healing_report.md"
+                report_path.write_text(report, encoding="utf-8")
+                Logger.info(f"[SOVEREIGN REPORT] Saved to {report_path}")
+                results["sovereign_report_path"] = str(report_path)
+                results["sovereign_report"] = report
 
             return results
 
