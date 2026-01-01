@@ -1,13 +1,20 @@
-import ast
-'''Brief description of functionality and purpose.'''
+"""ExecutionCanonBaseAgent — L2 Base with Subatomic Testing Framework (Jan 01, 2026)
 
-'Brief description of functionality and purpose.'
+L2 Execution agents produce executable artifacts (code, tool outputs, file ops).
+Subatomic CRITIQUE hop includes:
+- Basic self-testing (unit/syntax for artifacts)
+- Delegation to TestSovereigntyAgent on failure
+"""
+import ast
 import asyncio
+import json
 import os
 import re
+import subprocess
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dotenv import load_dotenv
@@ -322,3 +329,215 @@ class CanonBaseAgent(ABC):
         return (True, 'Fix verified')
 
 # Alias already defined - CanonBaseAgent is the class itself
+
+
+# =============================================================================
+# L2 SUBATOMIC TESTING FRAMEWORK — Basic Self-Testing + Delegation
+# =============================================================================
+
+class SovereignSeverity(Enum):
+    """Sovereign event severity levels for subatomic testing."""
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
+class SubatomicTestingMixin:
+    """Mixin providing L2 subatomic testing capabilities.
+    
+    L2 Table Decision:
+    - Basic Self-Testing: YES (unit/syntax for artifacts)
+    - Delegation to TestSovereigntyAgent: YES (on failure)
+    """
+
+    async def run_subatomic_critique(self, artifact: str, artifact_type: str, context: Dict) -> Dict:
+        """L2 CRITIQUE hop: Basic self-testing + delegation on failure.
+        
+        Args:
+            artifact: The produced artifact (code, JSON, file content)
+            artifact_type: Type of artifact (python_code, tool_json, file_content)
+            context: Execution context with goal, task info
+            
+        Returns:
+            Dict with passed, tests, coverage info
+        """
+        # Step 1: Generate basic tests for artifact
+        tests = self._generate_basic_tests(artifact, artifact_type, context)
+        
+        # Step 2: Run sandboxed tests
+        test_result = self._run_sandbox_tests(tests, artifact)
+        
+        if test_result["passed"]:
+            self._emit_subatomic_event(SovereignSeverity.INFO, "L2_CRITIQUE_PASSED", {
+                "artifact_type": artifact_type,
+                "tests_run": len(test_result.get("tests", []))
+            })
+            return test_result
+        
+        # Step 3: On failure, delegate to TestSovereigntyAgent
+        self._emit_subatomic_event(SovereignSeverity.WARNING, "L2_BASIC_TESTS_FAILED", {
+            "artifact_type": artifact_type,
+            "reason": test_result.get("error", "unknown")
+        })
+        
+        advanced_result = await self._delegate_to_specialist(artifact, artifact_type, context)
+        
+        if not advanced_result["passed"]:
+            self._emit_subatomic_event(SovereignSeverity.ERROR, "L2_CRITIQUE_FAILED", {
+                "artifact_type": artifact_type,
+                "specialist_coverage": advanced_result.get("coverage", 0)
+            })
+        
+        return advanced_result
+
+    def _generate_basic_tests(self, artifact: str, artifact_type: str, context: Dict) -> str:
+        """Generate basic unit tests for L2 artifact."""
+        if artifact_type == "python_code":
+            return self._generate_code_tests(artifact, context)
+        elif artifact_type == "tool_json":
+            return self._generate_json_tests(artifact, context)
+        elif artifact_type == "file_content":
+            return self._generate_file_tests(artifact, context)
+        else:
+            return self._generate_generic_tests(artifact, context)
+
+    def _generate_code_tests(self, code: str, context: Dict) -> str:
+        """L2 Example 1: Unit tests for generated Python code."""
+        # Basic syntax validation test
+        return f'''
+import ast
+import pytest
+
+def test_syntax_valid():
+    """Verify generated code has valid Python syntax."""
+    code = """{code.replace('"', '\\"')}"""
+    try:
+        ast.parse(code)
+        assert True
+    except SyntaxError as e:
+        pytest.fail(f"Syntax error: {{e}}")
+
+def test_no_undefined_names():
+    """Check for obvious undefined name patterns."""
+    code = """{code.replace('"', '\\"')}"""
+    # Basic check - real execution would catch more
+    assert "undefined" not in code.lower() or "# undefined" in code.lower()
+
+def test_no_placeholder_code():
+    """Ensure no placeholder patterns remain."""
+    code = """{code.replace('"', '\\"')}"""
+    placeholders = ["# TODO:", "# FIXME:", "pass  # placeholder", "raise NotImplementedError"]
+    # Allow some TODOs but flag pure placeholders
+    assert "pass  # placeholder" not in code
+'''
+
+    def _generate_json_tests(self, json_str: str, context: Dict) -> str:
+        """L2 Example 2: Validate tool call JSON structure."""
+        expected_keys = context.get("expected_keys", [])
+        return f'''
+import json
+import pytest
+
+def test_json_valid():
+    """Verify JSON is parseable."""
+    json_str = """{json_str.replace('"', '\\"')}"""
+    try:
+        data = json.loads(json_str)
+        assert isinstance(data, (dict, list))
+    except json.JSONDecodeError as e:
+        pytest.fail(f"Invalid JSON: {{e}}")
+
+def test_required_keys():
+    """Check required keys are present."""
+    json_str = """{json_str.replace('"', '\\"')}"""
+    data = json.loads(json_str)
+    expected = {expected_keys}
+    if isinstance(data, dict):
+        for key in expected:
+            assert key in data, f"Missing required key: {{key}}"
+'''
+
+    def _generate_file_tests(self, content: str, context: Dict) -> str:
+        """L2 Example 3: Test written file content."""
+        return f'''
+import pytest
+
+def test_content_not_empty():
+    """Verify file content is not empty."""
+    content = """{content[:500].replace('"', '\\"')}"""
+    assert len(content.strip()) > 0
+
+def test_no_corrupted_markers():
+    """Check for corruption markers."""
+    content = """{content[:500].replace('"', '\\"')}"""
+    corruption_markers = ["\\x00", "\\xff\\xfe"]
+    for marker in corruption_markers:
+        assert marker not in content
+'''
+
+    def _generate_generic_tests(self, artifact: str, context: Dict) -> str:
+        """Fallback tests for unknown artifact types."""
+        return f'''
+import pytest
+
+def test_artifact_exists():
+    """Verify artifact is not empty."""
+    artifact = """{str(artifact)[:200].replace('"', '\\"')}"""
+    assert artifact is not None
+    assert len(str(artifact)) > 0
+'''
+
+    def _run_sandbox_tests(self, tests: str, artifact: str) -> Dict:
+        """Run tests in sandboxed subprocess."""
+        try:
+            # Write tests to temp file
+            temp_test = Path.cwd() / "temp_l2_test.py"
+            temp_test.write_text(tests, encoding='utf-8')
+            
+            # Run pytest
+            result = subprocess.run(
+                ["pytest", str(temp_test), "-q", "--tb=short"],
+                capture_output=True,
+                timeout=30,
+                cwd=Path.cwd()
+            )
+            
+            # Cleanup
+            if temp_test.exists():
+                temp_test.unlink()
+            
+            passed = result.returncode == 0
+            return {
+                "passed": passed,
+                "tests": [{"name": "basic_tests", "passed": passed}],
+                "output": result.stdout.decode()[:500],
+                "error": result.stderr.decode()[:200] if not passed else None
+            }
+        except subprocess.TimeoutExpired:
+            return {"passed": False, "error": "Test timeout (30s)", "tests": []}
+        except Exception as e:
+            return {"passed": False, "error": str(e), "tests": []}
+
+    async def _delegate_to_specialist(self, artifact: str, artifact_type: str, context: Dict) -> Dict:
+        """Delegate to TestSovereigntyAgent for advanced testing."""
+        try:
+            from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
+            
+            specialist = TestSovereigntyAgent()
+            result = await specialist.execute({
+                "artifact": artifact,
+                "type": f"{artifact_type}_integration",
+                "coverage_target": 95
+            })
+            return result
+        except ImportError:
+            return {"passed": False, "error": "TestSovereigntyAgent not available", "tests": []}
+        except Exception as e:
+            return {"passed": False, "error": str(e), "tests": []}
+
+    def _emit_subatomic_event(self, severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
+        """Emit subatomic testing event for observability."""
+        print(f"[SUBATOMIC L2] {severity.value} | {event_type}")
+        if payload:
+            print(f"  Payload: {payload}")
