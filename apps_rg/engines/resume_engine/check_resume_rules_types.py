@@ -8,6 +8,7 @@ import traceback
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional, Union
+from apps_shared.utils.common_patterns import ExecutionContext
 
 LOGGER = logging.getLogger(__name__)
 
