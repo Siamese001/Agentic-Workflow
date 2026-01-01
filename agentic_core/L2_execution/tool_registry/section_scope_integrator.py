@@ -45,8 +45,10 @@ class ValidationResult: # Placeholder for ValidationResult
         self.details = DETAILS
         self.signature = SIGNATURE
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
-class IntegrityGateExecutor: # Placeholder for IntegrityGateExecutor
+class IntegrityGateExecutor(HealerMixin): # Placeholder for IntegrityGateExecutor
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):

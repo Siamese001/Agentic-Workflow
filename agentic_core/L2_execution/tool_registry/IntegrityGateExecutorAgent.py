@@ -114,8 +114,10 @@ class DeepResearchOutput:
 # --- End Inlined Type Definitions ---
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class IntegrityGateExecutorAgent:
+class IntegrityGateExecutorAgent(HealerMixin):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including

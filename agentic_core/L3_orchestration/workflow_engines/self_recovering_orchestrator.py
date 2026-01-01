@@ -55,7 +55,9 @@ class WorkflowMutation:
     applied_at: Optional[datetime] = None
     success: bool = False
 
-class SelfRecoveringOrchestrator:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class SelfRecoveringOrchestrator(HealerMixin):
     """
     Orchestrator that automatically recovers from workflow failures.
     

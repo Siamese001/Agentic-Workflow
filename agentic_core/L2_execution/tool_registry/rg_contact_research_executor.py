@@ -8,8 +8,9 @@ from typing import Any, Dict, List, Optional, Protocol
 _logger = logging.getLogger(__name__)
 '\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n'
 from typing import Optional
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class SafetyExecutor:
+class SafetyExecutor(HealerMixin):
     """
     Executes resume safety validation with optimal model selection.
 

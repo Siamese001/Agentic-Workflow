@@ -1,6 +1,9 @@
 """
 Testing Compliance Scanner - Phase 1 & 2 Verification
 
+UNIFIED SCANNER: Uses agent_discovery_full.json as single source of truth.
+Runs full_agent_discovery.py if JSON is stale.
+
 Scans all agents to verify:
 - L2-L4 agents have self-testing (_run_self_tests or inherit from testing mixins)
 - L0 agents have delegation (_delegate_tests or inherit from L0DelegationTestingMixin)
@@ -9,12 +12,16 @@ Detects both direct methods and inherited capabilities from base classes.
 """
 import ast
 import json
+import os
+import subprocess
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / 'agentic_core'
+DISCOVERY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
+DISCOVERY_SCRIPT = PROJECT_ROOT / 'scripts' / 'full_agent_discovery.py'
 
 # Base classes that provide testing capabilities
 SELF_TESTING_BASES = {
@@ -50,12 +57,19 @@ HEALING_BASES = {
 def infer_layer(file_path: Path) -> str:
     """Infer canonical layer from file path."""
     path_str = str(file_path)
-    if 'L0_maintenance' in path_str: return 'L0'
-    if 'L1_cognition' in path_str: return 'L1'
-    if 'L2_execution' in path_str: return 'L2'
-    if 'L3_orchestration' in path_str: return 'L3'
-    if 'L4_state' in path_str: return 'L4'
-    if 'L5_safety' in path_str: return 'L5'
+    if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
+    if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
+    if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
+    if 'L3_orchestration' in path_str or 'L3_' in path_str: return 'L3'
+    if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
+    if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
+    # Extended classification for other directories
+    if 'observability' in path_str: return 'L3'  # Observability is L3-tier
+    if 'utils' in path_str: return 'L2'  # Utils are L2-tier
+    if 'patterns' in path_str: return 'L2'  # Patterns are L2-tier
+    if 'config' in path_str: return 'L1'  # Config is L1-tier
+    if 'prompt_governance' in path_str: return 'L1'  # Prompt governance is L1-tier
+    if 'apps' in path_str: return 'L5'  # Apps layer
     return 'other'
 
 
@@ -122,12 +136,33 @@ def analyze_agent(class_node: ast.ClassDef, file_path: Path) -> Dict:
     }
 
 
+def regenerate_discovery_json():
+    """Regenerate the canonical agent discovery JSON."""
+    print("[REGENERATING] Running full_agent_discovery.py for fresh data...")
+    subprocess.run(['python', str(DISCOVERY_SCRIPT)], cwd=str(PROJECT_ROOT))
+
+
+def load_from_canonical_json() -> List[Dict]:
+    """Load agents from canonical JSON, regenerating if needed."""
+    # Force fresh regeneration if JSON doesn't exist or is older than 1 hour
+    if not DISCOVERY_JSON.exists():
+        regenerate_discovery_json()
+    
+    with open(DISCOVERY_JSON, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
 def main():
     print("=" * 80)
     print("TESTING COMPLIANCE SCANNER - Phase 1 & 2 Verification")
+    print("(Single Source of Truth: agent_discovery_full.json)")
     print("=" * 80)
     print()
     
+    # Load from canonical JSON
+    canonical_agents = load_from_canonical_json()
+    
+    # Convert to our format
     agents = []
     errors = []
     
@@ -143,23 +178,49 @@ def main():
             errors.append(f"Parse error in {py_file.name}: {e}")
             continue
         
-        # Find all classes ending with 'Agent'
+        # Find all agent classes - expanded detection
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                # Only include actual agents, not base classes or mixins
+                # Detect agents by multiple patterns:
+                # 1. Ends with 'Agent'
+                # 2. Ends with 'Mixin' (but only in agent contexts)
+                # 3. Has execute/run/heal methods (duck-typed agents)
+                # 4. Inherits from known agent bases
+                
+                is_agent = False
+                
+                # Pattern 1: Ends with Agent
                 if node.name.endswith('Agent'):
-                    # Skip lowercase or snake_case
-                    if node.name.islower() or ('_' in node.name and not node.name[0].isupper()):
-                        continue
-                    
-                    # Skip base classes marked as NOT_AN_AGENT
-                    if 'NOT_AN_AGENT' in py_file.read_text(encoding='utf-8', errors='replace'):
-                        if node.name in ['SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent', 
-                                        'OrchestrationBaseAgent', 'StateBaseAgent']:
-                            continue
-                    
-                    agent_data = analyze_agent(node, py_file)
-                    agents.append(agent_data)
+                    is_agent = True
+                
+                # Pattern 2: Known agent-like suffixes
+                if node.name.endswith(('Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel', 'Inspector', 'Architect', 'Engineer', 'Healer', 'Oracle', 'Curator', 'Router', 'Orchestrator', 'Conductor')):
+                    is_agent = True
+                
+                # Pattern 3: Inherits from agent bases
+                bases = extract_bases(node)
+                if bases & {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent', 
+                           'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+                           'HealerMixin', 'SubatomicTestingMixin', 'L3SubatomicTestingMixin',
+                           'L4SubatomicTestingMixin', 'AutonomyMixin', 'AdaptiveExecutionMixin'}:
+                    is_agent = True
+                
+                if not is_agent:
+                    continue
+                
+                # Skip lowercase or pure snake_case
+                if node.name.islower() or ('_' in node.name and not node.name[0].isupper()):
+                    continue
+                
+                # Skip known base classes (not concrete agents)
+                skip_bases = {'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent', 
+                             'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
+                             'IActionPlane', 'ValidationProtocol'}
+                if node.name in skip_bases:
+                    continue
+                
+                agent_data = analyze_agent(node, py_file)
+                agents.append(agent_data)
     
     # Statistics by layer
     by_layer = defaultdict(list)

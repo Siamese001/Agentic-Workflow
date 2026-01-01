@@ -23,7 +23,9 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
 from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 
-class PineconeSovereignAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class PineconeSovereignAgent(HealerMixin):
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
     Centralizes all vector operations to prevent configuration drift.

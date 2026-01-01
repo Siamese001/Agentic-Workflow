@@ -15,7 +15,9 @@ import redis
 
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
-class SovereignRedisOrchestrator:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class SovereignRedisOrchestrator(HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):

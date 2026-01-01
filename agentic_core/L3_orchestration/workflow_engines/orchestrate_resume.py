@@ -20,10 +20,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
-
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # NAMING FIXED: ResumeOrchestrator → ResumeOrchestrator
-class ResumeOrchestrator:
+class ResumeOrchestrator(HealerMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
 

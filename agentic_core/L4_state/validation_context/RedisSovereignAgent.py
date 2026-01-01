@@ -13,8 +13,10 @@ from redis.connection import ConnectionPool
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
-class RedisSovereignAgent:
+class RedisSovereignAgent(HealerMixin):
     """
     Sovereign Redis controller — hardened, monitored, eternal.
     """

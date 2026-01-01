@@ -23,7 +23,9 @@ class DagExecutionResult:
     _errors: List[str] = None
     outputs: Dict[str, Any] = None
 
-class DagExecutor:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class DagExecutor(HealerMixin):
     """Executes Directed Acyclic Graphs of operations."""
 
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:

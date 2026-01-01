@@ -46,8 +46,10 @@ class RecoveryResult:
     errors: List[str] = field(default_factory=list)
     recovery_time: float = 0.0
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousCheckpointManagerAgent:
+class AutonomousCheckpointManagerAgent(HealerMixin):
     """
     Manages state checkpoints with automatic recovery capabilities.
     

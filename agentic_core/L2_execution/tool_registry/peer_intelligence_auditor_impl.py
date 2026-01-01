@@ -13,7 +13,9 @@ class PeerIntelligenceConfig:
         self.total_searches = 24
         self.differentiator_threshold = 0.3
 
-class IntegrityGateExecutor:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class IntegrityGateExecutor(HealerMixin):
     """Brief description of functionality and purpose."""
 
     def __init__(self):

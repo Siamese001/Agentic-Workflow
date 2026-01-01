@@ -4,11 +4,12 @@ import json
 import re
 # import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 from typing import Any, Dict
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field  # TODO: Replace with sovereign equivalent
 
 # Stub classes for Missing dependencies (TODO: Replace with sovereign equivalents)
-class BaseAgent:
+class BaseAgent(HealerMixin):
     """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
     def __init__(self, context, debug_mode=False):
         self.context = context
