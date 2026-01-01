@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
-from AgenticCore.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
+from agentic_core.config.blueprint_sovereign.structure_blueprint import ALLOWED_DUPLICATE_FILENAMES
 
 def is_excluded_path(path: Path) -> bool:
     """Check if a path should be excluded from indexing."""
