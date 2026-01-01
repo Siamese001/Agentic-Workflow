@@ -38,6 +38,17 @@ class ModelTier(str, Enum):
     FLASH_BASIC = "gemini-2.5-flash"  # 8K thinking budget, cheap
     FLASH_EXTENDED = "gemini-2.5-flash"  # 16K thinking budget, moderate
     DEEP_THINK = "gemini-3.0-deep-think"  # 24K+ thinking budget, expensive
+    
+    @classmethod
+    def _run_self_tests(cls) -> bool:
+        """Phase 1 Final: Enum values validation."""
+        assert all(isinstance(v.value, str) for v in cls), "All values must be str"
+        assert len(cls) > 0, "Enum cannot be empty"
+        return True
+
+
+# Run self-tests on module load for enum
+ModelTier._run_self_tests()
 
 
 @dataclass
