@@ -30,11 +30,15 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
+# [PHASE 2] L0 Delegated Testing
+from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+
 
 class ScriptToAgentClassifier(
     AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
+    L0DelegationTestingMixin,
 ):
     """
     Sovereign classifier for script vs agent constitutional compliance.
