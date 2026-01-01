@@ -16,14 +16,13 @@ Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
 from agentic_core.L2_execution.tool_registry.ProactiveResourceManager import (
+    create_proactive_resource_manager,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
-)
-
-    create_proactive_resource_manager,
 )
 
 # L4 Checkpoint integration
