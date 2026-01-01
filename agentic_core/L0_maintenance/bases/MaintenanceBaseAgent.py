@@ -157,6 +157,8 @@ class L0DelegationMixin:
 class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin, L0DelegationTestingMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
     
+    NOTE: _healing_enabled = False for L0 boot isolation safety.
+    
     L0 Table Decision:
     - Basic Self-Testing: NO (infrastructure layer, no Artifact production)
     - Delegation to TestSovereigntyAgent: YES (on healing/operation failure)

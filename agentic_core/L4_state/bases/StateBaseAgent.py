@@ -21,6 +21,9 @@ from typing import Any, Dict, List, Optional
 
 from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 
+# [PHASE 3] Default-on healing mixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 
 class L4SovereignSeverity(Enum):
     """Sovereign event Severity levels for L4 subatomic testing."""
@@ -359,7 +362,7 @@ def test_artifact_exists():
 
 
 @dataclass
-class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin):
+class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin):
     """Base class for L4 State agents with subatomic testing.
     
     L4 Table Decision:
