@@ -10,8 +10,8 @@ from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main as run
 from canon_validator_agentic_v2 import run_mission as run_healing
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from typing import Any
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

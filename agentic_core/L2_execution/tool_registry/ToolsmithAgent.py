@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
-class ToolSpec(
+class ToolSpec:
     """Specification for a tool."""
     name: str
     description: str
@@ -29,7 +29,7 @@ class ToolSpec(
         return {'name': self.name, 'description': self.description, 'parameters': self.parameters, 'category': self.category, 'version': self.version, 'created_at': self.created_at.isoformat()}
 
 @dataclass
-class GeneratedTool(
+class GeneratedTool:
     """A dynamically generated tool."""
     spec: "ToolSpec"
     code: str

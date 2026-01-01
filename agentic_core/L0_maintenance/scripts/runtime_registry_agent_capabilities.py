@@ -28,7 +28,7 @@ class AgentRole(Enum):
 
 
 @dataclass
-class AgentCapability(
+class AgentCapability:
     """Defines the capability of an agent role."""
     role: AgentRole
     display_name: str = ""
@@ -42,7 +42,7 @@ class AgentCapability(
     legacy_k_nodes: List[str] = field(default_factory=list)
 
 
-class AgentSpec(
+class AgentSpec:
     """Specification for creating an agent instance."""
 
     def __init__(self, role: AgentRole, hop_function: Callable = None, config: Any = None, **kwargs) -> None:
@@ -58,7 +58,7 @@ class AgentSpec(
 
 
 # NOT_AN_AGENT — registry utility class, not a true agent — excluded from agent discovery
-class AgentRegistry(
+class AgentRegistry:
     """Registry for managing agent capabilities and specifications."""
 
     def __init__(self) -> None:
