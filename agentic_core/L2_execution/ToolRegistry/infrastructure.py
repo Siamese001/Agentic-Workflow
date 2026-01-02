@@ -12,11 +12,10 @@ from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: EXCLUDED_DIRS → excluded_dirs
 excluded_dirs = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}

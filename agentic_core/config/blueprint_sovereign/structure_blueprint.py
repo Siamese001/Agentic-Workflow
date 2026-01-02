@@ -157,6 +157,20 @@ CORE_TERRITORY_KEYWORDS: Dict[str, Dict[str, Set[str]]] = {
 TERRITORY_MISMATCH_THRESHOLD: float = 2.5
 MIN_ALIGNMENT_SCORE: float = 1.5
 
+# === ULTRA HEALING DEFAULTS (2026-01-02 Reliability Hardening) ===
+# Fallback targets when AST scoring is inconclusive
+DEFAULT_APP_HEALING_TARGET: str = "apps_rg/engines"  # Most common leak destination
+DEFAULT_CORE_HEALING_TERRITORY: str = "L2_execution/ToolRegistry"  # Safe neutral territory
+
+# Violation severity levels for prioritized healing
+VIOLATION_SEVERITY: Dict[str, int] = {
+    "GRAVITY VIOLATION": 10,
+    "AST DOMAIN VIOLATION": 9,
+    "TERRITORY MISMATCH VIOLATION": 8,
+    "APP-SPECIFIC IN CORE VIOLATION": 7,
+    "TERRITORY ALIGNMENT WEAK": 5,
+}
+
 def get_correct_app_folder(filename: str) -> Optional[str]:
     """
     Return the correct root app folder (e.g., 'apps_rg') for a file based on prefix.

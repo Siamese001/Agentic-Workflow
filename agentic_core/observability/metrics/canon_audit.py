@@ -13,10 +13,10 @@ from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWi
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 

@@ -17,8 +17,8 @@ from ..context import ResumeEngineContext
 from ..gitops import Phase4Orchestrator
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
 from ..learning import ResumeLearningAgent
-from ..observability import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from ..observability import (
     AuditReporter,
     ExecutionTracer,
     MetricsCollector,

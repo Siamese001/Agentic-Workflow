@@ -7,7 +7,8 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
 # NAMING FIXED: SubAtomicAgent → SubAtomicAgent
-class SubAtomicAgent(
+class SubAtomicAgent:
+    """Base class stub for structural agents."""
     pass
 
 # Alias for backward compatibility

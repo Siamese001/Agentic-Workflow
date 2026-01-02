@@ -1,6 +1,27 @@
 from __future__ import annotations
 import asyncio
-'''Brief description of functionality and purpose.'''
+'''
+NervousSystemAgent: Sovereign Orchestration Hub
+
+Central orchestrator that coordinates all agent phases and maintains
+mission-critical execution flow with human intervention support.
+
+GOLD STANDARD UPGRADE (2026-01-02):
+- LocationAgent integration for territory validation after heals
+- HierarchyAgent integration for structure validation after heals  
+- ImportAgent integration for gravity compliance after heals
+- GovernanceAgent integration for architecture validation
+- Post-phase validation with coordinated multi-agent checks
+- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
+- run_with_cleanup returning comprehensive summaries
+
+DOMAIN-SPECIFIC INTEGRATIONS (Orchestration Hub):
+- LocationAgent: Validate file territory after all phases
+- HierarchyAgent: Validate structure depth after all phases
+- ImportAgent: Validate gravity compliance after all phases
+- GovernanceAgent: Validate architecture after all phases
+- HealerAgent: Coordinate unified healing after validation
+'''
 
 import json
 import logging
@@ -8,6 +29,9 @@ import re
 import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+
+from dataclasses import dataclass
+from pathlib import Path
 
 from agentic_core.L1_cognition.P1_interfaces import (
     ActionRequest,
@@ -19,11 +43,16 @@ from agentic_core.L1_cognition.P1_interfaces import (
 )
 from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-)
+@dataclass
+class PhaseViolation:
+    """Structured violation output for deterministic phase healing."""
+    phase_name: str
+    is_valid: bool
+    message: str
+    agent_name: Optional[str] = None
+    file_path: Optional[Path] = None
+    suggested_action: Optional[str] = None
+    severity: int = 5
 
 
 if TYPE_CHECKING:
@@ -1096,6 +1125,25 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         # L6 Architecture Governor
         self.ArchitectureGovernor = ArchitectureGovernor()
 
+        # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
+        self.project_root = Path(__file__).resolve().parents[3]
+        try:
+            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            self.location_agent = LocationAgent(self.project_root)
+        except ImportError:
+            self.location_agent = None
+        try:
+            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            self.hierarchy_agent = HierarchyAgent(self.project_root)
+        except ImportError:
+            self.hierarchy_agent = None
+        try:
+            from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+            self.import_agent = ImportAgent(self.project_root)
+        except ImportError:
+            self.import_agent = None
+        self._backup_dir: Optional[Path] = None
+
         # Initialize helper classes
         self._checkpointing = NervousSystemCheckpointing(
             self.CheckpointManager, self.SignalLedger, self.session_id, LOGGER
@@ -1382,3 +1430,235 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
             Validation report
         """
         return self._architecture_governance.validate_architecture(file_paths)
+
+    def post_phase_validation(self, phase_name: str, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+        """
+        GOLD STANDARD: Post-phase validation using domain-specific agents.
+        Validates location, hierarchy, and import compliance after phase completion.
+        
+        Args:
+            phase_name: Name of the completed phase
+            affected_paths: List of file paths affected by the phase
+            dry_run: If True, only preview without applying fixes
+            
+        Returns:
+            Dict with validation results from all integrated agents
+        """
+        report = {
+            "phase_name": phase_name,
+            "post_phase_status": "SKIPPED",
+            "location_validation": {},
+            "hierarchy_validation": {},
+            "import_validation": {},
+            "message": "",
+        }
+
+        if dry_run:
+            report["message"] = "PREVIEW: Post-phase validation skipped in dry-run"
+            return report
+
+        try:
+            valid_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
+            
+            # LocationAgent validation
+            if self.location_agent and valid_files:
+                location_violations = []
+                for path in valid_files:
+                    is_valid, msg = self.location_agent.validate_file_location(path)
+                    if not is_valid:
+                        location_violations.append({"file": str(path), "issue": msg})
+                report["location_validation"] = {
+                    "violations": location_violations,
+                    "status": "FULL_SUCCESS" if not location_violations else "NEEDS_REVIEW"
+                }
+
+            # HierarchyAgent validation
+            if self.hierarchy_agent and valid_files:
+                hierarchy_violations = []
+                for path in valid_files:
+                    result = self.hierarchy_agent.validate_file_hierarchy(path)
+                    if not result.get("is_valid", True):
+                        hierarchy_violations.append({"file": str(path), "issue": result.get("message", "")})
+                report["hierarchy_validation"] = {
+                    "violations": hierarchy_violations,
+                    "status": "FULL_SUCCESS" if not hierarchy_violations else "NEEDS_REVIEW"
+                }
+
+            # ImportAgent validation
+            if self.import_agent and valid_files:
+                import_violations = self.import_agent.run(valid_files)
+                report["import_validation"] = {
+                    "violations": [{"file": str(p), "issues": m} for p, m in import_violations],
+                    "status": "FULL_SUCCESS" if not import_violations else "NEEDS_REVIEW"
+                }
+
+            # Determine overall status
+            all_statuses = [
+                report["location_validation"].get("status", "SKIPPED"),
+                report["hierarchy_validation"].get("status", "SKIPPED"),
+                report["import_validation"].get("status", "SKIPPED"),
+            ]
+            if all(s == "FULL_SUCCESS" for s in all_statuses if s != "SKIPPED"):
+                report["post_phase_status"] = "FULL_SUCCESS"
+                report["message"] = f"Phase {phase_name} post-validation: All checks passed"
+            elif "NEEDS_REVIEW" in all_statuses:
+                report["post_phase_status"] = "NEEDS_REVIEW"
+                report["message"] = f"Phase {phase_name} post-validation: Some violations detected"
+            else:
+                report["post_phase_status"] = "PARTIAL"
+                report["message"] = f"Phase {phase_name} post-validation: Partial completion"
+
+            Logger.info(f"[NervousSystemAgent] {report['message']}")
+
+        except Exception as e:
+            report["post_phase_status"] = "ERROR"
+            report["message"] = f"Post-phase validation error: {e}"
+            Logger.error(f"[NervousSystemAgent] Post-phase validation failed: {e}")
+
+        return report
+
+    def cleanup_violations(
+        self,
+        violations: List[PhaseViolation],
+        dry_run: bool = True,
+        max_actions: int = 50
+    ) -> List[Dict[str, Any]]:
+        """
+        GOLD STANDARD: Cleanup violations using integrated domain agents.
+        Prioritizes healing based on violation severity and type.
+        
+        Args:
+            violations: List of PhaseViolation objects
+            dry_run: If True, only preview actions
+            max_actions: Maximum cleanup actions per run
+            
+        Returns:
+            List of action dicts with results and batch summary
+        """
+        actions = []
+        affected_paths: List[Path] = []
+
+        for i, violation in enumerate(violations):
+            if i >= max_actions:
+                Logger.warning(f"[NervousSystemAgent] Cleanup budget exhausted ({max_actions})")
+                break
+
+            action = {
+                "type": "PHASE_VIOLATION_HEALING",
+                "phase": violation.phase_name,
+                "agent": violation.agent_name,
+                "violation": violation.message,
+                "applied": False,
+                "action_taken": "",
+            }
+
+            try:
+                # Route to appropriate agent based on violation type
+                if violation.file_path and self.location_agent:
+                    if "LOCATION" in violation.message.upper() or "TERRITORY" in violation.message.upper():
+                        cleanup_result = self.location_agent.cleanup_violations(
+                            [(violation.file_path, violation.message)], dry_run=dry_run
+                        )
+                        if cleanup_result:
+                            action.update(cleanup_result[0])
+                            if not dry_run:
+                                affected_paths.append(violation.file_path)
+
+                    elif "HIERARCHY" in violation.message.upper() and self.hierarchy_agent:
+                        cleanup_result = self.hierarchy_agent.cleanup_violations(
+                            [(violation.file_path, violation.message)], dry_run=dry_run
+                        )
+                        if cleanup_result:
+                            action.update(cleanup_result[0])
+                            if not dry_run:
+                                affected_paths.append(violation.file_path)
+
+                    elif "IMPORT" in violation.message.upper() or "GRAVITY" in violation.message.upper():
+                        if self.import_agent:
+                            cleanup_result = self.import_agent.cleanup_violations(
+                                [(violation.file_path, violation.message)], dry_run=dry_run
+                            )
+                            if cleanup_result:
+                                action.update(cleanup_result[0])
+                                if not dry_run:
+                                    affected_paths.append(violation.file_path)
+
+            except Exception as e:
+                action["error"] = str(e)
+                Logger.error(f"[NervousSystemAgent] Cleanup error: {e}")
+
+            actions.append(action)
+
+        # Batch post-heal summary
+        batch_report = {
+            "batch_post_heal_status": "PREVIEW" if dry_run else "APPLIED",
+            "batch_healed_count": sum(1 for a in actions if a.get("applied")),
+            "batch_affected_paths": len(affected_paths),
+            "batch_message": f"Processed {len(actions)} violations",
+        }
+
+        for action in actions:
+            action["batch_post_heal"] = batch_report
+
+        return actions
+
+    def run_with_cleanup(self, files: List[Path] = None, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        GOLD STANDARD: Full orchestration with autonomous cleanup.
+        Runs all phases, validates, and cleans up violations.
+        
+        Args:
+            files: Optional list of files to process
+            dry_run: If True, only preview cleanup actions
+            
+        Returns:
+            Dict with comprehensive execution and cleanup summaries
+        """
+        # Collect violations from post-phase validation
+        all_violations: List[PhaseViolation] = []
+        affected_paths = [Path(f) for f in (files or list(self._modified_files))]
+
+        # Run post-phase validation for all phases
+        for phase_name in self.phases.keys():
+            validation_report = self.post_phase_validation(phase_name, affected_paths, dry_run=dry_run)
+            
+            # Convert validation issues to PhaseViolation objects
+            for loc_viol in validation_report.get("location_validation", {}).get("violations", []):
+                all_violations.append(PhaseViolation(
+                    phase_name=phase_name,
+                    is_valid=False,
+                    message=loc_viol.get("issue", "Location violation"),
+                    file_path=Path(loc_viol.get("file", "")) if loc_viol.get("file") else None,
+                    severity=5
+                ))
+            for hier_viol in validation_report.get("hierarchy_validation", {}).get("violations", []):
+                all_violations.append(PhaseViolation(
+                    phase_name=phase_name,
+                    is_valid=False,
+                    message=hier_viol.get("issue", "Hierarchy violation"),
+                    file_path=Path(hier_viol.get("file", "")) if hier_viol.get("file") else None,
+                    severity=4
+                ))
+            for imp_viol in validation_report.get("import_validation", {}).get("violations", []):
+                all_violations.append(PhaseViolation(
+                    phase_name=phase_name,
+                    is_valid=False,
+                    message=str(imp_viol.get("issues", "Import violation")),
+                    file_path=Path(imp_viol.get("file", "")) if imp_viol.get("file") else None,
+                    severity=3
+                ))
+
+        # Cleanup violations
+        cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
+        batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
+
+        return {
+            "violations_detected": len(all_violations),
+            "actions_applied": sum(1 for a in cleanup_results if a.get("applied")),
+            "detailed_actions": cleanup_results,
+            "batch_post_heal_summary": batch_summary,
+            "location_summary": {"violations": len([v for v in all_violations if "LOCATION" in v.message.upper()])},
+            "hierarchy_summary": {"violations": len([v for v in all_violations if "HIERARCHY" in v.message.upper()])},
+            "import_summary": {"violations": len([v for v in all_violations if "IMPORT" in v.message.upper() or "GRAVITY" in v.message.upper()])},
+            "dry_run": dry_run,
+        }

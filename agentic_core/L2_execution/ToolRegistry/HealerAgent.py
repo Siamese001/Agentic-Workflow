@@ -13,8 +13,8 @@ import os
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
-from agentic_core.L2_execution.ToolRegistry.tools.code_transform import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.tools.code_transform import (
     CodeTransformArgs,
     TransformOperation,
     code_transform,

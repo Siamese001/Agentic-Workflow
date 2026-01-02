@@ -22,14 +22,22 @@ from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 try:
-    from google import genai
-    from google.genai import types
+    from google.cloud import aiplatform
+    from google.cloud.aiplatform import gapic
+    from google.cloud.aiplatform.gapic import (
+        dataset_service_client,
+        model_service_client,
+        pipeline_service_client,
+        tensorboard_service_client,
+        vertex_ai_client,
+    )
+    from google.cloud.aiplatform.gapic.schema import trainingjob
     GENAI_AVAILABLE: Any = True
 except ImportError:
     GENAI_AVAILABLE: Any = False

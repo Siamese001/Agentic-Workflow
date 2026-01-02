@@ -9,7 +9,7 @@ from typing import Dict, List, Set
 
 
 @dataclass
-class FilePathsConfig(
+class FilePathsConfig:
     """File paths for data files used by the workflow."""
     master_resume: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / 'config' / 'P1_core' / 'data' / 'master_resume.json')
     hyphenation_rules: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / 'config' / 'P1_core' / 'data' / 'hyphenation_rules.json')
@@ -23,7 +23,7 @@ class FilePathsConfig(
 
 
 @dataclass
-class ArtistConfig(
+class ArtistConfig:
     """Configuration for the Artist Generator (resume content generation)."""
     provenance_split_targets: Dict = field(default_factory=dict)
     bullet_word_count_ranges: Dict = field(default_factory=dict)
@@ -33,7 +33,7 @@ class ArtistConfig(
 
 
 @dataclass
-class ValidatorConfig(
+class ValidatorConfig:
     """Configuration for validation rules and constraints."""
     forbidden_verbs: List[str] = field(default_factory=list)
     required_sections: Set[str] = field(default_factory=set)
@@ -45,7 +45,7 @@ class ValidatorConfig(
 
 
 @dataclass
-class PromptsConfig(
+class PromptsConfig:
     """Configuration for all prompt templates."""
     prompts: Dict[str, Dict[str, str]] = field(default_factory=dict)
     
@@ -65,7 +65,7 @@ class PromptsConfig(
 
 
 @dataclass
-class WebRagConfig(
+class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
     peers_by_industry: Dict = field(default_factory=lambda: {
         'Financial Technology': ['JPMorgan', 'Goldman Sachs', 'Morgan Stanley', 'Stripe', 'Square'],
@@ -79,7 +79,7 @@ class WebRagConfig(
 
 
 @dataclass
-class EnricherConfig(
+class EnricherConfig:
     """Configuration for data enrichment."""
     canonical_verbs: Dict = field(default_factory=lambda: {
         'led': ['led', 'lead', 'leading'],
@@ -98,7 +98,7 @@ class EnricherConfig(
 
 
 @dataclass
-class EnforcementRAGConfig(
+class EnforcementRAGConfig:
     """Configuration for RAG system."""
     MODEL: str = 'gemini-2.5-pro'
     max_tokens: int = 8192
@@ -130,7 +130,7 @@ class EnforcementRAGConfig(
 
 
 @dataclass
-class EnforcementReasoningConfig(
+class EnforcementReasoningConfig:
     """Configuration for reasoning strategies."""
     cot_min_paths: int = 2
     tot_branches: int = 3
@@ -143,7 +143,7 @@ class EnforcementReasoningConfig(
 
 
 @dataclass
-class ContentConstraintsConfig(
+class ContentConstraintsConfig:
     """Content-level constraints for word counts, sentence counts, etc."""
     TOTAL_WORD_COUNT_MIN: int = 870
     TOTAL_WORD_COUNT_MAX: int = 1030
@@ -183,7 +183,7 @@ class ContentConstraintsConfig(
 
 
 @dataclass
-class SignalControlConfig(
+class SignalControlConfig:
     """Signal control thresholds for quality and relevance."""
     K1_MAX_DIFFERENTIATORS: int = 4
     RESUME_MAX_JD_KEYWORDS: int = 16
@@ -193,7 +193,7 @@ class SignalControlConfig(
 
 
 @dataclass
-class PromptAddendumConfig(
+class PromptAddendumConfig:
     """Configuration for reasoning prompt addendums."""
     HEADER: str = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n'
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
@@ -202,7 +202,7 @@ class PromptAddendumConfig(
 
 
 @dataclass
-class AppConfig(
+class AppConfig:
     """Master application configuration containing all sub-configs."""
     paths: FilePathsConfig = field(default_factory=FilePathsConfig)
     content_constraints: ContentConstraintsConfig = field(default_factory=ContentConstraintsConfig)
