@@ -8,66 +8,230 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --danger-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
-            --neutral-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            /* Corporate Color Palette */
+            --primary-blue: #2E86C1;
+            --secondary-blue: #5DADE2;
+            --accent-blue: #AED6F1;
+            --success-green: #27AE60;
+            --warning-orange: #F39C12;
+            --danger-red: #E74C3C;
+            --neutral-gray: #BDC3C7;
+            --dark-text: #2C3E50;
+            --light-text: #7F8C8D;
+            --background: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --border-color: #E9ECEF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2d3748;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--dark-text);
+            line-height: 1.6;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
+        }
+        
+        /* Header Section */
+        .dashboard-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .dashboard-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
         }
-        .metrics-grid {
+        
+        .nav-tab {
+            padding: 12px 20px;
+            background: var(--neutral-gray);
+            color: var(--dark-text);
+            text-decoration: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 2px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        /* KPI Boxes Grid */
+        .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .metric-card {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
             background: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
             text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
         }
-        .metric-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
+        
+        .kpi-box:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
+        
+        .kpi-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--light-text);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 5px;
+        }
+        
+        .kpi-target {
+            font-size: 10px;
+            color: var(--light-text);
+            background: #F8F9FA;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        /* Status Colors */
+        .kpi-box.success { border-left: 4px solid var(--success-green); }
+        .kpi-box.warning { border-left: 4px solid var(--warning-orange); }
+        .kpi-box.danger { border-left: 4px solid var(--danger-red); }
+        .kpi-box.primary { border-left: 4px solid var(--primary-blue); }
+        
+        .kpi-box.success .kpi-value { color: var(--success-green); }
+        .kpi-box.warning .kpi-value { color: var(--warning-orange); }
+        .kpi-box.danger .kpi-value { color: var(--danger-red); }
+        .kpi-box.primary .kpi-value { color: var(--primary-blue); }
         .metric-label {
             color: #718096;
             font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
-        .chart-container {
-            background: white;
-            padding: 20px;
-            margin: 20px 0;
+        
+        .metric-target {
+            font-size: 0.75em;
+            color: #a0aec0;
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.05);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        /* Chart Grid Layout */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .charts-grid.full-width {
+            grid-template-columns: 1fr;
+        }
+        
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .chart-header {
+            background: #F8F9FA;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin: 0;
+        }
+        
+        .chart-subtitle {
+            font-size: 12px;
+            color: var(--light-text);
+            margin: 2px 0 0 0;
+        }
+        
+        .chart-body {
+            padding: 20px;
+        }
+        
+        /* Gauge Container */
+        .gauge-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
         }
         .chart-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
             color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-subtitle {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 20px;
+            font-style: italic;
         }
         .risk-high { color: #e53e3e; }
         .risk-med { color: #dd6b20; }
@@ -90,34 +254,124 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎯 Autonomy Compliance Dashboard</h1>
-        <p>Interactive visualization of agent health, risks, and compliance metrics</p>
-        <div id="lastUpdated" class="metric-label"></div>
-    </div>
+    <div class="dashboard-container">
+        
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">Autonomy Compliance Dashboard</div>
+            <div class="dashboard-subtitle">Agent Health, Risk Management & Compliance Monitoring | <span id="lastUpdated"></span></div>
+        </div>
 
-    <div class="metrics-grid" id="metricsGrid">
-        <div class="loading">Loading compliance data...</div>
-    </div>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active">Executive Dashboard</a>
+            <a href="#" class="nav-tab">Territory Analysis</a>
+            <a href="#" class="nav-tab">Risk Assessment</a>
+            <a href="#" class="nav-tab">Compliance Metrics</a>
+        </div>
 
-    <div class="chart-container">
-        <div class="chart-title">Territory Health Overview</div>
-        <div id="healthChart" style="height: 400px;"></div>
-    </div>
+        <!-- KPI Boxes -->
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="loading">Loading KPI data...</div>
+        </div>
 
-    <div class="chart-container">
-        <div class="chart-title">Healing Gap Analysis</div>
-        <div id="healingChart" style="height: 400px;"></div>
-    </div>
+        <!-- Main Charts Grid -->
+        <div class="charts-grid">
+            <!-- Health Overview with Gauge -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">System Health Overview</div>
+                    <div class="chart-subtitle">Current health score with 80% target threshold</div>
+                </div>
+                <div class="chart-body">
+                    <div id="healthGauge" style="height: 300px;"></div>
+                </div>
+            </div>
 
-    <div class="chart-container">
-        <div class="chart-title">Risk vs Criticality Matrix</div>
-        <div id="riskMatrix" style="height: 400px;"></div>
-    </div>
+            <!-- Compliance Rate Gauge -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Compliance Rate</div>
+                    <div class="chart-subtitle">Healing invocation vs capabilities</div>
+                </div>
+                <div class="chart-body">
+                    <div id="complianceGauge" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="chart-container">
-        <div class="chart-title">Territory Compliance Breakdown</div>
-        <div id="complianceChart" style="height: 500px;"></div>
+        <!-- Secondary Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Territory Health Breakdown</div>
+                    <div class="chart-subtitle">Health scores by territory with targets</div>
+                </div>
+                <div class="chart-body">
+                    <div id="healthChart" style="height: 400px;"></div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Healing Gap Analysis</div>
+                    <div class="chart-subtitle">Capabilities vs invocation comparison</div>
+                </div>
+                <div class="chart-body">
+                    <div id="healingChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Analysis -->
+        <div class="charts-grid full-width">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Risk vs Criticality Matrix</div>
+                    <div class="chart-subtitle">Priority targeting based on business impact and risk assessment</div>
+                </div>
+                <div class="chart-body">
+                    <div id="riskMatrix" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Analytics -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Observability Maturity</div>
+                    <div class="chart-subtitle">Logging and monitoring capabilities</div>
+                </div>
+                <div class="chart-body">
+                    <div id="observabilityChart" style="height: 350px;"></div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Complexity Analysis</div>
+                    <div class="chart-subtitle">Cyclomatic complexity distribution (Target: <10 avg)</div>
+                </div>
+                <div class="chart-body">
+                    <div id="complexityChart" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Width Compliance Breakdown -->
+        <div class="charts-grid full-width">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Territory Compliance Breakdown</div>
+                    <div class="chart-subtitle">Compliant vs non-compliant agents across all territories</div>
+                </div>
+                <div class="chart-body">
+                    <div id="complianceChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -132,11 +386,15 @@
                 const territoryData = data.filter(row => row.Territory !== 'TOTAL');
                 const totalRow = data.find(row => row.Territory === 'TOTAL');
                 
-                renderMetrics(totalRow);
+                renderKPIBoxes(totalRow);
+                renderHealthGauge(totalRow);
+                renderComplianceGauge(totalRow);
                 renderHealthChart(territoryData);
                 renderHealingChart(territoryData);
                 renderRiskMatrix(territoryData);
                 renderComplianceChart(territoryData);
+                renderObservabilityChart(territoryData);
+                renderComplexityChart(territoryData);
                 
                 document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString();
             } catch (error) {
@@ -145,26 +403,143 @@
             }
         }
 
-        function renderMetrics(totalRow) {
+        function renderKPIBoxes(totalRow) {
             if (!totalRow) return;
             
-            const metrics = [
-                { label: 'Total Agents', value: totalRow.Total, color: '#4299e1' },
-                { label: 'Compliance Rate', value: `${totalRow.Heal_Inv_Pct}%`, color: getHealthColor(totalRow.Heal_Inv_Pct) },
-                { label: 'System Health', value: `${totalRow.Health}/100`, color: getHealthColor(totalRow.Health) },
-                { label: 'Risk Level', value: totalRow.Risk, color: getRiskColor(totalRow.Risk) },
-                { label: 'Avg Complexity', value: totalRow.Avg_CC, color: totalRow.Avg_CC > 10 ? '#e53e3e' : '#38a169' },
-                { label: 'Test Coverage', value: `${totalRow.Test_Pct}%`, color: getHealthColor(totalRow.Test_Pct) }
+            const kpis = [
+                { 
+                    label: 'Total Agents', 
+                    value: totalRow.Total, 
+                    target: null,
+                    status: 'primary'
+                },
+                { 
+                    label: 'Compliance Rate', 
+                    value: `${totalRow.Heal_Inv_Pct}%`, 
+                    target: 'Target: 80%',
+                    status: getKPIStatus(totalRow.Heal_Inv_Pct, 80)
+                },
+                { 
+                    label: 'System Health', 
+                    value: `${totalRow.Health}%`, 
+                    target: 'Target: 80%',
+                    status: getKPIStatus(totalRow.Health, 80)
+                },
+                { 
+                    label: 'Risk Level', 
+                    value: totalRow.Risk, 
+                    target: 'Target: LOW',
+                    status: totalRow.Risk === 'HIGH' ? 'danger' : totalRow.Risk === 'MED' ? 'warning' : 'success'
+                },
+                { 
+                    label: 'Avg Complexity', 
+                    value: totalRow.Avg_CC, 
+                    target: 'Target: <10',
+                    status: getKPIStatus(totalRow.Avg_CC, 10, true)
+                },
+                { 
+                    label: 'Observability', 
+                    value: `${totalRow.Obs_Pct}%`, 
+                    target: 'Target: 80%',
+                    status: getKPIStatus(totalRow.Obs_Pct, 80)
+                }
             ];
 
-            const html = metrics.map(metric => `
-                <div class="metric-card">
-                    <div class="metric-label">${metric.label}</div>
-                    <div class="metric-value" style="color: ${metric.color};">${metric.value}</div>
+            const html = kpis.map(kpi => `
+                <div class="kpi-box ${kpi.status}">
+                    <div class="kpi-label">${kpi.label}</div>
+                    <div class="kpi-value">${kpi.value}</div>
+                    ${kpi.target ? `<div class="kpi-target">${kpi.target}</div>` : ''}
                 </div>
             `).join('');
 
-            document.getElementById('metricsGrid').innerHTML = html;
+            document.getElementById('kpiGrid').innerHTML = html;
+        }
+        
+        function getKPIStatus(value, target, isInverse = false) {
+            const numValue = parseFloat(value);
+            if (isInverse) {
+                return numValue <= target ? 'success' : numValue <= target * 1.5 ? 'warning' : 'danger';
+            }
+            return numValue >= target ? 'success' : numValue >= target * 0.7 ? 'warning' : 'danger';
+        }
+
+        function renderHealthGauge(totalRow) {
+            if (!totalRow) return;
+            
+            const healthValue = parseFloat(totalRow.Health);
+            
+            const trace = {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: healthValue,
+                title: { text: "System Health" },
+                type: "indicator",
+                mode: "gauge+number+delta",
+                delta: { reference: 80 },
+                gauge: {
+                    axis: { range: [null, 100] },
+                    bar: { color: getGaugeColor(healthValue) },
+                    steps: [
+                        { range: [0, 50], color: "#FFEBEE" },
+                        { range: [50, 80], color: "#FFF3E0" },
+                        { range: [80, 100], color: "#E8F5E8" }
+                    ],
+                    threshold: {
+                        line: { color: "red", width: 4 },
+                        thickness: 0.75,
+                        value: 80
+                    }
+                }
+            };
+
+            const layout = {
+                margin: { t: 50, b: 50, l: 50, r: 50 },
+                font: { family: "Segoe UI, sans-serif", size: 14 }
+            };
+
+            Plotly.newPlot('healthGauge', [trace], layout, {displayModeBar: false});
+        }
+
+        function renderComplianceGauge(totalRow) {
+            if (!totalRow) return;
+            
+            const complianceValue = parseFloat(totalRow.Heal_Inv_Pct);
+            
+            const trace = {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: complianceValue,
+                title: { text: "Compliance Rate" },
+                type: "indicator",
+                mode: "gauge+number+delta",
+                delta: { reference: 80 },
+                gauge: {
+                    axis: { range: [null, 100] },
+                    bar: { color: getGaugeColor(complianceValue) },
+                    steps: [
+                        { range: [0, 50], color: "#FFEBEE" },
+                        { range: [50, 80], color: "#FFF3E0" },
+                        { range: [80, 100], color: "#E8F5E8" }
+                    ],
+                    threshold: {
+                        line: { color: "red", width: 4 },
+                        thickness: 0.75,
+                        value: 80
+                    }
+                }
+            };
+
+            const layout = {
+                margin: { t: 50, b: 50, l: 50, r: 50 },
+                font: { family: "Segoe UI, sans-serif", size: 14 }
+            };
+
+            Plotly.newPlot('complianceGauge', [trace], layout, {displayModeBar: false});
+        }
+
+        function getGaugeColor(value) {
+            if (value >= 80) return '#27AE60';
+            if (value >= 60) return '#F39C12';
+            return '#E74C3C';
         }
 
         function renderHealthChart(data) {
@@ -172,12 +547,23 @@
             const health = data.map(row => parseFloat(row.Health));
             const criticality = data.map(row => parseFloat(row.Criticality));
 
+            // Create corporate color array
+            const healthColors = health.map(h => {
+                if (h >= 80) return '#27AE60';
+                if (h >= 60) return '#F39C12'; 
+                if (h >= 40) return '#E74C3C';
+                return '#C0392B';
+            });
+
             const trace1 = {
                 x: territories,
                 y: health,
                 type: 'bar',
                 name: 'Health Score',
-                marker: { color: health.map(h => getHealthColor(h)) }
+                marker: { 
+                    color: healthColors,
+                    line: { color: 'white', width: 2 }
+                }
             };
 
             const trace2 = {
@@ -187,8 +573,8 @@
                 mode: 'markers+lines',
                 name: 'Criticality',
                 yaxis: 'y2',
-                marker: { size: 8, color: '#ff6b6b' },
-                line: { color: '#ff6b6b', width: 2 }
+                marker: { size: 10, color: '#2E86C1', line: { color: 'white', width: 2 } },
+                line: { color: '#2E86C1', width: 3 }
             };
 
             const layout = {
@@ -199,7 +585,19 @@
                     side: 'right',
                     overlaying: 'y'
                 },
-                margin: { b: 100 }
+                margin: { b: 100 },
+                shapes: [{
+                    type: 'line',
+                    x0: 0, x1: 1, xref: 'paper',
+                    y0: 80, y1: 80,
+                    line: { color: 'red', width: 2, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: 0.02, y: 82, xref: 'paper', yref: 'y',
+                    text: 'Target: 80%',
+                    showarrow: false,
+                    font: { color: 'red', size: 12 }
+                }]
             };
 
             Plotly.newPlot('healthChart', [trace1, trace2], layout);
@@ -215,7 +613,10 @@
                 y: healCap,
                 type: 'bar',
                 name: 'Healing Capabilities',
-                marker: { color: '#4ecdc4' }
+                marker: { 
+                    color: '#2E86C1',
+                    line: { color: 'white', width: 2 }
+                }
             };
 
             const trace2 = {
@@ -223,14 +624,33 @@
                 y: healInv,
                 type: 'bar',
                 name: 'Healing Invocation',
-                marker: { color: '#45b7d1' }
+                marker: { 
+                    color: '#5DADE2',
+                    line: { color: 'white', width: 2 }
+                }
             };
 
             const layout = {
                 xaxis: { title: 'Territory', tickangle: -45 },
-                yaxis: { title: 'Percentage (%)' },
+                yaxis: { title: 'Percentage (%)', range: [0, 100] },
                 barmode: 'group',
-                margin: { b: 100 }
+                margin: { b: 100 },
+                shapes: [
+                    {
+                        type: 'line',
+                        x0: 0, x1: 1, xref: 'paper',
+                        y0: 80, y1: 80,
+                        line: { color: '#E74C3C', width: 2, dash: 'dash' }
+                    }
+                ],
+                annotations: [
+                    {
+                        x: 0.02, y: 82, xref: 'paper', yref: 'y',
+                        text: 'Target: 80%',
+                        showarrow: false,
+                        font: { color: '#11998e', size: 12 }
+                    }
+                ]
             };
 
             Plotly.newPlot('healingChart', [trace1, trace2], layout);
@@ -325,19 +745,127 @@
             Plotly.newPlot('complianceChart', [trace1, trace2], layout);
         }
 
+        function renderObservabilityChart(data) {
+            const territories = data.map(row => row.Territory);
+            const obsValues = data.map(row => parseFloat(row.Obs_Pct) || 0);
+            
+            // Create bar chart instead of heatmap for better visibility
+            const colors = obsValues.map(val => {
+                if (val >= 80) return '#27AE60';
+                if (val >= 60) return '#F39C12';
+                if (val >= 40) return '#E74C3C';
+                return '#C0392B';
+            });
+
+            const trace = {
+                x: territories,
+                y: obsValues,
+                type: 'bar',
+                name: 'Observability Maturity',
+                marker: {
+                    color: colors,
+                    line: { color: 'white', width: 2 }
+                },
+                text: obsValues.map(v => `${v}%`),
+                textposition: 'auto',
+                textfont: { color: 'white', size: 12, family: 'Arial Black' }
+            };
+
+            const layout = {
+                xaxis: { title: 'Territory', tickangle: -45 },
+                yaxis: { title: 'Observability Maturity (%)', range: [0, 100] },
+                margin: { b: 100 },
+                shapes: [{
+                    type: 'line',
+                    x0: 0, x1: 1, xref: 'paper',
+                    y0: 80, y1: 80,
+                    line: { color: '#E74C3C', width: 3, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: 0.02, y: 85, xref: 'paper', yref: 'y',
+                    text: 'Target: 80%',
+                    showarrow: false,
+                    font: { color: '#E74C3C', size: 12, family: 'Segoe UI' }
+                }]
+            };
+
+            Plotly.newPlot('observabilityChart', [trace], layout, {displayModeBar: false});
+        }
+
+        function renderComplexityChart(data) {
+            const territories = data.map(row => row.Territory);
+            const avgCC = data.map(row => parseFloat(row.Avg_CC));
+            
+            // Color based on complexity thresholds
+            const complexityColors = avgCC.map(cc => {
+                if (cc <= 10) return '#11998e';  // Good
+                if (cc <= 15) return '#38ef7d';  // Acceptable  
+                if (cc <= 20) return '#f093fb';  // Warning
+                return '#fc466b';  // Critical
+            });
+
+            const trace = {
+                x: territories,
+                y: avgCC,
+                type: 'bar',
+                name: 'Average Cyclomatic Complexity',
+                marker: { 
+                    color: complexityColors,
+                    line: { color: 'white', width: 2 }
+                }
+            };
+
+            const layout = {
+                xaxis: { title: 'Territory', tickangle: -45 },
+                yaxis: { title: 'Cyclomatic Complexity' },
+                margin: { b: 100 },
+                shapes: [
+                    {
+                        type: 'line',
+                        x0: 0, x1: 1, xref: 'paper',
+                        y0: 10, y1: 10,
+                        line: { color: '#11998e', width: 3, dash: 'dash' }
+                    },
+                    {
+                        type: 'line', 
+                        x0: 0, x1: 1, xref: 'paper',
+                        y0: 20, y1: 20,
+                        line: { color: '#fc466b', width: 3, dash: 'dot' }
+                    }
+                ],
+                annotations: [
+                    {
+                        x: 0.02, y: 12, xref: 'paper', yref: 'y',
+                        text: 'Target: <10',
+                        showarrow: false,
+                        font: { color: '#11998e', size: 12 }
+                    },
+                    {
+                        x: 0.02, y: 22, xref: 'paper', yref: 'y', 
+                        text: 'Critical: >20',
+                        showarrow: false,
+                        font: { color: '#fc466b', size: 12 }
+                    }
+                ]
+            };
+
+            Plotly.newPlot('complexityChart', [trace], layout);
+        }
+
         function getHealthColor(value) {
             const v = parseFloat(value);
-            if (v >= 80) return '#38a169';
-            if (v >= 60) return '#dd6b20';
-            return '#e53e3e';
+            if (v >= 80) return '#27AE60';
+            if (v >= 60) return '#F39C12';
+            if (v >= 40) return '#E74C3C';
+            return '#C0392B';
         }
 
         function getRiskColor(risk) {
             switch(risk) {
-                case 'HIGH': return '#e53e3e';
-                case 'MED': return '#dd6b20';
-                case 'LOW': return '#38a169';
-                default: return '#718096';
+                case 'HIGH': return '#E74C3C';
+                case 'MED': return '#F39C12';
+                case 'LOW': return '#27AE60';
+                default: return '#BDC3C7';
             }
         }
 
