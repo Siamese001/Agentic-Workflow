@@ -294,7 +294,9 @@ def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStoragePr
     else:
         raise ValueError(f'Unknown adapter type: {adapter_type}')
 
-class RedisDistributedLock:
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+class RedisDistributedLock(MCPHardenedMixin):
     """
     Redis-based distributed lock for coordination across multiple processes.
     """
@@ -392,7 +394,7 @@ class RedisDistributedLock:
         except Exception:
             return key in self._local_cache
 
-class RedisHotCache:
+class RedisHotCache(MCPHardenedMixin):
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """

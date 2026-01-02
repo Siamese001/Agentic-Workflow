@@ -18,9 +18,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger: Any = logging.getLogger('L4.PineconeStore')
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SovereignPineconeStoreAgent(HealerMixin):
+class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     """
     ADAPTER: Legacy Interface -> New MCP Client.
     Maintains backward compatibility for 'add_texts' and 'similarity_search'.

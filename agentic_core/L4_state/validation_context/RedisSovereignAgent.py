@@ -14,9 +14,10 @@ from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
 
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent
-class RedisSovereignAgent(HealerMixin):
+class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign Redis controller — hardened, monitored, eternal.
     """

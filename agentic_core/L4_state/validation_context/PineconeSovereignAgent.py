@@ -24,8 +24,9 @@ from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
 
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class PineconeSovereignAgent(HealerMixin):
+class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign Pinecone controller — zero drift, eternal readiness.
     Centralizes all vector operations to prevent configuration drift.
