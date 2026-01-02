@@ -1,7 +1,8 @@
 from __future__ import annotations
 """Prompt Injection Detector Agent - Detects prompt-injection attacks."""
 
-from typing import Dict
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class BaseAgent(HealerMixin):
@@ -94,3 +95,9 @@ class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
             )
 
         return validated_output.model_dump()
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Operational guardrail agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Operational guardrail - no healing required")
+        return {"skipped": 1}

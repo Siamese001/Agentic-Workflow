@@ -16,7 +16,8 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Any, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -231,6 +232,12 @@ class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
         
         report.append("=" * 80)
         return "\n".join(report)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Operational guardrail agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Operational guardrail - no healing required")
+        return {"skipped": 1}
 
 
 # Singleton instance

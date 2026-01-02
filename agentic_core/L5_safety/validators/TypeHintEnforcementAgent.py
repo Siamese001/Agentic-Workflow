@@ -8,7 +8,8 @@ import ast
 '''Brief description of functionality and purpose.'''
 
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
