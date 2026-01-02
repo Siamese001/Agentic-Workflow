@@ -26,6 +26,9 @@ from typing import Any, Dict, List, Optional
 
 from .context import ResumeEngineContext
 from .learning import ConfidenceScorer
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class MutationMode(Enum):
@@ -961,7 +964,7 @@ No explanations, no markdown.
         }
 
 
-class Phase4Orchestrator:
+class Phase4Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 4 components for advanced healing.
 

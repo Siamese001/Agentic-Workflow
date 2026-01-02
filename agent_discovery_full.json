@@ -149,8 +149,8 @@
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L0DelegationTestingMixin"
+      "L0DelegationTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -177,8 +177,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "Agent"
+      "Agent",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": false,
@@ -224,9 +224,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -257,9 +257,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -367,9 +367,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,11 +423,11 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
+      "HealerMixin",
       "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "HealerMixin"
+      "AutonomyMixin",
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -538,8 +538,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\utilities_bad_actor.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "Protocol"
+      "Protocol",
+      "HealerMixin"
     ],
     "key_methods": [
       "execute_safe_command",
@@ -832,9 +832,10 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -844,9 +845,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).\n    ",
     "pascal_compliant": true,
@@ -858,8 +859,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -867,9 +869,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 5: Detects bare except: statements (catching all exceptions).\n    ",
     "pascal_compliant": true,
@@ -962,8 +964,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -971,9 +974,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).\n    ",
     "pascal_compliant": true,
@@ -985,8 +988,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -994,9 +998,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 3: Detects breakpoint() and pdb.set_trace() using AST.\n    ",
     "pascal_compliant": true,
@@ -1091,8 +1095,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -1100,9 +1105,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 4: Detects empty except blocks (except: pass).\n    ",
     "pascal_compliant": true,
@@ -1114,8 +1119,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1123,9 +1129,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 6: Detects eval() and exec() calls using AST.\n    ",
     "pascal_compliant": true,
@@ -1137,8 +1143,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -1147,9 +1154,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).\n    Automatically han",
     "pascal_compliant": true,
@@ -1252,9 +1259,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\planes.py",
     "layer": "L1",
     "inheritance": [
+      "Protocol",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "Protocol"
+      "HealerMixin"
     ],
     "key_methods": [
       "execute",
@@ -1359,8 +1366,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "CanonASTValidator"
+      "SubatomicTestingMixin",
+      "CanonASTValidator",
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1368,9 +1376,9 @@
     "has_tools": true,
     "has_memory": false,
     "has_healing": true,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 94,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 95,
     "class_count": 8,
     "description": "\n    Key 2: Detects print() statements using AST.\n    Automatically ignores TYPE_CHECKING blocks via",
     "pascal_compliant": true,
@@ -1474,8 +1482,8 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "ICognitivePlane"
+      "ICognitivePlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2044,8 +2052,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\subatomic_testing_mixin.py",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubatomicTestingMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -2340,8 +2348,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
       "MCPHardenedMixin",
+      "IActionPlane",
       "HealerMixin"
     ],
     "key_methods": [
@@ -3600,8 +3608,8 @@
     "path": "agentic_core\\L3_orchestration\\interfaces\\orchestrator.py",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "ABC"
+      "ABC",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3721,9 +3729,9 @@
     "layer": "L3",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5217,8 +5225,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run"
@@ -5327,8 +5335,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
@@ -5537,8 +5545,8 @@
     "layer": "L5",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5569,8 +5577,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "CachedSafetyShield"
+      "CachedSafetyShield",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6042,8 +6050,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run",
@@ -6067,8 +6075,8 @@
     "layer": "L5",
     "inheritance": [
       "CanonBaseAgent",
-      "ASTEnforcementMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6098,8 +6106,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
@@ -6394,8 +6402,8 @@
     "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "NodeTransformer"
+      "NodeTransformer",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6533,7 +6541,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -6555,7 +6563,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -6577,7 +6585,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -6622,7 +6630,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -6677,7 +6685,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6685,10 +6695,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 369,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 371,
     "class_count": 5,
     "description": "\n    v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)\n    \n    Single Responsibil",
     "pascal_compliant": true,
@@ -6700,7 +6710,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6715,10 +6727,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 760,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 762,
     "class_count": 5,
     "description": "\n    v13.1: Research Agent - Vector-store-first with fallback RAG (MCP Hardened)\n    \n    BREAKING C",
     "pascal_compliant": true,
@@ -6730,7 +6742,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6738,10 +6752,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 369,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 371,
     "class_count": 5,
     "description": "\n    v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)\n    \n    Single Responsibility: Extra",
     "pascal_compliant": true,
@@ -6753,7 +6767,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6761,10 +6777,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 369,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 371,
     "class_count": 5,
     "description": "\n    v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)\n    \n    Single Responsibil",
     "pascal_compliant": true,
@@ -6776,7 +6792,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6790,10 +6808,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 760,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 762,
     "class_count": 5,
     "description": "\n    v13.1: Generation Agent - N-candidate generation only (MCP Hardened)\n    \n    BREAKING CHANGE f",
     "pascal_compliant": true,
@@ -6805,7 +6823,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6814,10 +6834,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 760,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 762,
     "class_count": 5,
     "description": "\n    v13.1: Validation Agent - Rule-based validation from config (MCP Hardened)\n    \n    BREAKING CH",
     "pascal_compliant": true,
@@ -6829,7 +6849,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6838,10 +6860,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 369,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 371,
     "class_count": 5,
     "description": "\n    v13.1: HOP-7 - Gate Decision Agent (MCP Hardened)\n    \n    Single Responsibility: Make the \"Slo",
     "pascal_compliant": true,
@@ -6853,7 +6875,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "MCPHardenedMixin"
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6863,10 +6887,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 760,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 762,
     "class_count": 5,
     "description": "\n    v13.1: QA Report Agent - Persistent markdown report generation (MCP Hardened)\n    \n    NEW in v",
     "pascal_compliant": true,
@@ -6877,17 +6901,21 @@
     "class_name": "HOPOrchestrator",
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
-    "inheritance": [],
+    "inheritance": [
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "execute_workflow"
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 760,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 762,
     "class_count": 5,
     "description": "\n    v13.0: HOP-based Workflow Orchestrator\n    \n    BREAKING CHANGE from v12.0:\n    - OLD: Monolith",
     "pascal_compliant": true,
@@ -6898,17 +6926,21 @@
     "class_name": "HOPOrchestrator",
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
-    "inheritance": [],
+    "inheritance": [
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "execute_workflow"
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 369,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 371,
     "class_count": 5,
     "description": "\n    v13.0: Example orchestrator showing HOP execution pattern\n    \n    This demonstrates the \"Forem",
     "pascal_compliant": true,
@@ -6984,7 +7016,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -7006,7 +7038,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -7067,7 +7099,10 @@
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\outreach_base.py",
     "layer": "apps_lic",
     "inheritance": [
-      "ABC"
+      "SubatomicTestingMixin",
+      "ABC",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7078,17 +7113,17 @@
       "get_instructions",
       "call_llm"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 33,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 38,
     "class_count": 1,
     "description": "\n    Abstract base class for all outreach agents.\n\n    Each agent:\n    - Has a name and description\n",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "OutreachAgentFactory",
@@ -7175,7 +7210,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 215,
@@ -7226,7 +7261,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 348,
@@ -7248,7 +7283,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -7292,7 +7327,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -7416,7 +7451,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 229,
@@ -7550,7 +7585,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7564,24 +7599,27 @@
     "class_name": "AgentFactory",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "create_all_agents",
       "create_agents_by_name",
       "create_quality_agents",
       "create_compliance_agents"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 334,
+    "has_subatomic": true,
+    "loc": 339,
     "class_count": 9,
     "description": "Factory for creating agent instances.",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "BrandComplianceAgent",
@@ -7596,7 +7634,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7610,7 +7648,11 @@
     "class_name": "CapabilityMonitor",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "record_execution",
@@ -7619,17 +7661,17 @@
       "_get_supported_tasks",
       "get_all_stats"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 331,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 334,
     "class_count": 9,
     "description": "\n    Monitors agent capabilities and performance.\n\n    Tracks success rates, identifies limitations,",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "ContentQualityAgent",
@@ -7644,7 +7686,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7666,17 +7708,17 @@
       "is_oscillating",
       "get_stuck_signals"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
     "has_healing": false,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 334,
+    "has_subatomic": true,
+    "loc": 339,
     "class_count": 9,
     "description": "Detects when the system has converged.",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "FactCheckAgent",
@@ -7692,7 +7734,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7706,50 +7748,62 @@
     "class_name": "HealingOrchestrator",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "run"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 334,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 339,
     "class_count": 9,
     "description": "Orchestrates the complete self-healing process.",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "Phase4Orchestrator",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "heal_with_gitops",
       "get_comprehensive_stats"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 607,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 610,
     "class_count": 9,
     "description": "\n    Orchestrates all Phase 4 components for advanced healing.\n\n    Combines:\n    - GitOps for branc",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "Phase6Orchestrator",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "analyze_resume",
@@ -7759,21 +7813,25 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 578,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 581,
     "class_count": 14,
     "description": "\n    Orchestrates all Phase 6 intelligence components.\n\n    Combines:\n    - Security hardening\n    -",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "Phase7Orchestrator",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "check_dependencies",
@@ -7786,15 +7844,15 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 560,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 563,
     "class_count": 13,
     "description": "\n    Orchestrates all Phase 7 governance components.\n\n    Combines:\n    - Dependency arbitration\n   ",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "ProactiveAgent",
@@ -7809,17 +7867,17 @@
       "add_signal",
       "execute"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 331,
+    "has_subatomic": true,
+    "loc": 334,
     "class_count": 9,
     "description": "\n    Agent that proactively identifies and executes tasks.\n    ",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "ReflectionAgent",
@@ -7834,7 +7892,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7849,7 +7907,10 @@
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
     "layer": "apps_rg",
     "inheritance": [
-      "ABC"
+      "SubatomicTestingMixin",
+      "ABC",
+      "MCPHardenedMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7861,23 +7922,27 @@
       "record_fail",
       "call_llm"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 49,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 54,
     "class_count": 1,
     "description": "\n    Base class for all resume generation agents.\n\n    Each agent has:\n    - A reference to the shar",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "ResumeLearningAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "SubatomicTestingMixin",
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "get_few_shot_context",
@@ -7888,17 +7953,17 @@
       "record_section_validation",
       "get_comprehensive_stats"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 527,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 530,
     "class_count": 10,
     "description": "\n    Agent that combines all Phase 3 learning capabilities.\n\n    Integrates:\n    - Few-shot learning",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "ResumeOrchestrator",
@@ -7931,7 +7996,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -7945,23 +8010,26 @@
     "class_name": "SignalRouter",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "get_agents_for_signals",
       "has_critical_signal",
       "determine_strategy"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 334,
+    "has_subatomic": true,
+    "loc": 339,
     "class_count": 9,
     "description": "Routes signals to appropriate agents.",
     "pascal_compliant": true,
     "external_touch": false,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "StrategicPlanner",
@@ -7975,7 +8043,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -8003,13 +8071,13 @@
     "has_memory": false,
     "has_healing": false,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 560,
+    "has_subatomic": true,
+    "loc": 563,
     "class_count": 13,
     "description": "\n    Enforces type contract compliance in docstrings.\n\n    Features:\n    - Docstring existence check",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "TemplateOptimizer",
@@ -8024,7 +8092,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 418,
@@ -8307,7 +8375,11 @@
     "class_name": "UnifiedOrchestrator",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
     "layer": "apps_rg",
-    "inheritance": [],
+    "inheritance": [
+      "MCPHardenedMixin",
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "run_mission",
@@ -8317,15 +8389,15 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 578,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 581,
     "class_count": 14,
     "description": "\n    Multi-phase execution orchestrator.\n\n    Features:\n    - Phase-based execution\n    - Convergenc",
     "pascal_compliant": true,
     "external_touch": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "BaseTaskExecutor",

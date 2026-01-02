@@ -23,6 +23,9 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class SecurityLevel(Enum):
@@ -686,7 +689,7 @@ class OmniContext:
         }
 
 
-class UnifiedOrchestrator:
+class UnifiedOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Multi-phase execution orchestrator.
 
@@ -843,7 +846,7 @@ class UnifiedOrchestrator:
         }
 
 
-class Phase6Orchestrator:
+class Phase6Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 6 intelligence components.
 

@@ -22,6 +22,9 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class ConfidenceLevel(Enum):
@@ -753,7 +756,7 @@ class MemoryPersistence:
         self._save()
 
 
-class ResumeLearningAgent:
+class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Agent that combines all Phase 3 learning capabilities.
 

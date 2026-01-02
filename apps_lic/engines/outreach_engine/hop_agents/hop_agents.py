@@ -10,8 +10,10 @@ import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-# MCP Hardening
+# MCP Hardening + Healing + Testing
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Models (updated imports for new locations)
 from apps_lic.domain.lic_models import (
@@ -29,7 +31,7 @@ from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpre
 # HOP-1: PROFILE ANALYSIS AGENT
 # ============================================================================
 
-class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
+class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)
     
@@ -124,7 +126,7 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin):
 # HOP-3: SENDER GROUNDING AGENT
 # ============================================================================
 
-class HOP3SenderGroundingAgent(MCPHardenedMixin):
+class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)
     
@@ -234,7 +236,7 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin):
 # HOP-4: ROUTING AGENT
 # ============================================================================
 
-class HOP4RoutingAgent(MCPHardenedMixin):
+class HOP4RoutingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)
     
@@ -345,7 +347,7 @@ class HOP4RoutingAgent(MCPHardenedMixin):
 # HOP-7: GATE DECISION AGENT
 # ============================================================================
 
-class HOP7GateDecisionAgent(MCPHardenedMixin):
+class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: HOP-7 - Gate Decision Agent (MCP Hardened)
     
@@ -562,7 +564,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin):
 # HOP ORCHESTRATOR EXAMPLE
 # ============================================================================
 
-class HOPOrchestrator:
+class HOPOrchestrator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.0: Example orchestrator showing HOP execution pattern
     
