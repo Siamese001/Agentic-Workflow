@@ -22,6 +22,9 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -102,7 +105,7 @@ class ComplexityProfile:
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class DynamicModelRouterAgent(SubAtomicAgent):
+class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     The Throttler - Dynamic Model Router
     
@@ -120,6 +123,10 @@ class DynamicModelRouterAgent(SubAtomicAgent):
     - Function complexity
     - Cyclomatic complexity
     - Import dependencies
+    
+    L4 Checkpoint Integration:
+    - Hop state checkpointed for mid-hop resume
+    - Routing decisions logged to L4 ledger
     """
     
     def __init__(self, ctx):

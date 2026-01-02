@@ -150,7 +150,7 @@ class HealingDiffAnalyzer:
         return max_depth
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin):
+class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     Autonomous Knowledge Distillation Agent
     
@@ -162,6 +162,10 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin):
     2. Reflection: Analyze before/after AST diffs
     3. Generalization: Synthesize reusable pattern with Gemini Deep Think
     4. Inoculation: Upsert to Pinecone structural_patterns namespace
+    
+    L4 Checkpoint Integration:
+    - Distilled knowledge checkpointed for persistence
+    - Rollback on corruption
     """
 
     def __init__(self, ctx):
