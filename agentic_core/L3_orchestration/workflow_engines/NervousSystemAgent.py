@@ -1031,8 +1031,11 @@ class NervousSystemPhaseOrchestrator(HealerMixin):
 
 # NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.bases.OrchestrationBaseAgent import L3SubatomicTestingMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
-class NervousSystemAgent(HealerMixin):
+class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
