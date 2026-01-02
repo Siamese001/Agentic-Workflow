@@ -10,10 +10,13 @@ import logging
 import os
 from typing import Any, Dict, List, Optional
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class SovereignPineconeClient:
+class SovereignPineconeClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Pinecone client - audit + safe exec for all vector operations."""
     
     def __init__(self, index_name: Optional[str] = None, namespace: Optional[str] = None):
@@ -24,11 +27,13 @@ class SovereignPineconeClient:
             index_name: Pinecone index name (defaults to env var)
             namespace: Default namespace for operations
         """
+        super().__init__()
         self.index_name = index_name or os.getenv('PINECONE_INDEX_NAME', 'canon-memory-l2')
         self.namespace = namespace or ''
         self.audit_log: List[Dict[str, Any]] = []
         self._pc = None
         self._index = None
+        self._mcp_audit('init')
     
     def _get_client(self):
         """Lazy-load Pinecone client."""
