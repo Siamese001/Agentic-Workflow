@@ -12,17 +12,22 @@ from typing import Any, Dict, List, Optional, Protocol
 import redis
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 
 # NAMING FIXED: CachedStateLedger → CachedStateLedger
-class CachedStateLedger(MCPHardenedMixin):
+class CachedStateLedger(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
     Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.
     """
     def __init__(self, project_root: Path, session_id: str):
+        super().__init__()
         self.root = project_root
         self.session_id = session_id
+        self._mcp_audit('init', payload={'session_id': session_id})
         
         # [L6 HARDENING] Sovereign Redis connection with full URL parsing + fallback
         # Rationale: ValidationContext.py falls back to Fallback ValidationContext when ledger init fails
@@ -140,3 +145,46 @@ class CachedStateLedger(MCPHardenedMixin):
             else:
                 self._audit_trail.append(event)
         except Exception: pass
+
+    def _run_self_tests(self) -> bool:
+        """Run self-tests for CachedStateLedger."""
+        super()._run_self_tests()
+        
+        # Test cache round-trip
+        test_key = "__self_test_cache"
+        test_val = {"test": 42, "timestamp": time.time()}
+        self.cache_validation_context(test_key, test_val)
+        retrieved = self.get_cached_validation_context(test_key)
+        assert retrieved is not None, "Cache round-trip failed"
+        assert retrieved.get("test") == 42, "Cache data corruption"
+        
+        # Test audit trail
+        assert hasattr(self, '_successful_traces'), "Missing successful_traces"
+        
+        return True
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Perform healing for detected anomalies."""
+        self._mcp_audit("healing_start", payload=anomaly.to_dict())
+        
+        if anomaly.type == "cache_stale":
+            # Flush stale cache entries
+            if self.redis:
+                try:
+                    keys = self.redis.keys(f"{self.prefix_context}:*")
+                    for key in keys:
+                        self.redis.delete(key)
+                except: pass
+            else:
+                self._memory_cache.clear()
+            self._mcp_audit("healing_success", payload={"action": "cache_flush"})
+            return True
+        
+        if anomaly.type == "audit_corruption":
+            # Reset audit trail
+            self._audit_trail = []
+            self._successful_traces = []
+            self._mcp_audit("healing_success")
+            return True
+        
+        return False
