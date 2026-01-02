@@ -67,14 +67,22 @@ def safe_parse(code: str, file_path: Path) -> Optional[ast.AST]:
 def infer_layer(file_path: Path) -> str:
     """Infer canonical layer from file path."""
     path_str = str(file_path)
+    # Core layers
     if 'L0_maintenance' in path_str or 'L0_' in path_str: return 'L0'
     if 'L1_cognition' in path_str or 'L1_' in path_str: return 'L1'
     if 'L2_execution' in path_str or 'L2_' in path_str: return 'L2'
     if 'L3_orchestration' in path_str or 'L3_' in path_str: return 'L3'
     if 'L4_state' in path_str or 'L4_' in path_str: return 'L4'
     if 'L5_safety' in path_str or 'L5_' in path_str: return 'L5'
-    if 'observability' in path_str: return 'L3'  # Observability is L3-tier
-    if 'utils' in path_str: return 'L2'  # Utils are L2-tier
+    # agentic_core subfolders -> assign to appropriate layers
+    if 'agentic_core' in path_str:
+        if 'schemas' in path_str: return 'L1'  # Schemas are cognition-tier
+        if 'common' in path_str: return 'L2'  # Common utilities are execution-tier
+        if 'sovereign_clients' in path_str: return 'L2'  # Clients are execution-tier
+        if 'observability' in path_str: return 'L3'  # Observability is orchestration-tier
+        if 'utils' in path_str: return 'L2'  # Utils are execution-tier
+        return 'L2'  # Default agentic_core to L2
+    # Apps
     if 'apps_rg' in path_str: return 'apps_rg'
     if 'apps_lic' in path_str: return 'apps_lic'
     if 'apps_shared' in path_str: return 'apps_shared'
@@ -171,20 +179,25 @@ def count_loc(source: str) -> int:
 
 
 def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
-    """Determine if a class is an agent - ULTRA zero-loss detection (240 core target)."""
+    """Determine if a class is an agent - precise detection (240 core target)."""
     name = class_node.name
+    
+    # Skip known non-agent patterns
+    skip_patterns = ('Test', 'Mock', 'Stub', 'Fake', 'Dummy')
+    if name.startswith(skip_patterns) and 'Agent' not in name:
+        return False
     
     # Pattern 1: Ends with Agent (primary pattern)
     if name.endswith('Agent'):
         return True
     
-    # Pattern 2: Agent-like suffixes (curated for accuracy)
+    # Pattern 2: Agent-like suffixes (core agent roles only)
     agent_suffixes = (
         'Executor', 'Validator', 'Enforcer', 'Guardian', 'Sentinel',
-        'Inspector', 'Architect', 'Engineer', 'Healer', 'Oracle',
+        'Inspector', 'Architect', 'Healer', 'Oracle',
         'Curator', 'Router', 'Orchestrator', 'Conductor',
         'Guard', 'Detector', 'Hunter', 'Fixer', 'Reconciler',
-        'Mapper', 'Classifier', 'Auditor', 'Monitor',
+        'Mapper', 'Classifier', 'Auditor', 'Monitor', 'Witness',
     )
     if name.endswith(agent_suffixes):
         return True
@@ -193,19 +206,28 @@ def is_agent_class(class_node: ast.ClassDef, bases: Set[str]) -> bool:
     if 'Agent' in name:
         return True
     
-    # Pattern 4: Inherits from agent bases (canonical bases only)
+    # Pattern 4: Inherits from canonical agent bases
     agent_bases = {
         'SubAtomicAgent', 'CanonBaseAgent', 'MaintenanceBaseAgent',
         'OrchestrationBaseAgent', 'StateBaseAgent', 'SafetyBaseAgent',
         'HealerMixin', 'SubatomicTestingMixin', 'ExecutionCanonBaseAgent',
         'CognitionCanonBaseAgent', 'CanonASTValidator', 'CanonBaseAgentInterface',
-        'AutonomyMixin', 'AdaptiveExecutionMixin',
+        'AutonomyMixin', 'AdaptiveExecutionMixin', 'MCPHardenedMixin',
+        'OutreachAgent', 'ResumeAgent', 'BaseAgent',
     }
     if bases & agent_bases:
         return True
     
-    # Pattern 5: Specific Mixin classes that are agent-like
-    if name.endswith('Mixin') and any(x in name for x in ['Testing', 'Healing', 'Delegation', 'Autonomy']):
+    # Pattern 5: Testing/Delegation Mixins (agent infrastructure)
+    if name.endswith('Mixin') and any(x in name for x in ['Testing', 'Healing', 'Delegation', 'Autonomy', 'Hardened']):
+        return True
+    
+    # Pattern 6: Sovereign agent patterns
+    if name.startswith('Sovereign') and any(x in name for x in ['Agent', 'Client', 'Store', 'Cache', 'Orchestrator']):
+        return True
+    
+    # Pattern 7: AgenticWorkflowError (core exception)
+    if name == 'AgenticWorkflowError':
         return True
     
     return False
