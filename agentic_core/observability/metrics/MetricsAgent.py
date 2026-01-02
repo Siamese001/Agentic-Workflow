@@ -28,11 +28,12 @@ from datetime import datetime
 import logging
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class MetricsAgent(HealerMixin):
+class MetricsAgent(HealerMixin, MCPHardenedMixin):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.

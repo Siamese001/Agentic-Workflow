@@ -12,13 +12,14 @@ from agentic_core.observability.deepwiki_client_sovereign import SovereignDeepWi
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
-class SovereignCanonAuditor:
+class SovereignCanonAuditor(MCPHardenedMixin):
     """
     Sovereign Canon Auditor using DeepWiki MCP.
     Performs self-verification of critical system components.

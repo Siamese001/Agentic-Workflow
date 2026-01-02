@@ -21,6 +21,7 @@ from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -287,7 +288,7 @@ class OrchestratorAgentAndScopeManager:
         impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
         return impact_scope
 
-class ConsolidatedOrchestrator(HealerMixin):
+class ConsolidatedOrchestrator(HealerMixin, MCPHardenedMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     

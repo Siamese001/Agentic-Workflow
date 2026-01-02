@@ -11,6 +11,7 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -113,7 +114,7 @@ class GitAgent(SubAtomicAgent):
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class BenchmarkingAgent(SubAtomicAgent):
+class BenchmarkingAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Measures execution time and ensures tools aren't too slow.
     """

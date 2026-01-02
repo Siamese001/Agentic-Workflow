@@ -52,16 +52,15 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 
 # [PHASE 2] L0 Delegated Testing
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class FilesystemSSOTReconcilerAgent(
-    AutonomyMixin,
+class FilesystemSSOTReconcilerAgent(AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
-    L0DelegationTestingMixin,
-):
+    L0DelegationTestingMixin,, MCPHardenedMixin):
     """
     Filesystem-level SSOT reconciler - updates blueprint when folders change.
     

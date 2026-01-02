@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import shutil
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class StateManager:
@@ -405,7 +406,7 @@ class StateManager:
             json.dump(checksums, f, indent=2)
 
 
-class StateValidator:
+class StateValidator(MCPHardenedMixin):
     """
     Validates state files against expected schemas
     """

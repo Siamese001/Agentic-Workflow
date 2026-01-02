@@ -24,6 +24,7 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -59,7 +60,7 @@ class BlastRadius:
         assert self._run_self_tests(), f"Self-test failed: {self.__class__.__name__}"
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class DependencyDiplomatAgent(SubAtomicAgent):
+class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     The Dependency Diplomat - Graph Optimizer
     

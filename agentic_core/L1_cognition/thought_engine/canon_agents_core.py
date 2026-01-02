@@ -18,6 +18,7 @@ try:
 except ImportError:
     CanonBaseAgent = None
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
@@ -419,7 +420,7 @@ class HealerAgent(CanonBaseAgentInterface):
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class GenerativeGuard(CanonBaseAgentInterface):
+class GenerativeGuard(CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

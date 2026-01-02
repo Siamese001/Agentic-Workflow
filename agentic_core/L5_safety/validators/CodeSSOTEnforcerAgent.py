@@ -61,8 +61,9 @@ SKIP_PATHS = {
 }
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CodeSSOTEnforcerAgent(HealerMixin):
+class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
     """
     Ultra high-signal code-level SSOT enforcer using AST analysis.
     

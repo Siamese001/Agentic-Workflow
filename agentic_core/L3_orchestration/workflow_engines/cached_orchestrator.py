@@ -15,9 +15,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: CachedOrchestrator → CachedOrchestrator
-class CachedOrchestrator(HealerMixin):
+class CachedOrchestrator(HealerMixin, MCPHardenedMixin):
     """
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
     """

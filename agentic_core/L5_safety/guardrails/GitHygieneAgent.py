@@ -11,9 +11,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class GitHygieneAgent(HealerMixin):
+class GitHygieneAgent(HealerMixin, MCPHardenedMixin):
     """
     Batch agent: Enforces Git repository hygiene.
     - Detects stale branches (no commits in >90 days)

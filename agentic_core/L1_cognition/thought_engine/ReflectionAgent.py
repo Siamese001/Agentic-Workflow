@@ -5,10 +5,11 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class ReflectionAgent(HealerMixin):
+class ReflectionAgent(HealerMixin, MCPHardenedMixin):
     """
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).

@@ -17,6 +17,7 @@ from ..gitops import Phase4Orchestrator
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
 from ..learning import ResumeLearningAgent
 from ..observability import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     AuditReporter,
     ExecutionTracer,
     MetricsCollector,
@@ -92,7 +93,7 @@ class TestTracerWithHealingCycles:
         assert [s.agent_name for s in trace.steps] == agents
 
 
-class TestMetricsWithAgents:
+class TestMetricsWithAgents(MCPHardenedMixin):
     """Integration tests for MetricsCollector with agents."""
 
     @pytest.mark.asyncio

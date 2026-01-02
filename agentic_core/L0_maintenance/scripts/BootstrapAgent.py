@@ -28,12 +28,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 # [PHASE 2] L0 Delegated Testing
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 Logger = logging.getLogger(__name__)
 
 
-class BootstrapAgent(L0DelegationTestingMixin):
+class BootstrapAgent(L0DelegationTestingMixin, MCPHardenedMixin):
     """
     Autonomous boot integrity agent.
     Runs before any validation mission to anchor the environment.

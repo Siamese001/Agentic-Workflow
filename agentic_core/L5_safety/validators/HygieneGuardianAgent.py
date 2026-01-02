@@ -8,10 +8,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 # NAMING CANON COMPLIANCE — renamed to HygieneGuardianAgent for discovery and sovereignty — 2025-12-30
-class HygieneGuardianAgent(CanonBaseAgent):
+class HygieneGuardianAgent(CanonBaseAgent, MCPHardenedMixin):
     """
     Validates Canon Key 45: Shared Utils and Repository Hygiene.
     Ensures that architectural shifts do not leave behind structural debris.

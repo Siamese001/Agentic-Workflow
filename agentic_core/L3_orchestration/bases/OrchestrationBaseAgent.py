@@ -33,7 +33,7 @@ class L3SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class L3SubatomicTestingMixin:
+class L3SubatomicTestingMixin(MCPHardenedMixin):
     """Mixin providing L3 subatomic testing capabilities.
     
     L3 Table Decision:
@@ -251,6 +251,7 @@ def test_default_fallback():
         escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 def test_artifact_exists():
     """Verify Artifact is not empty."""

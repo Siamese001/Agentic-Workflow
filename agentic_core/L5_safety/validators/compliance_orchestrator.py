@@ -43,8 +43,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class ComplianceOrchestrator(HealerMixin):
+class ComplianceOrchestrator(HealerMixin, MCPHardenedMixin):
     """
     L5 Sovereign Compliance Orchestrator
 

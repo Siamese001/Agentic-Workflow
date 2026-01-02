@@ -18,8 +18,9 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CanonValidator(HealerMixin):
+class CanonValidator(HealerMixin, MCPHardenedMixin):
     """
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.

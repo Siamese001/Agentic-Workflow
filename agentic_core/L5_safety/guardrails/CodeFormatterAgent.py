@@ -6,9 +6,10 @@ Atomic agent: Enforces consistent formatting using Black + Ruff auto-fix.
 import subprocess
 from pathlib import Path
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class CodeFormatterAgent(HealerMixin):
+class CodeFormatterAgent(HealerMixin, MCPHardenedMixin):
     """
     Atomic agent: Enforces consistent formatting using Black + Ruff auto-fix.
     """

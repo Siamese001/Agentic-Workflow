@@ -17,8 +17,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class AgentInfo(HealerMixin):
+class AgentInfo(HealerMixin, MCPHardenedMixin):
     """Simple agent information container with explicit initialization."""
 
     def __init__(self, name: str, phase: str, capabilities: List[str]):
