@@ -3,6 +3,7 @@ import logging
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class DummyRag:
@@ -12,7 +13,7 @@ class DummyRag:
         SELF.EVIDENCE = [object() for _ in range(evidence_count)]
     'TODO: Add docstring.'
 
-class DummyAgentCard:
+class DummyAgentCard(HealerMixin):
     """TODO: Add docstring."""
 
     def __init__(self: Any, agent_id: str) -> None:
