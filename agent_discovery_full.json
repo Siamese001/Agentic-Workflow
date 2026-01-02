@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "L0DelegationTestingMixin",
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "L0DelegationTestingMixin",
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,9 +239,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -270,9 +270,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -372,9 +372,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "L0DelegationTestingMixin",
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "L0DelegationTestingMixin",
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -783,7 +783,9 @@
     "class_name": "DependencySentinel",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_syntax.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "__getattr__",
@@ -796,10 +798,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 376,
+    "loc": 377,
     "class_count": 3,
     "description": "\n    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (C",
     "pascal_compliant": true,
@@ -862,16 +864,18 @@
     "class_name": "DummyAgentCard",
     "path": "agentic_core\\L1_cognition\\thought_engine\\metacognition_hypothesis_generation.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__"
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 26,
+    "loc": 27,
     "class_count": 2,
     "description": "TODO: Add docstring.",
     "pascal_compliant": true,
@@ -3498,9 +3502,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5089,8 +5093,8 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
+      "AutonomyMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -5522,9 +5526,9 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AutonomyMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -5599,8 +5603,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "CanonBaseAgent",
-      "ASTEnforcementMixin"
+      "ASTEnforcementMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",

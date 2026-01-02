@@ -297,8 +297,10 @@ class CodeJanitor:
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
-class DependencySentinel:
+class DependencySentinel(HealerMixin):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
