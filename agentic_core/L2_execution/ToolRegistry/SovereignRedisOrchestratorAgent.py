@@ -13,7 +13,7 @@ from typing import Any, Optional
 
 # 2. THIRDPARTY
 import redis
-
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

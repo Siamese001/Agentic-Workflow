@@ -305,6 +305,27 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
             return Checkpoint.state_snapshot.copy()
         return None
 
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L4 state agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L4 state - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 def create_autonomous_checkpoint_manager(checkpoint_dir: Optional[str]=None) -> AutonomousCheckpointManager:
     """Factory function to create autonomous Checkpoint manager."""
     return AutonomousCheckpointManager(checkpoint_dir=checkpoint_dir)
+
+def get_checkpoint_manager(project_root: Path) -> AutonomousCheckpointManagerAgent:
+    """Factory function to get checkpoint manager instance."""
+    return AutonomousCheckpointManagerAgent(project_root=project_root)
