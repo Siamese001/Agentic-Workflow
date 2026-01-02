@@ -10,9 +10,12 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from .context import OutreachEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class OutreachAgent(ABC):
+class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     """
     Abstract base class for all outreach agents.
 
@@ -24,9 +27,11 @@ class OutreachAgent(ABC):
     """
 
     def __init__(self, ctx: OutreachEngineContext):
+        super().__init__()
         self.ctx = ctx
         self.name = self.__class__.__name__
         self.description = self.__doc__ or "No description"
+        self._mcp_audit("init")
 
     @abstractmethod
     async def execute(self) -> None:

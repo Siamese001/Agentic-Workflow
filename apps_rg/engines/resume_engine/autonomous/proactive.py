@@ -18,6 +18,9 @@ from typing import Any, Dict, List, Optional
 
 from .resume_base import ResumeAgent
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class TaskPriority(Enum):
@@ -322,7 +325,7 @@ class PredictiveHandoff:
         self._handoff_requests.clear()
 
 
-class CapabilityMonitor:
+class CapabilityMonitor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Monitors agent capabilities and performance.
 

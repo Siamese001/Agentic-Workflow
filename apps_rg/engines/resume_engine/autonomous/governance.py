@@ -26,6 +26,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class DependencyStatus(Enum):
@@ -860,7 +863,7 @@ class PredictiveBudgetManager:
         }
 
 
-class Phase7Orchestrator:
+class Phase7Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 7 governance components.
 

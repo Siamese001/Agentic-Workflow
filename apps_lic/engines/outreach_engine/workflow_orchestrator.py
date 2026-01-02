@@ -12,8 +12,10 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 
-# MCP Hardening
+# MCP Hardening + Healing + Testing
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Core infrastructure (updated imports for new locations)
 from apps_shared.utils.state_manager import StateManager
@@ -32,7 +34,7 @@ from apps_lic.domain.lic_models import (
 # HOP-2: RESEARCH AGENT (Refactored from S2_SupervisorAgent)
 # ============================================================================
 
-class HOP2ResearchAgent(MCPHardenedMixin):
+class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Research Agent - Vector-store-first with fallback RAG (MCP Hardened)
     
@@ -332,7 +334,7 @@ class HOP2ResearchAgent(MCPHardenedMixin):
 # HOP-5: GENERATION AGENT (Refactored from GenerationOrchestrator)
 # ============================================================================
 
-class HOP5GenerationAgent(MCPHardenedMixin):
+class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Generation Agent - N-candidate generation only (MCP Hardened)
     
@@ -590,7 +592,7 @@ class HOP5GenerationAgent(MCPHardenedMixin):
 # HOP-6: VALIDATION AGENT (Refactored from ValidationAgent)
 # ============================================================================
 
-class HOP6ValidationAgent(MCPHardenedMixin):
+class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: Validation Agent - Rule-based validation from config (MCP Hardened)
     
@@ -828,7 +830,7 @@ class HOP6ValidationAgent(MCPHardenedMixin):
 # HOP-8: QA REPORT AGENT (New - Enhancement 6)
 # ============================================================================
 
-class HOP8QAReportAgent(MCPHardenedMixin):
+class HOP8QAReportAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.1: QA Report Agent - Persistent markdown report generation (MCP Hardened)
     
@@ -1046,7 +1048,7 @@ class HOP8QAReportAgent(MCPHardenedMixin):
 # HOP ORCHESTRATOR (Refactored from WorkflowOrchestrator)
 # ============================================================================
 
-class HOPOrchestrator:
+class HOPOrchestrator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     v13.0: HOP-based Workflow Orchestrator
     

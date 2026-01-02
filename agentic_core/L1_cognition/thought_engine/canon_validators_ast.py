@@ -8,8 +8,9 @@ from typing import List, Dict, Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
-class PrintStatementValidator(HealerMixin, CanonASTValidator):
+class PrintStatementValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 2: Detects print() statements using AST.
     Automatically ignores TYPE_CHECKING blocks via base class.
@@ -22,7 +23,7 @@ class PrintStatementValidator(HealerMixin, CanonASTValidator):
                 self.report('Forbidden print() statement detected', node)
         self.generic_visit(node)
 
-class EvalExecValidator(HealerMixin, CanonASTValidator):
+class EvalExecValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 6: Detects eval() and exec() calls using AST.
     """
@@ -34,7 +35,7 @@ class EvalExecValidator(HealerMixin, CanonASTValidator):
                 self.report(f'Forbidden {node.func.id}() call detected', node)
         self.generic_visit(node)
 
-class DebuggerValidator(HealerMixin, CanonASTValidator):
+class DebuggerValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 3: Detects breakpoint() and pdb.set_trace() using AST.
     """
@@ -50,7 +51,7 @@ class DebuggerValidator(HealerMixin, CanonASTValidator):
                     self.report('Debugger pdb.set_trace() detected', node)
         self.generic_visit(node)
 
-class EmptyExceptValidator(HealerMixin, CanonASTValidator):
+class EmptyExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 4: Detects empty except blocks (except: pass).
     """
@@ -62,7 +63,7 @@ class EmptyExceptValidator(HealerMixin, CanonASTValidator):
             self.report('Empty except block detected (except: pass)', node)
         self.generic_visit(node)
 
-class BareExceptValidator(HealerMixin, CanonASTValidator):
+class BareExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 5: Detects bare except: statements (catching all exceptions).
     """
@@ -73,7 +74,7 @@ class BareExceptValidator(HealerMixin, CanonASTValidator):
             self.report('Bare except: statement detected (should specify exception type)', node)
         self.generic_visit(node)
 
-class ExternalHttpValidator(HealerMixin, CanonASTValidator):
+class ExternalHttpValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).
     Automatically handles TYPE_CHECKING blocks and exception ledger.
@@ -97,7 +98,7 @@ class ExternalHttpValidator(HealerMixin, CanonASTValidator):
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
 
-class AsyncBlockingValidator(HealerMixin, CanonASTValidator, MCPHardenedMixin):
+class AsyncBlockingValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """
@@ -123,7 +124,7 @@ class AsyncBlockingValidator(HealerMixin, CanonASTValidator, MCPHardenedMixin):
                     self.report(f'Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())', node)
         self.generic_visit(node)
 
-class DangerousBuiltinsValidator(HealerMixin, CanonASTValidator):
+class DangerousBuiltinsValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).
     """

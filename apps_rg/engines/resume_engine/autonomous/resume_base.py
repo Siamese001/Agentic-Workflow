@@ -12,9 +12,12 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class ResumeAgent(ABC):
+class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     """
     Base class for all resume generation agents.
 
@@ -25,8 +28,10 @@ class ResumeAgent(ABC):
     """
 
     def __init__(self, ctx: ResumeEngineContext):
+        super().__init__()
         self.ctx = ctx
         self.name = self.__class__.__name__
+        self._mcp_audit("init")
 
     @abstractmethod
     async def execute(self) -> None:

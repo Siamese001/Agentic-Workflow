@@ -29,6 +29,9 @@ from .agents import (
 )
 from .resume_base import ResumeAgent
 from .context import ResumeEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class HealingStrategy(Enum):
@@ -69,7 +72,7 @@ class HealingResult:
     final_resume: Dict[str, Any]
 
 
-class SignalRouter:
+class SignalRouter(MCPHardenedMixin, HealerMixin):
     """Routes signals to appropriate agents."""
 
     # Signal to agent mapping
@@ -121,7 +124,7 @@ class SignalRouter:
         return HealingStrategy.SURGICAL_STRIKE
 
 
-class AgentFactory:
+class AgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating agent instances."""
 
     @staticmethod
@@ -295,7 +298,7 @@ class HealingCycle:
                 self.ctx.remove_signal(signal)
 
 
-class HealingOrchestrator:
+class HealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
@@ -304,7 +307,9 @@ class HealingOrchestrator:
         max_cycles: int = 5,
         enable_reflection: bool = True,
     ):
+        super().__init__()
         self.ctx = ctx
+        self._mcp_audit("init")
         self.max_cycles = max_cycles
         self.enable_reflection = enable_reflection
         self.cycle_results: List[CycleResult] = []
