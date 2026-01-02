@@ -51,6 +51,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 # Try to import Logger, fallback to print
 try:
@@ -1126,6 +1127,86 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
             "capability_violations": self.enforce_subatomic_capability_isolation(),
             "dry_run": dry_run,
         }
+
+    @timeout(300)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None,
+    ) -> Dict[str, int]:
+        """
+        Autonomous full-repository hierarchy law healing.
+        Canon Key 51 compliance - fully self-orchestrating.
+        
+        Args:
+            dry_run: If True, only propose changes
+            execute: Must be explicitly True to perform changes
+            depth: Current recursion depth
+            max_depth: Maximum recursion depth
+            _call_path: Set of agent names in call path (cycle detection)
+            
+        Returns:
+            Summary dict with counts
+        """
+        if _call_path is None:
+            _call_path = set()
+        
+        agent_name = self.__class__.__name__
+        
+        # CYCLE DETECTION
+        if agent_name in _call_path:
+            print(f"  [!] HEALING CYCLE DETECTED: {agent_name} already in path → stopping")
+            return {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0, "cycle_detected": True}
+        
+        # DEPTH LIMIT
+        if depth > max_depth:
+            print(f"  [!] RECURSION DEPTH LIMIT REACHED ({depth}/{max_depth}) → stopping")
+            return {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0, "depth_limited": True}
+        
+        _call_path.add(agent_name)
+        
+        if execute and dry_run:
+            raise ValueError("execute and dry_run cannot both be True")
+        
+        actual_execute = execute and not dry_run
+        
+        try:
+            violations = self.run()
+            print(f"[HIERARCHY HEAL @ depth {depth}] Found {len(violations)} violations")
+            
+            counts = {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0}
+            
+            for file_path, reason in violations:
+                try:
+                    # Use existing cleanup_violations for single-item healing
+                    cleanup_results = self.cleanup_violations([(file_path, reason)], dry_run=not actual_execute)
+                    
+                    if cleanup_results and cleanup_results[0].get("applied"):
+                        counts["healed"] += 1
+                        print(f"  [+] HEALED: {file_path.name} - {cleanup_results[0].get('action_taken', 'fixed')}")
+                    elif cleanup_results and cleanup_results[0].get("error"):
+                        counts["errors"] += 1
+                        print(f"  [!] ERROR: {file_path.name} - {cleanup_results[0]['error']}")
+                    else:
+                        counts["skipped"] += 1
+                        
+                except Exception as e:
+                    counts["errors"] += 1
+                    print(f"  [!] ERROR on {file_path.name}: {e}")
+            
+            print(f"\n[HIERARCHY HEAL SUMMARY] "
+                  f"Healed: {counts['healed']} | "
+                  f"Blocked: {counts['blocked']} | "
+                  f"Skipped: {counts['skipped']} | "
+                  f"Errors: {counts['errors']}")
+            
+            return counts
+            
+        finally:
+            _call_path.discard(agent_name)
 
 
 # PascalCase is now the canonical name

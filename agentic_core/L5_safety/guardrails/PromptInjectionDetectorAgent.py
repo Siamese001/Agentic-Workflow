@@ -1,0 +1,96 @@
+from __future__ import annotations
+"""Prompt Injection Detector Agent - Detects prompt-injection attacks."""
+
+from typing import Dict
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+
+class BaseAgent(HealerMixin):
+    """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
+    def __init__(self, context, debug_mode=False):
+        self.context = context
+        self.debug_mode = debug_mode
+    
+    def log_info(self, msg):
+        pass
+    
+    def log_warning(self, msg):
+        pass
+    
+    def log_error(self, msg):
+        pass
+
+class BaseModel:
+    """Stub for BaseModel - TODO: Replace with sovereign equivalent"""
+    pass
+
+def Field(*args, **kwargs):
+    """Stub for Field - TODO: Replace with sovereign equivalent"""
+    return None
+
+def track_metrics(name):
+    """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
+    def decorator(func):
+        return func
+    return decorator
+
+async def _format_prompt_with_defaults(template, data, budget_manager, goal_state, top_failures):
+    """Stub for _format_prompt_with_defaults"""
+    return template
+
+
+class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
+    """Detects prompt-injection attacks."""
+
+    class PIDetectionOutput(BaseModel):
+        injection_detected: bool = Field(..., description="True if an attack was detected")
+        reason: str = Field(..., description="Explanation for the detection")
+        confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the detection")
+
+    @track_metrics("run_pi_detector")
+    async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
+        """Run async prompt injection detection on user input."""
+        self.log_info("Detecting prompt injection...")
+
+        if not self.config.agent_stacks.enable_prompt_injection_detection:
+            self.log_warning("Prompt injection detection is disabled.")
+            return {
+                "injection_detected": False,
+                "reason": "Detector disabled",
+                "confidence": 0.0,
+            }
+
+        client = self.get_model_client("prompt_injection_model")
+        prompt_template = self.prompt_manager.get_template("prompt_injection_detector")
+
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {"user_input": user_input},
+            self.BudgetManager,
+            client.goal_state,
+            client.top_failures,
+        )
+
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.ModelConfig.prompt_injection_model.temperature,
+            response_format="json_object",
+        )
+
+        validated_output, error = self.validator.validate(
+            response["content"],
+            self.PIDetectionOutput,
+        )
+        if error:
+            self.log_error(f"PromptInjectionDetector failed validation: {error}")
+            return {
+                "injection_detected": True,
+                "reason": f"Detector validation failed: {error}",
+                "confidence": 1.0,
+            }
+
+        if validated_output.injection_detected:
+            self.log_warning(
+                f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}"
+            )
+
+        return validated_output.model_dump()

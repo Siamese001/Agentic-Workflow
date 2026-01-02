@@ -698,6 +698,27 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
             except Exception as e:
                 return False, f"AGENT VALIDATION ERROR: Unable to parse '{file_name}': {e}"
         
+        # === REVERSE CHECK: AGENT CLASSES HIDING IN NON-AGENT.PY FILES ===
+        # This enforces that ALL agent classes must be in *Agent.py files
+        try:
+            content = file_path.read_text(encoding="utf-8", errors='ignore')
+            classes, _, _ = self._extract_ast_symbols(content)
+            # Find classes that look like agents (end with Agent, Handler, Manager, etc.)
+            agent_suffixes = ('Agent', 'Handler', 'Manager', 'Controller', 'Executor', 
+                            'Validator', 'Orchestrator', 'Governor', 'Enforcer', 'Sentinel')
+            hidden_agents = [c for c in classes if any(c.endswith(s) for s in agent_suffixes)
+                           and not any(excl in c for excl in ('Mixin', 'Base', 'Abstract', 'Protocol'))]
+            
+            if hidden_agents:
+                primary = hidden_agents[0]
+                suggested_name = f"{primary}.py" if primary.endswith('Agent') else f"{primary}Agent.py"
+                return False, (
+                    f"AGENT FILE NAMING VIOLATION: '{file_name}' contains agent class(es) {hidden_agents}. "
+                    f"Rename file to '{suggested_name}' to comply with *Agent.py naming law."
+                )
+        except Exception:
+            pass  # If we can't parse, continue with other checks
+        
         # === SNAKE_CASE ENFORCEMENT FOR NON-AGENT FILES ===
         if re.search(r'[A-Z]', stem):  # Any uppercase letter
             return False, (
@@ -987,9 +1008,10 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
 
     def auto_rename_proposal(self, file_path: Path, dry_run: bool = True) -> Dict:
         """
-        SUPPLEMENTED FROM NamingLawHealerAgent — merged 2025-12-30
-        
-        Generate automatic rename proposal with full context.
+        UPGRADED 2026-01-02: Uses actual primary agent class name from AST
+        Falls back to high-signal suggestions only if no agent class found.
+        Respects global uniqueness via _existing_agent_stems cache.
+        Detects multi-agent files and recommends splitting.
         
         Args:
             file_path: Path to file to rename
@@ -1008,40 +1030,68 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
             'import_updates_needed': [],
         }
         
-        # Detect violations
-        result['violations'] = self.detect_low_signal_patterns(file_path)
-        
-        if not result['violations']:
-            result['status'] = 'compliant'
-            return result
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            classes, _, _ = self._extract_ast_symbols(content)
             
-        # Generate and rank suggestions
-        result['suggestions'] = self.generate_name_suggestions(file_path)
-        result['best_name'] = self.rank_name_suggestions(result['suggestions'], file_path)
+            # Find agent-like classes (prioritize those ending with Agent)
+            agent_classes = [
+                c for c in classes 
+                if c.endswith('Agent') 
+                or c.endswith(('Handler', 'Manager', 'Orchestrator', 'Governor', 'Enforcer', 'Sentinel'))
+            ]
+            agent_classes = [c for c in agent_classes 
+                            if not any(excl in c for excl in ('Mixin', 'Base', 'Abstract', 'Protocol'))]
+            
+            if not agent_classes:
+                # Fallback to legacy heuristic only if truly no agent
+                result['violations'] = self.detect_low_signal_patterns(file_path)
+                if not result['violations']:
+                    result['status'] = 'compliant'
+                    return result
+                result['suggestions'] = self.generate_name_suggestions(file_path)
+                result['best_name'] = self.rank_name_suggestions(result['suggestions'], file_path) or file_path.name
+            elif len(agent_classes) == 1:
+                primary = agent_classes[0]
+                # ENFORCE NAMING LAW: Must end with Agent
+                if not primary.endswith('Agent'):
+                    primary = f"{primary}Agent"
+                result['best_name'] = f"{primary}.py"
+            else:
+                # MULTI-AGENT FILE → recommend split instead of rename
+                result['status'] = 'multi_agent_needs_split'
+                result['error'] = f"File contains multiple agents: {agent_classes}. Split into individual *Agent.py files."
+                result['best_name'] = None
+                return result
+                
+        except Exception as e:
+            result['status'] = 'error'
+            result['error'] = f"Failed to parse {file_path.name}: {e}"
+            return result
         
         if not result['best_name']:
             result['status'] = 'no_suggestion'
             return result
             
-        # Ensure .py extension
+        # Ensure .py extension and PascalCase agent format
         new_name = result['best_name']
         if not new_name.endswith('.py'):
             new_name = f'{new_name}.py'
+        
+        # GLOBAL UNIQUENESS ENFORCEMENT
+        target_stem = Path(new_name).stem
+        if target_stem in self._existing_agent_stems and target_stem != file_path.stem:
+            result['status'] = 'collision'
+            result['error'] = f"Target name '{target_stem}' already exists globally. Manual resolution required."
+            return result
             
         new_path = file_path.parent / new_name
         result['new_path'] = str(new_path)
         
-        # [SAFEGUARD] Check for duplicate prefix sprawl
-        has_dup, dup_msg = validate_no_duplicate_prefix(new_name)
-        if has_dup:
-            result['status'] = 'blocked'
-            result['error'] = f'Name sprawl prevented: {dup_msg}'
-            return result
-        
-        # Check for collision
-        if new_path.exists():
+        # Check for filesystem collision
+        if new_path.exists() and new_path != file_path:
             result['status'] = 'collision'
-            result['error'] = f'Target {new_name} already exists'
+            result['error'] = f'Target {new_name} already exists in directory'
             return result
             
         # Execute rename if not dry_run
@@ -1051,7 +1101,10 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
                 result['executed'] = True
                 result['status'] = 'renamed'
                 
-                # Note: import updates would need to be handled separately
+                # Update global cache
+                self._existing_agent_stems.discard(file_path.stem)
+                self._existing_agent_stems.add(new_path.stem)
+                
                 result['import_updates_needed'].append({
                     'old_import': file_path.stem,
                     'new_import': new_path.stem,
@@ -1063,6 +1116,180 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
             result['status'] = 'proposed'
             
         return result
+
+    def propose_split(self, file_path: Path) -> List[Dict]:
+        """
+        Propose splitting multi-agent file into individual *Agent.py files.
+        
+        Args:
+            file_path: Path to multi-agent file
+            
+        Returns:
+            List of split proposals with class name and target filename
+        """
+        try:
+            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            classes, _, _ = self._extract_ast_symbols(content)
+            
+            # Find agent classes
+            agent_classes = [
+                c for c in classes 
+                if c.endswith('Agent') 
+                or c.endswith(('Handler', 'Manager', 'Orchestrator', 'Governor', 'Enforcer', 'Sentinel'))
+            ]
+            agent_classes = [c for c in agent_classes 
+                            if not any(excl in c for excl in ('Mixin', 'Base', 'Abstract', 'Protocol'))]
+            
+            if len(agent_classes) <= 1:
+                return []
+            
+            proposals = []
+            for cls in agent_classes:
+                # Ensure Agent suffix
+                target_name = f"{cls}.py" if cls.endswith('Agent') else f"{cls}Agent.py"
+                proposals.append({
+                    "class_name": cls,
+                    "new_file": target_name,
+                    "action": "create_new_file"
+                })
+            
+            proposals.append({
+                "old_file": file_path.name,
+                "action": "delete_or_convert_to_init"
+            })
+            
+            return proposals
+        except Exception:
+            return []
+
+    def _detect_runner_script_violations(self) -> List[Path]:
+        """
+        Detect forbidden external runner scripts — autonomy law violation (Canon Key 51).
+        
+        Returns:
+            List of paths to forbidden runner scripts
+        """
+        violations = []
+        forbidden_dirs = ["scripts/healing", "scripts/tools", "scripts/runners"]
+        forbidden_patterns = ["heal", "runner", "launcher", "driver"]
+        
+        for dir_path in forbidden_dirs:
+            dir_obj = self.project_root / dir_path
+            if dir_obj.exists():
+                for py_file in dir_obj.rglob("*.py"):
+                    stem_lower = py_file.stem.lower()
+                    if any(pattern in stem_lower for pattern in forbidden_patterns):
+                        violations.append(py_file)
+        
+        return violations
+
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Optional[Set[str]] = None,
+    ) -> Dict[str, int]:
+        """
+        Autonomous full-repository naming law healing.
+        Replaces external scripts — NamingAgent is now self-orchestrating.
+        
+        Args:
+            dry_run: If True, only propose changes (default for safety)
+            execute: Must be explicitly True to perform renames (defense in depth)
+            depth: Current recursion depth (for meta-healing)
+            max_depth: Maximum recursion depth
+            _call_path: Set of agent names in current call path (cycle detection)
+        
+        Returns:
+            Summary dict with counts
+        """
+        # Initialize call path on first call
+        if _call_path is None:
+            _call_path = set()
+        
+        agent_name = self.__class__.__name__
+        
+        # CYCLE DETECTION
+        if agent_name in _call_path:
+            print(f"  [!] HEALING CYCLE DETECTED: {agent_name} already in path → stopping")
+            return {"renamed": 0, "collisions_blocked": 0, "multi_agent_needs_split": 0, "skipped": 0, "errors": 0, "cycle_detected": True}
+        
+        # DEPTH LIMIT
+        if depth > max_depth:
+            print(f"  [!] RECURSION DEPTH LIMIT REACHED ({depth}/{max_depth}) → stopping")
+            return {"renamed": 0, "collisions_blocked": 0, "multi_agent_needs_split": 0, "skipped": 0, "errors": 0, "depth_limited": True}
+        
+        # Add self to path
+        _call_path.add(agent_name)
+        
+        if execute and dry_run:
+            raise ValueError("execute and dry_run cannot both be True")
+        
+        actual_execute = execute and not dry_run
+        
+        # AUTONOMY LAW ENFORCEMENT (Canon Key 51)
+        script_violations = self._detect_runner_script_violations()
+        if script_violations:
+            print(f"\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
+            for script in script_violations:
+                print(f"    → {script.relative_to(self.project_root)} — DELETE THIS FILE")
+                if actual_execute:
+                    try:
+                        script.unlink()
+                        print(f"      [+] DELETED forbidden script")
+                    except Exception as e:
+                        print(f"      [!] Failed to delete: {e}")
+            if actual_execute:
+                print("[+] Autonomy law enforced — external scripts removed")
+        
+        violations = self.run()  # uses existing full scan
+        print(f"[NAMING HEAL @ depth {depth}] Found {len(violations)} violations")
+        
+        summary = {
+            "renamed": 0,
+            "collisions_blocked": 0,
+            "multi_agent_needs_split": 0,
+            "skipped": 0,
+            "errors": 0
+        }
+        
+        for file_path, reason in violations:
+            # Only process AGENT FILE NAMING VIOLATION (not other naming issues)
+            if 'AGENT FILE NAMING VIOLATION' not in reason:
+                summary['skipped'] += 1
+                continue
+                
+            proposal = self.auto_rename_proposal(file_path, dry_run=not actual_execute)
+            status = proposal.get('status', 'unknown')
+            
+            if status == 'renamed':
+                summary['renamed'] += 1
+                print(f"  [+] RENAMED: {file_path.name} → {Path(proposal['new_path']).name}")
+            elif status == 'proposed':
+                summary['renamed'] += 1
+                print(f"  [→] WOULD RENAME: {file_path.name} → {Path(proposal['new_path']).name}")
+            elif status == 'collision':
+                summary['collisions_blocked'] += 1
+                print(f"  [!] BLOCKED (collision): {file_path.name} → {proposal.get('best_name')} — {proposal.get('error')}")
+            elif status == 'multi_agent_needs_split':
+                summary['multi_agent_needs_split'] += 1
+                print(f"  [!] SPLIT REQUIRED: {file_path.name} contains multiple agents — manual split needed")
+            elif status == 'compliant':
+                summary['skipped'] += 1
+            else:
+                summary['errors'] += 1
+                print(f"  [!] ERROR: {file_path.name} — {proposal.get('error', status)}")
+        
+        print(f"\n[NAMING HEAL SUMMARY] "
+              f"Renamed: {summary['renamed']} | "
+              f"Collisions: {summary['collisions_blocked']} | "
+              f"Split needed: {summary['multi_agent_needs_split']} | "
+              f"Skipped: {summary['skipped']} | "
+              f"Errors: {summary['errors']}")
+        
+        return summary
 
     async def _assess_naming_signal(self, name: str, file_path: Path) -> float:
         """Assess naming signal strength (0.0-1.0)."""

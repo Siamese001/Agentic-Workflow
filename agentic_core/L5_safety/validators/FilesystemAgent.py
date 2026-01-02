@@ -43,6 +43,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 Logger = logging.getLogger(__name__)
 
@@ -321,6 +322,57 @@ class FilesystemAgent(HealerMixin):
             "detailed_actions": cleanup_results,
             "backup_path": str(self.backup_dir) if not dry_run else "DRY-RUN_MODE"
         }
+
+    @timeout(300)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: Set[str] = None,
+    ) -> Dict[str, int]:
+        """
+        Autonomous full-repository filesystem law healing.
+        Canon Key 51 compliance - fully self-orchestrating.
+        """
+        if _call_path is None:
+            _call_path = set()
+        
+        agent_name = self.__class__.__name__
+        
+        if agent_name in _call_path:
+            print(f"  [!] HEALING CYCLE DETECTED: {agent_name}")
+            return {"healed": 0, "errors": 0, "skipped": 0, "cycle_detected": True}
+        
+        if depth > max_depth:
+            print(f"  [!] RECURSION DEPTH LIMIT ({depth}/{max_depth})")
+            return {"healed": 0, "errors": 0, "skipped": 0, "depth_limited": True}
+        
+        _call_path.add(agent_name)
+        
+        try:
+            violations = self.run()
+            print(f"[FILESYSTEM HEAL @ depth {depth}] Found {len(violations)} violations")
+            
+            counts = {"healed": 0, "errors": 0, "skipped": 0}
+            
+            for file_path, reason in violations:
+                try:
+                    cleanup_results = self.cleanup_violations([(file_path, reason)])
+                    if cleanup_results and len(cleanup_results) > 0:
+                        counts["healed"] += 1
+                        print(f"  [+] HEALED: {file_path.name}")
+                    else:
+                        counts["skipped"] += 1
+                except Exception as e:
+                    counts["errors"] += 1
+                    print(f"  [!] ERROR on {file_path.name}: {e}")
+            
+            print(f"\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            return counts
+        finally:
+            _call_path.discard(agent_name)
 
 
 # PascalCase is now the canonical name

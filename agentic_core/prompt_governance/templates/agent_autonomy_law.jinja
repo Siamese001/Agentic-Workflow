@@ -1,0 +1,24 @@
+{# AGENT AUTONOMY LAW - CANON KEY 51 - 2026-01-02 #}
+{# This is immutable sovereign law. All agents that generate, heal, or refactor code MUST include this. #}
+
+CRITICAL AUTONOMY LAW (NON-NEGOTIABLE):
+
+1. Every domain agent (naming, location, uniqueness, safety, etc.) MUST be fully autonomous.
+2. Autonomous means:
+   - Contains a public method `heal_repository(dry_run: bool = True, execute: bool = False)` 
+   - This method performs full-repo scan + single-file healing + logging + summary
+   - Can be called directly via `get_agent(project_root).heal_repository()` 
+3. NO external runner scripts are permitted:
+   - Files in `scripts/healing/`, `scripts/tools/`, or similar are FORBIDDEN
+   - Creating such a script is a direct violation of sovereignty
+4. When healing or refactoring:
+   - If an agent lacks `heal_repository()`, ADD it (use the exact signature above)
+   - If an external runner script exists, MIGRATE its logic into the agent and DELETE the script
+   - NEVER create a new runner script — this is an anti-pattern
+5. Integration:
+   - Canon validator or HealerAgent calls the agent's internal method directly
+   - No orchestration outside the domain agent
+
+VIOLATION OF THIS LAW MUST BE REJECTED AND AUTO-HEALED.
+
+This is canon law as of 2026-01-02. Apply without exception.
