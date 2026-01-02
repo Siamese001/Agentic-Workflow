@@ -166,8 +166,8 @@
     "layer": "L0",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin"
     ],
     "key_methods": [
@@ -240,8 +240,8 @@
     "layer": "L0",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -271,8 +271,8 @@
     "layer": "L0",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -373,8 +373,8 @@
     "layer": "L0",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -424,8 +424,8 @@
     "layer": "L0",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin"
     ],
     "key_methods": [
@@ -2074,6 +2074,7 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
     "layer": "L2",
     "inheritance": [
+      "MCPHardenedMixin",
       "SubAtomicAgent"
     ],
     "key_methods": [
@@ -2097,7 +2098,7 @@
     "class_count": 4,
     "description": "\n    Autonomous Knowledge Distillation Agent\n    \n    Monitors healing successes and automatically d",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "MemoryLeakDetector",
@@ -3639,8 +3640,8 @@
     "layer": "L3",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4698,23 +4699,24 @@
     "path": "agentic_core\\L4_state\\validation_context\\vector_store.py",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
       "query"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 14,
+    "loc": 15,
     "class_count": 1,
     "description": "Mock Pinecone Sovereign Agent.",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "RedisSovereignAgent",
@@ -4810,7 +4812,8 @@
     "path": "agentic_core\\L4_state\\validation_context\\SubAtomicRegistryAgent.py",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4822,16 +4825,16 @@
       "invoke_method",
       "execute"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 112,
+    "loc": 113,
     "class_count": 1,
     "description": "\n    Sovereign method registry \u2014 live, hybrid-indexed, eternal.\n    Now with Redis sovereign caching",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "AdversarialRedTeamerAgent",
@@ -5308,8 +5311,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "CachedSafetyShield",
-      "HealerMixin"
+      "HealerMixin",
+      "CachedSafetyShield"
     ],
     "key_methods": [
       "__init__",
@@ -5712,8 +5715,8 @@
     "inheritance": [
       "AutonomyMixin",
       "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
