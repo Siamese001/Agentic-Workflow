@@ -20,7 +20,8 @@ This file will be removed in a future release.
 """
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Emit deprecation warning on import
 warnings.warn(

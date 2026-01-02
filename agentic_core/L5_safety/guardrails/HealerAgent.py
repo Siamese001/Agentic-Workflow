@@ -42,6 +42,7 @@ from difflib import unified_diff
 from pathlib import Path
 from tempfile import mkdtemp
 from typing import Any, Dict, List, Optional, Set, Tuple, Any, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from datetime import datetime
 from contextlib import nullcontext
 

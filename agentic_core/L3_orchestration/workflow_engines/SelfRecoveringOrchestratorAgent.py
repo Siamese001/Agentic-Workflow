@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 import networkx as nx
 Logger: Any = logging.getLogger(__name__)
 
@@ -380,6 +382,23 @@ class SelfRecoveringOrchestrator(HealerMixin):
         total_mutations: Any = len(self.mutation_history)
         successful_mutations: Any = sum((1 for m in self.mutation_history if m.success))
         return {'problematic_nodes': problematic_nodes, 'total_mutations': total_mutations, 'successful_mutations': successful_mutations, 'mutation_success_rate': successful_mutations / total_mutations if total_mutations > 0 else 0.0, 'total_nodes_tracked': len(self.node_patterns)}
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L3 orchestration agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L3 orchestration - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 def create_self_recovering_orchestrator() -> SelfRecoveringOrchestrator:
     """Factory function to create self-recovering orchestrator."""

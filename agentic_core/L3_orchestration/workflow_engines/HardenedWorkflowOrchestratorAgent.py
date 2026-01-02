@@ -10,6 +10,7 @@ Legacy API preserved for backward compatibility.
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

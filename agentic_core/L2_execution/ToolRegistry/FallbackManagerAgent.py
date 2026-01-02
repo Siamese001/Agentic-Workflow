@@ -8,6 +8,8 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class FallbackStrategy(Enum):
@@ -53,7 +55,7 @@ class FallbackResult:
         """Convert to dictionary."""
         return {'success': self.success, 'provider_used': self.provider_used, 'output': self.output, 'error': self.error, 'attempts': self.attempts, 'metadata': self.metadata}
 
-class FallbackManager:
+class FallbackManager(HealerMixin):
     """Manages automatic fallback chains for tool providers.
 
     Features:
@@ -174,6 +176,23 @@ class FallbackManager:
         """
         providers: Any = self._fallback_chains.get(tool_name, [])
         return [p for p in providers if p.is_available()]
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL) -> FallbackManager:
     """Factory function to create fallback manager.

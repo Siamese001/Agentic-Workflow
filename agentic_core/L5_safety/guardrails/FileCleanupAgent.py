@@ -7,7 +7,8 @@ Handles cases like 'data_models_enums_enums_enums' -> keeps only 'data_models_en
 """
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from collections import defaultdict
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 

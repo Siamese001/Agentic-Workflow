@@ -16,9 +16,11 @@ import logging
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
-class GitSafetyHandler:
+class GitSafetyHandler(HealerMixin):
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.
@@ -171,6 +173,23 @@ class GitSafetyHandler:
         except Exception as e:
             Logger.error(f'   [X] Failed to get commit history: {e}')
             return []
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L3 orchestration agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L3 orchestration - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 def get_git_safety_handler(McpRouter: Any) -> GitSafetyHandler:
     """

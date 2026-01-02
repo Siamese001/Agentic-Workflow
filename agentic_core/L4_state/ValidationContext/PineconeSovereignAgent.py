@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec

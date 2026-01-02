@@ -41,7 +41,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 try:
     from pinecone import Pinecone
     PINECONE_AVAILABLE: Any = True
@@ -50,6 +50,7 @@ except ImportError:
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -242,7 +243,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         
         This is called by the orchestrator after each healing cycle.
         """
-        Logger.info('🧠 Memory Architect: Scanning for healing successes...')
+        Logger.info(' Memory Architect: Scanning for healing successes...')
         successes: Any = self._detect_healing_successes()
         if not successes:
             Logger.info('   No new healing successes to harvest')
@@ -291,7 +292,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         Args:
             success: Healing success to harvest
         """
-        Logger.info(f'🌾 Harvesting success: {success.file_path} (Key {success.key_id})')
+        Logger.info(f' Harvesting success: {success.file_path} (Key {success.key_id})')
         diff_analysis = self.diff_analyzer.analyze_diff(success)
         if not diff_analysis:
             Logger.warning(f'   Could not analyze diff for {success.file_path}')
@@ -371,7 +372,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         Args:
             pattern: Distilled pattern to store
         """
-        Logger.info(f'💉 Inoculating pattern: {pattern.pattern_id}')
+        Logger.info(f' Inoculating pattern: {pattern.pattern_id}')
         if not self.pinecone_available:
             Logger.warning('   Pinecone not available, storing locally')
             self._store_pattern_locally(pattern)
@@ -556,6 +557,22 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             "dry_run": dry_run,
         }
 
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 _memory_architect = None
 

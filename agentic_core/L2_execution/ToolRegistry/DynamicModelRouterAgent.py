@@ -21,6 +21,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin

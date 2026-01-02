@@ -11,8 +11,10 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class MemoryManager:
+class MemoryManager(HealerMixin):
     """
     Manages JSON-based persistence for validation state.
     

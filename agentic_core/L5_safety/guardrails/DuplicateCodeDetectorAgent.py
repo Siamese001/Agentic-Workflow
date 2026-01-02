@@ -11,6 +11,7 @@ import ast
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, Any
 
 # Tree-sitter for AST fingerprinting
 try:
