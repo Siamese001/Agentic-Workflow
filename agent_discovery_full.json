@@ -1832,7 +1832,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\GitAgent.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1846,16 +1847,16 @@
       "create_branch",
       "commit_changes"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": false,
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 185,
+    "loc": 186,
     "class_count": 1,
     "description": "\n    Agent for managing git operations and remote synchronization.\n\n    Features:\n    - Atomic commi",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "GitAgent",
@@ -2506,7 +2507,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\autonomous_redis_orchestrator.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2518,16 +2520,16 @@
       "clear",
       "get_connection_info"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
     "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 86,
+    "loc": 87,
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "SovereignRedisOrchestrator",
@@ -4665,7 +4667,8 @@
     "path": "agentic_core\\L4_state\\validation_context\\PineconeSovereignAgent.py",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4679,16 +4682,16 @@
       "upsert_sovereign_chunks",
       "upsert_file_vector"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 259,
+    "loc": 260,
     "class_count": 1,
     "description": "\n    Sovereign Pinecone controller \u2014 zero drift, eternal readiness.\n    Centralizes all vector opera",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "PineconeSovereignAgent",
@@ -4718,7 +4721,8 @@
     "path": "agentic_core\\L4_state\\validation_context\\RedisSovereignAgent.py",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__new__",
@@ -4729,16 +4733,16 @@
       "invalidate_by_path",
       "execute"
     ],
-    "has_tools": false,
+    "has_tools": true,
     "has_memory": true,
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 71,
+    "loc": 72,
     "class_count": 1,
     "description": "\n    Sovereign Redis controller \u2014 hardened, monitored, eternal.\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": false
+    "mcp_hardened": true
   },
   {
     "class_name": "SchemaEvolverAgent",
@@ -4775,7 +4779,8 @@
     "path": "agentic_core\\L4_state\\validation_context\\SovereignPineconeStoreAgent.py",
     "layer": "L4",
     "inheritance": [
-      "HealerMixin"
+      "HealerMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4794,7 +4799,7 @@
     "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 102,
+    "loc": 103,
     "class_count": 1,
     "description": "\n    ADAPTER: Legacy Interface -> New MCP Client.\n    Maintains backward compatibility for 'add_text",
     "pascal_compliant": true,
@@ -4970,8 +4975,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "BaseAgent"
     ],
     "key_methods": [
       "run"
@@ -5073,8 +5078,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "BaseAgent"
     ],
     "key_methods": [
       "run_async"
@@ -5271,8 +5276,8 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "AutonomyMixin",
+      "HealerMixin",
       "AdaptiveExecutionMixin"
     ],
     "key_methods": [
@@ -5705,8 +5710,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
       "AutonomyMixin",
+      "HealerMixin",
       "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin"
     ],
@@ -5760,8 +5765,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "BaseAgent"
     ],
     "key_methods": [
       "run",
@@ -5813,8 +5818,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent",
-      "HealerMixin"
+      "HealerMixin",
+      "BaseAgent"
     ],
     "key_methods": [
       "run_async"

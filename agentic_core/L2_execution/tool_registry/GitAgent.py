@@ -14,8 +14,9 @@ from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class GitAgent(HealerMixin):
+class GitAgent(HealerMixin, MCPHardenedMixin):
     """
     Agent for managing git operations and remote synchronization.
 
