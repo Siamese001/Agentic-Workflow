@@ -62,7 +62,7 @@ class ValidationResult:
         self.signature = SIGNATURE
         self.details = DETAILS
 
-class PeerIntelligenceAuditor:
+class PeerIntelligenceAuditor(HealerMixin):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 

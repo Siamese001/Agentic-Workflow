@@ -18,8 +18,9 @@ from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
     PineconeSovereignAgent,
 )
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class SemanticTerritoryMapperAgent:
+class SemanticTerritoryMapperAgent(HealerMixin):
     """
     The Intelligent Brain that maps files to semantic territories
     using real Gemini embeddings and vector similarity search.

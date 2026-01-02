@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "L0DelegationTestingMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,9 +239,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -270,9 +270,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -372,9 +372,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "L0DelegationTestingMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2253,7 +2253,9 @@
     "class_name": "PeerIntelligenceAuditor",
     "path": "agentic_core\\L2_execution\\tool_registry\\peer_intelligence_auditor_impl.py",
     "layer": "L2",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "analyze_competitive_landscape",
@@ -2266,7 +2268,7 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
     "loc": 111,
@@ -2419,8 +2421,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "IActionPlane"
+      "IActionPlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3494,9 +3496,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3790,7 +3792,9 @@
     "class_name": "SemanticGatekeeperAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticGatekeeperAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3802,10 +3806,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 53,
+    "loc": 54,
     "class_count": 1,
     "description": "\n    Gatekeeper that controls agent execution with concurrency limits and timeouts.\n    ",
     "pascal_compliant": true,
@@ -3836,7 +3840,9 @@
     "class_name": "SemanticTerritoryMapperAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\SemanticTerritoryMapperAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3849,10 +3855,10 @@
     ],
     "has_tools": true,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": true,
-    "loc": 136,
+    "loc": 137,
     "class_count": 1,
     "description": "\n    The Intelligent Brain that maps files to semantic territories\n    using real Gemini embeddings ",
     "pascal_compliant": true,
@@ -5075,9 +5081,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
+      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5508,10 +5514,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
