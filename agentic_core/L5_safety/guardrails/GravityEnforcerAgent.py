@@ -8,7 +8,8 @@ This agent doesn't just flag violations; it actively stops the bleeding.
 
 import re
 from pathlib import Path
-from typing import Dict, Set
+from typing import Dict, Set, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield

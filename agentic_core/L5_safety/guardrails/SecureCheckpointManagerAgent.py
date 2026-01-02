@@ -12,6 +12,8 @@ import logging
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -27,7 +29,7 @@ class CheckpointIntegrityError(Exception):
     pass
 
 
-class SecureCheckpointManager:
+class SecureCheckpointManager(HealerMixin):
     """Manages secure Checkpoint persistence with encryption and integrity checks."""
     
     def __init__(
@@ -309,11 +311,7 @@ class CheckpointManagerFactory:
     
     @classmethod
     def quarantine_all(cls, checkpoint_dir: Path) -> None:
-        """Quarantine all checkpoints in a directory.
-        
-        Args:
-            checkpoint_dir: Directory containing checkpoints
-        """
+        """Quarantine all checkpoints in a directory."""
         for manager in cls._managers.values():
             if manager.checkpoint_dir == checkpoint_dir:
                 manager.quarantine_all_checkpoints()

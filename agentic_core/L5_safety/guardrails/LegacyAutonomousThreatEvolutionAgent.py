@@ -10,7 +10,8 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
@@ -110,7 +111,24 @@ class AutonomousThreatEvolutionAgent(HealerMixin):
             return rules_deployed
         return 0
 
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 # Factory function for L6 coordination
-def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolution:
+def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolutionAgent:
     """Create and configure the threat evolution agent"""
-    return AutonomousThreatEvolution(SafetyEngine=SafetyEngine)
+    return AutonomousThreatEvolutionAgent(SafetyEngine=SafetyEngine)

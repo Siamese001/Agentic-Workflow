@@ -19,6 +19,7 @@ import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -274,9 +275,27 @@ class AdversarialRedTeamerAgent(SubAtomicAgent, MCPHardenedMixin):
         if not vulnerabilities:
             Logger.info('\n[OK] No vulnerabilities found - system is resilient')
         Logger.info(f"{'=' * 80}\n")
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 _red_teamer: Optional[AdversarialRedTeamer] = None
 
-def get_red_teamer(ctx: Any) -> AdversarialRedTeamer:
+def get_adversarial_red_teamer(ctx: Any) -> AdversarialRedTeamer:
     """Get or create global Red Teamer instance."""
     global _red_teamer
     if _red_teamer is None:

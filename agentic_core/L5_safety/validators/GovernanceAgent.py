@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 GovernanceAgent - Sovereign Constitutional Decision Maker (Phase B - Dec 30, 2025)
 """
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Set
 from pathlib import Path
 import logging
 
@@ -161,10 +161,26 @@ class GovernanceAgent(
             if len(low_confidence) > 3:
                 return {
                     "reason": "high_uncertainty_pattern_detected",
-                    "low_confidence_decisions": len(low_confidence),
-                    "action": "trigger_governance_review"
+                    "pending_decisions": len(self.decision_queue)
                 }
-        return None
+                return {"pending_decisions": len(self.decision_queue)}
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
     # === Adaptive Execution ===
     async def _execute_conservative(self, ctx: Any, **context: Dict) -> Dict:

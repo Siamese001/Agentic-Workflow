@@ -147,7 +147,7 @@ class TypeHintFixer(HealerMixin, ast.NodeTransformer):
 
 
 # Factory for discovery
-def get_type_hint_enforcement_agent():
+def get_type_hint_enforcement_agent(project_root, ctx):
     '''Brief description of functionality and purpose.'''
     
-    return TypeHintEnforcementAgent()
+    return TypeHintEnforcementAgent(ctx, project_root)
