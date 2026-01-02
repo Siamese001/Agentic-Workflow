@@ -15,9 +15,10 @@ from typing import Dict, List, Optional
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousThreatEvolutionAgent(HealerMixin):
+class AutonomousThreatEvolutionAgent(MCPHardenedMixin, HealerMixin):
     """L5: Self-healing security agent"""
     def __init__(self, SafetyEngine=None):
         self.safety = SafetyEngine
