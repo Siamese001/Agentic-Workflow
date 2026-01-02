@@ -296,7 +296,7 @@ def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStoragePr
         raise ValueError(f'Unknown adapter type: {adapter_type}')
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class RedisDistributedLock(MCPHardenedMixin, HealerMixin):
     """

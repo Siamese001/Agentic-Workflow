@@ -22,7 +22,7 @@ allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.gith
 chunk_size: Any = 8000
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 class SovereignFetchClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):

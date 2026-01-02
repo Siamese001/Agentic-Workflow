@@ -124,7 +124,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "BiasAuditor",
+    "class_name": "BiasAuditorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\shared_safety_bias_auditor.py",
     "layer": "L0",
     "inheritance": [
@@ -148,8 +148,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
+      "HealerMixin",
       "L0DelegationTestingMixin"
     ],
     "key_methods": [
@@ -174,7 +174,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "GapClosureArchitect",
+    "class_name": "GapClosureArchitectAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
     "layer": "L0",
     "inheritance": [
@@ -195,7 +195,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "GravityComplianceValidator",
+    "class_name": "GravityComplianceValidatorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\gravity_compliance_validator.py",
     "layer": "L0",
     "inheritance": [
@@ -220,14 +220,14 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "GuardianOrchestrator",
+    "class_name": "GuardianOrchestratorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\GuardianOrchestratorAgent.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
+      "SelfDiagnosisMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -255,14 +255,14 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "HealingOrchestrator",
+    "class_name": "HealingOrchestratorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\HealingOrchestratorAgent.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
+      "SelfDiagnosisMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -290,7 +290,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "HygieneValidator",
+    "class_name": "HygieneValidatorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\hygiene_validator.py",
     "layer": "L0",
     "inheritance": [
@@ -385,7 +385,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "MetricsWitness",
+    "class_name": "MetricsWitnessAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
@@ -416,7 +416,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SafeSystemCommandExecutor",
+    "class_name": "SafeSystemCommandExecutorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\healer_utilities.py",
     "layer": "L0",
     "inheritance": [
@@ -442,15 +442,15 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ScriptToAgentClassifier",
+    "class_name": "ScriptToAgentClassifierAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "L0DelegationTestingMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
+      "HealerMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -475,7 +475,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ScriptsPlanningOrchestrator",
+    "class_name": "ScriptsPlanningOrchestratorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_get_info_request_orchestrate_scripts_planning.py",
     "layer": "L0",
     "inheritance": [
@@ -563,7 +563,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SystemCommandExecutor",
+    "class_name": "SystemCommandExecutorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\healer_utilities.py",
     "layer": "L0",
     "inheritance": [
@@ -587,7 +587,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "WorkflowOrchestrator",
+    "class_name": "WorkflowOrchestratorAgent",
     "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_workflow_integration.py",
     "layer": "L0",
     "inheritance": [
@@ -879,14 +879,14 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "AsyncBlockingValidator",
+    "class_name": "AsyncBlockingValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
       "SubatomicTestingMixin",
       "HealerMixin",
-      "CanonASTValidator",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonASTValidator"
     ],
     "key_methods": [
       "__init__",
@@ -906,7 +906,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "BareExceptValidator",
+    "class_name": "BareExceptValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -930,7 +930,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "CanonValidator",
+    "class_name": "CanonValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\agent_logic.py",
     "layer": "L1",
     "inheritance": [
@@ -963,7 +963,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "CognitiveContractValidator",
+    "class_name": "CognitiveContractValidatorAgent",
     "path": "agentic_core\\schemas\\models\\CognitiveContractManagerAgent.py",
     "layer": "L1",
     "inheritance": [],
@@ -987,7 +987,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ConcurrencyGuardian",
+    "class_name": "ConcurrencyGuardianAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\concurrency_guardian.py",
     "layer": "L1",
     "inheritance": [
@@ -1012,7 +1012,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ConsolidatedOrchestrator",
+    "class_name": "ConsolidatedOrchestratorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
     "layer": "L1",
     "inheritance": [
@@ -1040,7 +1040,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "DangerousBuiltinsValidator",
+    "class_name": "DangerousBuiltinsValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1064,7 +1064,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "DebuggerValidator",
+    "class_name": "DebuggerValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1088,7 +1088,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "DependencySentinel",
+    "class_name": "DependencySentinelAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\CanonDependencySentinelAgent.py",
     "layer": "L1",
     "inheritance": [
@@ -1197,7 +1197,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "EmptyExceptValidator",
+    "class_name": "EmptyExceptValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1221,7 +1221,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "EvalExecValidator",
+    "class_name": "EvalExecValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1245,7 +1245,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ExternalHttpValidator",
+    "class_name": "ExternalHttpValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1274,8 +1274,8 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
       "MCPHardenedMixin",
+      "HealerMixin",
       "CanonBaseAgentInterface"
     ],
     "key_methods": [
@@ -1361,7 +1361,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "IOrchestrator",
+    "class_name": "IOrchestratorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\planes.py",
     "layer": "L1",
     "inheritance": [
@@ -1386,7 +1386,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "IOrchestrator",
+    "class_name": "IOrchestratorAgent",
     "path": "agentic_core\\schemas\\models\\orchestrator.py",
     "layer": "L1",
     "inheritance": [
@@ -1417,7 +1417,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IntelligentOrchestrator",
+    "class_name": "IntelligentOrchestratorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\IntelligentOrchestratorAgent.py",
     "layer": "L1",
     "inheritance": [
@@ -1496,7 +1496,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "OrchestratorAgentAndScopeManager",
+    "class_name": "OrchestratorAgentAndScopeManagerAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
     "layer": "L1",
     "inheritance": [],
@@ -1518,7 +1518,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "PatternEnforcer",
+    "class_name": "PatternEnforcerAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
     "layer": "L1",
     "inheritance": [
@@ -1549,7 +1549,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "PrintStatementValidator",
+    "class_name": "PrintStatementValidatorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
@@ -1573,7 +1573,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ReasoningRouter",
+    "class_name": "ReasoningRouterAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\reasoning_router.py",
     "layer": "L1",
     "inheritance": [
@@ -1667,7 +1667,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SafetyInspector",
+    "class_name": "SafetyInspectorAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_quality.py",
     "layer": "L1",
     "inheritance": [
@@ -1698,7 +1698,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SemanticMapper",
+    "class_name": "SemanticMapperAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_pattern.py",
     "layer": "L1",
     "inheritance": [
@@ -1720,7 +1720,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SovereignCognitivePlane",
+    "class_name": "SovereignCognitivePlaneAgent",
     "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
     "layer": "L1",
     "inheritance": [
@@ -1748,6 +1748,62 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true
+  },
+  {
+    "class_name": "SovereignCognitivePlaneAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane_with_streamer.py",
+    "layer": "L1",
+    "inheritance": [
+      "ICognitivePlane"
+    ],
+    "key_methods": [
+      "__init__",
+      "start_streaming",
+      "stop_streaming",
+      "_initialize_agents",
+      "get_capabilities",
+      "plan"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 55,
+    "class_count": 2,
+    "description": "Sovereign cognitive plane with in-memory agent registry and L5 streaming.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "StrategicPlannerAgent",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\strategic_planner.py",
+    "layer": "L1",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "_load_agent_capabilities",
+      "generate_plan",
+      "_generate_plan_with_mcp",
+      "_extract_mission_plan_from_mcp",
+      "_parse_phases_from_thought",
+      "_generate_plan_legacy",
+      "_generate_phases",
+      "_assess_risks",
+      "update_phase_status"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 203,
+    "class_count": 5,
+    "description": "\n    Plans and coordinates mission execution.\n\n    Features:\n    - Generates mission plans based on ",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "SystemArchitect",
@@ -1902,7 +1958,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "BiasAuditor",
+    "class_name": "BiasAuditorAgent",
     "path": "agentic_core\\runtime\\shared_runtime\\bias_auditor.py",
     "layer": "L2",
     "inheritance": [],
@@ -1924,7 +1980,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "CanonAstValidator",
+    "class_name": "CanonAstValidatorAgent",
     "path": "agentic_core\\runtime\\shared_runtime\\ast_validator.py",
     "layer": "L2",
     "inheritance": [
@@ -2008,8 +2064,8 @@
     "path": "agentic_core\\L2_execution\\ToolRegistry\\CodeJanitorAgent.py",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -2064,7 +2120,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ContextAwareValidator",
+    "class_name": "ContextAwareValidatorAgent",
     "path": "agentic_core\\patterns\\agent_roles\\context_aware_validator.py",
     "layer": "L2",
     "inheritance": [],
@@ -2147,7 +2203,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "DeadlockDetector",
+    "class_name": "DeadlockDetectorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\concurrency.py",
     "layer": "L2",
     "inheritance": [
@@ -2300,7 +2356,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "FallbackManager",
+    "class_name": "FallbackManagerAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\FallbackManagerAgent.py",
     "layer": "L2",
     "inheritance": [
@@ -2416,8 +2472,8 @@
     "path": "agentic_core\\L2_execution\\ToolRegistry\\HealerAgent.py",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -2444,7 +2500,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "HierarchyHealer",
+    "class_name": "HierarchyHealerAgent",
     "path": "agentic_core\\config\\blueprint_sovereign\\hierarchy_healer.py",
     "layer": "L2",
     "inheritance": [],
@@ -2489,7 +2545,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ImportHealer",
+    "class_name": "ImportHealerAgent",
     "path": "agentic_core\\runtime\\shared_runtime\\import_healer.py",
     "layer": "L2",
     "inheritance": [],
@@ -2515,7 +2571,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IntegrityGateExecutor",
+    "class_name": "IntegrityGateExecutorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\healer_executive.py",
     "layer": "L2",
     "inheritance": [
@@ -2538,7 +2594,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IntegrityGateExecutor",
+    "class_name": "IntegrityGateExecutorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\IntegrityGateExecutorAgent.py",
     "layer": "L2",
     "inheritance": [
@@ -2569,7 +2625,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IntegrityGateExecutor",
+    "class_name": "IntegrityGateExecutorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\peer_intelligence_auditor_impl.py",
     "layer": "L2",
     "inheritance": [
@@ -2591,7 +2647,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IntegrityGateExecutor",
+    "class_name": "IntegrityGateExecutorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\section_scope_integrator_engine.py",
     "layer": "L2",
     "inheritance": [
@@ -2612,6 +2668,78 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": false
+  },
+  {
+    "class_name": "L0Agent",
+    "path": "agentic_core\\bases\\l0_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "HealerMixin",
+      "L0DelegationTestingMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Delegated",
+    "has_subatomic": false,
+    "loc": 12,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L0 Maintenance agents.\n    \n    Guaranteed Capabilities:\n    - heal_repos",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "L1Agent",
+    "path": "agentic_core\\bases\\l1_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "_run_self_tests"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 13,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L1 Cognition agents.\n    \n    Guaranteed Capabilities:\n    - heal_reposit",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "L2Agent",
+    "path": "agentic_core\\bases\\l2_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "SubatomicTestingMixin",
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 12,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L2 Execution agents.\n    \n    Guaranteed Capabilities:\n    - heal_reposit",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
   },
   {
     "class_name": "L2SelfTestingMixin",
@@ -2635,7 +2763,82 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "McpConnectionManager",
+    "class_name": "L3Agent",
+    "path": "agentic_core\\bases\\l3_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "HealerMixin",
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "orchestrate"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 14,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L3 Orchestration agents.\n    \n    Guaranteed Capabilities:\n    - heal_rep",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "L4Agent",
+    "path": "agentic_core\\bases\\l4_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "HealerMixin",
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "update_state"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 14,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L4 State agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository(",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "L5Agent",
+    "path": "agentic_core\\bases\\l5_agent.py",
+    "layer": "L2",
+    "inheritance": [
+      "HealerMixin",
+      "MCPHardenedMixin"
+    ],
+    "key_methods": [
+      "heal_repository",
+      "_run_self_tests",
+      "validate"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 15,
+    "class_count": 1,
+    "description": "\n    Consolidated base for L5 Safety agents.\n    \n    Guaranteed Capabilities:\n    - heal_repository",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "McpConnectionManagerAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\McpConnectionManagerAgent.py",
     "layer": "L2",
     "inheritance": [
@@ -2694,7 +2897,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MemoryLeakDetector",
+    "class_name": "MemoryLeakDetectorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\concurrency.py",
     "layer": "L2",
     "inheritance": [
@@ -2913,7 +3116,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "PeerIntelligenceAuditor",
+    "class_name": "PeerIntelligenceAuditorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\peer_intelligence_auditor_impl.py",
     "layer": "L2",
     "inheritance": [
@@ -2942,7 +3145,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ProactiveResourceManager",
+    "class_name": "ProactiveResourceManagerAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\ProactiveResourceManagerAgent.py",
     "layer": "L2",
     "inheritance": [
@@ -3106,8 +3309,8 @@
     "layer": "L2",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "IActionPlane"
+      "IActionPlane",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3330,7 +3533,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SovereignPineconeStore",
+    "class_name": "SovereignPineconeStoreAgent",
     "path": "agentic_core\\semantic_memory\\store\\pinecone_pinecone_store.py",
     "layer": "L2",
     "inheritance": [],
@@ -3414,7 +3617,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SovereignRedisOrchestrator",
+    "class_name": "SovereignRedisOrchestratorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\P2_tools_autonomous_redis_orchestrator.py",
     "layer": "L2",
     "inheritance": [
@@ -3444,7 +3647,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SovereignRedisOrchestrator",
+    "class_name": "SovereignRedisOrchestratorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\SovereignRedisOrchestratorAgent.py",
     "layer": "L2",
     "inheritance": [
@@ -3505,7 +3708,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SprawlInspector",
+    "class_name": "SprawlInspectorAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\sprawl_inspector.py",
     "layer": "L2",
     "inheritance": [
@@ -3719,35 +3922,6 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SystemArchitect",
-    "path": "agentic_core\\L2_execution\\ToolRegistry\\system_architect.py",
-    "layer": "L2",
-    "inheritance": [
-      "CanonBaseAgent"
-    ],
-    "key_methods": [
-      "get_validation_keys",
-      "execute",
-      "_check_file_headers",
-      "check_key_40_core_architecture",
-      "check_key_41_no_deep_nesting",
-      "check_key_42_no_large_files",
-      "_heal_violations",
-      "_smart_fix"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": true,
-    "testing": "Self",
-    "has_subatomic": true,
-    "loc": 60,
-    "class_count": 1,
-    "description": "\n    System Architect validates core architecture and import dependencies.\n    \n    Validates Canon ",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
-  },
-  {
     "class_name": "SystemArchitectAgent",
     "path": "agentic_core\\L2_execution\\ToolRegistry\\SystemArchitectAgent.py",
     "layer": "L2",
@@ -3771,6 +3945,35 @@
     "testing": "Self",
     "has_subatomic": true,
     "loc": 54,
+    "class_count": 1,
+    "description": "\n    System Architect validates core architecture and import dependencies.\n    \n    Validates Canon ",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "SystemArchitectAgent",
+    "path": "agentic_core\\L2_execution\\ToolRegistry\\system_architect.py",
+    "layer": "L2",
+    "inheritance": [
+      "CanonBaseAgent"
+    ],
+    "key_methods": [
+      "get_validation_keys",
+      "execute",
+      "_check_file_headers",
+      "check_key_40_core_architecture",
+      "check_key_41_no_deep_nesting",
+      "check_key_42_no_large_files",
+      "_heal_violations",
+      "_smart_fix"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "Self",
+    "has_subatomic": true,
+    "loc": 60,
     "class_count": 1,
     "description": "\n    System Architect validates core architecture and import dependencies.\n    \n    Validates Canon ",
     "pascal_compliant": true,
@@ -3941,7 +4144,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "AgentPermissionManager",
+    "class_name": "AgentPermissionManagerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\AgentPermissionManagerAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4037,7 +4240,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ArchitectureGovernor",
+    "class_name": "ArchitectureGovernorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\ArchitectureGovernorAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4063,7 +4266,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "AutonomicMonitor",
+    "class_name": "AutonomicMonitorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\autonomic_monitor_impl.py",
     "layer": "L3",
     "inheritance": [
@@ -4092,7 +4295,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "CachedOrchestrator",
+    "class_name": "CachedOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\CachedOrchestratorAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4178,13 +4381,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "DAGManager",
+    "class_name": "DAGManagerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4211,13 +4414,13 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "DAGMutator",
+    "class_name": "DAGMutatorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\DAGManagerAgent.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4275,7 +4478,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "DagExecutor",
+    "class_name": "DagExecutorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\healer_dag.py",
     "layer": "L3",
     "inheritance": [
@@ -4295,13 +4498,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "DagManager",
+    "class_name": "DagManagerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4316,13 +4519,13 @@
     "has_subatomic": true,
     "loc": 357,
     "class_count": 9,
-    "description": "Mock DAGManager for type hinting.",
+    "description": "Mock DAGManagerAgent for type hinting.",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true
   },
   {
-    "class_name": "DagRuntimeInspector",
+    "class_name": "DagRuntimeInspectorAgent",
     "path": "agentic_core\\observability\\metrics\\dag_runtime_inspector.py",
     "layer": "L3",
     "inheritance": [
@@ -4342,13 +4545,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "DeadlockDetector",
+    "class_name": "DeadlockDetectorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4375,7 +4578,49 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "FissionManager",
+    "class_name": "FissionManagerAgent",
+    "path": "agentic_core\\L3_orchestration\\fission_logic\\FissionManagerAgent.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "decompose_task",
+      "heal_repository"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 32,
+    "class_count": 1,
+    "description": "\n    L3 Orchestration: The Task Splitter.\n    Determines if a mission needs to be broken down into s",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "FissionManagerAgent",
+    "path": "agentic_core\\L3_orchestration\\fission_logic\\FissionManager\\__init__.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 4,
+    "class_count": 1,
+    "description": "Fission manager stub.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "FissionManagerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\WorkflowFissionManagerAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4406,7 +4651,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "GitSafetyHandler",
+    "class_name": "GitSafetyHandlerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\GitSafetyHandlerAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4435,7 +4680,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "HallucinationDetector",
+    "class_name": "HallucinationDetectorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\check_hallucination.py",
     "layer": "L3",
     "inheritance": [
@@ -4458,13 +4703,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "HardenedWorkflowOrchestrator",
+    "class_name": "HardenedWorkflowOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\HardenedWorkflowOrchestratorAgent.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4479,7 +4724,7 @@
     "has_subatomic": true,
     "loc": 43,
     "class_count": 1,
-    "description": "\n    Thin wrapper for Hardened Workflow Orchestrator.\n    Delegates to ConsolidatedOrchestrator.\n   ",
+    "description": "\n    Thin wrapper for Hardened Workflow Orchestrator.\n    Delegates to ConsolidatedOrchestratorAgent",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true
@@ -4514,12 +4759,12 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "IOrchestrator",
+    "class_name": "IOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\orchestrator.py",
     "layer": "L3",
     "inheritance": [
-      "HealerMixin",
-      "ABC"
+      "ABC",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4595,7 +4840,32 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "McpRouter",
+    "class_name": "McpConnectionManagerAgent",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\WorkflowMcpManagerAgent.py",
+    "layer": "L3",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "initialize",
+      "connect",
+      "call_tool",
+      "cleanup",
+      "heal_repository"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 72,
+    "class_count": 1,
+    "description": "Sovereign MCP Connection Manager \u2014 single source of truth",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "McpRouterAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router.py",
     "layer": "L3",
     "inheritance": [
@@ -4622,7 +4892,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MemoryLeakDetector",
+    "class_name": "MemoryLeakDetectorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\memory_leak_detector.py",
     "layer": "L3",
     "inheritance": [
@@ -4742,7 +5012,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ModelRouter",
+    "class_name": "ModelRouterAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\model_router_impl.py",
     "layer": "L3",
     "inheritance": [
@@ -4777,8 +5047,8 @@
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4805,7 +5075,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "NervousSystemPhaseOrchestrator",
+    "class_name": "NervousSystemPhaseOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4891,7 +5161,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ResumeOrchestrator",
+    "class_name": "ResumeOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\ResumeOrchestratorAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -4911,7 +5181,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SelfRecoveringOrchestrator",
+    "class_name": "SelfRecoveringOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\SelfRecoveringOrchestratorAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -5051,7 +5321,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SovereignCanonAuditor",
+    "class_name": "SovereignCanonAuditorAgent",
     "path": "agentic_core\\observability\\metrics\\canon_audit.py",
     "layer": "L3",
     "inheritance": [
@@ -5132,7 +5402,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SovereignRagOrchestrator",
+    "class_name": "SovereignRagOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\SovereignRagOrchestratorAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -5166,8 +5436,8 @@
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__"
@@ -5216,13 +5486,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SubatomicOrchestrator",
+    "class_name": "SubatomicOrchestratorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5243,13 +5513,13 @@
     "has_subatomic": true,
     "loc": 357,
     "class_count": 9,
-    "description": "Implementation for SubatomicOrchestrator.",
+    "description": "Implementation for SubatomicOrchestratorAgent.",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": true
   },
   {
-    "class_name": "TaskMonitor",
+    "class_name": "TaskMonitorAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
     "layer": "L3",
     "inheritance": [
@@ -5305,7 +5575,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "TerritoryChangeHandler",
+    "class_name": "TerritoryChangeHandlerAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\TerritoryChangeHandlerAgent.py",
     "layer": "L3",
     "inheritance": [
@@ -5418,7 +5688,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "TokenBudgetInspector",
+    "class_name": "TokenBudgetInspectorAgent",
     "path": "agentic_core\\observability\\metrics\\token_budget_inspector.py",
     "layer": "L3",
     "inheritance": [
@@ -5520,8 +5790,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5615,8 +5885,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5641,7 +5911,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "CanonValidator",
+    "class_name": "CanonValidatorAgent",
     "path": "agentic_core\\L4_state\\ValidationContext\\agent_logic_connectivity.py",
     "layer": "L4",
     "inheritance": [
@@ -5704,7 +5974,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MemoryManager",
+    "class_name": "MemoryManagerAgent",
     "path": "agentic_core\\L4_state\\ValidationContext\\MemoryManagerAgent.py",
     "layer": "L4",
     "inheritance": [
@@ -5958,8 +6228,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6021,8 +6291,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6049,8 +6319,8 @@
     "layer": "L4",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6104,7 +6374,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ValidationContextManager",
+    "class_name": "ValidationContextManagerAgent",
     "path": "agentic_core\\L4_state\\ValidationContext\\ValidationContextManagerAgent.py",
     "layer": "L4",
     "inheritance": [
@@ -6251,8 +6521,8 @@
     "has_memory": false,
     "has_healing": true,
     "testing": "None",
-    "has_subatomic": false,
-    "loc": 426,
+    "has_subatomic": true,
+    "loc": 522,
     "class_count": 2,
     "description": "\n    Sovereign guardian for agent autonomy enforcement (Canon Key 51).\n    \n    Responsibilities:\n  ",
     "pascal_compliant": true,
@@ -6357,7 +6627,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "BiasAuditor",
+    "class_name": "BiasAuditorAgent",
     "path": "agentic_core\\L5_safety\\validators\\bias_auditor.py",
     "layer": "L5",
     "inheritance": [
@@ -6464,7 +6734,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ComplianceOrchestrator",
+    "class_name": "ComplianceOrchestratorAgent",
     "path": "agentic_core\\L5_safety\\validators\\ComplianceOrchestratorAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -6520,7 +6790,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "CostGovernor",
+    "class_name": "CostGovernorAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\CostGovernorAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -6774,8 +7044,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "CachedSafetyShield",
-      "HealerMixin"
+      "HealerMixin",
+      "CachedSafetyShield"
     ],
     "key_methods": [
       "__init__",
@@ -6857,7 +7127,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "HealValidator",
+    "class_name": "HealValidatorAgent",
     "path": "agentic_core\\L5_safety\\validators\\heal_validator.py",
     "layer": "L5",
     "inheritance": [
@@ -6950,7 +7220,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "HierarchyHealer",
+    "class_name": "HierarchyHealerAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\hierarchy_healer.py",
     "layer": "L5",
     "inheritance": [
@@ -6981,8 +7251,8 @@
     "path": "agentic_core\\L5_safety\\validators\\HygieneGuardianAgent.py",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "get_validation_keys",
@@ -7009,8 +7279,8 @@
     "layer": "L5",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L4SubatomicTestingMixin"
+      "L4SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7062,7 +7332,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "InputValidator",
+    "class_name": "InputValidatorAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\input_validator.py",
     "layer": "L5",
     "inheritance": [
@@ -7210,7 +7480,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MethodChangeDetector",
+    "class_name": "MethodChangeDetectorAgent",
     "path": "agentic_core\\L5_safety\\validators\\RegressionOracleAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -7235,8 +7505,8 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "MultiProviderRouter",
-    "path": "data\\sdks_mcps\\client_wrappers\\multi_provider_router.py",
+    "class_name": "MultiProviderRouterAgent",
+    "path": "agentic_core\\L5_safety\\guardrails\\multi_provider_router_agent.py",
     "layer": "L5",
     "inheritance": [],
     "key_methods": [
@@ -7268,10 +7538,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin",
       "AutonomyMixin",
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
+      "SelfDiagnosisMixin",
       "MCPHardenedMixin"
     ],
     "key_methods": [
@@ -7353,9 +7623,9 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "ASTEnforcementMixin",
+      "MCPHardenedMixin",
       "CanonBaseAgent",
-      "MCPHardenedMixin"
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7406,7 +7676,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "RedSentinel",
+    "class_name": "RedSentinelAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\RedSentinelAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -7489,7 +7759,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SafetyInspector",
+    "class_name": "SafetyInspectorAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\overseer.py",
     "layer": "L5",
     "inheritance": [
@@ -7515,7 +7785,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SecureCheckpointManager",
+    "class_name": "SecureCheckpointManagerAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\SecureCheckpointManagerAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -7546,7 +7816,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SecureConfigManager",
+    "class_name": "SecureConfigManagerAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\SecureConfigManagerAgent.py",
     "layer": "L5",
     "inheritance": [
@@ -7700,8 +7970,8 @@
     "path": "agentic_core\\L5_safety\\validators\\TestSovereigntyAgent.py",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7752,12 +8022,12 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "TypeHintFixer",
+    "class_name": "TypeHintFixerAgent",
     "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
     "layer": "L5",
     "inheritance": [
-      "NodeTransformer",
-      "HealerMixin"
+      "HealerMixin",
+      "NodeTransformer"
     ],
     "key_methods": [
       "__init__",
@@ -7803,7 +8073,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ASCIIEnforcer",
+    "class_name": "ASCIIEnforcerAgent",
     "path": "apps_lic\\domain\\validators\\profile_validator.py",
     "layer": "apps_lic",
     "inheritance": [],
@@ -7907,7 +8177,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "CampaignPlanner",
+    "class_name": "CampaignPlannerAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -7951,7 +8221,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ContentCleanlinessValidator",
+    "class_name": "ContentCleanlinessValidatorAgent",
     "path": "apps_lic\\domain\\validators\\profile_validator.py",
     "layer": "apps_lic",
     "inheritance": [],
@@ -7996,7 +8266,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "FailureClassifier",
+    "class_name": "FailureClassifierAgent",
     "path": "apps_lic\\domain\\lic_models.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8016,7 +8286,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "FailureClassifier",
+    "class_name": "FailureClassifierAgent",
     "path": "apps_lic\\domain\\models\\outreach_models.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8287,7 +8557,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "IntelligenceLibrarian",
+    "class_name": "IntelligenceLibrarianAgent",
     "path": "apps_lic\\engines\\outreach_engine\\intelligence_librarian.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8388,7 +8658,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "MessageDiversityValidator",
+    "class_name": "MessageDiversityValidatorAgent",
     "path": "apps_lic\\domain\\validators\\profile_validator.py",
     "layer": "apps_lic",
     "inheritance": [],
@@ -8492,7 +8762,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "OutreachCapabilityMonitor",
+    "class_name": "OutreachCapabilityMonitorAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\proactive.py",
     "layer": "apps_lic",
     "inheritance": [],
@@ -8517,13 +8787,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "OutreachHealingOrchestrator",
+    "class_name": "OutreachHealingOrchestratorAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
     "layer": "apps_lic",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8568,7 +8838,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "OutreachPhase5Orchestrator",
+    "class_name": "OutreachPhase5OrchestratorAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\observability.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8641,7 +8911,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "OutreachSignalRouter",
+    "class_name": "OutreachSignalRouterAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\healing.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8688,7 +8958,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "OutreachValidationExecutor",
+    "class_name": "OutreachValidationExecutorAgent",
     "path": "apps_lic\\engines\\outreach_engine\\outreach_validation_executor_engine.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -8719,7 +8989,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "PlaceholderDetector",
+    "class_name": "PlaceholderDetectorAgent",
     "path": "apps_lic\\domain\\validators\\profile_validator.py",
     "layer": "apps_lic",
     "inheritance": [],
@@ -8790,7 +9060,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "TemplateOptimizer",
+    "class_name": "TemplateOptimizerAgent",
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\agents.py",
     "layer": "apps_lic",
     "inheritance": [
@@ -9021,7 +9291,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "CapabilityMonitor",
+    "class_name": "CapabilityMonitorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
     "layer": "apps_rg",
     "inheritance": [
@@ -9073,7 +9343,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "ConvergenceDetector",
+    "class_name": "ConvergenceDetectorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
     "inheritance": [],
@@ -9176,13 +9446,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "HealingOrchestrator",
+    "class_name": "HealingOrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9201,13 +9471,13 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "Phase4Orchestrator",
+    "class_name": "Phase4OrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\gitops.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9227,13 +9497,13 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "Phase6Orchestrator",
+    "class_name": "Phase6OrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9255,13 +9525,13 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "Phase7Orchestrator",
+    "class_name": "Phase7OrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -9399,13 +9669,13 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "ResumeOrchestrator",
+    "class_name": "ResumeOrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\AppsResumeOrchestratorAgent.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -9421,7 +9691,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "SafetyExecutor",
+    "class_name": "SafetyExecutorAgent",
     "path": "apps_rg\\engines\\rg_contact_research_executor.py",
     "layer": "apps_rg",
     "inheritance": [
@@ -9464,7 +9734,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "SignalRouter",
+    "class_name": "SignalRouterAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\healing.py",
     "layer": "apps_rg",
     "inheritance": [
@@ -9489,7 +9759,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "StrategicPlanner",
+    "class_name": "StrategicPlannerAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
     "layer": "apps_rg",
     "inheritance": [
@@ -9511,7 +9781,7 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "StrictDocEnforcer",
+    "class_name": "StrictDocEnforcerAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\governance.py",
     "layer": "apps_rg",
     "inheritance": [],
@@ -9537,7 +9807,7 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "TemplateOptimizer",
+    "class_name": "TemplateOptimizerAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\agents.py",
     "layer": "apps_rg",
     "inheritance": [
@@ -9882,13 +10152,13 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "UnifiedOrchestrator",
+    "class_name": "UnifiedOrchestratorAgent",
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\intelligence.py",
     "layer": "apps_rg",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -10005,77 +10275,6 @@
     "pascal_compliant": true,
     "external_touch": true,
     "mcp_hardened": true
-  },
-  {
-    "class_name": "MultiProviderRouter",
-    "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "examples",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "get_primary_client"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 328,
-    "class_count": 11,
-    "description": "",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "TalentIntelligenceAgent",
-    "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "examples",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "initialize",
-      "plan",
-      "retrieve",
-      "inspect",
-      "act",
-      "_search_resumes",
-      "_search_job_postings",
-      "_get_market_data",
-      "_execute_action"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 328,
-    "class_count": 11,
-    "description": "Production agent for talent intelligence operations",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "WorkflowOrchestrator",
-    "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "examples",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "execute_full_cycle"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 328,
-    "class_count": 11,
-    "description": "Orchestrates the complete agentic workflow",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
   },
   {
     "class_name": "TestAgentDiscovery",
@@ -10616,7 +10815,7 @@
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 103,
+    "loc": 109,
     "class_count": 1,
     "description": "",
     "pascal_compliant": true,
@@ -10686,15 +10885,17 @@
     "path": "validation_gate_executor\\__init__.py",
     "layer": "utils",
     "inheritance": [],
-    "key_methods": [],
+    "key_methods": [
+      "__init__"
+    ],
     "has_tools": false,
     "has_memory": false,
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 2,
-    "class_count": 1,
-    "description": "Validation gate executor stub.",
+    "loc": 50,
+    "class_count": 5,
+    "description": "Base validation gate executor.\n    \n    Subclass this for domain-specific validation (e.g., Outreach",
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": false

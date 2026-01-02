@@ -18,7 +18,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 try:
     from data.sdks_mcps.client_wrappers.anthropic_client import create_anthropic_client
-    from data.sdks_mcps.client_wrappers.multi_provider_router import (
+    from agentic_core.L5_safety.guardrails.multi_provider_router_agent import (
         create_multi_provider_router,
     )
     from data.sdks_mcps.client_wrappers.openai_client import create_openai_client

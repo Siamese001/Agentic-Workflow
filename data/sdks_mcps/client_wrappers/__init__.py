@@ -25,21 +25,17 @@ __all__ = [
     "create_openai_client",
     "create_anthropic_client",
     "create_vertex_client",
-    "create_multi_provider_router",
     # Client classes
     "OpenAIClient",
     "AnthropicClient",
     "VertexClient",
-    "MultiProviderRouterAgent",
     # Configuration classes
     "OpenAIConfig",
     "AnthropicConfig",
     "VertexConfig",
-    "RouterConfig",
-    "ProviderConfig",
-    # Enums
-    "Provider",
 ]
+
+# MultiProviderRouterAgent moved to agentic_core.L5_safety.guardrails.multi_provider_router_agent
 
 # Version information
 __version__ = "1.0.0"
