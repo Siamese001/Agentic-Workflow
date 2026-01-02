@@ -39,8 +39,10 @@ class MutationAction(Enum):
     
     SPAWN_PREDECESSOR = "spawn_predecessor"
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: WorkflowBlueprint → WorkflowBlueprint
-class WorkflowBlueprint:
+class WorkflowBlueprint(HealerMixin):
     """Mock WorkflowBlueprint for type hinting."""
     def __init__(self, name, DESCRIPTION, ROLES, EDGES, mutation_hooks=None, parallel_groups=None):
         self.name = name

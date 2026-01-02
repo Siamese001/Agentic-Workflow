@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
-class DummyRag:
+class DummyRag(HealerMixin):
     """TODO: Add docstring."""
 
     def __init__(self: Any, evidence_count: int) -> None:
