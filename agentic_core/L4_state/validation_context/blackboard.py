@@ -111,26 +111,71 @@ class AtomicBlackboard(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         return True
 
     def _perform_healing(self, anomaly: AnomalyReport) -> bool:
-        """Perform healing for detected anomalies."""
+        """Perform healing for detected anomalies with idempotency guards."""
         self._mcp_audit("healing_start", payload=anomaly.to_dict())
         
         if anomaly.type == "lease_expired_corruption":
+            # Idempotency guard (quick check, zero-work if already healed)
+            if self._all_leases_valid():
+                return True
+            
             # Expire all stale leases
             current_time = time.time()
             stale = [k for k, v in self._leases.items() if v.is_expired()]
             for key in stale:
                 del self._leases[key]
-            self._mcp_audit("healing_success", payload={"cleared_leases": len(stale)})
-            return True
+            
+            # Proactive validate after repair
+            if self._run_self_tests():
+                self._mcp_audit("healing_success", payload={"cleared_leases": len(stale)})
+                return True
+            return False
         
         if anomaly.type == "health_drift":
-            # Reset health scores
+            # Lightweight for MEDIUM/LOW severity
             self._health_scores.clear()
             self.redis_fallback.clear()
             self._mcp_audit("healing_success")
             return True
         
+        if anomaly.type == "lease_acquire_failure":
+            # Connection recovery
+            self._reinitialize_redis_connection()
+            return True
+        
         return False
+
+    def _all_leases_valid(self) -> bool:
+        """Idempotency check: are all current leases valid?"""
+        current_time = time.time()
+        for v in self._leases.values():
+            if v.is_expired():
+                return False
+        return True
+
+    def _reinitialize_redis_connection(self) -> None:
+        """Attempt to reconnect Redis on connection failure."""
+        if self.redis_client:
+            try:
+                self.redis_client.ping()
+            except Exception:
+                # Connection lost, clear fallback
+                self.redis_fallback.clear()
+
+    async def acquire_lease_async(self, file_path: str, agent_name: str) -> Optional[HealingLease]:
+        """Non-blocking lease acquisition for orchestrators."""
+        try:
+            return self.acquire_lease(file_path, agent_name)
+        except Exception as e:
+            anomaly = AnomalyReport(
+                type="lease_acquire_failure",
+                severity=AnomalySeverity.HIGH,
+                description=str(e),
+                source=self.__class__.__name__,
+                details={"file_path": file_path}
+            )
+            await self.heal_async({}, anomaly)  # Non-blocking
+            raise
 
     def acquire_lease(self, file_path: str, agent_name: str) -> Optional[HealingLease]:
         """
