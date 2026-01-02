@@ -585,9 +585,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             perc_used = round(terr_used / terr_total * 100, 1)
             perc_compliant = round(terr_compliant / terr_total * 100, 1)
-            perc_mixin = round(terr_mixin / terr_total * 100, 1)
+            perc_healing_cap = round(terr_healing_cap / terr_total * 100, 1)
+            perc_healing_invoke = round(terr_healing_invoke / terr_total * 100, 1)
             perc_hardened = round(terr_hardened / terr_total * 100, 1)
-            perc_healing = round(terr_healing / terr_total * 100, 1)
             perc_tests = round(terr_tests / terr_total * 100, 1)
             perc_typed = round(terr_typed / terr_total, 1)
             perc_documented = round(terr_documented / terr_total, 1)
@@ -595,9 +595,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
             totals["agents"] += terr_total
             totals["compliant"] += terr_compliant
-            totals["mixin"] += terr_mixin
             totals["hardened"] += terr_hardened
-            totals["healing"] += terr_healing
+            totals["healing_cap"] += terr_healing_cap
+            totals["healing_invoke"] += terr_healing_invoke
             totals["tests"] += terr_tests
             totals["loc"] += terr_loc
             totals["used"] += terr_used
@@ -609,7 +609,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
             row = (
                 f"| **OTHER/UNCLASSIFIED**                     | {terr_total:5} | {terr_compliant:9} | {perc_compliant:5}% | {terr_total - terr_compliant:4} "
-                f"| {perc_healing:5}% | {perc_hardened:4}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
+                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
                 f"| {perc_typed:5}% | {perc_documented:4}% | {perc_observable:4}% | {perc_used:4}% | Review   |"
             )
             print(row)
@@ -619,7 +619,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             t = totals
             total_perc = round(t["compliant"] / t["agents"] * 100, 1)
             total_hardened = round(t["hardened"] / t["agents"] * 100, 1)
-            total_healing = round(t["healing"] / t["agents"] * 100, 1)
+            total_healing_cap = round(t["healing_cap"] / t["agents"] * 100, 1)
+            total_healing_invoke = round(t["healing_invoke"] / t["agents"] * 100, 1)
             total_tests = round(t["tests"] / t["agents"] * 100, 1)
             overall_avg_loc = round(t["loc"] / t["agents"], 1)
             overall_avg_cc = round(t["cc_sum"] / t["agents"], 1)
@@ -630,12 +631,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
             total_row = (
                 f"| **TOTAL**                                  | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** "
-                f"| **{total_healing}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** "
+                f"| **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** "
                 f"| **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |"
             )
             print(total_row)
 
-            print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['healing']}/{t['agents']} with healing — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
+            print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['healing_cap']}/{t['agents']} with healing capabilities — {t['healing_invoke']}/{t['agents']} with healing invocation — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
             print(f"**Quality:** Avg CC={overall_avg_cc} | Max CC={t['max_cc']} | {total_typed}% typed | {total_documented}% documented | {total_observable}% observable")
 
             # Save markdown report to file
@@ -649,6 +650,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         t = totals
         total_perc = round(t["compliant"] / t["agents"] * 100, 1) if t["agents"] else 0
         total_hardened = round(t["hardened"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_healing_cap = round(t["healing_cap"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_healing_invoke = round(t["healing_invoke"] / t["agents"] * 100, 1) if t["agents"] else 0
         total_tests = round(t["tests"] / t["agents"] * 100, 1) if t["agents"] else 0
         overall_avg_loc = round(t["loc"] / t["agents"], 1) if t["agents"] else 0
         overall_avg_cc = round(t["cc_sum"] / t["agents"], 1) if t["agents"] else 0
@@ -656,8 +659,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         total_documented = round(t["documented"] / t["agents"], 1) if t["agents"] else 0
         total_observable = round(t["observable"] / t["agents"], 1) if t["agents"] else 0
         total_used = round(t["used"] / t["agents"] * 100, 1) if t["agents"] else 0
-        total_healing = round(t["healing"] / t["agents"] * 100, 1) if t["agents"] else 0
-
+        
         md = f"""# Autonomy Compliance Report
 
 **Generated:** {today}  
@@ -669,7 +671,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 |--------|-------|--------|
 | **Total Agents** | {t['agents']} | - |
 | **Compliant** | {t['compliant']} ({total_perc}%) | 80%+ |
-| **With Healing** | {t['healing']} ({total_healing}%) | 80%+ |
+| **Healing Capabilities** | {t['healing_cap']} ({total_healing_cap}%) | 80%+ |
+| **Healing Invocation** | {t['healing_invoke']} ({total_healing_invoke}%) | 80%+ |
 | **MCP Hardened** | {t['hardened']} ({total_hardened}%) | 80%+ |
 | **With Tests** | {t['tests']} ({total_tests}%) | 80%+ |
 | **Used Elsewhere** | {t['used']} ({total_used}%) | - |
@@ -686,8 +689,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
 ## Territory Breakdown
 
-| Territory / Layer | Total | Compliant | % Comp | Miss | % Healing | % MCP | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |
-|-------------------|-------|-----------|--------|------|---------|-------|--------|--------|---------|--------|--------|---------|--------|-------|--------|----------|
+| Territory / Layer | Total | Compliant | % Comp | Miss | % Heal Cap | % Heal Inv | % MCP | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |
+|-------------------|-------|-----------|--------|------|------------|-------------|-------|--------|---------|--------|--------|---------|--------|-------|--------|----------|
 """
         # Add territory rows using path_to_layer lookup
         for territory_key, (layer_filter, priority) in self.territories.items():
@@ -703,14 +706,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             terr_total = len(agents)
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            # Healing incorporated: either inherits HealerMixin OR has healing logic
-            terr_healing = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            # Healing capabilities: either inherits HealerMixin OR has healing logic
+            terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
             terr_tests = sum(1 for a in agents if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in agents if a.stem in used_stems)
             
             perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
-            perc_heal = round(terr_healing / terr_total * 100, 1) if terr_total else 0
+            perc_heal_cap = round(terr_healing_cap / terr_total * 100, 1) if terr_total else 0
+            perc_heal_inv = round(terr_healing_invoke / terr_total * 100, 1) if terr_total else 0
             perc_hard = round(terr_hardened / terr_total * 100, 1) if terr_total else 0
             perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
             perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
@@ -752,16 +757,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
             
             territory_name = territory_key.replace("_", " ").title()
-            md += f"| {territory_name} | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | {priority} |\n"
+            md += f"| {territory_name} | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal_cap}% | {perc_heal_inv}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | {priority} |\n"
 
         # Unclassified - calculate full metrics
         unclassified = [a for a in all_agents if a not in classified_paths]
         if unclassified:
             terr_total = len(unclassified)
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            # Healing incorporated: either inherits HealerMixin OR has healing logic
-            terr_healing = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            # Healing capabilities: either inherits HealerMixin OR has healing logic
+            terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
             terr_tests = sum(1 for a in unclassified if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             
@@ -798,7 +804,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
             avg_cc = round(terr_cc_sum / terr_total, 1) if terr_total else 0
             perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
-            perc_heal = round(terr_healing / terr_total * 100, 1) if terr_total else 0
+            perc_heal_cap = round(terr_healing_cap / terr_total * 100, 1) if terr_total else 0
+            perc_heal_inv = round(terr_healing_invoke / terr_total * 100, 1) if terr_total else 0
             perc_hard = round(terr_hardened / terr_total * 100, 1) if terr_total else 0
             perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
             perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
@@ -806,15 +813,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
             perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
             
-            md += f"| **OTHER/UNCLASSIFIED** | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | Review |\n"
+            md += f"| **OTHER/UNCLASSIFIED** | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal_cap}% | {perc_heal_inv}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | Review |\n"
 
-        md += f"| **TOTAL** | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** | **{total_healing}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** | **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |\n"
+        md += f"| **TOTAL** | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** | **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** | **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |\n"
 
         md += f"""
 ## Quick Stats
 
 - **Compliant:** {t['compliant']}/{t['agents']}
-- **With Healing:** {t['healing']}/{t['agents']}
+- **Healing Capabilities:** {t['healing_cap']}/{t['agents']}
+- **Healing Invocation:** {t['healing_invoke']}/{t['agents']}
 - **MCP Hardened:** {t['hardened']}/{t['agents']}
 - **Used Elsewhere:** {t['used']}/{t['agents']}
 
