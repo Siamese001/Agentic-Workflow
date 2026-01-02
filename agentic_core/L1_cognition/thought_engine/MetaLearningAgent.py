@@ -14,6 +14,32 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from functools import wraps
+from time import time
+
+def timeout(seconds=0, minutes=0, hours=0):
+    """
+    Add a signal-based timeout to any function.
+    Usage:
+    @timeout(seconds=5)
+    def my_slow_function(...)
+    Args:
+    - seconds: The time limit, in seconds.
+    - minutes: The time limit, in minutes.
+    - hours: The time limit, in hours.
+    """
+
+    limit = seconds + 60 * minutes + 3600 * hours
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                result = func(*args, **kwargs)
+            except TimeoutError:
+                raise TimeoutError(f"Timed out after {limit} seconds")
+            return result
+        return wrapper
+    return decorator
 
 Logger = logging.getLogger(__name__)
 

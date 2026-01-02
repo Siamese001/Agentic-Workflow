@@ -228,14 +228,28 @@ class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
             file: Any = str(Violation.file_path)
             summary['by_file'][file] = summary['by_file'].get(file, 0) + 1
         return summary
-_dependency_sentinel: Optional[DependencySentinel] = None
 
-def get_dependency_sentinel() -> DependencySentinel:
-    """Get or create the global DependencySentinel instance."""
-    global _dependency_sentinel
-    if _dependency_sentinel is None:
-        _dependency_sentinel = DependencySentinel()
-    return _dependency_sentinel
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L1 cognition agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L1 cognition - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
+
+def get_dependency_sentinel(project_root: Path) -> DependencySentinelAgent:
+    """Factory function to get dependency sentinel instance."""
+    return DependencySentinelAgent(project_root=project_root)
 
 def initialize_dependency_sentinel(root_dir: Path=None) -> Any:
     """

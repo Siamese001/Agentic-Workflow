@@ -287,12 +287,6 @@ class SchemaEvolverAgent(SubAtomicAgent):
         lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum((len(deps) for deps in self.registry.dependencies.values()))}', '', 'Schema Usage:']
         usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
         usage_counts.sort(key=lambda x: x[1], reverse=True)
-        for schema_name, count in usage_counts[:10]:
-            lines.append(f'  {schema_name}: {count} files')
-        if len(usage_counts) > 10:
-            lines.append(f'  ... and {len(usage_counts) - 10} more schemas')
-        lines.extend(['', '=' * 80])
-        return '\n'.join(lines)
 _schema_evolver = None
 
 def get_schema_evolver(ctx: Any) -> SchemaEvolver:
