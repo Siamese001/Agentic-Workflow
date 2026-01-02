@@ -1,12 +1,19 @@
 """
-ULTRA-SOVEREIGN NON-CONFORMING AGENT AUDITOR
+[DEPRECATED] ULTRA-SOVEREIGN NON-CONFORMING AGENT AUDITOR
+
+Use scripts/full_agent_discovery.py as the canonical AST scan.
+This script performs its own AST scan which may conflict with the SSOT.
 
 Finds all Python classes in agentic_core that:
  • Do NOT end with "Agent" in PascalCase
  • BUT exhibit agent-like behavior (have canonical methods)
-
-This ensures eternal enforcement of the naming canon.
 """
+import warnings
+warnings.warn(
+    "find_non_conforming_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 import ast
 import re
 from pathlib import Path

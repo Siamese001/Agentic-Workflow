@@ -526,7 +526,22 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         if file_path:
             agent_files = [file_path]
         else:
-            agent_files = list(self.project_root.rglob("*Agent*.py"))
+            # Use agent_discovery_full.json as authoritative source
+            json_path = self.project_root / "agent_discovery_full.json"
+            if json_path.exists():
+                try:
+                    data = json.loads(json_path.read_text(encoding="utf-8"))
+                    agent_files = []
+                    for agent in data:
+                        path_str = agent.get("path", "").replace("\\", "/")
+                        if path_str:
+                            full_path = self.project_root / path_str
+                            if full_path.exists():
+                                agent_files.append(full_path)
+                except Exception:
+                    agent_files = list(self.project_root.rglob("*Agent*.py"))
+            else:
+                agent_files = list(self.project_root.rglob("*Agent*.py"))
         
         for agent_file in agent_files:
             # Skip __init__.py and test files

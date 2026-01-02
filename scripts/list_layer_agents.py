@@ -1,4 +1,8 @@
-"""List agents by layer for batch hardening."""
+"""
+List agents by layer for batch hardening.
+
+Reads from agent_discovery_full.json - run full_agent_discovery.py first.
+"""
 import json
 import sys
 

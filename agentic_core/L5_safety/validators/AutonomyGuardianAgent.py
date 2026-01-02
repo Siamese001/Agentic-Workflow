@@ -8,11 +8,46 @@ from datetime import date
 from pathlib import Path
 from typing import List, Dict, Any, Set, Optional
 import ast
+import json
 import re
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
+
+
+class _CCVisitor(ast.NodeVisitor):
+    """Cyclomatic Complexity visitor for AST analysis."""
+    def __init__(self):
+        self.cc = 1  # Base complexity
+    
+    def visit_If(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_For(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_While(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_ExceptHandler(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_With(self, node):
+        self.cc += 1
+        self.generic_visit(node)
+    
+    def visit_BoolOp(self, node):
+        self.cc += len(node.values) - 1
+        self.generic_visit(node)
+    
+    def visit_comprehension(self, node):
+        self.cc += 1
+        self.generic_visit(node)
 
 
 class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
@@ -34,23 +69,57 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self.forbidden_patterns = ["heal", "runner", "launcher", "driver"]
         self.exclude_patterns = ["test_", "example_", "mock_", "stub_", "legacy", "deprecated"]
         
-        # Territory definitions for compliance report
+        # Load agents from authoritative JSON (agent_discovery_full.json)
+        self._agent_registry_cache = None
+        
+        # Territory definitions for compliance report - map to JSON layers
         self.territories = {
-            "L0_maintenance": ("agentic_core/L0_maintenance", "Medium"),
-            "L1_cognition": ("agentic_core/L1_cognition", "Medium"),
-            "L2_execution": ("agentic_core/L2_execution", "High"),
-            "L3_orchestration": ("agentic_core/L3_orchestration", "High"),
-            "L4_state": ("agentic_core/L4_state", "Medium"),
-            "L5_safety/validators": ("agentic_core/L5_safety/validators", "Critical"),
-            "L5_safety/guardrails": ("agentic_core/L5_safety/guardrails", "Critical"),
-            "L5_safety/gravity": ("agentic_core/L5_safety/gravity", "High"),
-            "utils": ("agentic_core/utils", "Medium"),
-            "observability": ("agentic_core/observability", "Low"),
-            "knowledge": ("agentic_core/knowledge", "Low"),
+            "L0_maintenance": ("L0", "Medium"),
+            "L1_cognition": ("L1", "Medium"),
+            "L2_execution": ("L2", "High"),
+            "L3_orchestration": ("L3", "High"),
+            "L4_state": ("L4", "Medium"),
+            "L5_safety/validators": ("L5", "Critical"),  # Will filter by validators subfolder
+            "L5_safety/guardrails": ("L5", "Critical"),  # Will filter by guardrails subfolder  
+            "L5_safety/gravity": ("L5", "High"),        # Will filter by gravity subfolder
+            "utils": ("utils", "Medium"),
+            "observability": ("observability", "Low"),
+            "knowledge": ("knowledge", "Low"),
             "apps_lic": ("apps_lic", "High"),
             "apps_rg": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
         }
+    
+    def _load_agent_registry(self) -> List[Dict[str, Any]]:
+        """Load agents from agent_discovery_full.json (authoritative AST scan)."""
+        if self._agent_registry_cache is not None:
+            return self._agent_registry_cache
+        
+        json_path = self.project_root / "agent_discovery_full.json"
+        if json_path.exists():
+            try:
+                self._agent_registry_cache = json.loads(json_path.read_text(encoding="utf-8"))
+                return self._agent_registry_cache
+            except Exception as e:
+                print(f"Error loading agent registry: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        # Fallback to empty list if JSON not found
+        self._agent_registry_cache = []
+        return self._agent_registry_cache
+    
+    def _get_all_agent_paths(self) -> List[Path]:
+        """Get all agent file paths from the authoritative JSON registry."""
+        registry = self._load_agent_registry()
+        paths = []
+        for agent in registry:
+            path_str = agent.get("path", "").replace("\\", "/")
+            if path_str:
+                full_path = self.project_root / path_str
+                if full_path.exists():
+                    paths.append(full_path)
+        return paths
     
     def _is_domain_agent(self, agent_file: Path) -> bool:
         """Check if file is a domain agent (not test/example)."""
@@ -118,7 +187,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     
     def run(self) -> List[tuple]:
         """
-        Scan repository for autonomy violations.
+        Scan repository for autonomy violations using agent_discovery_full.json.
         
         Returns:
             List of (file_path, violation_reason) tuples
@@ -130,8 +199,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         for script in script_violations:
             violations.append((script, "FORBIDDEN_RUNNER_SCRIPT"))
         
-        # Check all agent files for missing methods
-        for agent_file in self.project_root.rglob("*Agent.py"):
+        # Check all agent files from JSON registry for missing methods
+        all_agents = self._get_all_agent_paths()
+        for agent_file in all_agents:
             if not self._is_domain_agent(agent_file):
                 continue
             
@@ -278,24 +348,36 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
         if markdown:
             header = (
-                "| Territory / Layer                          | Total Agents | Compliant | % Compliant | Missing | % HealerMixin | % MCP Hardened | % Healing Logic | % With Tests | Avg LOC | % Used | High-Priority? | Notes / Next Batch |\n"
-                "|--------------------------------------------|--------------|-----------|-------------|---------|---------------|----------------|-----------------|--------------|---------|--------|----------------|--------------------|\n"
+                "| Territory / Layer                          | Total | Compliant | % Comp | Miss | % Mixin | % MCP | % Heal | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |\n"
+                "|--------------------------------------------|-------|-----------|--------|------|---------|-------|--------|--------|---------|--------|--------|---------|--------|-------|--------|----------|\n"
             )
             print(header)
 
         # Accumulators for totals
         totals = {
             "agents": 0, "compliant": 0, "mixin": 0, "hardened": 0,
-            "healing": 0, "tests": 0, "loc": 0, "used": 0
+            "healing": 0, "tests": 0, "loc": 0, "used": 0,
+            "cc_sum": 0, "typed": 0, "documented": 0, "observable": 0, "max_cc": 0
         }
 
-        # Step 1: Find ALL production Agent.py files (exhaustive base)
-        forbidden_paths = ["tests/", "__pycache__/", ".git/", "examples/", "docs/", "venv/", ".venv/"]
-        all_agents = [
-            p for p in self.project_root.rglob("*Agent.py")
-            if not any(excl in p.name for excl in ["test_", "Test", "example"])
-            and not any(forbidden in str(p.relative_to(self.project_root)) for forbidden in forbidden_paths)
-        ]
+        # Step 1: Load agents from authoritative JSON (agent_discovery_full.json)
+        registry = self._load_agent_registry()
+        all_agents = []
+        path_to_layer = {}  # Map path -> layer for territory classification
+        for agent in registry:
+            path_str = agent.get("path", "")
+            if path_str:
+                # Convert JSON path to actual file path
+                full_path = self.project_root / path_str
+                if full_path.exists():
+                    all_agents.append(full_path)
+                    # Store both forward and backslash versions for matching
+                    path_fwd = str(full_path).replace("\\", "/")
+                    path_back = str(full_path)
+                    path_to_layer[path_fwd] = agent.get("layer", "unknown")
+                    path_to_layer[path_back] = agent.get("layer", "unknown")
+        
+        print(f"Loaded {len(all_agents)} agents from agent_discovery_full.json\n")
 
         # Step 2: Compute global usage (which agents are imported elsewhere)
         used_stems = set()
@@ -310,30 +392,108 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             except:
                 pass
 
-        # Step 3: Process defined territories
+        # Step 3: Process defined territories using path_to_layer lookup
         classified_paths = set()
 
-        for territory_key, (path_pattern, priority) in self.territories.items():
-            patterns = (path_pattern,) if isinstance(path_pattern, str) else path_pattern
-
-            agents = [
-                p for p in all_agents
-                if any(pattern in str(p.relative_to(self.project_root)) for pattern in patterns)
-            ]
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            # Get agents based on layer from lookup
+            if territory_key.startswith("L5_safety"):
+                # Special handling for L5 subfolders (validators, guardrails, gravity)
+                subfolder = territory_key.split("/")[1]
+                agents = [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
+                ]
+            else:
+                # Standard layer matching
+                agents = [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == layer_filter
+                ]
             classified_paths.update(agents)
 
             terr_total = len(agents)
             if terr_total == 0:
                 continue
 
-            # Detections
-            terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_mixin = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore"))
-            terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            terr_healing = sum(1 for a in agents if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
-            terr_tests = sum(1 for a in agents if (a.parent / "tests" / f"test_{a.stem}.py").exists())
-            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in agents)
+            # Basic detections
+            terr_compliant = terr_mixin = terr_hardened = terr_healing = terr_tests = 0
+            terr_loc = terr_cc_sum = terr_max_cc = 0
+            terr_typed = terr_documented = terr_observable = 0
+
+            for a in agents:
+                try:
+                    content = a.read_text(errors="ignore")
+                    lines = content.splitlines()
+                    loc = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
+                    terr_loc += loc
+
+                    # Basic checks
+                    if "def heal_repository(self" in content:
+                        terr_compliant += 1
+                    if "HealerMixin" in content:
+                        terr_mixin += 1
+                    if "MCPHardenedMixin" in content:
+                        terr_hardened += 1
+                    if any(ind in content for ind in ["run(", "validate_", "auto_"]):
+                        terr_healing += 1
+                    # Count tests: external test file OR self-tests OR delegation to TestSovereigntyAgent
+                    has_external_test = (a.parent / "tests" / f"test_{a.stem}.py").exists()
+                    has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
+                    has_delegation = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
+                    if has_external_test or has_self_test or has_delegation:
+                        terr_tests += 1
+                    if a.stem in used_stems:
+                        terr_used += 1
+
+                    # AST-based metrics
+                    tree = ast.parse(content)
+                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                    classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+
+                    # Cyclomatic Complexity
+                    for func in functions:
+                        visitor = _CCVisitor()
+                        visitor.visit(func)
+                        terr_cc_sum += visitor.cc
+                        terr_max_cc = max(terr_max_cc, visitor.cc)
+
+                    # Typing coverage
+                    if functions:
+                        typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
+                        terr_typed += (typed / len(functions)) * 100
+
+                    # Documentation coverage
+                    doc_count = 0
+                    for cls in classes:
+                        if cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(getattr(cls.body[0].value, 's', None), str):
+                            doc_count += 1
+                        elif cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(cls.body[0].value, ast.Constant):
+                            doc_count += 1
+                    for f in functions:
+                        if f.body and isinstance(f.body[0], ast.Expr):
+                            val = f.body[0].value
+                            if isinstance(getattr(val, 's', None), str) or isinstance(val, ast.Constant):
+                                doc_count += 1
+                    total_targets = len(classes) + len(functions)
+                    if total_targets:
+                        terr_documented += (doc_count / total_targets) * 100
+
+                    # Observability (logging)
+                    if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]):
+                        terr_observable += 100
+
+                except SyntaxError:
+                    terr_max_cc = max(terr_max_cc, 999)
+                except Exception:
+                    pass
+
+            # Calculate averages
             avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
+            avg_cc = round(terr_cc_sum / max(terr_total, 1), 1)
+            perc_typed = round(terr_typed / terr_total, 1) if terr_total else 0
+            perc_documented = round(terr_documented / terr_total, 1) if terr_total else 0
+            perc_observable = round(terr_observable / terr_total, 1) if terr_total else 0
             terr_used = sum(1 for a in agents if a.stem in used_stems)
             perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
 
@@ -353,18 +513,18 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             totals["tests"] += terr_tests
             totals["loc"] += terr_loc
             totals["used"] += terr_used
+            totals["cc_sum"] += terr_cc_sum
+            totals["typed"] += terr_typed
+            totals["documented"] += terr_documented
+            totals["observable"] += terr_observable
+            totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
 
-            # Display name & notes
-            territory_name = territory_key.replace("_", " ").title()
-            notes = {
-                "L5_safety/validators": "Core safety — finish all",
-                "apps_rg": "High impact — next batch priority",
-                "apps_lic": "License critical — harden fully",
-            }.get(territory_key, "")
-
+            # Display
+            territory_name = territory_key.replace("_", " ").title()[:20]
             row = (
-                f"| {territory_name:<42} | {terr_total:12} | {terr_compliant:9} | {perc_compliant:11}% | {terr_total - terr_compliant:7} "
-                f"| {perc_mixin:13}% | {perc_hardened:14}% | {perc_healing:15}% | {perc_tests:12}% | {avg_loc:7} | {perc_used:6}% | {priority:14} | {notes} |"
+                f"| {territory_name:<42} | {terr_total:5} | {terr_compliant:9} | {perc_compliant:5}% | {terr_total - terr_compliant:4} "
+                f"| {perc_mixin:5}% | {perc_hardened:4}% | {perc_healing:5}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
+                f"| {perc_typed:5}% | {perc_documented:4}% | {perc_observable:4}% | {perc_used:4}% | {priority:8} |"
             )
             print(row)
 
@@ -372,21 +532,62 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         unclassified = [a for a in all_agents if a not in classified_paths]
         if unclassified:
             terr_total = len(unclassified)
-            terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_mixin = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore"))
-            terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            terr_healing = sum(1 for a in unclassified if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
-            terr_tests = sum(1 for a in unclassified if (a.parent / "tests" / f"test_{a.stem}.py").exists())
-            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in unclassified)
+            terr_compliant = terr_mixin = terr_hardened = terr_healing = terr_tests = 0
+            terr_loc = terr_cc_sum = terr_max_cc = 0
+            terr_typed = terr_documented = terr_observable = 0
+
+            for a in unclassified:
+                try:
+                    content = a.read_text(errors="ignore")
+                    lines = content.splitlines()
+                    terr_loc += len([l for l in lines if l.strip() and not l.strip().startswith("#")])
+                    
+                    if "def heal_repository(self" in content: terr_compliant += 1
+                    if "HealerMixin" in content: terr_mixin += 1
+                    if "MCPHardenedMixin" in content: terr_hardened += 1
+                    if any(ind in content for ind in ["run(", "validate_", "auto_"]): terr_healing += 1
+                    # Count tests: external test file OR self-tests OR delegation
+                    has_ext = (a.parent / "tests" / f"test_{a.stem}.py").exists()
+                    has_self = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
+                    has_deleg = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
+                    if has_ext or has_self or has_deleg: terr_tests += 1
+                    
+                    tree = ast.parse(content)
+                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                    classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+                    
+                    for func in functions:
+                        visitor = _CCVisitor()
+                        visitor.visit(func)
+                        terr_cc_sum += visitor.cc
+                        terr_max_cc = max(terr_max_cc, visitor.cc)
+                    
+                    if functions:
+                        typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
+                        terr_typed += (typed / len(functions)) * 100
+                    
+                    doc_count = sum(1 for cls in classes if cls.body and isinstance(cls.body[0], ast.Expr))
+                    doc_count += sum(1 for f in functions if f.body and isinstance(f.body[0], ast.Expr))
+                    if classes or functions:
+                        terr_documented += (doc_count / (len(classes) + len(functions))) * 100
+                    
+                    if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]):
+                        terr_observable += 100
+                except:
+                    pass
+
             avg_loc = round(terr_loc / terr_total, 1)
+            avg_cc = round(terr_cc_sum / max(terr_total, 1), 1)
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             perc_used = round(terr_used / terr_total * 100, 1)
-
             perc_compliant = round(terr_compliant / terr_total * 100, 1)
             perc_mixin = round(terr_mixin / terr_total * 100, 1)
             perc_hardened = round(terr_hardened / terr_total * 100, 1)
             perc_healing = round(terr_healing / terr_total * 100, 1)
             perc_tests = round(terr_tests / terr_total * 100, 1)
+            perc_typed = round(terr_typed / terr_total, 1)
+            perc_documented = round(terr_documented / terr_total, 1)
+            perc_observable = round(terr_observable / terr_total, 1)
 
             totals["agents"] += terr_total
             totals["compliant"] += terr_compliant
@@ -396,10 +597,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             totals["tests"] += terr_tests
             totals["loc"] += terr_loc
             totals["used"] += terr_used
+            totals["cc_sum"] += terr_cc_sum
+            totals["typed"] += terr_typed
+            totals["documented"] += terr_documented
+            totals["observable"] += terr_observable
+            totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
 
             row = (
-                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:12} | {terr_compliant:9} | {perc_compliant:11}% | {terr_total - terr_compliant:7} "
-                f"| {perc_mixin:13}% | {perc_hardened:14}% | {perc_healing:15}% | {perc_tests:12}% | {avg_loc:7} | {perc_used:6}% | Review         | Investigate/deprecate/classify |"
+                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:5} | {terr_compliant:9} | {perc_compliant:5}% | {terr_total - terr_compliant:4} "
+                f"| {perc_mixin:5}% | {perc_hardened:4}% | {perc_healing:5}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
+                f"| {perc_typed:5}% | {perc_documented:4}% | {perc_observable:4}% | {perc_used:4}% | Review   |"
             )
             print(row)
 
@@ -412,15 +619,215 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             total_healing = round(t["healing"] / t["agents"] * 100, 1)
             total_tests = round(t["tests"] / t["agents"] * 100, 1)
             overall_avg_loc = round(t["loc"] / t["agents"], 1)
+            overall_avg_cc = round(t["cc_sum"] / t["agents"], 1)
+            total_typed = round(t["typed"] / t["agents"], 1)
+            total_documented = round(t["documented"] / t["agents"], 1)
+            total_observable = round(t["observable"] / t["agents"], 1)
             total_used = round(t["used"] / t["agents"] * 100, 1)
 
             total_row = (
-                f"| **TOTAL**                                  | **{t['agents']}**   | **{t['compliant']}**   | **{total_perc}%**   | **{t['agents'] - t['compliant']}** "
-                f"| **{total_mixin}%**     | **{total_hardened}%**    | **{total_healing}%**       | **{total_tests}%**     | **{overall_avg_loc}** | **{total_used}%** |                |                    |"
+                f"| **TOTAL**                                  | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** "
+                f"| **{total_mixin}%** | **{total_hardened}%** | **{total_healing}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** "
+                f"| **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |"
             )
             print(total_row)
 
             print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['mixin']}/{t['agents']} HealerMixin — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
+            print(f"**Quality:** Avg CC={overall_avg_cc} | Max CC={t['max_cc']} | {total_typed}% typed | {total_documented}% documented | {total_observable}% observable")
+
+            # Save markdown report to file
+            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
+
+    def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict) -> None:
+        """Save compliance report as markdown file with full table format."""
+        report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        t = totals
+        total_perc = round(t["compliant"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_mixin = round(t["mixin"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_hardened = round(t["hardened"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_tests = round(t["tests"] / t["agents"] * 100, 1) if t["agents"] else 0
+        overall_avg_loc = round(t["loc"] / t["agents"], 1) if t["agents"] else 0
+        overall_avg_cc = round(t["cc_sum"] / t["agents"], 1) if t["agents"] else 0
+        total_typed = round(t["typed"] / t["agents"], 1) if t["agents"] else 0
+        total_documented = round(t["documented"] / t["agents"], 1) if t["agents"] else 0
+        total_observable = round(t["observable"] / t["agents"], 1) if t["agents"] else 0
+        total_used = round(t["used"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_healing = round(t["healing"] / t["agents"] * 100, 1) if t["agents"] else 0
+
+        md = f"""# Autonomy Compliance Report
+
+**Generated:** {today}  
+**Source:** `agent_discovery_full.json` (canonical AST scan)
+
+## Summary
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| **Total Agents** | {t['agents']} | - |
+| **Compliant** | {t['compliant']} ({total_perc}%) | 80%+ |
+| **HealerMixin** | {t['mixin']} ({total_mixin}%) | 80%+ |
+| **MCP Hardened** | {t['hardened']} ({total_hardened}%) | 80%+ |
+| **With Tests** | {t['tests']} ({total_tests}%) | 80%+ |
+| **Used Elsewhere** | {t['used']} ({total_used}%) | - |
+
+## Quality Metrics
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| **Avg Cyclomatic Complexity** | {overall_avg_cc} | <10 |
+| **Max CC** | {t['max_cc']} | <20 |
+| **Type Coverage** | {total_typed}% | 90%+ |
+| **Documentation** | {total_documented}% | 90%+ |
+| **Observability** | {total_observable}% | 80%+ |
+
+## Territory Breakdown
+
+| Territory / Layer | Total | Compliant | % Comp | Miss | % Mixin | % MCP | % Heal | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |
+|-------------------|-------|-----------|--------|------|---------|-------|--------|--------|---------|--------|--------|---------|--------|-------|--------|----------|
+"""
+        # Add territory rows using path_to_layer lookup
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            # Get agents for this territory using path_to_layer
+            if territory_key.startswith("L5_safety"):
+                subfolder = territory_key.split("/")[1]
+                agents = [p for p in all_agents if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")]
+            else:
+                agents = [p for p in all_agents if path_to_layer.get(str(p)) == layer_filter]
+            
+            if not agents:
+                continue
+            
+            terr_total = len(agents)
+            terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_mixin = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore"))
+            terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
+            terr_healing = sum(1 for a in agents if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            terr_tests = sum(1 for a in agents if "_run_self_tests" in a.read_text(errors="ignore") or "SubatomicTestingMixin" in a.read_text(errors="ignore"))
+            terr_used = sum(1 for a in agents if a.stem in used_stems)
+            
+            perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
+            perc_mixin = round(terr_mixin / terr_total * 100, 1) if terr_total else 0
+            perc_hard = round(terr_hardened / terr_total * 100, 1) if terr_total else 0
+            perc_heal = round(terr_healing / terr_total * 100, 1) if terr_total else 0
+            perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
+            perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
+            
+            # Calculate territory metrics for markdown
+            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in agents)
+            terr_cc_sum = 0
+            terr_max_cc = 0
+            terr_typed = 0
+            terr_documented = 0
+            terr_observable = 0
+            
+            for a in agents:
+                content = a.read_text(errors="ignore")
+                # CC calculation
+                try:
+                    tree = ast.parse(content)
+                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                    for func in functions:
+                        visitor = _CCVisitor()
+                        visitor.visit(func)
+                        terr_cc_sum += visitor.cc
+                        terr_max_cc = max(terr_max_cc, visitor.cc)
+                except:
+                    pass
+                
+                # Type/doc/obs detection
+                if "typing" in content or "from typing" in content or "import typing" in content:
+                    terr_typed += 1
+                if '"""' in content or "'''" in content:
+                    terr_documented += 1
+                if "logging" in content or "log" in content or "Logger" in content:
+                    terr_observable += 1
+            
+            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
+            avg_cc = round(terr_cc_sum / terr_total, 1) if terr_total else 0
+            perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
+            perc_docs = round(terr_documented / terr_total * 100, 1) if terr_total else 0
+            perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
+            
+            territory_name = territory_key.replace("_", " ").title()
+            md += f"| {territory_name} | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_mixin}% | {perc_hard}% | {perc_heal}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | {priority} |\n"
+
+        # Unclassified - calculate full metrics
+        unclassified = [a for a in all_agents if a not in classified_paths]
+        if unclassified:
+            terr_total = len(unclassified)
+            terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_mixin = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore"))
+            terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
+            terr_healing = sum(1 for a in unclassified if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            terr_tests = sum(1 for a in unclassified if "_run_self_tests" in a.read_text(errors="ignore") or "SubatomicTestingMixin" in a.read_text(errors="ignore"))
+            terr_used = sum(1 for a in unclassified if a.stem in used_stems)
+            
+            # Calculate full metrics for unclassified
+            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in unclassified)
+            terr_cc_sum = 0
+            terr_max_cc = 0
+            terr_typed = 0
+            terr_documented = 0
+            terr_observable = 0
+            
+            for a in unclassified:
+                content = a.read_text(errors="ignore")
+                # CC calculation
+                try:
+                    tree = ast.parse(content)
+                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                    for func in functions:
+                        visitor = _CCVisitor()
+                        visitor.visit(func)
+                        terr_cc_sum += visitor.cc
+                        terr_max_cc = max(terr_max_cc, visitor.cc)
+                except:
+                    pass
+                
+                # Type/doc/obs detection
+                if "typing" in content or "from typing" in content or "import typing" in content:
+                    terr_typed += 1
+                if '"""' in content or "'''" in content:
+                    terr_documented += 1
+                if "logging" in content or "log" in content or "Logger" in content:
+                    terr_observable += 1
+            
+            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
+            avg_cc = round(terr_cc_sum / terr_total, 1) if terr_total else 0
+            perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
+            perc_mixin = round(terr_mixin / terr_total * 100, 1) if terr_total else 0
+            perc_hard = round(terr_hardened / terr_total * 100, 1) if terr_total else 0
+            perc_heal = round(terr_healing / terr_total * 100, 1) if terr_total else 0
+            perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
+            perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
+            perc_docs = round(terr_documented / terr_total * 100, 1) if terr_total else 0
+            perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
+            perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
+            
+            md += f"| **OTHER/UNCLASSIFIED** | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_mixin}% | {perc_hard}% | {perc_heal}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | Review |\n"
+
+        md += f"| **TOTAL** | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** | **{total_mixin}%** | **{total_hardened}%** | **{total_healing}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** | **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |\n"
+
+        md += f"""
+## Quick Stats
+
+- **Compliant:** {t['compliant']}/{t['agents']}
+- **HealerMixin:** {t['mixin']}/{t['agents']}
+- **MCP Hardened:** {t['hardened']}/{t['agents']}
+- **Used Elsewhere:** {t['used']}/{t['agents']}
+
+## Quality
+
+- **Avg CC:** {overall_avg_cc} | **Max CC:** {t['max_cc']}
+- **Typed:** {total_typed}% | **Documented:** {total_documented}% | **Observable:** {total_observable}%
+
+---
+*Report generated by AutonomyGuardianAgent*
+"""
+        report_path.write_text(md, encoding="utf-8")
+        print(f"\n[SAVED] {report_path}")
 
 
 # Singleton accessor

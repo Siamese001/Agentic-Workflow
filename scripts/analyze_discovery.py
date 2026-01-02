@@ -1,4 +1,9 @@
-"""Analyze agent_discovery_full.json"""
+"""
+[DEPRECATED] Analyze agent_discovery_full.json
+
+Use scripts/full_agent_discovery.py as the canonical AST scan.
+This script just reads the JSON output - run full_agent_discovery.py first.
+"""
 import json
 from collections import defaultdict
 

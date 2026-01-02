@@ -194,8 +194,22 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
         return violations
 
     def _build_agent_stem_cache(self) -> Set[str]:
-        """Build set of all PascalCase agent filenames (without .py)"""
+        """Build set of all agent class names from agent_discovery_full.json (authoritative source)."""
         stems = set()
+        json_path = self.project_root / "agent_discovery_full.json"
+        
+        if json_path.exists():
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+                for agent in data:
+                    class_name = agent.get("class_name", "")
+                    if class_name:
+                        stems.add(class_name)
+                return stems
+            except Exception:
+                pass
+        
+        # Fallback to rglob if JSON not found
         for py_file in self.project_root.rglob("*Agent.py"):
             if any(ex in str(py_file) for ex in {"__pycache__", ".git", "archives"}):
                 continue
@@ -878,10 +892,10 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
         return suggestions
 
 
-    # SUPPLEMENTED FROM NamingLawHealerAgent — enhances AI-driven rename suggestion engine — merged 2025-12-30
+    # SUPPLEMENTED FROM NamingLawHealerAgent (now deprecated) — merged 2025-12-30
     def detect_low_signal_patterns(self, file_path: Path) -> List[str]:
         """
-        SUPPLEMENTED FROM NamingLawHealerAgent._detect_low_signal — merged 2025-12-30
+        SUPPLEMENTED FROM NamingLawHealerAgent (deprecated 2026-01-02) — merged 2025-12-30
         
         Detect low-signal patterns in file name.
         
@@ -917,7 +931,7 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
 
     def generate_name_suggestions(self, file_path: Path) -> List[str]:
         """
-        SUPPLEMENTED FROM NamingLawHealerAgent._generate_suggestions — merged 2025-12-30
+        SUPPLEMENTED FROM NamingLawHealerAgent (deprecated 2026-01-02) — merged 2025-12-30
         
         Generate high-signal name suggestions based on code content.
         
@@ -961,7 +975,7 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
 
     def rank_name_suggestions(self, suggestions: List[str], file_path: Path) -> str:
         """
-        SUPPLEMENTED FROM NamingLawHealerAgent._rank_suggestions — merged 2025-12-30
+        SUPPLEMENTED FROM NamingLawHealerAgent (deprecated 2026-01-02) — merged 2025-12-30
         
         Rank suggestions by signal strength and return the best one.
         

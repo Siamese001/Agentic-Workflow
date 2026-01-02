@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
-"""Find files containing agent classes that don't follow *Agent.py naming."""
+"""
+[DEPRECATED] Find files containing agent classes that don't follow *Agent.py naming.
+
+Use scripts/full_agent_discovery.py as the canonical AST scan.
+This script performs its own AST scan which may conflict with the SSOT.
+"""
+import warnings
+warnings.warn(
+    "find_misnamed_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 import ast
 from pathlib import Path
 

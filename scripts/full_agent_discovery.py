@@ -1,15 +1,29 @@
 """
-Full Agent Discovery - Complete AST-Based Analysis
-Regenerates agent_discovery_full.json with comprehensive AST scanning.
-
-Features:
-- Full AST parsing of all Python files
-- Complete class inheritance chain resolution
-- Method signature extraction
-- Decorator analysis
-- Import tracking per file
-- Class attribute detection
-- MRO-aware healing detection
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ CANONICAL AST AGENT DISCOVERY - SINGLE SOURCE OF TRUTH (SSOT)                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ This is THE authoritative agent discovery scan for the entire repository.    ║
+║ All other discovery scripts are DEPRECATED and should use this output.       ║
+║                                                                              ║
+║ Output: agent_discovery_full.json (407 agents as of 2026-01-02)              ║
+║                                                                              ║
+║ Features:                                                                    ║
+║ - Full AST parsing of all Python files                                       ║
+║ - Complete class inheritance chain resolution (MRO-aware)                    ║
+║ - Method signature extraction                                                ║
+║ - Decorator analysis                                                         ║
+║ - Import tracking per file                                                   ║
+║ - Class attribute detection                                                  ║
+║ - MRO-aware healing detection                                                ║
+║                                                                              ║
+║ Usage: python scripts/full_agent_discovery.py                                ║
+║                                                                              ║
+║ Consumers:                                                                   ║
+║ - canon_validator_agentic_v2_thin.py (--list-agents, --report)               ║
+║ - AutonomyGuardianAgent.generate_compliance_report()                         ║
+║ - NamingAgent._build_agent_stem_cache()                                      ║
+║ - HierarchyAgent.detect_layer_sprawl_violations()                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 """
 import ast
 import json
