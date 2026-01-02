@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "L0DelegationTestingMixin",
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,9 +239,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -270,9 +270,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -372,9 +372,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "L0DelegationTestingMixin",
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2425,8 +2425,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "HealerMixin",
-      "IActionPlane"
+      "IActionPlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3502,9 +3502,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4758,7 +4758,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 166,
+    "loc": 167,
     "class_count": 14,
     "description": "Stub for BaseAgent - TODO: Replace with sovereign equivalent",
     "pascal_compliant": true,
@@ -4794,17 +4794,18 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run"
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 166,
+    "loc": 167,
     "class_count": 14,
     "description": "Runs local bias detection with dynamic constitution rules.",
     "pascal_compliant": true,
@@ -4906,7 +4907,7 @@
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 166,
+    "loc": 167,
     "class_count": 14,
     "description": "Performs final constitutional review of the output.",
     "pascal_compliant": true,
@@ -5093,8 +5094,8 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -5526,9 +5527,9 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
       "AutonomyMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -5581,7 +5582,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run",
@@ -5589,10 +5591,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 166,
+    "loc": 167,
     "class_count": 14,
     "description": "Performs local PII detection using regex heuristics.",
     "pascal_compliant": true,
@@ -5633,17 +5635,18 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 166,
+    "loc": 167,
     "class_count": 14,
     "description": "Detects prompt-injection attacks.",
     "pascal_compliant": true,

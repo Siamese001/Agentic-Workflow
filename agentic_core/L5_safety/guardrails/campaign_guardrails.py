@@ -65,7 +65,9 @@ def detect_bias(context, text, workflow_id=""):
     """Stub for detect_bias - TODO: Replace with sovereign equivalent"""
     return {"bias_detected": False, "score": 0.0}
 
-class PIISanitizerAgent(BaseAgent):
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class PIISanitizerAgent(HealerMixin, BaseAgent):
     """Performs local PII detection using regex heuristics."""
 
     PII_PATTERNS = {
@@ -98,7 +100,7 @@ class PIISanitizerAgent(BaseAgent):
             text = pattern.sub(f"[{PiiType}_REDACTED]", text)
         return text
 
-class BiasDetectorAgent(BaseAgent):
+class BiasDetectorAgent(HealerMixin, BaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
 
     @track_metrics("run_bias_detector")
@@ -117,7 +119,7 @@ class BiasDetectorAgent(BaseAgent):
 
         return result
 
-class PromptInjectionDetectorAgent(BaseAgent):
+class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
     """Detects prompt-injection attacks."""
 
     class PIDetectionOutput(BaseModel):
