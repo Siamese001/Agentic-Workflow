@@ -66,31 +66,31 @@
 | AgenticWorkflowError | Exception | - | - | - | - | 68 | Base exception for agentic workflow |
 | AgenticWorkflowError | Exception | - | - | - | - | 27 | Base exception for agentic workflow |
 | BiasAuditor | HealerMixin | - | - | Y | - | 74 | Lightweight Bias Detection for Cont |
-| BootstrapAgent | HealerMixin, L0Delegation | Y | Y | Y | D | 137 | 
+| BootstrapAgent | MCPHardenedMixin, HealerM | Y | Y | Y | D | 137 | 
     Autonomous boot integrity agen |
 | GapClosureArchitect | HealerMixin, Agent | - | - | Y | - | 103 | Gap Closure Architect agent for lea |
 | GravityComplianceValidator | HealerMixin | - | - | Y | - | 52 | Brief description of functionality  |
-| GuardianOrchestrator | HealerMixin, SelfDiagnosi | - | - | Y | - | 77 | 
+| GuardianOrchestrator | AdaptiveExecutionMixin, H | - | - | Y | - | 77 | 
     Sovereign orchestrator for all |
-| HealingOrchestrator | HealerMixin, SelfDiagnosi | - | - | Y | - | 160 | 
+| HealingOrchestrator | AdaptiveExecutionMixin, H | - | - | Y | - | 160 | 
     Sovereign healing engine orche |
-| HygieneValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 144 | 
+| HygieneValidator | MCPHardenedMixin, HealerM | Y | - | Y | - | 144 | 
     Detects 'Rot' within the syste |
 | L0DelegationMixin | - | Y | - | - | - | 111 | Mixin providing L0 delegation-only  |
 | L0DelegationTestingMixin | - | - | - | - | D | 68 | 
     Phase 2: Canonical delegated t |
-| MetricsWitness | HealerMixin, SelfDiagnosi | - | - | Y | - | 70 | 
+| MetricsWitness | AdaptiveExecutionMixin, H | - | - | Y | - | 70 | 
     Sovereign witness that cross-e |
-| SafeSystemCommandExecutor | HealerMixin, MCPHardenedM | Y | - | Y | - | 140 | 
+| SafeSystemCommandExecutor | MCPHardenedMixin, HealerM | Y | - | Y | - | 140 | 
     A secure system command execut |
-| ScriptToAgentClassifier | HealerMixin, L0Delegation | - | - | Y | D | 245 | 
+| ScriptToAgentClassifier | AdaptiveExecutionMixin, L | - | - | Y | D | 245 | 
     Sovereign classifier for scrip |
 | ScriptsPlanningOrchestrator | HealerMixin | - | - | Y | - | 119 | Orchestrator for planning script ex |
 | SovereignFilesystemMcpClient | - | Y | - | - | - | 81 | Official Filesystem MCP client for  |
 | SovereignGitKrakenMcpClient | - | Y | - | - | - | 88 | Official GitKraken MCP client for s |
 | SystemCommandExecutor | HealerMixin, Protocol | Y | - | Y | - | 140 | 
     Protocol for safely executing  |
-| WorkflowOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 94 | Workflow orchestrator with SDK inte |
+| WorkflowOrchestrator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 94 | Workflow orchestrator with SDK inte |
 
 ### L1 Layer (39 agents)
 
@@ -99,7 +99,7 @@
 | AgentCapability | Enum | - | - | - | - | 14 | Standard agent capabilities. |
 | AgentContract | BaseModel | - | - | - | - | 30 | Contract specification for an agent |
 | AgentIdentity | - | Y | - | - | - | 52 | Cryptographically-verified agent id |
-| AgentInfo | HealerMixin, MCPHardenedM | Y | - | Y | - | 52 | Simple agent information container  |
+| AgentInfo | MCPHardenedMixin, HealerM | Y | - | Y | - | 52 | Simple agent information container  |
 | AgentMessage | SovereignBaseModel | Y | - | - | - | 21 | 
     Sovereign-grade message used f |
 | AgentMessage | SovereignBaseModel | - | - | - | - | 22 | Brief description of functionality  |
@@ -111,11 +111,11 @@
     Forces the agent to show its w |
 | AgentThoughtProcess | BaseModel | Y | - | - | - | 92 | 
     Forces the agent to show its w |
-| AsyncBlockingValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+| AsyncBlockingValidator | MCPHardenedMixin, HealerM | Y | - | Y | - | 94 | 
     Key 31: Detects blocking calls |
 | BareExceptValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 5: Detects bare except: st |
-| CanonValidator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 292 | 
+| CanonValidator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 292 | 
     The L5 Meta-Learner that valid |
 | CognitiveContractValidator | - | - | - | - | - | 257 | Validates cognitive contracts and e |
 | ConcurrencyGuardian | HealerMixin | - | - | Y | - | 105 | 
@@ -124,9 +124,9 @@
     Key 42: Detects dangerous buil |
 | DebuggerValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 3: Detects breakpoint() an |
-| DependencySentinel | HealerMixin, MCPHardenedM | Y | - | Y | - | 378 | 
+| DependencySentinel | MCPHardenedMixin, HealerM | Y | - | Y | - | 378 | 
     KEYS: 7 (Star Imports), 8 (Rel |
-| DependencySentinelAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 154 | 
+| DependencySentinelAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 154 | 
     Guards the codebase against il |
 | DummyAgentCard | HealerMixin | - | - | Y | - | 27 | TODO: Add docstring. |
 | EmptyExceptValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
@@ -135,13 +135,13 @@
     Key 6: Detects eval() and exec |
 | ExternalHttpValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 23: Detects forbidden HTTP |
-| GenerativeGuard | HealerMixin, MCPHardenedM | Y | - | Y | - | 301 | 
+| GenerativeGuard | CanonBaseAgentInterface,  | Y | - | Y | - | 301 | 
     KEYS: 45 (Dead Code/Runaway Ge |
-| GovernanceAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 337 | 
+| GovernanceAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 337 | 
     Enforces architectural governa |
-| HealerAgent | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+| HealerAgent | CanonBaseAgentInterface,  | Y | - | Y | - | 301 | 
     KEYS: 48 (Syntax Repair), 49 ( |
-| IOrchestrator | HealerMixin, MCPHardenedM | Y | - | Y | - | 31 | Interface for the orchestrator (Ner |
+| IOrchestrator | MCPHardenedMixin, HealerM | Y | - | Y | - | 31 | Interface for the orchestrator (Ner |
 | IOrchestrator | ABC | Y | - | - | - | 56 | Interface for the Orchestrator (Ner |
 | IntelligentOrchestrator | HealerMixin | Y | - | Y | - | 74 | Orchestrates all validation agents  |
 | MetaLearningAgent | HealerMixin | Y | - | Y | - | 109 | 
@@ -149,13 +149,13 @@
 | PrintStatementValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 2: Detects print() stateme |
 | ReasoningRouter | HealerMixin | Y | - | Y | - | 121 | Routes tasks to appropriate reasoni |
-| ReflectionAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 137 | 
+| ReflectionAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 137 | 
     Agent responsible for learning |
 | ResidualAgentMessage | - | Y | - | - | - | 21 | 
     Lightweight runtime message fo |
 | ResidualAgentMessage | - | Y | - | - | - | 82 | Message in agent conversation (Resi |
 | SovereignCognitivePlane | HealerMixin, ICognitivePl | Y | - | Y | - | 52 | Sovereign cognitive plane with in-m |
-| SystemArchitect | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+| SystemArchitect | CanonBaseAgentInterface,  | Y | - | Y | - | 301 | 
     KEYS: 40 (Metaclasses), 41 (De |
 
 ### L2 Layer (55 agents)
@@ -180,7 +180,7 @@
 | DriftDetectorAgent | HealerMixin | - | - | Y | - | 13 | Naming/Compliance: Drift Detection |
 | DynamicModelRouterAgent | SubAtomicAgent | Y | - | Y | S | 248 | 
     The Throttler - Dynamic Model  |
-| GitAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 186 | 
+| GitAgent | MCPHardenedMixin, HealerM | Y | - | Y | S | 186 | 
     Agent for managing git operati |
 | GlobalComplianceAggregatorAgent | HealerMixin | - | - | Y | - | 14 | Naming/Compliance: Global Complianc |
 | HierarchyHealer | - | - | - | - | - | 27 | 
@@ -193,10 +193,10 @@
 | IntegrityGateExecutorAgent | HealerMixin | - | - | Y | S | 211 | Executor for integrity gate validat |
 | L2SelfTestingMixin | MCPHardenedMixin, Subatom | Y | - | Y | S | 54 | 
     Alias for SubatomicTestingMixi |
-| MemoryArchitectAgent | MCPHardenedMixin, SubAtom | Y | Y | Y | S | 244 | 
+| MemoryArchitectAgent | SubAtomicAgent, MCPHarden | Y | Y | Y | S | 244 | 
     Autonomous Knowledge Distillat |
 | MemoryLeakDetector | HealerMixin | - | - | Y | - | 644 | ROLE: Memory Guardian. Detects and  |
-| NamingAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 872 | 
+| NamingAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 872 | 
     Autonomous agent for naming la |
 | NamingLawHealerAgent | HealerMixin | Y | - | Y | - | 135 | 
     L1 Cognition: High-Signal Nami |
@@ -212,7 +212,7 @@
     Executes resume safety validat |
 | SherlockAgent | SubAtomicAgent | Y | - | Y | S | 132 | 
     ROLE: Root Cause Analysis. Tri |
-| SovereignActionPlaneAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 194 | Sovereign action plane with Toolsmi |
+| SovereignActionPlaneAgent | IActionPlane, MCPHardened | Y | - | Y | S | 194 | Sovereign action plane with Toolsmi |
 | SovereignDeepWikiClient | - | Y | Y | - | - | 122 | 
     DeepWiki MCP Client for L6 Obs |
 | SovereignFetchClient | MCPHardenedMixin | Y | - | - | - | 41 | Ultra-hardened Fetch MCP client — e |
@@ -226,9 +226,9 @@
 | SovereignPlaywrightMcpClient | - | Y | - | - | - | 126 | 
     Playwright MCP Client for visu |
 | SovereignRedisClient | - | - | Y | - | - | 109 | Sovereign Redis client - audit + sa |
-| SovereignRedisOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 87 | Brief description of functionality  |
-| SovereignRedisOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 87 | Brief description of functionality  |
-| SovereigntyAuditor | HealerMixin, MCPHardenedM | Y | Y | Y | - | 108 | 
+| SovereignRedisOrchestrator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 87 | Brief description of functionality  |
+| SovereignRedisOrchestrator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 87 | Brief description of functionality  |
+| SovereigntyAuditor | MCPHardenedMixin, HealerM | Y | Y | Y | - | 108 | 
     Sovereignty Audit Engine for M |
 | SprawlInspector | HealerMixin | - | - | Y | - | 49 | Brief description of functionality  |
 | StrategicPlannerAgent | SubAtomicAgent | Y | - | Y | S | 67 | 
@@ -248,7 +248,7 @@
 | ToolsmithAgent | SubAtomicAgent | Y | - | Y | S | 132 | 
     ROLE: Dynamic Tool Forger.
     |
-| ToolsmithAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 204 | 
+| ToolsmithAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 204 | 
     Creates and manages tools dyna |
 
 ### L3 Layer (56 agents)
@@ -266,7 +266,7 @@
 | AutonomicMonitor | HealerMixin | - | - | Y | - | 93 | Autonomic immune system for agent h |
 | BenchmarkingAgent | HealerMixin | Y | - | Y | - | 229 | 
     Measures and tracks performanc |
-| CachedOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 59 | 
+| CachedOrchestrator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 59 | 
     Sovereign L3 orchestration bas |
 | ContextCurator | HealerMixin | Y | - | Y | - | 120 | Curates and manages the context win |
 | CoordinateObservabilityOperationsAg | HealerMixin | - | - | Y | - | 56 | Orchestrator for operations domain. |
@@ -278,8 +278,8 @@
 | DagRuntimeInspector | HealerMixin | - | - | Y | - | 30 | Diagnostics engine for inspection d |
 | DeadlockDetector | HealerMixin | - | - | Y | - | 192 | 
     Detects potential deadlocks in |
-| DispatchOutreachToolsAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 26 | Executor for outreach domain. |
-| DispatchResumeToolsAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 67 | Executor for resume domain with Tit |
+| DispatchOutreachToolsAgent | MCPHardenedMixin, HealerM | Y | - | Y | S | 26 | Executor for outreach domain. |
+| DispatchResumeToolsAgent | MCPHardenedMixin, HealerM | Y | - | Y | S | 67 | Executor for resume domain with Tit |
 | HallucinationDetector | HealerMixin | - | - | Y | - | 13 | Stub implementation of hallucinatio |
 | HardenedWorkflowOrchestrator | HealerMixin | - | - | Y | - | 22 | 
     Thin wrapper for Hardened Work |
@@ -287,13 +287,13 @@
     Enforces the canonical L4 hier |
 | IOrchestrator | HealerMixin, ABC | Y | - | Y | - | 111 | Interface for the Orchestrator (Ner |
 | L3SubatomicTestingMixin | MCPHardenedMixin | Y | - | Y | S | 133 | Mixin providing L3 subatomic testin |
-| McpRouter | HealerMixin, MCPHardenedM | Y | Y | Y | - | 52 | 
+| McpRouter | MCPHardenedMixin, HealerM | Y | Y | Y | - | 52 | 
     L3 Orchestration switchboard:  |
 | MemoryLeakDetector | HealerMixin | - | - | Y | - | 159 | 
     Detects memory leaks in the ag |
-| MetaLearningAgent | HealerMixin, SelfDiagnosi | - | - | Y | S | 122 | 
+| MetaLearningAgent | AdaptiveExecutionMixin, H | - | - | Y | S | 122 | 
     Sovereign meta-learning agent  |
-| MetricsAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 171 | 
+| MetricsAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 171 | 
     MetricsAgent: Sovereign quanti |
 | MockAgent | HealerMixin | Y | - | Y | S | 879 | - |
 | ModelRouter | HealerMixin | - | - | Y | - | 86 | Dynamic model router for cost-optim |
@@ -301,7 +301,7 @@
 | NervousSystemPhaseOrchestrator | HealerMixin | Y | - | Y | - | 879 | Orchestrates the execution of all p |
 | PredictiveCostAuditorAgent | SubAtomicAgent | Y | - | Y | S | 212 | 
     The Efficiency Guard - Predict |
-| ReportingAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 82 | 
+| ReportingAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 82 | 
     Autonomous diagnostic agent fo |
 | ResumeOrchestrator | HealerMixin | - | - | Y | - | 38 | Orchestrate the multi-hop resume ge |
 | SelfRecoveringOrchestrator | HealerMixin | - | - | Y | - | 280 | 
@@ -309,12 +309,12 @@
 | SemanticGatekeeperAgent | HealerMixin | - | - | Y | S | 54 | 
     Gatekeeper that controls agent |
 | SemanticTerritoryMapperAgent | HealerMixin | - | - | Y | S | 13 | L3 Orchestration: Semantic Territor |
-| SemanticTerritoryMapperAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 138 | 
+| SemanticTerritoryMapperAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 138 | 
     The Intelligent Brain that map |
 | SignatureVerifierAgent | HealerMixin | - | - | Y | - | 29 | function class for inspection domai |
 | SovereignDeepWikiClient | - | Y | Y | - | - | 122 | 
     DeepWiki MCP Client for L6 Obs |
-| SovereignMcpRouter | HealerMixin, MCPHardenedM | Y | Y | Y | - | 139 | Ultra-hardened L3 MCP switchboard — |
+| SovereignMcpRouter | MCPHardenedMixin, HealerM | Y | Y | Y | - | 139 | Ultra-hardened L3 MCP switchboard — |
 | SovereignRagOrchestrator | HealerMixin | - | - | Y | - | 107 | Brief description of functionality  |
 | SubatomicHop | HealerMixin | - | - | Y | - | 350 | Mock SubatomicHop for type hinting. |
 | SubatomicHopAgent | HealerMixin | Y | - | Y | S | 141 | 
@@ -324,9 +324,9 @@
 | TelemetryAgent | HealerMixin | - | - | Y | - | 147 | 
     Autonomous telemetry emission  |
 | TerritoryHealerAgent | HealerMixin | - | - | Y | S | 13 | L3 Orchestration: Territory Healing |
-| TerritoryHealerAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 197 | 
+| TerritoryHealerAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 197 | 
     Enforces exhaustive territory  |
-| TestPilotAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 191 | 
+| TestPilotAgent | MCPHardenedMixin, HealerM | Y | - | Y | S | 191 | 
     TestPilot agent with property- |
 | TokenBudgetInspector | HealerMixin | - | - | Y | - | 30 | Diagnostics engine for inspection d |
 | TracingAgent | HealerMixin | - | - | Y | - | 254 | 
@@ -350,17 +350,17 @@
     L4 State Guardian that autonom |
 | CachedStateLedger | MCPHardenedMixin | Y | Y | - | - | 103 | 
     Sovereign L4 state base — Redi |
-| CanonValidator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 203 | 
+| CanonValidator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 203 | 
     The Gatekeeper logic that enfo |
 | L4SubatomicTestingMixin | MCPHardenedMixin | Y | - | Y | S | 147 | Mixin providing L4 subatomic testin |
-| PineconeSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 260 | 
+| PineconeSovereignAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 260 | 
     Sovereign Pinecone controller  |
-| PineconeSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 15 | Mock Pinecone Sovereign Agent. |
+| PineconeSovereignAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 15 | Mock Pinecone Sovereign Agent. |
 | RedisDistributedLock | MCPHardenedMixin | Y | Y | - | - | 447 | 
     Redis-based distributed lock f |
 | RedisHotCache | MCPHardenedMixin | Y | Y | - | - | 447 | 
     Redis-based hot cache with loc |
-| RedisSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 72 | 
+| RedisSovereignAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 72 | 
     Sovereign Redis controller — h |
 | SchemaEvolverAgent | SubAtomicAgent | Y | - | Y | S | 203 | 
     The Structural Guard - Schema  |
@@ -368,11 +368,11 @@
     Client for the Knowledge Graph |
 | SovereignPineconeMcpClient | MCPHardenedMixin | Y | Y | - | - | 109 | 
     Official Pinecone MCP client — |
-| SovereignPineconeStoreAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 103 | 
+| SovereignPineconeStoreAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 103 | 
     ADAPTER: Legacy Interface -> N |
 | SovereignRedisMcpClient | MCPHardenedMixin | Y | Y | - | - | 91 | Official Redis MCP client for sover |
 | SovereignSemanticCache | MCPHardenedMixin | Y | Y | - | - | 81 | Ultra-hardened hybrid semantic cach |
-| SubAtomicRegistryAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 113 | 
+| SubAtomicRegistryAgent | MCPHardenedMixin, HealerM | Y | Y | Y | S | 113 | 
     Sovereign method registry — li |
 
 ### L5 Layer (49 agents)
@@ -384,14 +384,14 @@
 | BaseAgent | HealerMixin | - | - | Y | - | 167 | Stub for BaseAgent - TODO: Replace  |
 | BiasAuditor | HealerMixin | - | - | Y | - | 148 | Lightweight Bias Detection for Cont |
 | BiasDetectorAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Runs local bias detection with dyna |
-| CodeFormatterAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 35 | 
+| CodeFormatterAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 35 | 
     Atomic agent: Enforces consist |
-| CodeSSOTEnforcerAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 88 | 
+| CodeSSOTEnforcerAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 88 | 
     Ultra high-signal code-level S |
-| ComplianceOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 521 | 
+| ComplianceOrchestrator | MCPHardenedMixin, HealerM | Y | Y | Y | - | 521 | 
     L5 Sovereign Compliance Orches |
 | ConstitutionalReviewerAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Performs final constitutional revie |
-| DependencyPruningAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 72 | 
+| DependencyPruningAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 72 | 
     Batch agent: Detects and remov |
 | DocstringComplianceAgent | HealerMixin | - | - | Y | - | 61 | 
     Ensures public functions, clas |
@@ -399,13 +399,13 @@
     Batch agent: Detects exact dup |
 | FileCleanupAgent | HealerMixin | - | - | Y | - | 129 | 
     Batch agent: Identifies and re |
-| FilenameUniquenessGuardianAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 108 | 
+| FilenameUniquenessGuardianAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 108 | 
     Batch agent that enforces uniq |
 | FilesystemAgent | HealerMixin | - | - | Y | - | 199 | 
     Autonomous agent for physical  |
-| GitHygieneAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 96 | 
+| GitHygieneAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 96 | 
     Batch agent: Enforces Git repo |
-| GovernanceAgent | HealerMixin, AutonomyMixi | - | - | Y | - | 126 | 
+| GovernanceAgent | AdaptiveExecutionMixin, H | - | - | Y | - | 126 | 
     Sovereign governance agent tha |
 | GravityEnforcerAgent | HealerMixin, CachedSafety | - | - | Y | - | 88 | 
     The "Neural Link" stabilizer t |
@@ -413,16 +413,16 @@
     Converts forbidden static impo |
 | HallucinationHunterAgent | SubAtomicAgent | Y | - | Y | S | 291 | 
     The Hallucination Hunter - Gro |
-| HealValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 229 | 
+| HealValidator | MCPHardenedMixin, HealerM | Y | - | Y | - | 229 | 
     Multi-stage validator for LLM- |
-| HealerAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 787 | 
+| HealerAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 787 | 
     Autonomous Conductor for struc |
-| HierarchyAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 340 | 
+| HierarchyAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 340 | 
     Autonomous agent for hierarchi |
-| HierarchyHealer | HealerMixin, MCPHardenedM | Y | - | Y | - | 229 | 
+| HierarchyHealer | MCPHardenedMixin, HealerM | Y | - | Y | - | 229 | 
     L5 Hierarchy Healer Agent
      |
-| HygieneGuardianAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 51 | 
+| HygieneGuardianAgent | CanonBaseAgent, MCPHarden | Y | - | Y | S | 51 | 
     Validates Canon Key 45: Shared |
 | ImportAgent | HealerMixin | - | - | Y | - | 212 | 
     Autonomous agent for import co |
@@ -431,16 +431,16 @@
 | InputValidator | HealerMixin | - | - | Y | - | 289 | Validates input data against schema |
 | L5IntegrityGateExecutorAgent | HealerMixin | - | - | Y | - | 399 | 
     L5+ Integrity Gate Executor wi |
-| LocationAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 186 | 
+| LocationAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 186 | 
     Autonomous agent responsible f |
-| MCPGuardianAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 140 | 
+| MCPGuardianAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 140 | 
     L5 Safety Guardian for MCP int |
 | MCPHardenedMixin | - | Y | Y | - | - | 144 | 
     Mixin providing hardened MCP o |
-| MethodChangeDetector | HealerMixin, MCPHardenedM | Y | Y | Y | - | 316 | Detects method changes between two  |
-| NeuralAutoImmuneAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 12 | - |
+| MethodChangeDetector | MCPHardenedMixin, HealerM | Y | Y | Y | - | 316 | Detects method changes between two  |
+| NeuralAutoImmuneAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 12 | - |
 | PIISanitizerAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Performs local PII detection using  |
-| PascalSovereigntyEnforcerAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 176 | L5 Safety agent — enforces PascalCa |
+| PascalSovereigntyEnforcerAgent | CanonBaseAgent, ASTEnforc | Y | - | Y | S | 176 | L5 Safety agent — enforces PascalCa |
 | PromptInjectionDetectorAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Detects prompt-injection attacks. |
 | RedSentinel | HealerMixin | Y | - | Y | - | 127 | 
     Active defense system that gen |
@@ -448,21 +448,21 @@
     Sovereign red-teaming agent fo |
 | RegressionOracleAgent | SubAtomicAgent | Y | Y | Y | S | 316 | 
     The Regression Oracle - Automa |
-| SafetyInspector | HealerMixin, MCPHardenedM | Y | - | Y | - | 165 | 
+| SafetyInspector | MCPHardenedMixin, HealerM | Y | - | Y | - | 165 | 
     L5 Safety Inspector with Socra |
-| SelfUpdatingSafetyEngineAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 220 | 
+| SelfUpdatingSafetyEngineAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 220 | 
     Safety engine that learns and  |
 | SovereignLlmRouterMcpClient | - | Y | - | - | - | 40 | Official LLM Router MCP client for  |
-| TerritoryHealerAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 168 | 
+| TerritoryHealerAgent | MCPHardenedMixin, HealerM | Y | Y | Y | - | 168 | 
     Enforces exhaustive territory  |
-| TestCoverageGuardianAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 307 | 
+| TestCoverageGuardianAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 307 | 
     Ultimate verification agent: E |
-| TestSovereigntyAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 162 | L5 specialist — advanced sovereign  |
+| TestSovereigntyAgent | CanonBaseAgent, MCPHarden | Y | - | Y | S | 162 | L5 specialist — advanced sovereign  |
 | TypeHintEnforcementAgent | HealerMixin | Y | - | Y | - | 85 | 
     Ensures public functions, meth |
 | TypeHintFixer | HealerMixin, NodeTransfor | Y | - | Y | - | 85 | 
     AST transformer that adds Miss |
-| UnusedCleanupAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 33 | 
+| UnusedCleanupAgent | MCPHardenedMixin, HealerM | Y | - | Y | - | 33 | 
     Atomic agent: Removes unused i |
 
 ### apps_lic Layer (47 agents)
@@ -608,7 +608,7 @@
     Base class for task execution  |
 | CanonBaseAgentInterface | ABC | - | - | - | - | 14 | - |
 | CanonBaseAgentInterfaceImpl | ABC | - | - | - | - | 14 | Sovereign interface for all canon a |
-| StateValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 288 | 
+| StateValidator | MCPHardenedMixin, HealerM | Y | - | Y | - | 288 | 
     Validates state files against  |
 
 ### tests Layer (19 agents)

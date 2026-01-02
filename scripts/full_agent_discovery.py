@@ -1,12 +1,21 @@
 """
-Full Agent Discovery - Canonical Single Source of Truth
-Regenerates agent_discovery_full.json with safe parsing and complete detection.
+Full Agent Discovery - Complete AST-Based Analysis
+Regenerates agent_discovery_full.json with comprehensive AST scanning.
+
+Features:
+- Full AST parsing of all Python files
+- Complete class inheritance chain resolution
+- Method signature extraction
+- Decorator analysis
+- Import tracking per file
+- Class attribute detection
+- MRO-aware healing detection
 """
 import ast
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Set
+from typing import Dict, List, Any, Optional, Set, Tuple
 from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -98,11 +107,77 @@ def extract_bases(class_node: ast.ClassDef) -> Set[str]:
             bases.add(base.id)
         elif isinstance(base, ast.Attribute):
             bases.add(base.attr)
+        elif isinstance(base, ast.Subscript):  # Handle Generic[T]
+            if isinstance(base.value, ast.Name):
+                bases.add(base.value.id)
     return bases
+
+
+def extract_decorators(node: ast.ClassDef) -> List[str]:
+    """Extract decorator names from class definition."""
+    decorators = []
+    for dec in node.decorator_list:
+        if isinstance(dec, ast.Name):
+            decorators.append(dec.id)
+        elif isinstance(dec, ast.Call):
+            if isinstance(dec.func, ast.Name):
+                decorators.append(dec.func.id)
+            elif isinstance(dec.func, ast.Attribute):
+                decorators.append(dec.func.attr)
+        elif isinstance(dec, ast.Attribute):
+            decorators.append(dec.attr)
+    return decorators
+
+
+def extract_class_attributes(node: ast.ClassDef) -> List[str]:
+    """Extract class-level attribute assignments."""
+    attrs = []
+    for item in node.body:
+        if isinstance(item, ast.Assign):
+            for target in item.targets:
+                if isinstance(target, ast.Name):
+                    attrs.append(target.id)
+        elif isinstance(item, ast.AnnAssign):
+            if isinstance(item.target, ast.Name):
+                attrs.append(item.target.id)
+    return attrs
+
+
+def extract_imports(tree: ast.AST) -> Tuple[List[str], List[str]]:
+    """Extract all imports from a module."""
+    imports = []
+    from_imports = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                imports.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ''
+            for alias in node.names:
+                from_imports.append(f"{module}.{alias.name}")
+    return imports, from_imports
+
+
+def extract_method_signatures(node: ast.ClassDef) -> List[Dict[str, Any]]:
+    """Extract method signatures with parameters."""
+    methods = []
+    for item in node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            params = []
+            for arg in item.args.args:
+                params.append(arg.arg)
+            methods.append({
+                'name': item.name,
+                'async': isinstance(item, ast.AsyncFunctionDef),
+                'params': params,
+                'decorators': [d.id if isinstance(d, ast.Name) else str(d) for d in item.decorator_list[:3]]
+            })
+    return methods
 
 
 # Build inheritance map for MRO-like traversal
 CLASS_INHERITANCE_MAP: Dict[str, Set[str]] = {}
+
 
 def build_inheritance_map(tree: ast.AST) -> None:
     """Build map of class -> bases for MRO traversal."""
