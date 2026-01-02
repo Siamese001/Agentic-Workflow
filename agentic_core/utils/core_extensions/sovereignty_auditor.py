@@ -10,12 +10,13 @@ import logging
 from typing import List, Dict, Any
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 required_depth: Any = SOVEREIGN_REGISTRY['agentic_core']['depth']
 Logger: Any = logging.getLogger(__name__)
 banned_imports: Any = {'Redis': ['import\\s+redis', 'from\\s+redis'], 'LLM SDKs': ['import\\s+openai', 'import\\s+anthropic', 'google\\.generativeai'], 'Vector SDKs': ['from\\s+pinecone', 'Pinecone\\s*\\('], 'HTTP Clients': ['import\\s+requests', 'import\\s+httpx', 'urllib\\.request'], 'Filesystem': ['open\\(', '\\.read_text\\(', '\\.write_text\\('], 'Git Operations': ['subprocess\\..*?git', 'os\\.system\\(.*?git', 'import\\s+git\\s', 'from\\s+git\\s+import'], 'MCP Manager': ['from\\s+.*L2_execution.*mcp_manager', 'from\\s+.*P1_core.*mcp_manager', 'from\\s+\\.mcp_manager\\s+import']}
 required_clients: Any = ['SovereignRedisMCPClient', 'SovereignLLMRouterMCPClient', 'SovereignPineconeMCPClient', 'SovereignFilesystemMCPClient', 'SovereignFetchMCPClient', 'SovereignGitKrakenMCPClient']
 
-class SovereigntyAuditor(MCPHardenedMixin):
+class SovereigntyAuditor(HealerMixin, MCPHardenedMixin):
     """
     Sovereignty Audit Engine for MCP compliance.
     

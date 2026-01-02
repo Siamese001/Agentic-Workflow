@@ -32,14 +32,13 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 # [PHASE 2] L0 Delegated Testing
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class ScriptToAgentClassifier(
-    AutonomyMixin,
+class ScriptToAgentClassifier(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
-    L0DelegationTestingMixin,
-):
+    L0DelegationTestingMixin,):
     """
     Sovereign classifier for script vs agent constitutional compliance.
     Uses static analysis (AST) + heuristics aligned with semantic_l2_registry.

@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 from .cognitive_plane import ICognitivePlane, PlanningRequest
 from .action_plane import IActionPlane, ActionRequest
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 class ExecutionPhase(Enum):
@@ -88,7 +89,7 @@ class ExecutionResult:
         }
 
 
-class IOrchestrator(ABC):
+class IOrchestrator(HealerMixin, ABC):
     """Interface for the Orchestrator (Nervous System).
     
     The orchestrator coordinates between cognitive and action planes:

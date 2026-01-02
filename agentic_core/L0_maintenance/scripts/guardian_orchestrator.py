@@ -13,13 +13,12 @@ import logging
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class GuardianOrchestrator(
-    AutonomyMixin,
+class GuardianOrchestrator(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-):
+    SelfDiagnosisMixin,):
     """
     Sovereign orchestrator for all available L0 guardians.
     Returns standardized (score, issues) tuples for audit dimensions.

@@ -15,13 +15,12 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class HealingOrchestrator(
-    AutonomyMixin,
+class HealingOrchestrator(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-):
+    SelfDiagnosisMixin,):
     """
     Sovereign healing engine orchestrator.
     Coordinates diagnosis, strategy selection, transactional application, and audit logging.

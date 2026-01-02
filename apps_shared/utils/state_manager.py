@@ -13,6 +13,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 import shutil
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 class StateManager:
@@ -406,7 +407,7 @@ class StateManager:
             json.dump(checksums, f, indent=2)
 
 
-class StateValidator(MCPHardenedMixin):
+class StateValidator(HealerMixin, MCPHardenedMixin):
     """
     Validates state files against expected schemas
     """

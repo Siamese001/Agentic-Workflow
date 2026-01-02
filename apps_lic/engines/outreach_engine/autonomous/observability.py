@@ -17,6 +17,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from .context import OutreachEngineContext
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 class OutreachTraceLevel(Enum):
@@ -267,7 +268,7 @@ class OutreachAuditReporter:
         return self._reports
 
 
-class OutreachPhase5Orchestrator:
+class OutreachPhase5Orchestrator(HealerMixin):
     """
     Orchestrates Phase 5 observability for outreach.
     """

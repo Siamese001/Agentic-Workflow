@@ -6,11 +6,12 @@ Maps semantic territories and maintains territory index.
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class SemanticTerritoryMapperAgent:
+class SemanticTerritoryMapperAgent(HealerMixin):
     """L3 Orchestration: Semantic Territory Mapping"""
     
     def __init__(self, project_root: Path = None):

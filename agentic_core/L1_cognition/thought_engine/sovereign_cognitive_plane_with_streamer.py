@@ -9,13 +9,14 @@ from agentic_core.L1_cognition.P1_interfaces import ICognitivePlane, PlanningReq
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.common.healing.healer_mixin import HealerMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
 
 Logger: Any = logging.getLogger(__name__)
 
-class AgentInfo:
+class AgentInfo(HealerMixin):
     """Simple agent information container."""
 
     def __init__(self, name: str, phase: str, capabilities: List[str]):

@@ -7,6 +7,7 @@ from enum import Enum, auto
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Set
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class BiasType(Enum):
@@ -34,7 +35,7 @@ def get_critical_biases(self: Any) -> List[BiasMatch]:
     """Get high-Severity bias matches."""
     return [m for m in self.matches if m.Severity > 0.7]
 
-class BiasAuditor:
+class BiasAuditor(HealerMixin):
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation

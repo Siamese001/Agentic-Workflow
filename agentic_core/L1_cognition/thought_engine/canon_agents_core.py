@@ -19,6 +19,7 @@ except ImportError:
     CanonBaseAgent = None
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
@@ -100,7 +101,7 @@ class NestVisitor(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — legacy L1 class, true agent is SystemArchitectAgent in L2 — excluded from discovery
-class SystemArchitect(CanonBaseAgentInterface):
+class SystemArchitect(HealerMixin, CanonBaseAgentInterface):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
     ROLE: The Gatekeeper. If this fails, the system is unstable.
@@ -308,7 +309,7 @@ class SystemArchitect(CanonBaseAgentInterface):
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class HealerAgent(CanonBaseAgentInterface):
+class HealerAgent(HealerMixin, CanonBaseAgentInterface):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
     ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
@@ -420,7 +421,7 @@ class HealerAgent(CanonBaseAgentInterface):
 
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class GenerativeGuard(CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuard(HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

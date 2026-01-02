@@ -22,6 +22,7 @@ class SubAtomicAgent:
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.common.healing.healer_mixin import HealerMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -29,7 +30,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 Logger: Any = logging.getLogger(__name__)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
-class PatternEnforcer:
+class PatternEnforcer(HealerMixin):
     """
     Enforces coding patterns and best practices across Python files.
 
@@ -267,7 +268,7 @@ class UiValidationAgent(SubAtomicAgent):
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class SemanticMapper:
+class SemanticMapper(HealerMixin):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """

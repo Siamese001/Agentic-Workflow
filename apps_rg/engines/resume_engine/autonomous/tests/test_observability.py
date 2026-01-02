@@ -18,6 +18,7 @@ import pytest
 
 from ..context import ResumeEngineContext
 from ..observability import (
+from agentic_core.common.healing.healer_mixin import HealerMixin
     AuditReporter,
     ExecutionTrace,
     ExecutionTracer,
@@ -360,7 +361,7 @@ class TestMetricsCollector:
         assert stats["gauges"] == 1
 
 
-class TestValidationAgent:
+class TestValidationAgent(HealerMixin):
     """Tests for ValidationAgent class."""
 
     def test_init(self, ctx):
@@ -615,7 +616,7 @@ class TestTelemetryExporter:
         assert stats["export_count"] == 2
 
 
-class TestPhase5Orchestrator:
+class TestPhase5Orchestrator(HealerMixin):
     """Tests for Phase5Orchestrator class."""
 
     def test_init(self, ctx):
