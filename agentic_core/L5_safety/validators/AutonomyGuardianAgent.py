@@ -1,12 +1,14 @@
 from __future__ import annotations
 """
-Autonomy Guardian Agent - Canon Key 51 Meta-Enforcement
+Autonomy Guardian Agent - Autonomy Meta-Enforcement
 Ensures all domain agents have heal_repository() and no external scripts.
 This is the sovereign guardian for agent autonomy across the repository.
 """
+from datetime import date
 from pathlib import Path
 from typing import List, Dict, Any, Set, Optional
 import ast
+import re
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -31,6 +33,24 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self.forbidden_dirs = ["scripts/healing", "scripts/tools", "scripts/runners"]
         self.forbidden_patterns = ["heal", "runner", "launcher", "driver"]
         self.exclude_patterns = ["test_", "example_", "mock_", "stub_", "legacy", "deprecated"]
+        
+        # Territory definitions for compliance report
+        self.territories = {
+            "L0_maintenance": ("agentic_core/L0_maintenance", "Medium"),
+            "L1_cognition": ("agentic_core/L1_cognition", "Medium"),
+            "L2_execution": ("agentic_core/L2_execution", "High"),
+            "L3_orchestration": ("agentic_core/L3_orchestration", "High"),
+            "L4_state": ("agentic_core/L4_state", "Medium"),
+            "L5_safety/validators": ("agentic_core/L5_safety/validators", "Critical"),
+            "L5_safety/guardrails": ("agentic_core/L5_safety/guardrails", "Critical"),
+            "L5_safety/gravity": ("agentic_core/L5_safety/gravity", "High"),
+            "utils": ("agentic_core/utils", "Medium"),
+            "observability": ("agentic_core/observability", "Low"),
+            "knowledge": ("agentic_core/knowledge", "Low"),
+            "apps_lic": ("apps_lic", "High"),
+            "apps_rg": ("apps_rg", "High"),
+            "apps_shared": ("apps_shared", "Medium"),
+        }
     
     def _is_domain_agent(self, agent_file: Path) -> bool:
         """Check if file is a domain agent (not test/example)."""
@@ -246,6 +266,161 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         _call_path.discard(agent_name)
         
         return counts
+
+
+    def generate_compliance_report(self, markdown: bool = True) -> None:
+        """
+        Final high-signal autonomy compliance dashboard — exhaustive, on-demand.
+        All territories + unclassified, full prioritization columns.
+        """
+        today = date.today().strftime("%B %d, %Y")
+        print(f"### Autonomy Compliance Report — {today}\n")
+
+        if markdown:
+            header = (
+                "| Territory / Layer                          | Total Agents | Compliant | % Compliant | Missing | % HealerMixin | % MCP Hardened | % Healing Logic | % With Tests | Avg LOC | % Used | High-Priority? | Notes / Next Batch |\n"
+                "|--------------------------------------------|--------------|-----------|-------------|---------|---------------|----------------|-----------------|--------------|---------|--------|----------------|--------------------|\n"
+            )
+            print(header)
+
+        # Accumulators for totals
+        totals = {
+            "agents": 0, "compliant": 0, "mixin": 0, "hardened": 0,
+            "healing": 0, "tests": 0, "loc": 0, "used": 0
+        }
+
+        # Step 1: Find ALL production Agent.py files (exhaustive base)
+        forbidden_paths = ["tests/", "__pycache__/", ".git/", "examples/", "docs/", "venv/", ".venv/"]
+        all_agents = [
+            p for p in self.project_root.rglob("*Agent.py")
+            if not any(excl in p.name for excl in ["test_", "Test", "example"])
+            and not any(forbidden in str(p.relative_to(self.project_root)) for forbidden in forbidden_paths)
+        ]
+
+        # Step 2: Compute global usage (which agents are imported elsewhere)
+        used_stems = set()
+        for py_file in self.project_root.rglob("*.py"):
+            if py_file in all_agents:
+                continue
+            try:
+                content = py_file.read_text(errors="ignore")
+                for agent in all_agents:
+                    if agent.stem in content:
+                        used_stems.add(agent.stem)
+            except:
+                pass
+
+        # Step 3: Process defined territories
+        classified_paths = set()
+
+        for territory_key, (path_pattern, priority) in self.territories.items():
+            patterns = (path_pattern,) if isinstance(path_pattern, str) else path_pattern
+
+            agents = [
+                p for p in all_agents
+                if any(pattern in str(p.relative_to(self.project_root)) for pattern in patterns)
+            ]
+            classified_paths.update(agents)
+
+            terr_total = len(agents)
+            if terr_total == 0:
+                continue
+
+            # Detections
+            terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_mixin = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore"))
+            terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
+            terr_healing = sum(1 for a in agents if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            terr_tests = sum(1 for a in agents if (a.parent / "tests" / f"test_{a.stem}.py").exists())
+            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in agents)
+            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
+            terr_used = sum(1 for a in agents if a.stem in used_stems)
+            perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
+
+            # Percentages
+            perc_compliant = round(terr_compliant / terr_total * 100, 1)
+            perc_mixin = round(terr_mixin / terr_total * 100, 1)
+            perc_hardened = round(terr_hardened / terr_total * 100, 1)
+            perc_healing = round(terr_healing / terr_total * 100, 1)
+            perc_tests = round(terr_tests / terr_total * 100, 1)
+
+            # Accumulate
+            totals["agents"] += terr_total
+            totals["compliant"] += terr_compliant
+            totals["mixin"] += terr_mixin
+            totals["hardened"] += terr_hardened
+            totals["healing"] += terr_healing
+            totals["tests"] += terr_tests
+            totals["loc"] += terr_loc
+            totals["used"] += terr_used
+
+            # Display name & notes
+            territory_name = territory_key.replace("_", " ").title()
+            notes = {
+                "L5_safety/validators": "Core safety — finish all",
+                "apps_rg": "High impact — next batch priority",
+                "apps_lic": "License critical — harden fully",
+            }.get(territory_key, "")
+
+            row = (
+                f"| {territory_name:<42} | {terr_total:12} | {terr_compliant:9} | {perc_compliant:11}% | {terr_total - terr_compliant:7} "
+                f"| {perc_mixin:13}% | {perc_hardened:14}% | {perc_healing:15}% | {perc_tests:12}% | {avg_loc:7} | {perc_used:6}% | {priority:14} | {notes} |"
+            )
+            print(row)
+
+        # Step 4: Unclassified row (exhaustive coverage)
+        unclassified = [a for a in all_agents if a not in classified_paths]
+        if unclassified:
+            terr_total = len(unclassified)
+            terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_mixin = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore"))
+            terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
+            terr_healing = sum(1 for a in unclassified if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            terr_tests = sum(1 for a in unclassified if (a.parent / "tests" / f"test_{a.stem}.py").exists())
+            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in unclassified)
+            avg_loc = round(terr_loc / terr_total, 1)
+            terr_used = sum(1 for a in unclassified if a.stem in used_stems)
+            perc_used = round(terr_used / terr_total * 100, 1)
+
+            perc_compliant = round(terr_compliant / terr_total * 100, 1)
+            perc_mixin = round(terr_mixin / terr_total * 100, 1)
+            perc_hardened = round(terr_hardened / terr_total * 100, 1)
+            perc_healing = round(terr_healing / terr_total * 100, 1)
+            perc_tests = round(terr_tests / terr_total * 100, 1)
+
+            totals["agents"] += terr_total
+            totals["compliant"] += terr_compliant
+            totals["mixin"] += terr_mixin
+            totals["hardened"] += terr_hardened
+            totals["healing"] += terr_healing
+            totals["tests"] += terr_tests
+            totals["loc"] += terr_loc
+            totals["used"] += terr_used
+
+            row = (
+                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:12} | {terr_compliant:9} | {perc_compliant:11}% | {terr_total - terr_compliant:7} "
+                f"| {perc_mixin:13}% | {perc_hardened:14}% | {perc_healing:15}% | {perc_tests:12}% | {avg_loc:7} | {perc_used:6}% | Review         | Investigate/deprecate/classify |"
+            )
+            print(row)
+
+        # Grand total
+        if totals["agents"] > 0:
+            t = totals
+            total_perc = round(t["compliant"] / t["agents"] * 100, 1)
+            total_mixin = round(t["mixin"] / t["agents"] * 100, 1)
+            total_hardened = round(t["hardened"] / t["agents"] * 100, 1)
+            total_healing = round(t["healing"] / t["agents"] * 100, 1)
+            total_tests = round(t["tests"] / t["agents"] * 100, 1)
+            overall_avg_loc = round(t["loc"] / t["agents"], 1)
+            total_used = round(t["used"] / t["agents"] * 100, 1)
+
+            total_row = (
+                f"| **TOTAL**                                  | **{t['agents']}**   | **{t['compliant']}**   | **{total_perc}%**   | **{t['agents'] - t['compliant']}** "
+                f"| **{total_mixin}%**     | **{total_hardened}%**    | **{total_healing}%**       | **{total_tests}%**     | **{overall_avg_loc}** | **{total_used}%** |                |                    |"
+            )
+            print(total_row)
+
+            print(f"\n**Quick Stats:** {t['compliant']}/{t['agents']} compliant — {t['mixin']}/{t['agents']} HealerMixin — {t['hardened']}/{t['agents']} MCP hardened — {t['used']}/{t['agents']} used elsewhere")
 
 
 # Singleton accessor
