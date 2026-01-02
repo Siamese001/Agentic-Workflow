@@ -1,6 +1,8 @@
 """
 Ultra Zero-Loss Agent Discovery Report Generator
-January 01, 2026
+
+Reads from agent_discovery_full.json - run full_agent_discovery.py first.
+full_agent_discovery.py is the canonical SSOT for agent discovery.
 """
 import json
 from collections import defaultdict

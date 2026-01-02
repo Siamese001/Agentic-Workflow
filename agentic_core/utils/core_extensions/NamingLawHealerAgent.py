@@ -1,15 +1,34 @@
 from __future__ import annotations
 #!/usr/bin/env python3
 """
-Naming Law Healer Agent - File Identity Standardizer
-Renames forbidden or low-signal files to comply with naming laws.
-This agent prevents circular drift by ensuring all files have high-signal names.
+[DEPRECATED - 2026-01-02] Naming Law Healer Agent - File Identity Standardizer
+
+THIS AGENT IS DEPRECATED AND SHOULD NOT BE USED.
+
+Reason: Creates snake_case *_agent.py files, which conflicts with NamingAgent's 
+PascalCase *Agent.py enforcement. This agent's logic is misaligned with canon 
+naming standards.
+
+Use instead:
+- NamingAgent: Validates PascalCase *Agent.py files
+- PascalSovereigntyEnforcerAgent: Fixes snake_case → PascalCase class names
+
+This file will be removed in a future release.
 """
 
+import warnings
 import json
 import re
 from pathlib import Path
 from typing import Dict, List
+
+# Emit deprecation warning on import
+warnings.warn(
+    "NamingLawHealerAgent is deprecated (conflicts with PascalCase naming). "
+    "Use NamingAgent for validation or PascalSovereigntyEnforcerAgent for fixes.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,

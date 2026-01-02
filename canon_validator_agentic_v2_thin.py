@@ -86,6 +86,22 @@ def main():
         action="store_true",
         help="Execute changes (use with --agent, same as --execute-heal)"
     )
+    parser.add_argument(
+        "--list-agents",
+        action="store_true",
+        help="List all discoverable agents"
+    )
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="Run autonomy compliance report"
+    )
+    parser.add_argument(
+        "--method",
+        type=str,
+        default="heal_repository",
+        help="Agent method to invoke (default: heal_repository)"
+    )
     args = parser.parse_args()
     
     # Global mission timeout: 30 minutes
@@ -104,6 +120,52 @@ def main():
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
+    # Helper: Load agents from agent_discovery_full.json (396 agents - authoritative source)
+    def list_available_agents(dedupe: bool = True) -> list:
+        """Load agents from agent_discovery_full.json - the authoritative AST scan result."""
+        import json
+        agents = []
+        json_path = project_root / "agent_discovery_full.json"
+        
+        if json_path.exists():
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+                for agent in data:
+                    class_name = agent.get("class_name", "")
+                    path = agent.get("path", "").replace("\\", "/")
+                    # Convert path to module format
+                    module_path = path.replace("/", ".").replace(".py", "")
+                    agents.append((class_name, module_path))
+            except Exception:
+                pass
+        
+        if dedupe:
+            return sorted(set(agents), key=lambda x: (x[0], x[1]))
+        return sorted(agents, key=lambda x: (x[0], x[1]))
+    
+    # Handle --list-agents
+    if args.list_agents:
+        print("\n[*] DISCOVERABLE AGENTS (from agent_discovery_full.json):\n")
+        all_agents = list_available_agents()
+        for i, (class_name, module_path) in enumerate(all_agents, 1):
+            print(f"   {i:3}. {class_name:<45} [{module_path}]")
+        print(f"\n   Total: {len(all_agents)} agents")
+        print("\n   Usage: python canon_validator_agentic_v2_thin.py --agent <name> [--execute]")
+        print("   Example: python canon_validator_agentic_v2_thin.py --agent NamingAgent --execute")
+        return
+    
+    # Handle --report (compliance report shortcut)
+    if args.report:
+        print("\n[*] Running Autonomy Compliance Report...")
+        try:
+            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+            guardian = get_autonomy_guardian(project_root)
+            guardian.generate_compliance_report()
+        except Exception as e:
+            print(f"   [!] Report failed: {e}")
+            traceback.print_exc()
+        return
+    
     # Handle single agent invocation via dynamic discovery
     if args.agent:
         print(f"\n[*] AGENT MODE - Direct invocation of {args.agent.upper()}")
@@ -112,61 +174,35 @@ def main():
         mode_str = "EXECUTE" if execute else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
         
-        # Dynamic agent discovery - no hardcoded registry
+        # AST-based agent discovery - find class by name
         def discover_agent(agent_name: str) -> tuple:
-            """Discover agent module path dynamically by scanning *Agent*.py files."""
-            import re
-            search_dirs = [
-                project_root / "agentic_core",
-                project_root / "apps_lic",
-                project_root / "apps_rg",
-            ]
-            
+            """Discover agent by searching for matching class name via AST."""
             # Normalize search term
             search_term = agent_name.lower().replace("-", "").replace("_", "")
             
-            for search_dir in search_dirs:
-                if not search_dir.exists():
-                    continue
-                for agent_file in search_dir.rglob("*Agent*.py"):
-                    # Skip test files and __pycache__
-                    if "__pycache__" in str(agent_file) or "test_" in agent_file.name.lower():
-                        continue
-                    
-                    # Extract class name from filename
-                    stem = agent_file.stem
-                    stem_normalized = stem.lower().replace("_", "")
-                    
-                    # Match by normalized name
-                    if search_term in stem_normalized or stem_normalized.startswith(search_term):
-                        # Convert file path to module path
-                        rel_path = agent_file.relative_to(project_root)
-                        module_path = str(rel_path.with_suffix("")).replace(os.sep, ".")
-                        return (module_path, stem)
+            # Search through all discovered agents
+            all_agents = list_available_agents()
+            
+            # Exact match first
+            for class_name, module_path in all_agents:
+                if class_name.lower() == search_term or class_name.lower() == search_term + "agent":
+                    return (module_path, class_name)
+            
+            # Partial match (prefix)
+            for class_name, module_path in all_agents:
+                class_normalized = class_name.lower().replace("_", "")
+                if class_normalized.startswith(search_term) or search_term in class_normalized:
+                    return (module_path, class_name)
             
             return None
-        
-        def list_available_agents() -> list:
-            """List all discoverable agents."""
-            agents = []
-            search_dirs = [project_root / "agentic_core", project_root / "apps_lic"]
-            for search_dir in search_dirs:
-                if not search_dir.exists():
-                    continue
-                for agent_file in search_dir.rglob("*Agent*.py"):
-                    if "__pycache__" in str(agent_file) or "test_" in agent_file.name.lower():
-                        continue
-                    if "Base" not in agent_file.stem:  # Skip base classes
-                        agents.append(agent_file.stem)
-            return sorted(set(agents))
         
         discovery_result = discover_agent(args.agent)
         if not discovery_result:
             print(f"   [!] Agent not found: {args.agent}")
             print("   Available agents (use any unique prefix):")
-            for name in list_available_agents()[:30]:  # Show first 30
-                print(f"      - {name}")
-            print(f"   ... and more. Use partial name matching.")
+            for class_name, _ in list_available_agents()[:30]:  # Show first 30
+                print(f"      - {class_name}")
+            print(f"   ... and more. Use --list-agents for full list.")
             sys.exit(1)
         
         module_path, agent_name = discovery_result
@@ -193,18 +229,37 @@ def main():
                 else:
                     raise AttributeError(f"No Agent class found in {module_path}")
             
-            print(f"   [AGENT] {agent.__class__.__name__}.heal_repository()\n")
+            # Invoke specified method (default: heal_repository)
+            method_name = args.method
+            if not hasattr(agent, method_name):
+                print(f"   [!] Method '{method_name}' not found on {agent.__class__.__name__}")
+                print(f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}")
+                sys.exit(1)
             
-            result = agent.heal_repository(
-                dry_run=not execute,
-                execute=execute,
-                depth=0,
-                max_depth=3,
-            )
+            print(f"   [AGENT] {agent.__class__.__name__}.{method_name}()\n")
             
-            print(f"\n[AGENT COMPLETE]")
-            print(f"   Renamed: {result.get('renamed', 0)}")
-            print(f"   Errors: {result.get('errors', 0)}")
+            method = getattr(agent, method_name)
+            if method_name == "heal_repository":
+                result = method(
+                    dry_run=not execute,
+                    execute=execute,
+                    depth=0,
+                    max_depth=3,
+                )
+                print(f"\n[AGENT COMPLETE]")
+                print(f"   Renamed: {result.get('renamed', 0)}")
+                print(f"   Errors: {result.get('errors', 0)}")
+            elif method_name == "generate_compliance_report":
+                method()
+            elif method_name == "run":
+                result = method()
+                print(f"\n[AGENT COMPLETE]")
+                print(f"   Result: {result}")
+            else:
+                result = method()
+                print(f"\n[AGENT COMPLETE]")
+                if result:
+                    print(f"   Result: {result}")
             
         except Exception as e:
             print(f"   [!] Agent invocation failed: {e}")
