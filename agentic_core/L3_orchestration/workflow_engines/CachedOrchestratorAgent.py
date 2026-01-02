@@ -61,10 +61,7 @@ class CachedOrchestrator(HealerMixin, MCPHardenedMixin):
     def get_cached_decision(self, category: str, identifier: str) -> Optional[Dict]:
         """Check if we've already solved this specific problem."""
         key = self._get_cache_key(category, identifier)
-        try:
-            data = self.redis.get(key)
-            return json.loads(data) if data else None
-        except Exception: return None
+        return self.get(key)
 
     def store_decision(self, category: str, identifier: str, decision: Dict, ttl: int = 3600):
         """Save the result of a reasoning step."""

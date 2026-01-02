@@ -22,6 +22,7 @@ except ImportError:
     Language = None
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class CodeDeduplicationAgent(HealerMixin):
     """
@@ -188,11 +189,29 @@ class CodeDeduplicationAgent(HealerMixin):
                             break
                     new_lines: Any = lines[:import_idx] + [import_stmt + '\n'] + lines[import_idx:start_line - 1] + replacement + lines[end_line:]
                     file_path.write_text(''.join(new_lines), encoding='utf-8')
-                    print(f'      [✓] REFACTORED: {file_path.name}:{start_line}')
-                    self.extracted_count += 1
+                    backup_path = file_path.parent / f"{file_path.stem}_backup{file_path.suffix}"
+                    shutil.copy(file_path, backup_path)
+                    print(f"      [✓] Created backup: {backup_path}")
                 except Exception as e:
-                    self.errors.append(f'Refactor failed {file_path}: {e}')
+                    print(f"      [!] Backup failed for {file_path}: {e}")
         print(f'   [SURGERY COMPLETE] {self.extracted_count} instances extracted')
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
     async def execute(self, ctx: Any) -> Any:
         """Batch agent interface."""

@@ -288,6 +288,24 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
         with open(output_file, 'w') as f:
             json.dump(graph_data, f, indent=2)
         Logger.info(f'Graph exported to {output_file}')
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 _dependency_diplomat = None
 
 def get_dependency_diplomat(ctx: Any) -> DependencyDiplomat:
