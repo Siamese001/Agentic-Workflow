@@ -2,6 +2,7 @@ from __future__ import annotations
 """Bias Detector Agent - Runs local bias detection with dynamic constitution rules."""
 
 from typing import Dict
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class BaseAgent(HealerMixin):
@@ -45,3 +46,9 @@ class BiasDetectorAgent(HealerMixin, BaseAgent):
             )
 
         return result
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Operational guardrail agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Operational guardrail - no healing required")
+        return {"skipped": 1}

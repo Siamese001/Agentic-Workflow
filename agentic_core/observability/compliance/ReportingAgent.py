@@ -20,7 +20,8 @@ Depth: agentic_core/observability/compliance/reporting_agent.py
       → root/L1/L2/file.py → exactly 4 parts → Canon Key 3/12 compliant
 """
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from datetime import datetime
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -196,6 +197,12 @@ class ReportingAgent(HealerMixin, MCPHardenedMixin):
         report["metrics_available"] = METRICS_AGENT_AVAILABLE and bool(self.metrics_agent)
 
         return report
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Observability agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        return {"skipped": 1}
 
 
 # PascalCase is now the canonical name

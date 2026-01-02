@@ -24,7 +24,8 @@ import ast
 import logging
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Set, Tuple
+from typing import List, Dict, Any, Set, Tuple, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -275,6 +276,26 @@ class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
     def execute(self) -> Dict[str, Any]:
         """Orchestrator entrypoint"""
         return self.validate_and_fix_ssot_drift(dry_run=True)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Autonomous code SSOT enforcement."""
+        if _call_path is None:
+            _call_path = set()
+        if self.__class__.__name__ in _call_path:
+            return {"errors": 0, "skipped": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 0, "skipped": 1, "depth_limited": True}
+        _call_path.add(self.__class__.__name__)
+        
+        try:
+            result = self.validate_and_fix_ssot_drift(dry_run=True)
+            violations = result.get("violations_found", 0)
+            print(f"[CodeSSOTEnforcer HEAL @ depth {depth}] Found {violations} violations")
+            # Code SSOT violations require manual review - informational only
+            return {"violations_found": violations, "fixed": 0, "manual_review_required": violations}
+        finally:
+            _call_path.discard(self.__class__.__name__)
 
 
 __all__ = ["CodeSSOTEnforcerAgent"]

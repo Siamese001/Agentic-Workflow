@@ -24,6 +24,7 @@ Future: extend with Prometheus exposition or file export.
 """
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, List, Tuple
 from threading import Lock
 from datetime import datetime
 import logging
@@ -290,6 +291,12 @@ class MetricsAgent(HealerMixin, MCPHardenedMixin):
                 "labeled_counters": {k: v.copy() for k, v in self._labeled_counters.items()},
                 "metadata": self._metadata.copy(),
             }
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Observability agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        return {"skipped": 1}
 
 
 # PascalCase is now the canonical name

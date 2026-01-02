@@ -30,7 +30,8 @@ Sovereign tracing Provider:
 import os
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, Any, List, Optional, Callable
+from agentic_core.utils.core_extensions.timeout_decorator import timeoutAny
 from threading import Lock
 from datetime import datetime
 import uuid
@@ -388,6 +389,12 @@ class TracingAgent(HealerMixin):
                 # Auto-export on mission completion if enabled
                 if self.auto_export_on_mission_end and self.export_path:
                     self.export_trace_to_file(trace_id)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Observability agent - no repository healing required."""
+        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        return {"skipped": 1}
 
 
 # PascalCase is now the canonical name

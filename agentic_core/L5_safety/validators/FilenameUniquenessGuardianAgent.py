@@ -19,13 +19,14 @@ This file will be removed in a future release.
 import warnings
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 import shutil
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     FORBIDDEN_ROOT_FOLDERS,
     CORE_SUBFOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
 )
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Emit deprecation warning on import
 warnings.warn(
@@ -150,3 +151,9 @@ class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
         project_root: Any = Path(ctx.project_root)
         self.scan_repository(ctx.python_files, project_root)
         await self.auto_rename_duplicates(project_root, ctx)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """[DEPRECATED] Agent functionality merged into NamingAgent."""
+        print(f"[FilenameUniquenessGuardian] DEPRECATED - use NamingAgent instead")
+        return {"skipped": 1, "deprecated": True}

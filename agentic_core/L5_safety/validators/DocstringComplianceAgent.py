@@ -4,8 +4,9 @@ import ast
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class DocstringComplianceAgent(HealerMixin):
@@ -85,6 +86,24 @@ class DocstringComplianceAgent(HealerMixin):
         except Exception as e:
             ctx.report(self.__class__.__name__, 18, False, f'Docstring healing failed: {str(e)[:100]}')
             return {'healed': False}
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Autonomous docstring compliance enforcement."""
+        if _call_path is None:
+            _call_path = set()
+        if self.__class__.__name__ in _call_path:
+            return {"errors": 0, "skipped": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 0, "skipped": 1, "depth_limited": True}
+        _call_path.add(self.__class__.__name__)
+        
+        try:
+            print(f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only")
+            return {"skipped": 1, "requires_ctx": True}
+        finally:
+            _call_path.discard(self.__class__.__name__)
+
 
 def get_docstring_compliance_agent() -> Any:
     """Brief description of functionality and purpose."""
