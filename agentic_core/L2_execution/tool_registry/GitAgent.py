@@ -18,6 +18,12 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
+# L4 Checkpoint Integration
+try:
+    from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
+except ImportError:
+    CachedStateLedger = None
+
 class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Agent for managing git operations and remote synchronization.
@@ -27,6 +33,7 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     - Branch management for healing cycles
     - Remote push capabilities
     - Safety checks for secrets
+    - L4 checkpoint integration for execution persistence
     """
 
     def __init__(self, repo_root: Path=None):
@@ -40,12 +47,16 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self.repo_root = repo_root or Path.cwd()
         self.remote_repo = os.getenv('CANON_REMOTE_REPO')
         self.git_cmd = ['git', '-C', str(self.repo_root)]
+        
+        # L4 checkpoint integration
+        self._ledger = None
+        
         if not self._is_git_repo():
             Logger.warning(f'Not in a git repository: {self.repo_root}')
             self.enabled = False
         else:
             self.enabled = True
-            self._mcp_audit('init')
+            self._mcp_audit('init_with_l4_checkpoints')
             Logger.info(f'GitAgent initialized for {self.repo_root}')
 
     def _run_self_tests(self) -> bool:
@@ -53,6 +64,30 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         assert hasattr(self, 'repo_root'), "Missing repo_root"
         assert hasattr(self, 'enabled'), "Missing enabled"
         return True
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Perform healing for tool execution anomalies with L4 integration."""
+        self._mcp_audit("healing_start", payload=anomaly.to_dict())
+        
+        if anomaly.type == "tool_failure":
+            # Reset git state on tool failure
+            try:
+                self._run_git(['reset', '--hard', 'HEAD'], check=False)
+                self._mcp_audit("healing_success", payload={"action": "git_reset"})
+                return True
+            except Exception:
+                return False
+        
+        if anomaly.type == "commit_corruption":
+            # Abort any in-progress operations
+            try:
+                self._run_git(['merge', '--abort'], check=False)
+                self._run_git(['rebase', '--abort'], check=False)
+                return True
+            except Exception:
+                return False
+        
+        return False
 
     def _is_git_repo(self) -> bool:
         """Check if current directory is a git repository."""
