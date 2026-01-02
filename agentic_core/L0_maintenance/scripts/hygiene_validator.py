@@ -11,9 +11,10 @@ import os
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HygieneValidator:
+class HygieneValidator(MCPHardenedMixin):
     """
     Detects 'Rot' within the system:
     1. Dead Code (Orphaned files that are never imported)

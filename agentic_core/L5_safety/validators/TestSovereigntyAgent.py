@@ -16,6 +16,7 @@ from typing import Dict, List, Optional
 
 from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
 from enum import Enum
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 class SovereignSeverity(Enum):
@@ -26,7 +27,7 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class TestSovereigntyAgent(CanonBaseAgent):
+class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 
     def __init__(self, ctx=None, *args, _allow_mock: bool = True, **kwargs):

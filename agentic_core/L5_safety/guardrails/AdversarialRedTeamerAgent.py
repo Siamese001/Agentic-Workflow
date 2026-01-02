@@ -22,6 +22,7 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -49,7 +50,7 @@ class RedTeamResult:
     Recommendation: str
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
-class AdversarialRedTeamerAgent(SubAtomicAgent):
+class AdversarialRedTeamerAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     The Skeptic - Adversarial Red Team Agent
 

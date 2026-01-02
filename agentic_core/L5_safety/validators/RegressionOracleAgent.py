@@ -56,8 +56,9 @@ class GeneratedTest:
     error_message: Optional[str]
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class MethodChangeDetector(HealerMixin):
+class MethodChangeDetector(HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
 
     def __init__(self, ctx):

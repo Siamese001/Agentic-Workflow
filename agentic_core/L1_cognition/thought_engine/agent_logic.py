@@ -60,9 +60,10 @@ class CanonEntry:
 Logger = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: CanonValidator → CanonValidator
-class CanonValidator(HealerMixin):
+class CanonValidator(HealerMixin, MCPHardenedMixin):
     """
     The L5 Meta-Learner that validates code against the Canon.
 

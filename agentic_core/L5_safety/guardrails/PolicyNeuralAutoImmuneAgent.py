@@ -10,9 +10,10 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class NeuralAutoImmuneAgent(HealerMixin):
+class NeuralAutoImmuneAgent(HealerMixin, MCPHardenedMixin):
     def __init__(self, project_root: Path):
         self.redis = RedisSovereignAgent(project_root).get_client()
         self.threshold = 5

@@ -90,9 +90,10 @@ class ThreatDetection:
     recommendations: List[str]
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SelfUpdatingSafetyEngineAgent(HealerMixin):
+class SelfUpdatingSafetyEngineAgent(HealerMixin, MCPHardenedMixin):
     """
     Safety engine that learns and adapts to new threats.
     

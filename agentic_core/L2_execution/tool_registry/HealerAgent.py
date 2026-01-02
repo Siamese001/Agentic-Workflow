@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Protocol
 
 from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L2_execution.tool_registry.tools.code_transform import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     CodeTransformArgs,
     TransformOperation,
     code_transform,
@@ -21,7 +22,7 @@ from agentic_core.L2_execution.tool_registry.tools.code_transform import (
 )
 
 
-class HealerAgent(CanonBaseAgent):
+class HealerAgent(CanonBaseAgent, MCPHardenedMixin):
     """
     Healer Agent provides autonomous code repair for any canon Violation.
     

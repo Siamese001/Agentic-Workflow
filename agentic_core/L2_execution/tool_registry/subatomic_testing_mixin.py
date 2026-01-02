@@ -9,6 +9,7 @@ Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 """
 from typing import Any, Dict, Optional
 import logging
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -114,7 +115,7 @@ class SubatomicTestingMixin:
         cls._self_testing_enabled = True
 
 
-class L2SelfTestingMixin(SubatomicTestingMixin):
+class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
     """
     Alias for SubatomicTestingMixin - use in L2 agents.
     Provides the same functionality with clearer naming.

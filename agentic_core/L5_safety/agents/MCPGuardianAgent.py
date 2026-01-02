@@ -21,8 +21,9 @@ Logger: Any = logging.getLogger(__name__)
 
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class MCPGuardianAgent(HealerMixin):
+class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Guardian for MCP integration compliance.
     

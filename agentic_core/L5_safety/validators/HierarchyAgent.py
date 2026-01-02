@@ -30,9 +30,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
 )
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HierarchyAgent(HealerMixin):
+class HierarchyAgent(HealerMixin, MCPHardenedMixin):
     """
     Autonomous agent for hierarchical structure compliance.
     Scans folders only (no file content parsing).

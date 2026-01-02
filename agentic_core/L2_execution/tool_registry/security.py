@@ -13,6 +13,7 @@ from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -129,7 +130,7 @@ class SafetyInspectorAgent(SubAtomicAgent):
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ConcurrencyGuardianAgent(SubAtomicAgent):
+class ConcurrencyGuardianAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     Unified concurrency safety agent.
     Covers: Data races (Key 61), Livelock (Key 63), Starvation (Key 64)

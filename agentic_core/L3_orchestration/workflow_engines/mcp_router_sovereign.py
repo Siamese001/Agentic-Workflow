@@ -17,10 +17,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignMcpRouter(HealerMixin):
+class SovereignMcpRouter(HealerMixin, MCPHardenedMixin):
     """Ultra-hardened L3 MCP switchboard — zero tolerance for failure"""
 
     def __init__(self, role: str='validator', config_path: str='config/mcp_mappings.yaml'):

@@ -6,6 +6,7 @@ import ast
 from pathlib import Path
 from typing import List, Dict, Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class PrintStatementValidator(CanonASTValidator):
     """
@@ -95,7 +96,7 @@ class ExternalHttpValidator(CanonASTValidator):
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
 
-class AsyncBlockingValidator(CanonASTValidator):
+class AsyncBlockingValidator(CanonASTValidator, MCPHardenedMixin):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """

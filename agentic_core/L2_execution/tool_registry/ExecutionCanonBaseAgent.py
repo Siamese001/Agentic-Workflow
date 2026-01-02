@@ -351,7 +351,7 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class SubatomicTestingMixin:
+class SubatomicTestingMixin(MCPHardenedMixin):
     """Mixin providing L2 subatomic testing capabilities.
     
     L2 Table Decision:
@@ -488,6 +488,7 @@ def test_no_corrupted_markers():
         escaped_artifact = str(Artifact)[:200].replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 ARTIFACT_UNDER_TEST = """{escaped_artifact}"""
 

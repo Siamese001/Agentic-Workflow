@@ -20,9 +20,10 @@ from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l2,
 )
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HierarchyHealer(HealerMixin):
+class HierarchyHealer(HealerMixin, MCPHardenedMixin):
     """
     L5 Hierarchy Healer Agent
     

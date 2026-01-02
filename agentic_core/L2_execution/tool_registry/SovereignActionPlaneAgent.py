@@ -10,6 +10,7 @@ import subprocess
 import time
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 Logger: Any = logging.getLogger(__name__)
 
 class SovereignToolsmith:
@@ -91,7 +92,7 @@ class SovereignSandbox:
                         pass
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SovereignActionPlaneAgent(HealerMixin, IActionPlane):
+class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
     """Sovereign action plane with Toolsmith and Sandbox."""
 
     def __init__(self, safety_layer=None, SignalLedger=None):

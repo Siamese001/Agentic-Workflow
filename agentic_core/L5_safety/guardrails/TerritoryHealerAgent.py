@@ -29,9 +29,10 @@ warnings.warn(
 )
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # DEPRECATED — Logic absorbed into HealerAgent — 2025-12-31
-class TerritoryHealerAgent(HealerMixin):
+class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """

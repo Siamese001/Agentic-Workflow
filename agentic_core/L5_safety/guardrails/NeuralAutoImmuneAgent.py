@@ -16,13 +16,12 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class NeuralAutoImmuneAgent(
-    AutonomyMixin,
+class NeuralAutoImmuneAgent(AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
-    HealerMixin,
-):
+    HealerMixin,, MCPHardenedMixin):
     """
     Sovereign auto-immune response — isolates territories after repeated breaches.
     Now hardened with predictive, proactive, adaptive, and self-learning capabilities.

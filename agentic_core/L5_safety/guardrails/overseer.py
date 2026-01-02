@@ -121,8 +121,9 @@ class ConstitutionalOverseer:
         return self._forbidden_commands.copy()
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SafetyInspector(HealerMixin):
+class SafetyInspector(HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 

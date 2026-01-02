@@ -33,7 +33,7 @@ class L4SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class L4SubatomicTestingMixin:
+class L4SubatomicTestingMixin(MCPHardenedMixin):
     """Mixin providing L4 subatomic testing capabilities.
     
     L4 Table Decision:
@@ -300,6 +300,7 @@ def test_balanced_sentiment():
         escaped_artifact = artifact_str.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
         return f'''
 import pytest
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 def test_artifact_exists():
     """Verify Artifact is not empty."""

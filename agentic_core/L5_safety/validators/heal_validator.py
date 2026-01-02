@@ -73,8 +73,9 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
 ]
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class HealValidator(HealerMixin):
+class HealValidator(HealerMixin, MCPHardenedMixin):
     """
     Multi-stage validator for LLM-healed code.
     

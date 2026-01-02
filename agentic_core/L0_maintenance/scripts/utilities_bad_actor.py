@@ -3,6 +3,7 @@ import logging
 
 import sys
 from typing import Any, Dict, List, Optional, Protocol, Tuple
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
 # NAMING FIXED: Logger → Logger
@@ -62,7 +63,7 @@ class ConsoleLogger:
 
 
 # NAMING FIXED: SafeSystemCommandExecutor → SafeSystemCommandExecutor
-class SafeSystemCommandExecutor:
+class SafeSystemCommandExecutor(MCPHardenedMixin):
     """
     A secure system command executor that prevents destructive actions
     and logs attempts. This simulates the 'ActionNode' whitelist concept

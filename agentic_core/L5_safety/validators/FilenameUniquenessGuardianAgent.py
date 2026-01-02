@@ -47,9 +47,10 @@ def get_placement_guidance(content_preview):
     return 'agentic_core/L1_cognition'
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
-class FilenameUniquenessGuardianAgent(HealerMixin):
+class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
     """
     Batch agent that enforces unique filenames across the entire repository.
     

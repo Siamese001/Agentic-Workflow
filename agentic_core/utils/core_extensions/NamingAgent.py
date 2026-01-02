@@ -76,8 +76,9 @@ class PlacementResult:
     alternative_paths: List[str]
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class NamingAgent(HealerMixin):
+class NamingAgent(HealerMixin, MCPHardenedMixin):
     """
     Autonomous agent for naming law compliance.
     Operates after LocationAgent (assumes file is in valid territory).
