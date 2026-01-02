@@ -25,7 +25,8 @@ import os
 import sys
 import tempfile
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, Protocol
 from dataclasses import dataclass
 from pathlib import Path
 

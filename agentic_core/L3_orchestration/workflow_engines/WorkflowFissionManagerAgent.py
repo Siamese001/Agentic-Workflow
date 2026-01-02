@@ -18,6 +18,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 try:
     from google import genai
     from google.genai import types
@@ -40,7 +42,7 @@ class FissionResult:
     success: bool
     error_message: Optional[str] = None
 
-class FissionManager:
+class FissionManager(HealerMixin):
     """
     L3 Orchestration Layer: Manages transition from healing to atomic fission.
     

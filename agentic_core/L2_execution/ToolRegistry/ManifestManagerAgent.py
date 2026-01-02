@@ -7,8 +7,10 @@ import logging
 import os
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class StateSerializer:
+class StateSerializer(HealerMixin):
     """
     Manages serialization and deserialization of workflow hop outputs.
 

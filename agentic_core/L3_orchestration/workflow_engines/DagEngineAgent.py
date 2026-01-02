@@ -8,6 +8,7 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, Set
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 class TaskStatus(Enum):
@@ -123,7 +124,7 @@ class DagEngineAgent(HealerMixin):
             raise ValueError(f'Task {task_id} not found')
         del self.tasks[task_id]
         if self.enable_logging:
-            LOGGER.debug('task_removed', extra={'task_id': task_id})
+            Logger.debug('task_removed', extra={'task_id': task_id})
 
     def validate_dag(self) -> List[str]:
         """Validate the DAG for cycles and Missing dependencies.
@@ -218,7 +219,7 @@ class DagEngineAgent(HealerMixin):
     def _log_dag_start(self, execution_order: List[str]) -> None:
         """Log DAG execution start."""
         if self.enable_logging:
-            LOGGER.info('dag_execution_started', extra={'total_tasks': len(self.tasks), 'execution_order': execution_order})
+            Logger.info('dag_execution_started', extra={'total_tasks': len(self.tasks), 'execution_order': execution_order})
 
     def _should_execute_task(self, Task: Task, task_id: str, completed_tasks: Set[str], context: Dict[str, Any], task_results: Dict[str, Any], skipped_tasks: List[str]) -> bool:
         """Check if Task should be executed."""
@@ -232,7 +233,7 @@ class DagEngineAgent(HealerMixin):
                 Task.status = TaskStatus.SKIPPED
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
-                    LOGGER.debug('task_skipped_condition', extra={'task_id': task_id, 'condition': Task.condition})
+                    Logger.debug('task_skipped_condition', extra={'task_id': task_id, 'condition': Task.condition})
                 return False
         return True
 
@@ -241,21 +242,21 @@ class DagEngineAgent(HealerMixin):
         Task.status = TaskStatus.RUNNING
         try:
             if self.enable_logging:
-                LOGGER.info('task_started', extra={'task_id': task_id})
+                Logger.info('task_started', extra={'task_id': task_id})
             result = await executor(Task)
             Task.status = TaskStatus.COMPLETED
             Task.result = result
             task_results[task_id] = result
             completed_tasks.add(task_id)
             if self.enable_logging:
-                LOGGER.info('task_completed', extra={'task_id': task_id})
+                Logger.info('task_completed', extra={'task_id': task_id})
             return True
         except Exception as e:
             Task.status = TaskStatus.FAILED
             Task.error = str(e)
             failed_tasks.append(task_id)
             if self.enable_logging:
-                LOGGER.error('task_failed', extra={'task_id': task_id, 'error': str(e)}, exc_info=True)
+                Logger.error('task_failed', extra={'task_id': task_id, 'error': str(e)}, exc_info=True)
             return False
 
     def _create_dag_result(self, completed_tasks: Set[str], failed_tasks: List[str], skipped_tasks: List[str], task_results: Dict[str, Any], execution_order: List[str]) -> DAGExecutionResult:
@@ -263,7 +264,7 @@ class DagEngineAgent(HealerMixin):
         success = len(failed_tasks) == 0
         result = DAGExecutionResult(success=success, completed_tasks=list(completed_tasks), failed_tasks=failed_tasks, skipped_tasks=skipped_tasks, task_results=task_results, execution_order=execution_order, metadata={'total_tasks': len(self.tasks), 'completion_rate': len(completed_tasks) / len(self.tasks) if self.tasks else 0})
         if self.enable_logging:
-            LOGGER.info('dag_execution_completed', extra={'success': success, 'completed': len(completed_tasks), 'failed': len(failed_tasks), 'skipped': len(skipped_tasks)})
+            Logger.info('dag_execution_completed', extra={'success': success, 'completed': len(completed_tasks), 'failed': len(failed_tasks), 'skipped': len(skipped_tasks)})
         return result
 
     def _evaluate_condition(self, condition: str, context: Dict[str, Any], task_results: Dict[str, Any]) -> bool:

@@ -8,14 +8,16 @@ Watches for territory changes and triggers reindexing with debouncing
 import asyncio
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
 # NAMING FIXED: TerritoryChangeHandler → TerritoryChangeHandler
-class TerritoryChangeHandler(FileSystemEventHandler):
+class TerritoryChangeHandler(FileSystemEventHandler, HealerMixin):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
     def __init__(self, daemon):
         self.daemon = daemon

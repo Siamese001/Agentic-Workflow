@@ -16,6 +16,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 try:
     import redis
     REDIS_AVAILABLE: Any = True

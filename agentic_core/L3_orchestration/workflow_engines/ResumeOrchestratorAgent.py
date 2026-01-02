@@ -5,6 +5,7 @@ import logging
 '''Brief description of functionality and purpose.'''
 
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 _logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L3_orchestration
@@ -67,7 +68,25 @@ def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None
     self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
 
 
+@timeout(300)
+def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L3 orchestration agent - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = self.__class__.__name__
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L3 orchestration - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)
+
+
 def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
-    ResumeOrchestrator(master_resume)
+    orchestrator = ResumeOrchestrator(master_resume)
     return orchestrator.run(JobDescription)

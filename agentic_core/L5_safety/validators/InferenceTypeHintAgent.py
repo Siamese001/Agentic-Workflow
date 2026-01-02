@@ -3,7 +3,8 @@ import ast
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -87,11 +88,28 @@ class InferenceTypeHintAgent(HealerMixin):
                 message: Any = f'Inferred {healed_count} precise type hint(s) via LLM'
                 print(f'      [HEALED] {file_path.name}: {message}')
                 ctx.report(self.__class__.__name__, 18, True, message)
-                return {'healed': True, 'details': message}
+                return {'status': 'complete', 'added_hints': len(targets)}
             return {'healed': False}
         except Exception as e:
             ctx.report(self.__class__.__name__, 18, False, f'Inference healing failed: {str(e)[:100]}')
             return {'healed': False}
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Operational validator - requires LLM context."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Requires LLM context - operational mode only")
+            return {"skipped": 1, "requires_llm": True}
+        finally:
+            _call_path.discard(agent_name)
 
 def get_inference_type_hint_agent() -> Any:
     """Brief description of functionality and purpose."""

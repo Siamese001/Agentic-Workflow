@@ -6,7 +6,8 @@ RedisSovereignAgent - Eternal Sovereign Gateway to Redis
 
 import hashlib
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 import redis
 from redis.connection import ConnectionPool
@@ -27,8 +28,7 @@ class RedisSovereignAgent(HealerMixin, MCPHardenedMixin):
     def __new__(cls, project_root: Path, ctx=None):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._init(project_root, ctx)
-        return cls._instance
+            return get_redis_sovereign(project_root, ctx)
 
     def _init(self, project_root: Path, ctx=None):
         env = get_env(project_root)

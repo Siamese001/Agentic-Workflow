@@ -28,6 +28,7 @@ GOLD STANDARD UPGRADE (2026-01-02):
 """
 from pathlib import Path
 from typing import List, Tuple, Set, Dict, Optional, Any
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from dataclasses import dataclass
 import ast
 import re
@@ -653,5 +654,25 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
             "dry_run": dry_run,
         }
 
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Import/gravity enforcer - scans and fixes violations."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            violations = self.run()
+            print(f"[{agent_name} HEAL @ depth {depth}] Found {len(violations)} import violations")
+            if not dry_run and execute:
+                fixed = sum(1 for v in violations if self._fix_violation(v))
+                return {"violations_found": len(violations), "fixed": fixed}
+            return {"violations_found": len(violations), "fixed": 0}
+        finally:
+            _call_path.discard(agent_name)
 
-# PascalCase is now the canonical name
+# PascalCase singleton accessoronical name

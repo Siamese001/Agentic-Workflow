@@ -10,7 +10,8 @@ Responsible for:
 - CTE-powered deterministic fixes (no LLM for simple transforms)
 """
 import os
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Tuple
+from agentic_core.utils.core_extensions.timeout_decorator import timeoutProtocol
 
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

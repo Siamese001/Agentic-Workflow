@@ -16,6 +16,7 @@ class SovereignDependencyError(Exception):
     pass
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class SubatomicHopAgent(HealerMixin):

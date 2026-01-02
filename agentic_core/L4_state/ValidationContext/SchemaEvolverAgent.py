@@ -17,6 +17,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

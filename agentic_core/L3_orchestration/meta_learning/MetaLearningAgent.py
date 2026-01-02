@@ -3,6 +3,7 @@ from __future__ import annotations
 MetaLearningAgent - Sovereign Strategy Evolution Engine (Phase C - Dec 30, 2025)
 """
 from typing import Dict, Any, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
 from pathlib import Path
 from datetime import datetime
