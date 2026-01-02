@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for const_final.
 
 This module maintains backward compatibility by re-exporting all components

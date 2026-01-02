@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dataclass models for resume_orchestration_config_types.
 
 Local Runtime DTOs (Allowed) - App-specific configuration models.

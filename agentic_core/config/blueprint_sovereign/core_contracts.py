@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Core Contracts Registry – Final SSOT Import Point (Phase 2C Complete)
 

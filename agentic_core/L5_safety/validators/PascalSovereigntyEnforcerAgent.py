@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from enum import Enum
 
-from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent
 from agentic_core.L5_safety.utils.ASTEnforcementMixin import ASTEnforcementMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CodeSSOTEnforcerAgent — CODE-LEVEL SSOT ENFORCEMENT
 
@@ -60,7 +61,7 @@ SKIP_PATHS = {
     "runtime/backups",
 }
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):

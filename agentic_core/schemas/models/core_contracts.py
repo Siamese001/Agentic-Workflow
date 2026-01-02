@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core Contracts - Pydantic models for sovereign system contracts.
 SSOT for retry policies, hop specifications, and registry.

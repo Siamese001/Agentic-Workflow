@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Secure Logging Utility - Prevents sensitive data leakage in logs.
 
 This module provides a secure logging wrapper that sanitizes log messages

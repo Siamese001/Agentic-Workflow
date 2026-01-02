@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: tools_LIC.py
 # Description: Tool-Augmented Agents - "Fast Loop" tools for deterministic evaluation
 # v13.0: Replaces expensive LLM calls with cheap, fast, deterministic code

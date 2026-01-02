@@ -169,7 +169,7 @@ class TestAgentHierarchy:
     def test_l2_agents_use_canon_base(self):
         """Verify L2 agents use ExecutionCanonBaseAgent."""
         try:
-            from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+            from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
             # Just verify the base class exists and has expected structure
             assert hasattr(CanonBaseAgent, '__init__')
         except ImportError as e:

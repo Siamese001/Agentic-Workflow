@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Deep comparison of review_pending files vs approved files.
 Determine if any review_pending files have MORE content than approved versions.

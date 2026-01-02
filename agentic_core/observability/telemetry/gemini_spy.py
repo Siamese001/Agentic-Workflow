@@ -1,3 +1,4 @@
+from __future__ import annotations
 # gemini_spy.py
 # L5 Telemetry Interceptor for SubAtomicEngine
 # PURPOSE: Wraps the SubAtomicEngine to force visibility of all LLM transactions

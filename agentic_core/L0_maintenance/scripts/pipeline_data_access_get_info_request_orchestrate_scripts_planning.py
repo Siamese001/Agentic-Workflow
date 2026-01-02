@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Scripts Planning Orchestrator - Coordinates script execution planning operations.
 
 This orchestrator manages the planning phase for script operations,
@@ -9,7 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):

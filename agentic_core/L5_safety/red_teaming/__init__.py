@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L5_safety/red_teaming – Sovereign Territory
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SubAtomicAgent base class and ImportPatcher mixin.
 All validation agents inherit from SubAtomicAgent.

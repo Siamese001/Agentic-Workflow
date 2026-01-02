@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Fix trailing whitespace in all Python files."""
 import glob
 import logging

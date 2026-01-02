@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shared Infrastructure
 Provides shared infrastructure services and domain configuration.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 AssessMessageRelevance.py - Scoring Module
 

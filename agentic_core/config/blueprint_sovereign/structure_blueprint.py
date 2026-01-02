@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-2 for Apps/Tests and Depth-3 for the Agentic Core.
@@ -11,8 +12,8 @@ from typing import Any, Dict, List, Optional, Protocol, Set
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {23: {'files': {'agentic_core/L2_execution/mcp/fetch_client_sovereign.py'}, 'patterns': ['if TYPE_CHECKING:', '\\"\\"\\".*requests.*\\"\\"\\"']}, 20: {'files': {'canon_validator_agentic_v2.py', 'pyproject.toml'}, 'patterns': []}}
 ACTIVE_CANON_KEYS: Any = list(range(0, 20))
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {0: ['.'], 1: ['agentic_core/prompt_governance'], 2: ['agentic_core/schemas'], 3: ['agentic_core/L1_cognition'], 4: ['agentic_core/L3_orchestration'], 5: ['agentic_core/L4_state'], 6: ['agentic_core/L5_safety'], 7: ['agentic_core/L0_maintenance'], 8: ['agentic_core/L2_execution', 'agentic_core/patterns', 'agentic_core/semantic_memory', 'agentic_core/knowledge'], 9: ['agentic_core/config', 'agentic_core/runtime'], 10: ['agentic_core/utils', 'agentic_core/observability'], 11: ['apps_shared', 'apps_rg', 'apps_lic'], 12: ['tests'], 13: ['*'], 14: ['*'], 15: ['*'], 16: ['*'], 17: ['*'], 18: ['*'], 19: ['*']}
-SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'config', 'schemas', 'prompt_governance', 'runtime', 'observability', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates']}, 'apps_lic': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security']}}
-CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'observability': ['metrics', 'telemetry', 'tracing', 'compliance'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
+SOVEREIGN_REGISTRY: Any = {'agentic_core': {'depth': 3, 'subfolders': ['L0_maintenance', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'config', 'schemas', 'prompt_governance', 'runtime', 'observability', 'utils', 'patterns', 'semantic_memory', 'knowledge']}, 'apps_rg': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain']}, 'apps_lic': {'depth': 2, 'subfolders': ['logic_nodes', 'asset_library', 'system_flow', 'engines', 'templates', 'domain', 'core']}, 'apps_shared': {'depth': 2, 'subfolders': ['base_definitions', 'common_utils', 'core_components', 'base_agents', 'models', 'utils', 'P1_core', 'config']}, 'tests': {'depth': 2, 'subfolders': ['unit', 'integration', 'e2e', 'functional', 'fixtures', 'automation', 'core', 'data', 'performance', 'security', 'autogen']}}
+CORE_SUBFOLDER_MAP: Any = {'L0_maintenance': ['scripts', 'logs', 'benchmarks'], 'L1_cognition': ['thought_engine', 'intent_analysis', 'planning'], 'L2_execution': ['ToolRegistry', 'action_handlers', 'mcp', 'tool_registry'], 'L3_orchestration': ['workflow_engines', 'fission_logic', 'S3_vitality', 'mcp', 'meta_learning'], 'L4_state': ['ValidationContext', 'ledger', 'filesystem', 'memory', 'validation_context'], 'L5_safety': ['guardrails', 'red_teaming', 'gravity', 'validators', 'agents', 'bases', 'policies', 'utils', 'verifiability'], 'schemas': ['models', 'messages', 'types', 'validators'], 'config': ['blueprint_sovereign', 'environments', 'feature_flags', 'secrets_manager'], 'prompt_governance': ['meta_prompts', 'version_registry', 'rendering', 'templates'], 'runtime': ['shared_runtime', 'environment_setup', 'shared', 'resource_management'], 'observability': ['metrics', 'telemetry', 'tracing', 'compliance'], 'utils': ['core_extensions', 'wrappers', 'general_helpers', 'naming'], 'patterns': ['agent_roles', 'communication_flow', 'interaction_patterns', 'reasoning_patterns'], 'semantic_memory': ['store', 'embeddings', 'retrieval', 'index'], 'knowledge': ['document_loaders', 'static_index', 'ResearchCache']}
 APPS_RG_SUBFOLDER_MAP: Any = {'logic_nodes': ['node_definitions', 'node_helpers'], 'asset_library': ['asset_definitions', 'asset_helpers'], 'system_flow': ['flow_definitions', 'flow_helpers'], 'engines': ['engine_definitions', 'engine_helpers'], 'templates': ['template_definitions', 'template_helpers']}
 APPS_LIC_SUBFOLDER_MAP: Any = APPS_RG_SUBFOLDER_MAP
 APPS_SHARED_SUBFOLDER_MAP: Any = {'base_definitions': ['definition_helpers', 'definition_types'], 'common_utils': ['utility_helpers', 'utility_types'], 'core_components': ['component_definitions', 'component_helpers'], 'base_agents': ['agent_definitions', 'agent_helpers'], 'models': ['model_definitions', 'model_helpers'], 'utils': ['utility_helpers', 'utility_types']}
@@ -20,6 +21,230 @@ TESTS_L2_SUBFOLDER_MAP: Any = {'unit': ['test_definitions', 'test_helpers'], 'in
 agentic_core_registry: Any = CORE_SUBFOLDER_MAP
 TESTS_SUBFOLDER_MAP: Any = TESTS_L2_SUBFOLDER_MAP
 CANON_SIGNALS: set[str] = {'agent', 'manager', 'engine', 'validator', 'healer', 'auditor', 'enforcer', 'detector', 'orchestrator', 'coordinator', 'pruner', 'mapper', 'handler', 'guardian', 'governor', 'sentinel', 'strategy', 'reasoning', 'fission', 'workflow', 'state', 'memory', 'cache', 'safety', 'guardrail', 'prompt', 'persona', 'schema', 'blueprint', 'template', 'context', 'ledger', 'Historian', 'audit', 'coverage', 'vector', 'embedding', 'pinecone', 'redis', 'compliance', 'drift', 'hierarchy', 'Span', 'depth', 'naming', 'rescue', 'integrity', 'gravity', 'subatomic', 'gemini'}
+
+# === APP-SPECIFIC FILE PLACEMENT RULES ===
+# Files with these prefixes MUST be placed in their respective app folders, NOT agentic_core
+# This is enforced by LocationAgent and HierarchyAgent during validation
+
+APP_SPECIFIC_PREFIXES: Dict[str, str] = {
+    'rg_': 'apps_rg',      # Resume Gen executors/tools
+    'lic_': 'apps_lic',    # LinkedIn Connector executors/tools
+    'resume_': 'apps_rg',  # Resume-related files
+    'outreach_': 'apps_rg', # Outreach-related files
+    'dispatch_resume': 'apps_rg',  # Resume dispatch tools
+    'dispatch_outreach': 'apps_rg', # Outreach dispatch tools
+    'contact_research': 'apps_rg',  # Contact research executors
+    'company_research': 'apps_rg',  # Company research executors
+}
+
+# Target subfolder for all current app-specific executors/tools (per migration pattern)
+# Central SSOT — all agents should use get_correct_app_path() for precise suggestions
+APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
+
+# Files matching these patterns should NEVER be in agentic_core
+APP_SPECIFIC_PATTERNS: List[str] = [
+    r'^rg_.*\.py$',           # Resume Gen files
+    r'^lic_.*\.py$',          # LinkedIn Connector files  
+    r'^resume_.*\.py$',       # Resume-related files
+    r'^outreach_.*\.py$',     # Outreach-related files
+    r'^dispatch_(resume|outreach).*\.py$',  # Dispatch tools
+]
+
+# === FORBIDDEN FILENAME PREFIXES ===
+# Files should NEVER begin with layer/priority prefixes - these belong in folder structure, not filenames
+# Examples: l1_cms_schemas.py, P1_core___init__.py
+FORBIDDEN_LAYER_PREFIXES: List[str] = [
+    'l0_', 'l1_', 'l2_', 'l3_', 'l4_', 'l5_', 'l6_',  # Layer prefixes (lowercase)
+    'L0_', 'L1_', 'L2_', 'L3_', 'L4_', 'L5_', 'L6_',  # Layer prefixes (uppercase)
+    'p0_', 'p1_', 'p2_', 'p3_',                        # Priority prefixes (lowercase)
+    'P0_', 'P1_', 'P2_', 'P3_',                        # Priority prefixes (uppercase)
+]
+
+# === FORBIDDEN BACKUP FILE PATTERNS ===
+# Broken backup files that archiving agents cannot find - must be cleaned up
+# Examples: golden_record.json.bak.174742, config.yaml.bak.123456
+FORBIDDEN_BACKUP_PATTERNS: List[str] = [
+    r'.*\.bak\.\d+$',         # .bak.NNNNNN pattern (broken backup)
+    r'.*\.backup\.\d+$',      # .backup.NNNNNN pattern
+    r'.*\.old\.\d+$',         # .old.NNNNNN pattern
+    r'.*\.tmp\.\d+$',         # .tmp.NNNNNN pattern (temp files)
+]
+
+def has_forbidden_layer_prefix(filename: str) -> Optional[str]:
+    """
+    Check if filename starts with a forbidden layer/priority prefix.
+    Returns the matched prefix or None if compliant.
+    """
+    for prefix in FORBIDDEN_LAYER_PREFIXES:
+        if filename.startswith(prefix):
+            return prefix
+    return None
+
+def is_broken_backup_file(filename: str) -> bool:
+    """
+    Check if filename matches broken backup pattern (.bak.NNNNNN, etc.)
+    These files should be cleaned up as they break archiving logic.
+    """
+    import re
+    for pattern in FORBIDDEN_BACKUP_PATTERNS:
+        if re.match(pattern, filename):
+            return True
+    return False
+
+
+# === AST-BASED DOMAIN SIGNALS (2026-01-02 hardening) ===
+# High-confidence identifier terms for structural detection of leaked app logic
+APP_RG_AST_TERMS: Set[str] = {
+    "resume", "cv", "skill", "experience", "education", "section",
+    "job", "outreach", "dispatch", "generation", "formatter", "parser",
+    "header", "summary", "achievement", "certification"
+}
+APP_LIC_AST_TERMS: Set[str] = {
+    "linkedin", "lic", "profile", "connection", "invite", "message",
+    "connect", "campaign", "cadence", "note", "scrap", "navigate", "browser"
+}
+APP_RG_VARIABLE_TERMS: Set[str] = {
+    "resume", "cv", "skill", "experience", "education", "section",
+    "job", "header", "summary", "achievement", "certification",
+    "applicant", "candidate", "position", "role"
+}
+APP_LIC_VARIABLE_TERMS: Set[str] = {
+    "profile", "linkedin", "connection", "invite", "message", "note",
+    "campaign", "cadence", "lead", "contact", "person", "url"
+}
+VARIABLE_HIT_WEIGHT: float = 0.5
+STRING_HIT_WEIGHT: float = 0.25
+AST_DOMAIN_HIT_THRESHOLD: float = 2.0
+FORBIDDEN_APP_MODULES: Set[str] = {"apps_rg", "apps_lic"}
+
+# String literal signals (docstrings, comments, etc.)
+APP_RG_STRING_TERMS: Set[str] = {
+    "resume", "cv", "skill", "experience", "education",
+    "job posting", "outreach", "candidate", "applicant"
+}
+APP_LIC_STRING_TERMS: Set[str] = {
+    "linkedin", "profile", "connection", "invite", "campaign", "cadence"
+}
+
+# === CORE LAYER GRAVITY RULES (Internal dependency direction) ===
+LAYER_FORBIDDEN_IMPORTS: Dict[str, Set[str]] = {
+    "L1_cognition": {"L2_execution", "L3_orchestration", "L4_state", "L5_safety"},
+    "L2_execution": {"L1_cognition", "L3_orchestration", "L5_safety"},
+    "L3_orchestration": {"L5_safety"},
+}
+
+# === STRUCTURED TERRITORY KEYWORDS FOR ALIGNMENT SCORING ===
+CORE_TERRITORY_KEYWORDS: Dict[str, Dict[str, Set[str]]] = {
+    "L1_cognition/thought_engine": {"primary": {"think", "reason", "plan", "decompose", "critique", "reflect"}},
+    "L1_cognition/intent_analysis": {"primary": {"intent", "goal", "understand", "parse", "user"}},
+    "L2_execution/ToolRegistry": {"primary": {"tool", "execute", "call", "registry", "runner"}},
+    "L2_execution/mcp": {"primary": {"mcp", "client", "fetch", "protocol"}},
+    "L3_orchestration/workflow_engines": {"primary": {"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}},
+    "L3_orchestration/fission_logic": {"primary": {"fission", "split", "decompose", "atomic"}},
+    "L4_state/ValidationContext": {"primary": {"state", "context", "checkpoint", "persist"}},
+    "L4_state/ledger": {"primary": {"ledger", "history", "record", "transaction"}},
+    "L5_safety/validators": {"primary": {"validate", "enforce", "check", "guard", "policy", "heal"}},
+    "L5_safety/guardrails": {"primary": {"guardrail", "safety", "membrane", "airlock", "pii"}},
+    "L5_safety/gravity": {"primary": {"gravity", "import", "dependency", "layer"}},
+    "config/blueprint_sovereign": {"primary": {"blueprint", "registry", "sovereign", "canon"}},
+    "schemas/models": {"primary": {"schema", "model", "type", "message"}},
+    "prompt_governance": {"primary": {"prompt", "template", "persona", "render"}},
+    "observability": {"primary": {"metric", "trace", "telemetry", "log", "compliance"}},
+    "utils": {"primary": {"util", "helper", "extension", "wrapper"}},
+}
+
+# Territory alignment thresholds
+TERRITORY_MISMATCH_THRESHOLD: float = 2.5
+MIN_ALIGNMENT_SCORE: float = 1.5
+
+def get_correct_app_folder(filename: str) -> Optional[str]:
+    """
+    Return the correct root app folder (e.g., 'apps_rg') for a file based on prefix.
+    Legacy — kept for backward compatibility with existing agent code.
+    Prefer get_correct_app_path() for new healing/validation logic.
+    """
+    for prefix, folder in APP_SPECIFIC_PREFIXES.items():
+        if filename.startswith(prefix):
+            return folder
+    return None
+
+def get_correct_app_path(filename: str) -> Optional[str]:
+    """
+    Return the full recommended path (e.g., 'apps_rg/engines') for app-specific files.
+    Uses centralized target subfolder — all migrated files went here.
+    Returns None if not app-specific.
+    """
+    root = get_correct_app_folder(filename)
+    if root:
+        return f"{root}/{APP_SPECIFIC_TARGET_SUBFOLDER}"
+    return None
+
+def is_app_specific_file(filename: str) -> bool:
+    """Check if a file should be in an app folder, not agentic_core."""
+    import re
+    for pattern in APP_SPECIFIC_PATTERNS:
+        if re.match(pattern, filename):
+            return True
+    return False
+
+# === PROJECT ROOT SAFETY ===
+# Prevent agents from creating folders/files outside the active project root
+# RCA: Folders were created at C:\Git\ instead of C:\Git\Agentic-Workflow\
+
+PROJECT_ROOT_MARKERS: frozenset[str] = frozenset({
+    'pyproject.toml',
+    'canon_validator_agentic_v2_thin.py',
+    'agentic_core',
+    '.git',
+})
+
+def get_validated_project_root():
+    """
+    Get the validated project root by searching upward from this file.
+    Raises ValueError if no valid project root is found.
+    """
+    from pathlib import Path
+    current = Path(__file__).resolve()
+    
+    for parent in [current] + list(current.parents):
+        markers_found = sum(1 for marker in PROJECT_ROOT_MARKERS if (parent / marker).exists())
+        if markers_found >= 2:
+            return parent
+    
+    raise ValueError(f"Could not find valid project root from {__file__}")
+
+def validate_path_within_project(path, project_root=None) -> bool:
+    """
+    Validate that a path is within the project root.
+    Returns True if path is within project root, False otherwise.
+    """
+    from pathlib import Path
+    if project_root is None:
+        project_root = get_validated_project_root()
+    
+    try:
+        path = Path(path).resolve()
+        project_root = Path(project_root).resolve()
+        path.relative_to(project_root)
+        return True
+    except ValueError:
+        return False
+
+def safe_path_join(project_root, *parts):
+    """
+    Safely join path parts and validate result is within project root.
+    Raises ValueError if resulting path would be outside project root.
+    """
+    from pathlib import Path
+    project_root = Path(project_root).resolve()
+    result = project_root.joinpath(*parts).resolve()
+    
+    if not validate_path_within_project(result, project_root):
+        raise ValueError(
+            f"SAFETY VIOLATION: Path '{result}' is outside project root '{project_root}'"
+        )
+    
+    return result
 
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
 # All naming rules for all file types in the repository

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Workflow Integration - SDK integration into workflow orchestration.
 
 Provides integration layer between workflow orchestrator and SDK clients
@@ -14,7 +15,7 @@ from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
 from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass

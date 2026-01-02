@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 '''Brief description of functionality and purpose.'''
 
@@ -854,7 +855,7 @@ class NervousSystemInterventionManager:
         return None # No intervention required
 
 # NAMING FIXED: NervousSystemPhaseOrchestrator → NervousSystemPhaseOrchestrator
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class NervousSystemPhaseOrchestrator(HealerMixin):
     """Orchestrates the execution of all phases within a mission cycle."""
@@ -1030,10 +1031,10 @@ class NervousSystemPhaseOrchestrator(HealerMixin):
         return converged, errors
 
 # NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.bases.OrchestrationBaseAgent import L3SubatomicTestingMixin
-from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Core orchestrator that coordinates cognitive and action planes.

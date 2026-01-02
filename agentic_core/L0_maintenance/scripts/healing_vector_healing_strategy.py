@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Vector Healing Strategy – Phase 17B (Dec 27, 2025)
 Detects and autonomously corrects Pinecone vector state drift.

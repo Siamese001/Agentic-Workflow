@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Outreach Engine Tools.
 
 Migrated from archives/Reachout Engine Archive/Agentic LIC/

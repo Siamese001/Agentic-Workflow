@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Duplicate Code Detector Agent
@@ -21,7 +22,7 @@ except ImportError:
     Parser = None
     Language = None
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class DuplicateCodeDetectorAgent(HealerMixin):
     """

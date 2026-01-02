@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Secure Error Handling - Prevents sensitive data leakage in exceptions.
 
 This module provides secure exception handling that sanitizes error messages,

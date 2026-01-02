@@ -1,3 +1,4 @@
+from __future__ import annotations
 # Create a simple test resume
 test_resume = """  # GLOBAL: Review if this should be constant
 JOHN DOE

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HealerAgent: Sovereign Structural Convergence Conductor
 
@@ -98,7 +99,7 @@ class ImportUpdater(ast.NodeVisitor):
                 self.found_usage = True
         self.generic_visit(node)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class HealerAgent(HealerMixin, MCPHardenedMixin):

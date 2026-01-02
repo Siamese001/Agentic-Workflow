@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RetryGenerationFailures.py - Retry/Fallback Module
 

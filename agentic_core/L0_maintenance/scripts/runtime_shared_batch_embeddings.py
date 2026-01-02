@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Batch Embedding Service - Parallel embedding generation for 5-10x speedup.
 
 Optimized for i7-10750H (6 cores/12 threads) with 32GB RAM allocation.

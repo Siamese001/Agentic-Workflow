@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix all incomplete imports after bulk hierarchy heal.
 """

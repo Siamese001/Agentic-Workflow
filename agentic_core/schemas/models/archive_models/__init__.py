@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Archive Models - Migrated schema models from archives."""
 
 from .budget_profile import BudgetProfile

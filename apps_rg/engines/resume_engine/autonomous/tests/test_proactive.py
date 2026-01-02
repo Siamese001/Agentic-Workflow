@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unit Tests for Proactive Scheduling and Predictive Handoff
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Pitch Generator for Outreach Engine
 Generates personalized outreach pitches

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Interface: Canon Base Agent
 Neutral contract for all canon agents - shared across bounded contexts.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Configuration types for the agentic framework.
 
 Defines OrchestratorConfig and related configuration dataclasses.

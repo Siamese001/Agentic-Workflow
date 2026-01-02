@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Claim Confidence Scorer
 Atomic Claim extraction and confidence scoring.

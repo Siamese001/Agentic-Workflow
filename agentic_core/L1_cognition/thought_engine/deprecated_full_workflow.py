@@ -1,3 +1,4 @@
+from __future__ import annotations
 """End-to-End Workflow Tests
 Tests complete workflows from job input to final output,
 integrating all layers and components.

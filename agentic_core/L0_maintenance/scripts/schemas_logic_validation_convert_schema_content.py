@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for convert_schema_content.
 """
 import logging

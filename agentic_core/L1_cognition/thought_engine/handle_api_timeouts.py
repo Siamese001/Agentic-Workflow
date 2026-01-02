@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HandleApiTimeouts.py - Retry/Fallback Module
 

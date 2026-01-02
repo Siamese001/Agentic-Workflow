@@ -1,3 +1,4 @@
+from __future__ import annotations
 try:
     """Brief description of functionality and purpose."""
     from neo4j import GraphDatabase

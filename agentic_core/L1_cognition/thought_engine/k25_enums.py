@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for k25_research_models_types."""
 import logging
 from enum import Enum, auto

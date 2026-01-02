@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MetricsWitness – Phase 14 (Dec 30, 2025)
 PascalCase agent responsible for translating raw L6 MetricsAgent data into Sovereign Audit scores.
@@ -12,7 +13,7 @@ import logging
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class MetricsWitness(HealerMixin, AutonomyMixin,

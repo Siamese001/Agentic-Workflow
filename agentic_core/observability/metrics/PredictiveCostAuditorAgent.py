@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ⚛️ Predictive Cost Auditor - The Efficiency Guard
 
@@ -17,7 +18,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

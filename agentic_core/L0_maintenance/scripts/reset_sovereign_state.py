@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L0 Maintenance: Sovereign State Reset
 Purges volatile state that causes MemoryError and ensures clean SSL fixes.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Configuration SSOT
 Centralizes all environment variables, feature flags, and system constants.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CreateExperienceBullets.py - Execution Module
 

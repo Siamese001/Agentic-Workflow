@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L2_execution/action_handlers – Sovereign Territory
 

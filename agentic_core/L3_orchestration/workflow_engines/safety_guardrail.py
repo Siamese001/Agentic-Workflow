@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Safety Guardrail - L5 Safety Layer
 

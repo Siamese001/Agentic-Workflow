@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Bias Auditor
 Lightweight bias detection in text.

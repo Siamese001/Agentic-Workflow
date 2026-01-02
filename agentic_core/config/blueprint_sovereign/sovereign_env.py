@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SovereignEnv.py - Eternal Single Source of Truth Gateway to .env
 

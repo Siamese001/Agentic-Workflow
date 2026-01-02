@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Secure Configuration Management - Handles secrets, keys, and config validation.
 
 This module provides secure configuration management with encrypted key storage,

@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: vector_memory.py
 # Description: Vector Memory Store for persistent intelligence - v13.0
 # Provides interface to ChromaDB for storing and querying pre-computed research

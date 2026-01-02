@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for CapabilityAnalyzer."""
 import logging
 from dataclasses import dataclass, field

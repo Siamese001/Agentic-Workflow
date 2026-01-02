@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Simple Unit Tests for Resume Engine
 
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Consolidated Security Utilities for Agentic Workflow
 Implements P3 (Prompt Firewall) and P4 (Fact Checker) on L1

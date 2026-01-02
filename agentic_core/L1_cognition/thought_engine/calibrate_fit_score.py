@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CalibrateFitScore.py - Scoring Module
 

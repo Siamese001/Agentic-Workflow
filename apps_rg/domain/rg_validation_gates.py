@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for rg_validation_gates.
 
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Constitutional AI System for Safety and Alignment.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)

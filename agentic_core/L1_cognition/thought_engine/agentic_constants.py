@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Constants for the Agentic Core system.
 [SSOT] Structural constants derived from structure_blueprint.py

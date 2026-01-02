@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ast
 '''Brief description of functionality and purpose.'''
 
@@ -59,10 +60,10 @@ class CanonEntry:
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 # NAMING FIXED: CanonValidator → CanonValidator
 class CanonValidator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):

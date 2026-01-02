@@ -1,3 +1,4 @@
+from __future__ import annotations
 # Sovereign RAG Manager
 # Territory: agentic_core/knowledge (cross-subfolder orchestrator)
 # Canon Key 9 - Retrieval-Augmented Generation integration

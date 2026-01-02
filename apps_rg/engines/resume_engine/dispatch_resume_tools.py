@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 dispatch_resume_tools.py - Execution Module
 

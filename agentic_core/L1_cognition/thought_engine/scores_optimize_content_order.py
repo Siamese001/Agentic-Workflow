@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 OptimizeContentOrder.py - Refinement Module
 

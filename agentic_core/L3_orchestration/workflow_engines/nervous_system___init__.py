@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Nervous System module."""
 from .ReflexLayer import ReflexLayer
 

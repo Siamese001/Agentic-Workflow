@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Comprehensive fixer for cognitive density and micro-fragment violations."""
 import ast
 import logging

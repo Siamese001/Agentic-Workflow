@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MetricsAgent: Sovereign Observability Metrics Collector
 
@@ -27,7 +28,7 @@ from threading import Lock
 from datetime import datetime
 import logging
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)

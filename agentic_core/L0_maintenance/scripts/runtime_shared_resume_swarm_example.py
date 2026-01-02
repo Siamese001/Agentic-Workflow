@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Resume Swarm Integration Examples.
 
 Demonstrates how to use ResumeSwarm for CPU-intensive resume generation tasks

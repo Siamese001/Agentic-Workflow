@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RedSentinel - L5 Active Defense & Hostile Input Fuzzing
 
@@ -20,7 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class RedSentinel(HealerMixin):
     """

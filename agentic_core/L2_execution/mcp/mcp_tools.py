@@ -1,3 +1,4 @@
+from __future__ import annotations
 """MCP Tool Server Integration.
 
 Provides MCP (Model Context Protocol) tool server integration

@@ -153,7 +153,7 @@ class TestCriticalPaths:
         try:
             # This tests the import hierarchy
             from agentic_core.L5_safety.validators.PascalSovereigntyEnforcerAgent import PascalSovereigntyEnforcerAgent
-            from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+            from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
             
             # Both should be importable
             assert PascalSovereigntyEnforcerAgent is not None

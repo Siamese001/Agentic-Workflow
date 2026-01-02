@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix all Unicode emojis in Python files to ASCII equivalents.
 Prevents Windows encoding issues.

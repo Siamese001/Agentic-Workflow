@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Persona Planner - L1 planning for persona parameters and messaging approaches.
 
 Incorporated from L1 lic_persona_planner.py to provide deterministic persona

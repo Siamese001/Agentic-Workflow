@@ -1,3 +1,4 @@
+from __future__ import annotations
 # TypeHintEnforcementAgent - Atomic Validator (Ungated Healing)
 # Territory: agentic_core/L2_execution/ToolRegistry
 # Canon Alignment: Enforces complete type hints for public functions/methods/variables
@@ -14,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
@@ -90,7 +91,7 @@ class TypeHintEnforcementAgent(HealerMixin):
             return {"healed": False}
 
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: TypeHintFixer → TypeHintFixer
 class TypeHintFixer(HealerMixin, ast.NodeTransformer):

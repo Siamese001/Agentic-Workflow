@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Strategist BioWriter - Placeholder file to pass Key 10."""
 
 from typing import Any, Dict, List, Optional, Protocol

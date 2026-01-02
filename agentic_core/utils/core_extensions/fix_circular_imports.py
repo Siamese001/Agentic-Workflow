@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix circular imports in agentic_core by converting absolute imports to relative imports.
 

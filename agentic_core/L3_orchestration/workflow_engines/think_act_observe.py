@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Think-Act-Observe Cycle Implementation.
 
 Phase 2 - Pillar 4: Workflow (DAGs)

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Add docstrings to functions/classes Missing them."""
 import ast
 import logging

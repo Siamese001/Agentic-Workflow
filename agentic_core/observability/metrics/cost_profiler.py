@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Cost profiler for observability.
 Auto-hardened by WINDSURF v2

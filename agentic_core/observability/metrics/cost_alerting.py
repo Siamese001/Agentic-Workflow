@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Per-Agent Cost Tracking with Identity Integration.
 
 Phase 4 - Pillar 11 (Cont.): Cost & Optimization

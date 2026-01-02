@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Proactive Fission Scanner - L3 Orchestration
 

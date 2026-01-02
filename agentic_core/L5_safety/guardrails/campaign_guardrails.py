@@ -1,10 +1,11 @@
+from __future__ import annotations
 """Safety guard stack agents."""
 
 import json
 import re
 # import scripts.validation.check_canonical_structure  # TODO: Replace with sovereign equivalent
 from typing import Any, Dict
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # from archives.legacy_resume_gen.Older Microservices Models.v10.6.pydantic import BaseModel, Field  # TODO: Replace with sovereign equivalent
 
@@ -65,7 +66,7 @@ def detect_bias(context, text, workflow_id=""):
     """Stub for detect_bias - TODO: Replace with sovereign equivalent"""
     return {"bias_detected": False, "score": 0.0}
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class PIISanitizerAgent(HealerMixin, BaseAgent):
     """Performs local PII detection using regex heuristics."""

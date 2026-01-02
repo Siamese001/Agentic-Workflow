@@ -1,9 +1,10 @@
+from __future__ import annotations
 import logging
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class DummyRag(HealerMixin):

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 TestPilot - Property-Based Testing Agent
 
@@ -12,7 +13,7 @@ import tempfile
 import time
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 few_shot_property_tests: Any = '\nFEW-SHOT HYPOTHESIS PROPERTY TESTS (Valid syntax only):\n\nEXAMPLE 1: List reversal idempotency\nfrom hypothesis import given, strategies as st\n@given(st.lists(st.integers()))\ndef test_reverse_twice(lst):\n    assert lst[::-1][::-1] == lst\n\nEXAMPLE 2: JSON serialization roundtrip\n@given(st.dictionaries(st.text(), st.integers()))\ndef test_json_roundtrip(data):\n    assert json.loads(json.dumps(data)) == data\n\nEXAMPLE 3: Sorting is idempotent\n@given(st.lists(st.integers()))\ndef test_sorted_idempotent(numbers):\n    assert sorted(sorted(numbers)) == sorted(numbers)\n\nEXAMPLE 4: Set operations\n@given(st.sets(st.integers()))\ndef test_set_union_idempotent(s):\n    assert s | s == s\n\nEXAMPLE 5: Dictionary merge\n@given(st.dictionaries(st.text(), st.integers()), st.dictionaries(st.text(), st.integers()))\ndef test_dict_merge(a, b):\n    merged = {**a, **b}\n    for k, v in a.items():\n        if k not in b:\n            assert merged[k] == v\n'
 

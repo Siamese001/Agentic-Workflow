@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 HierarchyEnforcerAgent - Ensures L4 structure compliance
@@ -5,7 +6,7 @@ HierarchyEnforcerAgent - Ensures L4 structure compliance
 
 from pathlib import Path
 from typing import Any, Dict, List
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class HierarchyEnforcerAgent(HealerMixin):

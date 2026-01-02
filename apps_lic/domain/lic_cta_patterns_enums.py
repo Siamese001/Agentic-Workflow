@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for lic_cta_patterns."""
 import logging
 from enum import Enum, auto

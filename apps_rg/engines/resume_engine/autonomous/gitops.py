@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 GitOps & Advanced Mutation Module - Phase 4 Implementation
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Checkpoint Manager
 Manages workflow checkpoints and state persistence.

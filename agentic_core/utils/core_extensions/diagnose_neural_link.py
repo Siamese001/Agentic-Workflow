@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Diagnostic Script: Neural Link & Fission Verification
 Responsible for:

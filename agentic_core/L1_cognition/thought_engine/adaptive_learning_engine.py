@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Adaptive Learning Engine - L1 Cognition Enhancement
 

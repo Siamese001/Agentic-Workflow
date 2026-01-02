@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Runtime Shared Modules
 Resurrected from archives - provides RAG components, safety tools, and optimization utilities.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Check depth violations using SSOT.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py

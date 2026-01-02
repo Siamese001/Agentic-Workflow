@@ -1,10 +1,11 @@
+from __future__ import annotations
 import ast
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
 from pathlib import Path
 from typing import Dict, Any
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class DocstringComplianceAgent(HealerMixin):

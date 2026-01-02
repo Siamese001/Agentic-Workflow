@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Self-Healing Engine - Phase 2 Implementation
 

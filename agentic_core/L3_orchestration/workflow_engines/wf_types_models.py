@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dataclass models for orchestrate_workflow_types."""
 import logging
 from dataclasses import dataclass, field

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-generated stub for e2e\resume_flows\test_resume_flows.py
 

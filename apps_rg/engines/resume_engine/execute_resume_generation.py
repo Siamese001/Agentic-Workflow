@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ExecuteResumeGeneration.py - Execution Module
 

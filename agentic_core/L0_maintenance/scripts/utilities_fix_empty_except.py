@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Fix empty except blocks in Python files."""
 import glob
 import logging

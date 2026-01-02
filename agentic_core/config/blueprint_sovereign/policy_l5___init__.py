@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for l5___init__.
 
 

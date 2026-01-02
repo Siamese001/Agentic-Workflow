@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinel - Code hygiene and import management.
@@ -297,7 +298,7 @@ class CodeJanitor:
             print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery

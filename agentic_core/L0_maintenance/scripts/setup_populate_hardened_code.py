@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for populate_hardened_code.
 
 

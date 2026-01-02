@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Proactive Scheduling and Predictive Handoff for L4.5 Autonomy
 
@@ -20,7 +21,7 @@ from .resume_base import ResumeAgent
 from .context import ResumeEngineContext
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class TaskPriority(Enum):

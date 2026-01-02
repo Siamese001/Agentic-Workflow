@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Prune Empties - Final Stage of Hierarchy Healing
 Purges empty legacy folders and stale __init__.py files after bulk move.

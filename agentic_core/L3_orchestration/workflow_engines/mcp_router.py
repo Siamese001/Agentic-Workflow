@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MCP Router - L3 Orchestration Switchboard
 
@@ -14,7 +15,7 @@ MCP Assignment by Layer:
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)

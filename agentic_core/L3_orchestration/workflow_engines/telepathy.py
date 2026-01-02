@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L6 Codebase Telepathy - Human Instruction Watcher
 

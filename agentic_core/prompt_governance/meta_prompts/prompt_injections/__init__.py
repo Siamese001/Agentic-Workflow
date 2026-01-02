@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 prompt_governance/meta_prompts/prompt_injections – Sovereign Territory
 

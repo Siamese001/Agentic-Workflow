@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Security & Hygiene Fixer for Canon Validator.
 Targets: Keys 0-6 (TODO/FIXME, print statements, bare except, empty except, trailing whitespace)

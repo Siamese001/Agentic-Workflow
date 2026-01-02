@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Phase 1 Integrity Test with L5 Safety Layer Validation.
 
 This script tests the L5 safety layer integration with the NervousSystem.

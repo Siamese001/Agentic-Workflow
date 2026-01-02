@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ast
 '''Brief description of functionality and purpose.'''
 
@@ -15,7 +16,7 @@ try:
     PINECONE_AVAILABLE: Any = True
 except ImportError:
     PINECONE_AVAILABLE: Any = False
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -55,7 +56,7 @@ class GeneratedTest:
     passed: bool
     error_message: Optional[str]
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class MethodChangeDetector(HealerMixin, MCPHardenedMixin):

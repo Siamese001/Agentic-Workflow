@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MetaLearningAgent — TRUE SELF-IMPROVEMENT LOOP
 
@@ -12,7 +13,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Core Agentic module."""
 from typing import Dict, Any, Optional
 from enum import Enum

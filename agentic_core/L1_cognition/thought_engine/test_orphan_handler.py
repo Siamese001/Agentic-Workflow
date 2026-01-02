@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

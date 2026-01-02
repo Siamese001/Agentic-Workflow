@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L5 Safety Guardrails - Security and validation components.
 
 Note: Imports are lazy to avoid circular dependencies.

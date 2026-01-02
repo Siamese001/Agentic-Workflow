@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 One-time cleanup utility to collapse duplicate entries in registry.json.
 

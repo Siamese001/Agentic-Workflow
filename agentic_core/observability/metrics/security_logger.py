@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Security event logging."""
 from typing import Dict, Any, Optional
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L3 Orchestration: Autonomous Sovereign Core
 Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
@@ -48,7 +49,7 @@ class AutonomousSovereignCore:
         from agentic_core.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
         )
-        from agentic_core.L2_execution.tool_registry.ProactiveResourceManager import (
+        from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManager import (
             create_proactive_resource_manager,
         )
         from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign PDF Parser - L0 Document Ingestion
 Enhanced PDF parsing with OCR fallback, metadata extraction, and async processing

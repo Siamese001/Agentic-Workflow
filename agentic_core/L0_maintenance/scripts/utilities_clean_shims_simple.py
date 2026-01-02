@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Simple script to clean up shim chains by manually specifying the patterns.
 import logging

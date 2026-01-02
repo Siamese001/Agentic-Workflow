@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Script to replace print statements with logging calls.
 This will fix Key 2 (print statements) violations.

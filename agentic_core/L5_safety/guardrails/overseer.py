@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Constitutional Overseer for validating ActionRequests.
 
 Validates actions against forbidden commands and safety rules.
@@ -120,7 +121,7 @@ class ConstitutionalOverseer:
         """
         return self._forbidden_commands.copy()
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class SafetyInspector(HealerMixin, MCPHardenedMixin):

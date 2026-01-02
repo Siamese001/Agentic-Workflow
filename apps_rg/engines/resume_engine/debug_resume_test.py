@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-generated stub for debug_resume_test.py
 

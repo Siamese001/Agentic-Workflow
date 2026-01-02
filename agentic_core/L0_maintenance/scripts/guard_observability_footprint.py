@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guardian: Observability Footprint (Dark Reasoning Check)
 Ensures every L1 reasoning step leaves an L6 observability trail.

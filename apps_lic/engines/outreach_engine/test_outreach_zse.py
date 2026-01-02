@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 import os
 from unittest.mock import MagicMock, mock_open, patch

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Key Validators using AST-based validation.
 Replaces regex/string matching with proper AST analysis to eliminate false positives.
@@ -7,8 +8,8 @@ from pathlib import Path
 from typing import List, Dict, Any
 from agentic_core.runtime.shared_runtime.ast_validator import CanonASTValidator, parse_and_validate
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 class PrintStatementValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """

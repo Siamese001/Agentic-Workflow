@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 🚀 PHASE 5: THIN WRAPPER - SwarmScheduler for Canon Validator
 

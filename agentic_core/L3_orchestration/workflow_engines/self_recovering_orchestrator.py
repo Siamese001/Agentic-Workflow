@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Self-Recovering Orchestrator - L3 Orchestration Enhancement
 
@@ -55,7 +56,7 @@ class WorkflowMutation:
     applied_at: Optional[datetime] = None
     success: bool = False
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class SelfRecoveringOrchestrator(HealerMixin):
     """

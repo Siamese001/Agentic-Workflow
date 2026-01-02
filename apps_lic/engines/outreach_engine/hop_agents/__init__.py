@@ -1,3 +1,4 @@
+from __future__ import annotations
 """HOP Agents for LIC Outreach Engine.
 
 Migrated from archives/Reachout Engine Archive/Agentic LIC/

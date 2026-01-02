@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Configuration Contracts - SSOT for all config dataclasses.
 Modularized from core_contracts.py for DDD bounded context isolation.

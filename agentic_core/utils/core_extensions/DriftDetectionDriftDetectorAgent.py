@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 L6 Watchdog: Drift Detector Agent
@@ -11,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class DriftDetectorAgent(HealerMixin):

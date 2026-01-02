@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L6 Sovereign Code Graph & Governance Infrastructure
 

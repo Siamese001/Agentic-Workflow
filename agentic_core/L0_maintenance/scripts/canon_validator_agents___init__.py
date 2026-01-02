@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Validator Agents Package.
 All validation agents are exported from this module.

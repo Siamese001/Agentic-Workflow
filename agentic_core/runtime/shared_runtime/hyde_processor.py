@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Archetype-Aware HyDE Processor - Hypothetical Document Embeddings.
 
 NOTE: This file was stubbed due to structural corruption.

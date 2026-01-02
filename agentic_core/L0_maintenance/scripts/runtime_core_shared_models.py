@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shared models and enums for the Agentic Workflow runtime.
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Envelope Factory
 Creates and manages data envelopes for pipeline processing.

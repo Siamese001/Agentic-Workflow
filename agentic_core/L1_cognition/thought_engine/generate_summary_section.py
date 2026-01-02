@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 GenerateSummarySection.py - Execution Module
 

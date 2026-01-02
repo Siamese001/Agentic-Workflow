@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DDD Alignment Guardian - Sovereign Edition (December 29, 2025)
 Detects violations of Domain-Driven Design tactical patterns:

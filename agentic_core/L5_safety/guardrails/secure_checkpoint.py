@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Secure Checkpoint Manager - Protected persistence with encryption and integrity.
 
 This module provides a secure Checkpoint implementation that encrypts data at rest,

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Integration Tests for Autonomous Resume Engine
 

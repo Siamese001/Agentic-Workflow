@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Semantic Gatekeeper - L3 Orchestration Layer
 
@@ -7,11 +8,12 @@ import asyncio
 import logging
 import re
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
 class SemanticGatekeeperAgent(HealerMixin):

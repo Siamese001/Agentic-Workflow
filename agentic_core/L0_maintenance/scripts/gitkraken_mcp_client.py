@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign GitKraken MCP Client – Phase 16D (Dec 27, 2025)
 Replaces all direct git subprocess calls with official GitKraken MCP.

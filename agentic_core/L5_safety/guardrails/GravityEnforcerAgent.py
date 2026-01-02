@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Gravity Enforcer Agent - Neural Link Stabilizer
@@ -11,7 +12,7 @@ from typing import Dict, Set
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class GravityEnforcerAgent(HealerMixin, CachedSafetyShield):

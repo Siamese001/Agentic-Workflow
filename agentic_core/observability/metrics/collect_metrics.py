@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 BaseCollector.py - Collector Module
 

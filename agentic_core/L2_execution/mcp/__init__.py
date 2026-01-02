@@ -1,3 +1,4 @@
+from __future__ import annotations
 """MCP Integration - Hardened Sovereign Module."""
 from .client import MCPClient, MCPClientSpec
 from .factory import parse_mcp_client_specs, instantiate_mcp_client, create_mcp_registry

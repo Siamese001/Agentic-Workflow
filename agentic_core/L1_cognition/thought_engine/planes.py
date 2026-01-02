@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Plane interfaces - Protocol definitions for cognitive and action planes.
 
 Defines the contracts that cognitive (Brain) and action (Hands) planes
@@ -5,7 +6,7 @@ must implement for the orchestrator to coordinate them.
 """
 from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 @runtime_checkable

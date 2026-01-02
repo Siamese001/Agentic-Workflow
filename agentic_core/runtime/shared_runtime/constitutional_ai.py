@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for constitutional_ai."""
 import logging
 import re

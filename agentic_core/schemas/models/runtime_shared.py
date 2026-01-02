@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Runtime Shared Schemas (Phase 2C Residuals)
 ==========================================

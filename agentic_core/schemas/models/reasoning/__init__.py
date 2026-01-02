@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reasoning Contracts - SSOT for agent reasoning, code generation, and consensus models.
 Modularized from core_contracts.py for DDD bounded context isolation.

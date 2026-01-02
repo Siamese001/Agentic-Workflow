@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 HierarchyAgent: Canon Structural Hierarchy Enforcer (Key 3/12/41 territory)
 
@@ -28,8 +29,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     AUTONOMOUS_AGENT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
     ROOT_WHITELIST,
+    TESTS_ROOT_FILE_WHITELIST,
+    is_app_specific_file,
+    get_correct_app_path,
+    validate_path_within_project,
+    get_validated_project_root,
+    safe_path_join,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
@@ -38,11 +45,37 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
     Autonomous agent for hierarchical structure compliance.
     Scans folders only (no file content parsing).
     Run after LocationAgent.
+    
+    RCA FIX 2026-01-02: Added project root validation to prevent folder creation
+    outside the active project root.
     """
 
     def __init__(self, project_root: Path):
         self.project_root = project_root.resolve()
         self.excluded_folders = SOVEREIGN_EXCLUDED_FOLDERS
+        # Cache for faster healing suggestions
+        self._app_specific_checked: Dict[Path, bool] = {}
+        # Validate project root
+        self._validate_project_root()
+
+    def _validate_project_root(self) -> None:
+        """Validate project_root is the actual project root."""
+        validated_root = get_validated_project_root()
+        if self.project_root != validated_root:
+            self.project_root = validated_root
+
+    def suggest_healing_move(self, file_path: Path, violation_msg: str) -> Optional[str]:
+        """
+        HealerMixin-compatible suggestion for app-specific misplacement.
+        Returns a git mv command string or None.
+        """
+        if "APP-SPECIFIC IN CORE" in violation_msg or (
+            len(file_path.parts) > 0 and file_path.parts[0] == "agentic_core" and is_app_specific_file(file_path.name)
+        ):
+            correct_path = get_correct_app_path(file_path.name)
+            if correct_path:
+                return f"git mv {file_path} {self.project_root / correct_path / file_path.name}"
+        return None
 
     def check_span_of_two_violation(self, folder_path: Path) -> Tuple[bool, str]:
         """
@@ -139,10 +172,12 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
             subfolders_config = config.get("subfolders", [])
             is_dict_config = isinstance(subfolders_config, dict)
 
-            # No files directly under root (Key 41)
+            # No files directly under root (Key 41) - except whitelisted test infrastructure
+            whitelist = TESTS_ROOT_FILE_WHITELIST if root_key == "tests" else frozenset()
             root_py_files = [
                 p.name for p in root_path.iterdir()
                 if p.is_file() and p.suffix == ".py" and p.name != "__init__.py"
+                and p.name not in whitelist
             ]
             if root_py_files:
                 violations.append((
@@ -195,6 +230,25 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         all_violations.extend(self.validate_canonical_hierarchy())
 
         return all_violations
+
+    def check_span_of_two(self) -> Dict[str, Any]:
+        """
+        Wrapper for check_span_of_two_violations() returning structured result.
+        Used by mission_preflight.py for L6 preflight checks.
+        """
+        violations = self.check_span_of_two_violations()
+        return {
+            "compliant": len(violations) == 0,
+            "violations": len(violations),
+            "details": [msg for _, msg in violations],
+        }
+
+    def validate_hierarchy(self) -> List[Tuple[Path, str]]:
+        """
+        Alias for validate_canonical_hierarchy().
+        Used by mission_preflight.py for L6 preflight checks.
+        """
+        return self.validate_canonical_hierarchy()
 
 
     # SUPPLEMENTED FROM SemanticTerritoryMapperAgent — embedding-based semantic mapping — merged 2025-12-30

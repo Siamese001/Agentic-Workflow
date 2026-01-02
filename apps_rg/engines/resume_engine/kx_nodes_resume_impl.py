@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for kx_nodes_resume."""
 from typing import Any, Optional, Protocol, Dict, List
 

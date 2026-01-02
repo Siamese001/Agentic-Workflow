@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L5 Autonomous Orchestrator - Thin Wrapper
 Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py

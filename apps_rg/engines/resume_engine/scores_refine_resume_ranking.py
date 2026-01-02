@@ -1,3 +1,4 @@
+from __future__ import annotations
 ```python
 """
 RefineResumeRanking.py - Refinement Module

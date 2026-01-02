@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
 

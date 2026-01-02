@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L3 Orchestration: Sovereign MCP Marketplace Integration
 Safe discovery and registration of marketplace MCPs with L5 sovereignty enforcement.
 GEMINI-ONLY policy — forbidden providers auto-blocked.

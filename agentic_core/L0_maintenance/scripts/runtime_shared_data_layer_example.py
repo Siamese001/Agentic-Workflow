@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Data Layer Integration Example - Batch Embeddings + In-Memory Vector Cache.
 
 Demonstrates how to use BatchEmbeddingService and InMemoryVectorCache together

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix imports after moving files to P1_core subdirectories.
 Updates all references to moved files throughout the codebase.

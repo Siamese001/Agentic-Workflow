@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RetrieveResumeHistory.py - Retrieval Module
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 🚀 PHASE 5: THIN WRAPPER - Hardened Workflow Orchestrator
 
@@ -11,7 +12,7 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 

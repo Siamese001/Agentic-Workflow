@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Proactive Scheduling and Predictive Handoff for Outreach Engine L4.5 Autonomy
 

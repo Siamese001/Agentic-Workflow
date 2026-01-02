@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: models_LIC.py
 # Description: Data models, enumerations, and custom exceptions for the LIC workflow.
 # REFACTOR: v13.0 - Slimmed down to support HOP-based architecture.

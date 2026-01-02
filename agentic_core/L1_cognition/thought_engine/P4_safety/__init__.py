@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L1_cognition/thought_engine/P4_safety – Sovereign Territory
 

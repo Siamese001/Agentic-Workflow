@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 TokenBudgetInspector.py - Diagnostics Module
 
@@ -9,7 +10,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass

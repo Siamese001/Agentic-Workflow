@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Multi-Dimensional Auditor v3.1
 The Supreme Court of the Agentic Architecture.

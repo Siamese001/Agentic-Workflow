@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Canon Audit – Powered by DeepWiki MCP
 Phase 13E: L6 Self-Verification Utility

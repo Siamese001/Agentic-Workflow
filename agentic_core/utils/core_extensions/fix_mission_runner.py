@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 '''Brief description of functionality and purpose.'''
 

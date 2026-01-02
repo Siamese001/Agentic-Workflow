@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for GetInfoUnderstandRequest."""
 import logging
 import sys

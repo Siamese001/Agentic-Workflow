@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: intelligence_librarian.py
 # Description: Persistent Intelligence Service ("The Librarian") - v13.0
 # Runs offline/async to pre-compute deep research and store in vector database

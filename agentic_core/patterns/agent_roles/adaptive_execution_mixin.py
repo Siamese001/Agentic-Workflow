@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 AdaptiveExecutionMixin – Sovereign Agent Role Mixin (Phase 29 – Dec 30, 2025)
 

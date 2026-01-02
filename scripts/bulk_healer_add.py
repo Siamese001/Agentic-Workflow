@@ -12,7 +12,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / 'agent_discovery_full.json'
 
-HEALER_IMPORT = "from agentic_core.common.healing.healer_mixin import HealerMixin"
+HEALER_IMPORT = "from agentic_core.utils.core_extensions.healer_mixin import HealerMixin"
 
 # Skip these - they are base classes, enums, or data classes
 SKIP_CLASSES = {

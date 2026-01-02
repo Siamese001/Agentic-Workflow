@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-generated stub for unit\apps_rg\test_resume_integrity.py
 

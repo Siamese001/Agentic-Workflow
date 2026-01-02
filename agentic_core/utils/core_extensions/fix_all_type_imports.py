@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix all Missing type imports in agentic_core implementation files.
 Adds proper imports from corresponding *_types.py files.

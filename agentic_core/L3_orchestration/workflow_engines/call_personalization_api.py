@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Dict, List, Optional, Protocol
 '''Brief description of functionality and purpose.'''
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 '''Brief description of functionality and purpose.'''
 
@@ -13,7 +14,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO').upper())
 Logger: Any = logging.getLogger(__name__)

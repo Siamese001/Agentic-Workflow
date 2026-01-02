@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dataclass models for outreach_orchestration_config.
 
 Local Runtime DTOs (Allowed) - App-specific outreach configuration models.

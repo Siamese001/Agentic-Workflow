@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 AssessContentRisk.py - Scoring Module
 

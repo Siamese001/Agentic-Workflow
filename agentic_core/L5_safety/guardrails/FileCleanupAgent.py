@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 File Cleanup Agent
@@ -8,7 +9,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class FileCleanupAgent(HealerMixin):

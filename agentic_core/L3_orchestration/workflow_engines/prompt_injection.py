@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Prompt Injection Detection Module - Safety Guardrail
 
 Detects and blocks prompt injection attempts in user inputs.

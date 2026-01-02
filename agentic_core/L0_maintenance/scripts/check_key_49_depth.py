@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Standalone Key 49 Depth Violation Checker
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py

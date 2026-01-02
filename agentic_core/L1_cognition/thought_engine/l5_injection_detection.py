@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Unit Tests for Injection Detection System
 
 Tests all injection detection patterns and validation rules
@@ -10,7 +11,7 @@ Logger = logging.getLogger(__name__)
 """
 import pytest
 from typing import Any
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class TestInjectionDetector(HealerMixin):
     """Test cases for injection detection patterns."""

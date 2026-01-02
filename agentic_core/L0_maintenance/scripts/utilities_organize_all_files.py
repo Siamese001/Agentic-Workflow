@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Comprehensive file organization script for sovereign silos
 Moves ALL file types from root to appropriate directories

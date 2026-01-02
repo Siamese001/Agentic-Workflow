@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 End-to-End Tests for Phase 2: Self-Healing Mission
 

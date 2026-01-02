@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Knowledge Graph Healing Strategy – Phase 17C (Dec 27, 2025)
 Detects and autonomously corrects structured memory drift.

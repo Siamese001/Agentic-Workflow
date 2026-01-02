@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Fix final micro-fragment shim files in apps_rg/ directory."""
 import logging
 from pathlib import Path

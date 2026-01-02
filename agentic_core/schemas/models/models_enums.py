@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for models."""
 import logging
 from enum import Enum, auto

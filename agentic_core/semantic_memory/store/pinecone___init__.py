@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 semantic_memory/vector_stores/pinecone – Sovereign Territory
 

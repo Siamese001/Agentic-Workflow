@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Automatically fix lines longer than 100 characters."""
 import logging
 import os

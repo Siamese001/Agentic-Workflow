@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DependencySentinel - L1 Guardian for Import Dependencies
 
@@ -61,7 +62,7 @@ class DependencyViolation:
         """Convert to dictionary."""
         return {'type': self.type, 'file': str(self.file_path), 'line': self.line, 'message': self.message, 'details': self.details}
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON COMPLIANCE — renamed to DependencySentinelAgent for discovery and sovereignty — 2025-12-30

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L3 Orchestration: Fission Executor
 Physical file splitting logic for atomic fission protocol.

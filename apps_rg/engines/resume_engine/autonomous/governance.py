@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Governance & Meta-Optimization Module - Phase 7 Implementation
 

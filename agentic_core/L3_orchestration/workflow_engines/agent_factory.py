@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Agent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)
 Wires L1 Cognition agents with L2 Execution implementations via DIP.
@@ -15,7 +16,7 @@ Phase 11: Configurable Implementation Factory
 from typing import Optional, Any
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
 MockCanonBaseAgent = None  # Stub
@@ -52,7 +53,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING FIXED: AgentFactory → AgentFactory

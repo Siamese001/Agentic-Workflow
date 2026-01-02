@@ -1,3 +1,4 @@
+from __future__ import annotations
 '''Resume Engine - Core resume generation and optimization functionality.'''
 
 # Core engine functions

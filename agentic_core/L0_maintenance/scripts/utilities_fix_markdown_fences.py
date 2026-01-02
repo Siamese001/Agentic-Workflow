@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix markdown code fences in Python files.
 Removes ```python and ``` from files that have them.

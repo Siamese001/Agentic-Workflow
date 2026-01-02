@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 BenchmarkingAgent - L3 System Health Specialist
 
@@ -120,7 +121,7 @@ class BenchmarkSuite:
         }
 
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: BenchmarkingAgent → benchmarking_agent
 class BenchmarkingAgent(HealerMixin):

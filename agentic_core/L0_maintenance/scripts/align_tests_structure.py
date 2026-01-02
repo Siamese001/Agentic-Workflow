@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 TEST STRUCTURE ALIGNMENT
 Ensures all test directories have __init__.py for Python package recognition.

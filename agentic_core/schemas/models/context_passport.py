@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DEPRECATED – Zero-Loss Migration Complete (Phase 2B/Phase 4 – Dec 26, 2025)
 All models have been canonically centralized in:

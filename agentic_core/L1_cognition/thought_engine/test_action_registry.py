@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 The provided "healed code" perfectly addresses all the syntax and style violations, and implements the requested improvements. It successfully transforms the original script into a well-structured `pytest` test suite.
 

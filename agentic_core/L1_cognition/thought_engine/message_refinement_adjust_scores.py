@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for message_refinement_adjust_scores.
 
 

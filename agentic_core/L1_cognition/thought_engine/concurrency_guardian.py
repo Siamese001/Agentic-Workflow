@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 '''Brief description of functionality and purpose.'''
 
@@ -94,7 +95,7 @@ class LockInfo:
         """Convert to dictionary."""
         return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class ConcurrencyGuardian(HealerMixin):
     """

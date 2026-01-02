@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ImportAgent: Gravity & Import Convention Enforcer (Key 6/Gravity territory)
 
@@ -90,7 +91,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 @registers_prompt(
     template_name="gravity_repair.jinja",

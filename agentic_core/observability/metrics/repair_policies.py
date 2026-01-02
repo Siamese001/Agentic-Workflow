@@ -1,3 +1,4 @@
+from __future__ import annotations
 """AIS repair / mitigation policies.
 
 

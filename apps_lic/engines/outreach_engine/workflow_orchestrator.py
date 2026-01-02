@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: WorkflowOrchestrator.py
 # Description: Complete workflow orchestration v13.0 - Pure Agentic Architecture
 # REFACTOR: All v12.0 agents replaced with HOP-based state architecture
@@ -15,7 +16,7 @@ from pathlib import Path
 # MCP Hardening + Healing + Testing
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Core infrastructure (updated imports for new locations)
 from apps_shared.utils.state_manager import StateManager

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Airlock Protocol - Zero Trust Human Authorization
 

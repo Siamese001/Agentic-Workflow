@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Testing few-shot patterns.
 Used by TestPilot and property-based testing agents.

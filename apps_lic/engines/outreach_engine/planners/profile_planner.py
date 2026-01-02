@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Profile Planner - L1 planning for profile analysis and Archetype inference.
 
 Incorporated from L1 lic_profile_planner.py to provide deterministic profile

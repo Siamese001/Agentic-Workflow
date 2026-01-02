@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix gravity breaches caused by force_app_depth.py moving app-specific code to core.
 Move app-specific orchestrators and engines back to their respective apps.

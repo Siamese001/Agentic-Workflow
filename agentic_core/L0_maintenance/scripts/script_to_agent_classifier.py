@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ScriptToAgentClassifier – Sovereign Agent (Phase 17 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
@@ -32,7 +33,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 
 # [PHASE 2] L0 Delegated Testing
 from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0DelegationTestingMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class ScriptToAgentClassifier(HealerMixin, AutonomyMixin,

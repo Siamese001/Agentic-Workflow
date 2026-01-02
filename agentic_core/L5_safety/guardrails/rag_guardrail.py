@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RAGGuardrail - L5 RAG Content Filtering and Reranking
 """

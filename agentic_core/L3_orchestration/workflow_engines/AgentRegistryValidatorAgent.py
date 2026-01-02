@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 AgentRegistryValidatorAgent - L3 Orchestration Framework Agent
@@ -9,7 +10,7 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class AgentRegistryValidatorAgent(HealerMixin):
     """

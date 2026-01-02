@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L0_maintenance/scripts/.canon_memory – Sovereign Territory
 

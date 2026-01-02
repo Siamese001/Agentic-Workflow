@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic
 
@@ -18,7 +19,7 @@ import re
 import textwrap
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (

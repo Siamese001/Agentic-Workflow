@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Schema Interfaces - Abstract contracts for action and cognitive planes."""
 
 from .action_plane import ActionCapability, ActionRequest, ActionResult, ActionPlane

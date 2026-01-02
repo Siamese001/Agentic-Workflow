@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Change Tracker - Sovereign Healing Audit Trail
 Canon-compliant utility for tracking file modifications by healer/fixer agents.

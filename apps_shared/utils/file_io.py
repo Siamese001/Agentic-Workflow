@@ -1,3 +1,4 @@
+from __future__ import annotations
 """File system utilities for apps_shared."""
 from typing import Any, Optional, Protocol, Dict, List
 import ast

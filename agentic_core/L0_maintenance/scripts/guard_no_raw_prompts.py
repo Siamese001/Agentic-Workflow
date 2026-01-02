@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guard: Block Raw Prompt Strings (Final Sovereign Version)
 Constitutional enforcement - all prompts must be registered in sovereign_prompt_constitution.py

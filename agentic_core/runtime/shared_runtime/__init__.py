@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 runtime/shared_runtime – Sovereign Territory
 

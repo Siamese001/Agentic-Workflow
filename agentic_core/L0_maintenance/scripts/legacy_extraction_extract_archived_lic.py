@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Extract net incremental files from legacy_lic archive to staging directory."""
 import logging
 import shutil

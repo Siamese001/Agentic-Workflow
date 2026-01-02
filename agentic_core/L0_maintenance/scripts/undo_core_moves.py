@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Undo all the incorrect core/ subdirectory moves
 """

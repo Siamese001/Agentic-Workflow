@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Base Model Contracts - SSOT for foundational Pydantic models.
 Modularized from core_contracts.py for DDD bounded context isolation.

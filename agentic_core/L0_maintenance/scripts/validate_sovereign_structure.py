@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SOVEREIGN STRUCTURE VALIDATOR
 Enforces the 3-level depth law for agentic architecture.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for get_info_embedding_compare."""
 import logging
 import time

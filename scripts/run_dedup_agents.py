@@ -86,7 +86,7 @@ async def run_code_deduplication_agent(project_root: Path) -> Dict[str, Any]:
     start = time.time()
     
     try:
-        from agentic_core.L2_execution.tool_registry.CodeDeduplicationAgent import CodeDeduplicationAgent
+        from agentic_core.L2_execution.ToolRegistry.CodeDeduplicationAgent import CodeDeduplicationAgent
         
         agent = CodeDeduplicationAgent(similarity_threshold=0.95, min_lines=8)
         

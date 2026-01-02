@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core Utilities for Resume Engine
 Provides draft generation, scoring, and file operations

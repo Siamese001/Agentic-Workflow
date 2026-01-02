@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Base Agent for Outreach Engine
 
@@ -12,7 +13,7 @@ from typing import Optional
 from .context import OutreachEngineContext
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):

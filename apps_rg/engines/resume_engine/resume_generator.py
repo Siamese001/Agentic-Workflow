@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Resume Generator - LLM-powered resume tailoring.
 

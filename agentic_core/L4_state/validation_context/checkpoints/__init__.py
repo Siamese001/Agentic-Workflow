@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L4_state/ValidationContext/checkpoints – Sovereign Territory
 

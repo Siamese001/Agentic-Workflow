@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign DeepWiki Client – Phase 13E (Dec 26, 2025)
 L6 Codebase Intelligence via Official MCP.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L6 Observability Layer"""
 # Removed non-existent security_logger import
 

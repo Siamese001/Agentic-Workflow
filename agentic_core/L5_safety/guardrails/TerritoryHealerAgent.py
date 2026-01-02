@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 [DEPRECATED] TerritoryHealerAgent - ABSORBED INTO HealerAgent
 
@@ -28,7 +29,7 @@ warnings.warn(
     stacklevel=2
 )
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # DEPRECATED — Logic absorbed into HealerAgent — 2025-12-31

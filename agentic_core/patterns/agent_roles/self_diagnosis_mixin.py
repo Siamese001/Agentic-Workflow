@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SelfDiagnosisMixin – Sovereign Agent Role Mixin (Phase 31 – Dec 30, 2025)
 

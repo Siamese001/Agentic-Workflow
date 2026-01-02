@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix imports in ToolRegistry files after bulk hierarchy heal.
 """
@@ -19,7 +20,7 @@ def fix_imports_in_file(file_path: Path) -> int:
         with open(file_path, 'r', encoding='utf-8') as f:
             content: Any = f.read()
         original_content: Any = content
-        replacements: Any = [('from agentic_core\\.L2_execution\\.P4_agents\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P4_agents$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P2_tools\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P2_tools$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P3_engines\\.', 'from agentic_core.L2_execution.tool_registry.'), ('from agentic_core\\.L2_execution\\.P3_engines$', 'from agentic_core.L2_execution.tool_registry'), ('import agentic_core\\.L2_execution\\.P4_agents\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P2_tools\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P3_engines\\.', 'import agentic_core.L2_execution.tool_registry.')]
+        replacements: Any = [('from agentic_core\\.L2_execution\\.P4_agents\\.', 'from agentic_core.L2_execution.ToolRegistry.'), ('from agentic_core\\.L2_execution\\.P4_agents$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P2_tools\\.', 'from agentic_core.L2_execution.ToolRegistry.'), ('from agentic_core\\.L2_execution\\.P2_tools$', 'from agentic_core.L2_execution.tool_registry'), ('from agentic_core\\.L2_execution\\.P3_engines\\.', 'from agentic_core.L2_execution.ToolRegistry.'), ('from agentic_core\\.L2_execution\\.P3_engines$', 'from agentic_core.L2_execution.tool_registry'), ('import agentic_core\\.L2_execution\\.P4_agents\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P2_tools\\.', 'import agentic_core.L2_execution.tool_registry.'), ('import agentic_core\\.L2_execution\\.P3_engines\\.', 'import agentic_core.L2_execution.tool_registry.')]
         for pattern, replacement in replacements:
             content: Any = re.sub(pattern, replacement, content)
         if content != original_content:
