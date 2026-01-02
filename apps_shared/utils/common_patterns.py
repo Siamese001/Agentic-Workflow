@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -86,7 +88,7 @@ class BaseRefiner:
         return result
 
 
-class BaseTaskExecutor(HealerMixin):
+class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Base class for task execution with error handling.
     Previously duplicated 7+ times as execute() function.

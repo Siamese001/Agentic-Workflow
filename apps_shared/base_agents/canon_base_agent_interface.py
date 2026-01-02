@@ -5,14 +5,16 @@ Phase 9: DDD Remediation (Dec 26, 2025)
 """
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 # NAMING FIXED: CanonBaseAgentInterface → CanonBaseAgentInterface
-class CanonBaseAgentInterface(ABC):
+class CanonBaseAgentInterface(MCPHardenedMixin, HealerMixin, ABC):
     pass
 
 # Alias for backward compatibility
 
-class CanonBaseAgentInterfaceImpl(ABC):
+class CanonBaseAgentInterfaceImpl(MCPHardenedMixin, HealerMixin, ABC):
     """Sovereign interface for all canon agents — shared across contexts."""
     
     @abstractmethod
