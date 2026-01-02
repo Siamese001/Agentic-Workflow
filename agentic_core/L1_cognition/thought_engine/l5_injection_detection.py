@@ -10,8 +10,9 @@ Logger = logging.getLogger(__name__)
 """
 import pytest
 from typing import Any
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class TestInjectionDetector:
+class TestInjectionDetector(HealerMixin):
     """Test cases for injection detection patterns."""
 
     def setup_method(self) -> Any:

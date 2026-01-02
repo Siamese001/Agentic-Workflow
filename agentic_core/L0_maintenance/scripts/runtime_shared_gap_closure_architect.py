@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 'Gap Closure Architect - Leadership Competencies with Gap Filling (K.9).\n\nThis agent generates 6 leadership competencies with ≥85% JD keyword gap coverage,\nenforcing Industry-First ranking and 24-30 word descriptions.\n\nSub-Atomic Agent Name: GapClosureArchitect\nLegacy K-Node: K.9 (K.8 in some versions)\n'
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -28,7 +29,7 @@ class CompetenciesOutput:
     industry_first_compliant: bool
     _metadata: Dict[str, Any]
 
-class GapClosureArchitect(Agent):
+class GapClosureArchitect(HealerMixin, Agent):
     """Gap Closure Architect agent for leadership competencies.
 
     This agent generates competencies with strict constraints:

@@ -12,13 +12,12 @@ import logging
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class MetricsWitness(
-    AutonomyMixin,
+class MetricsWitness(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-):
+    SelfDiagnosisMixin,):
     """
     Sovereign witness that cross-examines L6 observability metrics against constitutional expectations.
     Provides audit-ready (score, issues) tuples for Structural SSOT and Healing Resilience dimensions.

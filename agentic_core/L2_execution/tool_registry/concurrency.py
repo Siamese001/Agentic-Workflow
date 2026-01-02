@@ -7,11 +7,12 @@ import os
 import re
 import time
 from collections import defaultdict
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 # NAMING FIXED: MemoryLeakDetector → MemoryLeakDetector
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class MemoryLeakDetector:
+class MemoryLeakDetector(HealerMixin):
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
 
     def __init__(self, ctx):
@@ -496,7 +497,7 @@ class DeadlockAnalyzer(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class DeadlockDetector:
+class DeadlockDetector(HealerMixin):
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 
     def __init__(self, ctx):

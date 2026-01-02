@@ -29,6 +29,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class DependencyGraph:
@@ -216,7 +217,7 @@ class DependencyGraph:
         return dot_str
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(MCPHardenedMixin):
+class GovernanceAgent(HealerMixin, MCPHardenedMixin):
     """
     Enforces architectural governance laws and constraints.
 

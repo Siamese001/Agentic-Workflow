@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Optional, Dict, Any
 
 from .react_engine import ReasoningMode
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class TaskType(Enum):
     UNKNOWN = "unknown"
 
 
-class ReasoningRouter:
+class ReasoningRouter(HealerMixin):
     """Routes tasks to appropriate reasoning strategies.
     
     Implements a simple strategy selector that uses ReAct for tasks

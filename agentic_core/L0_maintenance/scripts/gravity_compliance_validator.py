@@ -10,13 +10,14 @@ from pathlib import Path
 
 # [SSOT IMPORT] Layer authority from structure_blueprint.py
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
 # Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
-class GravityComplianceValidator:
+class GravityComplianceValidator(HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):

@@ -373,7 +373,7 @@ class NervousSystemPhaseExecution:
             phase = AgentInfo.phase
 
             # Create a simple mock agent that has execute method
-            class MockAgent:
+            class MockAgent(HealerMixin):
                                                     
                 def __init__(self, name, phase):
                     self.name = name

@@ -11,13 +11,12 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class MetaLearningAgent(
-    AutonomyMixin,
+class MetaLearningAgent(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
-    SelfDiagnosisMixin,
-):
+    SelfDiagnosisMixin,):
     """
     Sovereign meta-learning agent that evolves system behavior over time.
     Now hardened with strategy evolution, proactive monitoring, and self-learning.

@@ -5,6 +5,7 @@ must implement for the orchestrator to coordinate them.
 """
 from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 @runtime_checkable
@@ -120,7 +121,7 @@ class IActionPlane(Protocol):
 
 @runtime_checkable
 # NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
-class IOrchestrator(Protocol, MCPHardenedMixin):
+class IOrchestrator(HealerMixin, Protocol, MCPHardenedMixin):
     """Interface for the orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes,

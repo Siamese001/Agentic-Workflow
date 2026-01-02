@@ -12,6 +12,7 @@ Import from here instead of duplicating code.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from datetime import datetime
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
 @dataclass
@@ -85,7 +86,7 @@ class BaseRefiner:
         return result
 
 
-class BaseTaskExecutor:
+class BaseTaskExecutor(HealerMixin):
     """
     Base class for task execution with error handling.
     Previously duplicated 7+ times as execute() function.

@@ -13,6 +13,7 @@ except ImportError:
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+from agentic_core.common.healing.healer_mixin import HealerMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
@@ -24,7 +25,7 @@ class SubAtomicAgent:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
 # NOT_AN_AGENT — legacy L1 class, true agent is SafetyInspectorAgent in L2 — excluded from discovery
-class SafetyInspector:
+class SafetyInspector(HealerMixin):
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance. Emits SECURE signal.

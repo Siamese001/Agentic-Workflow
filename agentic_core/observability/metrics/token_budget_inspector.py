@@ -9,6 +9,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -19,7 +20,7 @@ class DiagnosticReport:
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
-class TokenBudgetInspector:
+class TokenBudgetInspector(HealerMixin):
     """Diagnostics engine for inspection domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:

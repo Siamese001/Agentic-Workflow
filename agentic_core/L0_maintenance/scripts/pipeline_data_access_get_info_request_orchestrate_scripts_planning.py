@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class ScriptExecutionPriority(Enum):
@@ -51,7 +52,7 @@ class ScriptsPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class ScriptsPlanningOrchestrator:
+class ScriptsPlanningOrchestrator(HealerMixin):
     """Orchestrator for planning script execution operations."""
 
     def __init__(self, config: Optional[ScriptsPlanningConfig]=None):

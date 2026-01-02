@@ -14,6 +14,7 @@ from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
 from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.common.healing.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -171,7 +172,7 @@ def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_fu
             Logger.error(f'Hop {hop_id} failed: {e}')
             raise
 
-class WorkflowOrchestrator(MCPHardenedMixin):
+class WorkflowOrchestrator(HealerMixin, MCPHardenedMixin):
     """Workflow orchestrator with SDK integration."""
 
 def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
