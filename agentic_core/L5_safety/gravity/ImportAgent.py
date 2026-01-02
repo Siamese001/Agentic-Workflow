@@ -33,6 +33,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
 def get_ast_safe_imports(content: str):
@@ -94,7 +97,7 @@ from agentic_core.common.healing.healer_mixin import HealerMixin
     purpose="Fixes import violations and gravity conventions",
     territory="templates"
 )
-class ImportAgent(HealerMixin):
+class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
     Autonomous agent for import convention and gravity compliance.
     Requires file content access → run only on location-valid files.

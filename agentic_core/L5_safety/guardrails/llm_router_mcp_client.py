@@ -12,17 +12,21 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignLlmRouterMcpClient:
+class SovereignLlmRouterMcpClient(MCPHardenedMixin, HealerMixin):
     """Official LLM Router MCP client for sovereign validation operations."""
 
     def __init__(self, role: str='safety_validation'):
+        super().__init__()
         if not config.LLM_ROUTER_MCP_ENABLED:
             raise ValueError('LLM Router MCP disabled in sovereign config')
         from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
+        self._mcp_audit('init')
         Logger.info('[L5 LLM ROUTER] Sovereign LLM Router MCP client initialized')
 
     async def validate_content(self, content: str, validation_type: str='safety') -> Dict[str, Any]:

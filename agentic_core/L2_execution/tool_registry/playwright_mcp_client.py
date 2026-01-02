@@ -15,10 +15,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger('L2.Playwright')
 
-class SovereignPlaywrightMcpClient:
+class SovereignPlaywrightMcpClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Playwright MCP Client for visual and behavioral validation.
     
@@ -28,8 +31,10 @@ class SovereignPlaywrightMcpClient:
 
     def __init__(self):
         """Initialize Playwright client with sovereign routing."""
+        super().__init__()
         self.router = SovereignMCPRouter(role='browser_validation')
         self.initialized = False
+        self._mcp_audit('init')
         Logger.info('[L2 PLAYWRIGHT] Client initialized')
 
     async def initialize(self) -> Any:
