@@ -90,8 +90,10 @@ class TypeHintEnforcementAgent(HealerMixin):
             return {"healed": False}
 
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: TypeHintFixer → TypeHintFixer
-class TypeHintFixer(ast.NodeTransformer):
+class TypeHintFixer(HealerMixin, ast.NodeTransformer):
     """
     AST transformer that adds Missing type hints to public symbols.
     """

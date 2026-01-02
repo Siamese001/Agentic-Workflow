@@ -166,9 +166,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -240,8 +240,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -271,8 +271,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -373,8 +373,8 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -424,9 +424,9 @@
     "layer": "L0",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3167,6 +3167,36 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "DAGManager",
+    "path": "agentic_core\\L3_orchestration\\dynamic_dag_manager.py",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "register_function",
+      "add_node",
+      "request_mutation",
+      "create_mutation_request",
+      "get_next_node",
+      "pause_node",
+      "resume_node",
+      "get_graph_stats",
+      "visualize_graph"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 410,
+    "class_count": 9,
+    "description": "Manages the dynamic DAG with mutation capabilities.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "DagEngineAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\DagEngineAgent.py",
     "layer": "L3",
@@ -3503,8 +3533,8 @@
     "layer": "L3",
     "inheritance": [
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5531,8 +5561,8 @@
     "inheritance": [
       "HealerMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin",
-      "SelfDiagnosisMixin"
+      "SelfDiagnosisMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5885,7 +5915,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 84,
+    "loc": 85,
     "class_count": 2,
     "description": "\n    Ensures public functions, methods, and module-level assignments have type hints.\n\n    Rules:\n  ",
     "pascal_compliant": true,
@@ -5896,6 +5926,7 @@
     "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
     "layer": "L5",
     "inheritance": [
+      "HealerMixin",
       "NodeTransformer"
     ],
     "key_methods": [
@@ -5906,10 +5937,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 84,
+    "loc": 85,
     "class_count": 2,
     "description": "\n    AST transformer that adds Missing type hints to public symbols.\n    ",
     "pascal_compliant": true,
