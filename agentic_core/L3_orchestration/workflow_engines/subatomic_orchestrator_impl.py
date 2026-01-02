@@ -64,7 +64,7 @@ def get_agent_registry() -> AgentRegistry:
     return AgentRegistry()
 
 # NAMING FIXED: DAGManager → DagManager
-class DagManager(HealerMixin):
+class DagManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Mock DAGManager for type hinting."""
     def __init__(self):
         self.node_registry = {}
@@ -91,7 +91,7 @@ class DagManager(HealerMixin):
 
 
 # NAMING FIXED: SubatomicHop → SubatomicHop
-class SubatomicHop(HealerMixin):
+class SubatomicHop(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Mock SubatomicHop for type hinting."""
     def __init__(self, role, hop_function, CONTEXT, enable_prompt_injection):
         self.config = type('obj', (object,), {'hop_id': role.value})()
@@ -116,9 +116,11 @@ _orchestrator: Optional[SubatomicOrchestrator] = None
 Logger = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 # NAMING FIXED: SubatomicOrchestrator → SubatomicOrchestrator
-class SubatomicOrchestrator(HealerMixin):
+class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Implementation for SubatomicOrchestrator."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):

@@ -14,17 +14,21 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignFilesystemMcpClient:
+class SovereignFilesystemMcpClient(MCPHardenedMixin, HealerMixin):
     """Official Filesystem MCP client for sovereign file operations."""
 
     def __init__(self, role: str='maintenance_files'):
+        super().__init__()
         if not config.FILESYSTEM_MCP_ENABLED:
             raise ValueError('Filesystem MCP disabled in sovereign config')
         from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
+        self._mcp_audit('init')
         Logger.info('[L0 FILESYSTEM] Sovereign Filesystem MCP client initialized')
 
     def _validate_path(self, path: str) -> str:

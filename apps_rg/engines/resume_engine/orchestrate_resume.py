@@ -5,13 +5,16 @@ from typing import Dict, List
 
 from services.configuration import ConfigurationService
 from shared.configuration.config import ContentConstraintsConfig
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 _logger = logging.getLogger(__name__)
 'Pure orchestration of resume generation using shared atoms.'
-Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+Logger = logging.getLogger(__name__)
 
 
-class ResumeOrchestrator:
+class ResumeOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
 
