@@ -104,7 +104,7 @@ def main():
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
-    # Handle single agent invocation
+    # Handle single agent invocation via dynamic discovery
     if args.agent:
         print(f"\n[*] AGENT MODE - Direct invocation of {args.agent.upper()}")
         
@@ -112,34 +112,86 @@ def main():
         mode_str = "EXECUTE" if execute else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
         
-        # Agent registry mapping
-        agent_registry = {
-            "naming": ("agentic_core.utils.core_extensions.NamingAgent", "get_naming_agent"),
-            "guardian": ("agentic_core.L5_safety.validators.AutonomyGuardianAgent", "get_autonomy_guardian"),
-            "location": ("agentic_core.L5_safety.validators.LocationAgent", "LocationAgent"),
-            "hierarchy": ("agentic_core.L5_safety.validators.HierarchyAgent", "HierarchyAgent"),
-            "filesystem": ("agentic_core.L5_safety.validators.FilesystemAgent", "FilesystemAgent"),
-            "governance": ("agentic_core.L5_safety.validators.GovernanceAgent", "get_governance_agent"),
-        }
+        # Dynamic agent discovery - no hardcoded registry
+        def discover_agent(agent_name: str) -> tuple:
+            """Discover agent module path dynamically by scanning *Agent*.py files."""
+            import re
+            search_dirs = [
+                project_root / "agentic_core",
+                project_root / "apps_lic",
+                project_root / "apps_rg",
+            ]
+            
+            # Normalize search term
+            search_term = agent_name.lower().replace("-", "").replace("_", "")
+            
+            for search_dir in search_dirs:
+                if not search_dir.exists():
+                    continue
+                for agent_file in search_dir.rglob("*Agent*.py"):
+                    # Skip test files and __pycache__
+                    if "__pycache__" in str(agent_file) or "test_" in agent_file.name.lower():
+                        continue
+                    
+                    # Extract class name from filename
+                    stem = agent_file.stem
+                    stem_normalized = stem.lower().replace("_", "")
+                    
+                    # Match by normalized name
+                    if search_term in stem_normalized or stem_normalized.startswith(search_term):
+                        # Convert file path to module path
+                        rel_path = agent_file.relative_to(project_root)
+                        module_path = str(rel_path.with_suffix("")).replace(os.sep, ".")
+                        return (module_path, stem)
+            
+            return None
         
-        agent_key = args.agent.lower()
-        if agent_key not in agent_registry:
-            print(f"   [!] Unknown agent: {args.agent}")
-            print("   Available agents:")
-            for key in sorted(agent_registry.keys()):
-                print(f"      - {key}")
+        def list_available_agents() -> list:
+            """List all discoverable agents."""
+            agents = []
+            search_dirs = [project_root / "agentic_core", project_root / "apps_lic"]
+            for search_dir in search_dirs:
+                if not search_dir.exists():
+                    continue
+                for agent_file in search_dir.rglob("*Agent*.py"):
+                    if "__pycache__" in str(agent_file) or "test_" in agent_file.name.lower():
+                        continue
+                    if "Base" not in agent_file.stem:  # Skip base classes
+                        agents.append(agent_file.stem)
+            return sorted(set(agents))
+        
+        discovery_result = discover_agent(args.agent)
+        if not discovery_result:
+            print(f"   [!] Agent not found: {args.agent}")
+            print("   Available agents (use any unique prefix):")
+            for name in list_available_agents()[:30]:  # Show first 30
+                print(f"      - {name}")
+            print(f"   ... and more. Use partial name matching.")
             sys.exit(1)
         
+        module_path, agent_name = discovery_result
+        print(f"   [DISCOVERED] {module_path}.{agent_name}")
+        
         try:
-            module_path, agent_name = agent_registry[agent_key]
             module = __import__(module_path, fromlist=[agent_name])
-            agent_cls_or_getter = getattr(module, agent_name)
             
-            # Instantiate agent
-            if callable(agent_cls_or_getter) and agent_cls_or_getter.__name__.startswith("get_"):
-                agent = agent_cls_or_getter(project_root)
+            # Try getter function first, then class
+            getter_name = f"get_{agent_name.lower()}" if not agent_name.startswith("get_") else agent_name
+            if hasattr(module, getter_name):
+                agent = getattr(module, getter_name)(project_root)
+            elif hasattr(module, agent_name):
+                agent_cls = getattr(module, agent_name)
+                agent = agent_cls(project_root)
             else:
-                agent = agent_cls_or_getter(project_root)
+                # Find any class ending with Agent
+                for attr_name in dir(module):
+                    if attr_name.endswith("Agent") and not attr_name.startswith("_"):
+                        agent_cls = getattr(module, attr_name)
+                        if callable(agent_cls):
+                            agent = agent_cls(project_root)
+                            break
+                else:
+                    raise AttributeError(f"No Agent class found in {module_path}")
             
             print(f"   [AGENT] {agent.__class__.__name__}.heal_repository()\n")
             
