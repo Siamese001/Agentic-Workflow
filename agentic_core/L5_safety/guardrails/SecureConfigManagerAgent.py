@@ -12,6 +12,8 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -23,7 +25,7 @@ from .secure_error import SecurityError, ConfigurationError
 Logger = logging.getLogger(__name__)
 
 
-class SecureConfigManager:
+class SecureConfigManager(HealerMixin):
     """Manages secure configuration with encrypted storage."""
     
     def __init__(
@@ -466,3 +468,20 @@ def get_encryption_key(key_name: str) -> Optional[str]:
         Encryption key if found
     """
     return get_config_manager().get_key(key_name)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
