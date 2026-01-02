@@ -96,7 +96,15 @@ def infer_layer(file_path: Path) -> str:
     if 'apps_lic' in path_str: return 'apps_lic'
     if 'apps_shared' in path_str: return 'apps_shared'
     if 'tests' in path_str: return 'tests'
-    return 'misc'
+    # Scripts and utilities
+    if 'scripts' in path_str: return 'utils'
+    # Data/examples
+    if 'data' in path_str and 'examples' in path_str: return 'examples'
+    # Production routers in data/sdks_mcps
+    if 'data' in path_str and 'sdks_mcps' in path_str and 'multi_provider_router' in path_str: return 'L5'
+    # Fallback for any remaining data files
+    if 'data' in path_str: return 'examples'
+    return 'utils'  # Changed from 'misc' to 'utils'
 
 
 def extract_bases(class_node: ast.ClassDef) -> Set[str]:

@@ -148,9 +148,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
     "layer": "L0",
     "inheritance": [
+      "MCPHardenedMixin",
       "L0DelegationTestingMixin",
-      "HealerMixin",
-      "MCPHardenedMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -177,8 +177,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_gap_closure_architect.py",
     "layer": "L0",
     "inheritance": [
-      "HealerMixin",
-      "Agent"
+      "Agent",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": false,
@@ -223,11 +223,11 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "AdaptiveExecutionMixin",
       "MCPHardenedMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -257,11 +257,11 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "AdaptiveExecutionMixin",
       "MCPHardenedMixin",
       "AutonomyMixin",
-      "HealerMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -368,10 +368,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
-      "HealerMixin"
+      "SelfDiagnosisMixin",
+      "HealerMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -425,11 +425,11 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AutonomyMixin",
-      "HealerMixin",
       "L0DelegationTestingMixin",
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -840,10 +840,10 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -867,9 +867,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -973,9 +973,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -997,9 +997,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1104,9 +1104,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -1128,9 +1128,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1152,9 +1152,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -1375,9 +1375,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1491,8 +1491,8 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "ICognitivePlane"
+      "ICognitivePlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1830,9 +1830,9 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\DynamicModelRouterAgent.py",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -2085,9 +2085,9 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -2334,9 +2334,9 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\repair.py",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
+      "MCPHardenedMixin",
       "HealerMixin",
-      "MCPHardenedMixin"
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -3783,10 +3783,10 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
-      "HealerMixin"
+      "SelfDiagnosisMixin",
+      "HealerMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4590,8 +4590,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4747,8 +4747,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5043,8 +5043,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5106,8 +5106,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5134,8 +5134,8 @@
     "layer": "L4",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5624,8 +5624,8 @@
     "layer": "L5",
     "inheritance": [
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5884,8 +5884,8 @@
     "layer": "L5",
     "inheritance": [
       "MCPHardenedMixin",
-      "L4SubatomicTestingMixin",
-      "HealerMixin"
+      "HealerMixin",
+      "L4SubatomicTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6104,6 +6104,35 @@
     "mcp_hardened": true
   },
   {
+    "class_name": "MultiProviderRouter",
+    "path": "data\\sdks_mcps\\client_wrappers\\multi_provider_router.py",
+    "layer": "L5",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "_default_config",
+      "_initialize_clients",
+      "chat_completion",
+      "structured_completion",
+      "batch_completion",
+      "_select_providers",
+      "_distribute_batch_requests",
+      "_call_provider",
+      "_is_provider_available"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 468,
+    "class_count": 4,
+    "description": "Production router with intelligent provider selection and failover.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "NeuralAutoImmuneAgent",
     "path": "agentic_core\\L5_safety\\guardrails\\PolicyNeuralAutoImmuneAgent.py",
     "layer": "L5",
@@ -6156,8 +6185,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "MCPHardenedMixin",
       "ASTEnforcementMixin",
+      "MCPHardenedMixin",
       "CanonBaseAgent"
     ],
     "key_methods": [
@@ -6487,8 +6516,8 @@
     "path": "agentic_core\\L5_safety\\validators\\TypeHintEnforcementAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "NodeTransformer"
+      "NodeTransformer",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7184,9 +7213,9 @@
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\outreach_base.py",
     "layer": "apps_lic",
     "inheritance": [
+      "ABC",
       "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "ABC",
       "HealerMixin"
     ],
     "key_methods": [
@@ -8002,9 +8031,9 @@
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
     "layer": "apps_rg",
     "inheritance": [
+      "ABC",
       "MCPHardenedMixin",
       "SubatomicTestingMixin",
-      "ABC",
       "HealerMixin"
     ],
     "key_methods": [
@@ -8531,8 +8560,8 @@
     "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
     "layer": "apps_shared",
     "inheritance": [
-      "MCPHardenedMixin",
       "ABC",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [],
@@ -8553,8 +8582,8 @@
     "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
     "layer": "apps_shared",
     "inheritance": [
-      "MCPHardenedMixin",
       "ABC",
+      "MCPHardenedMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -8598,63 +8627,9 @@
     "mcp_hardened": true
   },
   {
-    "class_name": "AgentInfo",
-    "path": "scripts\\ast_redundancy_analyzer.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 357,
-    "class_count": 2,
-    "description": "Information about a discovered agent class.",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "AgentInfo",
-    "path": "scripts\\ast_redundancy_analyzer_ultra.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 273,
-    "class_count": 2,
-    "description": "",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "AgentValidation",
-    "path": "scripts\\system_validation_v2.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 294,
-    "class_count": 3,
-    "description": "Validation results for a single agent.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true
-  },
-  {
     "class_name": "MultiProviderRouter",
     "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "misc",
+    "layer": "examples",
     "inheritance": [],
     "key_methods": [
       "__init__",
@@ -8673,119 +8648,9 @@
     "mcp_hardened": false
   },
   {
-    "class_name": "MultiProviderRouter",
-    "path": "data\\sdks_mcps\\client_wrappers\\multi_provider_router.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "_default_config",
-      "_initialize_clients",
-      "chat_completion",
-      "structured_completion",
-      "batch_completion",
-      "_select_providers",
-      "_distribute_batch_requests",
-      "_call_provider",
-      "_is_provider_available"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 468,
-    "class_count": 4,
-    "description": "Production router with intelligent provider selection and failover.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "NonConformingAgentFinder",
-    "path": "scripts\\find_non_conforming_agents.py",
-    "layer": "misc",
-    "inheritance": [
-      "NodeVisitor"
-    ],
-    "key_methods": [
-      "__init__",
-      "visit_ClassDef"
-    ],
-    "has_tools": false,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 103,
-    "class_count": 1,
-    "description": "",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": false
-  },
-  {
-    "class_name": "Phase5Validator",
-    "path": "scripts\\system_validation_v2.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "load_discovery",
-      "get_module_path",
-      "instantiate_agent",
-      "run_self_tests",
-      "simulate_healing",
-      "check_mcp_audit",
-      "validate_agent",
-      "run_validation",
-      "print_report"
-    ],
-    "has_tools": true,
-    "has_memory": false,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 294,
-    "class_count": 3,
-    "description": "Full system validation for ultra zero-loss sovereignty.",
-    "pascal_compliant": true,
-    "external_touch": false,
-    "mcp_hardened": true
-  },
-  {
-    "class_name": "SystemValidator",
-    "path": "scripts\\system_validation.py",
-    "layer": "misc",
-    "inheritance": [],
-    "key_methods": [
-      "__init__",
-      "load_discovery",
-      "check_has_healing",
-      "check_has_testing",
-      "check_external_touch",
-      "check_mcp_hardened",
-      "validate_syntax",
-      "validate_agent",
-      "run_validation",
-      "print_report"
-    ],
-    "has_tools": true,
-    "has_memory": true,
-    "has_healing": false,
-    "testing": "None",
-    "has_subatomic": false,
-    "loc": 204,
-    "class_count": 3,
-    "description": "Full system validation for sovereignty verification.",
-    "pascal_compliant": true,
-    "external_touch": true,
-    "mcp_hardened": true
-  },
-  {
     "class_name": "TalentIntelligenceAgent",
     "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "misc",
+    "layer": "examples",
     "inheritance": [],
     "key_methods": [
       "__init__",
@@ -8814,7 +8679,7 @@
   {
     "class_name": "WorkflowOrchestrator",
     "path": "data\\external\\examples\\plan_retrieve_inspect_full_cycle.py",
-    "layer": "misc",
+    "layer": "examples",
     "inheritance": [],
     "key_methods": [
       "__init__",
@@ -9300,5 +9165,140 @@
     "pascal_compliant": true,
     "external_touch": false,
     "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "scripts\\ast_redundancy_analyzer.py",
+    "layer": "utils",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 357,
+    "class_count": 2,
+    "description": "Information about a discovered agent class.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentInfo",
+    "path": "scripts\\ast_redundancy_analyzer_ultra.py",
+    "layer": "utils",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 273,
+    "class_count": 2,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "AgentValidation",
+    "path": "scripts\\system_validation_v2.py",
+    "layer": "utils",
+    "inheritance": [],
+    "key_methods": [],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 294,
+    "class_count": 3,
+    "description": "Validation results for a single agent.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "NonConformingAgentFinder",
+    "path": "scripts\\find_non_conforming_agents.py",
+    "layer": "utils",
+    "inheritance": [
+      "NodeVisitor"
+    ],
+    "key_methods": [
+      "__init__",
+      "visit_ClassDef"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 103,
+    "class_count": 1,
+    "description": "",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "Phase5Validator",
+    "path": "scripts\\system_validation_v2.py",
+    "layer": "utils",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "load_discovery",
+      "get_module_path",
+      "instantiate_agent",
+      "run_self_tests",
+      "simulate_healing",
+      "check_mcp_audit",
+      "validate_agent",
+      "run_validation",
+      "print_report"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 294,
+    "class_count": 3,
+    "description": "Full system validation for ultra zero-loss sovereignty.",
+    "pascal_compliant": true,
+    "external_touch": false,
+    "mcp_hardened": true
+  },
+  {
+    "class_name": "SystemValidator",
+    "path": "scripts\\system_validation.py",
+    "layer": "utils",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "load_discovery",
+      "check_has_healing",
+      "check_has_testing",
+      "check_external_touch",
+      "check_mcp_hardened",
+      "validate_syntax",
+      "validate_agent",
+      "run_validation",
+      "print_report"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 204,
+    "class_count": 3,
+    "description": "Full system validation for sovereignty verification.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true
   }
 ]
