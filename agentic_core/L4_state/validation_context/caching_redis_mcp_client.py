@@ -9,6 +9,8 @@ import logging
 from typing import Any, Optional, List, Dict
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -22,7 +24,7 @@ except ImportError:
     pass
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignRedisMcpClient(MCPHardenedMixin):
+class SovereignRedisMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """Official Redis MCP client for sovereign caching operations.
     
     [HARDENING] Inherits MCPHardenedMixin for:
@@ -33,10 +35,12 @@ class SovereignRedisMcpClient(MCPHardenedMixin):
     """
 
     def __init__(self, role: str='state_cache'):
+        super().__init__()
         if not config.REDIS_MCP_ENABLED:
             raise ValueError('Redis MCP disabled in sovereign config')
         from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
+        self._mcp_audit('init')
         Logger.info('[L4 REDIS] Sovereign Redis MCP client initialized')
 
     async def get(self, key: str) -> Optional[Any]:

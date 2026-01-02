@@ -10,6 +10,8 @@ from typing import Optional, List, Dict, Any
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -19,7 +21,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignPineconeMcpClient(MCPHardenedMixin):
+class SovereignPineconeMcpClient(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
     """
     Official Pinecone MCP client — L3 routed, L5 shielded.
     
@@ -37,8 +39,10 @@ class SovereignPineconeMcpClient(MCPHardenedMixin):
 
     def __init__(self):
         """Initialize the Pinecone MCP client with sovereign routing."""
+        super().__init__()
         self.router = SovereignMCPRouter(role='semantic_memory')
         self.initialized = False
+        self._mcp_audit('init')
         Logger.info('[L4 PINECONE MCP] Client initialized')
 
     async def initialize(self) -> Any:
