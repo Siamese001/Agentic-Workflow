@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 class ThreatLevel(Enum):
@@ -302,6 +303,23 @@ class SelfUpdatingSafetyEngineAgent(HealerMixin, MCPHardenedMixin):
             threat_counts[level] = threat_counts.get(level, 0) + 1
         detected_count: Any = sum((1 for d in self.detection_history if d['detected']))
         return {'total_detections': total_detections, 'threats_detected': detected_count, 'detection_rate': detected_count / total_detections, 'threat_distribution': threat_counts, 'unique_patterns': len(self.threat_patterns)}
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 def create_self_updating_safety_engine(rules_storage_path: Optional[str]=None) -> SelfUpdatingSafetyEngine:
     """Factory function to create self-updating safety engine."""
