@@ -13,8 +13,8 @@ import json
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import Phase4Orchestrator
-from ..healing import HealingOrchestrator, HealingResult, run_self_healing_mission
+from ..gitops import Phase4OrchestratorAgent
+from ..healing import HealingOrchestratorAgent, HealingResult, run_self_healing_mission
 from ..learning import MemoryPersistence, ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
@@ -70,7 +70,7 @@ class TestFullMissionWithObservability:
         trace_id = phase5.start_mission("e2e_mission_1")
 
         # Track healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
         result = await run_self_healing_mission(
             JobDescription=JobDescription,
             master_resume=valid_resume,
@@ -190,7 +190,7 @@ class TestIntegrationWithAllPhases:
 
         # Initialize all phase orchestrators
         phase5 = Phase5Orchestrator(ctx)
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
         learning_agent = ResumeLearningAgent(ctx)
         memory = MemoryPersistence(memory_file=tmp_path / "memory.json")
@@ -212,7 +212,7 @@ class TestIntegrationWithAllPhases:
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
         result = await run_self_healing_mission(
             JobDescription=JobDescription,
             master_resume=valid_resume,
@@ -257,9 +257,9 @@ class TestIntegrationWithAllPhases:
         phase5.start_mission("healing_observability")
 
         # Run healing with observability
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
 
-        healing = HealingOrchestrator(ctx, max_cycles=3)
+        healing = HealingOrchestratorAgent(ctx, max_cycles=3)
         result = await healing.run()
 
         phase5.complete_agent(step_id, success=result.success)

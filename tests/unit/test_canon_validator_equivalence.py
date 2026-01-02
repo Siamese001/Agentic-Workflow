@@ -51,7 +51,7 @@ class test_import_equivalence:
         sys.path.insert(0, str(SCRIPTS_DIR))
         try:
             import canon_validator
-            expected_exports: Any = ['EXCLUDED_DIRS', 'EXCLUDED_FILES', 'ALLOWED_ROOT_FOLDERS', 'ALLOWED_ROOT_FILES', 'MIN_DEPTH', 'MAX_DEPTH', 'MAX_LINES', 'get_python_files', 'is_excluded', 'ValidationContext', 'DependencyGraph', 'BudgetManager', 'SubAtomicAgent', 'ImportPatcher', 'POSITIVE_INSTRUCTIONAL_CONTEXT', 'FEW_SHOT_GLOBAL_REFACTOR', 'FEW_SHOT_PROMPTS', 'Historian', 'ArchitectureGovernor', 'HygieneGuardian', 'CodeStyleGuardian', 'DependencySentinel', 'SafetyInspector', 'ConcurrencyGuardian', 'TestPilot', 'StructuralEngineer', 'PatternEnforcer', 'SecurityEnforcer', 'PerformanceEnforcer', 'MemoryLeakDetector', 'DeadlockDetector', 'Sherlock', 'StrategicPlanner', 'ReflectionAgent', 'GitAgent', 'BenchmarkingAgent', 'ToolsmithAgent', 'TheStrategist', 'NamingEnforcer', 'DocEnforcer', 'TypeEnforcer', 'TheCartographer', 'TheOmniContext', 'SwarmScheduler', 'IntelligentOrchestrator']
+            expected_exports: Any = ['EXCLUDED_DIRS', 'EXCLUDED_FILES', 'ALLOWED_ROOT_FOLDERS', 'ALLOWED_ROOT_FILES', 'MIN_DEPTH', 'MAX_DEPTH', 'MAX_LINES', 'get_python_files', 'is_excluded', 'ValidationContext', 'DependencyGraph', 'BudgetManager', 'SubAtomicAgent', 'ImportPatcher', 'POSITIVE_INSTRUCTIONAL_CONTEXT', 'FEW_SHOT_GLOBAL_REFACTOR', 'FEW_SHOT_PROMPTS', 'Historian', 'ArchitectureGovernor', 'HygieneGuardian', 'CodeStyleGuardian', 'DependencySentinelAgent', 'SafetyInspectorAgent', 'ConcurrencyGuardianAgent', 'TestPilot', 'StructuralEngineer', 'PatternEnforcerAgent', 'SecurityEnforcer', 'PerformanceEnforcer', 'MemoryLeakDetectorAgent', 'DeadlockDetectorAgent', 'Sherlock', 'StrategicPlannerAgent', 'ReflectionAgent', 'GitAgent', 'BenchmarkingAgent', 'ToolsmithAgent', 'TheStrategist', 'NamingEnforcer', 'DocEnforcer', 'TypeEnforcer', 'TheCartographer', 'TheOmniContext', 'SwarmScheduler', 'IntelligentOrchestratorAgent']
             missing: Any = []
             for name in expected_exports:
                 if not hasattr(canon_validator, name):
@@ -106,7 +106,7 @@ class test_class_signature_equivalence:
     def test_agent_classes_exist_in_modular(self) -> Any:
         """All agent classes must exist in modular package."""
         modular_classes: Any = collect_modular_classes()
-        agent_classes: Any = ['Historian', 'ArchitectureGovernor', 'HygieneGuardian', 'CodeStyleGuardian', 'DependencySentinel', 'SafetyInspector', 'ConcurrencyGuardian', 'TestPilot', 'StructuralEngineer', 'PatternEnforcer', 'SecurityEnforcer', 'PerformanceEnforcer', 'MemoryLeakDetector', 'DeadlockDetector', 'Sherlock', 'StrategicPlanner', 'ReflectionAgent', 'GitAgent', 'BenchmarkingAgent', 'ToolsmithAgent', 'TheStrategist', 'NamingEnforcer', 'DocEnforcer', 'TypeEnforcer', 'TheCartographer', 'TheOmniContext']
+        agent_classes: Any = ['Historian', 'ArchitectureGovernor', 'HygieneGuardian', 'CodeStyleGuardian', 'DependencySentinelAgent', 'SafetyInspectorAgent', 'ConcurrencyGuardianAgent', 'TestPilot', 'StructuralEngineer', 'PatternEnforcerAgent', 'SecurityEnforcer', 'PerformanceEnforcer', 'MemoryLeakDetectorAgent', 'DeadlockDetectorAgent', 'Sherlock', 'StrategicPlannerAgent', 'ReflectionAgent', 'GitAgent', 'BenchmarkingAgent', 'ToolsmithAgent', 'TheStrategist', 'NamingEnforcer', 'DocEnforcer', 'TypeEnforcer', 'TheCartographer', 'TheOmniContext']
         missing: Any = [c for c in agent_classes if c not in modular_classes]
         assert not missing, f'Missing agent classes: {missing}'
 

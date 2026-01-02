@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Types and models for ModelRouter."""
+"""Types and models for ModelRouterAgent."""
 import logging
 from dataclasses import dataclass
 from dataclasses import field

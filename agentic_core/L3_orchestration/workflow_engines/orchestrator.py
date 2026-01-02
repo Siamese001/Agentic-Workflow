@@ -90,7 +90,7 @@ class ExecutionResult:
         }
 
 
-class IOrchestrator(HealerMixin, ABC):
+class IOrchestratorAgent(HealerMixin, ABC):
     """Interface for the Orchestrator (Nervous System).
     
     The orchestrator coordinates between cognitive and action planes:

@@ -18,7 +18,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
-class GravityComplianceValidator(HealerMixin):
+class GravityComplianceValidatorAgent(HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def __init__(self, project_root: Path):
@@ -79,6 +79,6 @@ class GravityComplianceValidator(HealerMixin):
 
 if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).parent.parent  # Assumes script in /scripts/
-    validator = GravityComplianceValidator(PROJECT_ROOT)
+    validator = GravityComplianceValidatorAgent(PROJECT_ROOT)
     success = validator.run()
     exit(0 if success else 1)

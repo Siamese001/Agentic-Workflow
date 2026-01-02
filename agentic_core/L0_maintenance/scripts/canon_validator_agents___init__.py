@@ -5,26 +5,26 @@ All validation agents are exported from this module.
 Note: Most imports are now stubs due to restructured module paths.
 """
 
-# Stub imports - actual agents are discovered dynamically by ComplianceOrchestrator
+# Stub imports - actual agents are discovered dynamically by ComplianceOrchestratorAgent
 ArchitectureGovernor = None
 BenchmarkingAgent = None
 CodeStyleGuardian = None
-ConcurrencyGuardian = None
-DeadlockDetector = None
-DependencySentinel = None
+ConcurrencyGuardianAgent = None
+DeadlockDetectorAgent = None
+DependencySentinelAgent = None
 DocEnforcer = None
 GitAgent = None
 Historian = None
 HygieneGuardian = None
-MemoryLeakDetector = None
+MemoryLeakDetectorAgent = None
 NamingEnforcer = None
-PatternEnforcer = None
+PatternEnforcerAgent = None
 PerformanceEnforcer = None
 ReflectionAgent = None
-SafetyInspector = None
+SafetyInspectorAgent = None
 SecurityEnforcer = None
 Sherlock = None
-StrategicPlanner = None
+StrategicPlannerAgent = None
 StructuralEngineer = None
 TestPilot = None
 TheCartographer = None
@@ -39,21 +39,21 @@ __all__ = [
     "ArchitectureGovernor",
     "HygieneGuardian",
     "CodeStyleGuardian",
-    "DependencySentinel",
+    "DependencySentinelAgent",
     # Safety and testing
-    "SafetyInspector",
-    "ConcurrencyGuardian",
+    "SafetyInspectorAgent",
+    "ConcurrencyGuardianAgent",
     "TestPilot",
     "StructuralEngineer",
-    "PatternEnforcer",
+    "PatternEnforcerAgent",
     # Security and performance
     "SecurityEnforcer",
     "PerformanceEnforcer",
-    "MemoryLeakDetector",
-    "DeadlockDetector",
+    "MemoryLeakDetectorAgent",
+    "DeadlockDetectorAgent",
     "Sherlock",
     # Strategic and operational
-    "StrategicPlanner",
+    "StrategicPlannerAgent",
     "ReflectionAgent",
     "GitAgent",
     "BenchmarkingAgent",

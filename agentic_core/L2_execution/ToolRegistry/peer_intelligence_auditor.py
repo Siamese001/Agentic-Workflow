@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Backward compatibility shim for PeerIntelligenceAuditor.
+"""Backward compatibility shim for PeerIntelligenceAuditorAgent.
 
 
 # NAMING FIXED: LOGGER → Logger

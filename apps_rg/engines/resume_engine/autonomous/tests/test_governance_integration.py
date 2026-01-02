@@ -4,7 +4,7 @@ Integration Tests for Phase 7: Governance & Meta-Optimization
 
 Tests the integration of governance components:
 - DependencyArbiter with environment
-- StrictDocEnforcer with code analysis
+- StrictDocEnforcerAgent with code analysis
 - DashboardGenerator with mission results
 - PromptGovernor with security scanning
 - PredictiveBudgetManager with mission planning
@@ -21,14 +21,14 @@ from ..governance import (
     DashboardGenerator,
     DependencyArbiter,
     DocComplianceLevel,
-    Phase7Orchestrator,
+    Phase7OrchestratorAgent,
     PredictiveBudgetManager,
     PromptGovernor,
     PromptRisk,
-    StrictDocEnforcer,
+    StrictDocEnforcerAgent,
 )
-from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
-from ..intelligence import Phase6Orchestrator
+from ..healing import HealingCycle, HealingOrchestratorAgent, HealingStrategy
+from ..intelligence import Phase6OrchestratorAgent
 from ..observability import Phase5Orchestrator
 
 
@@ -109,11 +109,11 @@ from sklearn.model_selection import train_test_split
 
 
 class TestDocEnforcerWithCodeAnalysis:
-    """Integration tests for StrictDocEnforcer with code analysis."""
+    """Integration tests for StrictDocEnforcerAgent with code analysis."""
 
     def test_doc_enforcer_with_multiple_functions(self, ctx):
         """Test doc enforcer with multiple functions."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         code = '''
 def function_one(a, b):
@@ -144,7 +144,7 @@ def function_three(data, options, callback):
 
     def test_compliance_level_tracking(self, ctx):
         """Test tracking compliance levels."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         # Complete docs
         complete_code = '''
@@ -290,14 +290,14 @@ class TestPhase7WithPreviousPhases:
         """Test Phase 7 integration with Phase 5 observability."""
         ctx.current_resume = valid_resume
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
         phase5 = Phase5Orchestrator(ctx)
 
         # Start observability
         phase5.start_mission("phase7_integration")
 
         # Run Phase 7 checks
-        step_id = phase5.track_agent("Phase7Orchestrator", "run_governance_checks")
+        step_id = phase5.track_agent("Phase7OrchestratorAgent", "run_governance_checks")
 
         sample_code = '''
 def test_function(x):
@@ -324,8 +324,8 @@ def test_function(x):
         """Test Phase 7 integration with Phase 6 intelligence."""
         ctx.current_resume = valid_resume
 
-        phase7 = Phase7Orchestrator(ctx)
-        phase6 = Phase6Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Run Phase 6 analysis
         analysis = await phase6.analyze_resume(valid_resume)
@@ -350,7 +350,7 @@ def process_resume(resume):
         ctx.current_resume = valid_resume
 
         phase5 = Phase5Orchestrator(ctx)
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # Start mission
         phase5.start_mission("full_governance_pipeline")
@@ -360,13 +360,13 @@ def process_resume(resume):
         phase5.metrics.gauge("predicted_cost", prediction.estimated_cost)
 
         # Run healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         await healing.run()
         phase5.complete_agent(step_id, success=True)
 
         # Run governance checks
-        step_id = phase5.track_agent("Phase7Orchestrator", "governance")
+        step_id = phase5.track_agent("Phase7OrchestratorAgent", "governance")
         sample_code = "def test(): pass"
         gov_results = await phase7.run_governance_checks(sample_code)
         phase5.complete_agent(step_id, success=gov_results["passed"])

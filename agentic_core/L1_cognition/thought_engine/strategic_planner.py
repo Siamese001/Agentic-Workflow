@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-StrategicPlanner - L1 Guardian for Mission Planning
+StrategicPlannerAgent - L1 Guardian for Mission Planning
 
 Generates MissionPlan at the start of cycles.
 Coordinates agent execution and resource allocation.
@@ -14,7 +14,7 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
-few_shot_strategic: Any = '\nYou are the StrategicPlanner, an expert in mission planning and coordination.\n\nYour role is to:\n1. Generate comprehensive mission plans\n2. Coordinate agent execution order\n3. Allocate resources efficiently\n4. Anticipate potential issues\n\nMission Plan Structure:\n{\n    "mission_id": "unique_identifier",\n    "cycle_id": 1,\n    "priority": "HIGH|MEDIUM|LOW",\n    "objective": "Clear mission objective",\n    "phases": [\n        {\n            "name": "phase_name",\n            "agents": ["agent1", "agent2"],\n            "dependencies": [],\n            "estimated_duration": 300,\n            "resources": ["cpu", "memory", "api_calls"]\n        }\n    ],\n    "risk_assessment": {\n        "risks": ["risk1", "risk2"],\n        "mitigations": ["mitigation1", "mitigation2"]\n    }\n}\n```\n\nGuidelines:\n- Start with reconnaissance (file scanning)\n- Follow with analysis (validation, checks)\n- End with execution (fixes, commits)\n- Always include rollback plans\n'
+few_shot_strategic: Any = '\nYou are the StrategicPlannerAgent, an expert in mission planning and coordination.\n\nYour role is to:\n1. Generate comprehensive mission plans\n2. Coordinate agent execution order\n3. Allocate resources efficiently\n4. Anticipate potential issues\n\nMission Plan Structure:\n{\n    "mission_id": "unique_identifier",\n    "cycle_id": 1,\n    "priority": "HIGH|MEDIUM|LOW",\n    "objective": "Clear mission objective",\n    "phases": [\n        {\n            "name": "phase_name",\n            "agents": ["agent1", "agent2"],\n            "dependencies": [],\n            "estimated_duration": 300,\n            "resources": ["cpu", "memory", "api_calls"]\n        }\n    ],\n    "risk_assessment": {\n        "risks": ["risk1", "risk2"],\n        "mitigations": ["mitigation1", "mitigation2"]\n    }\n}\n```\n\nGuidelines:\n- Start with reconnaissance (file scanning)\n- Follow with analysis (validation, checks)\n- End with execution (fixes, commits)\n- Always include rollback plans\n'
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -82,7 +82,7 @@ class MissionPlan:
             plan.phases.append(phase)
         return plan
 
-class StrategicPlanner:
+class StrategicPlannerAgent:
     """
     Plans and coordinates mission execution.
 
@@ -94,21 +94,21 @@ class StrategicPlanner:
     """
 
     def __init__(self):
-        """Initialize the StrategicPlanner."""
+        """Initialize the StrategicPlannerAgent."""
         self.active_missions: Dict[str, MissionPlan] = {}
         self.mission_history: List[Dict] = []
         self.agent_capabilities = self._load_agent_capabilities()
         try:
             from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
-            self.McpRouter = SovereignMCPRouter(role='cognition_strategic')
+            self.McpRouterAgent = SovereignMCPRouter(role='cognition_strategic')
         except Exception as e:
             LOGGER.warning(f'MCP Router initialization failed: {e}. Using legacy planning.')
-            self.McpRouter = None
-        LOGGER.info('StrategicPlanner initialized')
+            self.McpRouterAgent = None
+        LOGGER.info('StrategicPlannerAgent initialized')
 
     def _load_agent_capabilities(self) -> Dict[str, Dict]:
         """Load agent capabilities and requirements."""
-        return {'ArchitectureGovernor': {'purpose': 'Enforce architectural rules', 'resources': ['cpu', 'file_access'], 'phase': 'validation'}, 'TestPilot': {'purpose': 'Run property-based tests', 'resources': ['cpu', 'memory'], 'phase': 'testing'}, 'ReflectionAgent': {'purpose': 'Learn from execution', 'resources': ['memory', 'pinecone'], 'phase': 'learning'}, 'GitAgent': {'purpose': 'Commit changes', 'resources': ['git', 'network'], 'phase': 'execution'}, 'SafetyInspector': {'purpose': 'Security validation', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'TruthKeeper': {'purpose': 'Docstring consistency', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'RedSentinel': {'purpose': 'Fuzz testing', 'resources': ['cpu'], 'phase': 'testing'}, 'TheCartographer': {'purpose': 'Semantic mapping', 'resources': ['cpu', 'llm'], 'phase': 'analysis'}, 'Historian': {'purpose': 'Memory optimization', 'resources': ['disk'], 'phase': 'optimization'}}
+        return {'ArchitectureGovernor': {'purpose': 'Enforce architectural rules', 'resources': ['cpu', 'file_access'], 'phase': 'validation'}, 'TestPilot': {'purpose': 'Run property-based tests', 'resources': ['cpu', 'memory'], 'phase': 'testing'}, 'ReflectionAgent': {'purpose': 'Learn from execution', 'resources': ['memory', 'pinecone'], 'phase': 'learning'}, 'GitAgent': {'purpose': 'Commit changes', 'resources': ['git', 'network'], 'phase': 'execution'}, 'SafetyInspectorAgent': {'purpose': 'Security validation', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'TruthKeeper': {'purpose': 'Docstring consistency', 'resources': ['cpu', 'llm'], 'phase': 'validation'}, 'RedSentinelAgent': {'purpose': 'Fuzz testing', 'resources': ['cpu'], 'phase': 'testing'}, 'TheCartographer': {'purpose': 'Semantic mapping', 'resources': ['cpu', 'llm'], 'phase': 'analysis'}, 'Historian': {'purpose': 'Memory optimization', 'resources': ['disk'], 'phase': 'optimization'}}
 
     async def generate_plan(self, objective: str, cycle_id: int, priority: MissionPriority=MissionPriority.MEDIUM, context: Dict=None) -> MissionPlan:
         """
@@ -124,7 +124,7 @@ class StrategicPlanner:
             Generated mission plan
         """
         from agentic_core.config.blueprint_sovereign.sovereign_config import config
-        if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.McpRouter:
+        if config.SEQUENTIAL_THINKING_MCP_ENABLED and self.McpRouterAgent:
             try:
                 return await self._generate_plan_with_mcp(objective, cycle_id, priority, context)
             except Exception as e:
@@ -135,7 +135,7 @@ class StrategicPlanner:
         """Generate plan using Sequential Thinking MCP."""
         from agentic_core.config.blueprint_sovereign.sovereign_config import config
         mcp_payload = {'Task': f'Generate comprehensive sovereign mission plan for objective: {objective}', 'cycle_id': cycle_id, 'priority': priority.value, 'context': context or {}, 'max_steps': config.SEQ_THINKING_MAX_STEPS, 'temperature': config.SEQ_THINKING_TEMPERATURE, 'enable_hypothesis_branching': config.SEQ_THINKING_ENABLE_HYPOTHESIS_BRANCHING, 'enable_self_revision': config.SEQ_THINKING_ENABLE_SELF_REVISION, 'prune_low_confidence': config.SEQ_THINKING_PRUNE_LOW_CONFIDENCE, 'min_confidence_threshold': config.SEQ_THINKING_MIN_HYPOTHESIS_CONFIDENCE}
-        result = await self.McpRouter.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
+        result = await self.McpRouterAgent.manager.call_tool(tool_name='mcp10_sequentialthinking', args=mcp_payload)
         plan = self._extract_mission_plan_from_mcp(result, objective, cycle_id, priority)
         LOGGER.info(f'[L1 PLANNING] Mission plan generated via Sequential Thinking MCP')
         return plan
@@ -159,7 +159,7 @@ class StrategicPlanner:
         if 'reconnaissance' in thought.lower():
             phases.append(MissionPhase(name='reconnaissance', agents=['Historian', 'TheCartographer'], dependencies=[], estimated_duration=120, resources=['cpu', 'disk'], parallel=True))
         if 'validation' in thought.lower():
-            phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspector', 'TruthKeeper'], dependencies=['reconnaissance'] if phases else [], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
+            phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspectorAgent', 'TruthKeeper'], dependencies=['reconnaissance'] if phases else [], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
         return phases
 
     def _generate_plan_legacy(self, objective: str, cycle_id: int, priority: MissionPriority, context: Dict) -> MissionPlan:
@@ -179,8 +179,8 @@ class StrategicPlanner:
         """Generate mission phases based on objective."""
         phases = []
         phases.append(MissionPhase(name='reconnaissance', agents=['Historian', 'TheCartographer'], dependencies=[], estimated_duration=120, resources=['cpu', 'disk'], parallel=True))
-        phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspector', 'TruthKeeper'], dependencies=['reconnaissance'], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
-        phases.append(MissionPhase(name='testing', agents=['TestPilot', 'RedSentinel'], dependencies=['validation'], estimated_duration=600, resources=['cpu', 'memory'], parallel=True))
+        phases.append(MissionPhase(name='validation', agents=['ArchitectureGovernor', 'SafetyInspectorAgent', 'TruthKeeper'], dependencies=['reconnaissance'], estimated_duration=300, resources=['cpu', 'llm', 'file_access'], parallel=True))
+        phases.append(MissionPhase(name='testing', agents=['TestPilot', 'RedSentinelAgent'], dependencies=['validation'], estimated_duration=600, resources=['cpu', 'memory'], parallel=True))
         phases.append(MissionPhase(name='learning', agents=['ReflectionAgent'], dependencies=['testing'], estimated_duration=180, resources=['memory', 'pinecone']))
         phases.append(MissionPhase(name='execution', agents=['GitAgent'], dependencies=['learning'], estimated_duration=60, resources=['git', 'network']))
         if context.get('skip_testing'):
@@ -286,19 +286,19 @@ class StrategicPlanner:
         total_phases: Any = len(plan.phases)
         total_duration: Any = sum((p.estimated_duration for p in plan.phases))
         return {'mission_id': plan.mission_id, 'objective': plan.objective, 'priority': plan.priority.value, 'status': plan.status.value, 'progress': f'{completed_phases}/{total_phases}', 'progress_percent': completed_phases / total_phases * 100 if total_phases > 0 else 0, 'total_duration': total_duration, 'risk_score': plan.risk_assessment.get('risk_score', 0)}
-_strategic_planner: Optional[StrategicPlanner] = None
+_strategic_planner: Optional[StrategicPlannerAgent] = None
 
-def get_strategic_planner() -> StrategicPlanner:
-    """Get or create the global StrategicPlanner instance."""
+def get_strategic_planner() -> StrategicPlannerAgent:
+    """Get or create the global StrategicPlannerAgent instance."""
     global _strategic_planner
     if _strategic_planner is None:
-        _strategic_planner = StrategicPlanner()
+        _strategic_planner = StrategicPlannerAgent()
     return _strategic_planner
 
 def initialize_strategic_planner() -> Any:
-    """Initialize the StrategicPlanner system."""
+    """Initialize the StrategicPlannerAgent system."""
     get_strategic_planner()
-    LOGGER.info('StrategicPlanner system initialized')
+    LOGGER.info('StrategicPlannerAgent system initialized')
 
 def generate_mission_plan(objective: str, cycle_id: int, priority: MissionPriority=MissionPriority.MEDIUM, context: Dict=None) -> MissionPlan:
     """Generate a mission plan."""

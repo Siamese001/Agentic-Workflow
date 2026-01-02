@@ -150,7 +150,7 @@ class ValidationContext:
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
-class ValidationContextManager(HealerMixin):
+class ValidationContextManagerAgent(HealerMixin):
     """
     Manages ValidationContext persistence and history.
     """
@@ -266,13 +266,13 @@ class ValidationContextManager(HealerMixin):
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
-_context_manager: Optional[ValidationContextManager] = None
+_context_manager: Optional[ValidationContextManagerAgent] = None
 
-def get_context_manager() -> ValidationContextManager:
+def get_context_manager() -> ValidationContextManagerAgent:
     """Get or create the global context manager."""
     global _context_manager
     if _context_manager is None:
-        _context_manager = ValidationContextManager()
+        _context_manager = ValidationContextManagerAgent()
     return _context_manager
 
 def get_current_context() -> Optional[ValidationContext]:

@@ -65,8 +65,8 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
-# NAMING FIXED: CanonValidator → CanonValidator
-class CanonValidator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+# NAMING FIXED: CanonValidatorAgent → CanonValidatorAgent
+class CanonValidatorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     The L5 Meta-Learner that validates code against the Canon.
 
@@ -99,7 +99,7 @@ class CanonValidator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         self.failure_threshold = 5
         self._mcp_audit('init')
 
-        Logger.info("CanonValidator initialized with hybrid cache")
+        Logger.info("CanonValidatorAgent initialized with hybrid cache")
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L1 compliance."""

@@ -48,7 +48,7 @@ except ImportError:
 
 try:
     from agentic_core.L2_execution.ToolRegistry.proactive_resource_manager import (
-        ProactiveResourceManager,
+        ProactiveResourceManagerAgent,
         ResourceThreshold,
         ResourceMetrics,
         create_proactive_resource_manager
@@ -61,14 +61,14 @@ except ImportError:
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    ProactiveResourceManager = module.ProactiveResourceManager
+    ProactiveResourceManagerAgent = module.ProactiveResourceManagerAgent
     ResourceThreshold = module.ResourceThreshold
     ResourceMetrics = module.ResourceMetrics
     create_proactive_resource_manager = module.create_proactive_resource_manager
 
 try:
     from agentic_core.L3_orchestration.workflow_engines.self_recovering_orchestrator import (
-        SelfRecoveringOrchestrator,
+        SelfRecoveringOrchestratorAgent,
         RecoveryStrategy,
         NodeFailurePattern,
         create_self_recovering_orchestrator
@@ -81,7 +81,7 @@ except ImportError:
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    SelfRecoveringOrchestrator = module.SelfRecoveringOrchestrator
+    SelfRecoveringOrchestratorAgent = module.SelfRecoveringOrchestratorAgent
     RecoveryStrategy = module.RecoveryStrategy
     NodeFailurePattern = module.NodeFailurePattern
     create_self_recovering_orchestrator = module.create_self_recovering_orchestrator

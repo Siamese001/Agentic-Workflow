@@ -165,9 +165,9 @@ class TestDAGManagerImport:
     """Test dynamic_dag_manager module imports and basic functionality."""
     
     def test_import_dag_manager(self):
-        """Test that DAGManager can be imported."""
-        from agentic_core.L3_orchestration.dynamic_dag_manager import DAGManager
-        assert DAGManager is not None
+        """Test that DAGManagerAgent can be imported."""
+        from agentic_core.L3_orchestration.dynamic_dag_manager import DAGManagerAgent
+        assert DAGManagerAgent is not None
     
     def test_import_graph_transaction(self):
         """Test that GraphTransaction can be imported."""
@@ -185,15 +185,15 @@ class TestDAGManagerImport:
         assert DAGMutation is not None
     
     def test_dag_manager_creation(self):
-        """Test DAGManager can be instantiated."""
-        from agentic_core.L3_orchestration.dynamic_dag_manager import DAGManager, DAGConfig
+        """Test DAGManagerAgent can be instantiated."""
+        from agentic_core.L3_orchestration.dynamic_dag_manager import DAGManagerAgent, DAGConfig
         config = DAGConfig(
             max_depth=10,
             max_nodes=100,
             allow_cycles=False,
             enable_history=True
         )
-        manager = DAGManager(config=config)
+        manager = DAGManagerAgent(config=config)
         assert manager is not None
 
 
@@ -201,14 +201,14 @@ class TestSecurityModulesImport:
     """Test security modules imports."""
     
     def test_import_input_validator(self):
-        """Test that InputValidator can be imported."""
-        from agentic_core.L5_safety.guardrails.input_validator import InputValidator
-        assert InputValidator is not None
+        """Test that InputValidatorAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.input_validator import InputValidatorAgent
+        assert InputValidatorAgent is not None
     
     def test_import_secure_config_manager(self):
-        """Test that SecureConfigManager can be imported."""
-        from agentic_core.L5_safety.guardrails.secure_config import SecureConfigManager
-        assert SecureConfigManager is not None
+        """Test that SecureConfigManagerAgent can be imported."""
+        from agentic_core.L5_safety.guardrails.secure_config import SecureConfigManagerAgent
+        assert SecureConfigManagerAgent is not None
     
     def test_import_secure_error(self):
         """Test that SecureError can be imported."""
@@ -256,7 +256,7 @@ class TestIntegration:
         from agentic_core.schemas.models import (
             CognitiveContract,
             CognitiveContractManager,
-            CognitiveContractValidator,
+            CognitiveContractValidatorAgent,
             ContractStage,
             Constraint,
             Plan,
@@ -270,7 +270,7 @@ class TestIntegration:
         assert all([
             CognitiveContract,
             CognitiveContractManager,
-            CognitiveContractValidator,
+            CognitiveContractValidatorAgent,
             ContractStage,
             Constraint,
             Plan,

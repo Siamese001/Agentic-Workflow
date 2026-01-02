@@ -127,14 +127,14 @@ def test_episodic_memory_integration() -> Any:
 
 def test_interface_imports() -> Any:
     """Verify that all interfaces can be imported successfully."""
-    from agentic_core.L1_cognition.P1_interfaces import ActionRequest, ExecutionContext, ExecutionPhase, ExecutionResult, IActionPlane, ICognitivePlane, IOrchestrator, OrchestratorConfig, PlanningRequest, PlanningResult
+    from agentic_core.L1_cognition.P1_interfaces import ActionRequest, ExecutionContext, ExecutionPhase, ExecutionResult, IActionPlane, ICognitivePlane, IOrchestratorAgent, OrchestratorConfig, PlanningRequest, PlanningResult
 from typing import Any
     assert ExecutionContext is not None
     assert ExecutionResult is not None
     assert ExecutionPhase is not None
     assert ICognitivePlane is not None
     assert IActionPlane is not None
-    assert IOrchestrator is not None
+    assert IOrchestratorAgent is not None
     assert ActionRequest is not None
     assert PlanningRequest is not None
     assert PlanningResult is not None

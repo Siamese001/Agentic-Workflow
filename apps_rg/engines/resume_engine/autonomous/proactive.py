@@ -5,7 +5,7 @@ Proactive Scheduling and Predictive Handoff for L4.5 Autonomy
 Provides:
 - ProactiveScheduler: Autonomous Task identification and initiation
 - PredictiveHandoff: Signals before reaching capability edge
-- CapabilityMonitor: Tracks agent capabilities and limits
+- CapabilityMonitorAgent: Tracks agent capabilities and limits
 """
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
@@ -326,7 +326,7 @@ class PredictiveHandoff:
         self._handoff_requests.clear()
 
 
-class CapabilityMonitor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Monitors agent capabilities and performance.
 
@@ -422,7 +422,7 @@ class ProactiveAgent(ResumeAgent):
         self.name = "ProactiveAgent"
         self.scheduler = ProactiveScheduler(ctx)
         self.handoff = PredictiveHandoff(ctx)
-        self.monitor = CapabilityMonitor(ctx)
+        self.monitor = CapabilityMonitorAgent(ctx)
 
     def record_result(self, passed: bool, details: str = ""):
         """Record the agent's result."""

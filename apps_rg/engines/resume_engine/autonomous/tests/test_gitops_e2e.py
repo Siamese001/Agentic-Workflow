@@ -18,9 +18,9 @@ from ..gitops import (
     ConversationalRepair,
     GitOpsManager,
     ImportPatcher,
-    Phase4Orchestrator,
+    Phase4OrchestratorAgent,
 )
-from ..healing import HealingOrchestrator, HealingResult, run_self_healing_mission
+from ..healing import HealingOrchestratorAgent, HealingResult, run_self_healing_mission
 from ..learning import MemoryPersistence, ResumeLearningAgent
 
 
@@ -75,7 +75,7 @@ class TestFullHealingMissionWithGitOps:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
 
         # Create test files
@@ -85,7 +85,7 @@ class TestFullHealingMissionWithGitOps:
             orchestrator.gitops.backup_file(str(file_path))
 
         # Run healing
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         # Verify backups exist
@@ -99,7 +99,7 @@ class TestFullHealingMissionWithGitOps:
         ctx.current_resume = valid_resume
         ctx.budget.max_cost = 0.0001  # Very low budget
 
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
 
         # Create and backup file
@@ -220,7 +220,7 @@ class TestIntegrationWithPreviousPhases:
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
 
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
         learning_agent = ResumeLearningAgent(ctx)
 
@@ -243,11 +243,11 @@ class TestIntegrationWithPreviousPhases:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
 
         # Run healing
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         assert result.success is True
@@ -265,7 +265,7 @@ class TestIntegrationWithPreviousPhases:
         learning_agent.inject_instruction("Ensure ATS compatibility", priority=10)
 
         # Phase 4: GitOps
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
 
         # Create test files
@@ -367,7 +367,7 @@ class TestComprehensiveWorkflow:
         ctx.JobDescription = JobDescription
 
         # Initialize all components
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
         learning_agent = ResumeLearningAgent(ctx)
         memory = MemoryPersistence(memory_file=temp_dir / "memory.json")
@@ -388,7 +388,7 @@ class TestComprehensiveWorkflow:
         phase4.ImportPatcher.build_import_map(list(files.values()))
 
         # 4. Run healing
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         result = await healing.run()
 
         # 5. Record learning

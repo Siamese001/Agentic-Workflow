@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -33,7 +33,7 @@ class test_cvu003:
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
-        validator = CanonValidator()
+        validator = CanonValidatorAgent()
         validator.llm = Mock()
         validator.llm.generate_plan.return_value = {
             "status": "valid",

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 
-class ImportHealer:
+class ImportHealerAgent:
     """
     Automatically fixes import statements when files are moved.
     Critical for preventing breakage during structural refactoring.

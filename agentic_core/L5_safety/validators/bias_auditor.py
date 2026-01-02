@@ -50,7 +50,7 @@ class BiasResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class BiasAuditor(HealerMixin):
+class BiasAuditorAgent(HealerMixin):
     """Lightweight Bias Detection for Content Quality.
     
     Simple pattern-based bias detection for risk mitigation
@@ -241,5 +241,5 @@ def audit_bias(content: str) -> BiasResult:
     Returns:
         BiasResult with detection information
     """
-    auditor = BiasAuditor()
+    auditor = BiasAuditorAgent()
     return auditor.audit_content(content)

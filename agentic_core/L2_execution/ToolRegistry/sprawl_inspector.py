@@ -12,7 +12,7 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class SprawlInspector(HealerMixin):
+class SprawlInspectorAgent(HealerMixin):
     """Brief description of functionality and purpose."""
 
     def __init__(self, target_path='agentic_core'):
@@ -54,7 +54,7 @@ class SprawlInspector(HealerMixin):
                 print(f"  ... and {len(self.report['flattening_candidates']) - 10} more")
         print('=' * 70)
 if __name__ == '__main__':
-    inspector: Any = SprawlInspector('agentic_core')
+    inspector: Any = SprawlInspectorAgent('agentic_core')
     data: Any = inspector.inspect()
     inspector.print_summary()
     with open('sprawl_report.json', 'w') as f:

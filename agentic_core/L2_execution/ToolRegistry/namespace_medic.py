@@ -2,7 +2,7 @@ from __future__ import annotations
 """
 Namespace Medic - Standalone Utility for Fast Import Healing
 Scans all Python files and injects Missing standard library imports.
-Run this BEFORE CanonValidator to fix import starvation issues.
+Run this BEFORE CanonValidatorAgent to fix import starvation issues.
 """
 import ast
 import sys

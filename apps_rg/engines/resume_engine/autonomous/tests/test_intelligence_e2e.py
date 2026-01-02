@@ -11,9 +11,9 @@ Tests the complete intelligence workflow:
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import Phase4Orchestrator
+from ..gitops import Phase4OrchestratorAgent
 from ..healing import HealingResult, run_self_healing_mission
-from ..intelligence import Phase6Orchestrator
+from ..intelligence import Phase6OrchestratorAgent
 from ..learning import MemoryPersistence, ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
@@ -64,7 +64,7 @@ class TestFullMissionWithIntelligence:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Run full mission
         result = await phase6.run_full_mission(valid_resume, JobDescription)
@@ -79,7 +79,7 @@ class TestFullMissionWithIntelligence:
         """Test comprehensive intelligence analysis."""
         ctx = ResumeEngineContext()
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         result = await phase6.analyze_resume(valid_resume, JobDescription)
 
@@ -101,10 +101,10 @@ class TestIntegrationWithAllPhases:
         ctx.JobDescription = JobDescription
 
         # Initialize all orchestrators
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
         phase5 = Phase5Orchestrator(ctx)
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
         learning_agent = ResumeLearningAgent(ctx)
         memory = MemoryPersistence(memory_file=tmp_path / "memory.json")
 
@@ -121,12 +121,12 @@ class TestIntegrationWithAllPhases:
         phase5.start_mission("full_pipeline_e2e")
 
         # Phase 6: Intelligence - Analyze
-        step_id = phase5.track_agent("Phase6Orchestrator", "analyze_resume")
+        step_id = phase5.track_agent("Phase6OrchestratorAgent", "analyze_resume")
         analysis = await phase6.analyze_resume(valid_resume, JobDescription)
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
         result = await run_self_healing_mission(
             JobDescription=JobDescription,
             master_resume=valid_resume,
@@ -170,7 +170,7 @@ class TestIntegrationWithAllPhases:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Analyze before healing
         analysis_before = await phase6.analyze_resume(valid_resume, JobDescription)
@@ -198,7 +198,7 @@ class TestEdgeCases:
     async def test_empty_resume(self):
         """Test handling empty resume."""
         ctx = ResumeEngineContext()
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         result = await phase6.analyze_resume({})
 
@@ -209,7 +209,7 @@ class TestEdgeCases:
     async def test_resume_with_pii(self, valid_resume):
         """Test handling resume with PII."""
         ctx = ResumeEngineContext()
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         resume_with_pii = valid_resume.copy()
         resume_with_pii["contact"] = {
@@ -227,7 +227,7 @@ class TestEdgeCases:
     async def test_weak_resume_analysis(self):
         """Test analyzing a weak resume."""
         ctx = ResumeEngineContext()
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         weak_resume = {
             "summary": "I helped with tasks and assisted the team.",
@@ -250,7 +250,7 @@ class TestEdgeCases:
     async def test_no_job_description(self, valid_resume):
         """Test analysis without job description."""
         ctx = ResumeEngineContext()
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         result = await phase6.analyze_resume(valid_resume)
 
@@ -269,7 +269,7 @@ class TestComprehensiveWorkflow:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # 1. Security scan
         security_issues = phase6.security.scan_resume(valid_resume)
@@ -314,7 +314,7 @@ class TestComprehensiveWorkflow:
     async def test_workflow_with_run_self_healing_mission(self, valid_resume, JobDescription):
         """Test workflow using the main entry point function."""
         ctx = ResumeEngineContext()
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Analyze resume
         analysis = await phase6.analyze_resume(valid_resume, JobDescription)
@@ -337,7 +337,7 @@ class TestComprehensiveWorkflow:
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Run various operations
         phase6.security.scan_resume(valid_resume)

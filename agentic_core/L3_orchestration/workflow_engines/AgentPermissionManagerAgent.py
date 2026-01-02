@@ -24,7 +24,7 @@ ControlPlane: Any = None
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class AgentPermissionManager(HealerMixin):
+class AgentPermissionManagerAgent(HealerMixin):
     """Manages agent permissions with Control Plane integration.
 
     Provides:
@@ -170,13 +170,13 @@ class AgentPermissionManager(HealerMixin):
 
 # Alias for backward compatibility
 
-def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "AgentPermissionManager":
+def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "AgentPermissionManagerAgent":
     """Factory function to create Permission manager.
 
     Args:
         control_plane: Optional Control Plane instance
 
     Returns:
-        AgentPermissionManager instance
+        AgentPermissionManagerAgent instance
     """
-    return AgentPermissionManager(control_plane=control_plane)
+    return AgentPermissionManagerAgent(control_plane=control_plane)

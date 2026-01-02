@@ -20,7 +20,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
-class SovereignCanonAuditor(MCPHardenedMixin):
+class SovereignCanonAuditorAgent(MCPHardenedMixin):
     """
     Sovereign Canon Auditor using DeepWiki MCP.
     Performs self-verification of critical system components.
@@ -29,7 +29,7 @@ class SovereignCanonAuditor(MCPHardenedMixin):
     def __init__(self):
         """Initialize the canon auditor."""
         self.client = SovereignDeepWikiClient()
-        self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/StrategicPlanner.py', 'agentic_core/L2_execution/ToolRegistry/WebSearchTools.py']
+        self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/StrategicPlannerAgent.py', 'agentic_core/L2_execution/ToolRegistry/WebSearchTools.py']
 
     async def audit_core_components(self) -> Dict[str, Any]:
         """
@@ -94,7 +94,7 @@ class SovereignCanonAuditor(MCPHardenedMixin):
         print('\n' + '=' * 60)
         print('🔗 MCP INTEGRATION VERIFICATION')
         print('=' * 60)
-        mcp_components: Any = {'L1 Sequential Thinking': 'StrategicPlanner.py', 'L2 Web Search': 'WebSearchTools.py', 'L4 Pinecone': 'pinecone_mcp_client.py', 'L4 Knowledge Graph': 'SovereignGraphClient.py', 'L6 DeepWiki': 'deepwiki_client_sovereign.py'}
+        mcp_components: Any = {'L1 Sequential Thinking': 'StrategicPlannerAgent.py', 'L2 Web Search': 'WebSearchTools.py', 'L4 Pinecone': 'pinecone_mcp_client.py', 'L4 Knowledge Graph': 'SovereignGraphClient.py', 'L6 DeepWiki': 'deepwiki_client_sovereign.py'}
         results: Any = {'total': len(mcp_components), 'verified': 0, 'failed': 0, 'details': []}
         for component_name, filename in mcp_components.items():
             try:
@@ -148,7 +148,7 @@ async def audit_core_components() -> Any:
     Convenience function to run core component audit.
     Compatible with the spec example.
     """
-    auditor: Any = SovereignCanonAuditor()
+    auditor: Any = SovereignCanonAuditorAgent()
     critical_files: Any = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py']
     print('--- Starting Sovereign Canon Audit ---')
     for f in critical_files:
@@ -160,7 +160,7 @@ async def audit_core_components() -> Any:
 
 async def main() -> Any:
     """Main entry point for canon audit."""
-    auditor: Any = SovereignCanonAuditor()
+    auditor: Any = SovereignCanonAuditorAgent()
     results: Any = await auditor.run_full_audit()
     return results
 if __name__ == '__main__':

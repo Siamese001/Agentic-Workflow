@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Backward compatibility shim for SubatomicOrchestrator.
+"""Backward compatibility shim for SubatomicOrchestratorAgent.
 
 
 # NAMING FIXED: LOGGER → Logger

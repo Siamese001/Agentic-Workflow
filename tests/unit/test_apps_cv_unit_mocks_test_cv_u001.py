@@ -4,7 +4,7 @@ Unit test for isolated L1 component verification
 """
 from unittest.mock import Mock
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 from typing import Any
 
 class test_cvu001:
@@ -13,7 +13,7 @@ class test_cvu001:
     @pytest.fixture
     def validator(self) -> Any:
         """Create validator with mocked LLM"""
-        validator: Any = CanonValidator()
+        validator: Any = CanonValidatorAgent()
         validator.llm = Mock()
         validator.llm.generate_plan.return_value = {'status': 'repaired', 'reasoning': 'Fixed issues', 'commit_message': 'test commit'}
         return validator

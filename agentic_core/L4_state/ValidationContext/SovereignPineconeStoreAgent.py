@@ -203,4 +203,4 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
             Logger.error(f'[L4 PINECONE STORE] Execute failed: {e}')
             if ctx:
                 ctx.report('VectorHealth', 1, True, f'Pinecone health check warning: {str(e)}')
-PineconeSovereignAgent: Any = SovereignPineconeStore
+PineconeSovereignAgent: Any = SovereignPineconeStoreAgent

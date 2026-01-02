@@ -48,9 +48,9 @@ class TestArchiveLoopPrevention:
         
         # Import and test
         try:
-            from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealer
+            from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
             
-            healer = HierarchyHealer(temp_project)
+            healer = HierarchyHealerAgent(temp_project)
             
             # The fix should skip files with archive markers
             archive_markers = ('.archived', '.backup', '.old', '.copy')
@@ -66,7 +66,7 @@ class TestArchiveLoopPrevention:
             print("✓ hierarchy_healer archive marker detection works correctly")
             
         except ImportError as e:
-            pytest.skip(f"Could not import HierarchyHealer: {e}")
+            pytest.skip(f"Could not import HierarchyHealerAgent: {e}")
     
     def test_location_agent_skips_archived_files(self, temp_project):
         """Test that LocationAgent.cleanup_violations skips archived files."""

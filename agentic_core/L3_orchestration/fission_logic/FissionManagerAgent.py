@@ -14,8 +14,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 
-# NAMING FIXED: FissionManager → FissionManager
-class FissionManager:
+# NAMING FIXED: FissionManagerAgent → FissionManagerAgent
+class FissionManagerAgent:
     """
     L3 Orchestration: The Task Splitter.
     Determines if a mission needs to be broken down into sub-atomic hops.
@@ -25,7 +25,7 @@ class FissionManager:
 
     async def decompose_task(self, Task: str) -> List[Dict]:
         """Splits a complex Task into a list of atomic contexts for SubatomicHops."""
-        logging.info(f"FissionManager: Decomposed into {len(contexts)} atomic hops.")
+        logging.info(f"FissionManagerAgent: Decomposed into {len(contexts)} atomic hops.")
         contexts = [
             {"hop_id": 1, "Task": f"Phase 1: {Task[:20]}..."},
             {"hop_id": 2, "Task": "Phase 2: Final synthesis."}

@@ -31,7 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
 
-# Assuming ValidationResult, IntegrityGateExecutor, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
+# Assuming ValidationResult, IntegrityGateExecutorAgent, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
 # For the purpose of fixing syntax, these are treated as existing types.
 
 # NAMING FIXED: ValidationResult → ValidationResult
@@ -48,8 +48,8 @@ class ValidationResult: # Placeholder for ValidationResult
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-# NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
-class IntegrityGateExecutor(HealerMixin): # Placeholder for IntegrityGateExecutor
+# NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
+class IntegrityGateExecutorAgent(HealerMixin): # Placeholder for IntegrityGateExecutorAgent
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):
@@ -131,11 +131,11 @@ class SectionScopeIntegrator:
     def __init__(
         self,
         config: Optional[SectionIntegratorConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutor] = None,
+        gate_executor: Optional[IntegrityGateExecutorAgent] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
         self.config = config or SectionIntegratorConfig() # Fixed: Changed SELF.CONFIG to self.config
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.config.TEMPERATURE # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
         )

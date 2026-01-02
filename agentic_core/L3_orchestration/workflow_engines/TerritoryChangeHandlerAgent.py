@@ -16,8 +16,8 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-# NAMING FIXED: TerritoryChangeHandler → TerritoryChangeHandler
-class TerritoryChangeHandler(FileSystemEventHandler, HealerMixin):
+# NAMING FIXED: TerritoryChangeHandlerAgent → TerritoryChangeHandlerAgent
+class TerritoryChangeHandlerAgent(FileSystemEventHandler, HealerMixin):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
     def __init__(self, daemon):
         self.daemon = daemon
@@ -72,7 +72,7 @@ class AutonomousRagDaemon:
         
         # Watchdog setup
         self.observer = Observer()
-        self.handler = TerritoryChangeHandler(self)
+        self.handler = TerritoryChangeHandlerAgent(self)
         
     async def start(self):
         """Start the autonomous daemon"""

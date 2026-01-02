@@ -55,7 +55,7 @@ class FallbackResult:
         """Convert to dictionary."""
         return {'success': self.success, 'provider_used': self.provider_used, 'output': self.output, 'error': self.error, 'attempts': self.attempts, 'metadata': self.metadata}
 
-class FallbackManager(HealerMixin):
+class FallbackManagerAgent(HealerMixin):
     """Manages automatic fallback chains for tool providers.
 
     Features:
@@ -194,17 +194,17 @@ class FallbackManager(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL) -> FallbackManager:
+def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL) -> FallbackManagerAgent:
     """Factory function to create fallback manager.
 
     Args:
         strategy: Fallback strategy to use
 
     Returns:
-        FallbackManager instance
+        FallbackManagerAgent instance
     """
-    return FallbackManager(strategy=strategy)
+    return FallbackManagerAgent(strategy=strategy)
 
-def get_fallback_manager() -> FallbackManager:
+def get_fallback_manager() -> FallbackManagerAgent:
     """Factory function to get fallback manager instance."""
-    return FallbackManager()
+    return FallbackManagerAgent()

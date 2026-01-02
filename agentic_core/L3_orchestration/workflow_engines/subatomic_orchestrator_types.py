@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Types and models for SubatomicOrchestrator."""
+"""Types and models for SubatomicOrchestratorAgent."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto

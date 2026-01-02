@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Implementation for AutonomicMonitor."""
+"""Implementation for AutonomicMonitorAgent."""
 import logging
 import time
 from typing import Any, Callable, Dict, List, Optional, Protocol
@@ -16,7 +16,7 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class AutonomicMonitor(HealerMixin):
+class AutonomicMonitorAgent(HealerMixin):
     """Autonomic immune system for agent health monitoring.
 
     Features:
@@ -173,7 +173,7 @@ class AutonomicMonitor(HealerMixin):
             recommendations.append('CRITICAL: Consider taking agent offline for maintenance')
         return recommendations
 
-def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitor:
+def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_threshold: float=0.2) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.
 
     Args:
@@ -181,6 +181,6 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_thres
         error_rate_threshold: Error rate threshold
 
     Returns:
-        AutonomicMonitor instance
+        AutonomicMonitorAgent instance
     """
-    return AutonomicMonitor(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)
+    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)

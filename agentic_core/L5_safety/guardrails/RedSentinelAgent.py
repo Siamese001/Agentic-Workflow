@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-RedSentinel - L5 Active Defense & Hostile Input Fuzzing
+RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing
 
 Generates hostile inputs (buffer overflows, malformed data) to test
 the robustness of code and detect potential security vulnerabilities.
@@ -24,7 +24,7 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class RedSentinel(HealerMixin):
+class RedSentinelAgent(HealerMixin):
     """
     Active defense system that generates hostile inputs for testing.
 
@@ -37,7 +37,7 @@ class RedSentinel(HealerMixin):
 
     def __init__(self, llm_client=None):
         """
-        Initialize the RedSentinel agent.
+        Initialize the RedSentinelAgent agent.
         Phase 16B: Uses LLM Router MCP for hostile input generation.
 
         Args:
@@ -62,7 +62,7 @@ class RedSentinel(HealerMixin):
         """
         if not self.enabled:
             return {'enabled': False, 'reason': 'ENABLE_FUZZ not set'}
-        LOGGER.info(f'🛡️  RedSentinel: Generating hostile inputs for {func_name}')
+        LOGGER.info(f'🛡️  RedSentinelAgent: Generating hostile inputs for {func_name}')
         hostile_inputs: Any = await self._generate_hostile_inputs(func_name, func_code)
         results: Any = {'function': func_name, 'file': file_path, 'timestamp': datetime.utcnow().isoformat(), 'hostile_inputs': hostile_inputs, 'vulnerabilities': [], 'crashes': []}
         for input_data in hostile_inputs:
@@ -156,7 +156,7 @@ class RedSentinel(HealerMixin):
                 log_data['fuzz_tests'] = log_data['fuzz_tests'][-1000:]
             with open(self.audit_path, 'w') as f:
                 json.dump(log_data, f, indent=2)
-            LOGGER.info(f'RedSentinel: Logged fuzz results to {self.audit_path}')
+            LOGGER.info(f'RedSentinelAgent: Logged fuzz results to {self.audit_path}')
         except Exception as e:
             LOGGER.error(f'Failed to log fuzz results: {e}')
 
@@ -208,28 +208,28 @@ class RedSentinel(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-_red_sentinel: Optional[RedSentinel] = None
+_red_sentinel: Optional[RedSentinelAgent] = None
 
-def get_red_sentinel() -> RedSentinel:
-    """Get or create the global RedSentinel instance."""
+def get_red_sentinel() -> RedSentinelAgent:
+    """Get or create the global RedSentinelAgent instance."""
     global _red_sentinel
     if _red_sentinel is None:
-        _red_sentinel = RedSentinel()
+        _red_sentinel = RedSentinelAgent()
     return _red_sentinel
 
 async def initialize_red_sentinel(llm_client: Any=None) -> Any:
     """
-    Initialize the RedSentinel system.
+    Initialize the RedSentinelAgent system.
 
     Args:
         llm_client: LLM client instance
     """
     global _red_sentinel
-    _red_sentinel = RedSentinel(llm_client)
+    _red_sentinel = RedSentinelAgent(llm_client)
     if _red_sentinel.enabled:
-        LOGGER.info('RedSentinel initialized - Active defense enabled')
+        LOGGER.info('RedSentinelAgent initialized - Active defense enabled')
     else:
-        LOGGER.info('RedSentinel initialized - Set ENABLE_FUZZ=true to enable')
+        LOGGER.info('RedSentinelAgent initialized - Set ENABLE_FUZZ=true to enable')
 
 async def fuzz_function(func_name: str, func_code: str, file_path: str) -> Dict[str, Any]:
     """

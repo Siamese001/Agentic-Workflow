@@ -18,14 +18,14 @@ from typing import Any, Dict, List, Optional, Set
 
 from .agents import (
     CampaignBalanceAgent,
-    CampaignPlanner,
+    CampaignPlannerAgent,
     ContactValidatorAgent,
     DeliverabilityAgent,
     LeadQualityAgent,
     MessageComplianceAgent,
     OutreachReflectionAgent,
     OutreachTestPilot,
-    TemplateOptimizer,
+    TemplateOptimizerAgent,
 )
 from .outreach_base import OutreachAgent
 from .context import OutreachEngineContext
@@ -72,14 +72,14 @@ class OutreachHealingResult:
     final_campaign: Dict[str, Any]
 
 
-class OutreachSignalRouter(MCPHardenedMixin, HealerMixin):
+class OutreachSignalRouterAgent(MCPHardenedMixin, HealerMixin):
     """Routes signals to appropriate agents."""
 
     SIGNAL_TO_AGENTS = {
         "LEAD_QUALITY_ISSUE": ["LeadQualityAgent"],
         "CONTACT_VALIDATION_FAILED": ["ContactValidatorAgent"],
         "COMPLIANCE_ISSUE": ["MessageComplianceAgent"],
-        "TEMPLATE_NEEDS_OPTIMIZATION": ["TemplateOptimizer"],
+        "TEMPLATE_NEEDS_OPTIMIZATION": ["TemplateOptimizerAgent"],
         "CAMPAIGN_BALANCE_ISSUE": ["CampaignBalanceAgent"],
         "DELIVERABILITY_ISSUE": ["DeliverabilityAgent"],
         "TEST_FAILURE": ["OutreachTestPilot"],
@@ -134,7 +134,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
             MessageComplianceAgent(ctx),
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             CampaignBalanceAgent(ctx),
             DeliverabilityAgent(ctx),
             OutreachTestPilot(ctx),
@@ -146,7 +146,7 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
         return [
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             OutreachTestPilot(ctx),
         ]
 
@@ -166,11 +166,11 @@ class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
             "LeadQualityAgent": LeadQualityAgent,
             "ContactValidatorAgent": ContactValidatorAgent,
             "MessageComplianceAgent": MessageComplianceAgent,
-            "TemplateOptimizer": TemplateOptimizer,
+            "TemplateOptimizerAgent": TemplateOptimizerAgent,
             "CampaignBalanceAgent": CampaignBalanceAgent,
             "DeliverabilityAgent": DeliverabilityAgent,
             "OutreachTestPilot": OutreachTestPilot,
-            "CampaignPlanner": CampaignPlanner,
+            "CampaignPlannerAgent": CampaignPlannerAgent,
             "OutreachReflectionAgent": OutreachReflectionAgent,
         }
 
@@ -262,7 +262,7 @@ class OutreachHealingCycle:
             return OutreachAgentFactory.create_compliance_agents(self.ctx)
 
         elif strategy == OutreachHealingStrategy.SURGICAL_STRIKE:
-            agent_names = OutreachSignalRouter.get_agents_for_signals(self.ctx.signals)
+            agent_names = OutreachSignalRouterAgent.get_agents_for_signals(self.ctx.signals)
             if not agent_names:
                 agent_names = ["OutreachTestPilot"]
             agents = OutreachAgentFactory.create_agents_by_name(self.ctx, agent_names)
@@ -274,7 +274,7 @@ class OutreachHealingCycle:
 
     def _check_rollback_conditions(self) -> bool:
         """Check if rollback should be triggered."""
-        if OutreachSignalRouter.has_critical_signal(self.ctx.signals):
+        if OutreachSignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
 
         if (self.cycle_number > 1 and
@@ -290,11 +290,11 @@ class OutreachHealingCycle:
         self.ctx.rollback_all()
 
         for signal in list(self.ctx.signals):
-            if signal in OutreachSignalRouter.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
+            if signal in OutreachSignalRouterAgent.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
                 self.ctx.remove_signal(signal)
 
 
-class OutreachHealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class OutreachHealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
@@ -332,7 +332,7 @@ class OutreachHealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTest
             self.ctx.impact_zone.clear()
 
             # Determine strategy
-            strategy = OutreachSignalRouter.determine_strategy(
+            strategy = OutreachSignalRouterAgent.determine_strategy(
                 cycle_num,
                 self.ctx.signals,
                 self.ctx.modified_sections
@@ -423,5 +423,5 @@ async def run_outreach_healing_mission(
     # Backup initial state
     ctx.backup_campaign("default")
 
-    orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=max_cycles)
+    orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=max_cycles)
     return await orchestrator.run()

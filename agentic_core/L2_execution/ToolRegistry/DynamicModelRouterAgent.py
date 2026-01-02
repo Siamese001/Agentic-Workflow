@@ -146,7 +146,7 @@ class DynamicModelRouterAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
         
         self.engine = getattr(self.ctx, 'subatomic_engine', None)
         self.safety = getattr(self.ctx, 'SafetyGuardrail', None)
-        self.fission = getattr(self.ctx, 'FissionManager', None)
+        self.fission = getattr(self.ctx, 'FissionManagerAgent', None)
 
         # Log a warning if any are Missing, similar to the original try-except's intent.
         # The original code had a single try-except for all three.

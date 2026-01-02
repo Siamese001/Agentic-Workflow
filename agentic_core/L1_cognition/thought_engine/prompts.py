@@ -20,7 +20,7 @@ few_shot_safety: Any = '\nFEW-SHOT SAFETY FIXES:\n\nEXAMPLE 1: No Eval\nBAD: eva
 few_shot_concurrency: Any = '\nFEW-SHOT CONCURRENCY FIXES:\n\nEXAMPLE 1: Shared State\nBAD: counter += 1\nGOOD: async with lock: counter += 1\n'
 few_shot_hygiene: Any = '\nFEW-SHOT HYGIENE FIXES:\n\nEXAMPLE 1: Unused Imports\nBAD: import os # never used\nGOOD: # removed\n\nEXAMPLE 2: Dead Code\nBAD: if False: return\nGOOD: # removed\n'
 few_shot_testpilot: Any = '\nFEW-SHOT TEST GENERATION:\n\nEXAMPLE 1: Unit Test\nGOOD:\ndef test_valid_order():\n    assert process(Order(amount=10)).status == "paid"\n'
-few_shot_strategic: Any = '\nFEW-SHOT STRATEGY:\n\nRULES:\n1. TEST_FAILURE -> Sherlock\n2. IMPORT_ERROR -> DependencySentinel\n3. SYNTAX -> SafetyInspector\n'
+few_shot_strategic: Any = '\nFEW-SHOT STRATEGY:\n\nRULES:\n1. TEST_FAILURE -> Sherlock\n2. IMPORT_ERROR -> DependencySentinelAgent\n3. SYNTAX -> SafetyInspectorAgent\n'
 few_shot_reflection: Any = '\nFEW-SHOT REFLECTION:\n\nCheck:\n1. Did signals decrease?\n2. Did new signals appear?\n3. Convergence reached?\n'
 few_shot_reflection_strategy: Any = '\nFEW-SHOT HEALING STRATEGY DECISIONS:\n\nIF: Multiple test failures in same module\nTHEN: Extract shared utilities to agentic_core/shared/\n\nIF: Import errors after refactor\nTHEN: Update imports and check depth compliance\n\nIF: Performance regression\nTHEN: Profile and optimize hot paths\n'
 few_shot_reflection_enhanced: Any = '\nFEW-SHOT ENHANCED REFLECTION:\n\nEXAMPLE 1: Convergence Check\nSignals before: [SYNTAX_ERROR, IMPORT_ERROR]\nSignals after: []\nDecision: CONVERGE_AND_COMMIT\n\nEXAMPLE 2: Flapping Detection\nFile X modified 3 times, same error returns\nDecision: MARK_FLAPPING_SKIP_FILE\n'

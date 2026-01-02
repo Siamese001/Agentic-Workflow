@@ -18,8 +18,8 @@ from ..agents import (
     FactCheckAgent,
     ReflectionAgent,
     SectionBalanceAgent,
-    StrategicPlanner,
-    TemplateOptimizer,
+    StrategicPlannerAgent,
+    TemplateOptimizerAgent,
     TestPilot,
 )
 from ..context import ResumeEngineContext
@@ -72,7 +72,7 @@ class TestAgentCoordination:
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
@@ -121,7 +121,7 @@ class TestSignalPropagation:
         assert "QUALITY_FAILURE" in ctx.signals
 
         # Strategic planner should pick up the signal
-        planner = StrategicPlanner(ctx)
+        planner = StrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -143,7 +143,7 @@ class TestSignalPropagation:
         assert "BRAND_VIOLATION" in ctx.signals
 
         # Strategic planner should recommend BrandComplianceAgent
-        planner = StrategicPlanner(ctx)
+        planner = StrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -162,7 +162,7 @@ class TestSignalPropagation:
         assert len(ctx.signals) >= 2
 
         # Strategic planner should handle all
-        planner = StrategicPlanner(ctx)
+        planner = StrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -227,7 +227,7 @@ class TestStrategicPlanningIntegration:
         await ATSCompatibilityAgent(ctx).execute()
 
         # Run strategic planner
-        planner = StrategicPlanner(ctx)
+        planner = StrategicPlannerAgent(ctx)
         await planner.execute()
 
         plan = ctx.results["strategic_plan"]
@@ -321,14 +321,14 @@ class TestEndToEndScenarios:
 
         # Full agent pipeline
         agents = [
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
-            StrategicPlanner(ctx),
+            StrategicPlannerAgent(ctx),
             ReflectionAgent(ctx),
         ]
 
@@ -357,7 +357,7 @@ class TestEndToEndScenarios:
         assert len(ctx.signals) > 0
 
         # Strategic planner should identify issues
-        await StrategicPlanner(ctx).execute()
+        await StrategicPlannerAgent(ctx).execute()
         plan = ctx.results["strategic_plan"]
         assert len(plan["recommended_agents"]) > 0
 

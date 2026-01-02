@@ -199,7 +199,7 @@ from typing import Any
         """Tests multiple agents broadcasting concurrently."""
         ctx: Any = MockValidationContext(stream_dir=temp_stream_dir)
         await ctx.start_streamer()
-        agents: Any = ['Sherlock', 'TestPilot', 'SafetyInspector', 'Historian']
+        agents: Any = ['Sherlock', 'TestPilot', 'SafetyInspectorAgent', 'Historian']
         tasks: Any = []
         for agent in agents:
             for i in range(10):
@@ -242,7 +242,7 @@ class test_reasoning_extraction:
         ctx: Any = MockValidationContext(stream_dir=temp_stream_dir)
         await ctx.start_streamer()
         mock_response: Any = '<reasoning>\nStep 1: Analyze the import structure\nStep 2: Identify circular dependencies\nStep 3: Refactor to break the cycle\n</reasoning>\nimport os\nimport sys'
-        reasoning: Any = await ctx.broadcast_reasoning(mock_response, agent='DependencySentinel')
+        reasoning: Any = await ctx.broadcast_reasoning(mock_response, agent='DependencySentinelAgent')
         assert 'Step 1' in reasoning
         assert 'Step 2' in reasoning
         assert 'Step 3' in reasoning

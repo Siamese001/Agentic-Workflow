@@ -9,27 +9,27 @@ import re
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from agentic_core.canon_agents_pattern import PatternEnforcer, SemanticMapper, UIValidationAgent
-from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
+from agentic_core.canon_agents_pattern import PatternEnforcerAgent, SemanticMapperAgent, UIValidationAgent
+from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspectorAgent
 from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer, TypeMechanic
-from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
+from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinelAgent
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class IntelligentOrchestrator(HealerMixin):
+class IntelligentOrchestratorAgent(HealerMixin):
     """Orchestrates all validation agents in dependency order."""
 
     def __init__(self, target: Optional[str]=None):
         """
-        Initializes the IntelligentOrchestrator with a validation context and a swarm of agents.
+        Initializes the IntelligentOrchestratorAgent with a validation context and a swarm of agents.
 
         Args:
             target (Optional[str]): The target scope for validation, e.g., a file path or directory.
                                     Defaults to the current directory ".".
         """
         self.ctx: ValidationContext = ValidationContext(target_scope=target or '.')
-        self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinel(self.ctx), SafetyInspector(self.ctx), PatternEnforcer(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanic(self.ctx), UIValidationAgent(self.ctx), SemanticMapper(self.ctx), StructuralEngineer(self.ctx)]
+        self.swarm = [HealerAgent(self.ctx), SystemArchitect(self.ctx), GenerativeGuard(self.ctx), CodeJanitor(self.ctx), DependencySentinelAgent(self.ctx), SafetyInspectorAgent(self.ctx), PatternEnforcerAgent(self.ctx), DocumentationAgent(self.ctx), NamingAgent(self.ctx), BudgetAgent(self.ctx), TypeMechanic(self.ctx), UIValidationAgent(self.ctx), SemanticMapperAgent(self.ctx), StructuralEngineer(self.ctx)]
 
     async def run_mission(self) -> None:
         """

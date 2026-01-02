@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 
 
 # NAMING FIXED: TestCVI002 → test_cvi002
@@ -20,7 +20,7 @@ class test_cvi002:
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
-        validator = CanonValidator()
+        validator = CanonValidatorAgent()
         validator.llm = Mock()
         validator.embed_fn = Mock(return_value=[0.1] * 768)
         validator.cache = Mock()

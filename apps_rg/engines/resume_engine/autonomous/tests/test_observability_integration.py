@@ -14,8 +14,8 @@ import json
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import Phase4Orchestrator
-from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..gitops import Phase4OrchestratorAgent
+from ..healing import HealingCycle, HealingOrchestratorAgent, HealingStrategy
 from ..learning import ResumeLearningAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from ..observability import (
@@ -262,7 +262,7 @@ class TestPhase5WithPreviousPhases:
         ctx.current_resume = valid_resume
 
         phase5 = Phase5Orchestrator(ctx)
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
 
         # Start observability
@@ -294,8 +294,8 @@ class TestPhase5WithPreviousPhases:
         phase5.start_mission("full_pipeline")
 
         # Track healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         await healing.run()
         # Mark step as successful if healing ran (even if not fully converged)
         phase5.complete_agent(step_id, success=True)

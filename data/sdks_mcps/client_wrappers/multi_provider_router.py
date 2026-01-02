@@ -46,7 +46,7 @@ class RouterConfig:
     health_check_interval: int = 300  # seconds
     circuit_breaker_threshold: int = 5  # failures before circuit opens
 
-class MultiProviderRouter:
+class MultiProviderRouterAgent:
     """Production router with intelligent provider selection and failover."""
 
     def __init__(self, config: Optional[RouterConfig] = None):
@@ -561,7 +561,7 @@ def create_multi_provider_router(
     enable_openai: bool = None,
     enable_anthropic: bool = None,
     enable_vertex: bool = None,
-    **kwargs: Dict[str, object]) -> MultiProviderRouter:
+    **kwargs: Dict[str, object]) -> MultiProviderRouterAgent:
     """Create configured multi-provider router.
 
     Args:
@@ -612,7 +612,7 @@ def create_multi_provider_router(
         ))
 
     config = RouterConfig(providers=provider_configs, **kwargs)
-    return MultiProviderRouter(config)
+    return MultiProviderRouterAgent(config)
 
 # Example usage
 if __name__ == "__main__":

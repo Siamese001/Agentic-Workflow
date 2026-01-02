@@ -29,7 +29,7 @@ class CheckpointIntegrityError(Exception):
     pass
 
 
-class SecureCheckpointManager(HealerMixin):
+class SecureCheckpointManagerAgent(HealerMixin):
     """Manages secure Checkpoint persistence with encryption and integrity checks."""
     
     def __init__(
@@ -58,7 +58,7 @@ class SecureCheckpointManager(HealerMixin):
         # Initialize cipher
         self.cipher = Fernet(self.encryption_key)
         
-        Logger.debug(f"Initialized SecureCheckpointManager for hop {hop_id}")
+        Logger.debug(f"Initialized SecureCheckpointManagerAgent for hop {hop_id}")
     
     def _generate_key(self) -> bytes:
         """Generate a cryptographically secure key."""
@@ -271,7 +271,7 @@ class SecureCheckpointManager(HealerMixin):
 class CheckpointManagerFactory:
     """Factory for creating and managing secure Checkpoint managers."""
     
-    _managers: Dict[str, SecureCheckpointManager] = {}
+    _managers: Dict[str, SecureCheckpointManagerAgent] = {}
     _global_key: Optional[bytes] = None
     
     @classmethod
@@ -280,7 +280,7 @@ class CheckpointManagerFactory:
         hop_id: str,
         checkpoint_dir: Path,
         use_global_key: bool = True
-    ) -> SecureCheckpointManager:
+    ) -> SecureCheckpointManagerAgent:
         """Get or create a Checkpoint manager.
         
         Args:
@@ -289,7 +289,7 @@ class CheckpointManagerFactory:
             use_global_key: Whether to use a global encryption key
             
         Returns:
-            SecureCheckpointManager instance
+            SecureCheckpointManagerAgent instance
         """
         if hop_id not in cls._managers:
             if use_global_key:
@@ -297,13 +297,13 @@ class CheckpointManagerFactory:
                     cls._global_key = Fernet.generate_key()
                     Logger.info("Generated global Checkpoint encryption key")
                 
-                manager = SecureCheckpointManager(
+                manager = SecureCheckpointManagerAgent(
                     hop_id,
                     checkpoint_dir,
                     encryption_key=cls._global_key
                 )
             else:
-                manager = SecureCheckpointManager(hop_id, checkpoint_dir)
+                manager = SecureCheckpointManagerAgent(hop_id, checkpoint_dir)
             
             cls._managers[hop_id] = manager
         
@@ -316,7 +316,7 @@ class CheckpointManagerFactory:
             if manager.checkpoint_dir == checkpoint_dir:
                 manager.quarantine_all_checkpoints()
 
-def get_secure_checkpoint_manager(checkpoint_dir: Optional[Path] = None) -> SecureCheckpointManager:
+def get_secure_checkpoint_manager(checkpoint_dir: Optional[Path] = None) -> SecureCheckpointManagerAgent:
     """Factory function to get secure checkpoint manager."""
     if checkpoint_dir is None:
         checkpoint_dir = Path("checkpoints")
@@ -327,7 +327,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
     """L5 safety/guardrails - operational only."""
     if _call_path is None:
         _call_path = set()
-    agent_name = "SecureCheckpointManager"
+    agent_name = "SecureCheckpointManagerAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
     if depth > max_depth:

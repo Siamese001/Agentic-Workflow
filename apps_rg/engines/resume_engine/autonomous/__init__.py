@@ -14,8 +14,8 @@ from .agents import (
     FactCheckAgent,
     ReflectionAgent,
     SectionBalanceAgent,
-    StrategicPlanner,
-    TemplateOptimizer,
+    StrategicPlannerAgent,
+    TemplateOptimizerAgent,
     TestPilot,
 )
 from .resume_base import ResumeAgent
@@ -27,7 +27,7 @@ from .gitops import (
     ImportPatcher,
     MutationMode,
     MutationResult,
-    Phase4Orchestrator,
+    Phase4OrchestratorAgent,
     RepairProposal,
     ResilientMutator,
 )
@@ -39,29 +39,29 @@ from .governance import (
     DependencyStatus,
     DocComplianceLevel,
     DocViolation,
-    Phase7Orchestrator,
+    Phase7OrchestratorAgent,
     PredictiveBudgetManager,
     PromptGovernor,
     PromptIssue,
     PromptRisk,
-    StrictDocEnforcer,
+    StrictDocEnforcerAgent,
 )
 from .healing import (
     AgentFactory,
     AutomaticRollback,
-    ConvergenceDetector,
+    ConvergenceDetectorAgent,
     CycleResult,
     HealingCycle,
-    HealingOrchestrator,
+    HealingOrchestratorAgent,
     HealingResult,
     HealingStrategy,
-    SignalRouter,
+    SignalRouterAgent,
     run_self_healing_mission,
 )
 from .intelligence import (
     AnalysisType,
     OmniContext,
-    Phase6Orchestrator,
+    Phase6OrchestratorAgent,
     PhaseResult,
     PhaseType,
     RefactorProposal,
@@ -72,7 +72,7 @@ from .intelligence import (
     SemanticAnalyzer,
     SemanticMatch,
     StrategicAdvisor,
-    UnifiedOrchestrator,
+    UnifiedOrchestratorAgent,
 )
 from .learning import (
     ConfidenceLevel,
@@ -104,7 +104,7 @@ from .observability import (
 )
 from .orchestrator import quick_validate, run_resume_mission
 from .proactive import (
-    CapabilityMonitor,
+    CapabilityMonitorAgent,
     CapabilityProfile,
     HandoffReason,
     HandoffRequest,
@@ -126,11 +126,11 @@ __all__ = [
     "ContentQualityAgent",
     "FactCheckAgent",
     "BrandComplianceAgent",
-    "TemplateOptimizer",
+    "TemplateOptimizerAgent",
     "SectionBalanceAgent",
     "ATSCompatibilityAgent",
     "TestPilot",
-    "StrategicPlanner",
+    "StrategicPlannerAgent",
     "ReflectionAgent",
     # Orchestration (Phase 1)
     "run_resume_mission",
@@ -139,12 +139,12 @@ __all__ = [
     "HealingStrategy",
     "CycleResult",
     "HealingResult",
-    "SignalRouter",
+    "SignalRouterAgent",
     "AgentFactory",
     "HealingCycle",
-    "HealingOrchestrator",
+    "HealingOrchestratorAgent",
     "run_self_healing_mission",
-    "ConvergenceDetector",
+    "ConvergenceDetectorAgent",
     "AutomaticRollback",
     # Learning & Intelligence (Phase 3)
     "ConfidenceLevel",
@@ -166,7 +166,7 @@ __all__ = [
     "ResilientMutator",
     "ImportPatcher",
     "ConversationalRepair",
-    "Phase4Orchestrator",
+    "Phase4OrchestratorAgent",
     # Observability & Telemetry (Phase 5)
     "TraceLevel",
     "MetricType",
@@ -195,8 +195,8 @@ __all__ = [
     "SemanticAnalyzer",
     "StrategicAdvisor",
     "OmniContext",
-    "UnifiedOrchestrator",
-    "Phase6Orchestrator",
+    "UnifiedOrchestratorAgent",
+    "Phase6OrchestratorAgent",
     # Governance & Meta-Optimization (Phase 7)
     "DependencyStatus",
     "DocComplianceLevel",
@@ -206,11 +206,11 @@ __all__ = [
     "PromptIssue",
     "CostPrediction",
     "DependencyArbiter",
-    "StrictDocEnforcer",
+    "StrictDocEnforcerAgent",
     "DashboardGenerator",
     "PromptGovernor",
     "PredictiveBudgetManager",
-    "Phase7Orchestrator",
+    "Phase7OrchestratorAgent",
     # Proactive & Predictive (L4.5 Enhancements)
     "TaskPriority",
     "HandoffReason",
@@ -219,6 +219,6 @@ __all__ = [
     "CapabilityProfile",
     "ProactiveScheduler",
     "PredictiveHandoff",
-    "CapabilityMonitor",
+    "CapabilityMonitorAgent",
     "ProactiveAgent",
 ]

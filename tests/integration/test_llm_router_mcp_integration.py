@@ -80,9 +80,9 @@ class test_overseer_migration:
 
     @pytest.mark.asyncio
     async def test_safety_inspector_uses_mcp(self) -> Any:
-        """Verify SafetyInspector uses LLM Router MCP for Socratic Judge."""
-        from agentic_core.L5_safety.guardrails.overseer import SafetyInspector
-        inspector: Any = SafetyInspector(enable_socratic_judge=True)
+        """Verify SafetyInspectorAgent uses LLM Router MCP for Socratic Judge."""
+        from agentic_core.L5_safety.guardrails.overseer import SafetyInspectorAgent
+        inspector: Any = SafetyInspectorAgent(enable_socratic_judge=True)
         assert inspector.enable_socratic_judge is True, 'Socratic Judge should be enabled'
 
 class test_red_sentinel_migration:
@@ -90,10 +90,10 @@ class test_red_sentinel_migration:
 
     @pytest.mark.asyncio
     async def test_red_sentinel_uses_mcp(self) -> Any:
-        """Verify RedSentinel uses LLM Router MCP for hostile input generation."""
-        from agentic_core.L5_safety.guardrails.red_sentinel import RedSentinel
-        sentinel: Any = RedSentinel()
-        assert sentinel is not None, 'RedSentinel should initialize'
+        """Verify RedSentinelAgent uses LLM Router MCP for hostile input generation."""
+        from agentic_core.L5_safety.guardrails.red_sentinel import RedSentinelAgent
+        sentinel: Any = RedSentinelAgent()
+        assert sentinel is not None, 'RedSentinelAgent should initialize'
 
 class test_guardian_enforcement:
     """Test guardian enforcement of LLM Router MCP usage."""

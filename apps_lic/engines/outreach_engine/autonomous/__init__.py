@@ -11,14 +11,14 @@ Ported from Resume Engine autonomous module with outreach-specific adaptations.
 
 from .agents import (
     CampaignBalanceAgent,
-    CampaignPlanner,
+    CampaignPlannerAgent,
     ContactValidatorAgent,
     DeliverabilityAgent,
     LeadQualityAgent,
     MessageComplianceAgent,
     OutreachReflectionAgent,
     OutreachTestPilot,
-    TemplateOptimizer,
+    TemplateOptimizerAgent,
 )
 from .outreach_base import OutreachAgent
 from .context import OutreachBudgetManager, OutreachEngineContext
@@ -26,10 +26,10 @@ from .healing import (
     OutreachAgentFactory,
     OutreachCycleResult,
     OutreachHealingCycle,
-    OutreachHealingOrchestrator,
+    OutreachHealingOrchestratorAgent,
     OutreachHealingResult,
     OutreachHealingStrategy,
-    OutreachSignalRouter,
+    OutreachSignalRouterAgent,
     run_outreach_healing_mission,
 )
 from .learning import (
@@ -42,10 +42,10 @@ from .observability import (
     OutreachAuditReporter,
     OutreachExecutionTracer,
     OutreachMetricsCollector,
-    OutreachPhase5Orchestrator,
+    OutreachPhase5OrchestratorAgent,
 )
 from .proactive import (
-    OutreachCapabilityMonitor,
+    OutreachCapabilityMonitorAgent,
     OutreachCapabilityProfile,
     OutreachHandoffReason,
     OutreachHandoffRequest,
@@ -66,20 +66,20 @@ __all__ = [
     "LeadQualityAgent",
     "ContactValidatorAgent",
     "MessageComplianceAgent",
-    "TemplateOptimizer",
+    "TemplateOptimizerAgent",
     "CampaignBalanceAgent",
     "DeliverabilityAgent",
     "OutreachTestPilot",
-    "CampaignPlanner",
+    "CampaignPlannerAgent",
     "OutreachReflectionAgent",
     # Healing
     "OutreachHealingStrategy",
     "OutreachCycleResult",
     "OutreachHealingResult",
-    "OutreachSignalRouter",
+    "OutreachSignalRouterAgent",
     "OutreachAgentFactory",
     "OutreachHealingCycle",
-    "OutreachHealingOrchestrator",
+    "OutreachHealingOrchestratorAgent",
     "run_outreach_healing_mission",
     # Learning
     "OutreachLearningLoop",
@@ -90,7 +90,7 @@ __all__ = [
     "OutreachExecutionTracer",
     "OutreachMetricsCollector",
     "OutreachAuditReporter",
-    "OutreachPhase5Orchestrator",
+    "OutreachPhase5OrchestratorAgent",
     # Proactive & Predictive (L4.5 Enhancements)
     "OutreachTaskPriority",
     "OutreachHandoffReason",
@@ -99,6 +99,6 @@ __all__ = [
     "OutreachCapabilityProfile",
     "OutreachProactiveScheduler",
     "OutreachPredictiveHandoff",
-    "OutreachCapabilityMonitor",
+    "OutreachCapabilityMonitorAgent",
     "OutreachProactiveAgent",
 ]

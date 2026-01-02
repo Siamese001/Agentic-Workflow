@@ -61,7 +61,7 @@ class TypeHintEnforcementAgent(HealerMixin):
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
 
-            fixer = TypeHintFixer(self.FALLBACK_PARAM, self.FALLBACK_RETURN, self.FALLBACK_VAR)
+            fixer = TypeHintFixerAgent(self.FALLBACK_PARAM, self.FALLBACK_RETURN, self.FALLBACK_VAR)
             new_tree = fixer.visit(tree)
             
             if fixer.added_count > 0:
@@ -94,8 +94,8 @@ class TypeHintEnforcementAgent(HealerMixin):
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-# NAMING FIXED: TypeHintFixer → TypeHintFixer
-class TypeHintFixer(HealerMixin, ast.NodeTransformer):
+# NAMING FIXED: TypeHintFixerAgent → TypeHintFixerAgent
+class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
     """
     AST transformer that adds Missing type hints to public symbols.
     """

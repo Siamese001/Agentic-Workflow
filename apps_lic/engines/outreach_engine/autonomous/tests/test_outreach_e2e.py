@@ -19,18 +19,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.agents import (
     CampaignBalanceAgent,
-    CampaignPlanner,
+    CampaignPlannerAgent,
     ContactValidatorAgent,
     DeliverabilityAgent,
     LeadQualityAgent,
     MessageComplianceAgent,
     OutreachReflectionAgent,
     OutreachTestPilot,
-    TemplateOptimizer,
+    TemplateOptimizerAgent,
 )
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator,
+    OutreachHealingOrchestratorAgent,
     OutreachHealingResult,
     run_outreach_healing_mission,
 )
@@ -38,7 +38,7 @@ from apps_lic.outreach_engine.autonomous.learning import (
     OutreachLearningAgent,
     OutreachMemoryPersistence,
 )
-from apps_lic.outreach_engine.autonomous.observability import OutreachPhase5Orchestrator
+from apps_lic.outreach_engine.autonomous.observability import OutreachPhase5OrchestratorAgent
 
 
 @pytest.fixture
@@ -150,7 +150,7 @@ class TestCompleteCampaignLifecycle:
         ctx.backup_campaign("initial")
 
         # Start observability
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
         phase5.start_mission("campaign_lifecycle")
 
         # Run all validation agents
@@ -158,7 +158,7 @@ class TestCompleteCampaignLifecycle:
             LeadQualityAgent(ctx),
             ContactValidatorAgent(ctx),
             MessageComplianceAgent(ctx),
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             CampaignBalanceAgent(ctx),
             DeliverabilityAgent(ctx),
         ]
@@ -217,14 +217,14 @@ class TestMultiPhaseOrchestration:
         ctx.leads = enterprise_leads
         ctx.messages = professional_messages
 
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
         learning_agent = OutreachLearningAgent(ctx)
 
         # Phase 1: Planning
         phase5.start_mission("multi_phase_test")
 
-        planner = CampaignPlanner(ctx)
-        step_id = phase5.track_agent("CampaignPlanner", "plan")
+        planner = CampaignPlannerAgent(ctx)
+        step_id = phase5.track_agent("CampaignPlannerAgent", "plan")
         await planner.execute()
         phase5.complete_agent(step_id, success=True)
 
@@ -242,8 +242,8 @@ class TestMultiPhaseOrchestration:
 
         # Phase 3: Healing (if needed)
         if ctx.signals:
-            step_id = phase5.track_agent("HealingOrchestrator", "heal")
-            orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+            step_id = phase5.track_agent("HealingOrchestratorAgent", "heal")
+            orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
             result = await orchestrator.run()
             phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 

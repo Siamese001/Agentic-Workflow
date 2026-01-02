@@ -16,7 +16,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class HygieneValidator(HealerMixin, MCPHardenedMixin):
+class HygieneValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Detects 'Rot' within the system:
     1. Dead Code (Orphaned files that are never imported)
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     print(f"Running Hygiene Validator on: {root}")
 
-    validator = HygieneValidator(root)
+    validator = HygieneValidatorAgent(root)
     validator.scan()
 
     print("\n=== DUPLICATE FILES ===")

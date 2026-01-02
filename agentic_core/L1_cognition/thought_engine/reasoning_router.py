@@ -27,7 +27,7 @@ class TaskType(Enum):
     UNKNOWN = "unknown"
 
 
-class ReasoningRouter(HealerMixin):
+class ReasoningRouterAgent(HealerMixin):
     """Routes tasks to appropriate reasoning strategies.
     
     Implements a simple strategy selector that uses ReAct for tasks
@@ -203,7 +203,7 @@ class ReasoningRouter(HealerMixin):
 def select_reasoning_strategy(
     Task: str,
     context: Optional[Dict[str, Any]] = None,
-    router: Optional[ReasoningRouter] = None,
+    router: Optional[ReasoningRouterAgent] = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
     
@@ -216,6 +216,6 @@ def select_reasoning_strategy(
         Selected ReasoningMode
     """
     if router is None:
-        router = ReasoningRouter()
+        router = ReasoningRouterAgent()
     
     return router.select_strategy(Task, context)

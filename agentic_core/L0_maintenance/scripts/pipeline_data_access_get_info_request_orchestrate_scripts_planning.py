@@ -53,7 +53,7 @@ class ScriptsPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class ScriptsPlanningOrchestrator(HealerMixin):
+class ScriptsPlanningOrchestratorAgent(HealerMixin):
     """Orchestrator for planning script execution operations."""
 
     def __init__(self, config: Optional[ScriptsPlanningConfig]=None):
@@ -76,12 +76,12 @@ class ScriptsPlanningOrchestrator(HealerMixin):
             execution_plan: Any = self._resolve_dependencies(script_tasks)
             resource_requirements: Any = self._calculate_resources(execution_plan)
             total_duration: Any = self._estimate_duration(execution_plan)
-            result: Any = ScriptsPlanningResult(success=True, execution_plan=execution_plan, estimated_total_duration=total_duration, resource_requirements=resource_requirements, metadata={'planned_at': datetime.utcnow().isoformat(), 'task_count': len(execution_plan), 'orchestrator': 'ScriptsPlanningOrchestrator'})
+            result: Any = ScriptsPlanningResult(success=True, execution_plan=execution_plan, estimated_total_duration=total_duration, resource_requirements=resource_requirements, metadata={'planned_at': datetime.utcnow().isoformat(), 'task_count': len(execution_plan), 'orchestrator': 'ScriptsPlanningOrchestratorAgent'})
             self.Logger.info(f'Successfully planned {len(execution_plan)} tasks')
             return result
         except Exception as e:
             self.Logger.error(f'Scripts planning failed: {str(e)}')
-            return ScriptsPlanningResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'orchestrator': 'ScriptsPlanningOrchestrator'})
+            return ScriptsPlanningResult(success=False, errors=[str(e)], metadata={'failed_at': datetime.utcnow().isoformat(), 'orchestrator': 'ScriptsPlanningOrchestratorAgent'})
 
     def _validate_tasks(self, tasks: List[ScriptTask]) -> None:
         """Validate script tasks before planning."""
@@ -140,10 +140,10 @@ class ScriptsPlanningOrchestrator(HealerMixin):
                 total += 60.0 * priority_multipliers.get(Task.priority, 1.0)
         return total
 
-def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dependency_check: bool=True, **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestrator:
+def create_scripts_planning_orchestrator(max_concurrent_tasks: int=5, enable_dependency_check: bool=True, **kwargs: Dict[str, object]) -> ScriptsPlanningOrchestratorAgent:
     """Create a configured scripts planning orchestrator."""
     config: Any = ScriptsPlanningConfig(max_concurrent_tasks=max_concurrent_tasks, enable_dependency_check=enable_dependency_check, **kwargs)
-    return ScriptsPlanningOrchestrator(config)
+    return ScriptsPlanningOrchestratorAgent(config)
 
 def plan_script_execution(script_tasks: List[Dict[str, Any]], config: Optional[Dict[str, Any]]=None) -> Dict[str, Any]:
     """Plan script execution from simple Task definitions.
@@ -160,7 +160,7 @@ def plan_script_execution(script_tasks: List[Dict[str, Any]], config: Optional[D
         Task: Any = ScriptTask(id=task_dict['id'], script_path=task_dict['script_path'], dependencies=task_dict.get('dependencies', []), priority=ScriptExecutionPriority(task_dict.get('priority', 'normal')), parameters=task_dict.get('parameters', {}), estimated_duration=task_dict.get('estimated_duration'), retry_count=task_dict.get('retry_count', 0), max_retries=task_dict.get('max_retries', 3))
         tasks.append(Task)
     OrchestratorConfig: Any = ScriptsPlanningConfig(**config) if config else None
-    orchestrator: Any = ScriptsPlanningOrchestrator(OrchestratorConfig)
+    orchestrator: Any = ScriptsPlanningOrchestratorAgent(OrchestratorConfig)
     result: Any = orchestrator.execute(tasks)
     return {'success': result.success, 'execution_plan': [{'id': t.id, 'script_path': t.script_path, 'dependencies': t.dependencies, 'priority': t.priority.value, 'parameters': t.parameters, 'estimated_duration': t.estimated_duration} for t in result.execution_plan], 'estimated_total_duration': result.estimated_total_duration, 'resource_requirements': result.resource_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
 if __name__ == '__main__':

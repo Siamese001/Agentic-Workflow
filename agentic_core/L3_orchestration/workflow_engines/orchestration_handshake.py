@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
-from agentic_core.L3_orchestration.workflow_engines.CachedOrchestrator import CachedOrchestrator
+from agentic_core.L3_orchestration.workflow_engines.CachedOrchestratorAgent import CachedOrchestratorAgent
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -17,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 
-class OrchestrationHandshake(CachedOrchestrator):
+class OrchestrationHandshake(CachedOrchestratorAgent):
     """
     Sovereign handshake protocol — now with deep L3 caching.
     """

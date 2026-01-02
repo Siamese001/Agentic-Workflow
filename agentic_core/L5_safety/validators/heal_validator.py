@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-L5 Safety: HealValidator
+L5 Safety: HealValidatorAgent
 Post-LLM output validation pipeline for healed code.
 
 RESPONSIBILITIES:
@@ -76,7 +76,7 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class HealValidator(HealerMixin, MCPHardenedMixin):
+class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Multi-stage validator for LLM-healed code.
     
@@ -100,9 +100,9 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
             self.bandit_manager = bandit_manager
             self.bandit_config = bandit_config
             self.bandit_available = True
-            Logger.info("[HealValidator] Bandit static analysis available")
+            Logger.info("[HealValidatorAgent] Bandit static analysis available")
         except ImportError:
-            Logger.warning("[HealValidator] Bandit not available - using regex fallback")
+            Logger.warning("[HealValidatorAgent] Bandit not available - using regex fallback")
     
     def validate_healed_code(
         self, 
@@ -165,7 +165,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
         
         result["stage"] = "complete"
         result["details"]["passed_all_stages"] = True
-        Logger.info(f"[HealValidator] ✓ {file_path.name} passed all validation stages")
+        Logger.info(f"[HealValidatorAgent] ✓ {file_path.name} passed all validation stages")
         return result
     
     def _validate_syntax(self, code: str, file_path: Path) -> Dict[str, any]:
@@ -174,7 +174,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
             ast.parse(code)
             return {"valid": True, "reason": ""}
         except SyntaxError as e:
-            Logger.error(f"[HealValidator] Syntax error in {file_path.name}:{e.lineno} - {e.msg}")
+            Logger.error(f"[HealValidatorAgent] Syntax error in {file_path.name}:{e.lineno} - {e.msg}")
             return {
                 "valid": False,
                 "reason": f"Syntax error at line {e.lineno}: {e.msg}",
@@ -185,7 +185,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
                 }
             }
         except Exception as e:
-            Logger.error(f"[HealValidator] AST parsing failed for {file_path.name}: {e}")
+            Logger.error(f"[HealValidatorAgent] AST parsing failed for {file_path.name}: {e}")
             return {
                 "valid": False,
                 "reason": f"AST parsing error: {str(e)}",
@@ -207,7 +207,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
                 })
         
         if detected_patterns:
-            Logger.warning(f"[HealValidator] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found")
+            Logger.warning(f"[HealValidatorAgent] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found")
             return {
                 "valid": False,
                 "reason": f"Dangerous patterns detected: {', '.join([p['pattern'] for p in detected_patterns[:3]])}",
@@ -245,7 +245,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
                 ]
                 
                 if high_severity_issues:
-                    Logger.warning(f"[HealValidator] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}")
+                    Logger.warning(f"[HealValidatorAgent] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}")
                     return {
                         "valid": False,
                         "reason": f"Static analysis found {len(high_severity_issues)} high-Severity security issues",
@@ -269,7 +269,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
                 temp_path.unlink(missing_ok=True)
                 
         except Exception as e:
-            Logger.error(f"[HealValidator] Bandit analysis failed: {e}")
+            Logger.error(f"[HealValidatorAgent] Bandit analysis failed: {e}")
             # Don't fail validation if Bandit crashes - fall back to pattern matching
             return {"valid": True, "reason": f"Bandit analysis skipped: {e}"}
     
@@ -283,7 +283,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
         diff_size = len(diff)
         
         if diff_size > self.max_diff_lines:
-            Logger.warning(f"[HealValidator] Excessive diff in {file_path.name}: {diff_size} lines")
+            Logger.warning(f"[HealValidatorAgent] Excessive diff in {file_path.name}: {diff_size} lines")
             return {
                 "valid": False,
                 "reason": f"Diff too large: {diff_size} lines (max: {self.max_diff_lines})",
@@ -297,7 +297,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
         if original_loc > 0:
             retention_ratio = healed_loc / original_loc
             if retention_ratio < self.min_code_retention:
-                Logger.warning(f"[HealValidator] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained")
+                Logger.warning(f"[HealValidatorAgent] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained")
                 return {
                     "valid": False,
                     "reason": f"Excessive code deletion: only {retention_ratio:.1%} of original code retained",
@@ -310,7 +310,7 @@ class HealValidator(HealerMixin, MCPHardenedMixin):
         
         # Check 3: Detect ellipsis truncation (common LLM failure mode)
         if '...' in healed_code and healed_loc < original_loc * 0.8:
-            Logger.warning(f"[HealValidator] Truncation detected in {file_path.name}")
+            Logger.warning(f"[HealValidatorAgent] Truncation detected in {file_path.name}")
             return {
                 "valid": False,
                 "reason": "LLM truncation detected (ellipsis with significant code loss)",

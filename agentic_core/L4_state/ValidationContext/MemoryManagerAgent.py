@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class MemoryManager(HealerMixin):
+class MemoryManagerAgent(HealerMixin):
     """
     Manages JSON-based persistence for validation state.
     
@@ -325,7 +325,7 @@ class MemoryManager(HealerMixin):
 
 _memory_manager = None
 
-def get_memory_manager(base_dir: str=None) -> MemoryManager:
+def get_memory_manager(base_dir: str=None) -> MemoryManagerAgent:
     """
     Get or create global memory manager instance.
     
@@ -333,9 +333,9 @@ def get_memory_manager(base_dir: str=None) -> MemoryManager:
         base_dir: Base directory for memory storage
         
     Returns:
-        MemoryManager instance
+        MemoryManagerAgent instance
     """
     global _memory_manager
     if _memory_manager is None:
-        _memory_manager = MemoryManager(base_dir)
+        _memory_manager = MemoryManagerAgent(base_dir)
     return _memory_manager

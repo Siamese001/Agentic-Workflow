@@ -30,7 +30,7 @@ __all__ = [
     "OpenAIClient",
     "AnthropicClient",
     "VertexClient",
-    "MultiProviderRouter",
+    "MultiProviderRouterAgent",
     # Configuration classes
     "OpenAIConfig",
     "AnthropicConfig",

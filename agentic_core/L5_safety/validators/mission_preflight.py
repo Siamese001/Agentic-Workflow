@@ -12,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealer
+from agentic_core.L5_safety.guardrails.hierarchy_healer import HierarchyHealerAgent
 
 
 class MissionPreflight:
@@ -34,7 +34,7 @@ class MissionPreflight:
         self.project_root = project_root.resolve()
         self.healing_enabled = healing_enabled
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        self.HierarchyHealer = HierarchyHealer(project_root, healing_enabled)
+        self.HierarchyHealerAgent = HierarchyHealerAgent(project_root, healing_enabled)
         
         # Import agents dynamically to avoid circular imports
         self._location_agent = None
@@ -99,7 +99,7 @@ class MissionPreflight:
         results["hierarchy"] = len(hierarchy_violations)
         
         if hierarchy_violations and self.healing_enabled:
-            healing_results = self.HierarchyHealer.heal_hierarchy_violations()
+            healing_results = self.HierarchyHealerAgent.heal_hierarchy_violations()
             results["hierarchy_healed"] = healing_results["files_relocated"]
             
             # Re-check after healing
@@ -110,7 +110,7 @@ class MissionPreflight:
         
         # Check 3: Purge orphaned files
         if self.healing_enabled:
-            purge_results = self.HierarchyHealer.purge_orphaned_files()
+            purge_results = self.HierarchyHealerAgent.purge_orphaned_files()
             results["purged_orphans"] = purge_results["purged"]
             if purge_results["errors"]:
                 results.setdefault("errors", []).extend(purge_results["errors"])

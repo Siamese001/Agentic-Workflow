@@ -17,9 +17,9 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
-def get_sovereign_rag_orchestrator() -> SovereignRagOrchestrator:
+def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
     """Brief description of functionality and purpose."""
-    return SovereignRagOrchestrator()
+    return SovereignRagOrchestratorAgent()
 
 
 @timeout(300)
@@ -27,7 +27,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
     """L3 orchestration/workflow_engines - operational only."""
     if _call_path is None:
         _call_path = set()
-    agent_name = "SovereignRagOrchestrator"
+    agent_name = "SovereignRagOrchestratorAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
     if depth > max_depth:
@@ -40,7 +40,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         _call_path.discard(agent_name)
 
 
-class SovereignRagOrchestrator(HealerMixin):
+class SovereignRagOrchestratorAgent(HealerMixin):
     """Brief description of functionality and purpose."""
 
     def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None):

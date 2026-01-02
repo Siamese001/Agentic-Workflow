@@ -4,7 +4,7 @@ Governance & Meta-Optimization Module - Phase 7 Implementation
 
 This module provides advanced governance capabilities:
 - DependencyArbiter: Dependency hygiene and environment integrity
-- StrictDocEnforcer: Type contract compliance in docstrings
+- StrictDocEnforcerAgent: Type contract compliance in docstrings
 - DashboardGenerator: HTML mission control visualization
 - PromptGovernor: AI prompt security and segregation
 - PredictiveBudgetManager: Cost prediction before execution
@@ -274,7 +274,7 @@ class DependencyArbiter:
         }
 
 
-class StrictDocEnforcer:
+class StrictDocEnforcerAgent:
     """
     Enforces type contract compliance in docstrings.
 
@@ -864,7 +864,7 @@ class PredictiveBudgetManager:
         }
 
 
-class Phase7Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 7 governance components.
 
@@ -880,7 +880,7 @@ class Phase7Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         self.ctx = ctx
 
         self.dependency = DependencyArbiter(ctx)
-        self.doc_enforcer = StrictDocEnforcer(ctx)
+        self.doc_enforcer = StrictDocEnforcerAgent(ctx)
         self.dashboard = DashboardGenerator(ctx)
         self.prompt_gov = PromptGovernor(ctx)
         self.budget = PredictiveBudgetManager(ctx, budget_limit)

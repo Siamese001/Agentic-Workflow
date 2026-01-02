@@ -20,7 +20,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 Logger: Any = logging.getLogger(__name__)
 
-class McpRouter(HealerMixin, MCPHardenedMixin):
+class McpRouterAgent(HealerMixin, MCPHardenedMixin):
     """
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing
     specific layer failures to the appropriate installed MCP.

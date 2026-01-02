@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Types and models for PeerIntelligenceAuditor."""
+"""Types and models for PeerIntelligenceAuditorAgent."""
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto

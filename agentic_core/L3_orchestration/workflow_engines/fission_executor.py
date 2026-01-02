@@ -10,17 +10,17 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 if TYPE_CHECKING:
-    from agentic_core.FissionManager import FissionManager
+    from agentic_core.FissionManagerAgent import FissionManagerAgent
 Logger: Any = logging.getLogger(__name__)
 
-async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 'FissionManager') -> bool:
+async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 'FissionManagerAgent') -> bool:
     """
     Apply a fission blueprint to split a monolithic file into sub-modules.
     
     Args:
         file_path: Path to the monolithic file
         blueprint: Fission blueprint with module definitions
-        fission_mgr: FissionManager instance
+        fission_mgr: FissionManagerAgent instance
         
     Returns:
         bool: True if fission was successful, False otherwise

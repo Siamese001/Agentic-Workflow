@@ -13,7 +13,7 @@ Logger: Any = logging.getLogger(__name__)
 class LockStorageProtocol(Protocol):
     """
     Protocol defining the interface for distributed lock storage operations.
-    This allows ConcurrencyGuardian to depend on an abstraction, not a concrete implementation.
+    This allows ConcurrencyGuardianAgent to depend on an abstraction, not a concrete implementation.
     """
 
     async def acquire_lock(self, key: str, timeout: float) -> bool:
@@ -33,7 +33,7 @@ _global_lock_implementation: Optional[LockStorageProtocol] = None
 
 def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     """
-    Configures the distributed lock implementation for the ConcurrencyGuardian module.
+    Configures the distributed lock implementation for the ConcurrencyGuardianAgent module.
     This function should be called once at application startup or in the composition root
     to inject the concrete lock storage dependency.
 
@@ -44,7 +44,7 @@ def configure_distributed_locks(lock_impl: LockStorageProtocol) -> Any:
     if not isinstance(lock_impl, LockStorageProtocol):
         raise TypeError('Provided lock_impl must implement LockStorageProtocol.')
     _global_lock_implementation = lock_impl
-    LOGGER.info('Distributed lock implementation configured for ConcurrencyGuardian module.')
+    LOGGER.info('Distributed lock implementation configured for ConcurrencyGuardianAgent module.')
 
 def _get_lock_implementation() -> LockStorageProtocol:
     """
@@ -52,13 +52,13 @@ def _get_lock_implementation() -> LockStorageProtocol:
     Raises a RuntimeError if the implementation has not been configured.
     """
     if _global_lock_implementation is None:
-        raise RuntimeError('Distributed lock implementation not configured. Call configure_distributed_locks() before using ConcurrencyGuardian or any function that relies on distributed locks.')
+        raise RuntimeError('Distributed lock implementation not configured. Call configure_distributed_locks() before using ConcurrencyGuardianAgent or any function that relies on distributed locks.')
     return _global_lock_implementation
 
 async def acquire_lock(key: str, timeout: float) -> bool:
     """
     Acquire a distributed lock using the configured implementation.
-    This function is intended for internal use by ConcurrencyGuardian and
+    This function is intended for internal use by ConcurrencyGuardianAgent and
     other components within this module that need to interact with the
     distributed lock system.
     """
@@ -67,7 +67,7 @@ async def acquire_lock(key: str, timeout: float) -> bool:
 async def release_lock(key: str) -> bool:
     """
     Release a distributed lock using the configured implementation.
-    This function is intended for internal use by ConcurrencyGuardian and
+    This function is intended for internal use by ConcurrencyGuardianAgent and
     other components within this module that need to interact with the
     distributed lock system.
     """
@@ -75,7 +75,7 @@ async def release_lock(key: str) -> bool:
 default_lock_timeout: Any = int(os.getenv('DEFAULT_LOCK_TIMEOUT', '30'))
 max_retry_attempts: Any = int(os.getenv('MAX_RETRY_ATTEMPTS', '3'))
 retry_delay: Any = float(os.getenv('RETRY_DELAY', '0.5'))
-few_shot_concurrency: Any = '\nYou are the ConcurrencyGuardian, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
+few_shot_concurrency: Any = '\nYou are the ConcurrencyGuardianAgent, an expert in managing concurrent operations.\n\nYour role is to:\n1. Prevent race conditions in multi-agent execution\n2. Manage resource locks efficiently\n3. Detect and resolve deadlocks\n4. Ensure thread-safe operations\n\nRules:\n- Always acquire locks before accessing shared resources\n- Release locks promptly after use\n- Use timeouts to prevent deadlocks\n- Prefer async operations when possible\n'
 
 class LockInfo:
     """Information about an active lock."""
@@ -97,7 +97,7 @@ class LockInfo:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class ConcurrencyGuardian(HealerMixin):
+class ConcurrencyGuardianAgent(HealerMixin):
     """
     Manages concurrent operations and prevents conflicts.
 
@@ -109,12 +109,12 @@ class ConcurrencyGuardian(HealerMixin):
     """
 
     def __init__(self):
-        """Initialize the ConcurrencyGuardian."""
+        """Initialize the ConcurrencyGuardianAgent."""
         self.active_locks: Dict[str, LockInfo] = {}
         self.lock_history: List[Dict] = []
         self.enabled = True
         self.stats = {'locks_acquired': 0, 'locks_released': 0, 'timeouts': 0, 'conflicts': 0}
-        LOGGER.info('ConcurrencyGuardian initialized')
+        LOGGER.info('ConcurrencyGuardianAgent initialized')
 
     async def acquire_lock(self, key: str, owner: str=None, timeout: float=None) -> bool:
         """

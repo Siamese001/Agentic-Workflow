@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-ContextAwareValidator – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
+ContextAwareValidatorAgent – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
 
 Purpose:
   Move validation from rigid rule enforcement to intelligent, context-sensitive judgment.
@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 
-class ContextAwareValidator:
+class ContextAwareValidatorAgent:
     """
     Base class for intelligent validators.
     Subclasses implement rule-specific logic while inheriting context analysis.

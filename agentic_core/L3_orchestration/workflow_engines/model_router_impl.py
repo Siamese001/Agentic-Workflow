@@ -1,12 +1,12 @@
 from __future__ import annotations
-"""Implementation for ModelRouter."""
+"""Implementation for ModelRouterAgent."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class ModelRouter(HealerMixin):
+class ModelRouterAgent(HealerMixin):
     """Dynamic model router for cost-optimized LLM selection.
 
     Features:
@@ -174,13 +174,13 @@ class ModelRouter(HealerMixin):
         """
         return f''
 
-def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouter:
+def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelRouterAgent:
     """Factory function to create model router.
 
     Args:
         cost_budget_per_request: Cost budget per request
 
     Returns:
-        ModelRouter instance
+        ModelRouterAgent instance
     """
-    return ModelRouter(cost_budget_per_request=cost_budget_per_request)
+    return ModelRouterAgent(cost_budget_per_request=cost_budget_per_request)

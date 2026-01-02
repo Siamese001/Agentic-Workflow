@@ -7,7 +7,7 @@ Tests the core GitOps functionality:
 - ResilientMutator
 - ImportPatcher
 - ConversationalRepair
-- Phase4Orchestrator
+- Phase4OrchestratorAgent
 """
 
 from pathlib import Path
@@ -22,7 +22,7 @@ from ..gitops import (
     ImportPatcher,
     MutationMode,
     MutationResult,
-    Phase4Orchestrator,
+    Phase4OrchestratorAgent,
     RepairProposal,
     ResilientMutator,
 )
@@ -419,7 +419,7 @@ class TestConversationalRepair:
 
         assert repair.ctx == ctx
         assert "Sherlock" in repair.agents
-        assert "SafetyInspector" in repair.agents
+        assert "SafetyInspectorAgent" in repair.agents
 
     def test_clean_proposal_markdown(self, ctx):
         """Test cleaning markdown from proposal."""
@@ -442,11 +442,11 @@ class TestConversationalRepair:
 
 
 class TestPhase4Orchestrator:
-    """Tests for Phase4Orchestrator class."""
+    """Tests for Phase4OrchestratorAgent class."""
 
     def test_init(self, ctx):
-        """Test Phase4Orchestrator initialization."""
-        orchestrator = Phase4Orchestrator(ctx)
+        """Test Phase4OrchestratorAgent initialization."""
+        orchestrator = Phase4OrchestratorAgent(ctx)
 
         assert orchestrator.ctx == ctx
         assert orchestrator.gitops is not None
@@ -457,7 +457,7 @@ class TestPhase4Orchestrator:
     @pytest.mark.asyncio
     async def test_heal_with_gitops_backup(self, ctx, sample_python_file):
         """Test healing with GitOps backup."""
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
 
         content = Path(sample_python_file).read_text()
@@ -474,7 +474,7 @@ class TestPhase4Orchestrator:
 
     def test_get_comprehensive_stats(self, ctx):
         """Test getting comprehensive statistics."""
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
 
         stats = orchestrator.get_comprehensive_stats()
 

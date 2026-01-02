@@ -5,9 +5,9 @@ Canon Validator Pattern Agents
 This module defines a set of SubAtomicAgents responsible for enforcing coding patterns,
 validating UI components, and performing semantic analysis within a codebase.
 
-- PatternEnforcer: Checks for common Python coding patterns and best practices.
+- PatternEnforcerAgent: Checks for common Python coding patterns and best practices.
 - UIValidationAgent: Integrates with UI design tools (e.g., Figma MCP) for UI pattern validation.
-- SemanticMapper: Analyzes code structure to identify refactoring opportunities.
+- SemanticMapperAgent: Analyzes code structure to identify refactoring opportunities.
 """
 import ast
 import logging
@@ -31,7 +31,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
-class PatternEnforcer(HealerMixin):
+class PatternEnforcerAgent(HealerMixin):
     """
     Enforces coding patterns and best practices across Python files.
 
@@ -269,7 +269,7 @@ class UiValidationAgent(SubAtomicAgent):
         print('   ℹ UI validation placeholder - Figma MCP integration pending')
 
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
-class SemanticMapper(HealerMixin):
+class SemanticMapperAgent(HealerMixin):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """

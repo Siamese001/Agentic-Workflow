@@ -38,7 +38,7 @@ class ResourceThreshold:
     budget_critical_threshold: float = 0.95
     min_success_rate: float = 0.3
 
-class ProactiveResourceManager(HealerMixin):
+class ProactiveResourceManagerAgent(HealerMixin):
     """
     Manages healing resources proactively to prevent exhaustion.
     
@@ -335,6 +335,6 @@ class ProactiveResourceManager(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-    def get_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManager:
+    def get_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManagerAgent:
         """Factory function to create proactive resource manager."""
-        return ProactiveResourceManager(thresholds=thresholds)
+        return ProactiveResourceManagerAgent(thresholds=thresholds)

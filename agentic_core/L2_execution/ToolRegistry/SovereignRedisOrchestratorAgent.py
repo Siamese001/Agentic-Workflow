@@ -15,11 +15,11 @@ from typing import Any, Optional
 import redis
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-# NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
+# NAMING FIXED: SovereignRedisOrchestratorAgent → SovereignRedisOrchestratorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SovereignRedisOrchestrator(HealerMixin, MCPHardenedMixin):
+class SovereignRedisOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     '''Brief description of functionality and purpose.'''
     
     def __init__(self):
@@ -141,6 +141,6 @@ class SovereignRedisOrchestrator(HealerMixin, MCPHardenedMixin):
 # Singleton instance for global use
 _orchestrator = None
 
-def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestrator:
+def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestratorAgent:
     """Factory function to get sovereign redis orchestrator instance."""
-    return SovereignRedisOrchestrator()
+    return SovereignRedisOrchestratorAgent()

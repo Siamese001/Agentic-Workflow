@@ -13,7 +13,7 @@ Features:
 - File export of completed traces (JSON, timestamped or single file)
 
 Designed for integration with:
-- ComplianceOrchestrator (root Span)
+- ComplianceOrchestratorAgent (root Span)
 - Individual agents (child spans)
 - ReportingAgent (future trace visualization)
 
@@ -381,7 +381,7 @@ class TracingAgent(HealerMixin):
         # Force sampling for root mission trace
         self.force_sample_trace(trace_id)
 
-        attributes = {"mission_id": mission_id, "agent": "ComplianceOrchestrator"}
+        attributes = {"mission_id": mission_id, "agent": "ComplianceOrchestratorAgent"}
         with self.create_span("full_compliance_mission", trace_id, attributes=attributes) as root_span:
             try:
                 yield root_span, trace_id

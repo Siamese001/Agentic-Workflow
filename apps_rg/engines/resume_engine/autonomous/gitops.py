@@ -797,8 +797,8 @@ class ConversationalRepair:
         # Agent personas
         self.agents = {
             "Sherlock": "Root-cause detective. Analyzes tracebacks and cross-file interactions.",
-            "SafetyInspector": "Security enforcer. No eval/exec, no hardcoded secrets.",
-            "DependencySentinel": "Import fixer. Resolves circular dependencies and module paths.",
+            "SafetyInspectorAgent": "Security enforcer. No eval/exec, no hardcoded secrets.",
+            "DependencySentinelAgent": "Import fixer. Resolves circular dependencies and module paths.",
             "ArchitectureGovernor": "Structure enforcer. Ensures proper depth and atomicity.",
         }
 
@@ -965,7 +965,7 @@ No explanations, no markdown.
         }
 
 
-class Phase4Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 4 components for advanced healing.
 
@@ -1030,7 +1030,7 @@ class Phase4Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         mode = MutationMode.UNIFIED_DIFF if use_diff else MutationMode.FULL_CODE
 
         result = await self.mutator.mutate(
-            agent_name="Phase4Orchestrator",
+            agent_name="Phase4OrchestratorAgent",
             Task=Task,
             content=content,
             file_path=file_path,

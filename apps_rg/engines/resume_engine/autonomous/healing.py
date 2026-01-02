@@ -5,7 +5,7 @@ Self-Healing Engine - Phase 2 Implementation
 This module provides the core self-healing capabilities:
 - HealingCycle: Manages individual healing cycles
 - HealingStrategy: Determines which agents to run based on signals
-- HealingOrchestrator: Coordinates multiple healing cycles
+- HealingOrchestratorAgent: Coordinates multiple healing cycles
 - AutomaticRollback: Handles rollback on critical failures
 """
 from typing import Any, Optional, Protocol, Dict, List
@@ -24,8 +24,8 @@ from .agents import (
     FactCheckAgent,
     ReflectionAgent,
     SectionBalanceAgent,
-    StrategicPlanner,
-    TemplateOptimizer,
+    StrategicPlannerAgent,
+    TemplateOptimizerAgent,
     TestPilot,
 )
 from .resume_base import ResumeAgent
@@ -73,7 +73,7 @@ class HealingResult:
     final_resume: Dict[str, Any]
 
 
-class SignalRouter(MCPHardenedMixin, HealerMixin):
+class SignalRouterAgent(MCPHardenedMixin, HealerMixin):
     """Routes signals to appropriate agents."""
 
     # Signal to agent mapping
@@ -84,7 +84,7 @@ class SignalRouter(MCPHardenedMixin, HealerMixin):
         "ATS_FAILURE": ["ATSCompatibilityAgent"],
         "BALANCE_ISSUE": ["SectionBalanceAgent"],
         "TEST_FAILURE": ["TestPilot"],
-        "TEMPLATE_MISMATCH": ["TemplateOptimizer"],
+        "TEMPLATE_MISMATCH": ["TemplateOptimizerAgent"],
     }
 
     # Critical signals that trigger rollback
@@ -135,7 +135,7 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
             ContentQualityAgent(ctx),
             FactCheckAgent(ctx),
             BrandComplianceAgent(ctx),
-            TemplateOptimizer(ctx),
+            TemplateOptimizerAgent(ctx),
             SectionBalanceAgent(ctx),
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
@@ -148,11 +148,11 @@ class AgentFactory(MCPHardenedMixin, HealerMixin):
             "ContentQualityAgent": ContentQualityAgent,
             "FactCheckAgent": FactCheckAgent,
             "BrandComplianceAgent": BrandComplianceAgent,
-            "TemplateOptimizer": TemplateOptimizer,
+            "TemplateOptimizerAgent": TemplateOptimizerAgent,
             "SectionBalanceAgent": SectionBalanceAgent,
             "ATSCompatibilityAgent": ATSCompatibilityAgent,
             "TestPilot": TestPilot,
-            "StrategicPlanner": StrategicPlanner,
+            "StrategicPlannerAgent": StrategicPlannerAgent,
             "ReflectionAgent": ReflectionAgent,
         }
 
@@ -263,7 +263,7 @@ class HealingCycle:
 
         elif strategy == HealingStrategy.SURGICAL_STRIKE:
             # Get agents based on current signals
-            agent_names = SignalRouter.get_agents_for_signals(self.ctx.signals)
+            agent_names = SignalRouterAgent.get_agents_for_signals(self.ctx.signals)
             if not agent_names:
                 agent_names = ["TestPilot"]  # Default to verification
             agents = AgentFactory.create_agents_by_name(self.ctx, agent_names)
@@ -277,7 +277,7 @@ class HealingCycle:
     def _check_rollback_conditions(self) -> bool:
         """Check if rollback should be triggered."""
         # Rollback on critical signals
-        if SignalRouter.has_critical_signal(self.ctx.signals):
+        if SignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
 
         # Rollback on test failure after cycle 1 with modifications
@@ -295,11 +295,11 @@ class HealingCycle:
 
         # Clear critical signals after rollback
         for signal in list(self.ctx.signals):
-            if signal in SignalRouter.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
+            if signal in SignalRouterAgent.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
                 self.ctx.remove_signal(signal)
 
 
-class HealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
@@ -339,7 +339,7 @@ class HealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin
             self.ctx.impact_zone.clear()
 
             # Determine strategy
-            strategy = SignalRouter.determine_strategy(
+            strategy = SignalRouterAgent.determine_strategy(
                 cycle_num,
                 self.ctx.signals,
                 self.ctx.modified_sections
@@ -431,7 +431,7 @@ async def run_self_healing_mission(
     ctx.max_cycles = max_cycles
 
     # Create and run orchestrator
-    orchestrator = HealingOrchestrator(
+    orchestrator = HealingOrchestratorAgent(
         ctx=ctx,
         max_cycles=max_cycles,
         enable_reflection=enable_reflection,
@@ -440,7 +440,7 @@ async def run_self_healing_mission(
     return await orchestrator.run()
 
 
-class ConvergenceDetector:
+class ConvergenceDetectorAgent:
     """Detects when the system has converged."""
 
     def __init__(self, ctx: ResumeEngineContext):
@@ -491,7 +491,7 @@ class AutomaticRollback:
         if self.rollback_count >= self.max_rollbacks:
             return False  # Prevent infinite rollback loop
 
-        return SignalRouter.has_critical_signal(self.ctx.signals)
+        return SignalRouterAgent.has_critical_signal(self.ctx.signals)
 
     def execute_rollback(self) -> bool:
         """Execute rollback and return success status."""
@@ -503,7 +503,7 @@ class AutomaticRollback:
 
         # Clear critical signals
         for signal in list(self.ctx.signals):
-            if signal in SignalRouter.CRITICAL_SIGNALS:
+            if signal in SignalRouterAgent.CRITICAL_SIGNALS:
                 self.ctx.remove_signal(signal)
 
         return True

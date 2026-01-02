@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-ScriptToAgentClassifier – Sovereign Agent (Phase 17 – Dec 30, 2025)
+ScriptToAgentClassifierAgent – Sovereign Agent (Phase 17 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
 
 Purpose:
@@ -12,7 +12,7 @@ Purpose:
     - A candidate for fusion (dust agents → consolidated)
 
 Integrates with:
-  - GuardianOrchestrator (new "Atomic Classification" dimension)
+  - GuardianOrchestratorAgent (new "Atomic Classification" dimension)
   - Healing strategies (propose fission/fusion fixes)
   - MetricsWitness (emit compliance.script_vs_agent_violations)
 
@@ -36,7 +36,7 @@ from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0Dele
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class ScriptToAgentClassifier(HealerMixin, AutonomyMixin,
+class ScriptToAgentClassifierAgent(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
     L0DelegationTestingMixin,):

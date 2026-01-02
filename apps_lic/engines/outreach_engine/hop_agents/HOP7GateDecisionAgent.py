@@ -10,7 +10,7 @@ from agentic_core.L5_safety.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from apps_lic.domain.lic_models import FactualGapError, FailureClassifier
+from apps_lic.domain.lic_models import FactualGapError, FailureClassifierAgent
 from apps_shared.utils.state_manager import StateManager
 
 
@@ -119,7 +119,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
         print(f"  Reason: {failure_message}\n")
         
         # Make decision based on failure type
-        if failure_type == FailureClassifier.FACTUAL_FAILURE:
+        if failure_type == FailureClassifierAgent.FACTUAL_FAILURE:
             # Check loop limit
             if self.factual_loop_count >= self.max_factual_loops:
                 print(f"  ✗ Max factual loops ({self.max_factual_loops}) reached - HALTING")
@@ -201,7 +201,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
     def _classify_failure(
         self,
         failures: List[Dict[str, Any]]
-    ) -> Tuple[FailureClassifier, str]:
+    ) -> Tuple[FailureClassifierAgent, str]:
         """
         Classify failure type to determine retry strategy
         
@@ -216,15 +216,15 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
             
             # Check if this is a factual failure rule
             if rule_id in self.factual_failure_rules:
-                return FailureClassifier.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return FailureClassifierAgent.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
             
             # Check details for override
             details = failure.get("details", {})
             if details.get("failure_classifier") == "FACTUAL_FAILURE":
-                return FailureClassifier.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
+                return FailureClassifierAgent.FACTUAL_FAILURE, f"({rule_id}) {failure.get('message', '')}"
         
         # Default to creative failure
-        return FailureClassifier.CREATIVE_FAILURE, f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}"
+        return FailureClassifierAgent.CREATIVE_FAILURE, f"({failures[0].get('rule_id', '')}) {failures[0].get('message', '')}"
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:

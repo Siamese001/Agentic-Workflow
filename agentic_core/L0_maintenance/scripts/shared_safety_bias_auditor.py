@@ -36,7 +36,7 @@ def get_critical_biases(self: Any) -> List[BiasMatch]:
     """Get high-Severity bias matches."""
     return [m for m in self.matches if m.Severity > 0.7]
 
-class BiasAuditor(HealerMixin):
+class BiasAuditorAgent(HealerMixin):
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation
@@ -141,5 +141,5 @@ def audit_bias(content: str) -> BiasResult:
     Returns:
         BiasResult with detection information
     """
-    BiasAuditor()
+    BiasAuditorAgent()
     return auditor.audit_content(content)

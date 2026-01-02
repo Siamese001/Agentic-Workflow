@@ -7,7 +7,7 @@ This demonstrates the Canon Validator's highest-value use case.
 import json
 import pytest
 
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 
 
 # Mock MCP Tools for testing
@@ -73,7 +73,7 @@ def test_design_compliance():
     # print("=" * 60)  # [Security Fix]
 
     # Initialize validator and mock tools
-    validator = CanonValidator()
+    validator = CanonValidatorAgent()
     mock_tools = MockMCPTools()
     logger = MockLogger()
 

@@ -56,7 +56,7 @@ class ExecutionResult:
         return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
 
 # NOT_AN_AGENT — Abstract interface/protocol, not a true agent — excluded from agent discovery
-class IOrchestrator(ABC):
+class IOrchestratorAgent(ABC):
     """Interface for the Orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes:

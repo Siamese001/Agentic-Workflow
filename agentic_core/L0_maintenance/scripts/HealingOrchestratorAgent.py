@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-HealingOrchestrator – Sovereign Agent (Phase 16 – Dec 30, 2025)
+HealingOrchestratorAgent – Sovereign Agent (Phase 16 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
 Responsible for autonomous self-correction using diagnosed issues and healing strategies.
 Pure orchestration with transactional safety – zero direct file mutation outside transaction manager.
@@ -21,7 +21,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HealingOrchestrator(MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """

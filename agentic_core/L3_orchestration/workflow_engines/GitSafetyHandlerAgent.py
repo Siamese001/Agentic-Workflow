@@ -20,7 +20,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
-class GitSafetyHandler(HealerMixin):
+class GitSafetyHandlerAgent(HealerMixin):
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.
@@ -33,14 +33,14 @@ class GitSafetyHandler(HealerMixin):
     5. Update Redis state registry
     """
 
-    def __init__(self, McpRouter):
+    def __init__(self, McpRouterAgent):
         """
         Initialize Git Safety Handler.
         
         Args:
-            McpRouter: MCPRouter instance for MCP calls
+            McpRouterAgent: MCPRouter instance for MCP calls
         """
-        self.router = McpRouter
+        self.router = McpRouterAgent
         Logger.info('[OK] Git Safety Handler initialized')
 
     async def create_rollback_point(self, file_path: str) -> str:
@@ -191,14 +191,14 @@ class GitSafetyHandler(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-def get_git_safety_handler(McpRouter: Any) -> GitSafetyHandler:
+def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     """
-    Factory function to create GitSafetyHandler instance.
+    Factory function to create GitSafetyHandlerAgent instance.
     
     Args:
-        McpRouter: MCPRouter instance
+        McpRouterAgent: MCPRouter instance
         
     Returns:
-        GitSafetyHandler instance
+        GitSafetyHandlerAgent instance
     """
-    return GitSafetyHandler(McpRouter=McpRouter)
+    return GitSafetyHandlerAgent(McpRouterAgent=McpRouterAgent)

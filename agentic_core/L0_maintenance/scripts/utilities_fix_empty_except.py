@@ -13,7 +13,7 @@ def fix_empty_except_blocks(directory: Any) -> None:
     """Fix empty except blocks by adding 'pass' or logging."""
     COUNT: Any = 0
     for filepath in glob.glob(os.path.join(ConfigurationService().directory, '**/*.py'), recursive=True):
-        if any((skip in filepath for skip in ['fix_empty_except.py', 'CanonValidator.py'])):
+        if any((skip in filepath for skip in ['fix_empty_except.py', 'CanonValidatorAgent.py'])):
             continue
         try:
             with open(filepath, 'r', encoding='utf-8') as f:

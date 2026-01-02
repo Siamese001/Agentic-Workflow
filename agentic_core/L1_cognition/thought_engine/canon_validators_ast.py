@@ -11,7 +11,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
-class PrintStatementValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class PrintStatementValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 2: Detects print() statements using AST.
     Automatically ignores TYPE_CHECKING blocks via base class.
@@ -24,7 +24,7 @@ class PrintStatementValidator(HealerMixin, SubatomicTestingMixin, CanonASTValida
                 self.report('Forbidden print() statement detected', node)
         self.generic_visit(node)
 
-class EvalExecValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class EvalExecValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 6: Detects eval() and exec() calls using AST.
     """
@@ -36,7 +36,7 @@ class EvalExecValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
                 self.report(f'Forbidden {node.func.id}() call detected', node)
         self.generic_visit(node)
 
-class DebuggerValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class DebuggerValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 3: Detects breakpoint() and pdb.set_trace() using AST.
     """
@@ -52,7 +52,7 @@ class DebuggerValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
                     self.report('Debugger pdb.set_trace() detected', node)
         self.generic_visit(node)
 
-class EmptyExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class EmptyExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 4: Detects empty except blocks (except: pass).
     """
@@ -64,7 +64,7 @@ class EmptyExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator
             self.report('Empty except block detected (except: pass)', node)
         self.generic_visit(node)
 
-class BareExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class BareExceptValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 5: Detects bare except: statements (catching all exceptions).
     """
@@ -75,7 +75,7 @@ class BareExceptValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator)
             self.report('Bare except: statement detected (should specify exception type)', node)
         self.generic_visit(node)
 
-class ExternalHttpValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class ExternalHttpValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).
     Automatically handles TYPE_CHECKING blocks and exception ledger.
@@ -99,7 +99,7 @@ class ExternalHttpValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidato
                 self.report(f'Forbidden HTTP library import: from {node.module} (use MCP fetch_client_sovereign instead)', node)
         self.generic_visit(node)
 
-class AsyncBlockingValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
+class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator, MCPHardenedMixin):
     """
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """
@@ -125,7 +125,7 @@ class AsyncBlockingValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidat
                     self.report(f'Blocking requests.{node.func.attr}() in async function (use httpx.AsyncClient or asyncio.to_thread())', node)
         self.generic_visit(node)
 
-class DangerousBuiltinsValidator(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
+class DangerousBuiltinsValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTValidator):
     """
     Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).
     """
@@ -140,23 +140,23 @@ class DangerousBuiltinsValidator(HealerMixin, SubatomicTestingMixin, CanonASTVal
 
 def validate_print_statements(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 2: No print statements."""
-    return parse_and_validate(file_path, content, 2, PrintStatementValidator)
+    return parse_and_validate(file_path, content, 2, PrintStatementValidatorAgent)
 
 def validate_eval_exec(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 6: No eval/exec."""
-    return parse_and_validate(file_path, content, 6, EvalExecValidator)
+    return parse_and_validate(file_path, content, 6, EvalExecValidatorAgent)
 
 def validate_debugger(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 3: No debugger statements."""
-    return parse_and_validate(file_path, content, 3, DebuggerValidator)
+    return parse_and_validate(file_path, content, 3, DebuggerValidatorAgent)
 
 def validate_empty_except(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 4: No empty except blocks."""
-    return parse_and_validate(file_path, content, 4, EmptyExceptValidator)
+    return parse_and_validate(file_path, content, 4, EmptyExceptValidatorAgent)
 
 def validate_bare_except(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 5: No bare except statements."""
-    return parse_and_validate(file_path, content, 5, BareExceptValidator)
+    return parse_and_validate(file_path, content, 5, BareExceptValidatorAgent)
 
 def validate_external_http(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 23: No external HTTP imports."""
@@ -164,8 +164,8 @@ def validate_external_http(file_path: Path, content: str) -> List[Dict[str, Any]
 
 def validate_async_blocking(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 31: No blocking calls in async."""
-    return parse_and_validate(file_path, content, 31, AsyncBlockingValidator)
+    return parse_and_validate(file_path, content, 31, AsyncBlockingValidatorAgent)
 
 def validate_dangerous_builtins(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
-    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidator)
+    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidatorAgent)

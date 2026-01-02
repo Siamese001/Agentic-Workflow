@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-GuardianOrchestrator – Sovereign Agent (Phase 15 – Dec 30, 2025)
+GuardianOrchestratorAgent – Sovereign Agent (Phase 15 – Dec 30, 2025)
 SSOT-compliant location: L0_maintenance/scripts/
 Central coordination of all L0 guardians for Sovereign Audit.
 Pure orchestration – zero side effects beyond guardian execution.
@@ -19,7 +19,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class GuardianOrchestrator(MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class GuardianOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """

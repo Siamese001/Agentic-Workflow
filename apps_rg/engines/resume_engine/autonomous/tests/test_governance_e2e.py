@@ -13,10 +13,10 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import Phase4Orchestrator
-from ..governance import Phase7Orchestrator
+from ..gitops import Phase4OrchestratorAgent
+from ..governance import Phase7OrchestratorAgent
 from ..healing import HealingResult, run_self_healing_mission
-from ..intelligence import Phase6Orchestrator
+from ..intelligence import Phase6OrchestratorAgent
 from ..learning import ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
@@ -59,7 +59,7 @@ class TestFullMissionWithGovernance:
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # Check dependencies
         dep_issues = phase7.check_dependencies()
@@ -97,7 +97,7 @@ SYSTEM_PROMPT = "You are a helpful assistant."
         """Test comprehensive governance checks."""
         ctx = ResumeEngineContext()
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         sample_code = '''
 ANALYSIS_PROMPT = "Analyze this: {content}"
@@ -134,7 +134,7 @@ class TestDashboardGeneration:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # Run healing
         result = await run_self_healing_mission(
@@ -154,7 +154,7 @@ class TestDashboardGeneration:
     def test_dashboard_with_comprehensive_results(self, tmp_path):
         """Test dashboard with comprehensive results."""
         ctx = ResumeEngineContext()
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         results = {
             "ContentQualityAgent": {"passed": True, "details": "Quality OK"},
@@ -184,11 +184,11 @@ class TestIntegrationWithAllPhases:
         ctx.JobDescription = JobDescription
 
         # Initialize all orchestrators
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
         phase5 = Phase5Orchestrator(ctx)
-        phase6 = Phase6Orchestrator(ctx)
-        phase7 = Phase7Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
         learning_agent = ResumeLearningAgent(ctx)
 
         # Phase 3: Learning
@@ -208,12 +208,12 @@ class TestIntegrationWithAllPhases:
         phase5.complete_agent(step_id, success=not prediction.will_exceed)
 
         # Phase 6: Intelligence
-        step_id = phase5.track_agent("Phase6Orchestrator", "analyze")
+        step_id = phase5.track_agent("Phase6OrchestratorAgent", "analyze")
         analysis = await phase6.analyze_resume(valid_resume, JobDescription)
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
         result = await run_self_healing_mission(
             JobDescription=JobDescription,
             master_resume=valid_resume,
@@ -222,7 +222,7 @@ class TestIntegrationWithAllPhases:
         phase5.complete_agent(step_id, success=result.success)
 
         # Phase 7: Governance checks
-        step_id = phase5.track_agent("Phase7Orchestrator", "governance")
+        step_id = phase5.track_agent("Phase7OrchestratorAgent", "governance")
         sample_code = "def test(): pass"
         gov_results = await phase7.run_governance_checks(sample_code)
         phase5.complete_agent(step_id, success=gov_results["passed"])
@@ -259,7 +259,7 @@ class TestEdgeCases:
     async def test_empty_code_governance(self):
         """Test governance with empty code."""
         ctx = ResumeEngineContext()
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         results = await phase7.run_governance_checks("")
 
@@ -269,7 +269,7 @@ class TestEdgeCases:
     async def test_syntax_error_code(self):
         """Test governance with syntax error code."""
         ctx = ResumeEngineContext()
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         bad_code = "def broken(:\n    pass"
 
@@ -281,7 +281,7 @@ class TestEdgeCases:
     def test_budget_exceeded_prediction(self):
         """Test budget exceeded prediction."""
         ctx = ResumeEngineContext()
-        phase7 = Phase7Orchestrator(ctx, budget_limit=0.001)
+        phase7 = Phase7OrchestratorAgent(ctx, budget_limit=0.001)
 
         prediction = phase7.predict_mission_cost(100, 10, 5)
 
@@ -298,7 +298,7 @@ class TestComprehensiveWorkflow:
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # 1. Check dependencies
         dep_issues = phase7.check_dependencies()
@@ -359,7 +359,7 @@ SYSTEM_PROMPT = "You are helpful."
         ctx.JobDescription = JobDescription
 
         phase5 = Phase5Orchestrator(ctx)
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # Start observability
         phase5.start_mission("healing_governance_workflow")
@@ -378,7 +378,7 @@ SYSTEM_PROMPT = "You are helpful."
         phase5.complete_agent(step_id, success=result.success)
 
         # Run governance
-        step_id = phase5.track_agent("Phase7Orchestrator", "governance")
+        step_id = phase5.track_agent("Phase7OrchestratorAgent", "governance")
         sample_code = "def test(): pass"
         gov_results = await phase7.run_governance_checks(sample_code)
         phase5.complete_agent(step_id, success=gov_results["passed"])
@@ -406,7 +406,7 @@ SYSTEM_PROMPT = "You are helpful."
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
 
-        phase7 = Phase7Orchestrator(ctx)
+        phase7 = Phase7OrchestratorAgent(ctx)
 
         # Run various operations
         phase7.check_dependencies()

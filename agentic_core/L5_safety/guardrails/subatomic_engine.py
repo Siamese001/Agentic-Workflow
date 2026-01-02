@@ -263,8 +263,8 @@ class SubAtomicEngineImpl:
             # [HARDENING] Stage 1: Post-LLM Validation Pipeline
             if not fission_active:
                 try:
-                    from agentic_core.L5_safety.validators.heal_validator import HealValidator
-                    validator = HealValidator(Path('.'))
+                    from agentic_core.L5_safety.validators.heal_validator import HealValidatorAgent
+                    validator = HealValidatorAgent(Path('.'))
                     ValidationResult = validator.validate_healed_code(code, healed_code, Path(file_path))
                     
                     if not ValidationResult['valid']:
@@ -275,14 +275,14 @@ class SubAtomicEngineImpl:
                     
                     Logger.info(f"   [✓] Heal validated: {os.path.basename(file_path)}")
                 except ImportError as e:
-                    Logger.warning(f'   [!] HealValidator unavailable: {e}')
+                    Logger.warning(f'   [!] HealValidatorAgent unavailable: {e}')
                 except Exception as e:
                     Logger.error(f'   [!] Validation failed: {e}')
                     return code
             
             output = healed_code
             
-            # Legacy truncation check (now redundant with HealValidator but kept for defense-in-depth)
+            # Legacy truncation check (now redundant with HealValidatorAgent but kept for defense-in-depth)
             if not fission_active and '...' in output and (len(output) < len(code) * 0.8):
                 Logger.warning('   [X] TRUNCATION DETECTED. Rejecting mutation.')
                 if self.redis_client:

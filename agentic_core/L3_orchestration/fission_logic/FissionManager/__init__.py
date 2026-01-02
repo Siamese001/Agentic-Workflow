@@ -1,7 +1,7 @@
 from __future__ import annotations
 """Fission Manager module."""
 
-class FissionManager:
+class FissionManagerAgent:
     """Fission manager stub."""
     def __init__(self, *args, **kwargs):
         pass

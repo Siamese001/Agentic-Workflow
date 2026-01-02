@@ -10,7 +10,7 @@ Events cover:
 - System health signals
 
 Designed for integration with:
-- ComplianceOrchestrator (primary emitter)
+- ComplianceOrchestratorAgent (primary emitter)
 - ReportingAgent (can consume event log)
 - Future: external sinks (e.g., logging backend, OpenTelemetry)
 
@@ -181,7 +181,7 @@ class TelemetryAgent(HealerMixin):
         self.emit(
             event_type="compliance.scan_started",
             level="INFO",
-            agent="ComplianceOrchestrator",
+            agent="ComplianceOrchestratorAgent",
             details={"file_count": file_count}
         )
 
@@ -190,7 +190,7 @@ class TelemetryAgent(HealerMixin):
         self.emit(
             event_type="compliance.scan_completed",
             level="INFO" if violation_count == 0 else "WARNING",
-            agent="ComplianceOrchestrator",
+            agent="ComplianceOrchestratorAgent",
             details={
                 "violation_count": violation_count,
                 "duration_seconds": round(duration_seconds, 2),

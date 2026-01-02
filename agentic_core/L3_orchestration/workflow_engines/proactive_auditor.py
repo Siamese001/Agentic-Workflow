@@ -34,15 +34,15 @@ class ProactiveFissionScanner:
     5. Create GitKraken refactor proposal branches
     """
 
-    def __init__(self, McpRouter, line_threshold: int=600):
+    def __init__(self, McpRouterAgent, line_threshold: int=600):
         """
         Initialize Proactive Fission Scanner.
         
         Args:
-            McpRouter: MCPRouter instance for MCP calls
+            McpRouterAgent: MCPRouter instance for MCP calls
             line_threshold: Line count threshold for bloat detection
         """
-        self.router = McpRouter
+        self.router = McpRouterAgent
         self.threshold = line_threshold
         Logger.info(f'[OK] Proactive Scanner initialized (threshold: {line_threshold} lines)')
 
@@ -191,16 +191,16 @@ class ProactiveFissionScanner:
         Logger.info(f"      LOW: {severity_counts['LOW']}")
         return report
 
-def get_proactive_scanner(McpRouter: Any, line_threshold: int=600) -> ProactiveFissionScanner:
+def get_proactive_scanner(McpRouterAgent: Any, line_threshold: int=600) -> ProactiveFissionScanner:
     """
     Factory function to create ProactiveFissionScanner instance.
     
     Args:
-        McpRouter: MCPRouter instance
+        McpRouterAgent: MCPRouter instance
         line_threshold: Line count threshold
         
     Returns:
         ProactiveFissionScanner instance
     """
-    return ProactiveFissionScanner(McpRouter=McpRouter, line_threshold=line_threshold)
-'\nfrom agentic_core.core.proactive_audit import ProactiveFissionScanner\nfrom agentic_core.infra.McpRouter import MCPRouter\nfrom agentic_core.infra.tui_dashboard import AgenticTUI\n\n# Initialize components\nmcp_router = MCPRouter(tui_handle=tui)\nscanner = ProactiveFissionScanner(McpRouter=McpRouter, line_threshold=600)\n\n# Run proactive scan\ncandidates = await scanner.scan_repository("agentic_core/")\n\n# Generate strategies for each candidate\nfor candidate in candidates:\n    strategy = await scanner.generate_pre_emptive_strategy(candidate["path"])\n    print(f"Strategy for {candidate[\'path\']}: {strategy}")\n\n# Create refactor proposal branch\nbranch_name = await scanner.create_refactor_proposal(candidates)\n\n# Generate audit report\nreport = await scanner.generate_audit_report(candidates)\nprint(f"Audit Report: {report}")\n'
+    return ProactiveFissionScanner(McpRouterAgent=McpRouterAgent, line_threshold=line_threshold)
+'\nfrom agentic_core.core.proactive_audit import ProactiveFissionScanner\nfrom agentic_core.infra.McpRouterAgent import MCPRouter\nfrom agentic_core.infra.tui_dashboard import AgenticTUI\n\n# Initialize components\nmcp_router = MCPRouter(tui_handle=tui)\nscanner = ProactiveFissionScanner(McpRouterAgent=McpRouterAgent, line_threshold=600)\n\n# Run proactive scan\ncandidates = await scanner.scan_repository("agentic_core/")\n\n# Generate strategies for each candidate\nfor candidate in candidates:\n    strategy = await scanner.generate_pre_emptive_strategy(candidate["path"])\n    print(f"Strategy for {candidate[\'path\']}: {strategy}")\n\n# Create refactor proposal branch\nbranch_name = await scanner.create_refactor_proposal(candidates)\n\n# Generate audit report\nreport = await scanner.generate_audit_report(candidates)\nprint(f"Audit Report: {report}")\n'

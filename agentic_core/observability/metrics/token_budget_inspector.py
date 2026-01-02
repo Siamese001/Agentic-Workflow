@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-TokenBudgetInspector.py - Diagnostics Module
+TokenBudgetInspectorAgent.py - Diagnostics Module
 
 Domain: inspection
 Generated: 2025-12-07T12:07:59.843651
@@ -21,7 +21,7 @@ class DiagnosticReport:
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
-class TokenBudgetInspector(HealerMixin):
+class TokenBudgetInspectorAgent(HealerMixin):
     """Diagnostics engine for inspection domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
@@ -43,4 +43,4 @@ def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticRe
 
 def diagnose(target: object, config: Optional[Dict]=None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
-    return TokenBudgetInspector(config).diagnose(target)
+    return TokenBudgetInspectorAgent(config).diagnose(target)

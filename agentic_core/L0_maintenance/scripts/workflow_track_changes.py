@@ -1,7 +1,7 @@
 from __future__ import annotations
 """
-SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidator.py Key 00.
-Writes changes to a tracker file that CanonValidator reads.
+SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidatorAgent.py Key 00.
+Writes changes to a tracker file that CanonValidatorAgent reads.
 ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
 import logging
 

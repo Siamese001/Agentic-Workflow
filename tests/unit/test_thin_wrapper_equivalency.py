@@ -49,15 +49,15 @@ def test_mission_controller_has_required_methods():
 
 
 def test_compliance_orchestrator_structure():
-    """Test that ComplianceOrchestrator has required methods (static analysis)."""
-    print("\n[TEST 2] ComplianceOrchestrator Structure")
+    """Test that ComplianceOrchestratorAgent has required methods (static analysis)."""
+    print("\n[TEST 2] ComplianceOrchestratorAgent Structure")
     print("-" * 60)
     
     import inspect
     
     try:
         # Import the class definition without instantiating
-        from agentic_core.L5_safety.validators.compliance_orchestrator import ComplianceOrchestrator
+        from agentic_core.L5_safety.validators.compliance_orchestrator import ComplianceOrchestratorAgent
         
         required_methods = [
             'get_all_agents',
@@ -69,7 +69,7 @@ def test_compliance_orchestrator_structure():
         
         missing = []
         for method in required_methods:
-            if hasattr(ComplianceOrchestrator, method):
+            if hasattr(ComplianceOrchestratorAgent, method):
                 print(f"   [OK] {method}()")
             else:
                 print(f"   [MISSING] {method}()")

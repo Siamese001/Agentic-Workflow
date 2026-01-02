@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class McpConnectionManager(HealerMixin):
+class McpConnectionManagerAgent(HealerMixin):
     """
     L2 Execution: The Tool Bridge.
     Manages connections to Model Context Protocol (MCP) servers.

@@ -5,7 +5,7 @@ Resurrected from archives - provides RAG components, safety tools, and optimizat
 """
 
 # [TEMPORARY FIX] Comment out Missing modules until they are restored from archives
-# from .BiasAuditor import BiasAuditor
+# from .BiasAuditorAgent import BiasAuditorAgent
 # from .CheckpointManager import CheckpointManager, get_checkpoint_manager
 # from .claim_confidence import ClaimConfidenceScorer
 # from .constitutional_ai import ConstitutionalAISystem

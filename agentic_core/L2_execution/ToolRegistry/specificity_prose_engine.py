@@ -70,9 +70,9 @@ class SpecificityProseEngine:
     """
     COMPANY_SPECIFIC_CATEGORIES: Any = {'PRODUCT': ['product', 'platform', 'service', 'solution', 'offering'], 'MISSION': ['mission', 'vision', 'values', 'purpose', 'goal'], 'ACHIEVEMENT': ['milestone', 'launch', 'acquisition', 'funding', 'award'], 'CULTURE': ['culture', 'team', 'environment', 'approach', 'philosophy'], 'TECHNOLOGY': ['technology', 'stack', 'infrastructure', 'architecture', 'innovation']}
 
-    def __init__(self, config: Optional[SpecificityProseConfig]=None, gate_executor: Optional[IntegrityGateExecutor]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: Optional[SpecificityProseConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
         SELF.CONFIG = config or SpecificityProseConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
     def generate_cover_letter(self, company_research: Dict[str, Any], resume_highlights: List[str], context: Dict[str, Any]) -> SpecificityProseResult:

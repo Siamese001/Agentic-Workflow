@@ -58,7 +58,7 @@ def organize_structure():
 
     # Create main directories if they don't exist
     engines_dir = "/app/engines"
-    subdirs = ["resume_engine", "outreach_engine", "CanonValidator"]
+    subdirs = ["resume_engine", "outreach_engine", "CanonValidatorAgent"]
 
     for subdir in subdirs:
         path = os.path.join(engines_dir, subdir)
@@ -69,8 +69,8 @@ def organize_structure():
     file_mappings = {
         "resume": "resume_engine",
         "outreach": "outreach_engine",
-        "canon": "CanonValidator",
-        "validator": "CanonValidator"
+        "canon": "CanonValidatorAgent",
+        "validator": "CanonValidatorAgent"
     }
 
     moved_count = 0
@@ -211,7 +211,7 @@ excluded_dirs = {
 
 # NAMING FIXED: EXCLUDED_FILES → excluded_files
 excluded_files = {
-    'CanonValidator.py',
+    'CanonValidatorAgent.py',
     'canon_validator_backup.py',
     'canon_validator_v2_agentic.py',
     'auto_canon.py',

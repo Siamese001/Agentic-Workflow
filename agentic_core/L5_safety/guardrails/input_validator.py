@@ -70,7 +70,7 @@ class InputValidationError(Exception):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class InputValidator(MCPHardenedMixin, HealerMixin):
+class InputValidatorAgent(MCPHardenedMixin, HealerMixin):
     """Validates input data against schema and rules."""
     
     def __init__(self, name: str = "default"):
@@ -83,7 +83,7 @@ class InputValidator(MCPHardenedMixin, HealerMixin):
         self._rules: Dict[str, ValidationRule] = {}
         self._schemas: Dict[str, Dict[str, Any]] = {}
         
-        Logger.debug(f"Initialized InputValidator: {name}")
+        Logger.debug(f"Initialized InputValidatorAgent: {name}")
     
     def add_rule(self, field: str, rule: ValidationRule) -> None:
         """Add a validation rule.
@@ -321,7 +321,7 @@ class InputValidator(MCPHardenedMixin, HealerMixin):
             for prop, prop_schema in schema["properties"].items():
                 if prop in value:
                     # Recursively validate
-                    validator = InputValidator(f"{self.name}_{prop}")
+                    validator = InputValidatorAgent(f"{self.name}_{prop}")
                     rule = ValidationRule(
                         prop,
                         self._get_validation_type_from_schema(prop_schema),
@@ -443,13 +443,13 @@ COMMON_RULES = {
 }
 
 
-def create_default_validator() -> InputValidator:
+def create_default_validator() -> InputValidatorAgent:
     """Create a validator with common rules.
     
     Returns:
-        InputValidator with predefined rules
+        InputValidatorAgent with predefined rules
     """
-    validator = InputValidator("default")
+    validator = InputValidatorAgent("default")
     
     for name, rule in COMMON_RULES.items():
         validator.add_rule(name, rule)

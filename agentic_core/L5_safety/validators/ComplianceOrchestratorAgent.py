@@ -47,7 +47,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class ComplianceOrchestrator(HealerMixin, MCPHardenedMixin):
+class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     """
     L5 Sovereign Compliance Orchestrator
 
@@ -865,14 +865,14 @@ class ComplianceOrchestrator(HealerMixin, MCPHardenedMixin):
         _call_path.add(self.__class__.__name__)
         
         try:
-            print(f"[ComplianceOrchestrator HEAL @ depth {depth}] Coordinating validator healing")
+            print(f"[ComplianceOrchestratorAgent HEAL @ depth {depth}] Coordinating validator healing")
             # Orchestrator coordinates but doesn't directly heal - delegates to child validators
             return {"orchestrated": 1, "validators_available": len(self._all_agents)}
         finally:
             _call_path.discard(self.__class__.__name__)
 
 
-def compliance_orchestrator(project_root: Optional[Path] = None) -> ComplianceOrchestrator:
+def compliance_orchestrator(project_root: Optional[Path] = None) -> ComplianceOrchestratorAgent:
     """
     Factory function exported for import in L6.
     Usage in canon_validator_agentic_v2.py:
@@ -881,4 +881,4 @@ def compliance_orchestrator(project_root: Optional[Path] = None) -> ComplianceOr
     if project_root is None:
         # Fallback to current working directory
         project_root = Path.cwd()
-    return ComplianceOrchestrator(project_root)
+    return ComplianceOrchestratorAgent(project_root)

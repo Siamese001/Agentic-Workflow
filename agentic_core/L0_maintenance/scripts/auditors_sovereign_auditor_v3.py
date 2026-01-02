@@ -22,13 +22,13 @@ from agentic_core.L0_maintenance.scripts.sovereign_report import SovereignReport
 from agentic_core.L0_maintenance.scripts.metrics_witness import MetricsWitness
 
 # [PHASE 15] SSOT-compliant Guardian Orchestrator
-from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestrator
+from agentic_core.L0_maintenance.scripts.guardian_orchestrator import GuardianOrchestratorAgent
 
 # [PHASE 16] Healing Orchestrator – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.healing_orchestrator import HealingOrchestrator
+from agentic_core.L0_maintenance.scripts.healing_orchestrator import HealingOrchestratorAgent
 
 # [PHASE 17] Script-to-Agent Classifier – Sovereign Agent
-from agentic_core.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifier
+from agentic_core.L0_maintenance.scripts.script_to_agent_classifier import ScriptToAgentClassifierAgent
 
 
 # Add repo root to path for imports
@@ -41,7 +41,7 @@ try:
 except ImportError:
     check_underscore_fields = None
 
-# All guardians now loaded internally by GuardianOrchestrator
+# All guardians now loaded internally by GuardianOrchestratorAgent
 # Direct imports removed – reduces coupling and enables extensibility
 
 try:
@@ -54,7 +54,7 @@ except ImportError:
     NamingAgent = None
     MetricsAgent = None
 
-# Healing components now loaded internally by HealingOrchestrator
+# Healing components now loaded internally by HealingOrchestratorAgent
 
 async def main():
     """
@@ -69,18 +69,18 @@ async def main():
 
     # === Sovereign Agent Instantiation (Hardened) ===
     metrics_witness = MetricsWitness(project_root_path)
-    guardian_orchestrator = GuardianOrchestrator(target)
-    healing_orchestrator = HealingOrchestrator()
-    classifier = ScriptToAgentClassifier()
+    guardian_orchestrator = GuardianOrchestratorAgent(target)
+    healing_orchestrator = HealingOrchestratorAgent()
+    classifier = ScriptToAgentClassifierAgent()
 
     # === Optional: Proactive Self-Diagnosis Cycle ===
     print("\n[SELF_DIAGNOSIS] Initiating sovereign component health check...")
     component_health = {}
     for name, agent in [
         ("MetricsWitness", metrics_witness),
-        ("GuardianOrchestrator", guardian_orchestrator),
-        ("HealingOrchestrator", healing_orchestrator),
-        ("ScriptToAgentClassifier", classifier),
+        ("GuardianOrchestratorAgent", guardian_orchestrator),
+        ("HealingOrchestratorAgent", healing_orchestrator),
+        ("ScriptToAgentClassifierAgent", classifier),
     ]:
         diagnosis = await agent.self_diagnose()
         status = "HEALTHY" if diagnosis["overall_health"] == "healthy" else "DEGRADED"
@@ -126,7 +126,7 @@ async def main():
     report = builder.build()
     overall_score = report.print_summary()
     
-    # Phase 16: Sovereign Healing Engine – Delegated to HealingOrchestrator
+    # Phase 16: Sovereign Healing Engine – Delegated to HealingOrchestratorAgent
     if overall_score >= 95:
         print("\n[OK] SOVEREIGN BRAIN IN PERFECT ALIGNMENT")
     else:
@@ -161,7 +161,7 @@ async def main():
     
     return report
 
-# Healing logic fully extracted to HealingOrchestrator agent
+# Healing logic fully extracted to HealingOrchestratorAgent agent
 # Supreme Court now only triggers sovereign self-correction
 
 if __name__ == "__main__":

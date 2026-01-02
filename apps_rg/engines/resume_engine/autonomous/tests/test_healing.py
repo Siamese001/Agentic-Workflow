@@ -3,11 +3,11 @@ from __future__ import annotations
 Unit Tests for Phase 2: Self-Healing Components
 
 Tests the core self-healing functionality:
-- SignalRouter
+- SignalRouterAgent
 - AgentFactory
 - HealingCycle
-- HealingOrchestrator
-- ConvergenceDetector
+- HealingOrchestratorAgent
+- ConvergenceDetectorAgent
 - AutomaticRollback
 """
 
@@ -17,11 +17,11 @@ from ..context import ResumeEngineContext
 from ..healing import (
     AgentFactory,
     AutomaticRollback,
-    ConvergenceDetector,
+    ConvergenceDetectorAgent,
     CycleResult,
     HealingCycle,
     HealingStrategy,
-    SignalRouter,
+    SignalRouterAgent,
 )
 
 
@@ -59,12 +59,12 @@ def problematic_resume():
 
 
 class TestSignalRouter:
-    """Tests for SignalRouter class."""
+    """Tests for SignalRouterAgent class."""
 
     def test_get_agents_for_quality_failure(self):
         """Test agent routing for QUALITY_FAILURE signal."""
         signals = {"QUALITY_FAILURE"}
-        agents = SignalRouter.get_agents_for_signals(signals)
+        agents = SignalRouterAgent.get_agents_for_signals(signals)
 
         assert "ContentQualityAgent" in agents
         assert "FactCheckAgent" in agents
@@ -72,7 +72,7 @@ class TestSignalRouter:
     def test_get_agents_for_multiple_signals(self):
         """Test agent routing for multiple signals."""
         signals = {"QUALITY_FAILURE", "BRAND_VIOLATION"}
-        agents = SignalRouter.get_agents_for_signals(signals)
+        agents = SignalRouterAgent.get_agents_for_signals(signals)
 
         assert "ContentQualityAgent" in agents
         assert "BrandComplianceAgent" in agents
@@ -80,46 +80,46 @@ class TestSignalRouter:
     def test_get_agents_for_unknown_signal(self):
         """Test agent routing for unknown signal."""
         signals = {"UNKNOWN_SIGNAL"}
-        agents = SignalRouter.get_agents_for_signals(signals)
+        agents = SignalRouterAgent.get_agents_for_signals(signals)
 
         assert agents == []
 
     def test_has_critical_signal_true(self):
         """Test critical signal detection - positive case."""
         signals = {"QUALITY_FAILURE", "CRITICAL_FAILURE"}
-        assert SignalRouter.has_critical_signal(signals) is True
+        assert SignalRouterAgent.has_critical_signal(signals) is True
 
     def test_has_critical_signal_false(self):
         """Test critical signal detection - negative case."""
         signals = {"QUALITY_FAILURE", "BRAND_VIOLATION"}
-        assert SignalRouter.has_critical_signal(signals) is False
+        assert SignalRouterAgent.has_critical_signal(signals) is False
 
     def test_determine_strategy_cycle_1(self):
         """Test strategy determination for cycle 1."""
-        strategy = SignalRouter.determine_strategy(1, set(), set())
+        strategy = SignalRouterAgent.determine_strategy(1, set(), set())
         assert strategy == HealingStrategy.FULL_DIAGNOSTIC
 
     def test_determine_strategy_no_signals(self):
         """Test strategy determination with no signals."""
-        strategy = SignalRouter.determine_strategy(2, set(), set())
+        strategy = SignalRouterAgent.determine_strategy(2, set(), set())
         assert strategy == HealingStrategy.VERIFICATION_ONLY
 
     def test_determine_strategy_quality_focus(self):
         """Test strategy determination for quality signals."""
         signals = {"QUALITY_FAILURE"}
-        strategy = SignalRouter.determine_strategy(2, signals, set())
+        strategy = SignalRouterAgent.determine_strategy(2, signals, set())
         assert strategy == HealingStrategy.QUALITY_FOCUS
 
     def test_determine_strategy_compliance_focus(self):
         """Test strategy determination for compliance signals."""
         signals = {"BRAND_VIOLATION"}
-        strategy = SignalRouter.determine_strategy(2, signals, set())
+        strategy = SignalRouterAgent.determine_strategy(2, signals, set())
         assert strategy == HealingStrategy.COMPLIANCE_FOCUS
 
     def test_determine_strategy_surgical_strike(self):
         """Test strategy determination for mixed signals."""
         signals = {"QUALITY_FAILURE", "BRAND_VIOLATION"}
-        strategy = SignalRouter.determine_strategy(2, signals, set())
+        strategy = SignalRouterAgent.determine_strategy(2, signals, set())
         assert strategy == HealingStrategy.SURGICAL_STRIKE
 
 
@@ -250,14 +250,14 @@ class TestHealingCycle:
 
 
 class TestConvergenceDetector:
-    """Tests for ConvergenceDetector class."""
+    """Tests for ConvergenceDetectorAgent class."""
 
     def test_is_converged_true(self, ctx, valid_resume):
         """Test convergence detection - converged case."""
         ctx.current_resume = valid_resume
         ctx.record_result("Agent1", passed=True)
 
-        detector = ConvergenceDetector(ctx)
+        detector = ConvergenceDetectorAgent(ctx)
         assert detector.is_converged() is True
 
     def test_is_converged_false(self, ctx, valid_resume):
@@ -265,14 +265,14 @@ class TestConvergenceDetector:
         ctx.current_resume = valid_resume
         ctx.add_signal("QUALITY_FAILURE")
 
-        detector = ConvergenceDetector(ctx)
+        detector = ConvergenceDetectorAgent(ctx)
         assert detector.is_converged() is False
 
     def test_record_state(self, ctx):
         """Test state recording."""
         ctx.add_signal("SIGNAL_A")
 
-        detector = ConvergenceDetector(ctx)
+        detector = ConvergenceDetectorAgent(ctx)
         detector.record_state()
 
         assert len(detector.history) == 1
@@ -280,14 +280,14 @@ class TestConvergenceDetector:
 
     def test_is_oscillating_false(self, ctx):
         """Test oscillation detection - not oscillating."""
-        detector = ConvergenceDetector(ctx)
+        detector = ConvergenceDetectorAgent(ctx)
 
         # Not enough history
         assert detector.is_oscillating() is False
 
     def test_get_stuck_signals(self, ctx):
         """Test stuck signal detection."""
-        detector = ConvergenceDetector(ctx)
+        detector = ConvergenceDetectorAgent(ctx)
 
         ctx.signals = {"SIGNAL_A", "SIGNAL_B"}
         detector.record_state()

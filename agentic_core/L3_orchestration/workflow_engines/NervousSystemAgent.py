@@ -57,7 +57,7 @@ class PhaseViolation:
 
 
 if TYPE_CHECKING:
-    from agentic_core.L1_cognition.SovereignCognitivePlane import (
+    from agentic_core.L1_cognition.SovereignCognitivePlaneAgent import (
         create_sovereign_cognitive_plane,
     )
     from agentic_core.L2_execution.sovereign_action_plane import (
@@ -884,10 +884,10 @@ class NervousSystemInterventionManager:
                 return True
         return None # No intervention required
 
-# NAMING FIXED: NervousSystemPhaseOrchestrator → NervousSystemPhaseOrchestrator
+# NAMING FIXED: NervousSystemPhaseOrchestratorAgent → NervousSystemPhaseOrchestratorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class NervousSystemPhaseOrchestrator(HealerMixin):
+class NervousSystemPhaseOrchestratorAgent(HealerMixin):
     """Orchestrates the execution of all phases within a mission cycle."""
 
     def __init__(
@@ -1164,7 +1164,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
             self.InterventionServer, LOGGER
         )
 
-        self._phase_orchestrator = NervousSystemPhaseOrchestrator( # New orchestrator
+        self._phase_orchestrator = NervousSystemPhaseOrchestratorAgent( # New orchestrator
             self._phase_execution,
             self._checkpointing,
             self._result_reporting,
@@ -1299,7 +1299,7 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         context.execution_trace = []
 
         # The internal state (_iteration, _state, _results, _signals, _modified_files)
-        # will be managed by NervousSystemPhaseOrchestrator via direct references.
+        # will be managed by NervousSystemPhaseOrchestratorAgent via direct references.
         # NervousSystem needs to ensure they are correctly initialized or restored
         # before passing to orchestrator.
 

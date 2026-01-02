@@ -11,7 +11,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Callable
 
 from .PiiScrubber import PIIScrubber, PIIResult
-from .BiasAuditor import BiasAuditor, BiasResult
+from .BiasAuditorAgent import BiasAuditorAgent, BiasResult
 from .constitutional_ai import ConstitutionalAISystem, ConstitutionalReviewResult
 
 Logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class ControlPlane:
         self.enable_logging = enable_logging
         
         self.PiiScrubber = PIIScrubber(enable_logging=enable_logging)
-        self.BiasAuditor = BiasAuditor(enable_logging=enable_logging)
+        self.BiasAuditorAgent = BiasAuditorAgent(enable_logging=enable_logging)
         self.constitutional_ai = ConstitutionalAISystem(enable_logging=enable_logging)
         
         self._decision_count = 0
@@ -178,7 +178,7 @@ class ControlPlane:
         if not self.policy.enable_bias_detection:
             return None, False
         
-        BiasResult = self.BiasAuditor.audit_content(content)
+        BiasResult = self.BiasAuditorAgent.audit_content(content)
         if BiasResult.has_bias:
             warnings.append(f"Detected {len(BiasResult.bias_types)} bias types: {[bt.value for bt in BiasResult.bias_types]}")
             if self.policy.block_on_bias:

@@ -74,7 +74,7 @@ class TelepathyInterface:
         if 'pause' in instructions_lower:
             commands['pause'] = True
             commands['custom_signals'].add('TELEPATHY_PAUSE')
-        agent_mapping: Any = {'test': 'TestPilot', 'style': 'CodeStyleGuardian', 'safety': 'SafetyInspector', 'dependency': 'DependencySentinel', 'architecture': 'ArchitectureGovernor', 'hygiene': 'HygieneGuardian', 'Historian': 'Historian', 'sherlock': 'Sherlock', 'reflection': 'ReflectionAgent'}
+        agent_mapping: Any = {'test': 'TestPilot', 'style': 'CodeStyleGuardian', 'safety': 'SafetyInspectorAgent', 'dependency': 'DependencySentinelAgent', 'architecture': 'ArchitectureGovernor', 'hygiene': 'HygieneGuardian', 'Historian': 'Historian', 'sherlock': 'Sherlock', 'reflection': 'ReflectionAgent'}
         for keyword, agent in agent_mapping.items():
             if f'force {keyword}' in instructions_lower or f'run {keyword}' in instructions_lower:
                 commands['force_agents'].append(agent)

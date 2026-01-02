@@ -60,7 +60,7 @@ class WorkflowMutation:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class SelfRecoveringOrchestrator(HealerMixin):
+class SelfRecoveringOrchestratorAgent(HealerMixin):
     """
     Orchestrator that automatically recovers from workflow failures.
     
@@ -400,6 +400,6 @@ class SelfRecoveringOrchestrator(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-def create_self_recovering_orchestrator() -> SelfRecoveringOrchestrator:
+def create_self_recovering_orchestrator() -> SelfRecoveringOrchestratorAgent:
     """Factory function to create self-recovering orchestrator."""
-    return SelfRecoveringOrchestrator()
+    return SelfRecoveringOrchestratorAgent()

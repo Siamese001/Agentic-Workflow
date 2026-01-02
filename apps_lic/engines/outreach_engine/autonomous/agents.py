@@ -6,11 +6,11 @@ Provides domain-specific agents for outreach campaigns:
 - LeadQualityAgent: Validates lead quality
 - ContactValidatorAgent: Validates contact information
 - MessageComplianceAgent: Ensures message compliance
-- TemplateOptimizer: Optimizes message templates
+- TemplateOptimizerAgent: Optimizes message templates
 - CampaignBalanceAgent: Balances campaign elements
 - DeliverabilityAgent: Checks email deliverability
 - OutreachTestPilot: Runs validation tests
-- CampaignPlanner: Strategic campaign planning
+- CampaignPlannerAgent: Strategic campaign planning
 - OutreachReflectionAgent: Reflects on execution
 """
 
@@ -135,7 +135,7 @@ class MessageComplianceAgent(OutreachAgent):
             print(f"   [{self.name}] ✅ Messages compliant")
 
 
-class TemplateOptimizer(OutreachAgent):
+class TemplateOptimizerAgent(OutreachAgent):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:
@@ -307,7 +307,7 @@ class OutreachTestPilot(OutreachAgent):
             print(f"   [{self.name}] ❌ Failed tests: {failed_tests}")
 
 
-class CampaignPlanner(OutreachAgent):
+class CampaignPlannerAgent(OutreachAgent):
     """Strategic campaign planning agent."""
 
     async def execute(self) -> None:

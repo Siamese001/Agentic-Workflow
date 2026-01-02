@@ -8,8 +8,8 @@ from typing import List, Optional, Dict, Any
 from pinecone import Pinecone, ServerlessSpec, PineconeApiException
 from agentic_core.config.blueprint_sovereign.sovereign_config import config
 
-# NAMING FIXED: SovereignPineconeStore → SovereignPineconeStore
-class SovereignPineconeStore:
+# NAMING FIXED: SovereignPineconeStoreAgent → SovereignPineconeStoreAgent
+class SovereignPineconeStoreAgent:
     """Sovereign wrapper for Pinecone serverless index."""
     
     DEFAULT_INDEX_NAME = "sovereign-territory-index"
