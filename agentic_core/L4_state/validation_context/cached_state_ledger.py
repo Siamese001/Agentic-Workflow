@@ -11,9 +11,11 @@ from typing import Any, Dict, List, Optional, Protocol
 
 import redis
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
 
 # NAMING FIXED: CachedStateLedger → CachedStateLedger
-class CachedStateLedger:
+class CachedStateLedger(MCPHardenedMixin):
     """
     Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.

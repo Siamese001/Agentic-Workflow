@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -25,7 +26,7 @@ redis_cache_ttl: Any = 60 * 60 * 24 * 7
 max_redis_entry_size: Any = 1024 * 1024
 redis_timeout: Any = 5
 
-class SovereignSemanticCache:
+class SovereignSemanticCache(MCPHardenedMixin):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
     def __init__(self, mission_id: str, engine=None, pinecone_agent: Optional[PineconeSovereignAgent]=None):

@@ -13,9 +13,10 @@ from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class DispatchOutreachToolsAgent(HealerMixin):
+class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
