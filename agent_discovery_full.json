@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,9 +239,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -270,9 +270,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -372,9 +372,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -558,16 +558,18 @@
     "class_name": "AgentInfo",
     "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__"
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 50,
+    "loc": 51,
     "class_count": 2,
     "description": "Simple agent information container with explicit initialization.",
     "pascal_compliant": true,
@@ -659,7 +661,9 @@
     "class_name": "CanonValidator",
     "path": "agentic_core\\L1_cognition\\thought_engine\\agent_logic.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_safe_parse_ast",
@@ -674,10 +678,10 @@
     ],
     "has_tools": false,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 290,
+    "loc": 291,
     "class_count": 2,
     "description": "\n    The L5 Meta-Learner that validates code against the Canon.\n\n    This class implements the core ",
     "pascal_compliant": true,
@@ -711,7 +715,9 @@
     "class_name": "ConsolidatedOrchestrator",
     "path": "agentic_core\\L1_cognition\\thought_engine\\orchestration_main_handler.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_execute_clean_slate",
@@ -722,7 +728,7 @@
     ],
     "has_tools": true,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
     "loc": 372,
@@ -2413,8 +2419,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
-      "HealerMixin"
+      "HealerMixin",
+      "IActionPlane"
     ],
     "key_methods": [
       "__init__",
@@ -3222,7 +3228,9 @@
     "class_name": "DeadlockDetector",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\deadlock_detector.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "start_monitoring",
@@ -3237,10 +3245,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 190,
+    "loc": 191,
     "class_count": 2,
     "description": "\n    Detects potential deadlocks in asyncio tasks.\n\n    Monitors:\n    - Task execution time\n    - He",
     "pascal_compliant": true,
@@ -3301,14 +3309,19 @@
     "class_name": "HallucinationDetector",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\check_hallucination.py",
     "layer": "L3",
-    "inheritance": [],
-    "key_methods": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "check"
+    ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 9,
+    "loc": 13,
     "class_count": 1,
     "description": "Stub implementation of hallucination detector.",
     "pascal_compliant": true,
@@ -3451,7 +3464,9 @@
     "class_name": "MemoryLeakDetector",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\memory_leak_detector.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "start_cycle",
@@ -3465,10 +3480,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 158,
+    "loc": 159,
     "class_count": 2,
     "description": "\n    Detects memory leaks in the agentic system.\n\n    Features:\n    - Tracks memory usage across cyc",
     "pascal_compliant": true,
@@ -3479,9 +3494,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
+      "AutonomyMixin",
       "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3551,7 +3566,7 @@
     "has_healing": false,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 878,
+    "loc": 879,
     "class_count": 9,
     "description": "",
     "pascal_compliant": true,
@@ -3590,7 +3605,9 @@
     "class_name": "NervousSystemAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\NervousSystemAgent.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3605,10 +3622,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 878,
+    "loc": 879,
     "class_count": 9,
     "description": "Core orchestrator that coordinates cognitive and action planes.\n\n    Implements the 5-step agentic c",
     "pascal_compliant": true,
@@ -3634,7 +3651,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 878,
+    "loc": 879,
     "class_count": 9,
     "description": "Orchestrates the execution of all phases within a mission cycle.",
     "pascal_compliant": true,
@@ -4013,7 +4030,7 @@
     "has_healing": false,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 190,
+    "loc": 191,
     "class_count": 2,
     "description": "Monitors a single asyncio Task.",
     "pascal_compliant": true,
@@ -4397,7 +4414,9 @@
     "class_name": "CanonValidator",
     "path": "agentic_core\\L4_state\\validation_context\\agent_logic_connectivity.py",
     "layer": "L4",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_load_manifest_data",
@@ -4412,10 +4431,10 @@
     ],
     "has_tools": false,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 201,
+    "loc": 202,
     "class_count": 1,
     "description": "\n    The Gatekeeper logic that enforces the 'Subatomic' canon.\n    Uses a 2-stage cache (L1 Redis Ho",
     "pascal_compliant": true,
@@ -5056,9 +5075,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5489,10 +5508,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",

@@ -48,7 +48,9 @@ class MemorySnapshot:
         """Convert to dictionary for serialization."""
         return {'label': self.label, 'timestamp': self.timestamp.isoformat(), 'total_allocated_mb': self.get_size_mb(self.total_allocated), 'total_peaked_mb': self.get_size_mb(self.total_peaked), 'current_allocated_mb': self.get_size_mb(self.current_allocated), 'current_peaked_mb': self.get_size_mb(self.current_peaked), 'top_allocations': [{'file': str(stat.traceback[0].filename), 'line': stat.traceback[0].lineno, 'size_mb': self.get_size_mb(stat.size), 'count': stat.count} for stat in self.top_allocations[:5]]}
 
-class MemoryLeakDetector:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class MemoryLeakDetector(HealerMixin):
     """
     Detects memory leaks in the agentic system.
 

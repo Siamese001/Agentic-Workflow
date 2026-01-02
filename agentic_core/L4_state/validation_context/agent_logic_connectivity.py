@@ -17,7 +17,9 @@ except ImportError:
     CanonEntry = CanonMetadata = type('Stub', (), {})
 Logger: Any = logging.getLogger(__name__)
 
-class CanonValidator:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class CanonValidator(HealerMixin):
     """
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.

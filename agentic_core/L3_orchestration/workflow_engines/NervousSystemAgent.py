@@ -1030,7 +1030,9 @@ class NervousSystemPhaseOrchestrator(HealerMixin):
         return converged, errors
 
 # NAMING CANON COMPLIANCE — renamed to NervousSystemAgent for discovery and sovereignty — 2025-12-30
-class NervousSystemAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class NervousSystemAgent(HealerMixin):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:

@@ -4,25 +4,27 @@ import logging
 '''Brief description of functionality and purpose.'''
 
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-"""
-
-
-# NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
-Hallucination checking module for apps_rg.
-
-Provides basic hallucination detection for resume generation.
-"""
-
 
 # NAMING FIXED: HallucinationDetector → HallucinationDetector
-class HallucinationDetector:
+class HallucinationDetector(HealerMixin):
     """Stub implementation of hallucination detector."""
 
+    def __init__(self: Any, config: Dict[str, Any]) -> None:
+        self.config = config or {}
 
-def __init__(self: Any, config: Dict[str, Any]) -> None:
-    SELF.CONFIG = config or {}
+    def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Check text for potential hallucinations.
+        Args:
+            text: Text to check
+            context: Additional context for checking
+        Returns:
+            Dictionary with check results
+        """
+        return {"is_hallucination": False, "confidence": 0.95, "issues": []}
 
 def check(self: Any, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
     """

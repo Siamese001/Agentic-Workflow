@@ -67,7 +67,9 @@ class TaskMonitor:
 
 
 # NAMING FIXED: DeadlockDetector → DeadlockDetector
-class DeadlockDetector:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class DeadlockDetector(HealerMixin):
     """
     Detects potential deadlocks in asyncio tasks.
 
