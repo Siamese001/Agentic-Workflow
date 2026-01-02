@@ -17,6 +17,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 from agentic_core.L5_safety.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
 class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
@@ -140,3 +141,20 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         except Exception as e:
             self.log(f"⚠️ LLM error: {e}")
             return None
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Apps_rg/resume_engine base agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Apps_rg/resume_engine - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)

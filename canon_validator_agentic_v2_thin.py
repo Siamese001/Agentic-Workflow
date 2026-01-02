@@ -76,6 +76,16 @@ def main():
         action="store_true",
         help="Execute heal changes (use with --heal)"
     )
+    parser.add_argument(
+        "--agent",
+        type=str,
+        help="Run a specific agent directly (e.g., 'naming', 'location', 'hierarchy', 'filesystem', 'governance', 'guardian')"
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Execute changes (use with --agent, same as --execute-heal)"
+    )
     args = parser.parse_args()
     
     # Global mission timeout: 30 minutes
@@ -94,10 +104,67 @@ def main():
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
-    # Handle autonomous healing mode (Canon Key 51 - Agent Autonomy Law)
+    # Handle single agent invocation
+    if args.agent:
+        print(f"\n[*] AGENT MODE - Direct invocation of {args.agent.upper()}")
+        
+        execute = args.execute or args.execute_heal
+        mode_str = "EXECUTE" if execute else "DRY-RUN"
+        print(f"   [MODE] {mode_str}")
+        
+        # Agent registry mapping
+        agent_registry = {
+            "naming": ("agentic_core.utils.core_extensions.NamingAgent", "get_naming_agent"),
+            "guardian": ("agentic_core.L5_safety.validators.AutonomyGuardianAgent", "get_autonomy_guardian"),
+            "location": ("agentic_core.L5_safety.validators.LocationAgent", "LocationAgent"),
+            "hierarchy": ("agentic_core.L5_safety.validators.HierarchyAgent", "HierarchyAgent"),
+            "filesystem": ("agentic_core.L5_safety.validators.FilesystemAgent", "FilesystemAgent"),
+            "governance": ("agentic_core.L5_safety.validators.GovernanceAgent", "get_governance_agent"),
+        }
+        
+        agent_key = args.agent.lower()
+        if agent_key not in agent_registry:
+            print(f"   [!] Unknown agent: {args.agent}")
+            print("   Available agents:")
+            for key in sorted(agent_registry.keys()):
+                print(f"      - {key}")
+            sys.exit(1)
+        
+        try:
+            module_path, agent_name = agent_registry[agent_key]
+            module = __import__(module_path, fromlist=[agent_name])
+            agent_cls_or_getter = getattr(module, agent_name)
+            
+            # Instantiate agent
+            if callable(agent_cls_or_getter) and agent_cls_or_getter.__name__.startswith("get_"):
+                agent = agent_cls_or_getter(project_root)
+            else:
+                agent = agent_cls_or_getter(project_root)
+            
+            print(f"   [AGENT] {agent.__class__.__name__}.heal_repository()\n")
+            
+            result = agent.heal_repository(
+                dry_run=not execute,
+                execute=execute,
+                depth=0,
+                max_depth=3,
+            )
+            
+            print(f"\n[AGENT COMPLETE]")
+            print(f"   Renamed: {result.get('renamed', 0)}")
+            print(f"   Errors: {result.get('errors', 0)}")
+            
+        except Exception as e:
+            print(f"   [!] Agent invocation failed: {e}")
+            traceback.print_exc()
+            sys.exit(1)
+        
+        return  # Exit after agent mode
+    
+    # Handle autonomous healing mode
     if args.heal:
         print("\n[*] SOVEREIGN HEAL MODE - Autonomous Domain Healing")
-        print("   [LAW] Canon Key 51: All healing via agent.heal_repository() — no external scripts")
+        print("   [LAW] All healing via agent.heal_repository() — no external scripts")
         
         execute_heal = args.execute_heal
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
@@ -108,7 +175,7 @@ def main():
             from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
             from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
             
-            # All healing goes through agents directly — no scripts (Canon Key 51)
+            # All healing goes through agents directly — no scripts
             agents = [
                 ("NamingAgent", get_naming_agent(project_root)),
                 ("AutonomyGuardian", get_autonomy_guardian(project_root)),
