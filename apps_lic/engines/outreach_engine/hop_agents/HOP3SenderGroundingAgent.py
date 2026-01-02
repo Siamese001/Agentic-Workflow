@@ -105,15 +105,24 @@ class HOP3SenderGroundingAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
                             )
         
         # Write to state
-        output_state = {
-            "sender_grounding": grounding,
-            "source_files_loaded": [f for f in self.source_files if os.path.exists(f)]
-        }
-        
-        output_path = state_mgr.write_state("HOP-3", output_state)
-        
-        print(f"✓ Sender Grounding Complete")
-        print(f"  Team members: {len(grounding['team_members'])}")
+        try:
+            output_state = {
+                "sender_grounding": grounding,
+                "source_files_loaded": [f for f in self.source_files if os.path.exists(f)]
+            }
+            
+            output_path = state_mgr.write_state("HOP-3", output_state)
+            
+            print(f"✓ Sender Grounding Complete")
+            print(f"  Team members: {len(grounding['team_members'])}")
+            print(f"  Products: {len(grounding['products'])}")
+            print(f"  Case studies: {len(grounding['case_studies'])}")
+            print(f"  Achievements: {len(grounding['quantifiable_achievements'])}\n")
+            
+            return output_path
+        except Exception as e:
+            self.log(f"⚠️ LLM error: {e}")
+            return None
         print(f"  Products: {len(grounding['products'])}")
         print(f"  Case studies: {len(grounding['case_studies'])}")
         print(f"  Achievements: {len(grounding['quantifiable_achievements'])}\n")

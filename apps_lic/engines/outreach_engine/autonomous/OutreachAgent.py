@@ -69,7 +69,7 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             self.ctx.budget.record_llm_call(len(prompt) + len(response.text))
             return response.text
         except Exception as e:
-            print(f"   [{self.name}] ⚠️ LLM call failed: {e}")
+            self.log(f"⚠️ LLM error: {e}")
             return None
 
     @timeout(300)

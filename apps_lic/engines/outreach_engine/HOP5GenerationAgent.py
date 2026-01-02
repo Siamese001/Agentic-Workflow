@@ -59,7 +59,11 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         candidates = []
         for i in range(n_candidates):
             print(f"  Generating candidate {i+1}/{n_candidates}...")
-            draft_text = await self._generate_single_draft(research, grounding, scaffold, temperature)
+            try:
+                draft_text = await self._generate_single_draft(research, grounding, scaffold, temperature)
+            except Exception as e:
+                self.log(f"⚠️ LLM error: {e}")
+                return None
             candidates.append({
                 "candidate_id": i + 1,
                 "text": draft_text,

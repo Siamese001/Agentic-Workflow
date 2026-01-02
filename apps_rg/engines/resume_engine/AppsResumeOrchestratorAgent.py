@@ -9,6 +9,7 @@ from shared.configuration.config import ContentConstraintsConfig
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 _logger = logging.getLogger(__name__)
 'Pure orchestration of resume generation using shared atoms.'
@@ -58,4 +59,21 @@ def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, ob
     """Single public function - pure routing between atoms."""
     ResumeOrchestrator(master_resume)
     return ConfigurationService().orchestrator.run(ConfigurationService().JobDescription)
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """Apps_rg/resume_engine - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "ResumeOrchestrator"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] Apps_rg/resume_engine - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)
 

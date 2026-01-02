@@ -468,3 +468,24 @@ def get_encryption_key(key_name: str) -> Optional[str]:
         The encryption key or None
     """
     return get_config_manager().get_key(key_name)
+
+def get_secure_config_manager(config_dir: Optional[Path] = None, master_password: Optional[str] = None) -> SecureConfigManager:
+    """Factory function to get secure config manager."""
+    return SecureConfigManager(config_dir, master_password)
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L5 safety/guardrails - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "SecureConfigManager"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L5 safety/guardrails - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)

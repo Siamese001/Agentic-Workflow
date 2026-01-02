@@ -147,7 +147,23 @@ class TypeHintFixer(HealerMixin, ast.NodeTransformer):
 
 
 # Factory for discovery
-def get_type_hint_enforcement_agent(project_root, ctx):
-    '''Brief description of functionality and purpose.'''
-    
+def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforcementAgent:
+    """Factory function."""
     return TypeHintEnforcementAgent(ctx, project_root)
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L5 safety/validators - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "TypeHintEnforcement"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L5 safety/validators - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)

@@ -94,8 +94,8 @@ class HOPOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin)
                 break
             
             except Exception as e:
-                print(f"\n✗ Error in {hop_id}: {e}")
-                break
+                self.log(f"⚠️ LLM error: {e}")
+                return None
         
         # Get workflow progress
         progress = state_mgr.get_workflow_progress()

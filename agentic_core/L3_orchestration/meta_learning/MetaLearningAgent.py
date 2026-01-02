@@ -16,6 +16,29 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
+def get_meta_learning_agent() -> MetaLearningAgent:
+    """Factory function to get the meta-learning agent."""
+    return MetaLearningAgent()
+
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L3 orchestration/meta_learning - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "MetaLearning"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L3 orchestration/meta_learning - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)
+
+
 class MetaLearningAgent(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
