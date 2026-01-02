@@ -1,8 +1,9 @@
 """Mock Vector Store module."""
 from typing import Dict, Any, List
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 # NAMING FIXED: PineconeSovereignAgent → PineconeSovereignAgent
-class PineconeSovereignAgent:
+class PineconeSovereignAgent(HealerMixin):
     """Mock Pinecone Sovereign Agent."""
     
     def __init__(self, api_key: str = None, index_name: str = None):

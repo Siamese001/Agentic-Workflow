@@ -50,8 +50,10 @@ class WorkflowBlueprint:
         self.mutation_hooks = mutation_hooks or {}
         self.parallel_groups = parallel_groups or []
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING FIXED: AgentRegistry → AgentRegistry
-class AgentRegistry:
+class AgentRegistry(HealerMixin):
     """Mock AgentRegistry for type hinting."""
     pass
 
