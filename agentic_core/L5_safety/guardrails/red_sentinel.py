@@ -20,7 +20,9 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-class RedSentinel:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class RedSentinel(HealerMixin):
     """
     Active defense system that generates hostile inputs for testing.
 

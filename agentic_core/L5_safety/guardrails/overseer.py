@@ -120,14 +120,15 @@ class ConstitutionalOverseer:
         """
         return self._forbidden_commands.copy()
 
-class SafetyInspector:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class SafetyInspector(HealerMixin):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance with intelligent Violation verification.
     """
-
     def __init__(self, enable_socratic_judge: bool=True):
         """
         Initialize the SafetyInspector.

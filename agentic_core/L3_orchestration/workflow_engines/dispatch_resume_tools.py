@@ -13,8 +13,10 @@ except ImportError as e:
     TITANIUM_AVAILABLE: Any = False
     LOGGER.warning(f'Titanium RAG Pipeline not available: {e}')
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class DispatchResumeToolsAgent:
+class DispatchResumeToolsAgent(HealerMixin):
     """Executor for resume domain with Titanium RAG integration."""
 
     def __init__(self, config: Optional[Dict[str, object]]=None):
