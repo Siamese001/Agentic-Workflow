@@ -520,10 +520,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             totals["observable"] += terr_observable
             totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
 
-            # Calculate new high-signal metrics
-            layer_weight = {"L0": 5, "L1": 4, "L2": 3, "L3": 2, "L4": 1, "L5": 3, "unknown": 0}.get(layer_filter, 0)
-            priority_weight = {"CRITICAL": 10, "HIGH": 7, "MEDIUM": 5, "LOW": 2}.get(priority, 0)
-            criticality = min(100, (perc_used * 2) + layer_weight + priority_weight)
+            # Calculate new high-signal metrics with better distribution
+            layer_multiplier = {"L0": 1.3, "L1": 1.2, "L2": 1.1, "L3": 1.0, "L4": 0.9, "L5": 1.4, "unknown": 0.8}.get(layer_filter, 1.0)
+            priority_multiplier = {"CRITICAL": 1.5, "HIGH": 1.3, "MEDIUM": 1.1, "LOW": 0.9}.get(priority, 1.0)
+            
+            # Business criticality: usage + compliance gap + size impact
+            usage_factor = min(40, perc_used * 0.4)  # Max 40 points from usage
+            compliance_gap = max(0, 80 - perc_compliant) * 0.3  # Gap penalty, max 24 points
+            size_factor = min(20, terr_total * 0.5)  # Size impact, max 20 points
+            
+            base_criticality = usage_factor + compliance_gap + size_factor
+            criticality = round(base_criticality * layer_multiplier * priority_multiplier, 1)
             
             health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
             
@@ -622,7 +629,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
             # Calculate metrics for unclassified
             unclass_health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
-            unclass_criticality = min(100, (perc_used * 2) + 5)  # Default medium priority
+            
+            # Unclassified criticality with better distribution
+            unclass_usage_factor = min(40, perc_used * 0.4)
+            unclass_compliance_gap = max(0, 80 - perc_compliant) * 0.3
+            unclass_size_factor = min(20, terr_total * 0.5)
+            unclass_base = unclass_usage_factor + unclass_compliance_gap + unclass_size_factor
+            unclass_criticality = round(unclass_base * 0.8, 1)  # Lower priority for unclassified
             
             unclass_risk_score = 0
             if avg_cc > 10: unclass_risk_score += 3
@@ -652,9 +665,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             total_observable = round(t["observable"] / t["agents"], 1)
             total_used = round(t["used"] / t["agents"] * 100, 1)
 
-            # Calculate total metrics
+            # Calculate total metrics with improved distribution
             total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
-            total_criticality = min(100, (total_used * 2) + 30)  # Weighted average
+            
+            # Total criticality: weighted average of usage, compliance gap, and system size
+            total_usage_factor = min(40, total_used * 0.4)
+            total_compliance_gap = max(0, 80 - total_perc) * 0.3
+            total_size_factor = min(20, t['agents'] * 0.05)  # Scale down for total agents
+            total_criticality = round((total_usage_factor + total_compliance_gap + total_size_factor) * 1.2, 1)
             
             total_risk_score = 0
             if overall_avg_cc > 10: total_risk_score += 3
@@ -792,10 +810,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
             perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
             
-            # Calculate high-signal metrics
-            layer_weight = {"L0": 5, "L1": 4, "L2": 3, "L3": 2, "L4": 1, "L5": 3, "unknown": 0}.get(layer_filter, 0)
-            priority_weight = {"CRITICAL": 10, "HIGH": 7, "MEDIUM": 5, "LOW": 2}.get(priority, 0)
-            criticality = min(100, (perc_used * 2) + layer_weight + priority_weight)
+            # Calculate high-signal metrics with better distribution
+            layer_multiplier = {"L0": 1.3, "L1": 1.2, "L2": 1.1, "L3": 1.0, "L4": 0.9, "L5": 1.4, "unknown": 0.8}.get(layer_filter, 1.0)
+            priority_multiplier = {"CRITICAL": 1.5, "HIGH": 1.3, "MEDIUM": 1.1, "LOW": 0.9}.get(priority, 1.0)
+            
+            # Business criticality: usage + compliance gap + size impact
+            usage_factor = min(40, perc_used * 0.4)  # Max 40 points from usage
+            compliance_gap = max(0, 80 - perc_comp) * 0.3  # Gap penalty, max 24 points
+            size_factor = min(20, terr_total * 0.5)  # Size impact, max 20 points
+            
+            base_criticality = usage_factor + compliance_gap + size_factor
+            criticality = round(base_criticality * layer_multiplier * priority_multiplier, 1)
             
             health = round((perc_test + perc_heal_inv + perc_obs) / 3, 1)
             
