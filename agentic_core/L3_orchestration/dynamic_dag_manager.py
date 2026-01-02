@@ -463,8 +463,9 @@ class DAGMutator:
             return self.mutation_history[-limit:]
         return self.mutation_history
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class DAGManager:
+class DAGManager(HealerMixin):
     """Manages the dynamic DAG with mutation capabilities."""
     
     def __init__(self, config: Optional[DAGConfig] = None):
