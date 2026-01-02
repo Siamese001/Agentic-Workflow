@@ -287,7 +287,7 @@ class OrchestratorAgentAndScopeManager:
         impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
         return impact_scope
 
-class ConsolidatedOrchestrator:
+class ConsolidatedOrchestrator(HealerMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     
