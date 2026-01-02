@@ -149,8 +149,8 @@
     "layer": "L0",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L0DelegationTestingMixin"
+      "L0DelegationTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -223,10 +223,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
-      "MCPHardenedMixin",
       "SelfDiagnosisMixin",
+      "MCPHardenedMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -257,10 +257,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "AutonomyMixin",
-      "MCPHardenedMixin",
       "SelfDiagnosisMixin",
+      "MCPHardenedMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -368,9 +368,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
       "AutonomyMixin",
+      "SelfDiagnosisMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -425,10 +425,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
       "AutonomyMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -840,10 +840,10 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "CanonASTValidator",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -867,9 +867,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -972,9 +972,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -996,9 +996,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1103,9 +1103,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_ExceptHandler"
@@ -1127,9 +1127,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -1151,9 +1151,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Import",
@@ -1176,8 +1176,8 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
     "layer": "L1",
     "inheritance": [
-      "CanonBaseAgentInterface",
       "MCPHardenedMixin",
+      "CanonBaseAgentInterface",
       "HealerMixin"
     ],
     "key_methods": [
@@ -1374,9 +1374,9 @@
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_validators_ast.py",
     "layer": "L1",
     "inheritance": [
+      "CanonASTValidator",
       "SubatomicTestingMixin",
-      "HealerMixin",
-      "CanonASTValidator"
+      "HealerMixin"
     ],
     "key_methods": [
       "visit_Call"
@@ -2060,8 +2060,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\subatomic_testing_mixin.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -2081,8 +2081,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -2356,8 +2356,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
       "MCPHardenedMixin",
+      "IActionPlane",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2389,8 +2389,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\deepwiki_client_sovereign.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2422,8 +2422,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\fetch_client_sovereign.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2448,8 +2448,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\fetch_mcp_client.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -2609,8 +2609,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\playwright_mcp_client.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -3327,8 +3327,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3360,8 +3360,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3444,8 +3444,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3491,8 +3491,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3602,8 +3602,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3775,9 +3775,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
       "AutonomyMixin",
+      "SelfDiagnosisMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -4253,8 +4253,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__"
@@ -4308,8 +4308,8 @@
     "layer": "L3",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -6146,8 +6146,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "ASTEnforcementMixin",
       "MCPHardenedMixin",
+      "ASTEnforcementMixin",
       "CanonBaseAgent"
     ],
     "key_methods": [
@@ -6760,8 +6760,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6785,8 +6785,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6817,8 +6817,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6842,8 +6842,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6867,8 +6867,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6898,8 +6898,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6924,8 +6924,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6950,8 +6950,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -6977,8 +6977,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\workflow_orchestrator.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -7002,8 +7002,8 @@
     "path": "apps_lic\\engines\\outreach_engine\\hop_agents\\hop_agents.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -7174,10 +7174,10 @@
     "path": "apps_lic\\engines\\outreach_engine\\autonomous\\outreach_base.py",
     "layer": "apps_lic",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "ABC"
+      "ABC",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7257,8 +7257,8 @@
     "layer": "apps_lic",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7734,8 +7734,8 @@
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\proactive.py",
     "layer": "apps_rg",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -7835,8 +7835,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7860,8 +7860,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7886,8 +7886,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7914,8 +7914,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -7992,10 +7992,10 @@
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\resume_base.py",
     "layer": "apps_rg",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
-      "HealerMixin",
-      "ABC"
+      "ABC",
+      "SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8026,8 +8026,8 @@
     "path": "apps_rg\\engines\\resume_engine\\autonomous\\learning.py",
     "layer": "apps_rg",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -8058,8 +8058,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -8468,8 +8468,8 @@
     "layer": "apps_rg",
     "inheritance": [
       "MCPHardenedMixin",
-      "HealerMixin",
-      "L3SubatomicTestingMixin"
+      "L3SubatomicTestingMixin",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -8495,8 +8495,8 @@
     "path": "apps_shared\\utils\\common_patterns.py",
     "layer": "apps_shared",
     "inheritance": [
-      "SubatomicTestingMixin",
       "MCPHardenedMixin",
+      "SubatomicTestingMixin",
       "HealerMixin"
     ],
     "key_methods": [
@@ -8521,8 +8521,8 @@
     "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
     "layer": "apps_shared",
     "inheritance": [
-      "ABC",
       "MCPHardenedMixin",
+      "ABC",
       "HealerMixin"
     ],
     "key_methods": [],
@@ -8543,8 +8543,8 @@
     "path": "apps_shared\\base_agents\\canon_base_agent_interface.py",
     "layer": "apps_shared",
     "inheritance": [
-      "ABC",
       "MCPHardenedMixin",
+      "ABC",
       "HealerMixin"
     ],
     "key_methods": [
