@@ -13,7 +13,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIG
 Logger: Any = logging.getLogger(__name__)
 layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
 
-class ArchitectureGovernor(HealerMixin):
+class ArchitectureGovernorAgent(HealerMixin):
     """
     L3 Orchestration: Architecture Pattern Enforcement
     Ensures code follows canonical architectural patterns and layer boundaries.
@@ -21,7 +21,7 @@ class ArchitectureGovernor(HealerMixin):
 
     def __init__(self, project_root: Path=None):
         """
-        Initialize the ArchitectureGovernor.
+        Initialize the ArchitectureGovernorAgent.
         
         Args:
             project_root: Root directory of the project

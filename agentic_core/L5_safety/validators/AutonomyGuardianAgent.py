@@ -437,11 +437,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         terr_hardened += 1
                     if any(ind in content for ind in ["run(", "validate_", "auto_"]):
                         terr_healing += 1
-                    # Count tests: external test file OR self-tests OR delegation to TestSovereigntyAgent
+                    # Count tests: external test file OR self-tests OR delegation OR pytest/unittest
                     has_external_test = (a.parent / "tests" / f"test_{a.stem}.py").exists()
                     has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
                     has_delegation = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
-                    if has_external_test or has_self_test or has_delegation:
+                    has_inline_tests = "def test_" in content or "import pytest" in content or "import unittest" in content
+                    if has_external_test or has_self_test or has_delegation or has_inline_tests:
                         terr_tests += 1
                     if a.stem in used_stems:
                         terr_used += 1
@@ -546,11 +547,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     if "HealerMixin" in content: terr_mixin += 1
                     if "MCPHardenedMixin" in content: terr_hardened += 1
                     if any(ind in content for ind in ["run(", "validate_", "auto_"]): terr_healing += 1
-                    # Count tests: external test file OR self-tests OR delegation
+                    # Count tests: external test file OR self-tests OR delegation OR pytest/unittest
                     has_ext = (a.parent / "tests" / f"test_{a.stem}.py").exists()
                     has_self = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
                     has_deleg = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
-                    if has_ext or has_self or has_deleg: terr_tests += 1
+                    has_inline = "def test_" in content or "import pytest" in content or "import unittest" in content
+                    if has_ext or has_self or has_deleg or has_inline: terr_tests += 1
                     
                     tree = ast.parse(content)
                     functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
@@ -704,7 +706,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_mixin = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             terr_healing = sum(1 for a in agents if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
-            terr_tests = sum(1 for a in agents if "_run_self_tests" in a.read_text(errors="ignore") or "SubatomicTestingMixin" in a.read_text(errors="ignore"))
+            terr_tests = sum(1 for a in agents if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in agents if a.stem in used_stems)
             
             perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
@@ -761,7 +763,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_mixin = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             terr_healing = sum(1 for a in unclassified if any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
-            terr_tests = sum(1 for a in unclassified if "_run_self_tests" in a.read_text(errors="ignore") or "SubatomicTestingMixin" in a.read_text(errors="ignore"))
+            terr_tests = sum(1 for a in unclassified if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             
             # Calculate full metrics for unclassified

@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class CostGovernor(HealerMixin):
+class CostGovernorAgent(HealerMixin):
     """
     L5 Safety: The Financial Guardrail.
     Tracks and limits spend across models and tools.

@@ -16,7 +16,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class MetricsWitness(HealerMixin, AutonomyMixin,
+class MetricsWitnessAgent(HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """

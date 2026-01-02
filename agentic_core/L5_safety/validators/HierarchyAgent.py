@@ -135,8 +135,8 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         """Lazy-load GovernanceAgent to avoid circular import."""
         if self._governance_agent is None:
             try:
-                from agentic_core.L1_cognition.thought_engine.GovernanceAgent import ArchitectureGovernor
-                self._governance_agent = ArchitectureGovernor(str(self.project_root))
+                from agentic_core.L3_orchestration.workflow_engines.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+                self._governance_agent = ArchitectureGovernorAgent(str(self.project_root))
             except ImportError:
                 pass
         return self._governance_agent

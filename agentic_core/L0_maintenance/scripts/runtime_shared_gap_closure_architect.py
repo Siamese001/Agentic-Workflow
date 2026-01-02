@@ -30,7 +30,7 @@ class CompetenciesOutput:
     industry_first_compliant: bool
     _metadata: Dict[str, Any]
 
-class GapClosureArchitect(HealerMixin, Agent):
+class GapClosureArchitectAgent(HealerMixin, Agent):
     """Gap Closure Architect agent for leadership competencies.
 
     This agent generates competencies with strict constraints:

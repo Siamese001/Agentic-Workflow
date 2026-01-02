@@ -193,11 +193,11 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
-class DAGMutator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
+class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Handles the actual graph mutations."""
     
     def __init__(self, config: DAGConfig):
-        """Initialize the DAG Mutator.
+        """Initialize the DAGMutatorAgent.
         
         Args:
             config: DAG configuration

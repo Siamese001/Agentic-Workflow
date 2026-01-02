@@ -58,7 +58,7 @@ class CanonSwarmScheduler:
         if not self._agent_classes:
             raise ValueError('No agent classes provided. Call set_phases() or provide agent_classes in constructor.')
         from agentic_core.L2_execution.ToolRegistry.engineering import PatternEnforcer, StructuralEngineer
-        from agentic_core.L2_execution.ToolRegistry.governance import ArchitectureGovernor, DependencySentinel
+        from agentic_core.L2_execution.ToolRegistry.governance import ArchitectureGovernorAgent, DependencySentinel
         from agentic_core.L2_execution.ToolRegistry.infrastructure import BenchmarkingAgent, Historian
         from agentic_core.L2_execution.ToolRegistry.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
         from agentic_core.L2_execution.ToolRegistry.repair import TestPilot, ToolsmithAgent
