@@ -28,6 +28,9 @@ from .agents import (
 )
 from .outreach_base import OutreachAgent
 from .context import OutreachEngineContext
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
 
 class OutreachHealingStrategy(Enum):
@@ -68,7 +71,7 @@ class OutreachHealingResult:
     final_campaign: Dict[str, Any]
 
 
-class OutreachSignalRouter:
+class OutreachSignalRouter(MCPHardenedMixin, HealerMixin):
     """Routes signals to appropriate agents."""
 
     SIGNAL_TO_AGENTS = {
@@ -120,7 +123,7 @@ class OutreachSignalRouter:
         return OutreachHealingStrategy.QUALITY_FOCUS
 
 
-class OutreachAgentFactory:
+class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
     """Factory for creating outreach agents."""
 
     @staticmethod
@@ -290,7 +293,7 @@ class OutreachHealingCycle:
                 self.ctx.remove_signal(signal)
 
 
-class OutreachHealingOrchestrator:
+class OutreachHealingOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrates the complete self-healing process."""
 
     def __init__(
