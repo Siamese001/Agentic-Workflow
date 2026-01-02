@@ -23,9 +23,10 @@ from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSo
 
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SubAtomicRegistryAgent(HealerMixin):
+class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     """
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.

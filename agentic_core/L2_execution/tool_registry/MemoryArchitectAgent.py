@@ -150,7 +150,7 @@ class HealingDiffAnalyzer:
         return max_depth
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class MemoryArchitectAgent(SubAtomicAgent):
+class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin):
     """
     Autonomous Knowledge Distillation Agent
     
