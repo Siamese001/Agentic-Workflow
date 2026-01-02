@@ -176,7 +176,7 @@ class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
 
         return validated_output.model_dump()
 
-class ConstitutionalReviewerAgent(BaseAgent):
+class ConstitutionalReviewerAgent(HealerMixin, BaseAgent):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

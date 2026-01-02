@@ -11,9 +11,10 @@ from typing import Dict, Set
 
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyShield
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
 
-class GravityEnforcerAgent(CachedSafetyShield):
+class GravityEnforcerAgent(HealerMixin, CachedSafetyShield):
     """
     The "Neural Link" stabilizer that enforces gravity rules by actively
     commenting out forbidden imports from upstream sovereign code to downstream domains.
