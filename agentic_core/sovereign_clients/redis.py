@@ -11,10 +11,13 @@ import os
 from collections import OrderedDict
 from typing import Any, Dict, List, Optional
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class SovereignRedisClient:
+class SovereignRedisClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Redis client - audit + safe exec for all cache operations."""
     
     def __init__(self, url: Optional[str] = None):
@@ -24,12 +27,14 @@ class SovereignRedisClient:
         Args:
             url: Redis URL (defaults to env var or localhost)
         """
+        super().__init__()
         self.redis_url = url or os.getenv('REDIS_URL', 'redis://localhost:6379')
         self.audit_log: List[Dict[str, Any]] = []
         self._client = None
         self._fallback_cache: OrderedDict = OrderedDict()
         self._max_fallback_size = 1000
         self._use_fallback = False
+        self._mcp_audit('init')
     
     def _get_client(self):
         """Lazy-load Redis client with fallback."""

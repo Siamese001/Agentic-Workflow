@@ -11,10 +11,13 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 
-class SovereignGitClient:
+class SovereignGitClient(MCPHardenedMixin, HealerMixin):
     """Sovereign Git client - audit + safe exec for all Git operations."""
     
     def __init__(self, repo_root: Optional[Path] = None):
@@ -24,8 +27,10 @@ class SovereignGitClient:
         Args:
             repo_root: Repository root directory (defaults to cwd)
         """
+        super().__init__()
         self.repo_root = repo_root or Path.cwd()
         self.audit_log: List[Dict[str, Any]] = []
+        self._mcp_audit('init')
     
     def _audit(self, operation: str, payload: Dict[str, Any], result: Any) -> None:
         """Record operation to audit log."""
