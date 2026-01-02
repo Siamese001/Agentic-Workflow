@@ -6,6 +6,7 @@ Manages workflow checkpoints and state persistence.
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
