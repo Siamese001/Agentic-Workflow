@@ -20,7 +20,9 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-class AgentPermissionManager():
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class AgentPermissionManager(HealerMixin):
     """Manages agent permissions with Control Plane integration.
 
     Provides:

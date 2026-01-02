@@ -9,7 +9,9 @@ from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 Logger = logging.getLogger(__name__)
 
-class AgentRegistryValidatorAgent:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class AgentRegistryValidatorAgent(HealerMixin):
     """
     L3 Orchestration: Agent Registry Validation
     Ensures all agents defined in CANON_AGENT_REGISTRY are present and functional.

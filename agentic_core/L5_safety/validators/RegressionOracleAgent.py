@@ -55,7 +55,9 @@ class GeneratedTest:
     passed: bool
     error_message: Optional[str]
 
-class MethodChangeDetector:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class MethodChangeDetector(HealerMixin):
     """Detects method changes between two versions of a file."""
 
     def __init__(self, ctx):
