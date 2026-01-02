@@ -306,6 +306,11 @@ def main():
             has_tools = 'tool' in source.lower() or 'mcp' in source.lower()
             has_memory = 'pinecone' in source.lower() or 'redis' in source.lower()
             
+            # Check for external resource touch (Phase 5 validation)
+            external_markers = ['pinecone', 'redis', 'git', 'subprocess', 'requests.', 'httpx', 'aiohttp', 'http://', 'https://']
+            external_touch = any(marker in source.lower() for marker in external_markers)
+            mcp_hardened = 'mcphardenedmixin' in source.lower() or 'mcp_hardened_mixin' in source.lower()
+            
             agents.append({
                 'class_name': node.name,
                 'path': str(rel_path),
@@ -321,7 +326,8 @@ def main():
                 'class_count': class_count,
                 'description': get_docstring(node),
                 'pascal_compliant': node.name[0].isupper() and '_' not in node.name,
-                'mcp_hardened': 'mcp' in source.lower(),
+                'external_touch': external_touch,
+                'mcp_hardened': mcp_hardened,
             })
     
     # Sort by layer then name
