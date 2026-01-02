@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix tunnel violations by flattening to SSOT-compliant depth.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py

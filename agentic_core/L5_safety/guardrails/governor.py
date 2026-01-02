@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cost Governor for tracking and limiting mission costs.
 
 Tracks token usage and halts execution if cost exceeds threshold.

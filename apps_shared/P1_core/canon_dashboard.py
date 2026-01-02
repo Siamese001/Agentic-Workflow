@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DEPRECATED: December 28, 2025
 Dashboard functionality has been removed from the Canon Validator.

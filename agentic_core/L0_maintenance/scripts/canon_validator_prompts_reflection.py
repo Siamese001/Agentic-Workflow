@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Reflection and strategic planning few-shot patterns.
 Used by ReflectionAgent, StrategicPlanner.

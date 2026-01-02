@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Phase 1: Test Sovereignty Syntax Repair
 Target: Bulk-repair indentation and markdown fences.

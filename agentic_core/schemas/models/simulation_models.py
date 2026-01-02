@@ -1,11 +1,23 @@
-"""
-DEPRECATED – Zero-Loss Migration Complete (Phase 2B/Phase 4 – Dec 26, 2025)
-All models have been canonically centralized in:
-agentic_core/schemas/models/core_contracts.py
+from __future__ import annotations
 
-Imports below preserve backward compatibility. 
-New code MUST import directly from core_contracts.py
-"""
-from agentic_core.schemas.models.core_contracts import SimOutcome, SimScenario
+from typing import Any, Dict
 
-__all__ = ["SimScenario", "SimOutcome"]
+from pydantic import BaseModel
+
+
+class SimScenario(BaseModel):
+    id: str
+    description: str
+    initial_context: Dict[str, object]
+    execution_profile_name: str
+    run_count: int
+
+
+class SimOutcome(BaseModel):
+    scenario_id: str
+    average_scores: Dict[str, float]
+    safety_incidents: int
+    agent_conflict_count: int
+
+
+

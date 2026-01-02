@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Systematic fix for all indentation errors caused by the reorganization.
 Pattern: except ...:

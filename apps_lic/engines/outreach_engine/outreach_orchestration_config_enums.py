@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for outreach_orchestration_config."""
 from enum import Enum, auto
 

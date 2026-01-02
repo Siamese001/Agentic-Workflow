@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Unused Cleanup Agent
@@ -5,7 +6,7 @@ Atomic agent: Removes unused imports and variables using autoflake.
 """
 import subprocess
 from pathlib import Path
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 

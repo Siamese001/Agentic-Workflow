@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Move remaining shallow files to proper depth."""
 import shutil
 from pathlib import Path

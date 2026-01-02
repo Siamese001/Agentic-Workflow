@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guard: Prevent Dark Reasoning (Phase 10 – Dec 26, 2025)
 Ensures every reasoning/action in L1-L5 emits observability to L6.

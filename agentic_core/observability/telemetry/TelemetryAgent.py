@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 TelemetryAgent: Sovereign Structured Event Emitter
 
@@ -29,7 +30,7 @@ import json
 import logging
 from threading import Lock
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 

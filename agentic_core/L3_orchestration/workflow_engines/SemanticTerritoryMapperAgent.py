@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Semantic Territory Mapper Agent - Intelligent Brain
@@ -18,7 +19,7 @@ from agentic_core.L4_state.validation_context.PineconeSovereignAgent import (
     PineconeSovereignAgent,
 )
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):

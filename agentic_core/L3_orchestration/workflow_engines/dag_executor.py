@@ -1,3 +1,4 @@
+from __future__ import annotations
 """DAG Executor for orchestrating execution graphs.
 
 Minimal implementation for test compatibility.
@@ -23,7 +24,7 @@ class DagExecutionResult:
     _errors: List[str] = None
     outputs: Dict[str, Any] = None
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class DagExecutor(HealerMixin):
     """Executes Directed Acyclic Graphs of operations."""

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Human-in-the-Loop False Positive Management
 Allows humans to review and mark violations as false positives

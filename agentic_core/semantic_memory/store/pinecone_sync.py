@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Memory Architect Sync - L4 State Synchronization
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Core Embedder – Primary Embedding Engine
 Uses OpenAI text-embedding-3-large (SOTA as of Dec 2025).

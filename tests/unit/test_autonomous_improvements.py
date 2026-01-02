@@ -47,7 +47,7 @@ except ImportError:
     create_adaptive_learning_engine = module.create_adaptive_learning_engine
 
 try:
-    from agentic_core.L2_execution.tool_registry.proactive_resource_manager import (
+    from agentic_core.L2_execution.ToolRegistry.proactive_resource_manager import (
         ProactiveResourceManager,
         ResourceThreshold,
         ResourceMetrics,

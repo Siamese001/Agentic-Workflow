@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: state_manager.py
 # Description: State Manager for HOP-based architecture - v13.0
 # Manages explicit state files for auditable, debuggable, resumable workflow
@@ -13,7 +14,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 import shutil
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class StateManager:

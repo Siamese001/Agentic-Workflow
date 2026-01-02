@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for agent_permissions."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol
@@ -20,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class AgentPermissionManager(HealerMixin):
     """Manages agent permissions with Control Plane integration.

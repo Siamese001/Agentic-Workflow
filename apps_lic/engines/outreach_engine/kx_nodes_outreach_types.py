@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for kx_nodes_outreach.
 
 Local Runtime DTOs (Allowed) - App-specific K-node configuration models.

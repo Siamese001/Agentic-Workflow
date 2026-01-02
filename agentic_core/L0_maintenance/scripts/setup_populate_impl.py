@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for populate_impl.
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).

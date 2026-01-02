@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Outreach Engine Observability Module
 
@@ -17,7 +18,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from .context import OutreachEngineContext
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class OutreachTraceLevel(Enum):

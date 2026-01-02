@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Lightweight Bias Detection for Content Quality.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
@@ -47,7 +48,7 @@ class BiasResult:
         """Get high-Severity bias matches."""
         return [m for m in self.matches if m.Severity > 0.7]
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class BiasAuditor(HealerMixin):
     """Lightweight Bias Detection for Content Quality.

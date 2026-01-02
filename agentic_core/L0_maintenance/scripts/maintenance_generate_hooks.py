@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Pre-commit Hook Generator - SSOT Synchronization
 Dynamically generates .pre-commit-config.yaml patterns from structure_blueprint.py

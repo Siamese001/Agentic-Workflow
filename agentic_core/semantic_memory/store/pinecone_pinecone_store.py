@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Pinecone Vector Store Implementation – Sovereign Primary (Serverless)
 SSOT-aligned integration using SovereignConfig.

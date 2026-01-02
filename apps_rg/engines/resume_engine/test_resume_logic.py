@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-generated stub for integration\test_resume_logic.py
 

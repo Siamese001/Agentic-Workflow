@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Resume Engine Orchestrator - Self-Healing Mission Runner
 

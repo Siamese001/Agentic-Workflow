@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cognitive Contracts - Plan-before-Act enforcement with validation.
 
 This module implements Strategy 1: Cognitive Contracts, forcing agents to

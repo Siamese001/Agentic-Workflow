@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ⚛️ THIN PROXY - Core Utils (Post-Atomic Fission)
 

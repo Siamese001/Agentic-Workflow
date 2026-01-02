@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Automatically add type hints to all functions Missing them."""
 import ast
 import logging

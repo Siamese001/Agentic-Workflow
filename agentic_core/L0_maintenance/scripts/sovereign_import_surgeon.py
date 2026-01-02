@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SOVEREIGN IMPORT SURGEON
 Scans all .py files and identifies import statements that need updating

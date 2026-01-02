@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for lic_archetypes."""
 import logging
 from enum import Enum, auto

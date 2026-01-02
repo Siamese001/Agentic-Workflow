@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DEPRECATED: December 28, 2025
 Flask web dashboard has been removed from the Canon Validator.

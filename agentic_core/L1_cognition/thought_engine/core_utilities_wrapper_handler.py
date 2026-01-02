@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core Utils - Thin Wrapper
 Delegates to consolidated tools in agentic_core/tools/

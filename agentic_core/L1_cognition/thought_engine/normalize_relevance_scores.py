@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 NormalizeRelevanceScores.py - Scoring Module
 

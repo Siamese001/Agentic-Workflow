@@ -110,7 +110,7 @@ class TestL2ExecutionAgents:
     def test_execution_base_agent_import(self):
         """Test ExecutionCanonBaseAgent can be imported."""
         try:
-            from agentic_core.L2_execution.tool_registry.ExecutionCanonBaseAgent import CanonBaseAgent
+            from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
             assert CanonBaseAgent is not None
         except ImportError as e:
             pytest.skip(f"ExecutionCanonBaseAgent not available: {e}")
@@ -118,7 +118,7 @@ class TestL2ExecutionAgents:
     def test_code_deduplication_agent(self):
         """Test CodeDeduplicationAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.CodeDeduplicationAgent import CodeDeduplicationAgent
+            from agentic_core.L2_execution.ToolRegistry.CodeDeduplicationAgent import CodeDeduplicationAgent
             ctx = MagicMock()
             agent = CodeDeduplicationAgent(ctx, _allow_mock=True)
             assert agent is not None
@@ -131,7 +131,7 @@ class TestL2ExecutionAgents:
     def test_code_janitor_agent(self):
         """Test CodeJanitorAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.CodeJanitorAgent import CodeJanitorAgent
+            from agentic_core.L2_execution.ToolRegistry.CodeJanitorAgent import CodeJanitorAgent
             ctx = MagicMock()
             agent = CodeJanitorAgent(ctx, _allow_mock=True)
             assert agent is not None
@@ -143,7 +143,7 @@ class TestL2ExecutionAgents:
     def test_context_curator_agent(self):
         """Test ContextCuratorAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.ContextCuratorAgent import ContextCuratorAgent
+            from agentic_core.L2_execution.ToolRegistry.ContextCuratorAgent import ContextCuratorAgent
             ctx = MagicMock()
             agent = ContextCuratorAgent(ctx, _allow_mock=True)
             assert agent is not None
@@ -155,7 +155,7 @@ class TestL2ExecutionAgents:
     def test_dependency_diplomat_agent(self):
         """Test DependencyDiplomatAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.DependencyDiplomatAgent import DependencyDiplomatAgent
+            from agentic_core.L2_execution.ToolRegistry.DependencyDiplomatAgent import DependencyDiplomatAgent
             ctx = MagicMock()
             agent = DependencyDiplomatAgent(ctx, _allow_mock=True)
             assert agent is not None
@@ -167,7 +167,7 @@ class TestL2ExecutionAgents:
     def test_dynamic_model_router_agent(self):
         """Test DynamicModelRouterAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.DynamicModelRouterAgent import DynamicModelRouterAgent
+            from agentic_core.L2_execution.ToolRegistry.DynamicModelRouterAgent import DynamicModelRouterAgent
             ctx = MagicMock()
             agent = DynamicModelRouterAgent(ctx, _allow_mock=True)
             assert agent is not None
@@ -179,7 +179,7 @@ class TestL2ExecutionAgents:
     def test_git_agent(self):
         """Test GitAgent basic functionality."""
         try:
-            from agentic_core.L2_execution.tool_registry.GitAgent import GitAgent
+            from agentic_core.L2_execution.ToolRegistry.GitAgent import GitAgent
             ctx = MagicMock()
             agent = GitAgent(ctx, _allow_mock=True)
             assert agent is not None

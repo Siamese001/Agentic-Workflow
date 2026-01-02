@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Phase 2: Test L4 Temporal Layer with Outreach Engine
 Tests the temporal compliance gate and governed outreach sequence

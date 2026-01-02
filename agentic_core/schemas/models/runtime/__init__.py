@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Runtime Contracts - SSOT for hop states, micro stages, and execution models.
 Modularized from core_contracts.py for DDD bounded context isolation.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 utils/core_extensions – Sovereign Territory
 

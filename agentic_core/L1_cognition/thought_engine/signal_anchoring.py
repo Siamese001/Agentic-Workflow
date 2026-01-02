@@ -1,3 +1,4 @@
+from __future__ import annotations
 # Standard library imports
 import hashlib
 '''Brief description of functionality and purpose.'''

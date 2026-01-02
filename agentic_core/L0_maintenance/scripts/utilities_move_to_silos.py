@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Enhanced cleanup script that moves files to sovereign silos
 """

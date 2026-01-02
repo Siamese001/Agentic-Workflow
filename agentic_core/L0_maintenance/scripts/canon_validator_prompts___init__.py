@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Validator Prompts Package.
 All few-shot prompting constants re-exported for backward compatibility.

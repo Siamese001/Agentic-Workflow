@@ -7,7 +7,7 @@ import pytest
 import tempfile
 from pathlib import Path
 from typing import Any
-from agentic_core.L2_execution.tool_registry.fetch_mcp_client import SovereignFetchMCPClient, get_fetch_client
+from agentic_core.L2_execution.ToolRegistry.fetch_mcp_client import SovereignFetchMCPClient, get_fetch_client
 from agentic_core.config.P1_core.sovereign_config import config
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -137,7 +137,7 @@ class test_guardian_enforcement:
         from pathlib import Path
         import tempfile
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write('from agentic_core.L2_execution.tool_registry.fetch_mcp_client import get_fetch_client\n')
+            f.write('from agentic_core.L2_execution.ToolRegistry.fetch_mcp_client import get_fetch_client\n')
             f.write('client = get_fetch_client()\n')
             f.write("content = await client.get_clean_content('https://example.com')\n")
             temp_path: Any = Path(f.name)

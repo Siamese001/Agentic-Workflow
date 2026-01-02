@@ -1,3 +1,4 @@
+from __future__ import annotations
 # PromptRegistry - Sovereign Version Registry
 # Territory: agentic_core/prompt_governance/version_registry
 # Canon Alignment: Prompt versioning, active template management, backward compatibility

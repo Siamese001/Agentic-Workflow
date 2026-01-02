@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Governed Outreach Sequence - Master Function for Outreach Engine
 Integrates L4 Temporal Awareness with Action Layer and L5 MEMemory

@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from pathlib import Path
-from agentic_core.L2_execution.tool_registry.hybrid_retriever import ASTAwareTokenizer
+from agentic_core.L2_execution.ToolRegistry.hybrid_retriever import ASTAwareTokenizer
 from rank_bm25 import BM25Okapi
 
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Find all lines longer than 100 characters."""
 import logging
 import os

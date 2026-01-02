@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
@@ -16,7 +17,7 @@ class OperationResult:
     message: Optional[str] = None
     metadata: Dict[str, object] = field(default_factory=dict)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 class SignatureVerifierAgent(HealerMixin):

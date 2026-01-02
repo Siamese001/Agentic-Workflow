@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dataclass models for lic_routing_rules."""
 import logging
 from dataclasses import dataclass, field

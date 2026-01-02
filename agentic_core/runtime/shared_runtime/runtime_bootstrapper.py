@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 '''Brief description of functionality and purpose.'''
 
@@ -7,7 +8,7 @@ from agentic_core.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
 from agentic_core.L1_cognition.boundaries.SemanticGatekeeper import SemanticGatekeeper
 from agentic_core.L1_cognition.thought_engine.StructuredEngine import StructuredEngine
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
-from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
+from agentic_core.L2_execution.ToolRegistry.mcp_manager import MCPConnectionManager
 from agentic_core.L3_orchestration.fission_logic.FissionManager import FissionManager
 from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """MCP-specific exceptions.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Human-in-the-Loop Intervention Server for L5+ Autonomy.
 

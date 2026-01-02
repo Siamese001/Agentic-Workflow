@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign MCP Connection Manager – Phase 16E (Dec 27, 2025)
 Canonical SSOT for all MCP connections across L0-L6
@@ -71,3 +72,6 @@ def load_mcp_config(config_path: str) -> Dict[str, Any]:
     except Exception as e:
         Logger.error(f'[L3 MCP] Failed to load config: {e}')
         return {'roles': {}}
+
+# Backward compatibility alias
+MCPConnectionManager = McpConnectionManager

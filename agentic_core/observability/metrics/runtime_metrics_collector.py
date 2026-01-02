@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RuntimeMetricsCollector.py - Metrics Module
 

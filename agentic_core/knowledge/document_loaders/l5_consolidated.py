@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L5 Consolidated Knowledge Retrieval for Resume Engine
 Consolidates L3 (Pinecone) and L5 (MEMemory) into unified knowledge access

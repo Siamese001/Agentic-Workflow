@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RAG Enhancement Components
 Ported from archives - provides semantic caching, self-RAG, knowledge graph injection, and episodic memory.

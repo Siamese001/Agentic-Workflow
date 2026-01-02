@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Agent Capabilities Registry - Functional Role-based Agent System.
 

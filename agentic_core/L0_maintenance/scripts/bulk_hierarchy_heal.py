@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 One-Off Bulk Hierarchy Healer - Eternal Depth 4 Alignment
 """

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """MCP Provider mappings and defaults.
 
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)

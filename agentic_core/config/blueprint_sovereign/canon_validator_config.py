@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Validator Configuration
 Defines exclusion zones and constants for validation.

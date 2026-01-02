@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L0 Transaction Manager: Atomic Healing with Rollback
 Provides ACID-like guarantees for healing operations.

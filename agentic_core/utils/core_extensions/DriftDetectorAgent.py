@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 DriftDetectorAgent - Naming/Compliance Framework Agent
@@ -7,7 +8,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 

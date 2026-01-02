@@ -1,5 +1,6 @@
 """Unit tests for core domain models: MissionPlan, MissionResult, Missing."""
 import pytest
+from typing import Any
 from unittest.mock import Mock, patch
 from datetime import datetime
 

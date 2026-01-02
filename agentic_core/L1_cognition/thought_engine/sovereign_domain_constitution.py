@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Domain Constitution – DDD Alignment (Dec 26, 2025)
 Defines Bounded Contexts, Aggregates, and Ubiquitous Language.

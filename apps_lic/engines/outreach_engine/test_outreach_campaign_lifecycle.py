@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-generated stub for e2e\outreach_flows\test_outreach_campaign_lifecycle.py
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for SubatomicOrchestrator."""
 
 import asyncio
@@ -7,6 +8,11 @@ from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 
 import networkx as nx
+
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
+from agentic_core.L3_orchestration.workflow_engines.OrchestrationBaseAgent import L3SubatomicTestingMixin
 
 
 # NAMING FIXED: AgentRole → AgentRole
@@ -39,7 +45,7 @@ class MutationAction(Enum):
     
     SPAWN_PREDECESSOR = "spawn_predecessor"
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: WorkflowBlueprint → WorkflowBlueprint
 class WorkflowBlueprint(HealerMixin):
@@ -52,7 +58,7 @@ class WorkflowBlueprint(HealerMixin):
         self.mutation_hooks = mutation_hooks or {}
         self.parallel_groups = parallel_groups or []
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: AgentRegistry → AgentRegistry
 class AgentRegistry(HealerMixin):
@@ -115,7 +121,7 @@ _orchestrator: Optional[SubatomicOrchestrator] = None
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 

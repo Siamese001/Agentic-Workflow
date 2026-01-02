@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign LLM Router MCP Client – Phase 16B (Dec 27, 2025)
 Replaces all direct LLM SDK calls in L5 safety layer.

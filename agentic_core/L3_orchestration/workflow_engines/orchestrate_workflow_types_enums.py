@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for orchestrate_workflow_types."""
 import logging
 from enum import Enum, auto

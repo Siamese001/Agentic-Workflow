@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: utils_LIC.py
 # Description: General-purpose utilities for the LIC workflow.
 # REFACTOR: v13.0 - This file has been slimmed down.

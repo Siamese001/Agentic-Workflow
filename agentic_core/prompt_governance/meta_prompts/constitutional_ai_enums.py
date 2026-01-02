@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Enum types for constitutional_ai."""
 from enum import Enum, auto
 

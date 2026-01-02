@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_maintenance/scripts/

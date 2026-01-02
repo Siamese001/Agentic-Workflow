@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ContextAwareValidator – Sovereign Agent Role Component (Phase 32 – Dec 30, 2025)
 

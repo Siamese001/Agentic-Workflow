@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Extract net incremental files (Python and JSON) from legacy_lic archive to staging directory."""
 import hashlib
 import logging

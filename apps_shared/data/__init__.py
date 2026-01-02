@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Shared data files for Agentic Workflow.
 
 Contains:

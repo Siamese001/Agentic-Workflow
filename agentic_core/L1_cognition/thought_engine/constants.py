@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign domain constants - Re-exported from canonical location.
 This module provides waterfall-compliant access to shared constants.

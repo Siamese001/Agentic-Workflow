@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 TerritoryHealerAgent - L3 Orchestration Framework Agent
@@ -6,7 +7,7 @@ Heals territorial violations and ensures proper folder hierarchy.
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 

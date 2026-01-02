@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign MCP Registry – Phase 13 (Dec 26, 2025)
 Canonical SSOT for all MCP server configurations across L0-L6.

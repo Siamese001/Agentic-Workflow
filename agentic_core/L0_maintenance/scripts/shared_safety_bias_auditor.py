@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
 '''Brief description of functionality and purpose.'''
 
@@ -7,7 +8,7 @@ from enum import Enum, auto
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class BiasType(Enum):

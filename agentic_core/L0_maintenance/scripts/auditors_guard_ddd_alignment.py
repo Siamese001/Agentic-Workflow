@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guardian: DDD Alignment
 Enforces Bounded Contexts and Aggregate Root access.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for ToolsUseATool."""
 import logging
 import sys

@@ -303,7 +303,7 @@ async def test_mcp_full_pipeline_with_web_search_tools():
     """
     
     # Import the actual WebSearchTools
-    from agentic_core.L2_execution.tool_registry.web_search_tools import WebSearchTools
+    from agentic_core.L2_execution.ToolRegistry.web_search_tools import WebSearchTools
     
     # Mock the router's manager
     mock_result = {

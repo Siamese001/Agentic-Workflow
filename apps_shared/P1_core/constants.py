@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Global architectural constants and governance laws."""
 
 # [SSOT] Import from structure_blueprint.py instead of hardcoding

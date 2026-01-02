@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L1 Result Parser - Pure result parsing logic only."""
 import logging
 from dataclasses import dataclass, field

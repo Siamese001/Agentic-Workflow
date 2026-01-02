@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for CheckResumeRules."""
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto

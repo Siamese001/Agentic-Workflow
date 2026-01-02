@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Tool Verification Loop - The "Compiler Check"
 

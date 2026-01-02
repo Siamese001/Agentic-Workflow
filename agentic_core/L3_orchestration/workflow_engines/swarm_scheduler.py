@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 SwarmScheduler - L3 Task Scheduling System
 

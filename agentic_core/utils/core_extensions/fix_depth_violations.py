@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix depth violations by moving shallow files into proper stage subdirectories.
 Files at Layer/file.py need to move to Layer/Stage/file.py

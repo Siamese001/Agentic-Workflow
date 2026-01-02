@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Detailed extraction analysis for legacy_lic archive."""
 import logging
 import shutil

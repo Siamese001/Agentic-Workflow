@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unit Tests for Phase 3: Learning & Intelligence Components
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Dead Code Detection Module
 

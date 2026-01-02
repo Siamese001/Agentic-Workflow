@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pinecone import Pinecone, ServerlessSpec
 '''Brief description of functionality and purpose.'''
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Content-based extraction from legacy_lic archive."""
 import hashlib
 import logging

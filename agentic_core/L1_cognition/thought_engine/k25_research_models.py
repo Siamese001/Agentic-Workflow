@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Backward compatibility shim for k25_research_models.
 
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 # mission_controller.py
 # L3 Mission Controller - Main Orchestration Engine
 # PURPOSE: Executes the full Agentic Validation Mission

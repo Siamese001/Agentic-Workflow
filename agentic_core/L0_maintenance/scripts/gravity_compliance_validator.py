@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Sovereign Gravity Compliance Validator (Key 18)
@@ -10,7 +11,7 @@ from pathlib import Path
 
 # [SSOT IMPORT] Layer authority from structure_blueprint.py
 from agentic_core.config.blueprint_sovereign.structure_blueprint import CORE_SUBFOLDER_MAP
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT DERIVED] Layer authority order: Lower index = higher authority (cannot import upward)
 # Derived from CORE_SUBFOLDER_MAP keys in structure_blueprint.py

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ast
 '''Brief description of functionality and purpose.'''
 
@@ -15,10 +16,10 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 # [PHASE 1] Self-testing mixin for L2 canonical compliance
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [PHASE 3] Default-on healing mixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NOT_AN_AGENT — Base class for agents, not a true agent itself — excluded from agent discovery

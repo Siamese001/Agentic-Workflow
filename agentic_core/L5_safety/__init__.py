@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Sovereign Layer: L5_safety"""
 
 # Temporarily disabled due to cascading import errors
@@ -15,6 +16,12 @@ def __getattr__(name):
     elif name == 'sub_atomic_engine':
         from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine
         return SubAtomicEngine
+    elif name == 'healer_mixin':
+        from agentic_core.L5_safety.guardrails import healer_mixin
+        return healer_mixin
+    elif name == 'HealerMixin':
+        from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+        return HealerMixin
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = ['SafetyGuardrail', 'SubAtomicEngine', 'sub_atomic_engine']

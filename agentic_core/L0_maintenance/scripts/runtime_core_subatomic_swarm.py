@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Subatomic Swarm - Parallel HOP execution with concurrency control.
 
 Orchestrates multiple SubatomicHop instances running in parallel using asyncio.Semaphore

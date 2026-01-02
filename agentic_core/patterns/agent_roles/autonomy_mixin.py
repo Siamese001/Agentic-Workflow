@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 AutonomyMixin – Sovereign Agent Role Mixin (Phase 28 – Dec 30, 2025)
 Enables proactive, unprompted execution with constitutional safeguards.

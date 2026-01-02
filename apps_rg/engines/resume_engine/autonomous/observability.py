@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Observability & Telemetry Module - Phase 5 Implementation
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign DeepWiki Healing Strategy – Phase 17E (Dec 27, 2025)
 Detects and autonomously corrects codebase documentation drift.

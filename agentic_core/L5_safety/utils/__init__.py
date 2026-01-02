@@ -1,5 +1,2 @@
-"""L5 Safety Utilities - Sovereign enforcement mixins and helpers."""
-
-from .ASTEnforcementMixin import ASTEnforcementMixin
-
-__all__ = ['ASTEnforcementMixin']
+from __future__ import annotations
+"""L5 Safety utils package."""

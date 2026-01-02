@@ -1,3 +1,4 @@
+from __future__ import annotations
 # mission_preflight.py
 # L5 Mission Preflight Validator
 # PURPOSE: Executes pre-mission compliance checks and enforces void compliance

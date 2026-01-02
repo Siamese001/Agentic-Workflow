@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 TracingAgent: Sovereign Distributed Tracing System
 
@@ -104,7 +105,7 @@ class Span:
 # Uppercase alias for backward compatibility
 Span = Span
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class TracingAgent(HealerMixin):
     """

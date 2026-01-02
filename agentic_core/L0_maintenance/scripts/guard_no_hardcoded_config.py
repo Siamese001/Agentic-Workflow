@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guardian: No Hardcoded Configuration
 Enforces centralized config usage - bans os.getenv outside SSOT.
@@ -71,7 +72,7 @@ def check_file(filepath: Path) -> bool:
     for pattern, desc in http_patterns:
         for match in re.finditer(pattern, content):
             line_no: Any = content[:match.start()].count('\n') + 1
-            violations.append((line_no, desc, 'Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client'))
+            violations.append((line_no, desc, 'Use get_fetch_client() from agentic_core.L2_execution.ToolRegistry.fetch_mcp_client'))
     lockdown_patterns: Any = [('\\bsubprocess\\.call\\s*\\(', 'Direct subprocess.call() usage'), ('\\bos\\.popen\\s*\\(', 'Direct os.popen() usage'), ('agentic_core/tools/', "Legacy 'tools/' path usage")]
     for pattern, desc in lockdown_patterns:
         for match in re.finditer(pattern, content):

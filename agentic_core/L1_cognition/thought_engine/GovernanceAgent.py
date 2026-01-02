@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L6 Sovereign Code Graph & Governance Infrastructure
 
@@ -29,7 +30,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 class DependencyGraph:

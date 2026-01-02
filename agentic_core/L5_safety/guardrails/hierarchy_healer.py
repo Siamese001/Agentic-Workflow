@@ -1,3 +1,4 @@
+from __future__ import annotations
 # HierarchyHealer.py
 # L5 Hierarchy Healing Agent
 # PURPOSE: Heals hierarchy violations by relocating files and removing empty folders
@@ -19,7 +20,7 @@ from agentic_core.utils.general_helpers.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 

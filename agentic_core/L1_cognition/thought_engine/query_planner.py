@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 QueryPlanner - L1 Cognition Query Decomposition and Expansion
 """

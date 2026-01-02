@@ -1,9 +1,14 @@
-"""
-LEGACY MIGRATION COMPLETE: Phase 2B
-All models centralized in sovereign SSOT: agentic_core/schemas/models/core_contracts.py
+from __future__ import annotations
 
-Note: This file originally contained incomplete/broken ContextProfile model.
-The model has been removed as it referenced non-existent ContextBudget.
-"""
-# No models to export - original file was incomplete
-__all__ = []
+from pydantic import BaseModel, Field
+
+# from archives.legacy_root_folders.core.models.models import ContextBudget  # DEPRECATED: Archive import removed to protect archives from validation edits
+
+
+class ContextProfile(BaseModel):
+    """Profile capturing context budget hints used by planning and routing."""
+
+    context_budget: ContextBudget = Field(default_factory=ContextBudget)
+
+
+

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 OrderSkillsByRelevance.py - Resume Operations Module
 

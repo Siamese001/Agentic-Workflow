@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guard: Block Inline Pydantic Models (Final Sovereign Version)
 Constitutional enforcement - all models must live in core_contracts.py

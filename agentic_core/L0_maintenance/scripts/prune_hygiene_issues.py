@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Hygiene Pruner - Interactive Dead Code and Duplicate Cleanup

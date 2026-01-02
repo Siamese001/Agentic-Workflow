@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for resume_orchestration_config."""
 from typing import Any, Optional, Protocol, Dict, List
 

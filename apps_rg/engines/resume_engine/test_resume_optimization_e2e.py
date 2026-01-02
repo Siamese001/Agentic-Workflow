@@ -1,3 +1,4 @@
+from __future__ import annotations
 """E2E tests for resume optimization flows."""
 from typing import Any, Optional, Protocol, Dict, List
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Advanced Tone Model - Emotional Brain for AI Communication.
 

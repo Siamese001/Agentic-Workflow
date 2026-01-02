@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Specialized Resume Agents - Phase 1 Implementation
 

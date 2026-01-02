@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Configuration constants and file discovery utilities.
 The Three Laws of Subatomic Governance are defined here.

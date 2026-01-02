@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Networking Utilities for Agentic Workflow
 Provides P8 Egress Filter for strict domain whitelisting

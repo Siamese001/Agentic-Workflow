@@ -1,11 +1,17 @@
-"""
-DEPRECATED – Zero-Loss Migration Complete (Phase 2B/Phase 4 – Dec 26, 2025)
-All models have been canonically centralized in:
-agentic_core/schemas/models/core_contracts.py
+from __future__ import annotations
 
-Imports below preserve backward compatibility. 
-New code MUST import directly from core_contracts.py
-"""
-from agentic_core.schemas.models.core_contracts import BudgetProfile
+from pydantic import BaseModel, Field
 
-__all__ = ["BudgetProfile"]
+
+class BudgetProfile(BaseModel):
+    """High-level budget profile for cost/latency envelopes.
+
+    This duplicates some of the fields from ExecutionProfileSpec so that
+    future callers can reason about budget in a single nested object.
+    """
+
+    max_cost_usd: float = Field(default=0.10, ge=0.0)
+    max_latency_ms: int = Field(default=3000, ge=0)
+
+
+

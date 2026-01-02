@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Flatten scripts directory to SSOT-compliant depth.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py

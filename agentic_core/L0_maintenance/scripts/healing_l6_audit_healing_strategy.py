@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign L6 Audit Healing Strategy – Phase 17F (Dec 27, 2025)
 Detects and autonomously corrects gaps in observability audit trail.

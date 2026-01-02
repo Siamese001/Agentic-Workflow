@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FetchRecipientInteractions.py - Retrieval Module
 

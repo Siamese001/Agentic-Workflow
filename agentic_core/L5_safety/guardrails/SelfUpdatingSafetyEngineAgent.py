@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
 
@@ -89,7 +90,7 @@ class ThreatDetection:
     confidence: float
     recommendations: List[str]
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

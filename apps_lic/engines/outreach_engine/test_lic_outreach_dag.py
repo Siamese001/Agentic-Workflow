@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Test file - regenerated due to syntax errors."""
 
 import pytest

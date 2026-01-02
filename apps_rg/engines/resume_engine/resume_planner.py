@@ -1,3 +1,4 @@
+from __future__ import annotations
 """RG Planner - Resume Generation L1 Planning Layer.
 
 Incorporated from historical agentic_workflow/l1/RgPlanner.py to provide

@@ -1,3 +1,4 @@
+from __future__ import annotations
 # mission_metrics.py
 # Prometheus Metrics for Canon Validator Mission
 # PURPOSE: Provides Metric definitions and server initialization for mission observability

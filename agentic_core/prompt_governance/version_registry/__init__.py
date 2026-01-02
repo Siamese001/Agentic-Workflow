@@ -1,3 +1,4 @@
+from __future__ import annotations
 # [CANON KEY 1] Prompt Version Registry
 # Territory: agentic_core/prompt_governance/version_registry
 

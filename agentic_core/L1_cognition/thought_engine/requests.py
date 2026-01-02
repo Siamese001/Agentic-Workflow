@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Request and result types for inter-plane communication.
 
 Defines ActionRequest, PlanningRequest, and related types for

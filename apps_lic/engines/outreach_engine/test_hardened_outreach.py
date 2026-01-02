@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Test Hardened Outreach Engine with L3 RAG and L4 LangCache Integration
 Validates personalization, caching, rate limiting, and cost governance

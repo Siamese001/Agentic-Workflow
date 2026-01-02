@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Tool Argument Contracts - SSOT for all tool parameter schemas.
 Modularized from core_contracts.py for DDD bounded context isolation.

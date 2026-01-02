@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Vector Store Client Factory.
 
 Provides unified access to vector databases (Chroma, Qdrant, Pinecone)

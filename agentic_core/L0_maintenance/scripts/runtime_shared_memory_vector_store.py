@@ -1,3 +1,4 @@
+from __future__ import annotations
 """In-Memory Vector Cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.
 
 Provides ephemeral in-memory vector storage for frequently accessed collections.

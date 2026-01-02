@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Fix duplicate imports in Python files."""
 import logging
 import os

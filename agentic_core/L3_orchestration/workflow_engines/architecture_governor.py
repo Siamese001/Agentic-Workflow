@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ArchitectureGovernor - L3 Orchestration Framework Agent
 Validates and enforces architectural patterns across the codebase.

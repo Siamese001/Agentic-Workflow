@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 QueryPastGenerations.py - Retrieval Module
 

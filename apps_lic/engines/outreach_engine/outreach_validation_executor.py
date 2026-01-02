@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Outreach Validation Executor - LIC-Specific Validation Gates.
 
 This module extends ValidationGateExecutor with outreach-specific validation

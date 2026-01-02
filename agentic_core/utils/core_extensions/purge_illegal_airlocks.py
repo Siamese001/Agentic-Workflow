@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Purge illegal __init__.py airlocks using SSOT depth requirements.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py

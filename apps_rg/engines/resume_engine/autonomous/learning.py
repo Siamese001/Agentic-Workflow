@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Learning & Intelligence Module - Phase 3 Implementation
 
@@ -24,7 +25,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from .context import ResumeEngineContext
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class ConfidenceLevel(Enum):

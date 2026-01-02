@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DeadlockDetector - L3 System Health Specialist
 
@@ -26,7 +27,7 @@ deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 
 # NAMING FIXED: TaskMonitor → TaskMonitor
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class TaskMonitor(HealerMixin):
     """Monitors a single asyncio Task."""
@@ -69,10 +70,10 @@ class TaskMonitor(HealerMixin):
 
 
 # NAMING FIXED: DeadlockDetector → DeadlockDetector
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
-from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
 class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """

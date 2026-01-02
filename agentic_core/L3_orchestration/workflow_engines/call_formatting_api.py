@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CallFormattingApi.py - Formatting Module
 

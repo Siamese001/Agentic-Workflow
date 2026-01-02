@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L5 Safety: SafetyGuardrail
 Enforces Zero-Loss principles during code mutation.

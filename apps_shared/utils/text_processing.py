@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Text processing utilities."""
 import re
 

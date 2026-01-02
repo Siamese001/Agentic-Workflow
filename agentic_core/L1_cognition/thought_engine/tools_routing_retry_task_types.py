@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for tools_routing_retry_task."""
 import logging
 import time

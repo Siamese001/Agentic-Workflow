@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Event Contracts - SSOT for all event types and Severity levels.
 Modularized from core_contracts.py for DDD bounded context isolation.

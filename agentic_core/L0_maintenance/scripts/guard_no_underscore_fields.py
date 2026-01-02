@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Guard: Block underscore-prefixed fields in SSOT models.
 Location: agentic_core/L0_maintenance/scripts/

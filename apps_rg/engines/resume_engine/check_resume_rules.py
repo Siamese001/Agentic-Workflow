@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 
 Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant

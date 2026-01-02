@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 GetInfoEmbeddingCompareMeaning.py - Core Module Implementation.
 

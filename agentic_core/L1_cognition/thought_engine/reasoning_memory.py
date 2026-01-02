@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L1 Cognition: Sovereign Reasoning Memory — ULTRA-HARDENED
 Eternal thought history, scratchpad, and Redis persistence with L5 shielding.
 Zero tolerance for corruption or overflow.

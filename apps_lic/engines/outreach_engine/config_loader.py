@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: config_loader.py
 # Description: Centralized config loader for LIC Outreach Engine
 # CREATED: 2026-01-01 - Prompt externalization for sovereignty compliance

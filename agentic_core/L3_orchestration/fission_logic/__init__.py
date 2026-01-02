@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L3_orchestration/fission_logic – Sovereign Territory
 

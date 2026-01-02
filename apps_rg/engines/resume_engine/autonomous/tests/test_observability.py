@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Unit Tests for Phase 5: Observability & Telemetry Components
 
@@ -18,7 +19,7 @@ import pytest
 
 from ..context import ResumeEngineContext
 from ..observability import (
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
     AuditReporter,
     ExecutionTrace,
     ExecutionTracer,

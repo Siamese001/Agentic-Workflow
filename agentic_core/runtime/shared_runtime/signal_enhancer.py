@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Signal Enhancer - Hardened quality gates for high-signal outputs.
 
 This module provides strict validation gates, signal-to-noise optimization,

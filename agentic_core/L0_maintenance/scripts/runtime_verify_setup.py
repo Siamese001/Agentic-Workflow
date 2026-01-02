@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Tri-Brain Dependency Verification Script
 Checks all requirements before running the Magnificent Seven validator

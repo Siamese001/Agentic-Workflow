@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Migration Script - Physical Path Remediation
 Responsible for:

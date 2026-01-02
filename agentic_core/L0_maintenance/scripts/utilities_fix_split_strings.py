@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fix split string literals across multiple Python files.
 This script fixes the common pattern where string literals were incorrectly

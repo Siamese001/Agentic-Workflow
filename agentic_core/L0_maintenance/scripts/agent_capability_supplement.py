@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ULTRA-HARDENED AST-DRIVEN CAPABILITY SUPPLEMENTATION ANALYSIS
 

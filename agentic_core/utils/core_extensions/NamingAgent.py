@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 NamingAgent: Canon Naming Law Enforcer (Key 49 territory)
 
@@ -49,6 +50,14 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     VALIDATED_FILE_EXTENSIONS,
     NAMING_EXEMPT_FILES,
     NAMING_EXEMPT_DIRS,
+    # App-specific placement rules
+    APP_SPECIFIC_PREFIXES,
+    is_app_specific_file,
+    get_correct_app_folder,
+    # Forbidden filename patterns
+    FORBIDDEN_LAYER_PREFIXES,
+    has_forbidden_layer_prefix,
+    is_broken_backup_file,
 )
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SEMANTIC_L2_REGISTRY, CORE_SUBFOLDER_MAP, SOVEREIGN_REGISTRY,
@@ -75,7 +84,7 @@ class PlacementResult:
     reasoning: str
     alternative_paths: List[str]
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 class NamingAgent(HealerMixin, MCPHardenedMixin):
@@ -88,6 +97,7 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
     - Globally unique PascalCase agent names (no duplicates like CanonBaseAgent L1/L2)
     - Semantic territory context for higher signal
     - True LLM-powered intelligent suggestions
+    - App-specific prefix must match actual root folder (rg_* → apps_rg, etc.)
     """
 
     def __init__(self, project_root: Path):
@@ -110,6 +120,78 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
         # Tree-sitter parsers cache (lazy initialization)
         self.parsers = {}  # language_name -> Parser
         self.languages = {}  # language_name -> Language
+
+    def validate_prefix_location_match(self, file_path: Path) -> List[str]:
+        """
+        Validate that files with app-specific prefixes are in the correct root folder.
+        Returns list of violation messages (empty = compliant).
+        """
+        violations = []
+        filename = file_path.name
+
+        if not is_app_specific_file(filename):
+            return violations
+
+        try:
+            rel_path = file_path.relative_to(self.project_root)
+            root_folder = rel_path.parts[0]
+        except ValueError:
+            root_folder = None
+
+        expected_root = get_correct_app_folder(filename)
+        if expected_root and root_folder != expected_root:
+            violations.append(
+                f"PREFIX-LOCATION MISMATCH: '{filename}' has app-specific prefix "
+                f"→ expected root '{expected_root}', but found in '{root_folder}'. "
+                f"Move to '{expected_root}/engines/'."
+            )
+
+        # Additional strict check using PREFIXES dict
+        for prefix, expected in APP_SPECIFIC_PREFIXES.items():
+            if filename.startswith(prefix) and root_folder != expected:
+                violations.append(
+                    f"PREFIX VIOLATION: File starts with '{prefix}' → must be under '{expected}/'"
+                )
+                break  # one message is enough
+
+        return violations
+
+    def validate_forbidden_layer_prefix(self, file_path: Path) -> List[str]:
+        """
+        Validate that filenames do not begin with layer/priority prefixes.
+        Examples of forbidden: l1_cms_schemas.py, P1_core___init__.py
+        Layer info belongs in FOLDER structure, not filenames.
+        Returns list of violation messages (empty = compliant).
+        """
+        violations = []
+        filename = file_path.name
+
+        forbidden_prefix = has_forbidden_layer_prefix(filename)
+        if forbidden_prefix:
+            violations.append(
+                f"LAYER PREFIX VIOLATION: '{filename}' begins with forbidden prefix '{forbidden_prefix}'. "
+                f"Layer/priority info belongs in folder structure, not filenames. "
+                f"Rename to remove the '{forbidden_prefix}' prefix."
+            )
+
+        return violations
+
+    def validate_broken_backup_file(self, file_path: Path) -> List[str]:
+        """
+        Validate that file is not a broken backup (.bak.NNNNNN pattern).
+        These files break archiving logic and sit unused in repo.
+        Returns list of violation messages (empty = compliant).
+        """
+        violations = []
+        filename = file_path.name
+
+        if is_broken_backup_file(filename):
+            violations.append(
+                f"BROKEN BACKUP FILE: '{filename}' matches forbidden backup pattern (.bak.NNNNNN). "
+                f"These files break archiving logic. Delete or properly archive this file."
+            )
+
+        return violations
 
     def _build_agent_stem_cache(self) -> Set[str]:
         """Build set of all PascalCase agent filenames (without .py)"""

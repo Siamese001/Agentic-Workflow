@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Hardened Outreach Engine - Integrates L3 RAG (Pinecone) and L4 LangCache
 Enhanced with personalized content retrieval and intelligent caching

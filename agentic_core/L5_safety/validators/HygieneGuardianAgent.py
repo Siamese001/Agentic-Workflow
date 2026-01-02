@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Hygiene Guardian - Architectural Sanitation (Key 45)
 Handles physical removal of empty folders, temporary artifacts, and ghost directories.
@@ -7,7 +8,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 

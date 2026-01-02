@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 patterns/agent_roles – Sovereign Territory
 

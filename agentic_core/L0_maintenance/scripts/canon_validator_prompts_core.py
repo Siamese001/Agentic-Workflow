@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 """
 Core instructional context and global few-shot patterns.

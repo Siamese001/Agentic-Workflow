@@ -1,3 +1,4 @@
+from __future__ import annotations
 # Sovereign Mission Orchestrator
 # Territory: agentic_core/L3_orchestration
 # Canon Key 4 - Multi-agent mission coordination with RAG enrichment

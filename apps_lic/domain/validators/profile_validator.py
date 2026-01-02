@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: validation.py
 # Description: Validation agents, rules, and utilities for the LIC workflow.
 

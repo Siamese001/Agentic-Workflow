@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Semantic Memory Module - Sovereign Primary
 Provides vector storage, embedding logic, and semantic search capabilities.

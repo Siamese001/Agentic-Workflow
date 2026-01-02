@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Naming Law Healer Agent - File Identity Standardizer
@@ -14,7 +15,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
 )
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 class NamingLawHealerAgent(HealerMixin):

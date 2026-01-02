@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Clear all data from Redis and Pinecone for clean simulation."""
 import os
 from connection_manager import ConnectionFactory

@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 Dead Code Detector Agent - Sovereign Code Auditor
@@ -120,7 +121,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
                     break
         self.generic_visit(node)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class DeadCodeDetectorAgent(HealerMixin):
     """

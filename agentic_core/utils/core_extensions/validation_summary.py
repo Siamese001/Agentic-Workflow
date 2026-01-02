@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Simple validation summary without complex imports.
 Reports on the sovereign convergence completion status.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Subatomic Swarm Integration Examples.
 
 Demonstrates how to use SubatomicSwarm for parallel HOP execution

@@ -1,3 +1,4 @@
+from __future__ import annotations
 # scripts/populate_ssot_folders.py
 """
 Intelligent sovereign population of all approved SSOT subfolders.

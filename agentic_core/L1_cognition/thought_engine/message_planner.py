@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Message Planner - L1 planning for comprehensive message structure and content.
 
 Incorporated from L1 message_planning.py to provide Archetype-specific message

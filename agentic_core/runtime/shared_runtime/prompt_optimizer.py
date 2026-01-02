@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Prompt Optimizer
 Advanced prompt engineering and optimization.

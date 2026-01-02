@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 """
 Code style and hygiene few-shot patterns.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 apps_lic.domain - LinkedIn/Outreach domain models and configurations.
 

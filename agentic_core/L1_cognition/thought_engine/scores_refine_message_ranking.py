@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 RefineMessageRanking.py - Refinement Module
 

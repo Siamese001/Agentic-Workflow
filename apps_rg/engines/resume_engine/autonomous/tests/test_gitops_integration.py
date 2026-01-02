@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Integration Tests for Phase 4: GitOps & Advanced Mutation
 

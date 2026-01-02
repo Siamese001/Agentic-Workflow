@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 agentic_core/domain/prompts.py
 Depth: 3

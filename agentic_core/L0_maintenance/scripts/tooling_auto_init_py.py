@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Auto-initialize __init__.py files for Python packages.
 

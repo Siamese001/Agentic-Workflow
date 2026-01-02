@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 schemas/models – Sovereign Territory
 

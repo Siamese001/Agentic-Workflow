@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Subatomic Agentic Architecture Installation Verification
 Validates all core components are working correctly

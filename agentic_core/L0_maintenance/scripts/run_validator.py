@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Simple wrapper to run the validator and capture output
 """

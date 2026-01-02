@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Intelligence & Strategic Analysis Module - Phase 6 Implementation
 

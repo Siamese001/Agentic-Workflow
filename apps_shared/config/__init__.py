@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Shared configuration for operational agents."""
 
 from apps_shared.config.operational_config import (

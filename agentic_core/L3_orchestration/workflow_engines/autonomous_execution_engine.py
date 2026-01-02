@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L3 Orchestration: Autonomous Execution Engine
 The eternal heart that continuously validates and heals the Canon territory.
@@ -15,7 +16,7 @@ from typing import Any, Dict, List, Optional
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from agentic_core.L2_execution.tool_registry.ProactiveResourceManager import (
+from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManager import (
     create_proactive_resource_manager,
 )
 

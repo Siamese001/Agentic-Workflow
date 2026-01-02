@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Self-Reflection Engine - Quality gates for the CRITIQUE micro-stage.
 
 This module implements the reflection engine that forces nodes to grade their own

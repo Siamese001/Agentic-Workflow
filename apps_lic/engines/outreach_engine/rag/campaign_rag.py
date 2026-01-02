@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: rag_LIC.py
 # Description: RAG (Retrieval-Augmented Generation) agents and utilities
 # REFACTOR: v12.0 - Strategic Alignment Engine (from tactical posts to strategic briefs)

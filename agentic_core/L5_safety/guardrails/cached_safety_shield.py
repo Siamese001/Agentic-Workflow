@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 CachedSafetyShield - Eternal L5 Safety Base with Redis Sovereign Cache
 """

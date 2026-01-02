@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for get_info_embedding_compare."""
 import logging
 import sys

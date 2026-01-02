@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Sovereign Layer: L1_cognition
 [SIMPLIFIED] Imports guarded to prevent cascading failures during agent discovery.
 """

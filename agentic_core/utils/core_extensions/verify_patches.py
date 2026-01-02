@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Verify Sovereign Patches Applied Successfully"""
 import ast
 from pathlib import Path

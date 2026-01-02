@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Outreach Engine Context - Shared State for Autonomous Agents
 

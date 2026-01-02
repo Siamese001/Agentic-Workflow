@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Implementation for AgentGym."""
 import logging
 import time
@@ -16,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class AgentGym(HealerMixin):
     """Agent Gym for self-evolution and benchmarking.

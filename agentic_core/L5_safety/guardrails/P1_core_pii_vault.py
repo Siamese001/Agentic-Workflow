@@ -1,3 +1,4 @@
+from __future__ import annotations
 """PII Vault for protecting sensitive information.
 
 Grafted from monolith with Presidio-based PII detection and redaction.

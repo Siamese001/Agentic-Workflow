@@ -1,3 +1,4 @@
+from __future__ import annotations
 # mission_utils.py
 # L0 Utility Functions for Canon Validator Mission
 # PURPOSE: Provides helper functions for dynamic imports, layer ranking, and L2 lookups

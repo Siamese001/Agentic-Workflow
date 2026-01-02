@@ -1,3 +1,4 @@
+from __future__ import annotations
 from rank_bm25 import BM25Okapi
 '''Brief description of functionality and purpose.'''
 

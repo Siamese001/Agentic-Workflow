@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 apps_rg.domain - Resume Generation domain models and configurations.
 

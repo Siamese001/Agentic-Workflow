@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L5 Safety: MCP Sovereign Shield
 Enforces zero-trust auditing and auto-immune responses for all MCP tool calls.
 """

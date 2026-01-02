@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Automated cognitive density fixer - splits files with >5 top-level definitions."""
 import ast
 import logging

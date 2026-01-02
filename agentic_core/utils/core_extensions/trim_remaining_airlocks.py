@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Aggressively trim the remaining 6 heavy airlock files.
 Remove all blank lines and condense imports to single lines.

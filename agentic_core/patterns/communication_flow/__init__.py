@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 patterns/communication_flow – Sovereign Territory
 

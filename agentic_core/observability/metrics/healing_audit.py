@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L6 Observability: Healing Audit Logger
 Records all L0 healing actions for compliance and debugging.

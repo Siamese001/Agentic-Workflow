@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 PrioritizeTalkingPoints.py - Outreach Operations Module
 

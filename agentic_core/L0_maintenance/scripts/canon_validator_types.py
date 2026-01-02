@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Core types and dataclasses for Canon Validator.
 ValidationContext is the shared memory (Blackboard) for all agents.

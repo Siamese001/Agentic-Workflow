@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ResumeEngineContext - Central state management for autonomous resume generation.
 

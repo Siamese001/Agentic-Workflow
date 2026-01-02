@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L5 Safety Layer Integration.
 
 Coordinates PII Vault, Constitutional Overseer, and Cost Governor.

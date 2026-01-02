@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Brief Contracts - SSOT for all brief and template models.
 Modularized from core_contracts.py for DDD bounded context isolation.

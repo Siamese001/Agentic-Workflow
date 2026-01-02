@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 FileSystemAgent: Sovereign Non-Python File Naming Enforcer
 
@@ -41,7 +42,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CANON_KEY_TO_FOLDER_MAP
 )
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 

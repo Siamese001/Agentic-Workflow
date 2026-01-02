@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Integration Tests for Phase 6: Intelligence & Strategic Analysis
 

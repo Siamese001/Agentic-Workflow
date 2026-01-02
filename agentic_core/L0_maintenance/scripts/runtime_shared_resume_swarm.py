@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Resume Swarm - Multi-process resume generation for CPU-intensive tasks.
 
 Utilizes multiprocessing.Pool to distribute CPU-intensive resume generation tasks

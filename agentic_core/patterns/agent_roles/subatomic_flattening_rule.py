@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ⚛️ Subatomic Flattening Rule - Golden State Reference
 

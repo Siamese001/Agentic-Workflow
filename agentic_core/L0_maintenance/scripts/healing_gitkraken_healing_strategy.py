@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign GitKraken Healing Strategy – Phase 17D (Dec 27, 2025)
 Autonomous version control operations using official GitKraken MCP.

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """L3 Orchestration: Sovereign MCP Router — Eternal Integration
 Hardened routing of canon violations to MCP tools across all layers and apps.
 L5 safety shielded + auto-immune on breach.
@@ -16,7 +17,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger: Any = logging.getLogger(__name__)

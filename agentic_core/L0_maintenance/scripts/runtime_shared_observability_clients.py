@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Observability and Tracing Client Factory.
 
 Provides unified access to OpenTelemetry tracing and structured logging

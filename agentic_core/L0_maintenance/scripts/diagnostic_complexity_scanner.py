@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 ⚛️ Complexity Scanner - Identify Files Needing Flattening
 

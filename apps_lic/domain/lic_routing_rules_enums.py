@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 DEPRECATED – Phase 5 Comprehensive Enforcement Sweep (Dec 26, 2025)
 All enums have been migrated to the Sovereign SSOT:

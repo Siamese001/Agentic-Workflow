@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Dataclass models for models."""
 import datetime
 import logging

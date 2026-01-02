@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 StrategicPlanner - L1 Guardian for Mission Planning
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Fission Manager - L3 Orchestration Layer
 

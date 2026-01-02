@@ -1,3 +1,4 @@
+from __future__ import annotations
 """PII Detection and Sanitization.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)

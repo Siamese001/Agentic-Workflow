@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Types and models for AutonomicMonitor."""
 import logging
 import time

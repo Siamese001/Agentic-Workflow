@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Swarm Pipeline Orchestration - Main entry point demonstrating full parallel workflow.
 
 This script demonstrates the complete optimized pipeline using all 4 phases:

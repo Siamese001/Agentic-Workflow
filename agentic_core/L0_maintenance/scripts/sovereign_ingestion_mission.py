@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Ingestion Mission - Index all sovereign territories into vector store.
 """

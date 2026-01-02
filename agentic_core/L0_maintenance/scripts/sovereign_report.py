@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Report Agent – Phase 13+ (Dec 30, 2025)
 Pure canonical audit report structure and builder.

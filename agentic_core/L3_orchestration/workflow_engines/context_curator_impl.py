@@ -1,7 +1,8 @@
+from __future__ import annotations
 """Implementation for ContextCurator."""
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Set
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 

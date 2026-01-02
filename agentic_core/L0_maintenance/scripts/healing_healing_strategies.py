@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Healing Engine: Strategy Registry
 Proactive repair strategies for L0 governance violations.

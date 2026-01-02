@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Filesystem MCP Client – Phase 16C (Dec 27, 2025)
 All file operations routed through official Filesystem MCP (mcp5)

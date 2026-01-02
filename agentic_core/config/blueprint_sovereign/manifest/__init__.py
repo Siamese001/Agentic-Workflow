@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Modular Manifest Loader - Merges split manifest files on load.
 Replaces monolithic active_manifest.json (482KB) with modular chunks.

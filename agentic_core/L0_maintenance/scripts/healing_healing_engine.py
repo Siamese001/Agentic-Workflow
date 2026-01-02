@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Sovereign Healing Engine – Phase 17 (Dec 27, 2025)
 Autonomous self-correction using Filesystem and GitKraken MCPs.
@@ -239,7 +240,7 @@ class SovereignHealingEngine:
         """
         new_content = content
         if 'HTTP' in message or 'requests' in message.lower():
-            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client')
+            new_content = new_content.replace('import requests', '# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.ToolRegistry.fetch_mcp_client')
             new_content = new_content.replace('requests.get(', '# await get_fetch_client().get_clean_content(')
             new_content = new_content.replace('requests.post(', '# await get_fetch_client().fetch_url(')
         if 'Redis' in message:

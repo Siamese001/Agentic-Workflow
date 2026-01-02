@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 L5 Safety: SubAtomicEngine
 Hardens LLM interaction with token budgets and retry logic.

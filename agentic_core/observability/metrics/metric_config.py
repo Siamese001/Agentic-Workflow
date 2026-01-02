@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 MetricConfig.py - Metrics Module
 

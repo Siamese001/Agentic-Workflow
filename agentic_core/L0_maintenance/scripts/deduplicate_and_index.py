@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 The Librarian - Phase A Sanitization Boot Sequence
 Creates active_manifest.json as the single source of truth for all valid files.

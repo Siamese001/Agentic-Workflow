@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Autonomous Resume Engine - Phase 1 & 2: Foundation + Self-Healing
 

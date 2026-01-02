@@ -1,3 +1,4 @@
+from __future__ import annotations
 # File: hop_agents.py
 # Description: Refactored HOP agents for v13.0 pure agentic architecture
 # Demonstrates state-based I/O, single responsibility, and tool augmentation
@@ -13,7 +14,7 @@ from datetime import datetime
 # MCP Hardening + Healing + Testing
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
-from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Models (updated imports for new locations)
 from apps_lic.domain.lic_models import (

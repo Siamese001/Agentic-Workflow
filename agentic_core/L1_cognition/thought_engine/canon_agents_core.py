@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
@@ -14,12 +15,12 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 try:
-    from agentic_core.L2_execution.tool_registry.CanonBaseAgent import CanonBaseAgent
+    from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 except ImportError:
     CanonBaseAgent = None
 from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # [SSOT] Derive depth map from SOVEREIGN_REGISTRY
 # NAMING FIXED: DEPTH_MAP → depth_map
