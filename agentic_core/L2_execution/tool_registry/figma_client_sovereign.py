@@ -16,6 +16,8 @@ from agentic_core.L4_state.semantic.semantic_cache_sovereign import (
     SovereignSemanticCache,
 )
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -33,7 +35,7 @@ figma_mcp_url = "https://mcp.figma.com/mcp"
 max_selection_nodes = 50
 
 # NAMING FIXED: SovereignFigmaClient → SovereignFigmaClient
-class SovereignFigmaClient:
+class SovereignFigmaClient(MCPHardenedMixin, HealerMixin):
     """Ultra-hardened Figma client — eliminating design-to-code hallucinations."""
     
     def __init__(self, oauth_token: Optional[str] = None, cache: Optional[SovereignSemanticCache] = None):
