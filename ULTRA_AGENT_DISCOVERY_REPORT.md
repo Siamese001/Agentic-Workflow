@@ -7,7 +7,7 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Agents Discovered** | 401 |
+| **Total Agents Discovered** | 356 |
 | **Total .py Files Scanned** | 2,043 |
 | **Detection Coverage** | 100% (zero-loss) |
 
@@ -15,515 +15,640 @@
 
 | Layer | Count | % |
 |-------|-------|---|
-| L0 | 11 | 2% |
-| L1 | 32 | 7% |
-| L2 | 68 | 16% |
-| L3 | 29 | 7% |
-| L4 | 22 | 5% |
-| L5 | 78 | 19% |
-| apps_lic | 37 | 9% |
-| apps_rg | 26 | 6% |
-| apps_shared | 3 | 0% |
-| tests | 42 | 10% |
-| misc | 53 | 13% |
+| L0 | 23 | 6% |
+| L1 | 39 | 10% |
+| L2 | 55 | 15% |
+| L3 | 56 | 15% |
+| L4 | 20 | 5% |
+| L5 | 49 | 13% |
+| apps_lic | 47 | 13% |
+| apps_rg | 34 | 9% |
+| apps_shared | 4 | 1% |
+| tests | 19 | 5% |
+| misc | 10 | 2% |
 
 ### Capability Analysis
 
 | Capability | Count | % |
 |------------|-------|---|
-| **Healing Included** | 49 | 12% |
-| **Memory/State** | 140 | 34% |
-| **Tools Integration** | 106 | 26% |
-| **Subatomic Hops** | 11 | 2% |
+| **Healing Included** | 191 | 53% |
+| **Memory/State** | 55 | 15% |
+| **Tools Integration** | 178 | 50% |
+| **Subatomic Hops** | 57 | 16% |
 
 ### Testing Compliance
 
 | Testing Type | Count | % |
 |--------------|-------|---|
-| **Self-Testing** | 49 | 12% |
-| **Delegated** | 21 | 5% |
-| **None** | 331 | 82% |
+| **Self-Testing** | 50 | 14% |
+| **Delegated** | 3 | 0% |
+| **None** | 303 | 85% |
 
 ### Sovereignty Compliance
 
 | Metric | Count | % |
 |--------|-------|---|
-| **PascalCase Compliant** | 385 | 96% |
-| **MCP Hardened** | 12 | 2% |
+| **PascalCase Compliant** | 355 | 99% |
+| **MCP Hardened** | 100 | 28% |
 
 ---
 
 ## DETAILED AGENT TABLES BY LAYER
 
-### L0 Layer (11 agents)
+### L0 Layer (23 agents)
 
 | Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
 |------------|-------------|-------|--------|---------|---------|-----|-------------|
-| AgenticWorkflowError | Exception | - | - | - | - | 1 | Base exception for agentic workflow |
-| BootstrapAgent | - | Y | Y | - | - | 8 | Autonomous boot integrity agent.
-Ru |
-| FilesystemSSOTReconcilerAgent | AutonomyMixin, AdaptiveEx | - | Y | - | - | 24 | Filesystem-level SSOT reconciler -  |
-| GravityComplianceValidator | - | - | - | - | - | 1 | Brief description of functionality  |
-| HygieneValidator | - | - | - | - | - | 4 | Detects 'Rot' within the system:
-1. |
-| L0DelegationMixin | - | Y | - | - | S | 1 | Mixin providing L0 delegation-only  |
-| L0SovereignSeverity | Enum | Y | - | - | S | 1 | Sovereign event Severity levels for |
-| MaintenanceBaseAgent | CanonBaseAgent, L0Delegat | Y | - | - | S | 1 | Base class for L0 Maintenance agent |
-| ScriptToAgentClassifier | AutonomyMixin, AdaptiveEx | - | - | - | - | 1 | Sovereign classifier for script vs  |
-| SubAtomicAgent | - | - | - | - | - | 13 | Base class for all validation agent |
-| agentic_core | - | - | - | - | - | 1 | Main agentic core class. |
+| AgentCapability | - | Y | - | - | - | 57 | Defines the capability of an agent  |
+| AgentRegistry | - | Y | - | - | - | 57 | Registry for managing agent capabil |
+| AgentRole | Enum | Y | - | - | - | 57 | Functional roles for agents in the  |
+| AgentSpec | - | Y | - | - | - | 57 | Specification for creating an agent |
+| AgenticWorkflowError | Exception | - | - | - | - | 68 | Base exception for agentic workflow |
+| AgenticWorkflowError | Exception | - | - | - | - | 27 | Base exception for agentic workflow |
+| BiasAuditor | HealerMixin | - | - | Y | - | 74 | Lightweight Bias Detection for Cont |
+| BootstrapAgent | HealerMixin, MCPHardenedM | Y | Y | Y | D | 137 | 
+    Autonomous boot integrity agen |
+| GapClosureArchitect | HealerMixin, Agent | - | - | Y | - | 103 | Gap Closure Architect agent for lea |
+| GravityComplianceValidator | HealerMixin | - | - | Y | - | 52 | Brief description of functionality  |
+| GuardianOrchestrator | HealerMixin, AutonomyMixi | - | - | Y | - | 77 | 
+    Sovereign orchestrator for all |
+| HealingOrchestrator | HealerMixin, AutonomyMixi | - | - | Y | - | 160 | 
+    Sovereign healing engine orche |
+| HygieneValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 144 | 
+    Detects 'Rot' within the syste |
+| L0DelegationMixin | - | Y | - | - | - | 111 | Mixin providing L0 delegation-only  |
+| L0DelegationTestingMixin | - | - | - | - | D | 68 | 
+    Phase 2: Canonical delegated t |
+| MetricsWitness | HealerMixin, AutonomyMixi | - | - | Y | - | 70 | 
+    Sovereign witness that cross-e |
+| SafeSystemCommandExecutor | HealerMixin, MCPHardenedM | Y | - | Y | - | 140 | 
+    A secure system command execut |
+| ScriptToAgentClassifier | AdaptiveExecutionMixin, H | - | - | Y | D | 245 | 
+    Sovereign classifier for scrip |
+| ScriptsPlanningOrchestrator | HealerMixin | - | - | Y | - | 119 | Orchestrator for planning script ex |
+| SovereignFilesystemMcpClient | - | Y | - | - | - | 81 | Official Filesystem MCP client for  |
+| SovereignGitKrakenMcpClient | - | Y | - | - | - | 88 | Official GitKraken MCP client for s |
+| SystemCommandExecutor | HealerMixin, Protocol | Y | - | Y | - | 140 | 
+    Protocol for safely executing  |
+| WorkflowOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 94 | Workflow orchestrator with SDK inte |
 
-### L1 Layer (32 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| AgentCapability | Enum | - | - | - | - | 1 | Standard agent capabilities. |
-| AgentIdentity | - | - | - | - | - | 1 | Cryptographically-verified agent id |
-| AgentInfo | - | - | - | - | - | 1 | Simple agent information container  |
-| AgentInfo | - | - | - | - | - | 1 | Simple agent information container. |
-| AgentStatus | Enum | - | - | - | - | 1 | Agent operational status. |
-| AsyncBlockingValidator | CanonASTValidator | - | - | - | - | 1 | Key 31: Detects blocking calls in a |
-| BareExceptValidator | CanonASTValidator | - | - | - | - | 1 | Key 5: Detects bare except: stateme |
-| CanonBaseAgent | - | - | Y | - | - | 10 | Base class for all validation agent |
-| CanonValidator | - | - | Y | - | - | 1 | The L5 Meta-Learner that validates  |
-| DangerousBuiltinsValidator | CanonASTValidator | - | - | - | - | 1 | Key 42: Detects dangerous builtin f |
-| DebuggerValidator | CanonASTValidator | - | - | - | - | 1 | Key 3: Detects breakpoint() and pdb |
-| DependencyGraph | - | - | - | Y | - | 2 | Builds a directed graph of imports  |
-| DependencySentinelAgent | - | - | Y | - | - | 1 | Guards the codebase against illegal |
-| DependencyViolation | - | - | Y | - | - | 1 | Represents a dependency rule Violat |
-| DocumentationAgent | SubAtomicAgent | - | - | - | - | 4 | KEYS: 21 (Missing Docstrings)
-ROLE: |
-| DummyAgentCard | - | - | - | - | - | 1 | TODO: Add docstring. |
-| EmptyExceptValidator | CanonASTValidator | - | - | - | - | 1 | Key 4: Detects empty except blocks  |
-| EvalExecValidator | CanonASTValidator | - | - | - | - | 1 | Key 6: Detects eval() and exec() ca |
-| ExternalHttpValidator | CanonASTValidator | - | - | - | - | 1 | Key 23: Detects forbidden HTTP libr |
-| GenerativeGuard | CanonBaseAgentInterface | Y | Y | Y | - | 4 | KEYS: 45 (Dead Code/Runaway Generat |
-| GovernanceAgent | - | - | - | Y | - | 2 | Enforces architectural governance l |
-| HealerAgent | CanonBaseAgentInterface | Y | Y | Y | - | 4 | KEYS: 48 (Syntax Repair), 49 (Struc |
-| ImportAnalyzer | NodeVisitor | - | Y | - | - | 1 | AST visitor to extract import infor |
-| MetaLearningAgent | - | - | - | - | - | 2 | Sovereign meta-learning engine.
-Acc |
-| NamingAgent | SubAtomicAgent | - | - | - | - | 4 | KEYS: 47 (Naming Conventions)
-ROLE: |
-| OrchestratorAgentAndScopeManager | - | Y | Y | Y | - | 26 | Manages the creation of the subatom |
-| PrintStatementValidator | CanonASTValidator | - | - | - | - | 1 | Key 2: Detects print() statements u |
-| ReflectionAgent | - | - | Y | - | S | 1 | Agent responsible for learning from |
-| SubAtomicAgent | - | - | - | - | - | 4 | Base class stub for pattern agents. |
-| SubAtomicAgent | - | - | - | - | - | 4 | Stub base class for quality agents. |
-| SystemArchitect | CanonBaseAgentInterface | Y | Y | Y | - | 4 | KEYS: 40 (Metaclasses), 41 (Deep Ne |
-| UiValidationAgent | SubAtomicAgent | - | - | - | - | 4 | ROLE: UI Pattern Validator. Uses Fi |
-
-### L2 Layer (68 agents)
+### L1 Layer (39 agents)
 
 | Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
 |------------|-------------|-------|--------|---------|---------|-----|-------------|
-| ArchitectureGovernorAgent | SubAtomicAgent | Y | Y | - | - | 4 | Unified Architecture Governor.
-Enfo |
-| BenchmarkingAgent | SubAtomicAgent | Y | - | - | - | 5 | ROLE: Measures execution time and e |
-| BlastRadius | - | Y | Y | - | - | 5 | Blast radius analysis for a modifie |
-| CanonBaseAgent | CanonBaseAgentInterface | - | - | - | - | 1 | Implementation of canon agent base  |
-| CanonBaseAgent | CanonBaseAgentInterface | - | - | - | - | 1 | Implementation of canon agent base  |
-| CanonBaseAgent | ABC | - | - | - | S | 36 | Base class for Canon Validator agen |
-| CanonValidatorEngineZlm | - | - | - | - | - | 1 | Brief description of functionality  |
-| CartographerAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Memory & Embedding. Maps the  |
-| CitationMap | - | - | - | - | - | 1 | Brief description of functionality  |
-| CodeDeduplicationAgent | - | - | - | - | - | 12 | Batch agent for detecting and optio |
-| CodeJanitorAgent | CanonBaseAgent | Y | - | Y | - | 5 | Code Janitor validates syntax, styl |
-| ComplexityProfile | - | Y | Y | - | - | 4 | Comprehensive complexity profile fo |
-| ConcurrencyGuardianAgent | SubAtomicAgent | Y | - | - | - | 6 | Unified concurrency safety agent.
-C |
-| ContextCuratorAgent | SubAtomicAgent | Y | Y | - | - | 70 | The Context Curator - Prompt Engine |
-| ContextSnapshot | - | Y | Y | - | - | 70 | Snapshot of context at a point in t |
-| DeepResearchOutput | - | - | - | - | - | 1 | Brief description of functionality  |
-| DependencyDiplomatAgent | SubAtomicAgent | Y | Y | - | - | 5 | The Dependency Diplomat - Graph Opt |
-| DependencySentinelAgent | SubAtomicAgent | Y | Y | - | - | 4 | KEYS: 7 (Star Imports), 8 (Relative |
-| DistilledPattern | - | Y | Y | - | - | 6 | Represents a distilled pattern read |
-| DocEnforcerAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Documentation Surgeon. |
-| DynamicModelRouterAgent | SubAtomicAgent | Y | Y | - | - | 4 | The Throttler - Dynamic Model Route |
-| FinancialProofPoint | - | - | - | - | - | 1 | Brief description of functionality  |
-| GitAgent | - | - | - | - | - | 8 | Agent for managing git operations a |
-| GitAgent | SubAtomicAgent | Y | - | - | - | 5 | ROLE: Manages Version Control (Bran |
-| HandoffSummary | - | Y | Y | - | - | 70 | Compressed summary for stage handof |
-| HealerAgent | CanonBaseAgent | Y | Y | Y | S | 11 | Healer Agent provides autonomous co |
-| HealingDiffAnalyzer | - | Y | Y | - | - | 6 | Analyzes before/after code to ident |
-| HealingSuccess | - | Y | Y | - | - | 6 | Represents a successful healing ope |
-| HistorianAgent | SubAtomicAgent | Y | - | - | - | 5 | ROLE: Records all validation events |
-| ImportNode | - | Y | Y | - | - | 5 | Represents a file in the import gra |
-| IntegrityGateExecutorAgent | - | - | - | - | - | 1 | Executor for integrity gate validat |
-| IntegrityGateResult | - | - | - | - | - | 1 | Brief description of functionality  |
-| KeyExecutive | - | - | - | - | - | 1 | Brief description of functionality  |
-| KeyTechnology | - | - | - | - | - | 1 | Brief description of functionality  |
-| LeadershipLayer | - | - | - | - | - | 1 | Brief description of functionality  |
-| MemoryArchitectAgent | SubAtomicAgent | Y | Y | - | - | 6 | Autonomous Knowledge Distillation A |
-| ModelTier | str, Enum | Y | Y | - | - | 4 | Model tiers based on capability and |
-| NamingEnforcerAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Semantic Naming Guardian. |
-| OmniContextAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Wisdom & Semantic Retrieval.  |
-| PatternEnforcerAgent | SubAtomicAgent | Y | - | - | - | 5 | KEYS: 26-39 (Pattern Checks)
-ROLE:  |
-| RedSentinelAgent | SubAtomicAgent | Y | - | - | - | 6 | Red team sentinel for adversarial s |
-| ReflectionAgent | SubAtomicAgent | Y | Y | - | S | 5 | ROLE: Consolidation and self-critiq |
-| RoutingDecision | - | Y | Y | - | - | 4 | Model routing decision with rationa |
-| SafetyInspectorAgent | SubAtomicAgent | Y | - | - | - | 6 | Enforces Security Protocols: Keys 0 |
-| SecurityEnforcerAgent | SubAtomicAgent | Y | - | - | - | 6 | Security enforcement agent for addi |
-| SherlockAgent | SubAtomicAgent | Y | - | - | - | 4 | ROLE: Root Cause Analysis. Triggere |
-| SovereignActionPlaneAgent | IActionPlane | - | - | Y | S | 38 | Sovereign action plane with Toolsmi |
-| SovereignSandbox | - | - | - | Y | S | 38 | Secure execution environment for to |
-| SovereignSeverity | Enum | - | - | - | S | 36 | Sovereign event Severity levels for |
-| SovereignToolsmith | - | - | - | Y | S | 38 | Toolsmith implementation for dynami |
-| StrategicLayer | - | - | - | - | - | 1 | Brief description of functionality  |
-| StrategicPlannerAgent | SubAtomicAgent | Y | Y | - | S | 5 | ROLE: High-level strategist.
-Analyz |
-| StrategistAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Proactive Architecture. Ident |
-| StructuralEngineerAgent | SubAtomicAgent | Y | - | - | - | 5 | KEYS: 18 (Many Parameters), 20 (Lar |
-| StructuralEngineerAgent | CanonBaseAgent | Y | - | Y | - | 4 | Structural Engineer validates code  |
-| SubAtomicAgent | - | - | - | - | - | 13 | Base class for all validation agent |
-| SubatomicTestingMixin | - | - | - | - | S | 36 | Mixin providing L2 subatomic testin |
-| SystemArchitect | CanonBaseAgent | Y | - | Y | - | 7 | System Architect validates core arc |
-| SystemArchitectAgent | CanonBaseAgent | Y | - | Y | - | 18 | System Architect validates core arc |
-| TechnicalLayer | - | - | - | - | - | 1 | Brief description of functionality  |
-| TestPilotAgent | SubAtomicAgent | Y | - | - | - | 4 | ROLE: Integration Guardian. Runs py |
-| ToolsmithAgent | SubAtomicAgent | Y | - | - | - | 4 | ROLE: Dynamic Tool Forger.
-Creates  |
-| TypeEnforcerAgent | SubAtomicAgent | Y | Y | - | - | 7 | ROLE: Type Guardian. Enforces PEP 4 |
-| ValidationRejectionReason | Enum | - | - | - | - | 1 | Brief description of functionality  |
-| Violation | - | - | - | - | - | 1 | Brief description of functionality  |
-| _SubatomicEnginePlaceholder | - | - | - | - | S | 36 | Placeholder for the Subatomic Engin |
-| _fission_managerPlaceholder | - | - | - | - | S | 36 | Placeholder for the Fission Manager |
-| _safety_guardrailPlaceholder | - | - | - | - | S | 36 | Placeholder for the Safety Guardrai |
+| AgentCapability | Enum | - | - | - | - | 14 | Standard agent capabilities. |
+| AgentContract | BaseModel | - | - | - | - | 30 | Contract specification for an agent |
+| AgentIdentity | - | Y | - | - | - | 52 | Cryptographically-verified agent id |
+| AgentInfo | HealerMixin, MCPHardenedM | Y | - | Y | - | 52 | Simple agent information container  |
+| AgentMessage | SovereignBaseModel | Y | - | - | - | 21 | 
+    Sovereign-grade message used f |
+| AgentMessage | SovereignBaseModel | - | - | - | - | 22 | Brief description of functionality  |
+| AgentPlan | BaseModel | Y | - | - | - | 72 | Agent execution plan with reasoning |
+| AgentPlan | BaseModel | Y | - | - | - | 92 | Agent execution plan with reasoning |
+| AgentResponse | - | Y | - | - | - | 82 | Response from agent execution conta |
+| AgentStatus | Enum | - | - | - | - | 14 | Agent operational status. |
+| AgentThoughtProcess | BaseModel | Y | - | - | - | 72 | 
+    Forces the agent to show its w |
+| AgentThoughtProcess | BaseModel | Y | - | - | - | 92 | 
+    Forces the agent to show its w |
+| AsyncBlockingValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 94 | 
+    Key 31: Detects blocking calls |
+| BareExceptValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 5: Detects bare except: st |
+| CanonValidator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 292 | 
+    The L5 Meta-Learner that valid |
+| CognitiveContractValidator | - | - | - | - | - | 257 | Validates cognitive contracts and e |
+| ConcurrencyGuardian | HealerMixin | - | - | Y | - | 105 | 
+    Manages concurrent operations  |
+| DangerousBuiltinsValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 42: Detects dangerous buil |
+| DebuggerValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 3: Detects breakpoint() an |
+| DependencySentinel | HealerMixin, MCPHardenedM | Y | - | Y | - | 378 | 
+    KEYS: 7 (Star Imports), 8 (Rel |
+| DependencySentinelAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 154 | 
+    Guards the codebase against il |
+| DummyAgentCard | HealerMixin | - | - | Y | - | 27 | TODO: Add docstring. |
+| EmptyExceptValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 4: Detects empty except bl |
+| EvalExecValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 6: Detects eval() and exec |
+| ExternalHttpValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 23: Detects forbidden HTTP |
+| GenerativeGuard | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+    KEYS: 45 (Dead Code/Runaway Ge |
+| GovernanceAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 337 | 
+    Enforces architectural governa |
+| HealerAgent | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+    KEYS: 48 (Syntax Repair), 49 ( |
+| IOrchestrator | HealerMixin, MCPHardenedM | Y | - | Y | - | 31 | Interface for the orchestrator (Ner |
+| IOrchestrator | ABC | Y | - | - | - | 56 | Interface for the Orchestrator (Ner |
+| IntelligentOrchestrator | HealerMixin | Y | - | Y | - | 74 | Orchestrates all validation agents  |
+| MetaLearningAgent | HealerMixin | Y | - | Y | - | 109 | 
+    Sovereign meta-learning engine |
+| PrintStatementValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
+    Key 2: Detects print() stateme |
+| ReasoningRouter | HealerMixin | Y | - | Y | - | 121 | Routes tasks to appropriate reasoni |
+| ReflectionAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 137 | 
+    Agent responsible for learning |
+| ResidualAgentMessage | - | Y | - | - | - | 21 | 
+    Lightweight runtime message fo |
+| ResidualAgentMessage | - | Y | - | - | - | 82 | Message in agent conversation (Resi |
+| SovereignCognitivePlane | HealerMixin, ICognitivePl | Y | - | Y | - | 52 | Sovereign cognitive plane with in-m |
+| SystemArchitect | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+    KEYS: 40 (Metaclasses), 41 (De |
 
-### L3 Layer (29 agents)
+### L2 Layer (55 agents)
 
 | Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
 |------------|-------------|-------|--------|---------|---------|-----|-------------|
-| AgentFactory | - | Y | - | - | - | 1 | Centralized factory for sovereign a |
-| AgentRegistry | - | - | - | - | - | 1 | Mock AgentRegistry for type hinting |
-| AgentRegistryValidatorAgent | - | - | - | - | - | 1 | L3 Orchestration: Agent Registry Va |
-| AgentRole | Enum | - | - | - | - | 1 | Brief description of functionality  |
-| DagEngineAgent | - | - | - | - | - | 1 | Lightweight DAG engine for workflow |
-| DagExecutionResult | - | - | - | - | - | 1 | Result from DAG execution. |
-| DispatchOutreachToolsAgent | - | - | - | - | - | 1 | Executor for outreach domain. |
-| DispatchResumeToolsAgent | - | - | - | - | - | 1 | Executor for resume domain with Tit |
-| MetaLearningAgent | AutonomyMixin, AdaptiveEx | - | Y | - | - | 1 | Sovereign meta-learning agent that  |
-| MockAgent | - | - | Y | - | - | 1 | - |
-| NervousSystemAgent | - | - | Y | - | - | 1 | Core orchestrator that coordinates  |
-| NervousSystemArchitectureGovernance | - | - | Y | - | - | 1 | Handles architecture validation and |
-| NervousSystemCheckpointing | - | - | Y | - | - | 1 | Handles checkpointing operations fo |
-| NervousSystemInterventionManager | - | - | Y | - | - | 1 | Manages human intervention requests |
-| NervousSystemPhaseExecution | - | - | Y | - | - | 1 | Manages the execution of phases (se |
-| NervousSystemPhaseOrchestrator | - | - | Y | - | - | 1 | Orchestrates the execution of all p |
-| NervousSystemResultReporting | - | - | Y | - | - | 1 | Handles mission result generation a |
-| NervousSystemStateManagement | - | - | Y | - | - | 1 | Handles state persistence and retri |
-| SemanticGatekeeperAgent | - | - | - | - | - | 1 | Gatekeeper that controls agent exec |
-| SemanticTerritoryMapperAgent | - | - | - | - | - | 1 | L3 Orchestration: Semantic Territor |
-| SemanticTerritoryMapperAgent | - | - | Y | - | - | 4 | The Intelligent Brain that maps fil |
-| SovereignDependencyError | Exception | - | Y | - | S | 1 | Raised when a required dependency i |
-| SubatomicHopAgent | - | - | Y | - | S | 1 | Sovereign SubatomicHop with Depende |
-| Task | - | - | - | - | - | 1 | Individual Task in the DAG. |
-| TaskStatus | Enum | - | - | - | - | 1 | Status of a Task in the DAG. |
-| TaskType | Enum | - | - | - | - | 1 | Type of Task in the DAG. |
-| TerritoryHealerAgent | - | - | - | Y | - | 1 | L3 Orchestration: Territory Healing |
-| TerritoryHealerAgent | - | - | Y | - | - | 4 | Enforces exhaustive territory compl |
-| TestPilotAgent | - | - | Y | Y | S | 81 | TestPilot agent with property-based |
+| AgentPlan | BaseModel | Y | - | - | - | 320 | - |
+| AutonomyMixin | - | - | - | - | - | 45 | - |
+| BiasAuditor | - | - | - | - | - | 45 | Audits text for potential bias. |
+| CanonAstValidator | NodeVisitor | - | - | - | - | 62 | 
+    [L6 INFRASTRUCTURE] Base AST v |
+| CodeDeduplicationAgent | HealerMixin | - | - | Y | S | 260 | 
+    Batch agent for detecting and  |
+| ContextAwareValidator | - | - | - | - | - | 74 | 
+    Base class for intelligent val |
+| ContextCuratorAgent | SubAtomicAgent | Y | - | Y | S | 197 | 
+    The Context Curator - Prompt E |
+| DeadCodeDetectorAgent | HealerMixin | - | - | Y | - | 230 | 
+    Sovereign dead code auditor th |
+| DeadlockDetector | HealerMixin | - | - | Y | - | 644 | ROLE: Deadlock Guardian. Detects po |
+| DriftDetectorAgent | HealerMixin | - | - | Y | - | 26 | Detects files that have drifted out |
+| DriftDetectorAgent | HealerMixin | - | - | Y | - | 13 | Naming/Compliance: Drift Detection |
+| DynamicModelRouterAgent | SubAtomicAgent | Y | - | Y | S | 248 | 
+    The Throttler - Dynamic Model  |
+| GitAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 186 | 
+    Agent for managing git operati |
+| GlobalComplianceAggregatorAgent | HealerMixin | - | - | Y | - | 14 | Naming/Compliance: Global Complianc |
+| HierarchyHealer | - | - | - | - | - | 27 | 
+    [L3 AGENT] The Structural Surg |
+| ImportHealer | - | - | - | - | - | 101 | 
+    Automatically fixes import sta |
+| IntegrityGateExecutor | HealerMixin | - | - | Y | - | 232 | Brief description of functionality  |
+| IntegrityGateExecutor | HealerMixin | - | - | Y | - | 111 | Brief description of functionality  |
+| IntegrityGateExecutor | HealerMixin | - | - | Y | - | 206 | Brief description of functionality  |
+| IntegrityGateExecutorAgent | HealerMixin | - | - | Y | S | 211 | Executor for integrity gate validat |
+| L2SelfTestingMixin | SubatomicTestingMixin, MC | Y | - | Y | S | 54 | 
+    Alias for SubatomicTestingMixi |
+| MemoryArchitectAgent | SubAtomicAgent, MCPHarden | Y | Y | Y | S | 244 | 
+    Autonomous Knowledge Distillat |
+| MemoryLeakDetector | HealerMixin | - | - | Y | - | 644 | ROLE: Memory Guardian. Detects and  |
+| NamingAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 872 | 
+    Autonomous agent for naming la |
+| NamingLawHealerAgent | HealerMixin | Y | - | Y | - | 135 | 
+    L1 Cognition: High-Signal Nami |
+| NamingNormalizationAgent | HealerMixin | - | - | Y | - | 83 | 
+    Normalizes filenames and publi |
+| OmniContext | SubAtomicAgent | Y | - | Y | S | 52 | 
+    ROLE: Global Architectural Con |
+| PeerIntelligenceAuditor | HealerMixin | - | - | Y | - | 111 | 
+    K.2.5 - Multi-Hop RAG Analysis |
+| ReflectionAgent | SubAtomicAgent | Y | - | Y | S | 67 | 
+    ROLE: Consolidation and self-c |
+| SafetyExecutor | HealerMixin | - | - | Y | - | 24 | 
+    Executes resume safety validat |
+| SherlockAgent | SubAtomicAgent | Y | - | Y | S | 132 | 
+    ROLE: Root Cause Analysis. Tri |
+| SovereignActionPlaneAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 194 | Sovereign action plane with Toolsmi |
+| SovereignDeepWikiClient | - | Y | Y | - | - | 122 | 
+    DeepWiki MCP Client for L6 Obs |
+| SovereignFetchClient | MCPHardenedMixin | Y | - | - | - | 41 | Ultra-hardened Fetch MCP client — e |
+| SovereignFetchMcpClient | - | Y | - | - | - | 129 | 
+    Fetch MCP Client for sanitized |
+| SovereignFigmaClient | - | Y | - | - | - | 77 | Ultra-hardened Figma client — elimi |
+| SovereignGitClient | - | - | - | - | - | 93 | Sovereign Git client - audit + safe |
+| SovereignHttpClient | - | - | Y | - | - | 114 | Sovereign HTTP client - audit + saf |
+| SovereignPineconeClient | - | - | Y | - | - | 84 | Sovereign Pinecone client - audit + |
+| SovereignPineconeStore | - | - | Y | - | - | 60 | Sovereign wrapper for Pinecone serv |
+| SovereignPlaywrightMcpClient | - | Y | - | - | - | 126 | 
+    Playwright MCP Client for visu |
+| SovereignRedisClient | - | - | Y | - | - | 109 | Sovereign Redis client - audit + sa |
+| SovereignRedisOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 87 | Brief description of functionality  |
+| SovereignRedisOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 87 | Brief description of functionality  |
+| SovereigntyAuditor | HealerMixin, MCPHardenedM | Y | Y | Y | - | 108 | 
+    Sovereignty Audit Engine for M |
+| SprawlInspector | HealerMixin | - | - | Y | - | 49 | Brief description of functionality  |
+| StrategicPlannerAgent | SubAtomicAgent | Y | - | Y | S | 67 | 
+    ROLE: High-level strategist.
+  |
+| StructuralEngineerAgent | CanonBaseAgent | Y | - | Y | S | 142 | 
+    Structural Engineer validates  |
+| SubatomicTestingMixin | MCPHardenedMixin | Y | - | Y | - | 299 | Mixin providing L2 subatomic testin |
+| SubatomicTestingMixin | - | Y | - | Y | S | 54 | 
+    Phase 1: Canonical self-testin |
+| SystemArchitect | CanonBaseAgent | Y | - | Y | S | 59 | 
+    System Architect validates cor |
+| SystemArchitectAgent | CanonBaseAgent | Y | - | Y | S | 52 | 
+    System Architect validates cor |
+| TestPilotAgent | SubAtomicAgent | Y | - | Y | S | 132 | 
+    ROLE: Integration Guardian. Ru |
+| ToolsmithAgent | SubAtomicAgent | Y | - | Y | S | 132 | 
+    ROLE: Dynamic Tool Forger.
+    |
+| ToolsmithAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 204 | 
+    Creates and manages tools dyna |
 
-### L4 Layer (22 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| AutonomousCheckpointManagerAgent | - | - | Y | - | - | 1 | Manages state checkpoints with auto |
-| AutonomousCheckpointManagerAgent | - | - | Y | - | - | 1 | Manages state checkpoints with auto |
-| AutonomousStateGuardianAgent | - | Y | Y | - | - | 1 | L4 State Guardian that autonomously |
-| AutonomousStateGuardianAgent | - | Y | Y | - | - | 1 | L4 State Guardian that autonomously |
-| CanonValidator | - | - | Y | - | - | 1 | The Gatekeeper logic that enforces  |
-| Checkpoint | - | - | Y | - | - | 1 | Represents a state Checkpoint. |
-| ImpactAnalysis | - | Y | - | - | - | 8 | Analysis of schema change impact. |
-| L4SovereignSeverity | Enum | Y | Y | - | S | 9 | Sovereign event Severity levels for |
-| L4SubatomicTestingMixin | - | Y | Y | - | S | 9 | Mixin providing L4 subatomic testin |
-| PineconeSovereignAgent | - | - | Y | Y | - | 3 | Sovereign Pinecone controller — zer |
-| PineconeSovereignAgent | - | - | Y | - | - | 1 | Mock Pinecone Sovereign Agent. |
-| RecoveryResult | - | - | Y | - | - | 1 | Result of a recovery operation. |
-| RedisSovereignAgent | - | - | Y | - | - | 1 | Sovereign Redis controller — harden |
-| SchemaChange | - | Y | - | - | - | 8 | Represents a proposed schema change |
-| SchemaDefinition | - | Y | - | - | - | 8 | Represents a Pydantic model or data |
-| SchemaEvolverAgent | SubAtomicAgent | Y | - | - | - | 8 | The Structural Guard - Schema Evolu |
-| SchemaRegistry | - | Y | - | - | - | 8 | Registry of all schemas in the code |
-| SovereignPineconeMcpClient | MCPHardenedMixin | - | Y | - | S | 1 | Official Pinecone MCP client — L3 r |
-| SovereignPineconeStoreAgent | - | - | Y | - | - | 1 | ADAPTER: Legacy Interface -> New MC |
-| SovereignRedisMcpClient | MCPHardenedMixin | - | Y | - | S | 1 | Official Redis MCP client for sover |
-| StateBaseAgent | CanonBaseAgent, L4Subatom | Y | Y | - | S | 9 | Base class for L4 State agents with |
-| SubAtomicRegistryAgent | - | - | Y | - | - | 3 | Sovereign method registry — live, h |
-
-### L5 Layer (78 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| AdversarialRedTeamerAgent | SubAtomicAgent | Y | - | - | S | 39 | The Skeptic - Adversarial Red Team  |
-| AtomicClaim | - | Y | - | - | - | 30 | Represents an atomic Claim (proposi |
-| AutonomousThreatEvolutionAgent | - | - | - | - | - | 1 | L5: Self-healing security agent |
-| AutonomousThreatEvolutionAgent | - | - | - | - | - | 1 | L5: Self-healing security agent |
-| BaseAgent | - | - | - | - | - | 1 | Stub for BaseAgent - TODO: Replace  |
-| BiasDetectorAgent | BaseAgent | - | - | - | - | 1 | Runs local bias detection with dyna |
-| CapabilityVisitor | NodeVisitor | - | Y | - | S | 1 | - |
-| ClaimEmbedder | - | Y | - | - | - | 30 | Handles generating embeddings for c |
-| ClaimExtractor | - | Y | - | - | - | 30 | Handles extraction of atomic claims |
-| ClaimVerifier | - | Y | - | - | - | 30 | Handles verifying claims against a  |
-| CodeFormatterAgent | - | - | - | - | - | 1 | Atomic agent: Enforces consistent f |
-| CodeSSOTEnforcerAgent | - | - | - | Y | - | 1 | Ultra high-signal code-level SSOT e |
-| Config | - | - | - | - | - | 3 | - |
-| ConstitutionalReviewerAgent | BaseAgent | - | - | - | - | 1 | Performs final constitutional revie |
-| DependencyPruningAgent | - | - | - | - | - | 3 | Batch agent: Detects and removes un |
-| DocstringComplianceAgent | - | - | - | Y | - | 3 | Ensures public functions, classes,  |
-| DuplicateCodeDetectorAgent | - | - | - | - | - | 3 | Batch agent: Detects exact duplicat |
-| FileCleanupAgent | - | - | - | - | - | 5 | Batch agent: Identifies and removes |
-| FilenameUniquenessGuardianAgent | - | - | Y | - | - | 3 | Batch agent that enforces unique fi |
-| FilesystemAgent | - | - | Y | Y | - | 1 | Autonomous agent for physical files |
-| GeneratedTest | - | Y | Y | Y | - | 134 | Represents a generated test case. |
-| GitHygieneAgent | - | - | - | - | - | 1 | Batch agent: Enforces Git repositor |
-| GovernanceAgent | AutonomyMixin, AdaptiveEx | - | - | - | - | 1 | Sovereign governance agent that mak |
-| GravityEnforcerAgent | CachedSafetyShield | - | Y | Y | - | 2 | The "Neural Link" stabilizer that e |
-| GravityLeakRepairAgent | - | - | - | Y | - | 6 | Converts forbidden static imports f |
-| HallucinationHunterAgent | SubAtomicAgent | Y | - | - | - | 30 | The Hallucination Hunter - Ground T |
-| HealValidator | - | - | - | - | S | 2 | Multi-stage validator for LLM-heale |
-| HealerAgent | - | - | - | Y | - | 12 | Autonomous Conductor for structural |
-| HierarchyAgent | - | - | Y | - | S | 1 | Autonomous agent for hierarchical s |
-| HygieneGuardianAgent | CanonBaseAgent | Y | - | Y | - | 2 | Validates Canon Key 45: Shared Util |
-| ImportAgent | - | - | Y | - | - | 1 | Autonomous agent for import convent |
-| ImportUpdater | NodeVisitor | - | - | Y | - | 12 | AST engine to verify and suggest im |
-| ImportValidationVisitor | NodeVisitor | - | Y | - | - | 1 | [SUPREME COURT GATEKEEPER]
-Structur |
-| InferenceTypeHintAgent | - | - | - | Y | - | 19 | Uses LLM inference to add accurate  |
-| InputValidationError | Exception | - | - | - | - | 3 | Raised when input validation fails. |
-| InputValidator | - | - | - | - | - | 3 | Validates input data against schema |
-| IntegrityReport | - | Y | - | - | - | 30 | Data integrity audit report. |
-| L5IntegrityGateExecutorAgent | - | - | - | - | - | 1 | L5+ Integrity Gate Executor with Tw |
-| L5SignalType | str, Enum | - | - | - | - | 1 | Specific signal types emitted by th |
-| LocationAgent | - | - | - | - | - | 1 | Autonomous agent responsible for te |
-| MCPGuardianAgent | - | - | Y | - | S | 3 | L5 Safety Guardian for MCP integrat |
-| MethodChange | - | Y | Y | Y | - | 134 | Represents a changed method requiri |
-| MethodChangeDetector | - | Y | Y | Y | - | 134 | Detects method changes between two  |
-| NeuralAutoImmuneAgent | AutonomyMixin, AdaptiveEx | - | Y | - | - | 2 | Sovereign auto-immune response — is |
-| NeuralAutoImmuneAgent | - | - | Y | - | - | 1 | - |
-| PIISanitizerAgent | BaseAgent | - | - | - | - | 1 | Performs local PII detection using  |
-| PascalSovereigntyEnforcerAgent | CanonBaseAgent, ASTEnforc | Y | Y | - | S | 4 | L5 Safety agent — enforces PascalCa |
-| PromptInjectionDetectorAgent | BaseAgent | - | - | - | - | 1 | Detects prompt-injection attacks. |
-| RedTeamAgent | - | - | - | - | - | 3 | Sovereign red-teaming agent for gua |
-| RedTeamResult | - | Y | - | - | S | 39 | Result of a red team test. |
-| RegressionOracleAgent | SubAtomicAgent | Y | Y | Y | - | 134 | The Regression Oracle - Automated T |
-| RegressionTestGenerator | - | Y | Y | Y | - | 134 | Generates pytest code and creates t |
-| RegressionTestRunner | - | Y | Y | Y | - | 134 | Runs generated tests, performs self |
-| RuleType | Enum | - | - | - | - | 1 | Types of safety rules. |
-| SafetyRule | - | - | - | - | - | 1 | Represents a safety rule. |
-| SelfUpdatingSafetyEngineAgent | - | - | - | - | - | 1 | Safety engine that learns and adapt |
-| SignalBusInterface | Protocol | - | - | - | - | 1 | Protocol for a signal bus emitter.
- |
-| SovereignSeverity | Enum | Y | Y | - | S | 4 | Sovereign event Severity levels. |
-| SovereignSeverity | Enum | Y | - | - | S | 1 | Sovereign event Severity levels. |
-| TerritoryHealerAgent | - | - | Y | Y | - | 4 | Enforces exhaustive territory compl |
-| TestCoverageGuardianAgent | - | - | - | - | - | 25 | Ultimate verification agent: Enforc |
-| TestSovereigntyAgent | CanonBaseAgent | Y | - | - | S | 1 | L5 specialist — advanced sovereign  |
-| ThreatDetection | - | - | - | - | - | 1 | Result of threat detection. |
-| ThreatLevel | Enum | - | - | - | - | 1 | Threat Severity levels. |
-| ThreatPattern | - | - | - | - | - | 1 | Represents a detected threat patter |
-| TypeHintEnforcementAgent | - | - | - | Y | - | 2 | Ensures public functions, methods,  |
-| TypeHintFixer | NodeTransformer | - | - | Y | - | 2 | AST transformer that adds Missing t |
-| UnusedCleanupAgent | - | - | - | - | - | 1 | Atomic agent: Removes unused import |
-| UsageVisitor | NodeVisitor | - | Y | - | - | 1 | - |
-| ValidatedInput | BaseModel | - | - | - | - | 3 | Base model for validated input. |
-| ValidationCategory | str, Enum | - | - | - | - | 1 | Categories of validation checks. |
-| ValidationIssue | - | - | - | - | - | 1 | A single validation issue. |
-| ValidationResult | - | - | - | - | - | 1 | Result of validation with all issue |
-| ValidationRule | - | - | - | - | - | 3 | Rule for validating input. |
-| ValidationSeverity | str, Enum | - | - | - | - | 1 | Severity levels for validation issu |
-| ValidationType | Enum | - | - | - | - | 3 | Types of validation. |
-| VerificationResult | - | Y | - | - | - | 30 | Result of Claim verification. |
-| VulnerabilityTest | - | Y | - | - | S | 39 | Represents a vulnerability test cas |
-
-### apps_lic Layer (37 agents)
+### L3 Layer (56 agents)
 
 | Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
 |------------|-------------|-------|--------|---------|---------|-----|-------------|
-| ASCIIEnforcer | - | - | - | - | - | 1 | Enforce ASCII-only characters for L |
-| AgentStatus | Enum | - | - | - | S | 1 | Agent execution status |
-| AgentStatus | Enum | - | - | - | S | 1 | Agent execution status |
-| BaseAgent | - | - | - | - | S | 5 | Stub for BaseAgent - TODO: Replace  |
-| CampaignBalanceAgent | OutreachAgent | - | - | - | - | 1 | Ensures campaign elements are balan |
-| ConstraintFeasibilityChecker | - | - | - | - | - | 1 | Pre-flight check for constraint sat |
-| ContactValidatorAgent | OutreachAgent | - | - | - | - | 1 | Validates contact information. |
-| ContentCleanlinessValidator | - | - | - | - | - | 1 | Forbidden verbs and weak language d |
-| DeliverabilityAgent | OutreachAgent | - | - | - | - | 1 | Checks email deliverability factors |
-| ErrorCodeRegistry | - | - | - | - | - | 1 | Centralized error codes with remedi |
-| HOP1ProfileAnalysisAgent | MCPHardenedMixin | - | Y | - | - | 24 | v13.1: HOP-1 - Profile Analysis wit |
-| HOP2ResearchAgent | MCPHardenedMixin | - | Y | - | S | 63 | v13.1: Research Agent - Vector-stor |
-| HOP3SenderGroundingAgent | MCPHardenedMixin | - | Y | - | - | 24 | v13.1: HOP-3 - Sender Grounding Ext |
-| HOP4RoutingAgent | MCPHardenedMixin | - | Y | - | - | 24 | v13.1: HOP-4 - Routing Decision wit |
-| HOP5GenerationAgent | MCPHardenedMixin | - | Y | - | S | 63 | v13.1: Generation Agent - N-candida |
-| HOP6ValidationAgent | MCPHardenedMixin | - | Y | - | S | 63 | v13.1: Validation Agent - Rule-base |
-| HOP7GateDecisionAgent | MCPHardenedMixin | - | Y | - | - | 24 | v13.1: HOP-7 - Gate Decision Agent  |
-| HOP8QAReportAgent | MCPHardenedMixin | - | Y | - | S | 63 | v13.1: QA Report Agent - Persistent |
-| IntelligenceLibrarian | MCPHardenedMixin | - | Y | - | - | 16 | v13.1: Offline research agent that  |
-| InternalAgent | - | - | - | - | S | 5 | v12.0: UPGRADED to primary intellig |
-| LeadQualityAgent | OutreachAgent | - | - | - | - | 1 | Validates and scores lead quality. |
-| MessageComplianceAgent | OutreachAgent | - | - | - | - | 1 | Ensures message compliance with reg |
-| MessageDiversityValidator | - | - | - | - | - | 1 | Prevent repetitive messages using c |
-| OrganizationAgent | - | - | - | - | S | 5 | v12.0: DEMOTED to secondary fact-ch |
-| OutreachAgent | ABC | - | - | - | - | 2 | Abstract base class for all outreac |
-| OutreachAgentFactory | - | - | - | - | - | 6 | Factory for creating outreach agent |
-| OutreachLearningAgent | OutreachAgent | - | Y | - | - | 1 | Learning agent for outreach campaig |
-| OutreachProactiveAgent | OutreachAgent | - | - | - | - | 1 | Agent that proactively identifies a |
-| OutreachReflectionAgent | OutreachAgent | - | - | - | - | 1 | Reflects on execution and suggests  |
-| PlaceholderDetector | - | - | - | - | - | 1 | Comprehensive placeholder detection |
-| RecipientAgent | - | - | - | - | S | 5 | v12.0: DEMOTED to secondary fact-ch |
-| S2_SupervisorAgent | - | - | - | - | S | 5 | v12.0: Updated coordination logic f |
-| TestContactValidatorAgent | - | - | Y | - | - | 5 | Tests for ContactValidatorAgent. |
-| TestLeadQualityAgent | - | - | Y | - | - | 5 | Tests for LeadQualityAgent. |
-| TestMessageComplianceAgent | - | - | Y | - | - | 5 | Tests for MessageComplianceAgent. |
-| TestOutreachProactiveAgent | - | - | - | - | - | 1 | Tests for OutreachProactiveAgent. |
-| ValidationAgent | - | - | - | - | - | 1 | NEW v11.6: Comprehensive validation |
+| AgentFactory | HealerMixin | Y | - | Y | - | 77 | 
+    Centralized factory for sovere |
+| AgentGym | HealerMixin | - | - | Y | - | 131 | Agent Gym for self-evolution and be |
+| AgentPermissionManager | HealerMixin | Y | - | Y | - | 86 | Manages agent permissions with Cont |
+| AgentRegistry | HealerMixin | - | - | Y | - | 350 | Mock AgentRegistry for type hinting |
+| AgentRegistryValidatorAgent | HealerMixin | - | - | Y | S | 72 | 
+    L3 Orchestration: Agent Regist |
+| AgentRole | Enum | - | - | - | - | 350 | Brief description of functionality  |
+| AutonomicMonitor | HealerMixin | - | - | Y | - | 93 | Autonomic immune system for agent h |
+| BenchmarkingAgent | HealerMixin | Y | - | Y | - | 229 | 
+    Measures and tracks performanc |
+| CachedOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 59 | 
+    Sovereign L3 orchestration bas |
+| ContextCurator | HealerMixin | Y | - | Y | - | 120 | Curates and manages the context win |
+| CoordinateObservabilityOperationsAg | HealerMixin | - | - | Y | - | 56 | Orchestrator for operations domain. |
+| DAGManager | HealerMixin | - | - | Y | - | 411 | Manages the dynamic DAG with mutati |
+| DAGMutator | HealerMixin | - | - | Y | - | 411 | Handles the actual graph mutations. |
+| DagEngineAgent | HealerMixin | - | - | Y | S | 212 | Lightweight DAG engine for workflow |
+| DagExecutor | HealerMixin | - | - | Y | - | 41 | Executes Directed Acyclic Graphs of |
+| DagManager | HealerMixin | - | - | Y | - | 350 | Mock DAGManager for type hinting. |
+| DagRuntimeInspector | HealerMixin | - | - | Y | - | 30 | Diagnostics engine for inspection d |
+| DeadlockDetector | HealerMixin | - | - | Y | - | 192 | 
+    Detects potential deadlocks in |
+| DispatchOutreachToolsAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 26 | Executor for outreach domain. |
+| DispatchResumeToolsAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 67 | Executor for resume domain with Tit |
+| HallucinationDetector | HealerMixin | - | - | Y | - | 13 | Stub implementation of hallucinatio |
+| HardenedWorkflowOrchestrator | HealerMixin | - | - | Y | - | 22 | 
+    Thin wrapper for Hardened Work |
+| HierarchyEnforcerAgent | HealerMixin | - | - | Y | - | 149 | 
+    Enforces the canonical L4 hier |
+| IOrchestrator | HealerMixin, ABC | Y | - | Y | - | 111 | Interface for the Orchestrator (Ner |
+| L3SubatomicTestingMixin | MCPHardenedMixin | Y | - | Y | S | 133 | Mixin providing L3 subatomic testin |
+| McpRouter | HealerMixin, MCPHardenedM | Y | Y | Y | - | 52 | 
+    L3 Orchestration switchboard:  |
+| MemoryLeakDetector | HealerMixin | - | - | Y | - | 159 | 
+    Detects memory leaks in the ag |
+| MetaLearningAgent | HealerMixin, AutonomyMixi | - | - | Y | S | 122 | 
+    Sovereign meta-learning agent  |
+| MetricsAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 171 | 
+    MetricsAgent: Sovereign quanti |
+| MockAgent | HealerMixin | Y | - | Y | S | 879 | - |
+| ModelRouter | HealerMixin | - | - | Y | - | 86 | Dynamic model router for cost-optim |
+| NervousSystemAgent | HealerMixin | Y | - | Y | S | 879 | Core orchestrator that coordinates  |
+| NervousSystemPhaseOrchestrator | HealerMixin | Y | - | Y | - | 879 | Orchestrates the execution of all p |
+| PredictiveCostAuditorAgent | SubAtomicAgent | Y | - | Y | S | 212 | 
+    The Efficiency Guard - Predict |
+| ReportingAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 82 | 
+    Autonomous diagnostic agent fo |
+| ResumeOrchestrator | HealerMixin | - | - | Y | - | 38 | Orchestrate the multi-hop resume ge |
+| SelfRecoveringOrchestrator | HealerMixin | - | - | Y | - | 280 | 
+    Orchestrator that automaticall |
+| SemanticGatekeeperAgent | HealerMixin | - | - | Y | S | 54 | 
+    Gatekeeper that controls agent |
+| SemanticTerritoryMapperAgent | HealerMixin | - | - | Y | S | 13 | L3 Orchestration: Semantic Territor |
+| SemanticTerritoryMapperAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 138 | 
+    The Intelligent Brain that map |
+| SignatureVerifierAgent | HealerMixin | - | - | Y | - | 29 | function class for inspection domai |
+| SovereignDeepWikiClient | - | Y | Y | - | - | 122 | 
+    DeepWiki MCP Client for L6 Obs |
+| SovereignMcpRouter | HealerMixin, MCPHardenedM | Y | Y | Y | - | 139 | Ultra-hardened L3 MCP switchboard — |
+| SovereignRagOrchestrator | HealerMixin | - | - | Y | - | 107 | Brief description of functionality  |
+| SubatomicHop | HealerMixin | - | - | Y | - | 350 | Mock SubatomicHop for type hinting. |
+| SubatomicHopAgent | HealerMixin | Y | - | Y | S | 141 | 
+    Sovereign SubatomicHop with De |
+| SubatomicOrchestrator | HealerMixin | - | - | Y | - | 350 | Implementation for SubatomicOrchest |
+| TaskMonitor | HealerMixin | - | - | Y | - | 192 | Monitors a single asyncio Task. |
+| TelemetryAgent | HealerMixin | - | - | Y | - | 147 | 
+    Autonomous telemetry emission  |
+| TerritoryHealerAgent | HealerMixin | - | - | Y | S | 13 | L3 Orchestration: Territory Healing |
+| TerritoryHealerAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 197 | 
+    Enforces exhaustive territory  |
+| TestPilotAgent | HealerMixin, MCPHardenedM | Y | - | Y | S | 191 | 
+    TestPilot agent with property- |
+| TokenBudgetInspector | HealerMixin | - | - | Y | - | 30 | Diagnostics engine for inspection d |
+| TracingAgent | HealerMixin | - | - | Y | - | 254 | 
+    Autonomous distributed tracing |
+| TrackObservabilityCostAgent | HealerMixin | - | - | Y | - | 27 | function class for standard domain. |
+| WorkflowBlueprint | HealerMixin | - | - | Y | - | 350 | Mock WorkflowBlueprint for type hin |
 
-### apps_rg Layer (26 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| ATSCompatibilityAgent | ResumeAgent | - | Y | - | - | 1 | Validates ATS (Applicant Tracking S |
-| AgentFactory | - | - | - | Y | - | 6 | Factory for creating agent instance |
-| BrandComplianceAgent | ResumeAgent | - | Y | - | - | 1 | Ensures brand voice and professiona |
-| ContentQualityAgent | ResumeAgent | - | Y | - | - | 1 | Validates resume content quality.
-
- |
-| FactCheckAgent | ResumeAgent | - | Y | - | - | 1 | Verifies claims against user profil |
-| ProactiveAgent | ResumeAgent | - | - | - | - | 1 | Agent that proactively identifies a |
-| ReflectionAgent | ResumeAgent | - | Y | - | - | 1 | Learns from execution and records i |
-| ResumeAgent | ABC | - | - | - | - | 1 | Base class for all resume generatio |
-| ResumeLearningAgent | - | - | Y | - | - | 5 | Agent that combines all Phase 3 lea |
-| SectionBalanceAgent | ResumeAgent | - | Y | - | - | 1 | Ensures proper section balance and  |
-| TestATSCompatibilityAgent | - | - | - | - | - | 1 | Tests for ATSCompatibilityAgent. |
-| TestAgentCoordination | - | - | - | - | - | 1 | Tests for multi-agent coordination. |
-| TestAgentFactory | - | - | - | - | - | 1 | Tests for AgentFactory class. |
-| TestBrandComplianceAgent | - | - | - | - | - | 1 | Tests for BrandComplianceAgent. |
-| TestContentQualityAgent | - | - | - | - | - | 1 | Tests for ContentQualityAgent. |
-| TestFactCheckAgent | - | - | - | - | - | 1 | Tests for FactCheckAgent. |
-| TestMetricsWithAgents | - | - | - | - | - | 2 | Integration tests for MetricsCollec |
-| TestProactiveAgent | - | - | - | - | - | 1 | Tests for ProactiveAgent. |
-| TestReflectionAgent | - | - | - | - | - | 1 | Tests for ReflectionAgent. |
-| TestResilientMutatorWithAgents | - | - | - | Y | - | 21 | Integration tests for ResilientMuta |
-| TestResumeLearningAgent | - | - | Y | - | - | 1 | Tests for ResumeLearningAgent class |
-| TestResumeLearningAgentIntegration | - | - | - | - | D | 1 | Integration tests for ResumeLearnin |
-| TestSectionBalanceAgent | - | - | - | - | - | 1 | Tests for SectionBalanceAgent. |
-| TestValidationAgent | - | - | - | - | - | 1 | Tests for ValidationAgent class. |
-| TestValidatorWithResumeProcessing | - | - | - | - | - | 2 | Integration tests for ValidationAge |
-| ValidationAgent | - | - | - | - | - | 11 | Pattern enforcement and code qualit |
-
-### apps_shared Layer (3 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| CanonBaseAgentInterface | ABC | - | - | - | - | 1 | - |
-| CanonBaseAgentInterfaceImpl | ABC | - | - | - | - | 1 | Sovereign interface for all canon a |
-| StateValidator | - | - | Y | - | - | 11 | Validates state files against expec |
-
-### tests Layer (42 agents)
-
-| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
-|------------|-------------|-------|--------|---------|---------|-----|-------------|
-| MockContext | - | - | - | - | - | 6 | Mock context for testing. |
-| TestASTNormalization | TestCase | Y | - | - | - | 10 | Test AST normalization methods. |
-| TestAgentDiscovery | - | Y | - | - | D | 1 | E2E tests for agent discovery and r |
-| TestAgentFileValidation | - | Y | Y | - | D | 12 | Test validation of Agent files. |
-| TestAgentHierarchy | - | Y | - | - | S | 1 | Test agent hierarchy and inheritanc |
-| TestAgentRegistry | - | Y | Y | - | D | 1 | Test AGENT_REGISTRY from structure_ |
-| TestBasicNamingValidation | - | Y | Y | - | D | 12 | Test basic naming validation for un |
-| TestClient | MCPHardenedMixin | - | Y | - | S | 1 | - |
-| TestCodeDeduplicationAST | TestCase | Y | - | - | - | 10 | Test AST fingerprinting for code de |
-| TestCodeDeduplicationAgent | TestCase | Y | - | - | D | 11 | Test suite for L2 CodeDeduplication |
-| TestDuplicateCodeDetectorAgent | TestCase | Y | - | - | D | 11 | Test suite for L5 DuplicateCodeDete |
-| TestExemptions | - | Y | Y | - | D | 12 | Test file and directory exemptions. |
-| TestFileCleanupAgent | TestCase | - | - | - | - | 6 | Test FileCleanupAgent functionality |
-| TestFileTypeDetection | - | Y | Y | - | D | 12 | Test file type category detection. |
-| TestHealerAgentASTDiff | TestCase | - | - | Y | - | 3 | Test AST-based diff application for |
-| TestHealerAgentIntegration | TestCase | - | - | Y | - | 3 | Integration tests for AST-based hea |
-| TestHealerAgentPerformance | TestCase | - | - | Y | - | 3 | Performance tests for AST operation |
-| TestIntegrationFileCleanup | TestCase | - | - | - | - | 6 | Integration tests for FileCleanupAg |
-| TestL0MaintenanceAgents | - | Y | Y | - | D | 1 | L0 Maintenance Layer: Scripts, logs |
-| TestL1CognitionAgents | - | Y | Y | - | D | 1 | L1 Cognition Layer: Thought engine, |
-| TestL2ExecutionAgents | - | Y | Y | - | D | 1 | L2 Execution Layer: Tool registry,  |
-| TestL3OrchestrationAgents | - | Y | Y | - | D | 1 | L3 Orchestration Layer: Workflow en |
-| TestL4StateAgents | - | Y | Y | - | D | 1 | L4 State Layer: Validation context, |
-| TestL5SafetyAgents | - | Y | Y | - | D | 1 | L5 Safety Layer: Guardrails, valida |
-| TestNamingAgentFallback | TestCase | - | - | - | - | 2 | Test fallback behavior when tree-si |
-| TestNamingAgentPerformance | TestCase | - | - | - | - | 2 | Test performance improvements with  |
-| TestNamingAgentTreeSitter | TestCase | - | - | - | - | 2 | Test tree-sitter multi-language sym |
-| TestNonPythonFileValidation | - | Y | Y | - | D | 12 | Test validation of non-Python files |
-| TestRunMethod | - | Y | Y | - | D | 12 | Test the run() method for scanning  |
-| TestScriptFileValidation | - | Y | Y | - | D | 12 | Test validation of script files. |
-| TestWordCounting | - | Y | Y | - | D | 12 | Test word counting in filenames. |
-| agent_response | - | - | - | - | D | 1 | Brief description of functionality  |
-| git_agent | - | - | - | - | - | 1 | ROLE: Remote GitOps. Manages checkp |
-| test_agentic_core_model | - | - | - | Y | D | 1 | Test agentic_core domain model. |
-| test_git_agent_branching_logic | - | - | - | - | - | 1 | Verifies GitAgent branch creation a |
-| test_git_agent_critical_failure | - | - | - | - | - | 1 | Verifies GitAgent handles critical  |
-| test_git_agent_error_handling | - | - | - | - | - | 1 | Verifies GitAgent handles errors gr |
-| test_git_agent_remote_push | - | - | - | - | - | 1 | Verifies GitAgent remote push opera |
-| test_git_agent_streamer_integration | - | - | - | - | - | 1 | Verifies GitAgent broadcasts to the |
-| test_multi_agent_coordination | - | - | - | Y | - | 16 | Test coordinated healing across mul |
-| test_multi_agent_scenarios | - | - | - | - | - | 1 | E2E tests for multi-agent scenarios |
-| toolsmith_agent | - | - | Y | - | - | 5 | ROLE: Dynamic Agency. Creates diagn |
-
-### misc Layer (53 agents)
+### L4 Layer (20 agents)
 
 | Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
 |------------|-------------|-------|--------|---------|---------|-----|-------------|
-| ASTDeadCodeVisitor | NodeVisitor | - | - | - | - | 2 | Enhanced AST visitor that tracks de |
-| AgentContract | BaseModel | - | - | - | - | 1 | Contract specification for an agent |
-| AgentInfo | - | - | - | Y | - | 8 | Information about a discovered agen |
-| AgentInfo | - | - | - | Y | - | 16 | - |
-| AgentMessage | SovereignBaseModel | - | - | - | - | 1 | Sovereign-grade message used for in |
-| AgentMessage | SovereignBaseModel | - | - | - | - | 1 | Brief description of functionality  |
-| AgentPlan | BaseModel | - | Y | - | S | 1 | - |
-| AgentPlan | BaseModel | - | - | - | - | 1 | Agent execution plan with reasoning |
-| AgentPlan | BaseModel | - | - | - | - | 1 | Agent execution plan with reasoning |
-| AgentResponse | - | - | Y | - | - | 1 | Response from agent execution conta |
-| AgentThoughtProcess | BaseModel | - | - | - | - | 1 | Forces the agent to show its work b |
-| AgentThoughtProcess | BaseModel | - | - | - | - | 1 | Forces the agent to show its work b |
-| BenchmarkContext | - | - | Y | - | - | 1 | Context manager for benchmarking. |
-| BenchmarkResult | - | - | Y | - | - | 1 | - |
-| BenchmarkResultActual | - | - | Y | - | - | 1 | Result of a single benchmark measur |
-| BenchmarkSuite | - | - | Y | - | - | 1 | Collection of benchmarks for a spec |
-| BenchmarkingAgent | - | - | Y | - | - | 1 | Measures and tracks performance met |
-| CanonAstValidator | NodeVisitor | - | - | - | - | 1 | [L6 INFRASTRUCTURE] Base AST visito |
-| CognitiveContractValidator | - | - | - | - | - | 18 | Validates cognitive contracts and e |
-| ContextAwareValidator | - | - | - | Y | - | 1 | Base class for intelligent validato |
-| CoordinateObservabilityOperationsAg | - | - | - | - | - | 6 | Orchestrator for operations domain. |
-| CostReport | - | Y | - | - | - | 6 | Comprehensive cost report. |
-| DeadCodeDetectorAgent | - | - | - | - | - | 2 | Sovereign dead code auditor that id |
-| DriftDetectorAgent | - | - | - | - | - | 1 | Detects files that have drifted out |
-| DriftDetectorAgent | - | - | - | - | - | 1 | Naming/Compliance: Drift Detection |
-| FileAudit | - | Y | - | - | - | 6 | Audit record for a single file. |
-| GlobalComplianceAggregatorAgent | - | - | - | - | - | 1 | Naming/Compliance: Global Complianc |
-| HealingMetrics | - | Y | - | - | - | 6 | Metrics for a single healing attemp |
-| HierarchyEnforcerAgent | - | - | - | - | - | 10 | Enforces the canonical L4 hierarchy |
-| MetricsAgent | - | - | Y | - | - | 2 | MetricsAgent: Sovereign quantitativ |
-| MockSpan | - | - | - | - | - | 4 | - |
-| MockTracer | - | - | - | - | - | 4 | - |
-| NamingAgent | - | - | Y | Y | - | 1 | Autonomous agent for naming law com |
-| NamingLawHealerAgent | - | - | - | - | - | 5 | L1 Cognition: High-Signal Naming La |
-| NamingNormalizationAgent | - | - | - | Y | - | 3 | Normalizes filenames and public sym |
-| NoOpSpan | - | - | - | - | - | 4 | - |
-| NonConformingAgentFinder | NodeVisitor | - | - | Y | - | 6 | - |
-| OperationResult | - | - | - | - | - | 6 | Result of operation. |
-| OperationResult | - | - | - | - | - | 1 | Result of operation. |
-| OrchestrationResult | - | - | - | - | - | 6 | Result of orchestration. |
-| PlacementResult | - | - | Y | Y | - | 1 | - |
-| PredictiveCostAuditorAgent | SubAtomicAgent | Y | - | - | - | 6 | The Efficiency Guard - Predictive C |
-| ReportingAgent | - | - | - | - | - | 2 | Autonomous diagnostic agent for com |
-| ResidualAgentMessage | - | - | - | - | - | 1 | Lightweight runtime message format  |
-| ResidualAgentMessage | - | - | Y | - | - | 1 | Message in agent conversation (Resi |
-| SignatureVerifierAgent | - | - | - | - | - | 6 | function class for inspection domai |
-| Span | - | - | - | - | - | 4 | Represents a single tracing Span. |
-| StepResult | - | - | - | - | - | 6 | Result of orchestration step. |
-| StepStatus | Enum | - | - | - | - | 6 | StepStatus implementation. |
-| TalentIntelligenceAgent | - | - | Y | - | - | 3 | Production agent for talent intelli |
-| TelemetryAgent | - | - | - | - | - | 3 | Autonomous telemetry emission agent |
-| TracingAgent | - | - | - | - | - | 4 | Autonomous distributed tracing agen |
-| TrackObservabilityCostAgent | - | - | - | - | - | 1 | function class for standard domain. |
+| AtomicBlackboard | MCPHardenedMixin | Y | Y | - | - | 223 | 
+    Thread-safe blackboard for man |
+| AutonomousCheckpointManagerAgent | HealerMixin | - | - | Y | S | 203 | 
+    Manages state checkpoints with |
+| AutonomousCheckpointManagerAgent | HealerMixin | - | - | Y | S | 203 | 
+    Manages state checkpoints with |
+| AutonomousStateGuardianAgent | HealerMixin | Y | - | Y | S | 159 | 
+    L4 State Guardian that autonom |
+| AutonomousStateGuardianAgent | HealerMixin | Y | - | Y | S | 159 | 
+    L4 State Guardian that autonom |
+| CachedStateLedger | MCPHardenedMixin | Y | Y | - | - | 103 | 
+    Sovereign L4 state base — Redi |
+| CanonValidator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 203 | 
+    The Gatekeeper logic that enfo |
+| L4SubatomicTestingMixin | MCPHardenedMixin | Y | - | Y | S | 147 | Mixin providing L4 subatomic testin |
+| PineconeSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 260 | 
+    Sovereign Pinecone controller  |
+| PineconeSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 15 | Mock Pinecone Sovereign Agent. |
+| RedisDistributedLock | MCPHardenedMixin | Y | Y | - | - | 447 | 
+    Redis-based distributed lock f |
+| RedisHotCache | MCPHardenedMixin | Y | Y | - | - | 447 | 
+    Redis-based hot cache with loc |
+| RedisSovereignAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 72 | 
+    Sovereign Redis controller — h |
+| SchemaEvolverAgent | SubAtomicAgent | Y | - | Y | S | 203 | 
+    The Structural Guard - Schema  |
+| SovereignGraphClient | - | Y | Y | - | - | 138 | 
+    Client for the Knowledge Graph |
+| SovereignPineconeMcpClient | MCPHardenedMixin | Y | Y | - | - | 109 | 
+    Official Pinecone MCP client — |
+| SovereignPineconeStoreAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 103 | 
+    ADAPTER: Legacy Interface -> N |
+| SovereignRedisMcpClient | MCPHardenedMixin | Y | Y | - | - | 91 | Official Redis MCP client for sover |
+| SovereignSemanticCache | MCPHardenedMixin | Y | Y | - | - | 81 | Ultra-hardened hybrid semantic cach |
+| SubAtomicRegistryAgent | HealerMixin, MCPHardenedM | Y | Y | Y | S | 113 | 
+    Sovereign method registry — li |
+
+### L5 Layer (49 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| AutonomousThreatEvolutionAgent | HealerMixin | - | - | Y | - | 76 | L5: Self-healing security agent |
+| AutonomousThreatEvolutionAgent | HealerMixin | - | - | Y | - | 76 | L5: Self-healing security agent |
+| BaseAgent | HealerMixin | - | - | Y | - | 167 | Stub for BaseAgent - TODO: Replace  |
+| BiasAuditor | HealerMixin | - | - | Y | - | 148 | Lightweight Bias Detection for Cont |
+| BiasDetectorAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Runs local bias detection with dyna |
+| CodeFormatterAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 35 | 
+    Atomic agent: Enforces consist |
+| CodeSSOTEnforcerAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 88 | 
+    Ultra high-signal code-level S |
+| ComplianceOrchestrator | HealerMixin, MCPHardenedM | Y | Y | Y | - | 521 | 
+    L5 Sovereign Compliance Orches |
+| ConstitutionalReviewerAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Performs final constitutional revie |
+| DependencyPruningAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 72 | 
+    Batch agent: Detects and remov |
+| DocstringComplianceAgent | HealerMixin | - | - | Y | - | 61 | 
+    Ensures public functions, clas |
+| DuplicateCodeDetectorAgent | HealerMixin | - | - | Y | - | 90 | 
+    Batch agent: Detects exact dup |
+| FileCleanupAgent | HealerMixin | - | - | Y | - | 129 | 
+    Batch agent: Identifies and re |
+| FilenameUniquenessGuardianAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 108 | 
+    Batch agent that enforces uniq |
+| FilesystemAgent | HealerMixin | - | - | Y | - | 199 | 
+    Autonomous agent for physical  |
+| GitHygieneAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 96 | 
+    Batch agent: Enforces Git repo |
+| GovernanceAgent | HealerMixin, AutonomyMixi | - | - | Y | - | 126 | 
+    Sovereign governance agent tha |
+| GravityEnforcerAgent | HealerMixin, CachedSafety | - | - | Y | - | 88 | 
+    The "Neural Link" stabilizer t |
+| GravityLeakRepairAgent | HealerMixin | - | - | Y | - | 58 | 
+    Converts forbidden static impo |
+| HallucinationHunterAgent | SubAtomicAgent | Y | - | Y | S | 291 | 
+    The Hallucination Hunter - Gro |
+| HealValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 229 | 
+    Multi-stage validator for LLM- |
+| HealerAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 787 | 
+    Autonomous Conductor for struc |
+| HierarchyAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 340 | 
+    Autonomous agent for hierarchi |
+| HierarchyHealer | HealerMixin, MCPHardenedM | Y | - | Y | - | 229 | 
+    L5 Hierarchy Healer Agent
+     |
+| HygieneGuardianAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 51 | 
+    Validates Canon Key 45: Shared |
+| ImportAgent | HealerMixin | - | - | Y | - | 212 | 
+    Autonomous agent for import co |
+| InferenceTypeHintAgent | HealerMixin | - | - | Y | - | 71 | 
+    Uses LLM inference to add accu |
+| InputValidator | HealerMixin | - | - | Y | - | 289 | Validates input data against schema |
+| L5IntegrityGateExecutorAgent | HealerMixin | - | - | Y | - | 399 | 
+    L5+ Integrity Gate Executor wi |
+| LocationAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 186 | 
+    Autonomous agent responsible f |
+| MCPGuardianAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 140 | 
+    L5 Safety Guardian for MCP int |
+| MCPHardenedMixin | - | Y | Y | - | - | 144 | 
+    Mixin providing hardened MCP o |
+| MethodChangeDetector | HealerMixin, MCPHardenedM | Y | Y | Y | - | 316 | Detects method changes between two  |
+| NeuralAutoImmuneAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 12 | - |
+| PIISanitizerAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Performs local PII detection using  |
+| PascalSovereigntyEnforcerAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 176 | L5 Safety agent — enforces PascalCa |
+| PromptInjectionDetectorAgent | HealerMixin, BaseAgent | - | - | Y | - | 167 | Detects prompt-injection attacks. |
+| RedSentinel | HealerMixin | Y | - | Y | - | 127 | 
+    Active defense system that gen |
+| RedTeamAgent | HealerMixin | - | - | Y | - | 83 | 
+    Sovereign red-teaming agent fo |
+| RegressionOracleAgent | SubAtomicAgent | Y | Y | Y | S | 316 | 
+    The Regression Oracle - Automa |
+| SafetyInspector | HealerMixin, MCPHardenedM | Y | - | Y | - | 165 | 
+    L5 Safety Inspector with Socra |
+| SelfUpdatingSafetyEngineAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 220 | 
+    Safety engine that learns and  |
+| SovereignLlmRouterMcpClient | - | Y | - | - | - | 40 | Official LLM Router MCP client for  |
+| TerritoryHealerAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 168 | 
+    Enforces exhaustive territory  |
+| TestCoverageGuardianAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 307 | 
+    Ultimate verification agent: E |
+| TestSovereigntyAgent | MCPHardenedMixin, CanonBa | Y | - | Y | S | 162 | L5 specialist — advanced sovereign  |
+| TypeHintEnforcementAgent | HealerMixin | Y | - | Y | - | 85 | 
+    Ensures public functions, meth |
+| TypeHintFixer | HealerMixin, NodeTransfor | Y | - | Y | - | 85 | 
+    AST transformer that adds Miss |
+| UnusedCleanupAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 33 | 
+    Atomic agent: Removes unused i |
+
+### apps_lic Layer (47 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| ASCIIEnforcer | - | - | - | - | - | 411 | 
+    Enforce ASCII-only characters  |
+| AgentStatus | Enum | Y | - | - | - | 122 | Agent execution status |
+| AgentStatus | Enum | Y | - | - | - | 135 | Agent execution status |
+| BaseAgent | - | - | - | - | - | 640 | Stub for BaseAgent - TODO: Replace  |
+| CampaignBalanceAgent | OutreachAgent | - | - | - | - | 229 | Ensures campaign elements are balan |
+| CampaignPlanner | OutreachAgent | - | - | - | - | 229 | Strategic campaign planning agent. |
+| ContactValidatorAgent | OutreachAgent | - | - | - | - | 229 | Validates contact information. |
+| ContentCleanlinessValidator | - | - | - | - | - | 411 | 
+    Forbidden verbs and weak langu |
+| DeliverabilityAgent | OutreachAgent | - | - | - | - | 229 | Checks email deliverability factors |
+| FailureClassifier | Enum | Y | - | - | - | 122 | 
+    Classifies S6 validation failu |
+| FailureClassifier | Enum | Y | - | - | - | 135 | 
+    Classifies S6 validation failu |
+| HOP1ProfileAnalysisAgent | MCPHardenedMixin | Y | - | - | - | 369 | 
+    v13.1: HOP-1 - Profile Analysi |
+| HOP2ResearchAgent | MCPHardenedMixin | Y | - | - | - | 760 | 
+    v13.1: Research Agent - Vector |
+| HOP3SenderGroundingAgent | MCPHardenedMixin | Y | - | - | - | 369 | 
+    v13.1: HOP-3 - Sender Groundin |
+| HOP4RoutingAgent | MCPHardenedMixin | Y | - | - | - | 369 | 
+    v13.1: HOP-4 - Routing Decisio |
+| HOP5GenerationAgent | MCPHardenedMixin | Y | - | - | - | 760 | 
+    v13.1: Generation Agent - N-ca |
+| HOP6ValidationAgent | MCPHardenedMixin | Y | - | - | - | 760 | 
+    v13.1: Validation Agent - Rule |
+| HOP7GateDecisionAgent | MCPHardenedMixin | Y | - | - | - | 369 | 
+    v13.1: HOP-7 - Gate Decision A |
+| HOP8QAReportAgent | MCPHardenedMixin | Y | - | - | - | 760 | 
+    v13.1: QA Report Agent - Persi |
+| HOPOrchestrator | - | Y | - | - | - | 760 | 
+    v13.0: HOP-based Workflow Orch |
+| HOPOrchestrator | - | Y | - | - | - | 369 | 
+    v13.0: Example orchestrator sh |
+| IntelligenceLibrarian | MCPHardenedMixin | Y | - | - | - | 350 | 
+    v13.1: Offline research agent  |
+| InternalAgent | - | - | - | - | - | 640 | 
+    v12.0: UPGRADED to primary int |
+| LeadQualityAgent | OutreachAgent | - | - | - | - | 229 | Validates and scores lead quality. |
+| MessageComplianceAgent | OutreachAgent | - | - | - | - | 229 | Ensures message compliance with reg |
+| MessageDiversityValidator | - | - | - | - | - | 411 | 
+    Prevent repetitive messages us |
+| OrganizationAgent | - | - | - | - | - | 640 | 
+    v12.0: DEMOTED to secondary fa |
+| OutreachAgent | ABC | - | - | - | - | 33 | 
+    Abstract base class for all ou |
+| OutreachAgentFactory | - | - | - | - | - | 293 | Factory for creating outreach agent |
+| OutreachCapabilityMonitor | - | - | - | - | - | 348 | 
+    Monitors outreach agent capabi |
+| OutreachHealingOrchestrator | - | - | - | - | - | 293 | Orchestrates the complete self-heal |
+| OutreachLearningAgent | OutreachAgent | - | - | - | - | 215 | 
+    Learning agent for outreach ca |
+| OutreachPhase5Orchestrator | HealerMixin | - | - | Y | - | 227 | 
+    Orchestrates Phase 5 observabi |
+| OutreachProactiveAgent | OutreachAgent | - | - | - | - | 348 | 
+    Agent that proactively identif |
+| OutreachReflectionAgent | OutreachAgent | - | - | - | - | 229 | Reflects on execution and suggests  |
+| OutreachSignalRouter | - | - | - | - | - | 293 | Routes signals to appropriate agent |
+| OutreachTestPilot | OutreachAgent | - | - | - | - | 229 | Runs validation tests on the campai |
+| OutreachValidationExecutor | ValidationGateExecutor | - | - | - | - | 259 | Extended validation executor for ou |
+| PlaceholderDetector | - | - | - | - | - | 411 | 
+    Comprehensive placeholder dete |
+| RecipientAgent | - | - | - | - | - | 640 | 
+    v12.0: DEMOTED to secondary fa |
+| S2_SupervisorAgent | - | - | - | - | - | 640 | 
+    v12.0: Updated coordination lo |
+| TemplateOptimizer | OutreachAgent | - | - | - | - | 229 | Optimizes message templates for eng |
+| TestContactValidatorAgent | - | - | - | - | - | 254 | Tests for ContactValidatorAgent. |
+| TestLeadQualityAgent | - | - | - | - | - | 254 | Tests for LeadQualityAgent. |
+| TestMessageComplianceAgent | - | - | - | - | - | 254 | Tests for MessageComplianceAgent. |
+| TestOutreachProactiveAgent | - | - | - | - | - | 254 | Tests for OutreachProactiveAgent. |
+| ValidationAgent | - | - | - | - | - | 411 | 
+    NEW v11.6: Comprehensive valid |
+
+### apps_rg Layer (34 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| ATSCompatibilityAgent | ResumeAgent | - | - | - | - | 418 | 
+    Validates ATS (Applicant Track |
+| AgentFactory | - | - | - | - | - | 334 | Factory for creating agent instance |
+| BrandComplianceAgent | ResumeAgent | - | - | - | - | 418 | 
+    Ensures brand voice and profes |
+| CapabilityMonitor | - | - | - | - | - | 331 | 
+    Monitors agent capabilities an |
+| ContentQualityAgent | ResumeAgent | - | - | - | - | 418 | 
+    Validates resume content quali |
+| ConvergenceDetector | - | - | - | - | - | 334 | Detects when the system has converg |
+| FactCheckAgent | ResumeAgent | - | - | - | - | 418 | 
+    Verifies claims against user p |
+| HealingOrchestrator | - | - | - | - | - | 334 | Orchestrates the complete self-heal |
+| Phase4Orchestrator | - | - | - | - | - | 607 | 
+    Orchestrates all Phase 4 compo |
+| Phase6Orchestrator | - | Y | - | - | - | 578 | 
+    Orchestrates all Phase 6 intel |
+| Phase7Orchestrator | - | Y | - | - | - | 560 | 
+    Orchestrates all Phase 7 gover |
+| ProactiveAgent | ResumeAgent | - | - | - | - | 331 | 
+    Agent that proactively identif |
+| ReflectionAgent | ResumeAgent | - | - | - | - | 418 | 
+    Learns from execution and reco |
+| ResumeAgent | ABC | - | - | - | - | 49 | 
+    Base class for all resume gene |
+| ResumeLearningAgent | - | - | Y | - | - | 527 | 
+    Agent that combines all Phase  |
+| ResumeOrchestrator | - | - | - | - | - | 38 | Orchestrate the multi-hop resume ge |
+| SectionBalanceAgent | ResumeAgent | - | - | - | - | 418 | 
+    Ensures proper section balance |
+| SignalRouter | - | - | - | - | - | 334 | Routes signals to appropriate agent |
+| StrategicPlanner | ResumeAgent | - | - | - | - | 418 | 
+    Plans execution strategy based |
+| StrictDocEnforcer | - | Y | - | - | - | 560 | 
+    Enforces type contract complia |
+| TemplateOptimizer | ResumeAgent | - | - | - | - | 418 | 
+    Optimizes template selection b |
+| TestATSCompatibilityAgent | - | - | - | - | - | 273 | Tests for ATSCompatibilityAgent. |
+| TestAgentCoordination | - | - | - | - | - | 218 | Tests for multi-agent coordination. |
+| TestAgentFactory | - | - | - | - | - | 238 | Tests for AgentFactory class. |
+| TestBrandComplianceAgent | - | - | - | - | - | 273 | Tests for BrandComplianceAgent. |
+| TestContentQualityAgent | - | - | - | - | - | 273 | Tests for ContentQualityAgent. |
+| TestFactCheckAgent | - | - | - | - | - | 273 | Tests for FactCheckAgent. |
+| TestProactiveAgent | - | - | - | - | - | 269 | Tests for ProactiveAgent. |
+| TestReflectionAgent | - | - | - | - | - | 273 | Tests for ReflectionAgent. |
+| TestResilientMutatorWithAgents | - | - | - | - | - | 144 | Integration tests for ResilientMuta |
+| TestResumeLearningAgent | - | - | Y | - | - | 322 | Tests for ResumeLearningAgent class |
+| TestResumeLearningAgentIntegration | - | - | - | - | - | 243 | Integration tests for ResumeLearnin |
+| TestSectionBalanceAgent | - | - | - | - | - | 273 | Tests for SectionBalanceAgent. |
+| UnifiedOrchestrator | - | Y | - | - | - | 578 | 
+    Multi-phase execution orchestr |
+
+### apps_shared Layer (4 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| BaseTaskExecutor | HealerMixin | - | - | Y | - | 99 | 
+    Base class for task execution  |
+| CanonBaseAgentInterface | ABC | - | - | - | - | 14 | - |
+| CanonBaseAgentInterfaceImpl | ABC | - | - | - | - | 14 | Sovereign interface for all canon a |
+| StateValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 288 | 
+    Validates state files against  |
+
+### tests Layer (19 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| TestAgentDiscovery | - | Y | - | - | - | 123 | E2E tests for agent discovery and r |
+| TestAgentFileValidation | - | Y | - | - | - | 201 | Test validation of Agent files. |
+| TestAgentHierarchy | - | Y | - | - | - | 126 | Test agent hierarchy and inheritanc |
+| TestAgentRegistry | - | Y | Y | - | - | 280 | Test AGENT_REGISTRY from structure_ |
+| TestCodeDeduplicationAgent | TestCase | Y | - | - | - | 134 | Test suite for L2 CodeDeduplication |
+| TestDuplicateCodeDetectorAgent | TestCase | Y | - | - | - | 134 | Test suite for L5 DuplicateCodeDete |
+| TestFileCleanupAgent | TestCase | - | - | - | - | 151 | Test FileCleanupAgent functionality |
+| TestHealerAgentASTDiff | TestCase | - | - | - | - | 126 | Test AST-based diff application for |
+| TestHealerAgentIntegration | TestCase | - | - | - | - | 126 | Integration tests for AST-based hea |
+| TestHealerAgentPerformance | TestCase | - | - | - | - | 126 | Performance tests for AST operation |
+| TestL0MaintenanceAgents | - | Y | Y | - | - | 280 | L0 Maintenance Layer: Scripts, logs |
+| TestL1CognitionAgents | - | Y | Y | - | - | 280 | L1 Cognition Layer: Thought engine, |
+| TestL2ExecutionAgents | - | Y | Y | - | - | 280 | L2 Execution Layer: Tool registry,  |
+| TestL3OrchestrationAgents | - | Y | Y | - | - | 280 | L3 Orchestration Layer: Workflow en |
+| TestL4StateAgents | - | Y | Y | - | - | 280 | L4 State Layer: Validation context, |
+| TestL5SafetyAgents | - | Y | Y | - | - | 280 | L5 Safety Layer: Guardrails, valida |
+| TestNamingAgentFallback | TestCase | - | - | - | - | 86 | Test fallback behavior when tree-si |
+| TestNamingAgentPerformance | TestCase | - | - | - | - | 86 | Test performance improvements with  |
+| TestNamingAgentTreeSitter | TestCase | - | - | - | - | 86 | Test tree-sitter multi-language sym |
+
+### misc Layer (10 agents)
+
+| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |
+|------------|-------------|-------|--------|---------|---------|-----|-------------|
+| AgentInfo | - | - | - | - | - | 357 | Information about a discovered agen |
+| AgentInfo | - | - | - | - | - | 273 | - |
+| AgentValidation | - | Y | - | - | - | 294 | Validation results for a single age |
+| MultiProviderRouter | - | - | - | - | - | 328 | - |
+| MultiProviderRouter | - | Y | - | - | - | 468 | Production router with intelligent  |
+| NonConformingAgentFinder | NodeVisitor | - | - | - | - | 103 | - |
+| Phase5Validator | - | Y | - | - | - | 294 | Full system validation for ultra ze |
+| SystemValidator | - | Y | Y | - | - | 204 | Full system validation for sovereig |
+| TalentIntelligenceAgent | - | - | - | - | - | 328 | Production agent for talent intelli |
+| WorkflowOrchestrator | - | - | - | - | - | 328 | Orchestrates the complete agentic w |
 
 ---
 
@@ -531,103 +656,261 @@ Structur |
 
 ### Non-Compliant Agents (L2-L4 without Self-Testing)
 
-**Count: 99**
+**Count: 86**
 
-- `SubAtomicAgent` (L2) - base.py
-- `CanonBaseAgent` (L2) - base_agents_canon_base_agent_impl.py
-- `CanonBaseAgent` (L2) - canon_base_agent_impl.py
-- `CodeDeduplicationAgent` (L2) - CodeDeduplicationAgent.py
-- `CodeJanitorAgent` (L2) - CodeJanitorAgent.py
-- `ContextSnapshot` (L2) - ContextCuratorAgent.py
-- `HandoffSummary` (L2) - ContextCuratorAgent.py
-- `ContextCuratorAgent` (L2) - ContextCuratorAgent.py
-- `ImportNode` (L2) - DependencyDiplomatAgent.py
-- `BlastRadius` (L2) - DependencyDiplomatAgent.py
-- `DependencyDiplomatAgent` (L2) - DependencyDiplomatAgent.py
-- `ModelTier` (L2) - DynamicModelRouterAgent.py
-- `RoutingDecision` (L2) - DynamicModelRouterAgent.py
-- `ComplexityProfile` (L2) - DynamicModelRouterAgent.py
-- `DynamicModelRouterAgent` (L2) - DynamicModelRouterAgent.py
-- `StructuralEngineerAgent` (L2) - engineering.py
-- `PatternEnforcerAgent` (L2) - engineering.py
-- `GitAgent` (L2) - GitAgent.py
-- `ArchitectureGovernorAgent` (L2) - governance.py
-- `DependencySentinelAgent` (L2) - governance.py
-- ... and 79 more
+- `AgentPlan` (L2) - subatomic_hop_BROKEN.py
+- `AutonomyMixin` (L2) - autonomy_mixin.py
+- `BiasAuditor` (L2) - bias_auditor.py
+- `CanonAstValidator` (L2) - ast_validator.py
+- `ContextAwareValidator` (L2) - context_aware_validator.py
+- `DeadCodeDetectorAgent` (L2) - DeadCodeDetectorAgent.py
+- `DeadlockDetector` (L2) - concurrency.py
+- `DriftDetectorAgent` (L2) - DriftDetectionDriftDetectorAgent.py
+- `DriftDetectorAgent` (L2) - DriftDetectorAgent.py
+- `GlobalComplianceAggregatorAgent` (L2) - GlobalComplianceAggregatorAgent.py
+- `HierarchyHealer` (L2) - hierarchy_healer.py
+- `ImportHealer` (L2) - import_healer.py
+- `IntegrityGateExecutor` (L2) - executive_title_composer.py
+- `IntegrityGateExecutor` (L2) - peer_intelligence_auditor_impl.py
+- `IntegrityGateExecutor` (L2) - section_scope_integrator.py
+- `MemoryLeakDetector` (L2) - concurrency.py
+- `NamingAgent` (L2) - NamingAgent.py
+- `NamingLawHealerAgent` (L2) - NamingLawHealerAgent.py
+- `NamingNormalizationAgent` (L2) - NamingNormalizationAgent.py
+- `PeerIntelligenceAuditor` (L2) - peer_intelligence_auditor_impl.py
+- ... and 66 more
 
 ### L0 Agents Without Delegation
 
-**Count: 11**
+**Count: 20**
 
-- `L0SovereignSeverity` - Sovereign event Severity levels for L0 delegation.
-- `L0DelegationMixin` - Mixin providing L0 delegation-only capabilities.
-
-
-- `MaintenanceBaseAgent` - Base class for L0 Maintenance agents with delegati
-- `BootstrapAgent` - Autonomous boot integrity agent.
-Runs before any v
-- `SubAtomicAgent` - Base class for all validation agents with async su
-- `agentic_core` - Main agentic core class.
-- `FilesystemSSOTReconcilerAgent` - Filesystem-level SSOT reconciler - updates bluepri
-- `GravityComplianceValidator` - Brief description of functionality and purpose.
-- `HygieneValidator` - Detects 'Rot' within the system:
-1. Dead Code (Orp
+- `AgentCapability` - Defines the capability of an agent role.
+- `AgentRegistry` - Registry for managing agent capabilities and speci
+- `AgentRole` - Functional roles for agents in the system.
+- `AgentSpec` - Specification for creating an agent instance.
+- `AgenticWorkflowError` - Base exception for agentic workflow errors at L0.
 - `AgenticWorkflowError` - Base exception for agentic workflow.
-- `ScriptToAgentClassifier` - Sovereign classifier for script vs agent constitut
+- `BiasAuditor` - Lightweight Bias Detection for Content Quality.
+
+ 
+- `GapClosureArchitect` - Gap Closure Architect agent for leadership compete
+- `GravityComplianceValidator` - Brief description of functionality and purpose.
+- `GuardianOrchestrator` - 
+    Sovereign orchestrator for all available L0 g
+- `HealingOrchestrator` - 
+    Sovereign healing engine orchestrator.
+    Co
+- `HygieneValidator` - 
+    Detects 'Rot' within the system:
+    1. Dead 
+- `L0DelegationMixin` - Mixin providing L0 delegation-only capabilities.
+ 
+- `MetricsWitness` - 
+    Sovereign witness that cross-examines L6 obse
+- `SafeSystemCommandExecutor` - 
+    A secure system command executor that prevent
+- `ScriptsPlanningOrchestrator` - Orchestrator for planning script execution operati
+- `SovereignFilesystemMcpClient` - Official Filesystem MCP client for sovereign file 
+- `SovereignGitKrakenMcpClient` - Official GitKraken MCP client for sovereign versio
+- `SystemCommandExecutor` - 
+    Protocol for safely executing system commands
+- `WorkflowOrchestrator` - Workflow orchestrator with SDK integration.
 
 ### Agents with Healing Capability
 
-**Count: 49**
+**Count: 191**
 
-- `DependencyGraph` (L1)
+- `BiasAuditor` (L0)
+- `BootstrapAgent` (L0)
+- `GapClosureArchitect` (L0)
+- `GravityComplianceValidator` (L0)
+- `GuardianOrchestrator` (L0)
+- `HealingOrchestrator` (L0)
+- `HygieneValidator` (L0)
+- `MetricsWitness` (L0)
+- `SafeSystemCommandExecutor` (L0)
+- `ScriptToAgentClassifier` (L0)
+- `ScriptsPlanningOrchestrator` (L0)
+- `SystemCommandExecutor` (L0)
+- `WorkflowOrchestrator` (L0)
+- `AgentInfo` (L1)
+- `AsyncBlockingValidator` (L1)
+- `BareExceptValidator` (L1)
+- `CanonValidator` (L1)
+- `ConcurrencyGuardian` (L1)
+- `DangerousBuiltinsValidator` (L1)
+- `DebuggerValidator` (L1)
+- `DependencySentinel` (L1)
+- `DependencySentinelAgent` (L1)
+- `DummyAgentCard` (L1)
+- `EmptyExceptValidator` (L1)
+- `EvalExecValidator` (L1)
+- `ExternalHttpValidator` (L1)
 - `GenerativeGuard` (L1)
 - `GovernanceAgent` (L1)
 - `HealerAgent` (L1)
-- `OrchestratorAgentAndScopeManager` (L1)
+- `IOrchestrator` (L1)
+- `IntelligentOrchestrator` (L1)
+- `MetaLearningAgent` (L1)
+- `PrintStatementValidator` (L1)
+- `ReasoningRouter` (L1)
+- `ReflectionAgent` (L1)
+- `SovereignCognitivePlane` (L1)
 - `SystemArchitect` (L1)
-- `CodeJanitorAgent` (L2)
-- `HealerAgent` (L2)
+- `CodeDeduplicationAgent` (L2)
+- `ContextCuratorAgent` (L2)
+- `DeadCodeDetectorAgent` (L2)
+- `DeadlockDetector` (L2)
+- `DriftDetectorAgent` (L2)
+- `DriftDetectorAgent` (L2)
+- `DynamicModelRouterAgent` (L2)
+- `GitAgent` (L2)
+- `GlobalComplianceAggregatorAgent` (L2)
+- `IntegrityGateExecutor` (L2)
+- `IntegrityGateExecutor` (L2)
+- `IntegrityGateExecutor` (L2)
+- `IntegrityGateExecutorAgent` (L2)
+- `L2SelfTestingMixin` (L2)
+- `MemoryArchitectAgent` (L2)
+- `MemoryLeakDetector` (L2)
+- `NamingAgent` (L2)
+- `NamingLawHealerAgent` (L2)
+- `NamingNormalizationAgent` (L2)
+- `OmniContext` (L2)
+- `PeerIntelligenceAuditor` (L2)
+- `ReflectionAgent` (L2)
+- `SafetyExecutor` (L2)
+- `SherlockAgent` (L2)
 - `SovereignActionPlaneAgent` (L2)
-- `SovereignSandbox` (L2)
-- `SovereignToolsmith` (L2)
+- `SovereignRedisOrchestrator` (L2)
+- `SovereignRedisOrchestrator` (L2)
+- `SovereigntyAuditor` (L2)
+- `SprawlInspector` (L2)
+- `StrategicPlannerAgent` (L2)
 - `StructuralEngineerAgent` (L2)
+- `SubatomicTestingMixin` (L2)
+- `SubatomicTestingMixin` (L2)
 - `SystemArchitect` (L2)
 - `SystemArchitectAgent` (L2)
+- `TestPilotAgent` (L2)
+- `ToolsmithAgent` (L2)
+- `ToolsmithAgent` (L2)
+- `AgentFactory` (L3)
+- `AgentGym` (L3)
+- `AgentPermissionManager` (L3)
+- `AgentRegistry` (L3)
+- `AgentRegistryValidatorAgent` (L3)
+- `AutonomicMonitor` (L3)
+- `BenchmarkingAgent` (L3)
+- `CachedOrchestrator` (L3)
+- `ContextCurator` (L3)
+- `CoordinateObservabilityOperationsAgent` (L3)
+- `DAGManager` (L3)
+- `DAGMutator` (L3)
+- `DagEngineAgent` (L3)
+- `DagExecutor` (L3)
+- `DagManager` (L3)
+- `DagRuntimeInspector` (L3)
+- `DeadlockDetector` (L3)
+- `DispatchOutreachToolsAgent` (L3)
+- `DispatchResumeToolsAgent` (L3)
+- `HallucinationDetector` (L3)
+- `HardenedWorkflowOrchestrator` (L3)
+- `HierarchyEnforcerAgent` (L3)
+- `IOrchestrator` (L3)
+- `L3SubatomicTestingMixin` (L3)
+- `McpRouter` (L3)
+- `MemoryLeakDetector` (L3)
+- `MetaLearningAgent` (L3)
+- `MetricsAgent` (L3)
+- `MockAgent` (L3)
+- `ModelRouter` (L3)
+- `NervousSystemAgent` (L3)
+- `NervousSystemPhaseOrchestrator` (L3)
+- `PredictiveCostAuditorAgent` (L3)
+- `ReportingAgent` (L3)
+- `ResumeOrchestrator` (L3)
+- `SelfRecoveringOrchestrator` (L3)
+- `SemanticGatekeeperAgent` (L3)
+- `SemanticTerritoryMapperAgent` (L3)
+- `SemanticTerritoryMapperAgent` (L3)
+- `SignatureVerifierAgent` (L3)
+- `SovereignMcpRouter` (L3)
+- `SovereignRagOrchestrator` (L3)
+- `SubatomicHop` (L3)
+- `SubatomicHopAgent` (L3)
+- `SubatomicOrchestrator` (L3)
+- `TaskMonitor` (L3)
+- `TelemetryAgent` (L3)
+- `TerritoryHealerAgent` (L3)
 - `TerritoryHealerAgent` (L3)
 - `TestPilotAgent` (L3)
+- `TokenBudgetInspector` (L3)
+- `TracingAgent` (L3)
+- `TrackObservabilityCostAgent` (L3)
+- `WorkflowBlueprint` (L3)
+- `AutonomousCheckpointManagerAgent` (L4)
+- `AutonomousCheckpointManagerAgent` (L4)
+- `AutonomousStateGuardianAgent` (L4)
+- `AutonomousStateGuardianAgent` (L4)
+- `CanonValidator` (L4)
+- `L4SubatomicTestingMixin` (L4)
 - `PineconeSovereignAgent` (L4)
+- `PineconeSovereignAgent` (L4)
+- `RedisSovereignAgent` (L4)
+- `SchemaEvolverAgent` (L4)
+- `SovereignPineconeStoreAgent` (L4)
+- `SubAtomicRegistryAgent` (L4)
+- `AutonomousThreatEvolutionAgent` (L5)
+- `AutonomousThreatEvolutionAgent` (L5)
+- `BaseAgent` (L5)
+- `BiasAuditor` (L5)
+- `BiasDetectorAgent` (L5)
+- `CodeFormatterAgent` (L5)
 - `CodeSSOTEnforcerAgent` (L5)
+- `ComplianceOrchestrator` (L5)
+- `ConstitutionalReviewerAgent` (L5)
+- `DependencyPruningAgent` (L5)
 - `DocstringComplianceAgent` (L5)
+- `DuplicateCodeDetectorAgent` (L5)
+- `FileCleanupAgent` (L5)
+- `FilenameUniquenessGuardianAgent` (L5)
 - `FilesystemAgent` (L5)
-- `GeneratedTest` (L5)
+- `GitHygieneAgent` (L5)
+- `GovernanceAgent` (L5)
 - `GravityEnforcerAgent` (L5)
 - `GravityLeakRepairAgent` (L5)
+- `HallucinationHunterAgent` (L5)
+- `HealValidator` (L5)
 - `HealerAgent` (L5)
+- `HierarchyAgent` (L5)
+- `HierarchyHealer` (L5)
 - `HygieneGuardianAgent` (L5)
-- `ImportUpdater` (L5)
+- `ImportAgent` (L5)
 - `InferenceTypeHintAgent` (L5)
-- `MethodChange` (L5)
+- `InputValidator` (L5)
+- `L5IntegrityGateExecutorAgent` (L5)
+- `LocationAgent` (L5)
+- `MCPGuardianAgent` (L5)
 - `MethodChangeDetector` (L5)
+- `NeuralAutoImmuneAgent` (L5)
+- `PIISanitizerAgent` (L5)
+- `PascalSovereigntyEnforcerAgent` (L5)
+- `PromptInjectionDetectorAgent` (L5)
+- `RedSentinel` (L5)
+- `RedTeamAgent` (L5)
 - `RegressionOracleAgent` (L5)
-- `RegressionTestGenerator` (L5)
-- `RegressionTestRunner` (L5)
+- `SafetyInspector` (L5)
+- `SelfUpdatingSafetyEngineAgent` (L5)
 - `TerritoryHealerAgent` (L5)
+- `TestCoverageGuardianAgent` (L5)
+- `TestSovereigntyAgent` (L5)
 - `TypeHintEnforcementAgent` (L5)
 - `TypeHintFixer` (L5)
-- `AgentFactory` (apps_rg)
-- `TestResilientMutatorWithAgents` (apps_rg)
-- `TestHealerAgentASTDiff` (tests)
-- `TestHealerAgentIntegration` (tests)
-- `TestHealerAgentPerformance` (tests)
-- `test_agentic_core_model` (tests)
-- `test_multi_agent_coordination` (tests)
-- `AgentInfo` (misc)
-- `AgentInfo` (misc)
-- `ContextAwareValidator` (misc)
-- `NamingAgent` (misc)
-- `NamingNormalizationAgent` (misc)
-- `NonConformingAgentFinder` (misc)
-- `PlacementResult` (misc)
+- `UnusedCleanupAgent` (L5)
+- `OutreachPhase5Orchestrator` (apps_lic)
+- `BaseTaskExecutor` (apps_shared)
+- `StateValidator` (apps_shared)
 
 ---
 
@@ -635,46 +918,31 @@ Runs before any v
 
 ### L0 Layer Examples
 
-**L0SovereignSeverity**
-- Path: `agentic_core\L0_maintenance\bases\MaintenanceBaseAgent.py`
+**AgentCapability**
+- Path: `agentic_core\L0_maintenance\scripts\runtime_registry_agent_capabilities.py`
+- Inheritance: None
+- Key Methods: None
+- Healing: No
+- Testing: None
+- Description: Defines the capability of an agent role.
+
+**AgentRegistry**
+- Path: `agentic_core\L0_maintenance\scripts\runtime_registry_agent_capabilities.py`
+- Inheritance: None
+- Key Methods: __init__, get_capability, register_agent, get_agent_spec, list_roles, run
+- Healing: No
+- Testing: None
+- Description: Registry for managing agent capabilities and specifications.
+
+**AgentRole**
+- Path: `agentic_core\L0_maintenance\scripts\runtime_registry_agent_capabilities.py`
 - Inheritance: Enum
 - Key Methods: None
 - Healing: No
-- Testing: Self
-- Description: Sovereign event Severity levels for L0 delegation.
-
-**L0DelegationMixin**
-- Path: `agentic_core\L0_maintenance\bases\MaintenanceBaseAgent.py`
-- Inheritance: None
-- Key Methods: None
-- Healing: No
-- Testing: Self
-- Description: Mixin providing L0 delegation-only capabilities.
-
-L0 Table Decision:
-- Basic Sel
-
-**MaintenanceBaseAgent**
-- Path: `agentic_core\L0_maintenance\bases\MaintenanceBaseAgent.py`
-- Inheritance: CanonBaseAgent, L0DelegationMixin
-- Key Methods: None
-- Healing: No
-- Testing: Self
-- Description: Base class for L0 Maintenance agents with delegation-only testing.
-
-L0 Table Dec
+- Testing: None
+- Description: Functional roles for agents in the system.
 
 ### L1 Layer Examples
-
-**CanonValidator**
-- Path: `agentic_core\L1_cognition\thought_engine\agent_logic.py`
-- Inheritance: None
-- Key Methods: __init__, _extract_ast_error_message, _validate_ast_match, _process_l1_match, _process_l2_match
-- Healing: No
-- Testing: None
-- Description: The L5 Meta-Learner that validates code against the Canon.
-
-This class implement
 
 **AgentCapability**
 - Path: `agentic_core\L1_cognition\thought_engine\agent_registry_enums.py`
@@ -684,146 +952,159 @@ This class implement
 - Testing: None
 - Description: Standard agent capabilities.
 
-**AgentStatus**
-- Path: `agentic_core\L1_cognition\thought_engine\agent_registry_enums.py`
-- Inheritance: Enum
+**AgentContract**
+- Path: `agentic_core\schemas\models\core_contracts.py`
+- Inheritance: BaseModel
 - Key Methods: None
 - Healing: No
 - Testing: None
-- Description: Agent operational status.
+- Description: Contract specification for an agent.
+
+**AgentIdentity**
+- Path: `agentic_core\L1_cognition\thought_engine\spiffe_manager_types.py`
+- Inheritance: None
+- Key Methods: is_expired, is_valid, to_dict, get_namespace, get_agent_name
+- Healing: No
+- Testing: None
+- Description: Cryptographically-verified agent identity.
+
+    Based on SPIFFE ID format: spiffe://trust-domain/pat
 
 ### L2 Layer Examples
 
-**SubAtomicAgent**
-- Path: `agentic_core\L2_execution\tool_registry\base.py`
+**AgentPlan**
+- Path: `agentic_core\runtime\shared_runtime\subatomic_hop_BROKEN.py`
+- Inheritance: BaseModel
+- Key Methods: None
+- Healing: No
+- Testing: None
+
+**AutonomyMixin**
+- Path: `agentic_core\patterns\agent_roles\autonomy_mixin.py`
 - Inheritance: None
-- Key Methods: __init__, can_run
+- Key Methods: __init__, should_act_proactively, _system_healthy_for_proactivity, _detect_action_opportunity, proactive_execute
 - Healing: No
 - Testing: None
-- Description: Base class for all validation agents with async support.
 
-**CanonBaseAgent**
-- Path: `agentic_core\L2_execution\tool_registry\base_agents_canon_base_agent_impl.py`
-- Inheritance: CanonBaseAgentInterface
-- Key Methods: __init__, validate_state
+**BiasAuditor**
+- Path: `agentic_core\runtime\shared_runtime\bias_auditor.py`
+- Inheritance: None
+- Key Methods: __init__, audit, check_bias_type
 - Healing: No
 - Testing: None
-- Description: Implementation of canon agent base — lives in Execution context.
-
-This class pro
-
-**CanonBaseAgent**
-- Path: `agentic_core\L2_execution\tool_registry\canon_base_agent_impl.py`
-- Inheritance: CanonBaseAgentInterface
-- Key Methods: __init__, validate_state
-- Healing: No
-- Testing: None
-- Description: Implementation of canon agent base — lives in Execution context.
-
-This class pro
+- Description: Audits text for potential bias.
 
 ### L3 Layer Examples
 
-**MetaLearningAgent**
-- Path: `agentic_core\L3_orchestration\meta_learning\MetaLearningAgent.py`
-- Inheritance: AutonomyMixin, AdaptiveExecutionMixin, SelfDiagnosisMixin
-- Key Methods: __init__
-- Healing: No
-- Testing: None
-- Description: Sovereign meta-learning agent that evolves system behavior over time.
-Now harden
-
-**AgentRegistryValidatorAgent**
-- Path: `agentic_core\L3_orchestration\workflow_engines\AgentRegistryValidatorAgent.py`
-- Inheritance: None
-- Key Methods: __init__, validate_agent_exists, validate_registry, run_validation
-- Healing: No
-- Testing: None
-- Description: L3 Orchestration: Agent Registry Validation
-Ensures all agents defined in CANON_
-
 **AgentFactory**
 - Path: `agentic_core\L3_orchestration\workflow_engines\agent_factory.py`
-- Inheritance: None
-- Key Methods: create_healer_agent
-- Healing: No
+- Inheritance: HealerMixin
+- Key Methods: _create_impl, create_system_architect, create_healer_agent, create_generative_guard, create_code_janitor, create_dependency_sentinel, create_safety_inspector, create_pattern_enforcer
+- Healing: Yes
 - Testing: None
-- Description: Centralized factory for sovereign agent injection.
+- Description: 
+    Centralized factory for sovereign agent injection.
+    
+    Phase 9A DDD Compliance:
+    - Only
 
-Phase 9A DDD Compliance:
-- O
+**AgentGym**
+- Path: `agentic_core\L3_orchestration\workflow_engines\agent_gym_impl.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, register_scenario, run_benchmark, _execute_test_cases, _create_benchmark_result, _log_benchmark_start, run_training_session, get_scenario, list_scenarios, get_session_history
+- Healing: Yes
+- Testing: None
+- Description: Agent Gym for self-evolution and benchmarking.
+
+    Features:
+    - Offline simulation environment
+ 
+
+**AgentPermissionManager**
+- Path: `agentic_core\L3_orchestration\workflow_engines\agent_permissions_impl.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, grant_permission, revoke_permission, check_permission, list_permissions, _load_default_permissions
+- Healing: Yes
+- Testing: None
+- Description: Manages agent permissions with Control Plane integration.
+
+    Provides:
+    - Identity-based Permis
 
 ### L4 Layer Examples
 
-**L4SovereignSeverity**
-- Path: `agentic_core\L4_state\bases\StateBaseAgent.py`
-- Inheritance: Enum
-- Key Methods: None
+**AtomicBlackboard**
+- Path: `agentic_core\L4_state\validation_context\blackboard.py`
+- Inheritance: MCPHardenedMixin
+- Key Methods: __init__, acquire_lease, release_lease, extend_lease, wait_for_lease, get_health_score, update_health_score, check_regression, revert_file, store_healing_pattern
 - Healing: No
+- Testing: None
+- Description: 
+    Thread-safe blackboard for managing validation state.
+    
+    Features:
+    - Lease-based file
+
+**AutonomousCheckpointManagerAgent**
+- Path: `agentic_core\L4_state\validation_context\AutonomousCheckpointManagerAgent.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, _run_self_tests, _load_checkpoints, _save_checkpoint_index, _calculate_file_hash, _generate_checkpoint_id, create_checkpoint, auto_checkpoint_if_needed, verify_checkpoint, rollback_to_checkpoint
+- Healing: Yes
 - Testing: Self
-- Description: Sovereign event Severity levels for L4 subatomic testing.
+- Description: 
+    Manages state checkpoints with automatic recovery capabilities.
+    
+    Features:
+    - Automa
 
-**L4SubatomicTestingMixin**
-- Path: `agentic_core\L4_state\bases\StateBaseAgent.py`
-- Inheritance: None
-- Key Methods: _run_state_sandbox_tests
-- Healing: No
+**AutonomousCheckpointManagerAgent**
+- Path: `agentic_core\L4_state\validation_context\autonomous_checkpoint_manager.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, _run_self_tests, _load_checkpoints, _save_checkpoint_index, _calculate_file_hash, _generate_checkpoint_id, create_checkpoint, auto_checkpoint_if_needed, verify_checkpoint, rollback_to_checkpoint
+- Healing: Yes
 - Testing: Self
-- Description: Mixin providing L4 subatomic testing capabilities.
-
-L4 Table Decision:
-- Basic S
-
-**StateBaseAgent**
-- Path: `agentic_core\L4_state\bases\StateBaseAgent.py`
-- Inheritance: CanonBaseAgent, L4SubatomicTestingMixin
-- Key Methods: None
-- Healing: No
-- Testing: Self
-- Description: Base class for L4 State agents with subatomic testing.
-
-L4 Table Decision:
-- Bas
+- Description: 
+    Manages state checkpoints with automatic recovery capabilities.
+    
+    Features:
+    - Automa
 
 ### L5 Layer Examples
 
-**MCPGuardianAgent**
-- Path: `agentic_core\L5_safety\agents\MCPGuardianAgent.py`
-- Inheritance: None
-- Key Methods: __init__, _emit_critique
-- Healing: No
-- Testing: Self
-- Description: L5 Safety Guardian for MCP integration compliance.
-
-Validates that all MCP integ
-
-**GravityLeakRepairAgent**
-- Path: `agentic_core\L5_safety\gravity\GravityLeakRepairAgent.py`
-- Inheritance: None
-- Key Methods: __init__
+**AutonomousThreatEvolutionAgent**
+- Path: `agentic_core\L5_safety\guardrails\AutonomousThreatEvolutionAgent.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, run, threat_evolution_loop, _perform_evolution_cycle, _load_recent_detections, _analyze_patterns, stop, get_status, set_evolution_interval, set_confidence_threshold
 - Healing: Yes
 - Testing: None
-- Description: Converts forbidden static imports from higher layers (L4/L5) into dynamic import
+- Description: L5: Self-healing security agent
 
-**ImportValidationVisitor**
-- Path: `agentic_core\L5_safety\gravity\ImportAgent.py`
-- Inheritance: NodeVisitor
-- Key Methods: __init__
-- Healing: No
+**AutonomousThreatEvolutionAgent**
+- Path: `agentic_core\L5_safety\guardrails\autonomous_threat_evolution.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, run, threat_evolution_loop, _perform_evolution_cycle, _load_recent_detections, _analyze_patterns, stop, get_status, set_evolution_interval, set_confidence_threshold
+- Healing: Yes
 - Testing: None
-- Description: [SUPREME COURT GATEKEEPER]
-Structural visitor to identify imported vs used modul
+- Description: L5: Self-healing security agent
+
+**BaseAgent**
+- Path: `agentic_core\L5_safety\guardrails\campaign_guardrails.py`
+- Inheritance: HealerMixin
+- Key Methods: __init__, log_info
+- Healing: Yes
+- Testing: None
+- Description: Stub for BaseAgent - TODO: Replace with sovereign equivalent
 
 ---
 
 ## DISCOVERY VALIDATION
 
 - **Expected agents**: 63+ core + apps
-- **Discovered agents**: 401
-- **Core agents (L0-L5)**: 240
-- **Apps agents**: 66
-- **Test agents**: 42
-- **Misc agents**: 53
+- **Discovered agents**: 356
+- **Core agents (L0-L5)**: 242
+- **Apps agents**: 85
+- **Test agents**: 19
+- **Misc agents**: 10
 
 **VALIDATION: PASSED** - Discovery exceeds expected count with zero-loss scanning.
 
