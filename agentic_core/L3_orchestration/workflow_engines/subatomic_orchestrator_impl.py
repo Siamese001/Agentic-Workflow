@@ -64,7 +64,7 @@ def get_agent_registry() -> AgentRegistry:
     return AgentRegistry()
 
 # NAMING FIXED: DAGManager → DagManager
-class DagManager:
+class DagManager(HealerMixin):
     """Mock DAGManager for type hinting."""
     def __init__(self):
         self.node_registry = {}
@@ -91,7 +91,7 @@ class DagManager:
 
 
 # NAMING FIXED: SubatomicHop → SubatomicHop
-class SubatomicHop:
+class SubatomicHop(HealerMixin):
     """Mock SubatomicHop for type hinting."""
     def __init__(self, role, hop_function, CONTEXT, enable_prompt_injection):
         self.config = type('obj', (object,), {'hop_id': role.value})()

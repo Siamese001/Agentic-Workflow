@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin",
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,9 +239,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -270,9 +270,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -372,9 +372,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin",
+      "L0DelegationTestingMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3326,6 +3326,30 @@
     "mcp_hardened": false
   },
   {
+    "class_name": "DagManager",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "add_node",
+      "create_mutation_request",
+      "request_mutation"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 350,
+    "class_count": 9,
+    "description": "Mock DAGManager for type hinting.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "DagRuntimeInspector",
     "path": "agentic_core\\observability\\metrics\\dag_runtime_inspector.py",
     "layer": "L3",
@@ -3612,9 +3636,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -4075,6 +4099,27 @@
     "loc": 107,
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "SubatomicHop",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 350,
+    "class_count": 9,
+    "description": "Mock SubatomicHop for type hinting.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -4925,8 +4970,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run"
@@ -5028,8 +5073,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
@@ -5227,8 +5272,8 @@
     "layer": "L5",
     "inheritance": [
       "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5258,8 +5303,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "CachedSafetyShield"
+      "CachedSafetyShield",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5660,10 +5705,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5715,8 +5760,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run",
@@ -5768,8 +5813,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
