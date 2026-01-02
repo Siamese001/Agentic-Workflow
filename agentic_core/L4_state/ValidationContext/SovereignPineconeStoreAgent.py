@@ -8,6 +8,7 @@ while routing all operations through the Sovereign MCP architecture.
 """
 import logging
 from typing import List, Optional, Any, Dict
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -57,6 +58,23 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
         result: Any = await self.McpClient.search(query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get('rerank', True))
         matches: Any = result.get('matches', []) if isinstance(result, dict) else []
         return matches
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L4 state agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L4 state - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
     async def add_texts(self, texts: List[str], metadatas: Optional[List[dict]]=None, ids: Optional[List[str]]=None) -> List[str]:
         """Legacy adapter for adding documents."""

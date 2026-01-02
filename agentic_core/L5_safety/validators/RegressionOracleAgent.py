@@ -85,6 +85,7 @@ class GeneratedTest:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class MethodChangeDetector(HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
@@ -430,6 +431,23 @@ class RegressionOracleAgent(SubAtomicAgent):
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f'REGRESSION_CHECK_PASS:{file_path}:{method_name}')
             Logger.info(f'   [OK] Regression check passed for {method_name}')
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
     def post_heal_validation(self, generated_tests: List[GeneratedTest], dry_run: bool = True) -> Dict[str, Any]:
         """

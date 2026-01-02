@@ -11,7 +11,8 @@ import ast
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-from agentic_core.utils.core_extensions.timeout_decorator import timeout, Any
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # Tree-sitter for AST fingerprinting
 try:

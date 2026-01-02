@@ -13,6 +13,7 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 from enum import Enum
@@ -225,3 +226,24 @@ class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
         print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
+def create_test_sovereignty(ctx=None) -> Any:
+    """Brief description of functionality and purpose."""
+    return TestSovereigntyAgent(ctx)

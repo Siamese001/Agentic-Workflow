@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -232,7 +233,7 @@ async def scan_file_for_vulnerabilities(file_path: str) -> Dict[str, Any]:
     Scan a file for security vulnerabilities using hostile inputs.
 
     Args:
-        file_path: Path to the file to scan
+        file_path: Path to Python file to scan
 
     Returns:
         Scan results
