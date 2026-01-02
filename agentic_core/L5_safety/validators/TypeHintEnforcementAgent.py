@@ -76,8 +76,8 @@ class TypeHintEnforcementAgent(HealerMixin):
                         self.__class__.__name__,
                         key_id=18,  # Core Laws / Safety category
                         success=True,
-                        msg=message,
                     )
+                    print(f"   [✓] {self.ctx.agent_name} COMPLETE: Normalized {len(files)} files.")
                     return {"healed": True, "details": message}
 
             return {"healed": False}

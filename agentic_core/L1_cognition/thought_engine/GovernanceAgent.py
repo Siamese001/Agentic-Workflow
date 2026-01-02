@@ -789,6 +789,6 @@ def create_architecture_governor(root_dir: str=None) -> GovernanceAgent:
     """Create an architecture governor instance."""
     return GovernanceAgent(root_dir)
 
-def get_governance_agent(project_root: Path) -> GovernanceAgent:
+def get_governance_agent(project_root: Path, enforcement_mode: str = "audit") -> GovernanceAgent:
     """Factory function to get governance agent instance."""
-    return GovernanceAgent(project_root=project_root)
+    return GovernanceAgent(project_root, enforcement_mode)

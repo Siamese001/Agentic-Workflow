@@ -204,3 +204,7 @@ def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTI
         FallbackManager instance
     """
     return FallbackManager(strategy=strategy)
+
+def get_fallback_manager() -> FallbackManager:
+    """Factory function to get fallback manager instance."""
+    return FallbackManager()

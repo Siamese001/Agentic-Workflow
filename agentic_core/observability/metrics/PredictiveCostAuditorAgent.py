@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -293,3 +294,20 @@ def get_cost_auditor(ctx: Any) -> PredictiveCostAuditor:
     if _cost_auditor is None:
         _cost_auditor = PredictiveCostAuditor(ctx)
     return _cost_auditor
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """Observability metrics - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "PredictiveCostAuditor"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] Observability metrics - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)

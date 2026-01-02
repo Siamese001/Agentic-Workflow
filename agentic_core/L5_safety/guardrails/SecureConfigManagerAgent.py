@@ -462,9 +462,9 @@ def get_encryption_key(key_name: str) -> Optional[str]:
     """Get an encryption key from the default manager.
     
     Args:
-        key_name: Name of the key
+        key_name: Name of the encryption key
         
     Returns:
-        Encryption key if found
+        The encryption key or None
     """
     return get_config_manager().get_key(key_name)

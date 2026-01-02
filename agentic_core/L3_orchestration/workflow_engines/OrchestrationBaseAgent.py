@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
 

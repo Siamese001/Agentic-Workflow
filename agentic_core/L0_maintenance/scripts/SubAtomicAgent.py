@@ -7,6 +7,7 @@ import ast
 import os
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 if TYPE_CHECKING:
     from agentic_core.types import ValidationContext
 

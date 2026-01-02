@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 import logging
 from datetime import datetime
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Sovereign Hardening Mixins – Phase 33
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
@@ -232,3 +233,20 @@ class HealingOrchestrator(MCPHardenedMixin, HealerMixin, AutonomyMixin,
 
         print(f"\n   [L0 HEALING] Initiating transactional healing for {len(fixes)} fixes...")
         await self.apply_fixes_transactionally(fixes)
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L0 maintenance agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L0 maintenance - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)

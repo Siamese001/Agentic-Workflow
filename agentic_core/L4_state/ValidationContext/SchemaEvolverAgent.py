@@ -282,11 +282,29 @@ class SchemaEvolverAgent(SubAtomicAgent):
         """Get all schemas used by a file."""
         return self.registry.reverse_deps.get(file_path, set())
 
-    def generate_drift_report(self) -> str:
-        """Generate schema drift report."""
-        lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum((len(deps) for deps in self.registry.dependencies.values()))}', '', 'Schema Usage:']
-        usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
-        usage_counts.sort(key=lambda x: x[1], reverse=True)
+def generate_drift_report(self) -> str:
+    """Generate schema drift report."""
+    lines: Any = ['🛡️  SCHEMA DRIFT REPORT', '=' * 80, f'Total Schemas: {len(self.registry.schemas)}', f'Total Dependencies: {sum((len(deps) for deps in self.registry.dependencies.values()))}', '', 'Schema Usage:']
+    usage_counts: Any = [(name, len(deps)) for name, deps in self.registry.dependencies.items()]
+    usage_counts.sort(key=lambda x: x[1], reverse=True)
+
+@timeout(300)
+def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L4 state agent - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = self.__class__.__name__
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L4 state - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)
+
 _schema_evolver = None
 
 def get_schema_evolver(ctx: Any) -> SchemaEvolver:

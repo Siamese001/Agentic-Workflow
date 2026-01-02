@@ -9,6 +9,7 @@ Pure orchestration – zero side effects beyond guardian execution.
 from typing import List, Tuple, Dict, Callable, Optional, Any
 from pathlib import Path
 import logging
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # Sovereign Hardening Mixins – Phase 34
 from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
@@ -127,3 +128,20 @@ class GuardianOrchestrator(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     async def get_all_guardian_results(self) -> Dict[str, Tuple[float, List[str]]]:
         """Consolidated execution – used by Sovereign Court. Now uses adaptive execution."""
         return await self.execute()
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L0 maintenance agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L0 maintenance - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)

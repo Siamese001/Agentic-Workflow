@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
 from dotenv import load_dotenv
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.config.blueprint_sovereign.structure_blueprint import ROOT_PROTECTED_FILES
 load_dotenv(Path(__file__).parent.parent.parent / '.env')
 allowed_root_files: Any = ROOT_PROTECTED_FILES
@@ -367,17 +368,156 @@ class ValidationContext:
                 return result_text
             except Exception as e:
                 print(f'   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}')
-                self.mutation_stats['total'] += 1
-                if '429' in str(e):
-                    await asyncio.sleep(2 ** attempt)
-        return current_code
 
-    def _clean_llm_code(self, raw_code: str) -> str:
-        """Extracts code from Chain-of-Thought responses."""
-        raw_code = re.sub('<reasoning>.*?</reasoning>', '', raw_code, flags=re.DOTALL)
-        code_match = re.search('```(?:python)?\\n(.*?)```', raw_code, re.DOTALL)
-        if code_match:
-            return code_match.group(1).strip()
-        if raw_code.strip().startswith('```'):
-            return raw_code.strip().strip('`').replace('python', '', 1).strip()
-        return raw_code.strip()
+def inject_instruction(self, source_agent: str, instruction: str) -> Any:
+    """Add a guiding hint to the blackboard for downstream agents."""
+    self.instructions.append(f'[{source_agent}] {instruction}')
+
+def refresh_graph(self) -> Any:
+    """Rebuilds graph after mutations."""
+    self.code_graph.build(self.python_files)
+
+def set_current_agent(self, agent_name: str) -> Any:
+    """Sets the current agent for broadcast context."""
+    self._current_agent = agent_name
+
+async def broadcast(self, event: dict) -> Any:
+    """L5 Live Reasoning Stream: Broadcast event to WebSocket clients."""
+    if not self.websocket_clients:
+        return
+    message: Any = json.dumps(event)
+    disconnected: Any = set()
+    for ws in list(self.websocket_clients):
+        try:
+            await ws.send(message)
+        except Exception:
+            disconnected.add(ws)
+    self.websocket_clients -= disconnected
+
+def calculate_file_hash(self, file_path: str) -> str:
+    """Calculate SHA-256 hash of a file."""
+    try:
+        with open(file_path, 'rb') as f:
+            return hashlib.sha256(f.read()).hexdigest()
+    except Exception:
+        return ''
+
+def should_skip_file(self, file_path: str) -> bool:
+    """Check if file should be skipped based on memory."""
+    if file_path in self.skip_files:
+        return True
+    current_hash: Any = self.calculate_file_hash(file_path)
+    if not current_hash:
+        return False
+    saved_hash: Any = self.file_hashes.get(file_path)
+    if saved_hash and saved_hash == current_hash:
+        return self.results.get(self._get_file_key(file_path), {}).get('passed', False)
+    return False
+
+def _get_file_key(self, file_path: str) -> int:
+    """Get the validation key associated with a file."""
+    return hash(file_path) % 50
+
+def _path_to_module(self, file_path: str) -> str:
+    """Convert file path to module name."""
+    return file_path.replace(os.sep, '.').replace('.py', '')
+
+def write_compliant_file(self, path: str, content: str, dry_run: bool=False) -> bool:
+    """Enforces Laws and Syntax Safety before writing to disk."""
+    clean_content: Any = content
+    if '```' in clean_content:
+        clean_content: Any = re.sub('```[a-z]*\\n', '', clean_content)
+        clean_content: Any = clean_content.replace('```', '')
+    clean_content: Any = clean_content.strip()
+    if path.endswith('.py'):
+        try:
+            ast.parse(clean_content)
+        except SyntaxError as e:
+            print(f'   BLOCKED WRITE: Invalid syntax for {path}: {e}')
+            return False
+    normalized_path: Any = os.path.normpath(path)
+    parts: Any = Path(normalized_path).parts
+    if len(parts) == 1 and parts[0] not in ALLOWED_ROOT_FILES:
+        print(f'   BLOCKED: {path} is an illegal root file.')
+        return False
+    if dry_run:
+        print(f'   [GOVERNOR] Dry run: File would be written compliantly')
+        return True
+    if os.path.exists(path):
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                self.file_backups[path] = f.read()
+        except Exception:
+            pass
+    try:
+        os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(clean_content)
+        self.modified_files.add(path)
+        return True
+    except Exception as e:
+        print(f'   Write Failed: {e}')
+        return False
+
+async def recall_memory(self, query: str, top_k: int=3) -> List[Dict]:
+    """Recall similar memories from embeddings (stub - returns empty if no Pinecone)."""
+    return []
+
+async def upsert_embedding(self, key: str, text: str, metadata: dict) -> Any:
+    """Learns from success by saving to Deep Brain (stub if no Pinecone)."""
+    if not self.pinecone_available or not self.intelligence_enabled:
+        return
+
+async def resilient_mutation(self, agent_name: str, Task: str, code: str='', file_path: str=None, *, max_attempts: int=4, diff_mode: bool=False, min_confidence: float=0.7) -> str:
+    """Level 6 Mutation with retry logic. Returns original code if intelligence disabled."""
+    if not self.intelligence_enabled:
+        print(f'   [{agent_name}] Intelligence disabled - skipping mutation')
+        return code
+    current_code: Any = code or ''
+    for attempt in range(1, max_attempts + 1):
+        try:
+            if not self.budget.check_budget():
+                return current_code
+            prompt: Any = f'{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {Task}\nContext:\n{current_code[:4000]}'
+            response: Any = await asyncio.to_thread(self._client.models.generate_content, model=self.model_id, contents=[prompt])
+            self.budget.track(prompt, response.text)
+            result_text: Any = self._clean_llm_code(response.text)
+            if result_text.strip() and (file_path and file_path.endswith('.py')):
+                ast.parse(result_text)
+            self.mutation_stats['success'] += 1
+            self.mutation_stats['total'] += 1
+            print(f'   [{agent_name}] Success (Attempt {attempt})')
+            return result_text
+        except Exception as e:
+            print(f'   [{agent_name}] Attempt {attempt} Error: {e}')
+            self.mutation_stats['total'] += 1
+            if '429' in str(e):
+                await asyncio.sleep(2 ** attempt)
+    return current_code
+
+def _clean_llm_code(self, raw_code: str) -> str:
+    """Extracts code from Chain-of-Thought responses."""
+    raw_code = re.sub('<reasoning>.*?</reasoning>', '', raw_code, flags=re.DOTALL)
+    code_match = re.search('```(?:python)?\\n(.*?)```', raw_code, re.DOTALL)
+    if code_match:
+        return code_match.group(1).strip()
+    if raw_code.strip().startswith('```'):
+        return raw_code.strip().strip('`').replace('python', '', 1).strip()
+    return raw_code.strip()
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[Set] = None) -> Dict[str, int]:
+    """L0 maintenance - operational only."""
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "BudgetManager"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L0 maintenance - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)

@@ -22,6 +22,7 @@ Logger: Any = logging.getLogger(__name__)
 ControlPlane: Any = None
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class AgentPermissionManager(HealerMixin):
     """Manages agent permissions with Control Plane integration.

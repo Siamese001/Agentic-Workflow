@@ -23,6 +23,7 @@ except ImportError:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class CodeDeduplicationAgent(HealerMixin):
     """
@@ -378,11 +379,9 @@ class CodeDeduplicationAgent(HealerMixin):
                 lines = content.splitlines(keepends=True)
                 new_lines = [line for i, line in enumerate(lines, 1) if i not in lines_to_remove]
                 file_path.write_text(''.join(new_lines), encoding='utf-8')
-                results['pruned'] = True
+                results['applied'] = True
             except Exception as e:
                 results['error'] = str(e)
-                
-        return results
 
 
 def get_code_deduplication_agent() -> Any:

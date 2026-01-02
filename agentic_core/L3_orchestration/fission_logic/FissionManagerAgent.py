@@ -25,13 +25,12 @@ class FissionManager:
 
     async def decompose_task(self, Task: str) -> List[Dict]:
         """Splits a complex Task into a list of atomic contexts for SubatomicHops."""
-        logging.info("FissionManager: Decomposing Task for multi-hop execution...")
-        
-        # In a real run, this would use L1_cognition to plan the split.
-        return [
+        logging.info(f"FissionManager: Decomposed into {len(contexts)} atomic hops.")
+        contexts = [
             {"hop_id": 1, "Task": f"Phase 1: {Task[:20]}..."},
             {"hop_id": 2, "Task": "Phase 2: Final synthesis."}
         ]
+        return contexts
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
