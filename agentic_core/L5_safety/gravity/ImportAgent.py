@@ -48,7 +48,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L4_state.validation_context.l4_subatomic_testing_mixin import L4SubatomicTestingMixin
 from agentic_core.prompt_governance.version_registry.PromptRegistry import registers_prompt
 # [PHASE 20] DEPRECATION: void_compliance_helpers.py removed - inline implementation
