@@ -15,8 +15,10 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
-class GitAgent(HealerMixin, MCPHardenedMixin):
+class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Agent for managing git operations and remote synchronization.
 
@@ -34,6 +36,7 @@ class GitAgent(HealerMixin, MCPHardenedMixin):
         Args:
             repo_root: Root directory of the git repository
         """
+        super().__init__()
         self.repo_root = repo_root or Path.cwd()
         self.remote_repo = os.getenv('CANON_REMOTE_REPO')
         self.git_cmd = ['git', '-C', str(self.repo_root)]
@@ -42,6 +45,7 @@ class GitAgent(HealerMixin, MCPHardenedMixin):
             self.enabled = False
         else:
             self.enabled = True
+            self._mcp_audit('init')
             Logger.info(f'GitAgent initialized for {self.repo_root}')
 
     def _run_self_tests(self) -> bool:
