@@ -305,6 +305,23 @@ class FissionManager(HealerMixin):
         """Alias for heal() for validator compatibility."""
         return self.heal(ctx)
 
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L3 orchestration agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L3 orchestration - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 
 def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManager:
     """
@@ -317,4 +334,8 @@ def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManager:
         FissionManager instance
     """
     return FissionManager(gemini_client=gemini_client)
-'\nfrom agentic_core.FissionManager import FissionManager\nfrom agentic_core.tui_dashboard import AgenticTUI\n\n# Initialize managers\nfission_manager = FissionManager()\ntui = AgenticTUI()\n\n# Inside healing loop:\ntrigger, reason = FissionManager.should_trigger_fission(\n    file_path=target_file,\n    current_round=round_count,\n    last_error=error_msg,\n    lines_deleted=deleted_lines\n)\n\nif trigger:\n    # Update TUI to show fission mode\n    tui.update_state(\n        file=target_file,\n        key="FISSION",\n        round_num=round_count,\n        tokens=token_count,\n        log_msg=f"[ALERT] {reason}"\n    )\n    \n    # Execute fission\n    with open(target_file, \'r\') as f:\n        content = f.read()\n    \n    result = await FissionManager.execute_fission(\n        file_path=target_file,\n        content=content,\n        reason=reason\n    )\n    \n    if result.success:\n        # Write decomposed files\n        FissionManager.write_decomposed_files(result)\n        \n        # Update TUI\n        tui.update_state(\n            file=target_file,\n            key="Key 42",\n            round_num=round_count,\n            tokens=token_count,\n            log_msg=f"[OK] Key 42 Resolved: Complexity distributed"\n        )\n'
+
+
+def get_workflow_fission_manager() -> WorkflowFissionManagerAgent:
+    """Factory function to get workflow fission manager instance."""
+    return WorkflowFissionManagerAgent()

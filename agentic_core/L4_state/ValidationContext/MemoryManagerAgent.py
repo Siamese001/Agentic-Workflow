@@ -305,6 +305,24 @@ class MemoryManager(HealerMixin):
         backup_file = file_path.with_suffix('.bak')
         if backup_file.exists():
             backup_file.unlink()
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L4 state agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L4 state - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
 _memory_manager = None
 
 def get_memory_manager(base_dir: str=None) -> MemoryManager:
@@ -312,7 +330,7 @@ def get_memory_manager(base_dir: str=None) -> MemoryManager:
     Get or create global memory manager instance.
     
     Args:
-        base_dir: Base directory for memory files
+        base_dir: Base directory for memory storage
         
     Returns:
         MemoryManager instance

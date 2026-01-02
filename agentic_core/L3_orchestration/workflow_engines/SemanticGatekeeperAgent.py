@@ -110,13 +110,14 @@ class SemanticGatekeeperAgent(HealerMixin):
     def get_stats(self) -> dict:
         """Get gatekeeper statistics."""
         return {'max_concurrent': self.semaphore._value, 'current_running': self.semaphore._value - self.semaphore._value, 'dead_letter_count': len(self.dead_letter_queue), 'timeout_seconds': self.timeout_seconds}
-_global_gatekeeper: Optional[SemanticGatekeeper] = None
 
-def get_gatekeeper() -> SemanticGatekeeper:
+_global_gatekeeper: Optional[SemanticGatekeeperAgent] = None
+
+def get_gatekeeper() -> SemanticGatekeeperAgent:
     """Get or create the global gatekeeper instance."""
     global _global_gatekeeper
     if _global_gatekeeper is None:
-        _global_gatekeeper = SemanticGatekeeper()
+        _global_gatekeeper = SemanticGatekeeperAgent()
     return _global_gatekeeper
 
 async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:

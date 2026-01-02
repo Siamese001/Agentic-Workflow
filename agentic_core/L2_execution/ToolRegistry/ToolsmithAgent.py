@@ -335,6 +335,7 @@ class ToolsmithAgent(HealerMixin, MCPHardenedMixin):
                         results['errors'].append(f"{filename}: {e}")
                         
         return results
+
 _toolsmith_agent: Optional["ToolsmithAgent"] = None
 
 # Aliases for discovery

@@ -198,7 +198,7 @@ def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTI
     """Factory function to create fallback manager.
 
     Args:
-        strategy: Fallback strategy
+        strategy: Fallback strategy to use
 
     Returns:
         FallbackManager instance

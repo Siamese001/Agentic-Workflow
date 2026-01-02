@@ -743,20 +743,14 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin,
         except Exception as e:
             issues.append(f"Blueprint syntax error: {e}")
         
-        return {
-            "overall_health": "healthy" if not issues else "degraded",
-            "issues": issues
-        }
     
-    async def _execute_standard(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Standard execution mode - full reconciliation scan."""
-        return await self.reconcile_blueprint(auto_apply=False)
+# ===================================================================
+# Mixin Implementations
+# ===================================================================
     
-    async def _execute_conservative(self, ctx: Any, **context: Dict[str, Any]) -> Any:
-        """Conservative mode - minimal scanning."""
-        # Only scan filesystem, skip agent analysis
-        await self._scan_filesystem()
-        return {"mode": "conservative", "filesystem_scanned": True}
+async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
+    """
+    Proactively detect when blueprint needs reconciliation.
     
     async def _execute_minimal(self, ctx: Any, **context: Dict[str, Any]) -> Any:
         """Minimal mode - health check only."""

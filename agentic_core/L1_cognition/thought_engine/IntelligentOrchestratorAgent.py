@@ -7,6 +7,7 @@ Orchestrates all validation agents in dependency order.
 import asyncio
 import re
 from typing import Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
 from agentic_core.canon_agents_pattern import PatternEnforcer, SemanticMapper, UIValidationAgent
 from agentic_core.canon_agents_quality import DocumentationAgent, NamingAgent, SafetyInspector
@@ -102,3 +103,20 @@ class IntelligentOrchestrator(HealerMixin):
         else:
             print(f'\n[!]  Canon incomplete – {failed_checks} keys remain violated.')
             print('   Run again with healing enabled for further convergence.')
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L1 cognition agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L1 cognition - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)

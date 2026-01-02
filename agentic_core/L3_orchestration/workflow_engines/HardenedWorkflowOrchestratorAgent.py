@@ -50,7 +50,29 @@ class HardenedWorkflowOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTes
         results: Any = await self.orchestrator.run_mission(target_path=context.get('target_path'), workflow_id=workflow_id)
         return results
 
-def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> HardenedWorkflowOrchestrator:
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L3 orchestration agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L3 orchestration - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
+
+def get_hardened_workflow_orchestrator() -> HardenedWorkflowOrchestratorAgent:
+    """Factory function to get hardened workflow orchestrator instance."""
+    return HardenedWorkflowOrchestratorAgent()
+
+def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> HardenedWorkflowOrchestratorAgent:
     """Create a hardened orchestrator (thin wrapper to consolidated orchestrator).
 
     Args:
@@ -59,6 +81,6 @@ def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir
         storage_path: Path for atomic state storage (legacy, not used)
 
     Returns:
-        HardenedWorkflowOrchestrator instance
+        HardenedWorkflowOrchestratorAgent instance
     """
-    return HardenedWorkflowOrchestrator(workflow_spec=workflow_spec, run_base_dir=run_base_dir, storage_path=storage_path)
+    return HardenedWorkflowOrchestratorAgent(workflow_spec=workflow_spec, run_base_dir=run_base_dir, storage_path=storage_path)
