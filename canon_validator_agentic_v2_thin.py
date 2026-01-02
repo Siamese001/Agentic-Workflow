@@ -66,6 +66,16 @@ def main():
         action="store_true",
         help="Reset sovereign state before validation"
     )
+    parser.add_argument(
+        "--heal",
+        action="store_true",
+        help="Run autonomous domain healing (dry-run by default)"
+    )
+    parser.add_argument(
+        "--execute-heal",
+        action="store_true",
+        help="Execute heal changes (use with --heal)"
+    )
     args = parser.parse_args()
     
     # Global mission timeout: 30 minutes
@@ -83,6 +93,59 @@ def main():
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
+    
+    # Handle autonomous healing mode (Canon Key 51 - Agent Autonomy Law)
+    if args.heal:
+        print("\n[*] SOVEREIGN HEAL MODE - Autonomous Domain Healing")
+        print("   [LAW] Canon Key 51: All healing via agent.heal_repository() — no external scripts")
+        
+        execute_heal = args.execute_heal
+        mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
+        print(f"   [MODE] {mode_str}")
+        
+        try:
+            # Import autonomous agents
+            from agentic_core.utils.core_extensions.NamingAgent import get_naming_agent
+            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+            
+            # All healing goes through agents directly — no scripts (Canon Key 51)
+            agents = [
+                ("NamingAgent", get_naming_agent(project_root)),
+                ("AutonomyGuardian", get_autonomy_guardian(project_root)),
+                # Add other autonomous agents as they become available:
+                # ("LocationAgent", get_location_agent(project_root)),
+                # ("UniquenessAgent", get_uniqueness_agent(project_root)),
+            ]
+            
+            total_summary = {"agents_run": 0, "total_renamed": 0, "total_errors": 0}
+            
+            for agent_name, agent in agents:
+                print(f"\n   [AGENT] {agent_name}.heal_repository()")
+                try:
+                    result = agent.heal_repository(
+                        dry_run=not execute_heal,
+                        execute=execute_heal,
+                        depth=0,
+                        max_depth=3,
+                        _call_path=None,  # Clean start for each agent
+                    )
+                    total_summary["agents_run"] += 1
+                    total_summary["total_renamed"] += result.get("renamed", 0)
+                    total_summary["total_errors"] += result.get("errors", 0)
+                except Exception as e:
+                    print(f"   [!] {agent_name} failed: {e}")
+                    total_summary["total_errors"] += 1
+            
+            print(f"\n[SOVEREIGN HEAL COMPLETE]")
+            print(f"   Agents run: {total_summary['agents_run']}")
+            print(f"   Total renamed: {total_summary['total_renamed']}")
+            print(f"   Total errors: {total_summary['total_errors']}")
+            
+        except Exception as e:
+            print(f"   [!] Heal mode failed: {e}")
+            traceback.print_exc()
+        
+        return  # Exit after heal mode
     
     try:
         async def timed_mission():

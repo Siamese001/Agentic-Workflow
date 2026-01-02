@@ -11,6 +11,7 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveExecutionMixin
 from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 
 class GovernanceAgent(
