@@ -12,17 +12,21 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class SovereignGitKrakenMcpClient:
+class SovereignGitKrakenMcpClient(MCPHardenedMixin, HealerMixin):
     """Official GitKraken MCP client for sovereign version control operations."""
 
     def __init__(self, role: str='governance_git'):
+        super().__init__()
         if not config.GITKRAKEN_MCP_ENABLED:
             raise ValueError('GitKraken MCP disabled in sovereign config')
         from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
+        self._mcp_audit('init')
         Logger.info('[L0 GITKRAKEN] Sovereign GitKraken MCP client initialized')
 
     async def create_healing_commit(self, files: List[str], message: str) -> Dict[str, Any]:

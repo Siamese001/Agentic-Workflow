@@ -189,8 +189,10 @@ class DAGConfig(BaseModel):
     mutation_history_size: int = Field(default=1000, ge=100)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
-class DAGMutator(HealerMixin):
+class DAGMutator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Handles the actual graph mutations."""
     
     def __init__(self, config: DAGConfig):
@@ -466,7 +468,7 @@ class DAGMutator(HealerMixin):
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class DAGManager(HealerMixin):
+class DAGManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Manages the dynamic DAG with mutation capabilities."""
     
     def __init__(self, config: Optional[DAGConfig] = None):
