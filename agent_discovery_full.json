@@ -165,10 +165,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "L0DelegationTestingMixin"
+      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -239,8 +239,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -270,8 +270,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -372,8 +372,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -423,10 +423,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "L0DelegationTestingMixin"
+      "AdaptiveExecutionMixin",
+      "L0DelegationTestingMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -862,6 +862,27 @@
   },
   {
     "class_name": "DummyAgentCard",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\metacognition_hypothesis_generation.py",
+    "layer": "L1",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 27,
+    "class_count": 2,
+    "description": "TODO: Add docstring.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "DummyRag",
     "path": "agentic_core\\L1_cognition\\thought_engine\\metacognition_hypothesis_generation.py",
     "layer": "L1",
     "inheritance": [
@@ -3005,7 +3026,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 349,
+    "loc": 350,
     "class_count": 9,
     "description": "Mock AgentRegistry for type hinting.",
     "pascal_compliant": true,
@@ -3050,7 +3071,7 @@
     "has_healing": false,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 349,
+    "loc": 350,
     "class_count": 9,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
@@ -3591,8 +3612,8 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -4111,7 +4132,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 349,
+    "loc": 350,
     "class_count": 9,
     "description": "Implementation for SubatomicOrchestrator.",
     "pascal_compliant": true,
@@ -4392,6 +4413,27 @@
     "loc": 27,
     "class_count": 2,
     "description": "function class for standard domain.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "WorkflowBlueprint",
+    "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 350,
+    "class_count": 9,
+    "description": "Mock WorkflowBlueprint for type hinting.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },
@@ -5618,9 +5660,9 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
+      "HealerMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -5696,8 +5738,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "ASTEnforcementMixin",
-      "CanonBaseAgent"
+      "CanonBaseAgent",
+      "ASTEnforcementMixin"
     ],
     "key_methods": [
       "__init__",
