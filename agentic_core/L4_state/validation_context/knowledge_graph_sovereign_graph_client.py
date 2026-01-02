@@ -16,10 +16,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger('L4.KnowledgeGraph')
 
-class SovereignGraphClient:
+class SovereignGraphClient(MCPHardenedMixin, HealerMixin):
     """
     Client for the Knowledge Graph MCP (Memory MCP).
     Stores and retrieves structured entities and relationships.
@@ -31,8 +33,10 @@ class SovereignGraphClient:
 
     def __init__(self):
         """Initialize the Knowledge Graph client with sovereign routing."""
+        super().__init__()
         self.router = SovereignMCPRouter(role='memory')
         self.initialized = False
+        self._mcp_audit('init')
         Logger.info('[L4 KG] Sovereign Graph Client initialized')
 
     async def initialize(self) -> Any:
