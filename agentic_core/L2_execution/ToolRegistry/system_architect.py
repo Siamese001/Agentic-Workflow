@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 
-class SystemArchitect(CanonBaseAgent):
+class SystemArchitectAgent(CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
     

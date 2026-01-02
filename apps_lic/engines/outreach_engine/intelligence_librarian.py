@@ -33,7 +33,7 @@ from apps_shared.utils.circuit_breaker import CircuitBreaker
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 
-class IntelligenceLibrarian(MCPHardenedMixin):
+class IntelligenceLibrarianAgent(MCPHardenedMixin):
     """
     v13.1: Offline research agent that pre-computes intelligence (MCP Hardened)
     
