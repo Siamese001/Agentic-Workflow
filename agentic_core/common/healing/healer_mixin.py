@@ -14,8 +14,12 @@ Opt-out cases:
 """
 from ast import parse, unparse
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 import logging
+import time
+import asyncio
+
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 Logger = logging.getLogger(__name__)
 
@@ -41,7 +45,13 @@ class HealerMixin:
     _healing_count: int = 0
     _max_healing_per_session: int = 50
 
-    def heal(self, violation: Dict[str, Any]) -> bool:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._healing_cache: Dict[str, Tuple[float, bool]] = {}  # {type: (ts, success)}
+        self._healing_metrics = {"count": 0, "total_time": 0.0, "success_count": 0}
+        self._cache_ttl = 300  # 5min suppression (configurable)
+
+    def heal(self, violation: Dict[str, Any], anomaly: Optional[AnomalyReport] = None) -> bool:
         """
         Autonomous repair with rollback verification.
         
@@ -54,9 +64,26 @@ class HealerMixin:
         Raises:
             Exception: If healing fails critically
         """
+        start_time = time.time()
+        success = False
+        
         if not self._healing_enabled:
             Logger.debug(f"[HEALING] {self.__class__.__name__}: Healing disabled")
             return False
+        
+        # 1. Cache short-circuit (zero-cost repeat suppression)
+        if anomaly and anomaly.type in self._healing_cache:
+            cached_ts, cached_success = self._healing_cache[anomaly.type]
+            if time.time() - cached_ts < self._cache_ttl:
+                return cached_success
+        
+        # 2. Severity optimization (skip heavy MCP audit for LOW)
+        lightweight = anomaly and anomaly.severity == AnomalySeverity.LOW
+        if lightweight:
+            success = self._perform_healing(anomaly) if anomaly else False
+            if success:
+                Logger.debug(f"[HEALING] Low severity heal success: {anomaly.type if anomaly else 'unknown'}")
+            return success
         
         # Budget check
         if self._healing_count >= self._max_healing_per_session:
@@ -123,6 +150,43 @@ class HealerMixin:
             except Exception:
                 pass
             return False
+        finally:
+            # Track metrics
+            duration = time.time() - start_time
+            self._healing_metrics["count"] += 1
+            self._healing_metrics["total_time"] += duration
+            if success:
+                self._healing_metrics["success_count"] += 1
+            # Cache result for repeat suppression
+            if anomaly:
+                self._healing_cache[anomaly.type] = (time.time(), success)
+            # Optional audited emit (zero-loss safe)
+            if hasattr(self, "_mcp_audit") and self._healing_metrics["count"] > 0:
+                avg_time = self._healing_metrics["total_time"] / self._healing_metrics["count"]
+                self._mcp_audit("healing_metrics", payload={
+                    "duration": duration,
+                    "success": success,
+                    "avg_time": avg_time,
+                    "success_rate": self._healing_metrics["success_count"] / self._healing_metrics["count"]
+                })
+
+    async def heal_async(self, violation: Dict[str, Any], anomaly: Optional[AnomalyReport] = None) -> bool:
+        """Non-blocking heal for orchestrators/state agents."""
+        return await asyncio.to_thread(self.heal, violation, anomaly)
+
+    def get_healing_metrics(self) -> Dict[str, Any]:
+        """Zero-loss observable — for diagnostics/metrics agents."""
+        count = self._healing_metrics["count"]
+        return {
+            "count": count,
+            "avg_time": (self._healing_metrics["total_time"] / count) if count else 0,
+            "success_rate": (self._healing_metrics["success_count"] / count) if count else 1.0
+        }
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Override in subclasses for anomaly-specific healing logic."""
+        Logger.debug(f"[HEALING] {self.__class__.__name__}: No _perform_healing implementation")
+        return False
 
     def apply_fix(self, ast_tree: Any, violation: Dict[str, Any]) -> Optional[Any]:
         """
