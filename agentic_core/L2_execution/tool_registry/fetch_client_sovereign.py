@@ -20,7 +20,9 @@ Logger: Any = logging.getLogger(__name__)
 allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.githubusercontent.com', 'readthedocs.io', 'developer.mozilla.org', 'stackoverflow.com', 'pypi.org'}
 chunk_size: Any = 8000
 
-class SovereignFetchClient:
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+class SovereignFetchClient(MCPHardenedMixin):
     """Ultra-hardened Fetch MCP client — enforcing external knowledge purity."""
 
     def __init__(self, manager, cache: Optional[SovereignSemanticCache]=None):
