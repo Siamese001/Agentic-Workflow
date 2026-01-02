@@ -27,7 +27,7 @@ class AgentInfo(HealerMixin):
         self.capabilities = capabilities
 sovereign_agents: Any = [AgentInfo('Historian', 'integrity_seq', ['reasoning']), AgentInfo('ArchitectureGovernor', 'integrity_seq', ['reasoning']), AgentInfo('DependencySentinel', 'integrity_seq', ['reasoning']), AgentInfo('HygieneGuardian', 'curation_seq', ['reasoning']), AgentInfo('CodeStyleGuardian', 'curation_seq', ['reasoning']), AgentInfo('TestPilot', 'test_seq', ['reasoning']), AgentInfo('TheCartographer', 'memory_parallel', ['reasoning']), AgentInfo('TheOmniContext', 'memory_parallel', ['reasoning']), AgentInfo('SafetyInspector', 'resilience_parallel', ['reasoning']), AgentInfo('SecurityEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('PerformanceEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('ConcurrencyGuardian', 'resource_safety_parallel', ['reasoning']), AgentInfo('StructuralEngineer', 'engineering_parallel', ['reasoning']), AgentInfo('PatternEnforcer', 'engineering_parallel', ['reasoning']), AgentInfo('ToolsmithAgent', 'engineering_parallel', ['reasoning', 'tool_creation']), AgentInfo('NamingEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('DocEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('TypeEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('BenchmarkingAgent', 'benchmarking_seq', ['reasoning']), AgentInfo('TheStrategist', 'optimization_conditional', ['reasoning'])]
 
-class SovereignCognitivePlane(ICognitivePlane):
+class SovereignCognitivePlane(HealerMixin, ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and async compliance."""
 
     def __init__(self):

@@ -1292,6 +1292,35 @@
     "mcp_hardened": true
   },
   {
+    "class_name": "SovereignCognitivePlane",
+    "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
+    "layer": "L1",
+    "inheritance": [
+      "HealerMixin",
+      "ICognitivePlane"
+    ],
+    "key_methods": [
+      "__init__",
+      "_initialize_agents",
+      "get_capabilities",
+      "_discover_agents",
+      "plan",
+      "reason",
+      "__aenter__",
+      "__aexit__"
+    ],
+    "has_tools": true,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 51,
+    "class_count": 2,
+    "description": "Sovereign cognitive plane with in-memory agent registry and async compliance.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
     "class_name": "SystemArchitect",
     "path": "agentic_core\\L1_cognition\\thought_engine\\canon_agents_core.py",
     "layer": "L1",
@@ -3190,9 +3219,39 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 410,
+    "loc": 411,
     "class_count": 9,
     "description": "Manages the dynamic DAG with mutation capabilities.",
+    "pascal_compliant": true,
+    "mcp_hardened": false
+  },
+  {
+    "class_name": "DAGMutator",
+    "path": "agentic_core\\L3_orchestration\\dynamic_dag_manager.py",
+    "layer": "L3",
+    "inheritance": [
+      "HealerMixin"
+    ],
+    "key_methods": [
+      "__init__",
+      "apply_mutation",
+      "_validate_mutation",
+      "_spawn_predecessor",
+      "_spawn_successor",
+      "_skip_successor",
+      "_replace_node",
+      "_update_depths",
+      "_store_mutation_result",
+      "get_mutation_history"
+    ],
+    "has_tools": false,
+    "has_memory": false,
+    "has_healing": true,
+    "testing": "None",
+    "has_subatomic": true,
+    "loc": 411,
+    "class_count": 9,
+    "description": "Handles the actual graph mutations.",
     "pascal_compliant": true,
     "mcp_hardened": false
   },

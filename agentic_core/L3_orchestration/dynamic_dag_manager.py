@@ -188,8 +188,9 @@ class DAGConfig(BaseModel):
     enable_mutation_logging: bool = True
     mutation_history_size: int = Field(default=1000, ge=100)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
 
-class DAGMutator:
+class DAGMutator(HealerMixin):
     """Handles the actual graph mutations."""
     
     def __init__(self, config: DAGConfig):
