@@ -235,9 +235,20 @@ class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """Operational guardrail agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational guardrail - no healing required")
-        return {"skipped": 1}
+        """L5 safety agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L5 safety - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 
 # Singleton instance
@@ -249,12 +260,12 @@ def get_mcp_guardian(project_root: Optional[Path] = None) -> MCPGuardianAgent:
     Get or create the global MCP Guardian instance.
     
     Args:
-        project_root: Project root directory
-        
+        project_root: Project root path
+    
     Returns:
-        MCPGuardianAgent singleton
+        MCPGuardianAgent instance
     """
     global _guardian
     if _guardian is None:
-        _guardian = MCPGuardianAgent(project_root)
+        _guardian = MCPGuardianAgent(project_root or Path.cwd())
     return _guardian

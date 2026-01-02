@@ -141,9 +141,6 @@ class SovereignRedisOrchestrator(HealerMixin, MCPHardenedMixin):
 # Singleton instance for global use
 _orchestrator = None
 
-def get_redis_orchestrator() -> SovereignRedisOrchestrator:
-    """Get the global Redis orchestrator instance"""
-    global _orchestrator
-    if _orchestrator is None:
-        _orchestrator = SovereignRedisOrchestrator()
-    return _orchestrator
+def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestrator:
+    """Factory function to get sovereign redis orchestrator instance."""
+    return SovereignRedisOrchestrator()

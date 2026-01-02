@@ -286,3 +286,7 @@ def create_sovereign_action_plane(safety_layer: Any=None, SignalLedger: Any=None
         SovereignActionPlane instance
     """
     return SovereignActionPlane(safety_layer=safety_layer, SignalLedger=SignalLedger)
+
+def get_sovereign_action_plane() -> SovereignActionPlane:
+    """Factory function to get sovereign action plane instance."""
+    return SovereignActionPlane()

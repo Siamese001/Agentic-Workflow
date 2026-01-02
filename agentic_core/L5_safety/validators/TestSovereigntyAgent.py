@@ -244,6 +244,10 @@ class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
+    def get_test_sovereignty_agent(self) -> TestSovereigntyAgent:
+        """Factory function to get test sovereignty agent instance."""
+        return TestSovereigntyAgent()
+
 def create_test_sovereignty(ctx=None) -> Any:
     """Brief description of functionality and purpose."""
     return TestSovereigntyAgent(ctx)

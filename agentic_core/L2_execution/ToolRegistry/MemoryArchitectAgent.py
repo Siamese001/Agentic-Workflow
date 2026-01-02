@@ -576,9 +576,6 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
 
 _memory_architect = None
 
-def get_memory_architect(ctx: Any) -> MemoryArchitect:
-    """Get or create global Memory Architect instance."""
-    global _memory_architect
-    if _memory_architect is None:
-        _memory_architect = MemoryArchitect(ctx)
-    return _memory_architect
+def get_memory_architect() -> MemoryArchitect:
+    """Factory function to get memory architect instance."""
+    return MemoryArchitect()

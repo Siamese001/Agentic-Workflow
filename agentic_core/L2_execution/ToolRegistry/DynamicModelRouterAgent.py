@@ -25,6 +25,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from agentic_core.L2_execution.ToolRegistry.base import SubAtomicAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
@@ -465,4 +466,7 @@ def get_model_router(ctx) -> DynamicModelRouterAgent:
     global _model_router
     if _model_router is None:
         _model_router = DynamicModelRouterAgent(ctx)
+    return _model_router
+
+def get_dynamic_model_routerAgent(ctx)
     return _model_router

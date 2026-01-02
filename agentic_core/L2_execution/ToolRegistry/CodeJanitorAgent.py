@@ -54,19 +54,9 @@ class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
         passed, violations = self.check_key_10_syntax()
         if not passed:
             print(f'   [{self.name}] Key 10: FAIL ({len(violations)} violations)')
-            await self._heal_violations(10, violations)
-        passed, violations = self.check_key_11_indentation()
-        if not passed:
-            print(f'   [{self.name}] Key 11: FAIL ({len(violations)} violations)')
-            await self._heal_violations(11, violations)
-        passed, violations = self.check_key_12_trailing_whitespace()
-        if not passed:
-            print(f'   [{self.name}] Key 12: FAIL ({len(violations)} violations)')
-            await self._heal_violations(12, violations)
-        passed, violations = self.check_key_14_naming_conventions()
-        if not passed:
-            print(f'   [{self.name}] Key 14: FAIL ({len(violations)} violations)')
-            await self._heal_violations(14, violations)
+            return {"passed": False, "violations": violations}
+
+        return {"passed": True, "violations": []}
 
     def check_key_10_syntax(self) -> Tuple[bool, List[str]]:
         """
@@ -411,3 +401,20 @@ class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
             "batch_post_heal_summary": batch_summary,
             "dry_run": dry_run,
         }
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)

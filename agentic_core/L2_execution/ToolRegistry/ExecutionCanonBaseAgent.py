@@ -548,6 +548,31 @@ def test_artifact_exists():
         except Exception as e:
             return {"passed": False, "error": str(e), "tests": []}
 
+    def validate_state(self) -> bool:
+        """
+        Validate agent's internal state.
+        Default behavior for subclasses to validate their internal state.
+        Can be overridden by subclasses to add agent-specific validation.
+        """
+        return True
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L2 execution agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] L2 execution - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
+
     def _emit_subatomic_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit subatomic testing event for observability."""
         print(f"[SUBATOMIC L2] {Severity.value} | {event_type}")

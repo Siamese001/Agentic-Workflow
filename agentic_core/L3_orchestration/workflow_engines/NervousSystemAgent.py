@@ -29,6 +29,7 @@ import re
 import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from dataclasses import dataclass
 from pathlib import Path

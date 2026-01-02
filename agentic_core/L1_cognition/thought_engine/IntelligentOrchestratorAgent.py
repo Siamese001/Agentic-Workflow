@@ -15,6 +15,7 @@ from agentic_core.canon_agents_structural import BudgetAgent, StructuralEngineer
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
 from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 class IntelligentOrchestrator(HealerMixin):
     """Orchestrates all validation agents in dependency order."""

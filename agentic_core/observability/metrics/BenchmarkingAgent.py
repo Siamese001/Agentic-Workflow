@@ -13,6 +13,7 @@ from datetime import datetime
 from functools import wraps
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING FIXED: Logger → Logger
 Logger = logging.getLogger(__name__)

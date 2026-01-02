@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger: Any = logging.getLogger(__name__)
 
 @dataclass
@@ -334,6 +335,6 @@ class ProactiveResourceManager(HealerMixin):
         finally:
             _call_path.discard(agent_name)
 
-def create_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManager:
-    """Factory function to create proactive resource manager."""
-    return ProactiveResourceManager(thresholds=thresholds)
+    def get_proactive_resource_manager(thresholds: Optional[ResourceThreshold]=None) -> ProactiveResourceManager:
+        """Factory function to create proactive resource manager."""
+        return ProactiveResourceManager(thresholds=thresholds)

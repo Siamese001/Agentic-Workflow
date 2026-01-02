@@ -264,7 +264,7 @@ class DagEngineAgent(HealerMixin):
         success = len(failed_tasks) == 0
         result = DAGExecutionResult(success=success, completed_tasks=list(completed_tasks), failed_tasks=failed_tasks, skipped_tasks=skipped_tasks, task_results=task_results, execution_order=execution_order, metadata={'total_tasks': len(self.tasks), 'completion_rate': len(completed_tasks) / len(self.tasks) if self.tasks else 0})
         if self.enable_logging:
-            Logger.info('dag_execution_completed', extra={'success': success, 'completed': len(completed_tasks), 'failed': len(failed_tasks), 'skipped': len(skipped_tasks)})
+            Logger.info('dag_execution_summary', extra={'completed': len(result.completed_tasks), 'failed': len(result.failed_tasks), 'skipped': len(result.skipped_tasks)})
         return result
 
     def _evaluate_condition(self, condition: str, context: Dict[str, Any], task_results: Dict[str, Any]) -> bool:
