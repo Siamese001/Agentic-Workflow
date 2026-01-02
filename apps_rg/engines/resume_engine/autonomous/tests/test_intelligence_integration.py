@@ -7,21 +7,21 @@ Tests the integration of intelligence components:
 - SemanticAnalyzer with healing cycles
 - StrategicAdvisor with optimization
 - OmniContext with search
-- UnifiedOrchestrator with full pipeline
+- UnifiedOrchestratorAgent with full pipeline
 """
 
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import Phase4Orchestrator
-from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..gitops import Phase4OrchestratorAgent
+from ..healing import HealingCycle, HealingOrchestratorAgent, HealingStrategy
 from ..intelligence import (
     OmniContext,
-    Phase6Orchestrator,
+    Phase6OrchestratorAgent,
     SecurityHardener,
     SemanticAnalyzer,
     StrategicAdvisor,
-    UnifiedOrchestrator,
+    UnifiedOrchestratorAgent,
 )
 from ..learning import ResumeLearningAgent
 from ..observability import Phase5Orchestrator
@@ -185,12 +185,12 @@ class TestOmniContextWithSearch:
 
 
 class TestUnifiedOrchestratorWithPipeline:
-    """Integration tests for UnifiedOrchestrator with full pipeline."""
+    """Integration tests for UnifiedOrchestratorAgent with full pipeline."""
 
     @pytest.mark.asyncio
     async def test_unified_mission_execution(self, ctx, valid_resume):
         """Test unified mission execution."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         result = await orchestrator.run_mission(valid_resume)
 
@@ -200,7 +200,7 @@ class TestUnifiedOrchestratorWithPipeline:
     @pytest.mark.asyncio
     async def test_unified_with_job_description(self, ctx, valid_resume, JobDescription):
         """Test unified orchestrator with job description."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         result = await orchestrator.run_mission(valid_resume, JobDescription)
 
@@ -213,14 +213,14 @@ class TestPhase6WithPreviousPhases:
     @pytest.mark.asyncio
     async def test_phase6_with_phase5_observability(self, ctx, valid_resume):
         """Test Phase 6 integration with Phase 5 observability."""
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
         phase5 = Phase5Orchestrator(ctx)
 
         # Start observability
         phase5.start_mission("phase6_integration")
 
         # Run Phase 6 analysis
-        step_id = phase5.track_agent("Phase6Orchestrator", "analyze_resume")
+        step_id = phase5.track_agent("Phase6OrchestratorAgent", "analyze_resume")
         result = await phase6.analyze_resume(valid_resume)
         phase5.complete_agent(step_id, success=True)
 
@@ -233,7 +233,7 @@ class TestPhase6WithPreviousPhases:
     @pytest.mark.asyncio
     async def test_phase6_with_learning_agent(self, ctx, valid_resume):
         """Test Phase 6 integration with Phase 3 learning."""
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
         learning_agent = ResumeLearningAgent(ctx)
 
         # Inject instruction
@@ -258,13 +258,13 @@ class TestPhase6WithPreviousPhases:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # Analyze before healing
         analysis_before = await phase6.analyze_resume(valid_resume)
 
         # Run healing
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         healing_result = await healing.run()
 
         # Verify both worked
@@ -281,7 +281,7 @@ class TestCrossComponentIntegration:
         ctx.current_resume = valid_resume
         ctx.JobDescription = JobDescription
 
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
 
         # 1. Security scan
         security_issues = phase6.security.scan_resume(valid_resume)
@@ -313,10 +313,10 @@ class TestCrossComponentIntegration:
         ctx.JobDescription = JobDescription
 
         # Initialize all phase orchestrators
-        phase4 = Phase4Orchestrator(ctx)
+        phase4 = Phase4OrchestratorAgent(ctx)
         phase4.gitops.enable_git = False
         phase5 = Phase5Orchestrator(ctx)
-        phase6 = Phase6Orchestrator(ctx)
+        phase6 = Phase6OrchestratorAgent(ctx)
         learning_agent = ResumeLearningAgent(ctx)
 
         # Phase 3: Learning
@@ -331,13 +331,13 @@ class TestCrossComponentIntegration:
         phase5.start_mission("all_phases_test")
 
         # Phase 6: Intelligence
-        step_id = phase5.track_agent("Phase6Orchestrator", "analyze")
+        step_id = phase5.track_agent("Phase6OrchestratorAgent", "analyze")
         analysis = await phase6.analyze_resume(valid_resume, JobDescription)
         phase5.complete_agent(step_id, success=True)
 
         # Phase 2: Healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
-        healing = HealingOrchestrator(ctx, max_cycles=2)
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
+        healing = HealingOrchestratorAgent(ctx, max_cycles=2)
         healing_result = await healing.run()
         phase5.complete_agent(step_id, success=True)
 

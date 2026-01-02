@@ -42,7 +42,7 @@ def test_executive_brief_agent() -> Any:
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_hardened_orchestrator_integration() -> Any:
     """
-    Test HardenedWorkflowOrchestrator with Titanium.
+    Test HardenedWorkflowOrchestratorAgent with Titanium.
     """
 
 @pytest.mark.asyncio

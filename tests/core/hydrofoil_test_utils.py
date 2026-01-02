@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from unittest.mock import Mock
 
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -32,7 +32,7 @@ sys.modules['redis_client'] = Mock()
 
 def create_hydrofoil_validator():
     """Create a validator with Hydrofoil-configured mocks"""
-    validator = CanonValidator()
+    validator = CanonValidatorAgent()
 
     # Mock LLM - The Navigation AI
     validator.llm = Mock()

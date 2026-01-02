@@ -7,7 +7,7 @@ import json
 from datetime import datetime, timezone
 from unittest.mock import Mock
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 from typing import Any
 
 class test_cvu004:
@@ -16,7 +16,7 @@ class test_cvu004:
     @pytest.fixture
     def validator(self) -> Any:
         """Create validator with mocked dependencies"""
-        validator: Any = CanonValidator()
+        validator: Any = CanonValidatorAgent()
         validator.llm = Mock()
         validator.llm.generate_plan.return_value = {'status': 'valid', 'reasoning': 'Code is valid'}
         validator.embed_fn = Mock(return_value=[0.1] * 768)

@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 from typing import Optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class SafetyExecutor(HealerMixin):
+class SafetyExecutorAgent(HealerMixin):
     """
     Executes resume safety validation with optimal model selection.
 

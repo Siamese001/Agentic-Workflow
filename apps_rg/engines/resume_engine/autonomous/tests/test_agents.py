@@ -6,11 +6,11 @@ Tests each specialized agent's functionality:
 - ContentQualityAgent
 - FactCheckAgent
 - BrandComplianceAgent
-- TemplateOptimizer
+- TemplateOptimizerAgent
 - SectionBalanceAgent
 - ATSCompatibilityAgent
 - TestPilot
-- StrategicPlanner
+- StrategicPlannerAgent
 - ReflectionAgent
 """
 import re
@@ -25,8 +25,8 @@ from ..agents import (
     FactCheckAgent,
     ReflectionAgent,
     SectionBalanceAgent,
-    StrategicPlanner,
-    TemplateOptimizer,
+    StrategicPlannerAgent,
+    TemplateOptimizerAgent,
     TestPilot,
 )
 from ..context import ResumeEngineContext
@@ -205,18 +205,18 @@ class TestBrandComplianceAgent:
 
 
 class TestTemplateOptimizer:
-    """Tests for TemplateOptimizer."""
+    """Tests for TemplateOptimizerAgent."""
 
     @pytest.mark.asyncio
     async def test_technical_job_detection(self, ctx, valid_resume):
         """Test technical job type detection."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = "Senior Software Engineer needed for cloud development"
-        agent = TemplateOptimizer(ctx)
+        agent = TemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
-        assert ctx.results["TemplateOptimizer"]["passed"] is True
+        assert ctx.results["TemplateOptimizerAgent"]["passed"] is True
         assert ctx.results["template_recommendations"]["job_type"] == "technical"
 
     @pytest.mark.asyncio
@@ -224,7 +224,7 @@ class TestTemplateOptimizer:
         """Test executive job type detection."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = "VP of Engineering, Director level position"
-        agent = TemplateOptimizer(ctx)
+        agent = TemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
@@ -235,11 +235,11 @@ class TestTemplateOptimizer:
         """Test handling of Missing job description."""
         ctx.current_resume = valid_resume
         ctx.JobDescription = ""
-        agent = TemplateOptimizer(ctx)
+        agent = TemplateOptimizerAgent(ctx)
 
         await agent.execute()
 
-        assert ctx.results["TemplateOptimizer"]["passed"] is True
+        assert ctx.results["TemplateOptimizerAgent"]["passed"] is True
 
 
 class TestSectionBalanceAgent:
@@ -361,14 +361,14 @@ class TestTestPilot:
 
 
 class TestStrategicPlanner:
-    """Tests for StrategicPlanner agent."""
+    """Tests for StrategicPlannerAgent agent."""
 
     @pytest.mark.asyncio
     async def test_quality_failure_strategy(self, ctx, valid_resume):
         """Test strategy for quality failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("QUALITY_FAILURE")
-        agent = StrategicPlanner(ctx)
+        agent = StrategicPlannerAgent(ctx)
 
         await agent.execute()
 
@@ -381,7 +381,7 @@ class TestStrategicPlanner:
         """Test strategy for ATS failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("ATS_FAILURE")
-        agent = StrategicPlanner(ctx)
+        agent = StrategicPlannerAgent(ctx)
 
         await agent.execute()
 
@@ -395,7 +395,7 @@ class TestStrategicPlanner:
         ctx.current_resume = valid_resume
         ctx.impact_zone.add("skills")
         ctx.impact_zone.add("summary")
-        agent = StrategicPlanner(ctx)
+        agent = StrategicPlannerAgent(ctx)
 
         await agent.execute()
 

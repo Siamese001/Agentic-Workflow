@@ -10,7 +10,7 @@ Supports:
 - Basic metadata storage
 
 Designed for integration with:
-- ComplianceOrchestrator (increment violations)
+- ComplianceOrchestratorAgent (increment violations)
 - ReportingAgent (read current state)
 
 Placed in observability/metrics per SSOT semantic registry:
@@ -228,7 +228,7 @@ class MetricsAgent(HealerMixin, MCPHardenedMixin):
     def record_compliance_scan(self, violations: List[Tuple[Path, str]]) -> None:
         """
         Record results of a compliance scan.
-        Called by ComplianceOrchestrator.
+        Called by ComplianceOrchestratorAgent.
         Updates internal metrics counters and convergence status.
         """
         total = len(violations)

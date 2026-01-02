@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness
-from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManager import (
+from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManagerAgent import (
     create_proactive_resource_manager,
 )
 

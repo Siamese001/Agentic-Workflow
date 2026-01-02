@@ -70,7 +70,7 @@ def test_function() -> Any:
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')
 def test_initialization() -> Any:
     """
-    Test DAGManager initialization.
+    Test DAGManagerAgent initialization.
     """
 
 @pytest.mark.skip(reason='Original test file had syntax errors - needs implementation')

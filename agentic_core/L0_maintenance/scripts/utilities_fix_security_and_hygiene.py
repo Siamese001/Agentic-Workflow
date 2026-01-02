@@ -10,7 +10,7 @@ import shutil
 from datetime import datetime
 from typing import Any
 excluded_dirs: Any = {'.git', '.venv', 'venv', 'env', '__pycache__', 'node_modules', 'build', 'dist', 'eggs', 'archives', 'data'}
-excluded_files: Any = {'CanonValidator.py', 'canon_validator_backup.py', 'canon_validator_v2_agentic.py', 'resume_engine.py', 'action_registry.py', 'fix_syntax_errors.py', 'healthcheck.py', 'check_pinecone.py', 'governed_outreach.py', 'fix_security_and_hygiene.py', 'fix_structural_debt.py', 'fix_print_statements.py'}
+excluded_files: Any = {'CanonValidatorAgent.py', 'canon_validator_backup.py', 'canon_validator_v2_agentic.py', 'resume_engine.py', 'action_registry.py', 'fix_syntax_errors.py', 'healthcheck.py', 'check_pinecone.py', 'governed_outreach.py', 'fix_security_and_hygiene.py', 'fix_structural_debt.py', 'fix_print_statements.py'}
 
 def fix_file(file_path: Any) -> Any:
     """Apply security and hygiene fixes to a file."""

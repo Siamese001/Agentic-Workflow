@@ -42,7 +42,7 @@ class FissionResult:
     success: bool
     error_message: Optional[str] = None
 
-class FissionManager(HealerMixin):
+class FissionManagerAgent(HealerMixin):
     """
     L3 Orchestration Layer: Manages transition from healing to atomic fission.
     
@@ -78,9 +78,9 @@ class FissionManager(HealerMixin):
             api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
             if api_key:
                 self._client = genai.Client(api_key=api_key)
-                if not getattr(FissionManager, '_gemini_logged', False):
+                if not getattr(FissionManagerAgent, '_gemini_logged', False):
                     Logger.info('[OK] Fission Manager connected to Gemini 2.5')
-                    FissionManager._gemini_logged = True
+                    FissionManagerAgent._gemini_logged = True
             else:
                 self._client = None
                 Logger.warning('[!]  Fission Manager: No Gemini API key found')
@@ -323,17 +323,17 @@ class FissionManager(HealerMixin):
             _call_path.discard(agent_name)
 
 
-def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManager:
+def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManagerAgent:
     """
-    Factory function to create FissionManager instance.
+    Factory function to create FissionManagerAgent instance.
     
     Args:
         gemini_client: Optional Gemini client
         
     Returns:
-        FissionManager instance
+        FissionManagerAgent instance
     """
-    return FissionManager(gemini_client=gemini_client)
+    return FissionManagerAgent(gemini_client=gemini_client)
 
 
 def get_workflow_fission_manager() -> WorkflowFissionManagerAgent:

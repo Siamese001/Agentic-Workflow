@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Implementation for SubatomicOrchestrator."""
+"""Implementation for SubatomicOrchestratorAgent."""
 
 import asyncio
 import logging
@@ -20,7 +20,7 @@ class AgentRole(Enum):
     '''Brief description of functionality and purpose.'''
     
     CONTEXT_GATHERER = "context_gatherer"
-    STRATEGIC_PLANNER = "StrategicPlanner"
+    STRATEGIC_PLANNER = "StrategicPlannerAgent"
     RESUME_BUILDER = "resume_builder"
     QUALITY_CRITIC = "quality_critic"
     MESSAGE_CRAFTER = "message_crafter"
@@ -69,9 +69,9 @@ def get_agent_registry() -> AgentRegistry:
     """Mock function."""
     return AgentRegistry()
 
-# NAMING FIXED: DAGManager → DagManager
-class DagManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
-    """Mock DAGManager for type hinting."""
+# NAMING FIXED: DAGManagerAgent → DagManagerAgent
+class DagManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
+    """Mock DAGManagerAgent for type hinting."""
     def __init__(self):
         self.node_registry = {}
         self.execution_queue = []
@@ -104,7 +104,7 @@ class SubatomicHop(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         self.run = hop_function
         self.context = CONTEXT
         self.enable_prompt_injection = enable_prompt_injection
-        self.DagManager = None
+        self.DagManagerAgent = None
 
 def create_functional_agent(role, hop_function, CONTEXT, enable_prompt_injection):
     '''Brief description of functionality and purpose.'''
@@ -116,7 +116,7 @@ def validate_no_legacy_code(value, message):
     pass
 
 # Global orchestrator instance
-_orchestrator: Optional[SubatomicOrchestrator] = None
+_orchestrator: Optional[SubatomicOrchestratorAgent] = None
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)
@@ -125,9 +125,9 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
-# NAMING FIXED: SubatomicOrchestrator → SubatomicOrchestrator
-class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
-    """Implementation for SubatomicOrchestrator."""
+# NAMING FIXED: SubatomicOrchestratorAgent → SubatomicOrchestratorAgent
+class SubatomicOrchestratorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
+    """Implementation for SubatomicOrchestratorAgent."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):
         """Initialize the orchestrator.
@@ -135,11 +135,11 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
             registry: Optional agent registry (uses global if not provided)
         """
         self.REGISTRY = registry or get_agent_registry()
-        self.DagManager = DAGManager()
+        self.DagManagerAgent = DAGManagerAgent()
         self.active_graphs: Dict[str, nx.DiGraph] = {}
         self.execution_history: List[Dict[str, Any]] = []
         self._define_standard_workflows()
-        LOGGER.info('Initialized SubatomicOrchestrator')
+        LOGGER.info('Initialized SubatomicOrchestratorAgent')
 
     def _define_standard_workflows(self) -> None:
         """Define standard workflow blueprints."""
@@ -256,7 +256,7 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
                                                              {}),
                                           enable_prompt_injection=kwargs.get('enable_injections',
                                                                              True))
-            HOP.DagManager = self.DagManager
+            HOP.DagManagerAgent = self.DagManagerAgent
             role_to_hop[role] = HOP
             G.add_node(HOP, role=role)
         for from_role, to_role in blueprint.EDGES:
@@ -335,7 +335,7 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
                            'results': {}}
         try:
             for node in graph.nodes():
-                self.DagManager.add_node(node)
+                self.DagManagerAgent.add_node(node)
             ready_nodes = self._get_ready_nodes(
                 graph, execution_state['completed_nodes'])
             while ready_nodes:
@@ -359,7 +359,7 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
                         LOGGER.info(f'Node {node.config.hop_id} completed')
                         execution_state['completed_nodes'].add(node)
                         execution_state['results'][node] = result
-                        self.DagManager.execution_queue.append(node)
+                        self.DagManagerAgent.execution_queue.append(node)
                 ready_nodes = self._get_ready_nodes(
                     graph, execution_state['completed_nodes'])
             if len(execution_state['completed_nodes']) == graph.number_of_nodes():
@@ -455,16 +455,16 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
         mutation_hooks = node.context['mutation_hooks']
         for action, role in mutation_hooks:
             try:
-                MUTATION = self.DagManager.create_mutation_request(action=action,
+                MUTATION = self.DagManagerAgent.create_mutation_request(action=action,
                                                                     target_hop_id=node.config.hop_id,
                                                                     hop_function=role.value,
                                                                     REASON=f'Node failed: {str(error)}',
                                                                     requester_hop_id=node.config.hop_id)
-                RESULT = self.DagManager.request_mutation(MUTATION)
+                RESULT = self.DagManagerAgent.request_mutation(MUTATION)
                 if RESULT.success:
                     LOGGER.info(
                         f'Successfully applied mutation for {role.value}')
-                    new_hop = self.DagManager.node_registry.get(role.value)
+                    new_hop = self.DagManagerAgent.node_registry.get(role.value)
                     if new_hop:
                         graph.add_node(new_hop, role=role)
                         graph.add_edge(new_hop, node)
@@ -494,15 +494,15 @@ class SubatomicOrchestrator(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMix
                 'active_graphs': len(self.active_graphs)}
 
 
-def get_orchestrator() -> SubatomicOrchestrator:
+def get_orchestrator() -> SubatomicOrchestratorAgent:
     """Get the global orchestrator instance.
 
     Returns:
-        SubatomicOrchestrator instance
+        SubatomicOrchestratorAgent instance
     """
     global _orchestrator
     if _orchestrator is None:
-        _orchestrator = SubatomicOrchestrator()
+        _orchestrator = SubatomicOrchestratorAgent()
     return _orchestrator
 
 

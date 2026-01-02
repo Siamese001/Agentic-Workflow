@@ -51,7 +51,7 @@ class MemorySnapshot:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class MemoryLeakDetector(HealerMixin):
+class MemoryLeakDetectorAgent(HealerMixin):
     """
     Detects memory leaks in the agentic system.
 
@@ -63,7 +63,7 @@ class MemoryLeakDetector(HealerMixin):
     """
 
     def __init__(self):
-        """Initialize the MemoryLeakDetector."""
+        """Initialize the MemoryLeakDetectorAgent."""
         self.enabled = True
         self.snapshots: List[MemorySnapshot] = []
         self.cycle_snapshots: Dict[str, List[MemorySnapshot]] = {}
@@ -75,7 +75,7 @@ class MemoryLeakDetector(HealerMixin):
             except Exception as e:
                 LOGGER.error(f'Failed to start tracemalloc: {e}')
                 self.enabled = False
-        LOGGER.info('MemoryLeakDetector initialized')
+        LOGGER.info('MemoryLeakDetectorAgent initialized')
 
     def start_cycle(self, cycle_id: str) -> Any:
         """
@@ -200,19 +200,19 @@ class MemoryLeakDetector(HealerMixin):
         freed_mb: Any = before.get('allocated_mb', 0) - after.get('allocated_mb', 0)
         LOGGER.info(f'Garbage collection: collected {collected} objects, freed {freed_mb:.1f}MB')
         return {'objects_collected': collected, 'memory_freed_mb': freed_mb}
-_memory_detector: Optional[MemoryLeakDetector] = None
+_memory_detector: Optional[MemoryLeakDetectorAgent] = None
 
-def get_memory_detector() -> MemoryLeakDetector:
-    """Get or create the global MemoryLeakDetector instance."""
+def get_memory_detector() -> MemoryLeakDetectorAgent:
+    """Get or create the global MemoryLeakDetectorAgent instance."""
     global _memory_detector
     if _memory_detector is None:
-        _memory_detector = MemoryLeakDetector()
+        _memory_detector = MemoryLeakDetectorAgent()
     return _memory_detector
 
 def initialize_memory_detector() -> Any:
-    """Initialize the MemoryLeakDetector system."""
+    """Initialize the MemoryLeakDetectorAgent system."""
     get_memory_detector()
-    LOGGER.info('MemoryLeakDetector system initialized')
+    LOGGER.info('MemoryLeakDetectorAgent system initialized')
 
 def start_memory_cycle(cycle_id: str) -> Any:
     """Start monitoring memory for a cycle."""

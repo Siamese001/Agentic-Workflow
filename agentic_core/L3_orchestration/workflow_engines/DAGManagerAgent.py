@@ -469,7 +469,7 @@ class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class DAGManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
+class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Manages the dynamic DAG with mutation capabilities."""
     
     def __init__(self, config: Optional[DAGConfig] = None):
@@ -495,7 +495,7 @@ class DAGManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
             "replaced_nodes": 0
         }
         
-        Logger.info("Initialized DAGManager with dynamic mutation support")
+        Logger.info("Initialized DAGManagerAgent with dynamic mutation support")
     
     def register_function(self, name: str, function: Callable) -> None:
         """Register a hop function that can be spawned.
@@ -720,23 +720,23 @@ class DAGManager(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
 
 
 # Global instance
-_dag_manager: Optional[DAGManager] = None
+_dag_manager: Optional[DAGManagerAgent] = None
 
 
-def get_dag_manager(**kwargs) -> DAGManager:
-    """Get or create global DAGManager instance.
+def get_dag_manager(**kwargs) -> DAGManagerAgent:
+    """Get or create global DAGManagerAgent instance.
     
     Args:
         **kwargs: Configuration arguments
         
     Returns:
-        DAGManager instance
+        DAGManagerAgent instance
     """
     global _dag_manager
     
     if _dag_manager is None:
         config = DAGConfig(**kwargs) if kwargs else DAGConfig()
-        _dag_manager = DAGManager(config)
+        _dag_manager = DAGManagerAgent(config)
     
     return _dag_manager
 

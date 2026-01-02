@@ -27,7 +27,7 @@ class ConversationalRepair:
         """
         self.llm_client = llm_client
         self.max_rounds = 3
-        self.specialists = {'sherlock': {'name': 'Sherlock', 'role': 'Root Cause Analysis', 'prompt_template': self._get_sherlock_prompt()}, 'safety': {'name': 'SafetyInspector', 'role': 'Security Review', 'prompt_template': self._get_safety_prompt()}, 'dependency': {'name': 'DependencySentinel', 'role': 'Import Analysis', 'prompt_template': self._get_dependency_prompt()}, 'architecture': {'name': 'ArchitectureGovernor', 'role': 'Architecture Compliance', 'prompt_template': self._get_architecture_prompt()}}
+        self.specialists = {'sherlock': {'name': 'Sherlock', 'role': 'Root Cause Analysis', 'prompt_template': self._get_sherlock_prompt()}, 'safety': {'name': 'SafetyInspectorAgent', 'role': 'Security Review', 'prompt_template': self._get_safety_prompt()}, 'dependency': {'name': 'DependencySentinelAgent', 'role': 'Import Analysis', 'prompt_template': self._get_dependency_prompt()}, 'architecture': {'name': 'ArchitectureGovernor', 'role': 'Architecture Compliance', 'prompt_template': self._get_architecture_prompt()}}
 
     async def debate_failure(self, failure_context: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -171,7 +171,7 @@ class ConversationalRepair:
             prompt += f"\n{config['name']} ({config['role']}):\n"
             prompt += f"Analysis: {response['analysis']}\n"
             prompt += f"Proposal: {response['proposal']}\n"
-        prompt += "\n\nTASK:\nReview all proposals and extract the best consensus fix that:\n1. Addresses the root cause (Sherlock's concern)\n2. Maintains security (SafetyInspector's concern)\n3. Fixes imports/dependencies (DependencySentinel's concern)\n4. Follows architecture rules (ArchitectureGovernor's concern)\n\nFormat your response as:\nCONSENSUS: [Brief explanation of the consensus approach]\n\nCODE:\n[The final consensus code fix]\n```\n"
+        prompt += "\n\nTASK:\nReview all proposals and extract the best consensus fix that:\n1. Addresses the root cause (Sherlock's concern)\n2. Maintains security (SafetyInspectorAgent's concern)\n3. Fixes imports/dependencies (DependencySentinelAgent's concern)\n4. Follows architecture rules (ArchitectureGovernor's concern)\n\nFormat your response as:\nCONSENSUS: [Brief explanation of the consensus approach]\n\nCODE:\n[The final consensus code fix]\n```\n"
         return prompt
 
     def _get_sherlock_prompt(self) -> str:
@@ -179,12 +179,12 @@ class ConversationalRepair:
         return "You are Sherlock, the Root Cause Analysis specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure to identify the root cause. Consider:\n- What exactly is failing?\n- Why is it failing?\n- What are the contributing factors?\n- What's the minimal fix needed?\n\nPROPOSAL:\nPropose a specific code fix that addresses the root cause.\nProvide clear, actionable Python code.\n"
 
     def _get_safety_prompt(self) -> str:
-        """Get SafetyInspector's security review prompt."""
-        return 'You are SafetyInspector, the Security specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a security perspective:\n- Are there any security vulnerabilities?\n- Could the fix introduce security issues?\n- Are there unsafe operations?\n- Is input validation needed?\n\nPROPOSAL:\nPropose a fix that maintains security best practices.\nEnsure no security regressions.\n'
+        """Get SafetyInspectorAgent's security review prompt."""
+        return 'You are SafetyInspectorAgent, the Security specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a security perspective:\n- Are there any security vulnerabilities?\n- Could the fix introduce security issues?\n- Are there unsafe operations?\n- Is input validation needed?\n\nPROPOSAL:\nPropose a fix that maintains security best practices.\nEnsure no security regressions.\n'
 
     def _get_dependency_prompt(self) -> str:
-        """Get DependencySentinel's import analysis prompt."""
-        return 'You are DependencySentinel, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there Missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.\n'
+        """Get DependencySentinelAgent's import analysis prompt."""
+        return 'You are DependencySentinelAgent, the Import/Dependency specialist.\n\nFAILURE INFORMATION:\n{failure_info}\n\nPREVIOUS RESPONSES:\n{previous_responses}\n\nANALYSIS:\nAnalyze the failure from a dependency perspective:\n- Are there Missing imports?\n- Are imports incorrectly ordered?\n- Are there circular dependencies?\n- Are external dependencies available?\n\nPROPOSAL:\nPropose a fix that resolves import/dependency issues.\nEnsure all imports are correct and available.\n'
 
     def _get_architecture_prompt(self) -> str:
         """Get ArchitectureGovernor's compliance review prompt."""

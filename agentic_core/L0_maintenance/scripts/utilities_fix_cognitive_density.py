@@ -117,4 +117,4 @@ for file_path in files_to_fix:
         defs: Any = count_top_level_defs(full_path)
         if defs > 5:
             split_file_by_type(full_path)
-LOGGER.info('\nDone! Re-run CanonValidator.py to verify.')
+LOGGER.info('\nDone! Re-run CanonValidatorAgent.py to verify.')

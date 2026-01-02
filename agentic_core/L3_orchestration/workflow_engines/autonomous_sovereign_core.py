@@ -49,13 +49,13 @@ class AutonomousSovereignCore:
         from agentic_core.L1_cognition.thought_engine.AdaptiveLearningEngine import (
             create_adaptive_learning_engine,
         )
-        from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManager import (
+        from agentic_core.L2_execution.ToolRegistry.ProactiveResourceManagerAgent import (
             create_proactive_resource_manager,
         )
         from agentic_core.L3_orchestration.workflow_engines.autonomous_execution_engine import (
             create_autonomous_execution_engine,
         )
-        from agentic_core.L3_orchestration.workflow_engines.SelfRecoveringOrchestrator import (
+        from agentic_core.L3_orchestration.workflow_engines.SelfRecoveringOrchestratorAgent import (
             create_self_recovering_orchestrator,
         )
         # GRAVITY FIXED: Dynamic imports for autonomous components

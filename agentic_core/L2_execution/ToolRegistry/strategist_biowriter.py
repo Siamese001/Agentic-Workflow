@@ -60,9 +60,9 @@ class StrategistBioWriter:
     """
     FIRST_PERSON_PATTERNS: Any = ['\\bI\\b', '\\bmy\\b', '\\bme\\b', '\\bmine\\b', '\\bwe\\b', '\\bour\\b', '\\bus\\b', '\\bours\\b']
 
-    def __init__(self, config: Optional[BioWriterConfig]=None, gate_executor: Optional[IntegrityGateExecutor]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: Optional[BioWriterConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
         self.config = config or BioWriterConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
     def generate_summary(self, bullet_pool: List[str], context: Dict[str, Any]) -> BioWriterResult:

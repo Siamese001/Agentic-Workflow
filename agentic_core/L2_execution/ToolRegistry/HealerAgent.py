@@ -218,7 +218,7 @@ CURRENT CODE:
             print(f"      [!] Cannot read {file_path}: {e}")
             return False
         
-        # [KEY 42 INTEGRATION] Redirect large files to FissionManager
+        # [KEY 42 INTEGRATION] Redirect large files to FissionManagerAgent
         if violation_key == 42:
             print(f"      [SIGNAL] Key 42 Surgery Triggered for {os.path.basename(file_path)}")
             if hasattr(self.ctx, 'fission'):

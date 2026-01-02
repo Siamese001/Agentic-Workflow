@@ -67,7 +67,7 @@ class CognitiveContract:
     validation_errors: List[str] = field(default_factory=list)
 
 
-class CognitiveContractValidator:
+class CognitiveContractValidatorAgent:
     """Validates cognitive contracts and ensures compliance."""
     
     def __init__(self):
@@ -252,7 +252,7 @@ class CognitiveContractManager:
     
     def __init__(self):
         """Initialize the contract manager."""
-        self.validator = CognitiveContractValidator()
+        self.validator = CognitiveContractValidatorAgent()
         self.active_contracts: Dict[str, CognitiveContract] = {}
         
     def create_contract(

@@ -13,7 +13,7 @@ import pytest
 
 from ..agents import ContentQualityAgent
 from ..context import ResumeEngineContext
-from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..healing import HealingCycle, HealingOrchestratorAgent, HealingStrategy
 from ..learning import (
     ConfidenceLevel,
     ConfidenceScorer,
@@ -401,7 +401,7 @@ class TestCrossComponentIntegration:
         )
 
         # Run orchestrator
-        orchestrator = HealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = HealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Record outcome

@@ -13,7 +13,7 @@ def fix_bare_except_clauses(directory: Any) -> None:
     """Fix bare except clauses by adding Exception."""
     COUNT: Any = 0
     for filepath in glob.glob(os.path.join(ConfigurationService().directory, '**/*.py'), recursive=True):
-        if any((skip in ConfigurationService().filepath for skip in ['fix_bare_except.py', 'CanonValidator.py'])):
+        if any((skip in ConfigurationService().filepath for skip in ['fix_bare_except.py', 'CanonValidatorAgent.py'])):
             continue
         try:
             with open(filepath, 'r', encoding='utf-8') as f:

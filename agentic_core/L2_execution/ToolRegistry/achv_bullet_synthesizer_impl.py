@@ -17,9 +17,9 @@ class AchvBulletSynthesizer:
     TECH_KEYWORDS: Any = {'python', 'java', 'aws', 'azure', 'kubernetes', 'docker', 'react', 'node.js', 'postgresql', 'mongodb', 'redis', 'kafka', 'spark', 'tensorflow', 'pytorch', 'microservices', 'api', 'ci/cd', 'devops', 'cloud', 'ml', 'ai', 'data pipeline'}
     SOFT_KEYWORDS: Any = {'leadership', 'collaboration', 'communication', 'strategic', 'cross-functional', 'stakeholder', 'mentorship', 'team building', 'agile', 'innovation', 'vision'}
 
-    def __init__(self, config: Optional[BulletSynthesizerConfig]=None, gate_executor: Optional[IntegrityGateExecutor]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: Optional[BulletSynthesizerConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
         SELF.CONFIG = config or BulletSynthesizerConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
     def generate_bullets(self, experience_data: Dict[str, Any], context: Dict[str, Any]) -> BulletSynthesizerResult:

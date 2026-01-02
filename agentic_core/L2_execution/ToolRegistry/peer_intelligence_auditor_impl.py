@@ -16,7 +16,7 @@ class PeerIntelligenceConfig:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class IntegrityGateExecutor(HealerMixin):
+class IntegrityGateExecutorAgent(HealerMixin):
     """Brief description of functionality and purpose."""
 
     def __init__(self):
@@ -63,7 +63,7 @@ class ValidationResult:
         self.signature = SIGNATURE
         self.details = DETAILS
 
-class PeerIntelligenceAuditor(HealerMixin):
+class PeerIntelligenceAuditorAgent(HealerMixin):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 
@@ -73,9 +73,9 @@ class PeerIntelligenceAuditor(HealerMixin):
     - Differentiator list MUST be used by Executive_Title_Composer and Strategist_BioWriter
     """
 
-    def __init__(self, config: Optional[PeerIntelligenceConfig]=None, gate_executor: Optional[IntegrityGateExecutor]=None):
+    def __init__(self, config: Optional[PeerIntelligenceConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None):
         self.config = config or PeerIntelligenceConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
 
     def analyze_competitive_landscape(self, jd_keywords: List[str], context: Dict[str, Any]) -> PeerIntelligenceResult:
         """
@@ -179,6 +179,6 @@ class PeerIntelligenceAuditor(HealerMixin):
             return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=True, SEVERITY='INFO', MESSAGE=f'RAG intensity satisfied: {total_searches} searches across {len(hops)} hops', SIGNATURE=f'RAG:OK:{total_searches}', DETAILS={'total_searches': total_searches, 'total_hops': len(hops), 'searches_per_hop': [len(hop.search_queries) for hop in hops]})
         return ValidationResult(gate_id='VG_RAG_INTENSITY', PASSED=False, SEVERITY='BLOCK', MESSAGE=f'BLOCKED: Insufficient RAG intensity - {total_searches} searches across {len(hops)} hops (expected {self.config.total_searches} searches across {self.config.total_hops} hops)', DETAILS={'total_searches': total_searches, 'expected_searches': self.config.total_searches, 'total_hops': len(hops), 'expected_hops': self.config.total_hops})
 
-def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditor:
-    """Factory function to create PeerIntelligenceAuditor instance"""
-    return PeerIntelligenceAuditor(config=config)
+def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=None) -> PeerIntelligenceAuditorAgent:
+    """Factory function to create PeerIntelligenceAuditorAgent instance"""
+    return PeerIntelligenceAuditorAgent(config=config)

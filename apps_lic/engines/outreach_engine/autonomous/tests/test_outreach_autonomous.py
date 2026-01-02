@@ -30,10 +30,10 @@ from apps_lic.outreach_engine.autonomous.context import (
     OutreachEngineContext,
 )
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator,
+    OutreachHealingOrchestratorAgent,
     OutreachHealingResult,
     OutreachHealingStrategy,
-    OutreachSignalRouter,
+    OutreachSignalRouterAgent,
     run_outreach_healing_mission,
 )
 from apps_lic.outreach_engine.autonomous.learning import (
@@ -42,7 +42,7 @@ from apps_lic.outreach_engine.autonomous.learning import (
 )
 from apps_lic.outreach_engine.autonomous.observability import (
     OutreachMetricsCollector,
-    OutreachPhase5Orchestrator,
+    OutreachPhase5OrchestratorAgent,
 )
 
 
@@ -251,7 +251,7 @@ class TestMessageComplianceAgent:
 
 
 class TestOutreachHealingOrchestrator:
-    """Tests for OutreachHealingOrchestrator."""
+    """Tests for OutreachHealingOrchestratorAgent."""
 
     @pytest.mark.asyncio
     async def test_successful_healing(self, ctx, valid_campaign, valid_leads, valid_messages):
@@ -260,7 +260,7 @@ class TestOutreachHealingOrchestrator:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
 
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=3)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=3)
         result = await orchestrator.run()
 
         assert result.total_cycles >= 1
@@ -280,13 +280,13 @@ class TestOutreachHealingOrchestrator:
 
 
 class TestOutreachSignalRouter:
-    """Tests for OutreachSignalRouter."""
+    """Tests for OutreachSignalRouterAgent."""
 
     def test_get_agents_for_signals(self):
         """Test getting agents for signals."""
         signals = {"LEAD_QUALITY_ISSUE", "COMPLIANCE_ISSUE"}
 
-        agents = OutreachSignalRouter.get_agents_for_signals(signals)
+        agents = OutreachSignalRouterAgent.get_agents_for_signals(signals)
 
         assert "LeadQualityAgent" in agents
         assert "MessageComplianceAgent" in agents
@@ -295,15 +295,15 @@ class TestOutreachSignalRouter:
         """Test critical signal detection."""
         signals = {"COMPLIANCE_ISSUE"}
 
-        assert OutreachSignalRouter.has_critical_signal(signals) is True
+        assert OutreachSignalRouterAgent.has_critical_signal(signals) is True
 
         signals = {"LEAD_QUALITY_ISSUE"}
 
-        assert OutreachSignalRouter.has_critical_signal(signals) is False
+        assert OutreachSignalRouterAgent.has_critical_signal(signals) is False
 
     def test_determine_strategy(self):
         """Test strategy determination."""
-        strategy = OutreachSignalRouter.determine_strategy(1, set(), set())
+        strategy = OutreachSignalRouterAgent.determine_strategy(1, set(), set())
 
         assert strategy == OutreachHealingStrategy.FULL_DIAGNOSTIC
 
@@ -370,11 +370,11 @@ class TestOutreachConfidenceScorer:
 
 
 class TestOutreachPhase5Orchestrator:
-    """Tests for OutreachPhase5Orchestrator."""
+    """Tests for OutreachPhase5OrchestratorAgent."""
 
     def test_start_mission(self, ctx):
         """Test starting a mission."""
-        orchestrator = OutreachPhase5Orchestrator(ctx)
+        orchestrator = OutreachPhase5OrchestratorAgent(ctx)
 
         trace_id = orchestrator.start_mission("test_mission")
 
@@ -382,7 +382,7 @@ class TestOutreachPhase5Orchestrator:
 
     def test_track_agent(self, ctx):
         """Test tracking an agent."""
-        orchestrator = OutreachPhase5Orchestrator(ctx)
+        orchestrator = OutreachPhase5OrchestratorAgent(ctx)
         orchestrator.start_mission("test")
 
         step_id = orchestrator.track_agent("TestAgent", "execute")
@@ -391,7 +391,7 @@ class TestOutreachPhase5Orchestrator:
 
     def test_end_mission(self, ctx):
         """Test ending a mission."""
-        orchestrator = OutreachPhase5Orchestrator(ctx)
+        orchestrator = OutreachPhase5OrchestratorAgent(ctx)
         orchestrator.start_mission("test")
 
         trace = orchestrator.end_mission(success=True)
@@ -402,7 +402,7 @@ class TestOutreachPhase5Orchestrator:
     def test_generate_report(self, ctx, valid_campaign):
         """Test generating a report."""
         ctx.current_campaign = valid_campaign
-        orchestrator = OutreachPhase5Orchestrator(ctx)
+        orchestrator = OutreachPhase5OrchestratorAgent(ctx)
         orchestrator.start_mission("test")
 
         report = orchestrator.generate_report()

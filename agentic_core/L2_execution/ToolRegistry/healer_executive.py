@@ -30,8 +30,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-# NAMING FIXED: IntegrityGateExecutor → IntegrityGateExecutor
-class IntegrityGateExecutor(HealerMixin):
+# NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
+class IntegrityGateExecutorAgent(HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def execute_hygiene_scan(self, headline: str): pass
@@ -128,11 +128,11 @@ class ExecutiveTitleComposer:
     def __init__(
         self,
         config: Optional[TitleComposerConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutor] = None,
+        gate_executor: Optional[IntegrityGateExecutorAgent] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
         self.CONFIG = config or TitleComposerConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.CONFIG.TEMPERATURE # Changed self.config to self.CONFIG to match definition
         )

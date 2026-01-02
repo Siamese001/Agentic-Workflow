@@ -13,7 +13,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 # Import validator and engine
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 from canon_validator_engine import execute_cost_governed_vulnerability_check
 
 # Import shared test utilities
@@ -49,7 +49,7 @@ sys.modules['mcp11_convert_time'] = Mock()
 
 def create_hydrofoil_validator():
     """Create a validator with Hydrofoil-configured mocks"""
-    validator = CanonValidator()
+    validator = CanonValidatorAgent()
 
     # Mock LLM - The Navigation AI
     validator.llm = Mock()

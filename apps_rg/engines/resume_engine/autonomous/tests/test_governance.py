@@ -4,11 +4,11 @@ Unit Tests for Phase 7: Governance & Meta-Optimization Components
 
 Tests the core governance functionality:
 - DependencyArbiter
-- StrictDocEnforcer
+- StrictDocEnforcerAgent
 - DashboardGenerator
 - PromptGovernor
 - PredictiveBudgetManager
-- Phase7Orchestrator
+- Phase7OrchestratorAgent
 """
 import re
 
@@ -26,12 +26,12 @@ from ..governance import (
     DependencyStatus,
     DocComplianceLevel,
     DocViolation,
-    Phase7Orchestrator,
+    Phase7OrchestratorAgent,
     PredictiveBudgetManager,
     PromptGovernor,
     PromptIssue,
     PromptRisk,
-    StrictDocEnforcer,
+    StrictDocEnforcerAgent,
 )
 
 
@@ -251,17 +251,17 @@ from pandas import DataFrame
 
 
 class TestStrictDocEnforcer:
-    """Tests for StrictDocEnforcer class."""
+    """Tests for StrictDocEnforcerAgent class."""
 
     def test_init(self, ctx):
-        """Test StrictDocEnforcer initialization."""
-        enforcer = StrictDocEnforcer(ctx)
+        """Test StrictDocEnforcerAgent initialization."""
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         assert enforcer.ctx == ctx
 
     def test_check_documented_code(self, ctx, sample_code_documented):
         """Test checking well-documented code."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         violations = enforcer.check_content(sample_code_documented)
 
@@ -270,7 +270,7 @@ class TestStrictDocEnforcer:
 
     def test_check_undocumented_code(self, ctx, sample_code_undocumented):
         """Test checking undocumented code."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         violations = enforcer.check_content(sample_code_undocumented)
 
@@ -279,7 +279,7 @@ class TestStrictDocEnforcer:
 
     def test_get_compliance_level_complete(self, ctx, sample_code_documented):
         """Test getting compliance level for complete docs."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         level = enforcer.get_compliance_level(sample_code_documented)
 
@@ -287,7 +287,7 @@ class TestStrictDocEnforcer:
 
     def test_get_compliance_level_none(self, ctx, sample_code_undocumented):
         """Test getting compliance level for no docs."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
 
         level = enforcer.get_compliance_level(sample_code_undocumented)
 
@@ -295,7 +295,7 @@ class TestStrictDocEnforcer:
 
     def test_get_stats(self, ctx, sample_code_undocumented):
         """Test getting enforcer statistics."""
-        enforcer = StrictDocEnforcer(ctx)
+        enforcer = StrictDocEnforcerAgent(ctx)
         enforcer.check_content(sample_code_undocumented)
 
         stats = enforcer.get_stats()
@@ -479,11 +479,11 @@ class TestPredictiveBudgetManager:
 
 
 class TestPhase7Orchestrator:
-    """Tests for Phase7Orchestrator class."""
+    """Tests for Phase7OrchestratorAgent class."""
 
     def test_init(self, ctx):
-        """Test Phase7Orchestrator initialization."""
-        orchestrator = Phase7Orchestrator(ctx)
+        """Test Phase7OrchestratorAgent initialization."""
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         assert orchestrator.ctx == ctx
         assert orchestrator.dependency is not None
@@ -494,7 +494,7 @@ class TestPhase7Orchestrator:
 
     def test_check_dependencies(self, ctx):
         """Test checking dependencies."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         issues = orchestrator.check_dependencies()
 
@@ -502,7 +502,7 @@ class TestPhase7Orchestrator:
 
     def test_check_documentation(self, ctx, sample_code_undocumented):
         """Test checking documentation."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         violations = orchestrator.check_documentation(sample_code_undocumented)
 
@@ -510,7 +510,7 @@ class TestPhase7Orchestrator:
 
     def test_scan_prompts(self, ctx, sample_code_with_prompts):
         """Test scanning prompts."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         issues = orchestrator.scan_prompts(sample_code_with_prompts)
 
@@ -518,7 +518,7 @@ class TestPhase7Orchestrator:
 
     def test_predict_mission_cost(self, ctx):
         """Test predicting mission cost."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         prediction = orchestrator.predict_mission_cost(10, 5, 3)
 
@@ -526,7 +526,7 @@ class TestPhase7Orchestrator:
 
     def test_generate_dashboard(self, ctx, tmp_path):
         """Test generating dashboard."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         output_path = str(tmp_path / "mission_control.html")
         result = orchestrator.generate_dashboard(
@@ -540,7 +540,7 @@ class TestPhase7Orchestrator:
     @pytest.mark.asyncio
     async def test_run_governance_checks(self, ctx, sample_code_with_prompts):
         """Test running governance checks."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         results = await orchestrator.run_governance_checks(sample_code_with_prompts)
 
@@ -551,7 +551,7 @@ class TestPhase7Orchestrator:
 
     def test_get_comprehensive_stats(self, ctx):
         """Test getting comprehensive statistics."""
-        orchestrator = Phase7Orchestrator(ctx)
+        orchestrator = Phase7OrchestratorAgent(ctx)
 
         stats = orchestrator.get_comprehensive_stats()
 

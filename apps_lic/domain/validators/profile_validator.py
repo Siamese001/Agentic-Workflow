@@ -137,7 +137,7 @@ class ConstraintFeasibilityChecker:
 # NEW v11.6: CONTENT CLEANLINESS VALIDATORS (FEATURE 3.1, 3.2, 3.3)
 # ============================================================================
 
-class ContentCleanlinessValidator:
+class ContentCleanlinessValidatorAgent:
     """
     Forbidden verbs and weak language detection
     FEATURE 3.1 and 3.2 from SUPREME_SPELL
@@ -204,7 +204,7 @@ class ContentCleanlinessValidator:
         
         return True, ""
 
-class PlaceholderDetector:
+class PlaceholderDetectorAgent:
     """
     Comprehensive placeholder detection
     FEATURE 3.3 from SUPREME_SPELL / GAP 1.5
@@ -250,7 +250,7 @@ class PlaceholderDetector:
 # NEW v11.6: MESSAGE DIVERSITY VALIDATOR (FEATURE 1.3)
 # ============================================================================
 
-class MessageDiversityValidator:
+class MessageDiversityValidatorAgent:
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL
@@ -300,7 +300,7 @@ class MessageDiversityValidator:
 # NEW v11.6: ASCII CHARACTER ENFORCER (GAP 1.10)
 # ============================================================================
 
-class ASCIIEnforcer:
+class ASCIIEnforcerAgent:
     """
     Enforce ASCII-only characters for LinkedIn compatibility
     GAP 1.10 from v10.22
@@ -351,10 +351,10 @@ class ValidationAgent:
         self.status = "IDLE" # Using simple string, could be AgentStatus enum
         
         # NEW v11.6: Initialize validators
-        self.placeholder_detector = PlaceholderDetector()
-        self.diversity_validator = MessageDiversityValidator()
-        self.content_validator = ContentCleanlinessValidator()
-        self.ascii_enforcer = ASCIIEnforcer()
+        self.placeholder_detector = PlaceholderDetectorAgent()
+        self.diversity_validator = MessageDiversityValidatorAgent()
+        self.content_validator = ContentCleanlinessValidatorAgent()
+        self.ascii_enforcer = ASCIIEnforcerAgent()
         
         # These validators require RAG context, so they are instantiated
         # in rag.py or called dynamically.

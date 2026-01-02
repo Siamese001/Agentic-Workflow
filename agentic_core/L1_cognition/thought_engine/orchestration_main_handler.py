@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol, Set
 from agentic_core.tools.filesystem import WriteFileArgs, write_file
-from agentic_core.L2_execution.tool_registry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspector, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
+from agentic_core.L2_execution.tool_registry import CanonStructuralEngineer, CodeJanitor, CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer, SafetyInspectorAgent, SecurityEnforcer, SystemArchitect, get_dependency_diplomat, get_regression_oracle
 from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -44,7 +44,7 @@ except ImportError:
     genai: Any = None
     types: Any = None
 Logger: Any = logging.getLogger(__name__)
-_orchestrator_instance: Optional['ConsolidatedOrchestrator'] = None
+_orchestrator_instance: Optional['ConsolidatedOrchestratorAgent'] = None
 
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
@@ -130,7 +130,7 @@ class OrchestratorHealingService:
             response: Any = await asyncio.to_thread(self.client.models.generate_content, model=self.config.gemini_model, contents=f'{fix_prompt}\n\n{original_code}', config=config)
             fixed_code: Any = response.text.strip() if response.text else original_code
             if self._validate_fix(original_code, fixed_code):
-                write_file(WriteFileArgs(path=file_path, content=fixed_code), blackboard=getattr(self.ctx, 'blackboard', None), agent_id='ConsolidatedOrchestrator')
+                write_file(WriteFileArgs(path=file_path, content=fixed_code), blackboard=getattr(self.ctx, 'blackboard', None), agent_id='ConsolidatedOrchestratorAgent')
                 self._record_healing_attempt(file_path, success=True)
                 self.Logger.info(f'[OK] Healed {file_path} for Violation {violation_key}')
                 return True
@@ -235,7 +235,7 @@ class OrchestratorStateManager:
             duration: Any = (self.state.end_time - self.state.start_time).total_seconds()
         return {'workflow_id': self.state.workflow_id, 'status': self.state.status, 'cycles_executed': self.state.current_cycle, 'signals': list(self.state.signals), 'modified_files': list(self.state.modified_files), 'healing_attempts': self.state.healing_attempts, 'healing_budget_used': self.state.healing_budget_used, 'checkpoints_created': len(self.state.checkpoints), 'duration_seconds': duration, 'start_time': self.state.start_time.isoformat() if self.state.start_time else None, 'end_time': self.state.end_time.isoformat() if self.state.end_time else None}
 
-class OrchestratorAgentAndScopeManager:
+class OrchestratorAgentAndScopeManagerAgent:
     """
     Manages the creation of the subatomic agent swarm and calculates
     the smart scope for targeted execution.
@@ -259,7 +259,7 @@ class OrchestratorAgentAndScopeManager:
         agents.append(CanonStructuralEngineer(self.ctx))
         agents.append(HygieneGuardian(self.ctx))
         agents.append(CodeStyleGuardian(self.ctx))
-        agents.append(SafetyInspector(self.ctx))
+        agents.append(SafetyInspectorAgent(self.ctx))
         agents.append(SecurityEnforcer(self.ctx))
         agents.append(PerformanceEnforcer(self.ctx))
         self.Logger.info(f'   🤖 Agent Swarm Created: {len(agents)} agents')
@@ -297,7 +297,7 @@ class OrchestratorAgentAndScopeManager:
         impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
         return impact_scope
 
-class ConsolidatedOrchestrator(HealerMixin, MCPHardenedMixin):
+class ConsolidatedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     
@@ -336,7 +336,7 @@ class ConsolidatedOrchestrator(HealerMixin, MCPHardenedMixin):
             Logger.warning('[!]  Gemini client not available')
         self.healing_service: Optional[OrchestratorHealingService] = None
         self.state_manager: Optional[OrchestratorStateManager] = None
-        self.agent_scope_manager = OrchestratorAgentAndScopeManager(self.config, self.ctx, Logger)
+        self.agent_scope_manager = OrchestratorAgentAndScopeManagerAgent(self.config, self.ctx, Logger)
         if self.config.clean_slate:
             self._execute_clean_slate()
         Logger.info('[START] Consolidated orchestrator initialized (Phase 5: Swarm Assembly)')
@@ -485,7 +485,7 @@ class ConsolidatedOrchestrator(HealerMixin, MCPHardenedMixin):
             return False
         return await self.healing_service.execute_healing(file_path, violation_key, fix_prompt)
 
-def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> ConsolidatedOrchestrator:
+def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> ConsolidatedOrchestratorAgent:
     """
     Factory function to create a consolidated orchestrator.
     
@@ -494,9 +494,9 @@ def create_orchestrator(config: Optional[OrchestratorConfig]=None, context: Opti
         context: Validation context
         
     Returns:
-        ConsolidatedOrchestrator instance
+        ConsolidatedOrchestratorAgent instance
     """
-    return ConsolidatedOrchestrator(config=config, context=context)
+    return ConsolidatedOrchestratorAgent(config=config, context=context)
 
 async def main() -> Any:
     """

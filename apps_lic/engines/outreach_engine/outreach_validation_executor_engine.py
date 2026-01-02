@@ -20,7 +20,7 @@ from validation_gate_executor import (  # Assuming this import is correct
 
 LOGGER = logging.getLogger(__name__)
 
-class OutreachValidationExecutor(ValidationGateExecutor):
+class OutreachValidationExecutorAgent(ValidationGateExecutor):
     """Extended validation executor for outreach-specific rules.
 
     Implements LIC-specific validation gates:
@@ -59,7 +59,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         self.forbidden_filler_phrases = [p.lower() for p in forbidden_filler_phrases]
 
         LOGGER.info(
-            f"OutreachValidationExecutor initialized: "
+            f"OutreachValidationExecutorAgent initialized: "
             f"{len(forbidden_verbs)} forbidden verbs, "
             f"{len(forbidden_filler_phrases)} forbidden phrases"
         )

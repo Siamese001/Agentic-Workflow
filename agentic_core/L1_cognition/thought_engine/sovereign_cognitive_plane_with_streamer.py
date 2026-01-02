@@ -24,9 +24,9 @@ class AgentInfo(HealerMixin):
         self.name = name
         self.phase = phase
         self.capabilities = capabilities
-sovereign_agents: Any = [AgentInfo('Historian', 'integrity_seq', ['reasoning']), AgentInfo('ArchitectureGovernor', 'integrity_seq', ['reasoning']), AgentInfo('DependencySentinel', 'integrity_seq', ['reasoning']), AgentInfo('HygieneGuardian', 'curation_seq', ['reasoning']), AgentInfo('CodeStyleGuardian', 'curation_seq', ['reasoning']), AgentInfo('TestPilot', 'test_seq', ['reasoning']), AgentInfo('TheCartographer', 'memory_parallel', ['reasoning']), AgentInfo('TheOmniContext', 'memory_parallel', ['reasoning']), AgentInfo('SafetyInspector', 'resilience_parallel', ['reasoning']), AgentInfo('SecurityEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('PerformanceEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('ConcurrencyGuardian', 'resource_safety_parallel', ['reasoning']), AgentInfo('StructuralEngineer', 'engineering_parallel', ['reasoning']), AgentInfo('PatternEnforcer', 'engineering_parallel', ['reasoning']), AgentInfo('ToolsmithAgent', 'engineering_parallel', ['reasoning', 'tool_creation']), AgentInfo('NamingEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('DocEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('TypeEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('BenchmarkingAgent', 'benchmarking_seq', ['reasoning']), AgentInfo('TheStrategist', 'optimization_conditional', ['reasoning'])]
+sovereign_agents: Any = [AgentInfo('Historian', 'integrity_seq', ['reasoning']), AgentInfo('ArchitectureGovernor', 'integrity_seq', ['reasoning']), AgentInfo('DependencySentinelAgent', 'integrity_seq', ['reasoning']), AgentInfo('HygieneGuardian', 'curation_seq', ['reasoning']), AgentInfo('CodeStyleGuardian', 'curation_seq', ['reasoning']), AgentInfo('TestPilot', 'test_seq', ['reasoning']), AgentInfo('TheCartographer', 'memory_parallel', ['reasoning']), AgentInfo('TheOmniContext', 'memory_parallel', ['reasoning']), AgentInfo('SafetyInspectorAgent', 'resilience_parallel', ['reasoning']), AgentInfo('SecurityEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('PerformanceEnforcer', 'resilience_parallel', ['reasoning']), AgentInfo('ConcurrencyGuardianAgent', 'resource_safety_parallel', ['reasoning']), AgentInfo('StructuralEngineer', 'engineering_parallel', ['reasoning']), AgentInfo('PatternEnforcerAgent', 'engineering_parallel', ['reasoning']), AgentInfo('ToolsmithAgent', 'engineering_parallel', ['reasoning', 'tool_creation']), AgentInfo('NamingEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('DocEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('TypeEnforcer', 'refinement_parallel', ['reasoning']), AgentInfo('BenchmarkingAgent', 'benchmarking_seq', ['reasoning']), AgentInfo('TheStrategist', 'optimization_conditional', ['reasoning'])]
 
-class SovereignCognitivePlane(ICognitivePlane):
+class SovereignCognitivePlaneAgent(ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
     def __init__(self, enable_streaming: bool=True, streamer_factory: Optional[callable]=None):
@@ -48,7 +48,7 @@ class SovereignCognitivePlane(ICognitivePlane):
             if streamer_factory:
                 try:
                     self._streamer = streamer_factory()
-                    LOGGER.info('L5 Streamer integrated with SovereignCognitivePlane via factory')
+                    LOGGER.info('L5 Streamer integrated with SovereignCognitivePlaneAgent via factory')
                 except Exception as e:
                     LOGGER.warning(f'Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled')
             else:

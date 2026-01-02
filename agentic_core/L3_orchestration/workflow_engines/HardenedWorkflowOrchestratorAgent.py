@@ -17,10 +17,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 
-class HardenedWorkflowOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Thin wrapper for Hardened Workflow Orchestrator.
-    Delegates to ConsolidatedOrchestrator.
+    Delegates to ConsolidatedOrchestratorAgent.
     
     Legacy API preserved for backward compatibility.
     """
@@ -37,7 +37,7 @@ class HardenedWorkflowOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTes
         self.orchestrator = create_orchestrator(config=config)
         self.workflow_spec = workflow_spec
         self.run_base_dir = run_base_dir
-        Logger.info('🔗 HardenedWorkflowOrchestrator wrapper initialized (delegates to orchestrator_main)')
+        Logger.info('🔗 HardenedWorkflowOrchestratorAgent wrapper initialized (delegates to orchestrator_main)')
 
     async def initialize_or_resume_workflow(self, workflow_id: str, total_k_nodes: int, context: Dict[str, Any]) -> Dict[str, Any]:
         """Initialize new workflow or resume from Checkpoint (legacy wrapper)."""

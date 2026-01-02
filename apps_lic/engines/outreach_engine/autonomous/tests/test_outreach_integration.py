@@ -24,14 +24,14 @@ from apps_lic.outreach_engine.autonomous.agents import (
 )
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator,
-    OutreachSignalRouter,
+    OutreachHealingOrchestratorAgent,
+    OutreachSignalRouterAgent,
 )
 from apps_lic.outreach_engine.autonomous.learning import (
     OutreachLearningAgent,
     OutreachLearningLoop,
 )
-from apps_lic.outreach_engine.autonomous.observability import OutreachPhase5Orchestrator
+from apps_lic.outreach_engine.autonomous.observability import OutreachPhase5OrchestratorAgent
 
 
 @pytest.fixture
@@ -83,7 +83,7 @@ class TestHealingWithLearning:
         learning_agent = OutreachLearningAgent(ctx)
 
         # Run healing
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Run learning
@@ -118,14 +118,14 @@ class TestObservabilityWithHealing:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
 
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
 
         # Start mission
         phase5.start_mission("healing_test")
 
         # Run healing
-        step_id = phase5.track_agent("HealingOrchestrator", "run")
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
         phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 
@@ -142,7 +142,7 @@ class TestObservabilityWithHealing:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
 
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
         phase5.start_mission("metrics_test")
 
         # Record metrics
@@ -150,7 +150,7 @@ class TestObservabilityWithHealing:
         phase5.metrics.gauge("message_count", len(valid_messages))
 
         # Run healing
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         await orchestrator.run()
 
         phase5.metrics.counter("healing_cycles", 2)
@@ -171,7 +171,7 @@ class TestFullPipelineIntegration:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
 
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
         learning_agent = OutreachLearningAgent(ctx)
 
         # Start observability
@@ -192,8 +192,8 @@ class TestFullPipelineIntegration:
 
         # Run healing if needed
         if ctx.signals:
-            step_id = phase5.track_agent("HealingOrchestrator", "run")
-            orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+            step_id = phase5.track_agent("HealingOrchestratorAgent", "run")
+            orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
             result = await orchestrator.run()
             phase5.complete_agent(step_id, success=result.total_cycles >= 1)
 
@@ -217,7 +217,7 @@ class TestFullPipelineIntegration:
         ctx.leads = [{"company": ""}]  # Invalid lead
         ctx.messages = [{"subject": "FREE!!!", "content": "Act now!"}]  # Non-compliant
 
-        phase5 = OutreachPhase5Orchestrator(ctx)
+        phase5 = OutreachPhase5OrchestratorAgent(ctx)
         phase5.start_mission("failure_test")
 
         # Run agents
@@ -232,7 +232,7 @@ class TestFullPipelineIntegration:
         assert ctx.has_signal("COMPLIANCE_ISSUE")
 
         # Run healing
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Healing should complete even with issues
@@ -249,7 +249,7 @@ class TestSignalRouting:
         """Test routing multiple signals."""
         signals = {"LEAD_QUALITY_ISSUE", "COMPLIANCE_ISSUE", "DELIVERABILITY_ISSUE"}
 
-        agents = OutreachSignalRouter.get_agents_for_signals(signals)
+        agents = OutreachSignalRouterAgent.get_agents_for_signals(signals)
 
         assert "LeadQualityAgent" in agents
         assert "MessageComplianceAgent" in agents
@@ -266,7 +266,7 @@ class TestSignalRouting:
         ctx.add_signal("LEAD_QUALITY_ISSUE")
 
         # Run healing with surgical strike
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         result = await orchestrator.run()
 
         # Should have executed LeadQualityAgent
@@ -285,7 +285,7 @@ class TestBudgetIntegration:
 
         ctx.budget.current_cost
 
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=2)
         await orchestrator.run()
 
         # Budget should still be available
@@ -298,7 +298,7 @@ class TestBudgetIntegration:
         ctx.budget.max_budget = 0.0001  # Very low budget
         ctx.budget.current_cost = 0.0001  # Already at limit
 
-        orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=5)
+        orchestrator = OutreachHealingOrchestratorAgent(ctx, max_cycles=5)
         result = await orchestrator.run()
 
         # Should stop due to budget

@@ -7,8 +7,8 @@ Tests the core intelligence functionality:
 - SemanticAnalyzer
 - StrategicAdvisor
 - OmniContext
-- UnifiedOrchestrator
-- Phase6Orchestrator
+- UnifiedOrchestratorAgent
+- Phase6OrchestratorAgent
 """
 import re
 
@@ -19,7 +19,7 @@ from ..context import ResumeEngineContext
 from ..intelligence import (
     AnalysisType,
     OmniContext,
-    Phase6Orchestrator,
+    Phase6OrchestratorAgent,
     RefactorProposal,
     RefactorType,
     SecurityHardener,
@@ -28,7 +28,7 @@ from ..intelligence import (
     SemanticAnalyzer,
     SemanticMatch,
     StrategicAdvisor,
-    UnifiedOrchestrator,
+    UnifiedOrchestratorAgent,
 )
 
 
@@ -429,11 +429,11 @@ class TestOmniContext:
 
 
 class TestUnifiedOrchestrator:
-    """Tests for UnifiedOrchestrator class."""
+    """Tests for UnifiedOrchestratorAgent class."""
 
     def test_init(self, ctx):
-        """Test UnifiedOrchestrator initialization."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        """Test UnifiedOrchestratorAgent initialization."""
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         assert orchestrator.ctx == ctx
         assert orchestrator.security is not None
@@ -442,7 +442,7 @@ class TestUnifiedOrchestrator:
     @pytest.mark.asyncio
     async def test_run_mission(self, ctx, valid_resume):
         """Test running a mission."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         result = await orchestrator.run_mission(valid_resume)
 
@@ -453,7 +453,7 @@ class TestUnifiedOrchestrator:
     @pytest.mark.asyncio
     async def test_run_mission_with_job_description(self, ctx, valid_resume):
         """Test running a mission with job description."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         jd = "Looking for Python developer"
         result = await orchestrator.run_mission(valid_resume, jd)
@@ -462,7 +462,7 @@ class TestUnifiedOrchestrator:
 
     def test_get_comprehensive_stats(self, ctx):
         """Test getting comprehensive statistics."""
-        orchestrator = UnifiedOrchestrator(ctx)
+        orchestrator = UnifiedOrchestratorAgent(ctx)
 
         stats = orchestrator.get_comprehensive_stats()
 
@@ -473,11 +473,11 @@ class TestUnifiedOrchestrator:
 
 
 class TestPhase6Orchestrator:
-    """Tests for Phase6Orchestrator class."""
+    """Tests for Phase6OrchestratorAgent class."""
 
     def test_init(self, ctx):
-        """Test Phase6Orchestrator initialization."""
-        orchestrator = Phase6Orchestrator(ctx)
+        """Test Phase6OrchestratorAgent initialization."""
+        orchestrator = Phase6OrchestratorAgent(ctx)
 
         assert orchestrator.ctx == ctx
         assert orchestrator.security is not None
@@ -489,7 +489,7 @@ class TestPhase6Orchestrator:
     @pytest.mark.asyncio
     async def test_analyze_resume(self, ctx, valid_resume):
         """Test analyzing a resume."""
-        orchestrator = Phase6Orchestrator(ctx)
+        orchestrator = Phase6OrchestratorAgent(ctx)
 
         result = await orchestrator.analyze_resume(valid_resume)
 
@@ -501,7 +501,7 @@ class TestPhase6Orchestrator:
     @pytest.mark.asyncio
     async def test_analyze_resume_with_job_description(self, ctx, valid_resume):
         """Test analyzing with job description."""
-        orchestrator = Phase6Orchestrator(ctx)
+        orchestrator = Phase6OrchestratorAgent(ctx)
 
         jd = "Python developer with AWS experience"
         result = await orchestrator.analyze_resume(valid_resume, jd)
@@ -511,7 +511,7 @@ class TestPhase6Orchestrator:
     @pytest.mark.asyncio
     async def test_run_full_mission(self, ctx, valid_resume):
         """Test running a full mission."""
-        orchestrator = Phase6Orchestrator(ctx)
+        orchestrator = Phase6OrchestratorAgent(ctx)
 
         result = await orchestrator.run_full_mission(valid_resume)
 
@@ -520,7 +520,7 @@ class TestPhase6Orchestrator:
 
     def test_search_context(self, ctx, valid_resume):
         """Test searching context."""
-        orchestrator = Phase6Orchestrator(ctx)
+        orchestrator = Phase6OrchestratorAgent(ctx)
         orchestrator.omni.build_context(valid_resume)
 
         matches = orchestrator.search_context("engineer")
@@ -529,7 +529,7 @@ class TestPhase6Orchestrator:
 
     def test_get_comprehensive_stats(self, ctx):
         """Test getting comprehensive statistics."""
-        orchestrator = Phase6Orchestrator(ctx)
+        orchestrator = Phase6OrchestratorAgent(ctx)
 
         stats = orchestrator.get_comprehensive_stats()
 

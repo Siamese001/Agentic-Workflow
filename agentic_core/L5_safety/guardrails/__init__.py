@@ -3,8 +3,8 @@ from __future__ import annotations
 
 Note: Imports are lazy to avoid circular dependencies.
 Import specific modules directly when needed:
-    from agentic_core.L5_safety.guardrails.input_validator import InputValidator
-    from agentic_core.L5_safety.guardrails.secure_config import SecureConfigManager
+    from agentic_core.L5_safety.guardrails.input_validator import InputValidatorAgent
+    from agentic_core.L5_safety.guardrails.secure_config import SecureConfigManagerAgent
 """
 
 __all__ = [

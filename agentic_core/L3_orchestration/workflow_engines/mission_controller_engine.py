@@ -130,7 +130,7 @@ class MissionController:
         ctx.python_files = self._discover_python_files(target_scope)
         print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(self.allowed_root_folders)} allowed folders")
         
-        # Initialize core components (SubAtomicEngine, SafetyGuardrail, FissionManager)
+        # Initialize core components (SubAtomicEngine, SafetyGuardrail, FissionManagerAgent)
         await self._initialize_core_components(ctx)
         
         # Run Sovereign Dashboard (ReportingAgent diagnostic)
@@ -370,7 +370,7 @@ class MissionController:
         print("-" * 50)
 
     async def _initialize_core_components(self, ctx: Any) -> None:
-        """Initialize SubAtomicEngine, SafetyGuardrail, and FissionManager."""
+        """Initialize SubAtomicEngine, SafetyGuardrail, and FissionManagerAgent."""
         print(f"\n[CORE INIT] Initializing sovereign components...")
         
         # Initialize SubAtomicEngine (LLM-powered code mutation)
@@ -399,17 +399,17 @@ class MissionController:
             print(f"   [!] SafetyGuardrail init failed: {e}")
             ctx.safety = None
         
-        # Initialize FissionManager (file splitting)
+        # Initialize FissionManagerAgent (file splitting)
         try:
-            from agentic_core.L3_orchestration.fission_logic.FissionManager import FissionManager
-            self._fission_manager = FissionManager(self.project_root)
+            from agentic_core.L3_orchestration.fission_logic.FissionManagerAgent import FissionManagerAgent
+            self._fission_manager = FissionManagerAgent(self.project_root)
             ctx.fission = self._fission_manager
-            print(f"   [OK] FissionManager armed — file splitting available")
+            print(f"   [OK] FissionManagerAgent armed — file splitting available")
         except ImportError as e:
-            print(f"   [!] FissionManager unavailable: {e}")
+            print(f"   [!] FissionManagerAgent unavailable: {e}")
             ctx.fission = None
         except Exception as e:
-            print(f"   [!] FissionManager init failed: {e}")
+            print(f"   [!] FissionManagerAgent init failed: {e}")
             ctx.fission = None
 
     async def _run_gravity_refactor(self, ctx: Any) -> None:

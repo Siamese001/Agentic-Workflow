@@ -6,7 +6,7 @@ import asyncio
 import pytest
 import tempfile
 from pathlib import Path
-from agentic_core.utils.guardian.sovereignty_auditor import SovereigntyAuditor, run_sovereignty_audit
+from agentic_core.utils.guardian.sovereignty_auditor import SovereigntyAuditorAgent, run_sovereignty_audit
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -21,7 +21,7 @@ class test_sovereignty_auditor:
     @pytest.mark.asyncio
     async def test_auditor_initialization(self) -> Any:
         """Test auditor initializes correctly."""
-        auditor: Any = SovereigntyAuditor(root_dir='agentic_core')
+        auditor: Any = SovereigntyAuditorAgent(root_dir='agentic_core')
         assert auditor.root_dir == 'agentic_core'
         assert auditor.violations == []
         assert auditor.stats['files_scanned'] == 0
@@ -29,7 +29,7 @@ class test_sovereignty_auditor:
     @pytest.mark.asyncio
     async def test_depth_calculation(self) -> Any:
         """Test path depth calculation."""
-        auditor: Any = SovereigntyAuditor(root_dir='agentic_core')
+        auditor: Any = SovereigntyAuditorAgent(root_dir='agentic_core')
         assert auditor._calculate_depth('agentic_core') == 0
         assert auditor._calculate_depth('agentic_core/L1_cognition') == 1
         assert auditor._calculate_depth('agentic_core/L1_cognition/thought_engine') == 2
@@ -41,7 +41,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('import redis\nclient = redis.Redis()')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['import_violations'] > 0
             assert any(('Redis' in v['message'] for v in auditor.violations))
@@ -52,7 +52,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text("import requests\nresponse = requests.get('url')")
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['import_violations'] > 0
             assert any(('HTTP' in v['message'] for v in auditor.violations))
@@ -63,7 +63,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('from pinecone import Pinecone\npc = Pinecone()')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['import_violations'] > 0
             assert any(('Vector' in v['message'] for v in auditor.violations))
@@ -74,7 +74,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('from agentic_core.tools.guardian import check')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['path_violations'] > 0
             assert any(('PATH_BREACH' in v['type'] for v in auditor.violations))
@@ -85,7 +85,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'redis_mcp_client.py'
             test_file.write_text('import redis\n# This is the MCP client itself')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['import_violations'] == 0
 
@@ -97,7 +97,7 @@ class test_sovereignty_auditor:
             deep_path.mkdir(parents=True)
             test_file: Any = deep_path / 'test.py'
             test_file.write_text('# Deep file')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             assert auditor.stats['depth_violations'] > 0
             assert any(('DEPTH_BREACH' in v['type'] for v in auditor.violations))
@@ -108,7 +108,7 @@ class test_sovereignty_auditor:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             result: Any = await auditor.run_audit()
             assert result is True
             assert auditor.stats['violations_found'] == 0
@@ -167,7 +167,7 @@ class test_guardian_lockdown:
         import tempfile
 from typing import Any
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write('from agentic_core.utils.guardian import SovereigntyAuditor\n')
+            f.write('from agentic_core.utils.guardian import SovereigntyAuditorAgent\n')
             temp_path: Any = Path(f.name)
         try:
             result: Any = check_file(temp_path)
@@ -181,7 +181,7 @@ class test_auditor_reporting:
     @pytest.mark.asyncio
     async def test_get_stats(self) -> Any:
         """Test auditor statistics retrieval."""
-        auditor: Any = SovereigntyAuditor(root_dir='agentic_core')
+        auditor: Any = SovereigntyAuditorAgent(root_dir='agentic_core')
         stats: Any = auditor.get_stats()
         assert 'files_scanned' in stats
         assert 'violations_found' in stats
@@ -195,7 +195,7 @@ class test_auditor_reporting:
         with tempfile.TemporaryDirectory() as tmpdir:
             test_file: Any = Path(tmpdir) / 'test.py'
             test_file.write_text('import redis')
-            auditor: Any = SovereigntyAuditor(root_dir=tmpdir)
+            auditor: Any = SovereigntyAuditorAgent(root_dir=tmpdir)
             await auditor.run_audit()
             violations: Any = auditor.get_violations()
             assert isinstance(violations, list)

@@ -61,12 +61,12 @@ except ImportError:
 def _get_imports():
     """Lazy import to avoid circular dependencies.
 
-    NOTE: We import from scripts/CanonValidator/agents/ which has the FULL
+    NOTE: We import from scripts/CanonValidatorAgent/agents/ which has the FULL
     self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
-    # Import ALL self-healing agents from CanonValidator (ZERO CAPABILITY LOSS)
-    # WatchmanHandler is in agentic_core (not in scripts/CanonValidator)
+    # Import ALL self-healing agents from CanonValidatorAgent (ZERO CAPABILITY LOSS)
+    # WatchmanHandler is in agentic_core (not in scripts/CanonValidatorAgent)
     from agentic_core.canon_scheduler import CanonSwarmScheduler
     from agentic_core.InterventionServer import (
         FASTAPI_AVAILABLE,
@@ -75,11 +75,11 @@ def _get_imports():
     )
     from agentic_core.L2_execution.ToolRegistry.infrastructure import WatchmanHandler
 
-    # GRAVITY FIX: Removed all scripts.CanonValidator imports
+    # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored
     ArchitectureGovernor = None  # Keys 40, 41, 50 + syntax fix
     CodeStyleGuardian = None  # Keys 10-16, 21, 47 + auto-fix whitespace/tabs/newlines
-    DependencySentinel = None  # Keys 7, 8, 9, 14, 44 + autoflake/isort
+    DependencySentinelAgent = None  # Keys 7, 8, 9, 14, 44 + autoflake/isort
     HygieneGuardian = None  # Key 45 + auto-delete generative artifacts
     NamingEnforcer = None  # Key 47 + auto-fix naming
     StructuralEngineer = None  # Keys 17, 18, 20, 25, 42, 43, 46
@@ -87,10 +87,10 @@ def _get_imports():
     GitAgent = None
     Historian = None
     ReflectionAgent = None
-    StrategicPlanner = None
+    StrategicPlannerAgent = None
 
-    # Use the FULL ValidationContext from scripts/CanonValidator which has all methods
-    # GRAVITY FIX: Removed all scripts.CanonValidator imports
+    # Use the FULL ValidationContext from scripts/CanonValidatorAgent which has all methods
+    # GRAVITY FIX: Removed all scripts.CanonValidatorAgent imports
     # These agents need to be moved to agentic_core or refactored
 
     return {
@@ -102,19 +102,19 @@ def _get_imports():
         # All agents for zero capability loss
         'ArchitectureGovernor': None,
         'CodeStyleGuardian': None,
-        'ConcurrencyGuardian': None,
-        'DependencySentinel': None,
+        'ConcurrencyGuardianAgent': None,
+        'DependencySentinelAgent': None,
         'GitAgent': None,
         'Historian': None,
         'HygieneGuardian': None,
         'NamingEnforcer': None,
         'TypeEnforcer': None,
-        'PatternEnforcer': None,
+        'PatternEnforcerAgent': None,
         'StructuralEngineer': None,
-        'SafetyInspector': None,
+        'SafetyInspectorAgent': None,
         'TestPilot': None,
         'ReflectionAgent': None,
-        'StrategicPlanner': None,
+        'StrategicPlannerAgent': None,
         'WatchmanHandler': WatchmanHandler,
     }
 
@@ -225,19 +225,19 @@ def run_standard_mode():
     # ALL agents for zero capability loss
     ArchitectureGovernor = imports['ArchitectureGovernor']
     CodeStyleGuardian = imports['CodeStyleGuardian']
-    ConcurrencyGuardian = imports['ConcurrencyGuardian']
-    DependencySentinel = imports['DependencySentinel']
+    ConcurrencyGuardianAgent = imports['ConcurrencyGuardianAgent']
+    DependencySentinelAgent = imports['DependencySentinelAgent']
     GitAgent = imports['GitAgent']
     Historian = imports['Historian']
     HygieneGuardian = imports['HygieneGuardian']
     NamingEnforcer = imports['NamingEnforcer']
     TypeEnforcer = imports['TypeEnforcer']
-    PatternEnforcer = imports['PatternEnforcer']
+    PatternEnforcerAgent = imports['PatternEnforcerAgent']
     StructuralEngineer = imports['StructuralEngineer']
-    SafetyInspector = imports['SafetyInspector']
+    SafetyInspectorAgent = imports['SafetyInspectorAgent']
     TestPilot = imports['TestPilot']
     ReflectionAgent = imports['ReflectionAgent']
-    StrategicPlanner = imports['StrategicPlanner']
+    StrategicPlannerAgent = imports['StrategicPlannerAgent']
 
     try:
         ctx = ValidationContext()
@@ -251,7 +251,7 @@ def run_standard_mode():
         sys.exit(1)
 
     # Build COMPLETE agent list - ALL 50 KEYS COVERED (ZERO CAPABILITY LOSS)
-    # Order matches original IntelligentOrchestrator swarm order
+    # Order matches original IntelligentOrchestratorAgent swarm order
     agents = [
         # 1. Structure (Blocker) - Keys 40, 41, 50 + syntax fix
         ArchitectureGovernor(ctx),
@@ -260,17 +260,17 @@ def run_standard_mode():
         # 3. Syntax/Style (Signal: AST_VALID) - Keys 10-16, 21, 47 + auto-fix
         CodeStyleGuardian(ctx),
         # 4. Import Hygiene (Signal: DEPS_VALID) - Keys 7, 8, 9, 14, 44 + autoflake/isort
-        DependencySentinel(ctx),
+        DependencySentinelAgent(ctx),
         # 5. Security (Signal: SECURE) - Keys 0-6, 60
-        SafetyInspector(ctx),
+        SafetyInspectorAgent(ctx),
         # 6. Patterns - Keys 26-39
-        PatternEnforcer(ctx),
+        PatternEnforcerAgent(ctx),
         # 7. Naming - Key 47 + auto-fix
         NamingEnforcer(ctx),
         # 8. Types - Key 22 + auto-inject typing
         TypeEnforcer(ctx),
         # 9. Concurrency - Keys 61, 63, 64
-        ConcurrencyGuardian(ctx),
+        ConcurrencyGuardianAgent(ctx),
         # 10. Structure - Keys 17, 18, 20, 25, 42, 43, 46
         StructuralEngineer(ctx),
         # 11. History
@@ -303,7 +303,7 @@ def run_standard_mode():
             ctx.modified_files.clear()
 
             # Build agenda based on cycle and signals
-            agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlanner, ReflectionAgent)
+            agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent)
 
             # Deduplicate agenda
             final_agenda = _deduplicate_agenda(agenda)
@@ -373,7 +373,7 @@ def _start_websocket_server(ctx):
     ws_thread.start()
 
 
-def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlanner, ReflectionAgent) -> List:
+def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlannerAgent, ReflectionAgent) -> List:
     """Build the agent execution agenda based on cycle and signals."""
     agenda = [GitAgent(ctx)]
 
@@ -383,18 +383,18 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlanner, Ref
     else:
         print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
         agenda.append(agents[0])  # Historian
-        agenda.append(StrategicPlanner(ctx))
+        agenda.append(StrategicPlannerAgent(ctx))
 
         if "TEST_FAILURE" in ctx.signals:
             agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
             print("      -> Priority: Root Cause Analysis & Verification")
 
         if any(s for s in ctx.signals if "IMPORT" in s or "ModuleNotFound" in s):
-            agenda.extend([a for a in agents if a.name == "DependencySentinel"])
+            agenda.extend([a for a in agents if a.name == "DependencySentinelAgent"])
             print("      -> Priority: Dependency Resolution")
 
         if ctx.modified_files:
-            agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
+            agenda.extend([a for a in agents if a.name in ["SafetyInspectorAgent", "CodeStyleGuardian"]])
             print("      -> Priority: Safety/Style check on modified files")
 
             impact_zone = set()
@@ -407,7 +407,7 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlanner, Ref
                 ctx.impact_zone = impact_zone
 
         if "SYNTAX_ERROR" in str(ctx.signals):
-            agenda.extend([a for a in agents if a.name == "SafetyInspector"])
+            agenda.extend([a for a in agents if a.name == "SafetyInspectorAgent"])
             print("      -> Priority: Syntax Repair")
 
         if len(agenda) == 2:

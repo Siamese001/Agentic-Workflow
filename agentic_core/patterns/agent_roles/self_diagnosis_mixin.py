@@ -8,7 +8,7 @@ Purpose:
     - Missing mandatory components
     - Component health_check failures
     - Configuration drift
-  Critical for ComplianceOrchestrator, HealingOrchestrator, and future SovereignOrchestrator.
+  Critical for ComplianceOrchestratorAgent, HealingOrchestratorAgent, and future SovereignOrchestrator.
 
 Constitutional Alignment:
   - Enables self-preservation without external monitoring

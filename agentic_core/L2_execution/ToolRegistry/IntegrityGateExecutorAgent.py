@@ -120,7 +120,7 @@ class DeepResearchOutput:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class IntegrityGateExecutor(HealerMixin):
+class IntegrityGateExecutorAgent(HealerMixin):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including
@@ -327,5 +327,5 @@ def validate_research_output(
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
-    EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
+    EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)
     return EXECUTOR.execute(research_output)

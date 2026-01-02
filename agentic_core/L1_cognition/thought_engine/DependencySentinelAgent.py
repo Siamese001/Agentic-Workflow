@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-DependencySentinel - L1 Guardian for Import Dependencies
+DependencySentinelAgent - L1 Guardian for Import Dependencies
 
 Enforces the "Law of Depth" and prevents circular imports.
 Uses AST parsing to analyze and validate import structures.
@@ -79,7 +79,7 @@ class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
 
     def __init__(self, root_dir: Path=None):
         """
-        Initialize the DependencySentinel.
+        Initialize the DependencySentinelAgent.
 
         Args:
             root_dir: Root directory of the codebase
@@ -88,7 +88,7 @@ class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
         self.violations: List[DependencyViolation] = []
         self.layer_hierarchy = {'L1': 1, 'L2': 2, 'L3': 3, 'L4': 4, 'L5': 5}
         self.allowed_cross_layers = {('L2', 'L1'), ('L3', 'L1'), ('L3', 'L2'), ('L4', 'L1'), ('L5', 'L1'), ('L5', 'L2'), ('L5', 'L3'), ('L5', 'L4')}
-        LOGGER.info('DependencySentinel initialized')
+        LOGGER.info('DependencySentinelAgent initialized')
 
     def check_file(self, file_path: Path) -> List[DependencyViolation]:
         """
@@ -269,14 +269,14 @@ def get_dependency_sentinel(project_root: Path) -> DependencySentinelAgent:
 
 def initialize_dependency_sentinel(root_dir: Path=None) -> Any:
     """
-    Initialize the DependencySentinel system.
+    Initialize the DependencySentinelAgent system.
 
     Args:
         root_dir: Root directory of the codebase
     """
     global _dependency_sentinel
-    _dependency_sentinel = DependencySentinel(root_dir)
-    LOGGER.info('DependencySentinel system initialized')
+    _dependency_sentinel = DependencySentinelAgent(root_dir)
+    LOGGER.info('DependencySentinelAgent system initialized')
 
 def check_dependencies(file_path: Path=None, directory: Path=None) -> List[DependencyViolation]:
     """

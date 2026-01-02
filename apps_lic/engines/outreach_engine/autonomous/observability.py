@@ -269,7 +269,7 @@ class OutreachAuditReporter:
         return self._reports
 
 
-class OutreachPhase5Orchestrator(HealerMixin):
+class OutreachPhase5OrchestratorAgent(HealerMixin):
     """
     Orchestrates Phase 5 observability for outreach.
     """

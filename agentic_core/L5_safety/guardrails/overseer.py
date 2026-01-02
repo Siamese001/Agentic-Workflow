@@ -2,7 +2,7 @@ from __future__ import annotations
 """Constitutional Overseer for validating ActionRequests.
 
 Validates actions against forbidden commands and safety rules.
-Includes SafetyInspector with Socratic Judge for false positive mitigation.
+Includes SafetyInspectorAgent with Socratic Judge for false positive mitigation.
 """
 import logging
 import os
@@ -124,7 +124,7 @@ class ConstitutionalOverseer:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SafetyInspector(HealerMixin, MCPHardenedMixin):
+class SafetyInspectorAgent(HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
@@ -133,7 +133,7 @@ class SafetyInspector(HealerMixin, MCPHardenedMixin):
     """
     def __init__(self, enable_socratic_judge: bool=True):
         """
-        Initialize the SafetyInspector.
+        Initialize the SafetyInspectorAgent.
 
         Args:
             enable_socratic_judge: Whether to use LLM verification for false positives
@@ -145,7 +145,7 @@ class SafetyInspector(HealerMixin, MCPHardenedMixin):
         self.print_patterns = ['print\\s*\\(', 'sys\\.stdout\\.write']
         self.debugger_patterns = ['import pdb', 'pdb\\.set_trace', 'import ipdb', 'ipdb\\.set_trace', 'breakpoint\\(\\)']
         self.eval_patterns = ['eval\\s*\\(', 'exec\\s*\\(', '__import__\\s*\\(', 'compile\\s*\\(']
-        LOGGER.info(f'SafetyInspector initialized (Socratic Judge: {enable_socratic_judge})')
+        LOGGER.info(f'SafetyInspectorAgent initialized (Socratic Judge: {enable_socratic_judge})')
 
     async def scan_file(self, file_path: str) -> Dict[str, List[str]]:
         """
@@ -254,6 +254,6 @@ def create_overseer() -> ConstitutionalOverseer:
     """Factory function to create overseer instance."""
     return ConstitutionalOverseer()
 
-def create_safety_inspector(enable_socratic_judge: bool=True) -> SafetyInspector:
-    """Factory function to create SafetyInspector instance."""
-    return SafetyInspector(enable_socratic_judge)
+def create_safety_inspector(enable_socratic_judge: bool=True) -> SafetyInspectorAgent:
+    """Factory function to create SafetyInspectorAgent instance."""
+    return SafetyInspectorAgent(enable_socratic_judge)

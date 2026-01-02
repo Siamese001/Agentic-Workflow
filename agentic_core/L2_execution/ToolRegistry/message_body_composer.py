@@ -57,9 +57,9 @@ class MessageBodyComposer:
     """
     ARCHETYPE_TRANSITIONS: Any = {'C_LEVEL': 'Two strategic insights from my experience:', 'VP_LEVEL': 'Two key achievements that align with your priorities:', 'DIRECTOR': 'Two relevant accomplishments from my background:', 'MANAGER': 'Two specific examples of my impact:', 'RECRUITER': 'Two qualifications that match your requirements:'}
 
-    def __init__(self, config: Optional[MessageBodyConfig]=None, gate_executor: Optional[IntegrityGateExecutor]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
+    def __init__(self, config: Optional[MessageBodyConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None, recovery_loop: Optional[AdaptiveRecoveryLoop]=None):
         SELF.CONFIG = config or MessageBodyConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
+        self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(initial_temperature=self.config.temperature)
 
     def generate_message_body(self, Archetype: str, resume_evidence: Dict[str, str], context: Dict[str, Any]) -> MessageBodyResult:

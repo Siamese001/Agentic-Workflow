@@ -133,8 +133,8 @@ class NeuralAutoImmuneAgent(AutonomyMixin,
                     ),
                     "Recommendation": "Pre-emptive validation and monitoring",
                     "preventive_actions": [
-                        "Run GuardianOrchestrator on this file",
-                        "Execute ScriptToAgentClassifier",
+                        "Run GuardianOrchestratorAgent on this file",
+                        "Execute ScriptToAgentClassifierAgent",
                         "Consider temporary write protection during review"
                     ],
                     "justification": f"High churn ({change_count} changes) + historical risk pattern"

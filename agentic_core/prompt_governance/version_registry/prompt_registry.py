@@ -300,7 +300,7 @@ def get_prompt_registry() -> PromptRegistry:
         #
         # Registry maintenance:
         # - Deduplication: Handled by register_prompt() logic
-        # - Runtime sync: ComplianceOrchestrator._sync_agent_prompts_to_registry()
+        # - Runtime sync: ComplianceOrchestratorAgent._sync_agent_prompts_to_registry()
         # - Cleanup: Run cleanup_duplicates.py to remove historical duplicates
         #
         # Hardcoded registrations REMOVED - registry is now 100% agent-driven.

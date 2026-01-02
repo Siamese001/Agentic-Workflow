@@ -24,8 +24,8 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-# NAMING FIXED: ResumeOrchestrator → ResumeOrchestrator
-class ResumeOrchestrator(HealerMixin):
+# NAMING FIXED: ResumeOrchestratorAgent → ResumeOrchestratorAgent
+class ResumeOrchestratorAgent(HealerMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
 
@@ -88,5 +88,5 @@ def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: in
 
 def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
-    orchestrator = ResumeOrchestrator(master_resume)
+    orchestrator = ResumeOrchestratorAgent(master_resume)
     return orchestrator.run(JobDescription)

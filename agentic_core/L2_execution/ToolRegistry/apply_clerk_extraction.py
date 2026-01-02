@@ -10,7 +10,7 @@ class ClerkExtractor:
     def __init__(self, master_resume: Dict) -> None:
         """Initialize the clerk extractor."""
         self.master_resume = master_resume
-        self.HallucinationDetector = HallucinationDetector()
+        self.HallucinationDetectorAgent = HallucinationDetectorAgent()
         self._validate_structure()
 
     def extract(self) -> Tuple[Dict, List[ValidationResult]]:
@@ -20,7 +20,7 @@ class ClerkExtractor:
         for section in experience_sections:
             all_bullets.extend([b['bullet_text'] for b in section.get('bullets', [])])
         bullet_dicts: Any = [{'bullet_text': b} for b in all_bullets]
-        validation_results: Any = self.HallucinationDetector.detect(bullet_dicts)
+        validation_results: Any = self.HallucinationDetectorAgent.detect(bullet_dicts)
         return ({'experience_sections': experience_sections, 'header': self.master_resume.get('header', {}), 'education': self.master_resume.get('education', []), 'certifications': self.master_resume.get('certifications', [])}, validation_results)
 
     def _validate_structure(self) -> None:

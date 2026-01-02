@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-L0_maintenance/scripts/CanonValidator – Sovereign Territory
+L0_maintenance/scripts/CanonValidatorAgent – Sovereign Territory
 
 Purpose:
     Sovereign territory

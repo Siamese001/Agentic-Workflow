@@ -9,8 +9,8 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger = logging.getLogger(__name__)
 
-# NAMING FIXED: HallucinationDetector → HallucinationDetector
-class HallucinationDetector(HealerMixin):
+# NAMING FIXED: HallucinationDetectorAgent → HallucinationDetectorAgent
+class HallucinationDetectorAgent(HealerMixin):
     """Stub implementation of hallucination detector."""
 
     def __init__(self: Any, config: Dict[str, Any]) -> None:

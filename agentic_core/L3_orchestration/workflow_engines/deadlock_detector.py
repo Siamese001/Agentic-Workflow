@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-DeadlockDetector - L3 System Health Specialist
+DeadlockDetectorAgent - L3 System Health Specialist
 
 Monitors asyncio tasks for potential deadlocks and long-running operations.
 Alerts when tasks exceed MAX_PHASE_TIME without progress.
@@ -26,10 +26,10 @@ heartbeat_interval = 30  # Check every 30 seconds
 deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 
-# NAMING FIXED: TaskMonitor → TaskMonitor
+# NAMING FIXED: TaskMonitorAgent → TaskMonitorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class TaskMonitor(HealerMixin):
+class TaskMonitorAgent(HealerMixin):
     """Monitors a single asyncio Task."""
 
     def __init__(self, Task: asyncio.Task, name: str = None):
@@ -69,13 +69,13 @@ class TaskMonitor(HealerMixin):
         return "Task completed"
 
 
-# NAMING FIXED: DeadlockDetector → DeadlockDetector
+# NAMING FIXED: DeadlockDetectorAgent → DeadlockDetectorAgent
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin import L3SubatomicTestingMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
-class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Detects potential deadlocks in asyncio tasks.
 
@@ -86,17 +86,17 @@ class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
 
     def __init__(self):
-        """Initialize the DeadlockDetector."""
+        """Initialize the DeadlockDetectorAgent."""
         super().__init__()
-        self.monitored_tasks: Dict[str, TaskMonitor] = {}
+        self.monitored_tasks: Dict[str, TaskMonitorAgent] = {}
         self.alerted_tasks: Set[str] = set()
         self.monitor_task: Optional[asyncio.Task] = None
         self.enabled = True
         self._mcp_audit('init')
-        Logger.info("DeadlockDetector initialized")
+        Logger.info("DeadlockDetectorAgent initialized")
 
     def _run_self_tests(self) -> bool:
-        """Run self-tests for DeadlockDetector."""
+        """Run self-tests for DeadlockDetectorAgent."""
         super()._run_self_tests()
         
         # Test empty state
@@ -162,7 +162,7 @@ class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
             return ""
 
         task_id = name or f"Task-{id(Task)}"
-        monitor = TaskMonitor(Task, task_id)
+        monitor = TaskMonitorAgent(Task, task_id)
         self.monitored_tasks[task_id] = monitor
 
         # Add done callback
@@ -229,7 +229,7 @@ class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                         f"{elapsed:.1f}s without heartbeat"
                     )
 
-    async def _alert_deadlock(self, task_id: str, monitor: TaskMonitor, elapsed: float):
+    async def _alert_deadlock(self, task_id: str, monitor: TaskMonitorAgent, elapsed: float):
         """Alert about a potential deadlock."""
         if task_id in self.alerted_tasks:
             return  # Already alerted
@@ -309,22 +309,22 @@ class DeadlockDetector(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
 
 
 # Global instance
-_deadlock_detector: Optional[DeadlockDetector] = None
+_deadlock_detector: Optional[DeadlockDetectorAgent] = None
 
 
-def get_deadlock_detector() -> DeadlockDetector:
-    """Get or create the global DeadlockDetector instance."""
+def get_deadlock_detector() -> DeadlockDetectorAgent:
+    """Get or create the global DeadlockDetectorAgent instance."""
     global _deadlock_detector
     if _deadlock_detector is None:
-        _deadlock_detector = DeadlockDetector()
+        _deadlock_detector = DeadlockDetectorAgent()
     return _deadlock_detector
 
 
 async def initialize_deadlock_detector():
-    """Initialize the DeadlockDetector system."""
+    """Initialize the DeadlockDetectorAgent system."""
     detector = get_deadlock_detector()
     detector.start_monitoring()
-    LOGGER.info("DeadlockDetector system initialized")
+    LOGGER.info("DeadlockDetectorAgent system initialized")
 
 
 # Convenience functions

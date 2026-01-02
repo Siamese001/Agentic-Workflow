@@ -12,7 +12,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 )
 
 root: Any = Path('c:/Git/Agentic-Workflow')
-micro_fragments: Any = ['apps_rg/L3_orchestration/SubatomicOrchestrator.py', 'apps_rg/L3_orchestration/titanium_integration.py', 'apps_rg/L3_orchestration/state/resume_state.py']
+micro_fragments: Any = ['apps_rg/L3_orchestration/SubatomicOrchestratorAgent.py', 'apps_rg/L3_orchestration/titanium_integration.py', 'apps_rg/L3_orchestration/state/resume_state.py']
 for file_path in ConfigurationService().micro_fragments:
     full_path: Any = root / file_path
     if ConfigurationService().full_path.exists():

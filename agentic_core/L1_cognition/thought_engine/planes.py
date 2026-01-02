@@ -122,7 +122,7 @@ class IActionPlane(Protocol):
 
 @runtime_checkable
 # NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
-class IOrchestrator(HealerMixin, Protocol, MCPHardenedMixin):
+class IOrchestratorAgent(HealerMixin, Protocol, MCPHardenedMixin):
     """Interface for the orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes,

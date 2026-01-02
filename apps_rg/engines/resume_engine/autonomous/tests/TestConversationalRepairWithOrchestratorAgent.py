@@ -19,7 +19,7 @@ from ..gitops import (
     GitOpsManager,
     ImportPatcher,
     MutationMode,
-    Phase4Orchestrator,
+    Phase4OrchestratorAgent,
     ResilientMutator,
 )
 from ..healing import HealingCycle, HealingStrategy
@@ -183,7 +183,7 @@ class TestConversationalRepairWithOrchestrator:
         """Test that conversational repair has all agents."""
         repair = ConversationalRepair(ctx)
 
-        expected_agents = ["Sherlock", "SafetyInspector", "DependencySentinel", "ArchitectureGovernor"]
+        expected_agents = ["Sherlock", "SafetyInspectorAgent", "DependencySentinelAgent", "ArchitectureGovernor"]
 
         for agent in expected_agents:
             assert agent in repair.agents
@@ -205,12 +205,12 @@ class TestConversationalRepairWithOrchestrator:
 
 
 class TestPhase4OrchestratorIntegration:
-    """Integration tests for Phase4Orchestrator."""
+    """Integration tests for Phase4OrchestratorAgent."""
 
     @pytest.mark.asyncio
     async def test_orchestrator_creates_backups(self, ctx, temp_dir):
         """Test that orchestrator creates backups before healing."""
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
 
         # Create test file
@@ -232,7 +232,7 @@ class TestPhase4OrchestratorIntegration:
         """Test orchestrator integration with learning agent."""
         ctx.current_resume = valid_resume
 
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         learning_agent = ResumeLearningAgent(ctx)
 
         # Inject instruction
@@ -256,7 +256,7 @@ class TestPhase4OrchestratorIntegration:
         """Test full orchestrator workflow."""
         ctx.current_resume = valid_resume
 
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
 
         # Create test file
@@ -318,7 +318,7 @@ class TestCrossComponentIntegration:
         ctx.current_resume = valid_resume
 
         # Initialize all components
-        orchestrator = Phase4Orchestrator(ctx)
+        orchestrator = Phase4OrchestratorAgent(ctx)
         orchestrator.gitops.enable_git = False
         learning_agent = ResumeLearningAgent(ctx)
 

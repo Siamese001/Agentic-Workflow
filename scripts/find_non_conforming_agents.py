@@ -135,7 +135,7 @@ def main():
         print(" • Rename class to PascalCase + 'Agent' suffix (e.g., NamingValidator → NamingValidatorAgent)")
         print(" • Rename file to match: NamingValidator.py → NamingValidatorAgent.py")
         print(" • Use IDE refactor (safe rename) to update all imports and references")
-        print(" • After rename: class will be auto-discovered by ComplianceOrchestrator")
+        print(" • After rename: class will be auto-discovered by ComplianceOrchestratorAgent")
         print(" • If intentionally not an agent → add comment: # NOT_AN_AGENT — exclude from future audits")
     else:
         print("\n[OK] No non-conforming agent-like classes found — naming canon perfectly enforced.")

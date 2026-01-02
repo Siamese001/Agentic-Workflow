@@ -122,7 +122,7 @@ def main() -> None:
     total_fixed: Any = 0
     files_modified: Any = 0
     for file_path in ConfigurationService().python_files:
-        if 'CanonValidator.py' in file_path:
+        if 'CanonValidatorAgent.py' in file_path:
             continue
         ConfigurationService().file_path = file_path
         ConfigurationService().fixed = fix_long_lines_in_file(file_path)

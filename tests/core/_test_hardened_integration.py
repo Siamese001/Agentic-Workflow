@@ -38,7 +38,7 @@ logging.basicConfig(
     reset_router,
     RoutingTier,
 )
-    HardenedWorkflowOrchestrator,
+    HardenedWorkflowOrchestratorAgent,
     create_hardened_orchestrator,
 )
     WorkflowSpec,

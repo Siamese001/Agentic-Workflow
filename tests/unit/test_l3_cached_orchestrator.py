@@ -5,7 +5,7 @@ import pytest
 import json
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestrator
+from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestratorAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -21,7 +21,7 @@ def orchestrator(tmp_path: Any) -> Any:
     with patch('agentic_core.L4_state.cache.redis_sovereign_agent.RedisSovereignAgent') as mock_agent:
         mock_client: Any = MagicMock()
         mock_agent.return_value.get_client.return_value = mock_client
-        engine: Any = CachedOrchestrator(tmp_path, mission_id='test_hop')
+        engine: Any = CachedOrchestratorAgent(tmp_path, mission_id='test_hop')
         return (engine, mock_client)
 
 def test_fission_decision_recall(orchestrator: Any) -> Any:

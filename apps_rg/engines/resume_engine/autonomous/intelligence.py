@@ -7,7 +7,7 @@ This module provides advanced intelligence capabilities:
 - SemanticAnalyzer: Docstring consistency, content quality analysis
 - StrategicAdvisor: Code smell detection, refactoring proposals
 - OmniContext: Global context management and semantic retrieval
-- UnifiedOrchestrator: Multi-phase execution with convergence
+- UnifiedOrchestratorAgent: Multi-phase execution with convergence
 """
 from typing import Any, Optional, Protocol, Dict, List
 from enum import Enum, auto
@@ -690,7 +690,7 @@ class OmniContext:
         }
 
 
-class UnifiedOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Multi-phase execution orchestrator.
 
@@ -847,7 +847,7 @@ class UnifiedOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin
         }
 
 
-class Phase6Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Orchestrates all Phase 6 intelligence components.
 
@@ -866,7 +866,7 @@ class Phase6Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         self.semantic = SemanticAnalyzer(ctx)
         self.strategic = StrategicAdvisor(ctx)
         self.omni = OmniContext(ctx)
-        self.unified = UnifiedOrchestrator(ctx)
+        self.unified = UnifiedOrchestratorAgent(ctx)
 
     async def analyze_resume(
         self,

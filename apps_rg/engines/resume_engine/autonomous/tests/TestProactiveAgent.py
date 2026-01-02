@@ -5,7 +5,7 @@ Unit Tests for Proactive Scheduling and Predictive Handoff
 Tests L4.5 autonomy enhancements:
 - ProactiveScheduler
 - PredictiveHandoff
-- CapabilityMonitor
+- CapabilityMonitorAgent
 - ProactiveAgent
 """
 
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_rg.resume_engine.autonomous.context import ResumeEngineContext
 from apps_rg.resume_engine.autonomous.proactive import (
-    CapabilityMonitor,
+    CapabilityMonitorAgent,
     CapabilityProfile,
     HandoffReason,
     PredictiveHandoff,
@@ -275,18 +275,18 @@ class TestPredictiveHandoff:
 
 
 class TestCapabilityMonitor:
-    """Tests for CapabilityMonitor."""
+    """Tests for CapabilityMonitorAgent."""
 
     def test_init(self, ctx):
         """Test monitor initialization."""
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         assert monitor.ctx == ctx
         assert len(monitor._execution_history) == 0
 
     def test_record_execution(self, ctx):
         """Test recording execution."""
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         monitor.record_execution(
             agent_name="TestAgent",
@@ -301,7 +301,7 @@ class TestCapabilityMonitor:
 
     def test_get_success_rate(self, ctx):
         """Test getting success rate."""
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         monitor.record_execution("TestAgent", "task1", True, 100)
         monitor.record_execution("TestAgent", "task2", True, 100)
@@ -313,7 +313,7 @@ class TestCapabilityMonitor:
 
     def test_get_capability_profile(self, ctx):
         """Test generating capability profile."""
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         monitor.record_execution("TestAgent", "task1", True, 100, complexity=3)
         monitor.record_execution("TestAgent", "task2", True, 100, complexity=5)
@@ -327,7 +327,7 @@ class TestCapabilityMonitor:
 
     def test_get_all_stats(self, ctx):
         """Test getting all stats."""
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         monitor.record_execution("Agent1", "Task", True, 100)
         monitor.record_execution("Agent2", "Task", True, 100)
@@ -388,7 +388,7 @@ class TestIntegration:
         # Create components
         scheduler = ProactiveScheduler(ctx)
         handoff = PredictiveHandoff(ctx)
-        monitor = CapabilityMonitor(ctx)
+        monitor = CapabilityMonitorAgent(ctx)
 
         # Register capability
         profile = CapabilityProfile(

@@ -16,12 +16,12 @@ except ImportError:
 
 # [DEPRECATED IMPORTS] Legacy agent imports - now using canon_agents_* modules
 # TODO: Migrate to agentic_core.L1_cognition.thought_engine.canon_agents_* when needed
-# from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
-# from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+# from agentic_core.agents.engineering import PatternEnforcerAgent, StructuralEngineer
+# from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinelAgent
 # from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
 # from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
 # from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-# from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector, SecurityEnforcer
+# from agentic_core.agents.security import ConcurrencyGuardianAgent, SafetyInspectorAgent, SecurityEnforcer
 # from agentic_core.agents.specialized import DocEnforcer, NamingEnforcer, TheCartographer, TheOmniContext, TheStrategist, TypeEnforcer
 
 # Import Domain
@@ -95,7 +95,7 @@ class SwarmScheduler:
         self.ctx = ValidationContext()
 
         # [DEPRECATED] Legacy agent phases - these agents have been migrated to canon_agents_* modules
-        # The orchestration now uses MissionController + ComplianceOrchestrator for agent discovery
+        # The orchestration now uses MissionController + ComplianceOrchestratorAgent for agent discovery
         self.phases = {
             "integrity_seq": [],
             "curation_seq": [],

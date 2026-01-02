@@ -36,17 +36,17 @@ try:
     from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import CodeJanitor as CodeJanitor
 except ImportError:
     CodeJanitor = None
-DependencySentinel = None  # Stub
+DependencySentinelAgent = None  # Stub
 
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_quality import SafetyInspector as SafetyInspector
+    from agentic_core.L1_cognition.thought_engine.canon_agents_quality import SafetyInspectorAgent as SafetyInspectorAgent
 except ImportError:
-    SafetyInspector = None
+    SafetyInspectorAgent = None
 
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcer as PatternEnforcer
+    from agentic_core.L1_cognition.thought_engine.canon_agents_pattern import PatternEnforcerAgent as PatternEnforcerAgent
 except ImportError:
-    PatternEnforcer = None
+    PatternEnforcerAgent = None
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -136,31 +136,31 @@ class AgentFactory(HealerMixin):
         return CodeJanitor(AgentFactory._create_impl(ctx))
     
     @staticmethod
-    def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinel:
+    def create_dependency_sentinel(ctx: Optional[Any] = None) -> DependencySentinelAgent:
         """
-        Create DependencySentinel with injected L2 implementation.
+        Create DependencySentinelAgent with injected L2 implementation.
         
         Injects L2 import management into L1 dependency reasoning.
         """
-        return DependencySentinel(AgentFactory._create_impl(ctx))
+        return DependencySentinelAgent(AgentFactory._create_impl(ctx))
     
     @staticmethod
-    def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspector:
+    def create_safety_inspector(ctx: Optional[Any] = None) -> SafetyInspectorAgent:
         """
-        Create SafetyInspector with injected L2 implementation.
+        Create SafetyInspectorAgent with injected L2 implementation.
         
         Injects L2 security checks into L1 safety reasoning.
         """
-        return SafetyInspector(AgentFactory._create_impl(ctx))
+        return SafetyInspectorAgent(AgentFactory._create_impl(ctx))
     
     @staticmethod
-    def create_pattern_enforcer(ctx: Optional[Any] = None) -> PatternEnforcer:
+    def create_pattern_enforcer(ctx: Optional[Any] = None) -> PatternEnforcerAgent:
         """
-        Create PatternEnforcer with injected L2 implementation.
+        Create PatternEnforcerAgent with injected L2 implementation.
         
         Injects L2 pattern detection into L1 quality reasoning.
         """
-        return PatternEnforcer(AgentFactory._create_impl(ctx))
+        return PatternEnforcerAgent(AgentFactory._create_impl(ctx))
 
 
 # Convenience function for creating all agents at once
@@ -179,7 +179,7 @@ def create_all_agents(ctx: Optional[Any] = None) -> dict:
         "HealerAgent": AgentFactory.create_healer_agent(ctx),
         "GenerativeGuard": AgentFactory.create_generative_guard(ctx),
         "CodeJanitor": AgentFactory.create_code_janitor(ctx),
-        "DependencySentinel": AgentFactory.create_dependency_sentinel(ctx),
-        "SafetyInspector": AgentFactory.create_safety_inspector(ctx),
-        "PatternEnforcer": AgentFactory.create_pattern_enforcer(ctx),
+        "DependencySentinelAgent": AgentFactory.create_dependency_sentinel(ctx),
+        "SafetyInspectorAgent": AgentFactory.create_safety_inspector(ctx),
+        "PatternEnforcerAgent": AgentFactory.create_pattern_enforcer(ctx),
     }

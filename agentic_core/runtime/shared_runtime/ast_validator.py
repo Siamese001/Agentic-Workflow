@@ -36,7 +36,7 @@ def is_excepted_from_key(key_id: int, file_path: Path, line_content: str='') -> 
                 return True
     return False
 
-class CanonAstValidator(ast.NodeVisitor):
+class CanonAstValidatorAgent(ast.NodeVisitor):
     """
     [L6 INFRASTRUCTURE] Base AST visitor for Canon keys.
     Provides automatic Type-Checking suppression and Exception Ledger integration.

@@ -66,7 +66,7 @@ class CircuitState(Enum):
     OPEN = "OPEN"          # Blocking requests
     HALF_OPEN = "HALF_OPEN"  # Testing recovery
 
-class FailureClassifier(Enum):
+class FailureClassifierAgent(Enum):
     """
     Classifies S6 validation failures to determine retry strategy in HOP-7.
     """

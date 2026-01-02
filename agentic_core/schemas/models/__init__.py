@@ -27,7 +27,7 @@ Future Curation Roadmap:
 from .CognitiveContractManagerAgent import (
     CognitiveContract,
     CognitiveContractManager,
-    CognitiveContractValidator,
+    CognitiveContractValidatorAgent,
     ContractStage,
     Constraint,
     Plan,
@@ -53,7 +53,7 @@ __all__ = [
     # Cognitive contracts
     "CognitiveContract",
     "CognitiveContractManager",
-    "CognitiveContractValidator",
+    "CognitiveContractValidatorAgent",
     "ContractStage",
     "Constraint",
     "Plan",

@@ -22,8 +22,8 @@ class Logger(Protocol):
                     
 
 
-# NAMING FIXED: SystemCommandExecutor → SystemCommandExecutor
-class SystemCommandExecutor(HealerMixin, Protocol):
+# NAMING FIXED: SystemCommandExecutorAgent → SystemCommandExecutorAgent
+class SystemCommandExecutorAgent(HealerMixin, Protocol):
     """
     Protocol for safely executing system commands.
     This executor enforces security policies and does NOT execute dangerous commands.
@@ -64,8 +64,8 @@ class ConsoleLogger:
         pass
 
 
-# NAMING FIXED: SafeSystemCommandExecutor → SafeSystemCommandExecutor
-class SafeSystemCommandExecutor(HealerMixin, MCPHardenedMixin):
+# NAMING FIXED: SafeSystemCommandExecutorAgent → SafeSystemCommandExecutorAgent
+class SafeSystemCommandExecutorAgent(HealerMixin, MCPHardenedMixin):
     """
     A secure system command executor that prevents destructive actions
     and logs attempts. This simulates the 'ActionNode' whitelist concept
@@ -137,7 +137,7 @@ class SafeSystemCommandExecutor(HealerMixin, MCPHardenedMixin):
 def delete_system(
     *,
     Logger: Logger,
-    executor: SystemCommandExecutor,
+    executor: SystemCommandExecutorAgent,
     confirm_destructive_action: bool = False
 ) -> str:
     """
@@ -147,7 +147,7 @@ def delete_system(
 
     Args:
         Logger: An object adhering to the Logger protocol for logging events.
-        executor: An object adhering to the SystemCommandExecutor protocol for command execution.
+        executor: An object adhering to the SystemCommandExecutorAgent protocol for command execution.
         confirm_destructive_action: A boolean indicating if human confirmation was provided.
 
     Returns:
@@ -221,7 +221,7 @@ def delete_system(
 def run(
     *,
     Logger: Logger,
-    executor: SystemCommandExecutor,
+    executor: SystemCommandExecutorAgent,
     confirm_destructive_action: bool = False
 ) -> str:
     """
@@ -231,7 +231,7 @@ def run(
 
     Args:
         Logger: An object adhering to the Logger protocol for logging events.
-        executor: An object adhering to the SystemCommandExecutor protocol for command execution.
+        executor: An object adhering to the SystemCommandExecutorAgent protocol for command execution.
         confirm_destructive_action: A boolean indicating if human confirmation was provided.
 
     Returns:

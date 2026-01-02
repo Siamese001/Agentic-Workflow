@@ -25,7 +25,7 @@ from .secure_error import SecurityError, ConfigurationError
 Logger = logging.getLogger(__name__)
 
 
-class SecureConfigManager(HealerMixin):
+class SecureConfigManagerAgent(HealerMixin):
     """Manages secure configuration with encrypted storage."""
     
     def __init__(
@@ -56,7 +56,7 @@ class SecureConfigManager(HealerMixin):
         self._config = self._load_config()
         self._keys = self._load_keys()
         
-        Logger.info(f"Initialized SecureConfigManager with config dir: {self.config_dir}")
+        Logger.info(f"Initialized SecureConfigManagerAgent with config dir: {self.config_dir}")
     
     def _init_encryption(self, master_password: Optional[str]) -> None:
         """Initialize encryption keys.
@@ -414,22 +414,22 @@ class SecureConfigManager(HealerMixin):
 
 
 # Global config manager instance
-_default_manager: Optional[SecureConfigManager] = None
+_default_manager: Optional[SecureConfigManagerAgent] = None
 _manager_lock = threading.Lock()
 
 
-def get_config_manager() -> SecureConfigManager:
+def get_config_manager() -> SecureConfigManagerAgent:
     """Get the default secure config manager.
     
     Returns:
-        SecureConfigManager instance
+        SecureConfigManagerAgent instance
     """
     global _default_manager
     
     if _default_manager is None:
         with _manager_lock:
             if _default_manager is None:
-                _default_manager = SecureConfigManager()
+                _default_manager = SecureConfigManagerAgent()
     
     return _default_manager
 
@@ -469,16 +469,16 @@ def get_encryption_key(key_name: str) -> Optional[str]:
     """
     return get_config_manager().get_key(key_name)
 
-def get_secure_config_manager(config_dir: Optional[Path] = None, master_password: Optional[str] = None) -> SecureConfigManager:
+def get_secure_config_manager(config_dir: Optional[Path] = None, master_password: Optional[str] = None) -> SecureConfigManagerAgent:
     """Factory function to get secure config manager."""
-    return SecureConfigManager(config_dir, master_password)
+    return SecureConfigManagerAgent(config_dir, master_password)
 
 @timeout(300)
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L5 safety/guardrails - operational only."""
     if _call_path is None:
         _call_path = set()
-    agent_name = "SecureConfigManager"
+    agent_name = "SecureConfigManagerAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
     if depth > max_depth:

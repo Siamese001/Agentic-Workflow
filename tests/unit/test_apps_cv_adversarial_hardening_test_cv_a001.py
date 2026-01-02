@@ -7,7 +7,7 @@ Adversarial test for robustness and security
 from unittest.mock import Mock
 
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 from l5_governance_policy_filter import l5_governance_policy_filter
 
 
@@ -18,7 +18,7 @@ class test_cva001:
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
-        validator = CanonValidator()
+        validator = CanonValidatorAgent()
         validator.llm = Mock()
         validator.embed_fn = Mock(return_value=[0.1] * 768)
         validator.cache = Mock()

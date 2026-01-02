@@ -11,7 +11,7 @@ from typing import Any, Dict, Optional
 import yaml
 Logger: Any = logging.getLogger(__name__)
 
-class McpConnectionManager:
+class McpConnectionManagerAgent:
     """Sovereign MCP Connection Manager — single source of truth"""
 
     def __init__(self, config: Dict[str, Any]):
@@ -91,4 +91,4 @@ def load_mcp_config(config_path: str) -> Dict[str, Any]:
         return {'roles': {}}
 
 # Backward compatibility alias
-MCPConnectionManager = McpConnectionManager
+MCPConnectionManager = McpConnectionManagerAgent

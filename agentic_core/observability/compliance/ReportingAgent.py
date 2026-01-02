@@ -48,7 +48,7 @@ class ReportingAgent(HealerMixin, MCPHardenedMixin):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.
-    Safe to run alongside or after ComplianceOrchestrator.
+    Safe to run alongside or after ComplianceOrchestratorAgent.
     """
 
     def __init__(self, project_root: Path):

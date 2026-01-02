@@ -8,7 +8,7 @@ import sys
 from unittest.mock import Mock
 
 import pytest
-from canon_validator import CanonValidator
+from canon_validator import CanonValidatorAgent
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.abspath(
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(
 @pytest.fixture
 def mock_validator():
     """Create a validator with mocked dependencies for general testing"""
-    validator = CanonValidator()
+    validator = CanonValidatorAgent()
 
     # Mock LLM
     validator.llm = Mock()
@@ -46,7 +46,7 @@ def mock_validator():
 @pytest.fixture
 def mock_validator_with_all_dependencies():
     """Create a validator with all L1-L5 dependencies mocked"""
-    validator = CanonValidator()
+    validator = CanonValidatorAgent()
 
     # L1: Filesystem and GitKraken
     validator.llm = Mock()

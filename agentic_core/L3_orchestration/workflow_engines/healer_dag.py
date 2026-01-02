@@ -26,7 +26,7 @@ class DagExecutionResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class DagExecutor(HealerMixin):
+class DagExecutorAgent(HealerMixin):
     """Executes Directed Acyclic Graphs of operations."""
 
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:

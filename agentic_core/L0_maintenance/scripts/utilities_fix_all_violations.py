@@ -60,4 +60,4 @@ if __name__ == '__main__':
     fix_micro_fragments()
     ConfigurationService().Logger.info('\nSplitting large _types files...')
     split_large_types_files()
-    ConfigurationService().Logger.info('\nDone! Re-run CanonValidator.py to verify.')
+    ConfigurationService().Logger.info('\nDone! Re-run CanonValidatorAgent.py to verify.')

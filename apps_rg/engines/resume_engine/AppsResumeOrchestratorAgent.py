@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 Logger = logging.getLogger(__name__)
 
 
-class ResumeOrchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class ResumeOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """Orchestrate the multi-hop resume generation workflow."""
 
 
@@ -57,7 +57,7 @@ def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None
 
 def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
-    ResumeOrchestrator(master_resume)
+    ResumeOrchestratorAgent(master_resume)
     return ConfigurationService().orchestrator.run(ConfigurationService().JobDescription)
 
 @timeout(300)
@@ -65,7 +65,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
     """Apps_rg/resume_engine - operational only."""
     if _call_path is None:
         _call_path = set()
-    agent_name = "ResumeOrchestrator"
+    agent_name = "ResumeOrchestratorAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
     if depth > max_depth:

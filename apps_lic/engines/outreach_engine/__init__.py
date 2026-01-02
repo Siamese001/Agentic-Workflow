@@ -10,7 +10,7 @@ Provides outreach automation capabilities including:
 - HOP-based agent architecture (v13.1)
 
 Migrated from archives/Reachout Engine Archive/Agentic LIC/ (2026-01-01):
-- WorkflowOrchestrator.py: HOP2ResearchAgent and workflow orchestration
+- WorkflowOrchestratorAgent.py: HOP2ResearchAgent and workflow orchestration
 - hop_agents/: HOP1ProfileAnalysisAgent, HOP3SenderGroundingAgent
 - intelligence_librarian.py: IntelligenceLibrarianAgent for offline research
 - tools/code_interpreter.py: CodeInterpreterTool, ValidationToolkit

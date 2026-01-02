@@ -173,7 +173,7 @@ def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_fu
             Logger.error(f'Hop {hop_id} failed: {e}')
             raise
 
-class WorkflowOrchestrator(HealerMixin, MCPHardenedMixin):
+class WorkflowOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     """Workflow orchestrator with SDK integration."""
 
 def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
@@ -215,7 +215,7 @@ def execute(self: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
             current_inputs: Any = hop_outputs
         return outputs
 
-def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> WorkflowOrchestrator:
+def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.OPENAI, model: Optional[str]=None) -> WorkflowOrchestratorAgent:
     """Create workflow orchestrator with SDK clients.
 
     Args:
@@ -224,6 +224,6 @@ def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.O
         model: Optional model name
 
     Returns:
-        WorkflowOrchestrator instance
+        WorkflowOrchestratorAgent instance
     """
-    return WorkflowOrchestrator(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)
+    return WorkflowOrchestratorAgent(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)

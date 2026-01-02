@@ -21,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CanonValidator(HealerMixin, MCPHardenedMixin):
+class CanonValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
@@ -34,7 +34,7 @@ class CanonValidator(HealerMixin, MCPHardenedMixin):
 
     def __init__(self, similarity_threshold: float=0.75, manifest_path: str='active_manifest.json'):
         """
-        Initializes the CanonValidator with connection managers and cache settings.
+        Initializes the CanonValidatorAgent with connection managers and cache settings.
 
         Args:
             similarity_threshold (float): The minimum similarity score for an L2 match.

@@ -87,7 +87,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class MethodChangeDetector(HealerMixin, MCPHardenedMixin):
+class MethodChangeDetectorAgent(HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
 
     def __init__(self, ctx):
@@ -382,7 +382,7 @@ class RegressionOracleAgent(SubAtomicAgent):
                 except Exception as e:
                     Logger.warning(f'[!]  Could not connect to Gemini: {e}')
                     genai_available = False
-        self.change_detector = MethodChangeDetector(self.ctx)
+        self.change_detector = MethodChangeDetectorAgent(self.ctx)
         self.test_generator = RegressionTestGenerator(self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client)
         self.test_runner = RegressionTestRunner(self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass)
         self.generated_tests: List[GeneratedTest] = []

@@ -43,12 +43,12 @@ class BiasResult:
     overall_severity: BiasSeverity
     summary: str
 
-class BiasAuditor:
+class BiasAuditorAgent:
     """Audits text for potential bias."""
 
     def __init__(self):
         """Initialize bias auditor."""
-        Logger.debug('BiasAuditor initialized')
+        Logger.debug('BiasAuditorAgent initialized')
 
     def audit(self, text: str) -> BiasResult:
         """Audit text for bias."""
@@ -61,10 +61,10 @@ class BiasAuditor:
 
 def audit_bias(text: str) -> BiasResult:
     """Convenience function to audit bias."""
-    auditor: Any = BiasAuditor()
+    auditor: Any = BiasAuditorAgent()
     return auditor.audit(text)
 
-def create_bias_auditor() -> BiasAuditor:
+def create_bias_auditor() -> BiasAuditorAgent:
     """Factory function to create bias auditor."""
-    return BiasAuditor()
-__all__ = ['BiasType', 'BiasSeverity', 'BiasMatch', 'BiasResult', 'BiasAuditor', 'audit_bias', 'create_bias_auditor']
+    return BiasAuditorAgent()
+__all__ = ['BiasType', 'BiasSeverity', 'BiasMatch', 'BiasResult', 'BiasAuditorAgent', 'audit_bias', 'create_bias_auditor']

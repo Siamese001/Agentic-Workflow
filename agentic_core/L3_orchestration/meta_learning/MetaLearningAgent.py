@@ -181,7 +181,7 @@ class MetaLearningAgent(HealerMixin, AutonomyMixin,
     async def _detect_action_opportunity(self) -> Optional[Dict[str, Any]]:
         """Proactively evolve poorly performing agents."""
         # Simple trigger: check known underperformers
-        underperformers = ["HealingOrchestrator"]  # From metrics
+        underperformers = ["HealingOrchestratorAgent"]  # From metrics
         if underperformers:
             return {
                 "reason": "agent_underperformance_detected",
@@ -200,5 +200,5 @@ class MetaLearningAgent(HealerMixin, AutonomyMixin,
 
     async def _execute_standard(self, ctx: Any, **context: Dict) -> Dict:
         """Standard mode - full strategy evolution."""
-        agent_name = context.get("agent_name", "HealingOrchestrator")
+        agent_name = context.get("agent_name", "HealingOrchestratorAgent")
         return await self.evolve_agent_strategy(agent_name)

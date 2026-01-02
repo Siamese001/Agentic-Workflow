@@ -5,7 +5,7 @@ Unit Tests for Outreach Engine Proactive Scheduling and Predictive Handoff
 Tests L4.5 autonomy enhancements for outreach:
 - OutreachProactiveScheduler
 - OutreachPredictiveHandoff
-- OutreachCapabilityMonitor
+- OutreachCapabilityMonitorAgent
 - OutreachProactiveAgent
 """
 
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.proactive import (
-    OutreachCapabilityMonitor,
+    OutreachCapabilityMonitorAgent,
     OutreachCapabilityProfile,
     OutreachHandoffReason,
     OutreachPredictiveHandoff,
@@ -272,18 +272,18 @@ class TestOutreachPredictiveHandoff:
 
 
 class TestOutreachCapabilityMonitor:
-    """Tests for OutreachCapabilityMonitor."""
+    """Tests for OutreachCapabilityMonitorAgent."""
 
     def test_init(self, ctx):
         """Test monitor initialization."""
-        monitor = OutreachCapabilityMonitor(ctx)
+        monitor = OutreachCapabilityMonitorAgent(ctx)
 
         assert monitor.ctx == ctx
         assert len(monitor._execution_history) == 0
 
     def test_record_execution(self, ctx):
         """Test recording execution."""
-        monitor = OutreachCapabilityMonitor(ctx)
+        monitor = OutreachCapabilityMonitorAgent(ctx)
 
         monitor.record_execution(
             agent_name="TestAgent",
@@ -298,7 +298,7 @@ class TestOutreachCapabilityMonitor:
 
     def test_get_success_rate(self, ctx):
         """Test getting success rate."""
-        monitor = OutreachCapabilityMonitor(ctx)
+        monitor = OutreachCapabilityMonitorAgent(ctx)
 
         monitor.record_execution("TestAgent", "task1", True, 100, 5)
         monitor.record_execution("TestAgent", "task2", True, 100, 5)
@@ -310,7 +310,7 @@ class TestOutreachCapabilityMonitor:
 
     def test_get_capability_profile(self, ctx):
         """Test generating capability profile."""
-        monitor = OutreachCapabilityMonitor(ctx)
+        monitor = OutreachCapabilityMonitorAgent(ctx)
 
         monitor.record_execution("TestAgent", "email", True, 100, 10)
         monitor.record_execution("TestAgent", "validation", True, 100, 5)
@@ -369,7 +369,7 @@ class TestIntegration:
 
         scheduler = OutreachProactiveScheduler(ctx)
         handoff = OutreachPredictiveHandoff(ctx)
-        monitor = OutreachCapabilityMonitor(ctx)
+        monitor = OutreachCapabilityMonitorAgent(ctx)
 
         # Register capability
         profile = OutreachCapabilityProfile(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-apps_shared/security/domain/SafetyInspector.py
+apps_shared/security/domain/SafetyInspectorAgent.py
 Depth: 5
 Role: Enforces security protocols, concurrency safety, and intelligent remediation.
 """

@@ -3,7 +3,7 @@ Integrated Test Suite for MCP Hardening System
 
 Tests the complete L1-L5 MCP architecture including:
 - MCPRouter layer routing
-- GitSafetyHandler rollback/commit operations
+- GitSafetyHandlerAgent rollback/commit operations
 - ProactiveFissionScanner bloat detection
 - End-to-end fission workflow with MCP coordination
 """
@@ -108,31 +108,31 @@ class mcp_integration_tests:
             return False
 
     async def test_git_safety_handler_initialization(self) -> Any:
-        """Test GitSafetyHandler initialization."""
-        print('\n🧪 Test 4: GitSafetyHandler Initialization')
+        """Test GitSafetyHandlerAgent initialization."""
+        print('\n🧪 Test 4: GitSafetyHandlerAgent Initialization')
         try:
             router: Any = get_mcp_router()
             git_safety: Any = get_git_safety_handler(router)
             assert git_safety.router is not None, 'Router not initialized'
-            self.log_test('GitSafetyHandler Initialization', True, 'Handler initialized with router')
+            self.log_test('GitSafetyHandlerAgent Initialization', True, 'Handler initialized with router')
             return True
         except Exception as e:
-            self.log_test('GitSafetyHandler Initialization', False, str(e))
+            self.log_test('GitSafetyHandlerAgent Initialization', False, str(e))
             return False
 
     async def test_git_safety_handler_rollback_point(self) -> Any:
-        """Test GitSafetyHandler rollback point creation."""
-        print('\n🧪 Test 5: GitSafetyHandler Rollback Point')
+        """Test GitSafetyHandlerAgent rollback point creation."""
+        print('\n🧪 Test 5: GitSafetyHandlerAgent Rollback Point')
         try:
             router: Any = get_mcp_router()
             git_safety: Any = get_git_safety_handler(router)
             branch_name: Any = await git_safety.create_rollback_point('test_file.py')
             assert branch_name is not None, 'Branch name should not be None'
             assert 'fission_backup_' in branch_name, 'Branch name should contain fission_backup_'
-            self.log_test('GitSafetyHandler Rollback Point', True, f'Created branch: {branch_name}')
+            self.log_test('GitSafetyHandlerAgent Rollback Point', True, f'Created branch: {branch_name}')
             return True
         except Exception as e:
-            self.log_test('GitSafetyHandler Rollback Point', False, str(e))
+            self.log_test('GitSafetyHandlerAgent Rollback Point', False, str(e))
             return False
 
     async def test_proactive_scanner_initialization(self) -> Any:

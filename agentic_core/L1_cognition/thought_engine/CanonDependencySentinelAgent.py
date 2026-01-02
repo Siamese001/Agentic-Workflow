@@ -1,7 +1,7 @@
 from __future__ import annotations
 """
 Canon Validator Syntax Agents
-CodeJanitor, DependencySentinel - Code hygiene and import management.
+CodeJanitor, DependencySentinelAgent - Code hygiene and import management.
 """
 import ast
 import os
@@ -300,7 +300,7 @@ class CodeJanitor:
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
-class DependencySentinel(HealerMixin, MCPHardenedMixin):
+class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
@@ -321,7 +321,7 @@ class DependencySentinel(HealerMixin, MCPHardenedMixin):
 
     def execute(self):
         """
-        Executes the DependencySentinel agent's checks and auto-fixes for imports.
+        Executes the DependencySentinelAgent agent's checks and auto-fixes for imports.
         """
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Enforcing Import Hygiene...")
 

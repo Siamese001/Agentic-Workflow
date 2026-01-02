@@ -16,7 +16,7 @@ from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orche
 class SwarmScheduler:
     """
     Thin wrapper for Canon Validator SwarmScheduler.
-    Delegates to ConsolidatedOrchestrator.
+    Delegates to ConsolidatedOrchestratorAgent.
     """
 
     def __init__(self):
@@ -29,9 +29,9 @@ class SwarmScheduler:
     async def run_mission(self, target_scope: Optional[str]=None) -> Any:
         """Run the validation mission (delegates to orchestrator_main)."""
         Logger.info(f'🚀 Running Canon Validator mission')
-        results: Any = await self.orchestrator.run_mission(target_path=target_scope, workflow_id='CanonValidator')
+        results: Any = await self.orchestrator.run_mission(target_path=target_scope, workflow_id='CanonValidatorAgent')
         return results
-IntelligentOrchestrator: Any = SwarmScheduler
+IntelligentOrchestratorAgent: Any = SwarmScheduler
 
 async def main() -> Any:
     """Main entry point for the Canon Validator."""
