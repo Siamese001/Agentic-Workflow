@@ -55,10 +55,50 @@ class NamingNormalizationAgent(HealerMixin):
 
     def _to_snake_case(self, name: str) -> str:
         """Convert CamelCase/PascalCase/kebab-case to snake_case."""
-        s1 = re.sub('(.)([A-Z][a-z]+)', '\\1_\\2', name)
-        s2 = re.sub('([a-z0-9])([A-Z])', '\\1_\\2', s1)
-        s3 = s2.replace('-', '_')
-        return s3.lower()
+        s1 = re.sub('([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
+        s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
+        return s2.lower()
+
+    def timeout(seconds=0, minutes=0, hours=0):
+        """
+        Add a signal-based timeout to any function.
+        Usage:
+        @timeout(seconds=5)
+        def my_slow_function(...)
+        Args:
+        - seconds: The time limit, in seconds.
+        - minutes: The time limit, in minutes.
+        - hours: The time limit, in hours.
+        """
+        limit = seconds + 60 * minutes + 3600 * hours
+
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                import asyncio
+                try:
+                    loop = asyncio.get_event_loop()
+                    return loop.run_until_complete(asyncio.wait_for(func(*args, **kwargs), limit))
+                except asyncio.TimeoutError:
+                    raise TimeoutError(f'Timeout after {limit} seconds')
+            return wrapper
+        return decorator
+
+    @timeout(300)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """Deprecated naming agent - operational only."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            print(f"[{agent_name}] Deprecated/utils - operational only")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
     async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
         """
