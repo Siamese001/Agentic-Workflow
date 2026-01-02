@@ -165,9 +165,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
+      "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -239,8 +239,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -270,8 +270,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -372,8 +372,8 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -423,9 +423,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "SelfDiagnosisMixin",
-      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
+      "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -2421,8 +2421,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\SovereignActionPlaneAgent.py",
     "layer": "L2",
     "inheritance": [
-      "IActionPlane",
-      "HealerMixin"
+      "HealerMixin",
+      "IActionPlane"
     ],
     "key_methods": [
       "__init__",
@@ -2963,14 +2963,16 @@
     "class_name": "AgentRegistry",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\subatomic_orchestrator_impl.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 348,
+    "loc": 349,
     "class_count": 9,
     "description": "Mock AgentRegistry for type hinting.",
     "pascal_compliant": true,
@@ -3015,7 +3017,7 @@
     "has_healing": false,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 348,
+    "loc": 349,
     "class_count": 9,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
@@ -3496,8 +3498,8 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin"
     ],
     "key_methods": [
@@ -4014,7 +4016,7 @@
     "has_healing": true,
     "testing": "None",
     "has_subatomic": true,
-    "loc": 348,
+    "loc": 349,
     "class_count": 9,
     "description": "Implementation for SubatomicOrchestrator.",
     "pascal_compliant": true,
@@ -4508,7 +4510,9 @@
     "class_name": "PineconeSovereignAgent",
     "path": "agentic_core\\L4_state\\validation_context\\vector_store.py",
     "layer": "L4",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -4516,10 +4520,10 @@
     ],
     "has_tools": false,
     "has_memory": true,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 13,
+    "loc": 14,
     "class_count": 1,
     "description": "Mock Pinecone Sovereign Agent.",
     "pascal_compliant": true,
@@ -5514,8 +5518,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "SelfDiagnosisMixin",
       "AdaptiveExecutionMixin",
+      "SelfDiagnosisMixin",
       "HealerMixin",
       "AutonomyMixin"
     ],
@@ -5591,8 +5595,8 @@
     "path": "agentic_core\\L5_safety\\validators\\PascalSovereigntyEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "CanonBaseAgent",
-      "ASTEnforcementMixin"
+      "ASTEnforcementMixin",
+      "CanonBaseAgent"
     ],
     "key_methods": [
       "__init__",
