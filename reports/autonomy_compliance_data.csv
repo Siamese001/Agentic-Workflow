@@ -1,0 +1,15 @@
+Territory,Total,Compliant,Heal_Cap_Pct,Heal_Inv_Pct,MCP_Pct,Test_Pct,Avg_CC,Typed_Pct,Obs_Pct,Criticality,Health,Risk,Used_Pct,Priority
+L0 Maintenance,24,5,87.5,20.8,41.7,29.2,23.5,91.7,87.5,100,45.8,HIGH,70.8,Medium
+L1 Cognition,50,9,78.0,18.0,42.0,22.0,45.6,100.0,60.0,100,33.3,HIGH,62.0,Medium
+L2 Execution,83,27,79.5,32.5,59.0,24.1,45.5,85.5,81.9,100,46.2,HIGH,83.1,High
+L3 Orchestration,62,30,90.3,48.4,38.7,41.9,49.0,96.8,91.9,100,60.7,HIGH,71.0,High
+L4 State,21,10,85.7,47.6,66.7,57.1,51.8,90.5,66.7,100,57.1,HIGH,95.2,Medium
+L5 Safety/Validators,19,12,94.7,63.2,63.2,31.6,92.7,100.0,78.9,100,57.9,HIGH,94.7,Critical
+L5 Safety/Guardrails,37,28,89.2,75.7,48.6,2.7,46.4,100.0,73.0,100,50.5,HIGH,70.3,Critical
+L5 Safety/Gravity,2,2,100.0,100.0,50.0,50.0,89.5,100.0,50.0,100,66.7,MED,100.0,High
+Utils,7,0,42.9,0.0,42.9,42.9,57.4,100.0,57.1,28.6,33.3,HIGH,14.3,Medium
+Apps Lic,47,11,68.1,23.4,31.9,38.3,54.7,72.3,31.9,100,31.2,HIGH,78.7,High
+Apps Rg,39,1,53.8,2.6,43.6,76.9,69.0,64.1,46.2,100,41.9,HIGH,64.1,High
+Apps Shared,4,0,100.0,0.0,100.0,50.0,24.8,100.0,0.0,100,16.7,HIGH,75.0,Medium
+OTHER/UNCLASSIFIED,20,1,40.0,5.0,0.0,95.0,47.4,65.0,50.0,15.0,50.0,HIGH,5.0,Review
+TOTAL,0,0,77.3,32.8,45.3,39.5,49.9,70.1,41.2,100,37.8,HIGH,70.8,ALL

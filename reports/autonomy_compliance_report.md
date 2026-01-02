@@ -3,57 +3,77 @@
 **Generated:** January 02, 2026  
 **Source:** `agent_discovery_full.json` (canonical AST scan)
 
-## Summary
+## 🎯 Executive Summary
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| **Total Agents** | 415 | - |
-| **Compliant** | 136 (32.8%) | 80%+ |
-| **HealerMixin** | 259 (62.4%) | 80%+ |
-| **MCP Hardened** | 188 (45.3%) | 80%+ |
-| **With Tests** | 164 (39.5%) | 80%+ |
-| **Used Elsewhere** | 294 (70.8%) | - |
+**System Health:** 37.8/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
-## Quality Metrics
+### Key Metrics
+- **Total Agents:** 415
+- **Compliant:** 136 (32.8%) ❌
+- **Healing Capabilities:** 321 (77.3%) ⚠️
+- **Healing Invocation:** 136 (32.8%) ❌
+- **With Tests:** 164 (39.5%) ❌
+- **Avg Complexity:** 49.9 ❌
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| **Avg Cyclomatic Complexity** | 49.9 | <10 |
-| **Max CC** | 102 | <20 |
-| **Type Coverage** | 70.1% | 90%+ |
-| **Documentation** | 81.0% | 90%+ |
-| **Observability** | 41.2% | 80%+ |
+## 📊 Territory Analysis
 
-## Territory Breakdown
+**Note:** Table data available in CSV format for better readability in spreadsheet tools.
 
-| Territory / Layer | Total | Compliant | % Comp | Miss | % Mixin | % MCP | % Heal | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |
-|-------------------|-------|-----------|--------|------|---------|-------|--------|--------|---------|--------|--------|---------|--------|-------|--------|----------|
-| L0 Maintenance | 24 | 5 | 20.8% | 19 | 66.7% | 41.7% | 54.2% | 29.2% | 138.3 | 23.5 | 22 | 91.7% | 100.0% | 87.5% | 70.8% | Medium |
-| L1 Cognition | 50 | 9 | 18.0% | 41 | 68.0% | 42.0% | 56.0% | 22.0% | 193.2 | 45.6 | 22 | 100.0% | 100.0% | 60.0% | 62.0% | Medium |
-| L2 Execution | 83 | 27 | 32.5% | 56 | 55.4% | 59.0% | 47.0% | 24.1% | 195.8 | 45.5 | 37 | 85.5% | 100.0% | 81.9% | 83.1% | High |
-| L3 Orchestration | 62 | 30 | 48.4% | 32 | 88.7% | 38.7% | 38.7% | 41.9% | 255.9 | 49.0 | 41 | 96.8% | 100.0% | 91.9% | 71.0% | High |
-| L4 State | 21 | 10 | 47.6% | 11 | 85.7% | 66.7% | 23.8% | 57.1% | 257.7 | 51.8 | 18 | 90.5% | 100.0% | 66.7% | 95.2% | Medium |
-| L5 Safety/Validators | 19 | 12 | 63.2% | 7 | 84.2% | 63.2% | 63.2% | 31.6% | 377.4 | 91.6 | 102 | 100.0% | 100.0% | 78.9% | 94.7% | Critical |
-| L5 Safety/Guardrails | 37 | 28 | 75.7% | 9 | 89.2% | 48.6% | 54.1% | 2.7% | 206.4 | 46.4 | 27 | 100.0% | 100.0% | 73.0% | 70.3% | Critical |
-| L5 Safety/Gravity | 2 | 2 | 100.0% | 0 | 100.0% | 50.0% | 50.0% | 50.0% | 383.5 | 89.5 | 18 | 100.0% | 100.0% | 50.0% | 100.0% | High |
-| Utils | 7 | 0 | 0.0% | 7 | 14.3% | 42.9% | 42.9% | 42.9% | 245.6 | 57.4 | 28 | 100.0% | 100.0% | 57.1% | 14.3% | Medium |
-| Apps Lic | 47 | 11 | 23.4% | 36 | 31.9% | 31.9% | 46.8% | 38.3% | 317.3 | 54.7 | 19 | 72.3% | 100.0% | 31.9% | 78.7% | High |
-| Apps Rg | 39 | 1 | 2.6% | 38 | 46.2% | 43.6% | 35.9% | 76.9% | 403.6 | 69.0 | 17 | 64.1% | 100.0% | 46.2% | 64.1% | High |
-| Apps Shared | 4 | 0 | 0.0% | 4 | 100.0% | 100.0% | 75.0% | 50.0% | 163.8 | 24.8 | 10 | 100.0% | 100.0% | 0.0% | 75.0% | Medium |
-| **OTHER/UNCLASSIFIED** | 20 | 1 | 5.0% | 19 | 5.0% | 0.0% | 35.0% | 95.0% | 241.5 | 47.4 | 11 | 65.0% | 100.0% | 50.0% | 5.0% | Review |
-| **TOTAL** | **415** | **136** | **32.8%** | **279** | **62.4%** | **45.3%** | **46.0%** | **39.5%** | **250.5** | **49.9** | **102** | **70.1%** | **81.0%** | **41.2%** | **70.8%** | **ALL** |
+### High Priority Territories (Criticality > 70)
 
-## Quick Stats
+### High Priority Territories
 
-- **Compliant:** 136/415
-- **HealerMixin:** 259/415
-- **MCP Hardened:** 188/415
-- **Used Elsewhere:** 294/415
+- 🔥 **L0 Maintenance**: 5/24 compliant | Health: 45.8% | Risk: HIGH | Heal Gap: 66.7%
+- 🔥 **L1 Cognition**: 9/50 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 60.0%
+- 🔥 **L2 Execution**: 27/83 compliant | Health: 46.2% | Risk: HIGH | Heal Gap: 47.0%
+- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 60.7% | Risk: HIGH | Heal Gap: 41.9%
+- 🔥 **L4 State**: 10/21 compliant | Health: 57.1% | Risk: HIGH | Heal Gap: 38.1%
+- 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 57.9% | Risk: HIGH | Heal Gap: 31.5%
+- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 50.5% | Risk: HIGH | Heal Gap: 13.5%
+- ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 66.7% | Risk: MED
+- 🔥 **Apps Lic**: 11/47 compliant | Health: 31.2% | Risk: HIGH | Heal Gap: 44.7%
+- 🔥 **Apps Rg**: 1/39 compliant | Health: 41.9% | Risk: HIGH | Heal Gap: 51.2%
+- 🔥 **Apps Shared**: 0/4 compliant | Health: 16.7% | Risk: HIGH | Heal Gap: 100.0%
 
-## Quality
+### Low Priority Territories
 
-- **Avg CC:** 49.9 | **Max CC:** 102
-- **Typed:** 70.1% | **Documented:** 81.0% | **Observable:** 41.2%
+- 🔥 **Utils**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 42.9%
+
+### Unclassified Agents
+
+- ❓ **Unclassified**: 1/20 compliant | Health: 50.0% | Risk: HIGH | Heal Gap: 35.0%
+
+
+## 📈 Recommendations
+
+### Immediate Actions (High Risk)
+- **L0 Maintenance**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L1 Cognition**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L2 Execution**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L3 Orchestration**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L4 State**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L5 Safety/Validators**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=47.4) and test coverage
+- **Apps Lic**: Focus on complexity reduction (CC=47.4) and test coverage
+- **Apps Rg**: Focus on complexity reduction (CC=47.4) and test coverage
+- **Apps Shared**: Focus on complexity reduction (CC=47.4) and test coverage
+
+### Healing Gap Closure
+- **Apps Shared**: Add heal_repository() methods (Gap: 100.0%)
+- **L0 Maintenance**: Add heal_repository() methods (Gap: 66.7%)
+- **L1 Cognition**: Add heal_repository() methods (Gap: 60.0%)
+- **Apps Rg**: Add heal_repository() methods (Gap: 51.2%)
+- **L2 Execution**: Add heal_repository() methods (Gap: 47.0%)
+- **Apps Lic**: Add heal_repository() methods (Gap: 44.7%)
+- **L3 Orchestration**: Add heal_repository() methods (Gap: 41.9%)
+- **L4 State**: Add heal_repository() methods (Gap: 38.1%)
+- **L5 Safety/Validators**: Add heal_repository() methods (Gap: 31.5%)
+
+
+## 📊 Data Files
+
+- **Detailed CSV**: `reports/autonomy_compliance_data.csv` (open in Excel/Sheets)
+- **Summary Report**: This markdown file
 
 ---
-*Report generated by AutonomyGuardianAgent*
+*Report generated by AutonomyGuardianAgent | January 02, 2026*

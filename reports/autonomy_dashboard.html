@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomy Compliance Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        .risk-high { color: #e53e3e; }
+        .risk-med { color: #dd6b20; }
+        .risk-low { color: #38a169; }
+        .health-score {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .health-high { background: #c6f6d5; color: #2f855a; }
+        .health-med { background: #feebc8; color: #c05621; }
+        .health-low { background: #fed7d7; color: #c53030; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Autonomy Compliance Dashboard</h1>
+        <p>Interactive visualization of agent health, risks, and compliance metrics</p>
+        <div id="lastUpdated" class="metric-label"></div>
+    </div>
+
+    <div class="metrics-grid" id="metricsGrid">
+        <div class="loading">Loading compliance data...</div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Territory Health Overview</div>
+        <div id="healthChart" style="height: 400px;"></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Healing Gap Analysis</div>
+        <div id="healingChart" style="height: 400px;"></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Risk vs Criticality Matrix</div>
+        <div id="riskMatrix" style="height: 400px;"></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Territory Compliance Breakdown</div>
+        <div id="complianceChart" style="height: 500px;"></div>
+    </div>
+
+    <script>
+        // Load and parse CSV data
+        async function loadData() {
+            try {
+                const response = await fetch('./autonomy_compliance_data.csv');
+                const csvText = await response.text();
+                const data = Papa.parse(csvText, { header: true, skipEmptyLines: true }).data;
+                
+                // Filter out TOTAL row for charts
+                const territoryData = data.filter(row => row.Territory !== 'TOTAL');
+                const totalRow = data.find(row => row.Territory === 'TOTAL');
+                
+                renderMetrics(totalRow);
+                renderHealthChart(territoryData);
+                renderHealingChart(territoryData);
+                renderRiskMatrix(territoryData);
+                renderComplianceChart(territoryData);
+                
+                document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString();
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                document.getElementById('metricsGrid').innerHTML = '<div class="loading">Failed to load data. Please ensure autonomy_compliance_data.csv exists.</div>';
+            }
+        }
+
+        function renderMetrics(totalRow) {
+            if (!totalRow) return;
+            
+            const metrics = [
+                { label: 'Total Agents', value: totalRow.Total, color: '#4299e1' },
+                { label: 'Compliance Rate', value: `${totalRow.Heal_Inv_Pct}%`, color: getHealthColor(totalRow.Heal_Inv_Pct) },
+                { label: 'System Health', value: `${totalRow.Health}/100`, color: getHealthColor(totalRow.Health) },
+                { label: 'Risk Level', value: totalRow.Risk, color: getRiskColor(totalRow.Risk) },
+                { label: 'Avg Complexity', value: totalRow.Avg_CC, color: totalRow.Avg_CC > 10 ? '#e53e3e' : '#38a169' },
+                { label: 'Test Coverage', value: `${totalRow.Test_Pct}%`, color: getHealthColor(totalRow.Test_Pct) }
+            ];
+
+            const html = metrics.map(metric => `
+                <div class="metric-card">
+                    <div class="metric-label">${metric.label}</div>
+                    <div class="metric-value" style="color: ${metric.color};">${metric.value}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('metricsGrid').innerHTML = html;
+        }
+
+        function renderHealthChart(data) {
+            const territories = data.map(row => row.Territory);
+            const health = data.map(row => parseFloat(row.Health));
+            const criticality = data.map(row => parseFloat(row.Criticality));
+
+            const trace1 = {
+                x: territories,
+                y: health,
+                type: 'bar',
+                name: 'Health Score',
+                marker: { color: health.map(h => getHealthColor(h)) }
+            };
+
+            const trace2 = {
+                x: territories,
+                y: criticality,
+                type: 'scatter',
+                mode: 'markers+lines',
+                name: 'Criticality',
+                yaxis: 'y2',
+                marker: { size: 8, color: '#ff6b6b' },
+                line: { color: '#ff6b6b', width: 2 }
+            };
+
+            const layout = {
+                xaxis: { title: 'Territory', tickangle: -45 },
+                yaxis: { title: 'Health Score (0-100)', side: 'left' },
+                yaxis2: {
+                    title: 'Criticality (0-100)',
+                    side: 'right',
+                    overlaying: 'y'
+                },
+                margin: { b: 100 }
+            };
+
+            Plotly.newPlot('healthChart', [trace1, trace2], layout);
+        }
+
+        function renderHealingChart(data) {
+            const territories = data.map(row => row.Territory);
+            const healCap = data.map(row => parseFloat(row.Heal_Cap_Pct));
+            const healInv = data.map(row => parseFloat(row.Heal_Inv_Pct));
+
+            const trace1 = {
+                x: territories,
+                y: healCap,
+                type: 'bar',
+                name: 'Healing Capabilities',
+                marker: { color: '#4ecdc4' }
+            };
+
+            const trace2 = {
+                x: territories,
+                y: healInv,
+                type: 'bar',
+                name: 'Healing Invocation',
+                marker: { color: '#45b7d1' }
+            };
+
+            const layout = {
+                xaxis: { title: 'Territory', tickangle: -45 },
+                yaxis: { title: 'Percentage (%)' },
+                barmode: 'group',
+                margin: { b: 100 }
+            };
+
+            Plotly.newPlot('healingChart', [trace1, trace2], layout);
+        }
+
+        function renderRiskMatrix(data) {
+            const territories = data.map(row => row.Territory);
+            const criticality = data.map(row => parseFloat(row.Criticality));
+            const health = data.map(row => parseFloat(row.Health));
+            const risks = data.map(row => row.Risk);
+
+            const trace = {
+                x: criticality,
+                y: health,
+                mode: 'markers+text',
+                type: 'scatter',
+                text: territories,
+                textposition: 'top center',
+                marker: {
+                    size: 12,
+                    color: risks.map(r => getRiskColor(r)),
+                    line: { width: 2, color: 'white' }
+                }
+            };
+
+            const layout = {
+                xaxis: { title: 'Criticality (0-100)' },
+                yaxis: { title: 'Health Score (0-100)' },
+                shapes: [
+                    // Risk zones
+                    {
+                        type: 'rect',
+                        x0: 70, x1: 100, y0: 0, y1: 40,
+                        fillcolor: 'rgba(229, 62, 62, 0.1)',
+                        line: { width: 0 }
+                    },
+                    {
+                        type: 'rect', 
+                        x0: 40, x1: 70, y0: 40, y1: 70,
+                        fillcolor: 'rgba(221, 107, 32, 0.1)',
+                        line: { width: 0 }
+                    }
+                ],
+                annotations: [
+                    {
+                        x: 85, y: 20,
+                        text: 'HIGH RISK<br>High Criticality<br>Low Health',
+                        showarrow: false,
+                        font: { color: '#e53e3e' }
+                    },
+                    {
+                        x: 55, y: 55,
+                        text: 'MEDIUM RISK',
+                        showarrow: false,
+                        font: { color: '#dd6b20' }
+                    }
+                ]
+            };
+
+            Plotly.newPlot('riskMatrix', [trace], layout);
+        }
+
+        function renderComplianceChart(data) {
+            const territories = data.map(row => row.Territory);
+            const compliant = data.map(row => parseInt(row.Compliant));
+            const total = data.map(row => parseInt(row.Total));
+            const nonCompliant = total.map((t, i) => t - compliant[i]);
+
+            const trace1 = {
+                x: territories,
+                y: compliant,
+                type: 'bar',
+                name: 'Compliant',
+                marker: { color: '#38a169' }
+            };
+
+            const trace2 = {
+                x: territories,
+                y: nonCompliant,
+                type: 'bar',
+                name: 'Non-Compliant',
+                marker: { color: '#e53e3e' }
+            };
+
+            const layout = {
+                xaxis: { title: 'Territory', tickangle: -45 },
+                yaxis: { title: 'Number of Agents' },
+                barmode: 'stack',
+                margin: { b: 100 }
+            };
+
+            Plotly.newPlot('complianceChart', [trace1, trace2], layout);
+        }
+
+        function getHealthColor(value) {
+            const v = parseFloat(value);
+            if (v >= 80) return '#38a169';
+            if (v >= 60) return '#dd6b20';
+            return '#e53e3e';
+        }
+
+        function getRiskColor(risk) {
+            switch(risk) {
+                case 'HIGH': return '#e53e3e';
+                case 'MED': return '#dd6b20';
+                case 'LOW': return '#38a169';
+                default: return '#718096';
+            }
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

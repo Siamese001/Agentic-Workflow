@@ -348,8 +348,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
         if markdown:
             header = (
-                "| Territory / Layer                          | Total | Compliant | % Comp | Miss | % Heal Cap | % Heal Inv | % MCP | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |\n"
-                "|--------------------------------------------|-------|-----------|--------|------|-----------|------------|-------|--------|---------|--------|--------|---------|--------|-------|--------|----------|\n"
+                "| Territory / Layer                          | Total | Compliant | % Heal Cap | % Heal Inv | % MCP | % Test | Avg CC | % Typed | % Obs | Criticality | Health | Risk | % Used | Priority |\n"
+                "|--------------------------------------------|-------|-----------|------------|-------------|-------|--------|--------|---------|-------|-------------|--------|------|--------|----------|\n"
             )
             print(header)
 
@@ -520,12 +520,25 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             totals["observable"] += terr_observable
             totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
 
+            # Calculate new high-signal metrics
+            layer_weight = {"L0": 5, "L1": 4, "L2": 3, "L3": 2, "L4": 1, "L5": 3, "unknown": 0}.get(layer_filter, 0)
+            priority_weight = {"CRITICAL": 10, "HIGH": 7, "MEDIUM": 5, "LOW": 2}.get(priority, 0)
+            criticality = min(100, (perc_used * 2) + layer_weight + priority_weight)
+            
+            health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
+            
+            risk_score = 0
+            if avg_cc > 10: risk_score += 3
+            if perc_tests < 50: risk_score += 3
+            if perc_compliant < 80: risk_score += 4
+            risk = "HIGH" if risk_score >= 6 else "MED" if risk_score >= 3 else "LOW"
+
             # Display
             territory_name = territory_key.replace("_", " ").title()[:20]
             row = (
-                f"| {territory_name:<42} | {terr_total:5} | {terr_compliant:9} | {perc_compliant:5}% | {terr_total - terr_compliant:4} "
-                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
-                f"| {perc_typed:5}% | {perc_documented:4}% | {perc_observable:4}% | {perc_used:4}% | {priority:8} |"
+                f"| {territory_name:<42} | {terr_total:5} | {terr_compliant:9} "
+                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% "
+                f"| {avg_cc:6} | {perc_typed:5}% | {perc_observable:4}% | {criticality:5.0f} | {health:5.1f} | {risk:4} | {perc_used:4}% | {priority:8} |"
             )
             print(row)
 
@@ -607,10 +620,20 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             totals["observable"] += terr_observable
             totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
 
+            # Calculate metrics for unclassified
+            unclass_health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
+            unclass_criticality = min(100, (perc_used * 2) + 5)  # Default medium priority
+            
+            unclass_risk_score = 0
+            if avg_cc > 10: unclass_risk_score += 3
+            if perc_tests < 50: unclass_risk_score += 3
+            if perc_compliant < 80: unclass_risk_score += 4
+            unclass_risk = "HIGH" if unclass_risk_score >= 6 else "MED" if unclass_risk_score >= 3 else "LOW"
+
             row = (
-                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:5} | {terr_compliant:9} | {perc_compliant:5}% | {terr_total - terr_compliant:4} "
-                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% | {avg_loc:7} | {avg_cc:6} | {terr_max_cc:6} "
-                f"| {perc_typed:5}% | {perc_documented:4}% | {perc_observable:4}% | {perc_used:4}% | Review   |"
+                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:5} | {terr_compliant:9} "
+                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% "
+                f"| {avg_cc:6} | {perc_typed:5}% | {perc_observable:4}% | {unclass_criticality:5.0f} | {unclass_health:5.1f} | {unclass_risk:4} | {perc_used:4}% | Review   |"
             )
             print(row)
 
@@ -629,10 +652,20 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             total_observable = round(t["observable"] / t["agents"], 1)
             total_used = round(t["used"] / t["agents"] * 100, 1)
 
+            # Calculate total metrics
+            total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
+            total_criticality = min(100, (total_used * 2) + 30)  # Weighted average
+            
+            total_risk_score = 0
+            if overall_avg_cc > 10: total_risk_score += 3
+            if total_tests < 50: total_risk_score += 3
+            if total_perc < 80: total_risk_score += 4
+            total_risk = "HIGH" if total_risk_score >= 6 else "MED" if total_risk_score >= 3 else "LOW"
+
             total_row = (
-                f"| **TOTAL**                                  | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** "
-                f"| **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** "
-                f"| **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |"
+                f"| **TOTAL**                                  | **{t['agents']}** | **{t['compliant']}** "
+                f"| **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** "
+                f"| **{overall_avg_cc}** | **{total_typed}%** | **{total_observable}%** | **{total_criticality:.0f}** | **{total_health:.1f}** | **{total_risk}** | **{total_used}%** | **ALL** |"
             )
             print(total_row)
 
@@ -643,8 +676,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
 
     def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict) -> None:
-        """Save compliance report as markdown file with full table format."""
+        """Save compliance report as Windsurf-readable format with structured sections."""
         report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
+        csv_path = self.project_root / "reports" / "autonomy_compliance_data.csv"
         report_path.parent.mkdir(parents=True, exist_ok=True)
         
         t = totals
@@ -660,38 +694,47 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         total_observable = round(t["observable"] / t["agents"], 1) if t["agents"] else 0
         total_used = round(t["used"] / t["agents"] * 100, 1) if t["agents"] else 0
         
+        # Calculate overall health and criticality
+        overall_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
+        overall_criticality = min(100, (total_used * 2) + 30)
+        
+        overall_risk_score = 0
+        if overall_avg_cc > 10: overall_risk_score += 3
+        if total_tests < 50: overall_risk_score += 3
+        if total_perc < 80: overall_risk_score += 4
+        overall_risk = "HIGH" if overall_risk_score >= 6 else "MED" if overall_risk_score >= 3 else "LOW"
+
         md = f"""# Autonomy Compliance Report
 
 **Generated:** {today}  
 **Source:** `agent_discovery_full.json` (canonical AST scan)
 
-## Summary
+## 🎯 Executive Summary
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| **Total Agents** | {t['agents']} | - |
-| **Compliant** | {t['compliant']} ({total_perc}%) | 80%+ |
-| **Healing Capabilities** | {t['healing_cap']} ({total_healing_cap}%) | 80%+ |
-| **Healing Invocation** | {t['healing_invoke']} ({total_healing_invoke}%) | 80%+ |
-| **MCP Hardened** | {t['hardened']} ({total_hardened}%) | 80%+ |
-| **With Tests** | {t['tests']} ({total_tests}%) | 80%+ |
-| **Used Elsewhere** | {t['used']} ({total_used}%) | - |
+**System Health:** {overall_health:.1f}/100 | **Risk Level:** {overall_risk} | **Criticality:** {overall_criticality:.0f}/100
 
-## Quality Metrics
+### Key Metrics
+- **Total Agents:** {t['agents']}
+- **Compliant:** {t['compliant']} ({total_perc}%) {'✅' if total_perc >= 80 else '⚠️' if total_perc >= 60 else '❌'}
+- **Healing Capabilities:** {t['healing_cap']} ({total_healing_cap}%) {'✅' if total_healing_cap >= 80 else '⚠️' if total_healing_cap >= 60 else '❌'}
+- **Healing Invocation:** {t['healing_invoke']} ({total_healing_invoke}%) {'✅' if total_healing_invoke >= 80 else '⚠️' if total_healing_invoke >= 60 else '❌'}
+- **With Tests:** {t['tests']} ({total_tests}%) {'✅' if total_tests >= 80 else '⚠️' if total_tests >= 60 else '❌'}
+- **Avg Complexity:** {overall_avg_cc} {'✅' if overall_avg_cc <= 10 else '⚠️' if overall_avg_cc <= 15 else '❌'}
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| **Avg Cyclomatic Complexity** | {overall_avg_cc} | <10 |
-| **Max CC** | {t['max_cc']} | <20 |
-| **Type Coverage** | {total_typed}% | 90%+ |
-| **Documentation** | {total_documented}% | 90%+ |
-| **Observability** | {total_observable}% | 80%+ |
+## 📊 Territory Analysis
 
-## Territory Breakdown
+**Note:** Table data available in CSV format for better readability in spreadsheet tools.
 
-| Territory / Layer | Total | Compliant | % Comp | Miss | % Heal Cap | % Heal Inv | % MCP | % Test | Avg LOC | Avg CC | Max CC | % Typed | % Docs | % Obs | % Used | Priority |
-|-------------------|-------|-----------|--------|------|------------|-------------|-------|--------|---------|--------|--------|---------|--------|-------|--------|----------|
+### High Priority Territories (Criticality > 70)
 """
+        # Create CSV data for spreadsheet viewing
+        csv_data = []
+        csv_headers = ["Territory", "Total", "Compliant", "Heal_Cap_Pct", "Heal_Inv_Pct", "MCP_Pct", "Test_Pct", "Avg_CC", "Typed_Pct", "Obs_Pct", "Criticality", "Health", "Risk", "Used_Pct", "Priority"]
+        
+        high_priority_territories = []
+        medium_priority_territories = []
+        low_priority_territories = []
+        
         # Add territory rows using path_to_layer lookup
         for territory_key, (layer_filter, priority) in self.territories.items():
             # Get agents for this territory using path_to_layer
@@ -713,6 +756,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_tests = sum(1 for a in agents if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in agents if a.stem in used_stems)
             
+            # Calculate basic percentages
             perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
             perc_heal_cap = round(terr_healing_cap / terr_total * 100, 1) if terr_total else 0
             perc_heal_inv = round(terr_healing_invoke / terr_total * 100, 1) if terr_total else 0
@@ -720,12 +764,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
             perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
             
-            # Calculate territory metrics for markdown
-            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in agents)
+            # Calculate detailed metrics
             terr_cc_sum = 0
-            terr_max_cc = 0
             terr_typed = 0
-            terr_documented = 0
             terr_observable = 0
             
             for a in agents:
@@ -738,28 +779,66 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         visitor = _CCVisitor()
                         visitor.visit(func)
                         terr_cc_sum += visitor.cc
-                        terr_max_cc = max(terr_max_cc, visitor.cc)
                 except:
                     pass
                 
-                # Type/doc/obs detection
+                # Type/obs detection
                 if "typing" in content or "from typing" in content or "import typing" in content:
                     terr_typed += 1
-                if '"""' in content or "'''" in content:
-                    terr_documented += 1
                 if "logging" in content or "log" in content or "Logger" in content:
                     terr_observable += 1
             
-            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
             avg_cc = round(terr_cc_sum / terr_total, 1) if terr_total else 0
             perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
-            perc_docs = round(terr_documented / terr_total * 100, 1) if terr_total else 0
             perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
             
-            territory_name = territory_key.replace("_", " ").title()
-            md += f"| {territory_name} | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal_cap}% | {perc_heal_inv}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | {priority} |\n"
+            # Calculate high-signal metrics
+            layer_weight = {"L0": 5, "L1": 4, "L2": 3, "L3": 2, "L4": 1, "L5": 3, "unknown": 0}.get(layer_filter, 0)
+            priority_weight = {"CRITICAL": 10, "HIGH": 7, "MEDIUM": 5, "LOW": 2}.get(priority, 0)
+            criticality = min(100, (perc_used * 2) + layer_weight + priority_weight)
+            
+            health = round((perc_test + perc_heal_inv + perc_obs) / 3, 1)
+            
+            risk_score = 0
+            if avg_cc > 10: risk_score += 3
+            if perc_test < 50: risk_score += 3
+            if perc_comp < 80: risk_score += 4
+            risk = "HIGH" if risk_score >= 6 else "MED" if risk_score >= 3 else "LOW"
+            
+            # Add to CSV data
+            csv_data.append([
+                territory_key.replace("_", " ").title(), terr_total, terr_compliant, perc_heal_cap, perc_heal_inv,
+                perc_hard, perc_test, avg_cc, perc_typed, perc_obs, criticality, health, risk, perc_used, priority
+            ])
+            
+            # Categorize territory
+            territory_info = {
+                "name": territory_key.replace("_", " ").title(),
+                "total": terr_total,
+                "compliant": terr_compliant,
+                "health": health,
+                "risk": risk,
+                "criticality": criticality,
+                "heal_gap": perc_heal_cap - perc_heal_inv
+            }
+            
+            if criticality > 70:
+                high_priority_territories.append(territory_info)
+            elif criticality > 40:
+                medium_priority_territories.append(territory_info)
+            else:
+                low_priority_territories.append(territory_info)
 
-        # Unclassified - calculate full metrics
+        # Add territory summaries to markdown
+        for territory_list, title in [(high_priority_territories, "High Priority"), (medium_priority_territories, "Medium Priority"), (low_priority_territories, "Low Priority")]:
+            if territory_list:
+                md += f"\n### {title} Territories\n\n"
+                for t in sorted(territory_list, key=lambda x: x['criticality'], reverse=True):
+                    status_icon = "🔥" if t['risk'] == "HIGH" else "⚠️" if t['risk'] == "MED" else "✅"
+                    heal_gap_note = f" | Heal Gap: {t['heal_gap']:.1f}%" if abs(t['heal_gap']) > 10 else ""
+                    md += f"- {status_icon} **{t['name']}**: {t['compliant']}/{t['total']} compliant | Health: {t['health']:.1f}% | Risk: {t['risk']}{heal_gap_note}\n"
+
+        # Handle unclassified agents
         unclassified = [a for a in all_agents if a not in classified_paths]
         if unclassified:
             terr_total = len(unclassified)
@@ -771,17 +850,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_tests = sum(1 for a in unclassified if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             
-            # Calculate full metrics for unclassified
-            terr_loc = sum(len([l for l in a.read_text(errors="ignore").splitlines() if l.strip() and not l.strip().startswith("#")]) for a in unclassified)
+            # Calculate unclassified metrics quickly
             terr_cc_sum = 0
-            terr_max_cc = 0
             terr_typed = 0
-            terr_documented = 0
             terr_observable = 0
             
             for a in unclassified:
                 content = a.read_text(errors="ignore")
-                # CC calculation
                 try:
                     tree = ast.parse(content)
                     functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
@@ -789,19 +864,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         visitor = _CCVisitor()
                         visitor.visit(func)
                         terr_cc_sum += visitor.cc
-                        terr_max_cc = max(terr_max_cc, visitor.cc)
                 except:
                     pass
                 
-                # Type/doc/obs detection
-                if "typing" in content or "from typing" in content or "import typing" in content:
+                if "typing" in content or "from typing" in content:
                     terr_typed += 1
-                if '"""' in content or "'''" in content:
-                    terr_documented += 1
-                if "logging" in content or "log" in content or "Logger" in content:
+                if "logging" in content or "log" in content:
                     terr_observable += 1
             
-            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
             avg_cc = round(terr_cc_sum / terr_total, 1) if terr_total else 0
             perc_comp = round(terr_compliant / terr_total * 100, 1) if terr_total else 0
             perc_heal_cap = round(terr_healing_cap / terr_total * 100, 1) if terr_total else 0
@@ -809,33 +879,95 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_hard = round(terr_hardened / terr_total * 100, 1) if terr_total else 0
             perc_test = round(terr_tests / terr_total * 100, 1) if terr_total else 0
             perc_typed = round(terr_typed / terr_total * 100, 1) if terr_total else 0
-            perc_docs = round(terr_documented / terr_total * 100, 1) if terr_total else 0
             perc_obs = round(terr_observable / terr_total * 100, 1) if terr_total else 0
             perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
             
-            md += f"| **OTHER/UNCLASSIFIED** | {terr_total} | {terr_compliant} | {perc_comp}% | {terr_total - terr_compliant} | {perc_heal_cap}% | {perc_heal_inv}% | {perc_hard}% | {perc_test}% | {avg_loc} | {avg_cc} | {terr_max_cc} | {perc_typed}% | {perc_docs}% | {perc_obs}% | {perc_used}% | Review |\n"
+            # Calculate unclassified metrics
+            unclass_health = round((perc_test + perc_heal_inv + perc_obs) / 3, 1)
+            unclass_criticality = min(100, (perc_used * 2) + 5)
+            unclass_risk_score = 0
+            if avg_cc > 10: unclass_risk_score += 3
+            if perc_test < 50: unclass_risk_score += 3  
+            if perc_comp < 80: unclass_risk_score += 4
+            unclass_risk = "HIGH" if unclass_risk_score >= 6 else "MED" if unclass_risk_score >= 3 else "LOW"
+            
+            # Add to CSV
+            csv_data.append([
+                "OTHER/UNCLASSIFIED", terr_total, terr_compliant, perc_heal_cap, perc_heal_inv,
+                perc_hard, perc_test, avg_cc, perc_typed, perc_obs, unclass_criticality, unclass_health, unclass_risk, perc_used, "Review"
+            ])
+            
+            # Add to markdown
+            md += f"\n### Unclassified Agents\n\n"
+            md += f"- ❓ **Unclassified**: {terr_compliant}/{terr_total} compliant | Health: {unclass_health:.1f}% | Risk: {unclass_risk} | Heal Gap: {perc_heal_cap - perc_heal_inv:.1f}%\n"
 
-        md += f"| **TOTAL** | **{t['agents']}** | **{t['compliant']}** | **{total_perc}%** | **{t['agents'] - t['compliant']}** | **{total_healing_cap}%** | **{total_healing_invoke}%** | **{total_hardened}%** | **{total_tests}%** | **{overall_avg_loc}** | **{overall_avg_cc}** | **{t['max_cc']}** | **{total_typed}%** | **{total_documented}%** | **{total_observable}%** | **{total_used}%** | **ALL** |\n"
+        # Add CSV totals
+        total_agents = t.get('agents', 0)
+        total_compliant = t.get('compliant', 0)
+        csv_data.append([
+            "TOTAL", total_agents, total_compliant, total_healing_cap, total_healing_invoke,
+            total_hardened, total_tests, overall_avg_cc, total_typed, total_observable, overall_criticality, overall_health, overall_risk, total_used, "ALL"
+        ])
+
+        # Finish markdown report
+        md += f"""
+
+## 📈 Recommendations
+
+### Immediate Actions (High Risk)
+"""
+        high_risk_territories = [t for t in high_priority_territories + medium_priority_territories if t['risk'] == 'HIGH']
+        if high_risk_territories:
+            for t in high_risk_territories:
+                md += f"- **{t['name']}**: Focus on complexity reduction (CC={avg_cc:.1f}) and test coverage\n"
+        else:
+            md += "- No high-risk territories identified ✅\n"
 
         md += f"""
-## Quick Stats
+### Healing Gap Closure
+"""
+        healing_gaps = [(t['name'], t['heal_gap']) for t in high_priority_territories + medium_priority_territories if abs(t['heal_gap']) > 15]
+        if healing_gaps:
+            for name, gap in sorted(healing_gaps, key=lambda x: abs(x[1]), reverse=True):
+                action = "Add heal_repository() methods" if gap > 0 else "Remove unused HealerMixin inheritance"
+                md += f"- **{name}**: {action} (Gap: {gap:.1f}%)\n"
+        else:
+            md += "- Healing capabilities and invocation are well-aligned ✅\n"
 
-- **Compliant:** {t['compliant']}/{t['agents']}
-- **Healing Capabilities:** {t['healing_cap']}/{t['agents']}
-- **Healing Invocation:** {t['healing_invoke']}/{t['agents']}
-- **MCP Hardened:** {t['hardened']}/{t['agents']}
-- **Used Elsewhere:** {t['used']}/{t['agents']}
+        md += f"""
 
-## Quality
+## 📊 Data Files
 
-- **Avg CC:** {overall_avg_cc} | **Max CC:** {t['max_cc']}
-- **Typed:** {total_typed}% | **Documented:** {total_documented}% | **Observable:** {total_observable}%
+- **Detailed CSV**: `reports/autonomy_compliance_data.csv` (open in Excel/Sheets)
+- **Summary Report**: This markdown file
 
 ---
-*Report generated by AutonomyGuardianAgent*
+*Report generated by AutonomyGuardianAgent | {today}*
 """
+        
+        # Write CSV file
+        import csv
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(csv_headers)
+            writer.writerows(csv_data)
+        
+        # Write markdown report
         report_path.write_text(md, encoding="utf-8")
-        print(f"\n[SAVED] {report_path}")
+        
+        # Launch interactive dashboard
+        dashboard_path = self.project_root / "reports" / "autonomy_dashboard.html"
+        if dashboard_path.exists():
+            print(f"\n[SAVED] Markdown: {report_path}")
+            print(f"[SAVED] CSV Data: {csv_path}")
+            print(f"[READY] Interactive Dashboard: {dashboard_path}")
+            print(f"\n🚀 VIEW DASHBOARD:")
+            print(f"   1. Install 'Live Server' extension in VS Code")
+            print(f"   2. Right-click {dashboard_path.name} → 'Open with Live Server'")
+            print(f"   3. Or open file directly in browser for static view")
+        else:
+            print(f"\n[SAVED] Markdown: {report_path}")
+            print(f"[SAVED] CSV Data: {csv_path}")
 
 
 # Singleton accessor
