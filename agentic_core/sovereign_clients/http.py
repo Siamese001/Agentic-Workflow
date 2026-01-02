@@ -11,6 +11,9 @@ import logging
 from typing import Any, Dict, List, Optional, Set
 from urllib.parse import urlparse
 
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+
 Logger = logging.getLogger(__name__)
 
 # Approved domains for external HTTP (sovereignty enforcement)
@@ -28,10 +31,11 @@ ALLOWED_DOMAINS: Set[str] = {
 }
 
 
-class SovereignHttpClient:
+class SovereignHttpClient(MCPHardenedMixin, HealerMixin):
     """Sovereign HTTP client - audit + safe exec for all HTTP operations."""
     
     def __init__(self, timeout: int = 30, allow_internal: bool = False):
+        super().__init__()
         """
         Initialize HTTP client.
         
