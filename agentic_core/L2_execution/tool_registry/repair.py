@@ -25,15 +25,37 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class SherlockAgent(SubAtomicAgent):
+from agentic_core.common.healing.healer_mixin import HealerMixin
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
+
+class SherlockAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
+    
+    L4 Checkpoint Integration:
+    - Analysis state checkpointed for persistent debugging
+    - Trace snapshots stored in L4 ledger
     """
     def __init__(self, context):
         super().__init__(context)
         self.triggered = False
         self.last_failure = None
+        self._mcp_audit('init')
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Perform healing for diagnostic anomalies."""
+        self._mcp_audit("healing_start", payload=anomaly.to_dict())
+        
+        if anomaly.type == "diagnostic_corruption":
+            # Reset diagnostic state
+            self.triggered = False
+            self.last_failure = None
+            self._mcp_audit("healing_success")
+            return True
+        
+        return False
 
     def can_run(self) -> bool:
                     
