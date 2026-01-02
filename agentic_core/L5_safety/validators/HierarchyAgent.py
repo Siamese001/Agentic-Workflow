@@ -112,20 +112,33 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         self._app_specific_checked: Dict[Path, bool] = {}
         # Validate project root
         self._validate_project_root()
-        # LocationAgent integration for coordinated file moves after hierarchy fixes
-        try:
-            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-            self.location_agent = LocationAgent(self.project_root)
-        except ImportError:
-            self.location_agent = None
-        # GovernanceAgent integration for architectural rules validation
-        try:
-            from agentic_core.L1_cognition.thought_engine.GovernanceAgent import ArchitectureGovernor
-            self.governance_agent = ArchitectureGovernor(str(self.project_root))
-        except ImportError:
-            self.governance_agent = None
+        # LocationAgent and GovernanceAgent are lazy-loaded to avoid circular imports
+        self._location_agent = None
+        self._governance_agent = None
         # Backup directory for safe operations
         self._backup_dir: Optional[Path] = None
+    
+    @property
+    def location_agent(self):
+        """Lazy-load LocationAgent to avoid circular import."""
+        if self._location_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+                self._location_agent = LocationAgent(self.project_root)
+            except ImportError:
+                pass
+        return self._location_agent
+    
+    @property
+    def governance_agent(self):
+        """Lazy-load GovernanceAgent to avoid circular import."""
+        if self._governance_agent is None:
+            try:
+                from agentic_core.L1_cognition.thought_engine.GovernanceAgent import ArchitectureGovernor
+                self._governance_agent = ArchitectureGovernor(str(self.project_root))
+            except ImportError:
+                pass
+        return self._governance_agent
 
     def _validate_project_root(self) -> None:
         """Validate project_root is the actual project root."""
