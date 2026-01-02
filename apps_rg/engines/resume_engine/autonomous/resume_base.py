@@ -15,6 +15,7 @@ from .context import ResumeEngineContext
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.L5_safety.healer_mixin import HealerMixin
 from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 
 class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
@@ -32,6 +33,38 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         self.ctx = ctx
         self.name = self.__class__.__name__
         self._mcp_audit("init")
+
+    def _run_self_tests(self) -> bool:
+        """Run self-tests for ResumeAgent."""
+        super()._run_self_tests()
+        
+        # Verify context is valid
+        assert self.ctx is not None, "Context must not be None"
+        assert self.name, "Agent name must be set"
+        
+        # Verify signals interface
+        assert hasattr(self.ctx, 'signals'), "Context must have signals"
+        assert hasattr(self.ctx, 'record_result'), "Context must have record_result"
+        
+        return True
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Perform healing for detected anomalies."""
+        self._mcp_audit("healing_start", payload=anomaly.to_dict())
+        
+        if anomaly.type == "context_corruption":
+            # Reset context state
+            self.ctx.signals.clear()
+            self._mcp_audit("healing_success")
+            return True
+        
+        if anomaly.type == "budget_exhausted":
+            # Reset budget tracking
+            self.ctx.budget.reset() if hasattr(self.ctx, 'budget') else None
+            self._mcp_audit("healing_success")
+            return True
+        
+        return False
 
     @abstractmethod
     async def execute(self) -> None:
