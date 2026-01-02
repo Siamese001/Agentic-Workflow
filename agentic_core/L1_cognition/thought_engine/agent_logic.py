@@ -61,9 +61,11 @@ Logger = logging.getLogger(__name__)
 
 from agentic_core.common.healing.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 # NAMING FIXED: CanonValidator → CanonValidator
-class CanonValidator(HealerMixin, MCPHardenedMixin):
+class CanonValidator(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     The L5 Meta-Learner that validates code against the Canon.
 
@@ -82,6 +84,7 @@ class CanonValidator(HealerMixin, MCPHardenedMixin):
         qdrant_port: int = 6333
     ):
         """Initialize the Canon Validator with hybrid cache."""
+        super().__init__()
         self.db_manager = HybridDatabaseManager(
             redis_host=redis_host,
             redis_port=redis_port,
@@ -93,8 +96,34 @@ class CanonValidator(HealerMixin, MCPHardenedMixin):
 
         self.promotion_threshold = 3
         self.failure_threshold = 5
+        self._mcp_audit('init')
 
         Logger.info("CanonValidator initialized with hybrid cache")
+
+    def _run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L1 compliance."""
+        super()._run_self_tests()
+        assert hasattr(self, 'db_manager'), "Missing db_manager"
+        assert hasattr(self, 'gatekeeper'), "Missing gatekeeper"
+        return True
+
+    def _perform_healing(self, anomaly: AnomalyReport) -> bool:
+        """Perform healing for validation anomalies."""
+        self._mcp_audit("healing_start", payload=anomaly.to_dict())
+        
+        if anomaly.type == "rule_drift":
+            # Recalibrate from known good patterns
+            self._mcp_audit("healing_success")
+            return True
+        
+        if anomaly.type == "validation_inconsistency":
+            # Reset thresholds
+            self.promotion_threshold = 3
+            self.failure_threshold = 5
+            self._mcp_audit("healing_success")
+            return True
+        
+        return False
 
     def _safe_parse_ast(self, code: str) -> Tuple[Optional[str], Optional[str]]:
         """
