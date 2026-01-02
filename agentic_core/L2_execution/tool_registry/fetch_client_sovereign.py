@@ -21,13 +21,17 @@ allowed_domains: Any = {'python.org', 'docs.python.org', 'github.com', 'raw.gith
 chunk_size: Any = 8000
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
-class SovereignFetchClient(MCPHardenedMixin):
+class SovereignFetchClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """Ultra-hardened Fetch MCP client — enforcing external knowledge purity."""
 
     def __init__(self, manager, cache: Optional[SovereignSemanticCache]=None):
+        super().__init__()
         self.manager = manager
         self.cache = cache
+        self._mcp_audit('init')
         Logger.info('[L2 FETCH] Sovereign gateway armed.')
 
     def _validate_url(self, url: str) -> str:
