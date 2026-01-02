@@ -26,7 +26,9 @@ deadlock_threshold = 2  # Alert after 2 consecutive timeouts
 
 
 # NAMING FIXED: TaskMonitor → TaskMonitor
-class TaskMonitor:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class TaskMonitor(HealerMixin):
     """Monitors a single asyncio Task."""
 
     def __init__(self, Task: asyncio.Task, name: str = None):
