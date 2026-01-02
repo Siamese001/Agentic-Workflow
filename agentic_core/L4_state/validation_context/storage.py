@@ -395,7 +395,7 @@ class RedisDistributedLock(MCPHardenedMixin, HealerMixin):
         except Exception:
             return key in self._local_cache
 
-class RedisHotCache(MCPHardenedMixin):
+class RedisHotCache(MCPHardenedMixin, HealerMixin):
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """
@@ -408,10 +408,12 @@ class RedisHotCache(MCPHardenedMixin):
             redis_client: Redis client instance
             default_ttl: Default TTL in seconds
         """
+        super().__init__()
         self.redis = redis_client
         self.default_ttl = default_ttl
         self._local_cache = {}
         self._local_cache_times = {}
+        self._mcp_audit('init')
 
     async def set_cache(self, key: str, value: Any, ttl: Optional[int]=None) -> bool:
         """
