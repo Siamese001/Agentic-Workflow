@@ -66,24 +66,24 @@
 | AgenticWorkflowError | Exception | - | - | - | - | 68 | Base exception for agentic workflow |
 | AgenticWorkflowError | Exception | - | - | - | - | 27 | Base exception for agentic workflow |
 | BiasAuditor | HealerMixin | - | - | Y | - | 74 | Lightweight Bias Detection for Cont |
-| BootstrapAgent | HealerMixin, MCPHardenedM | Y | Y | Y | D | 137 | 
+| BootstrapAgent | HealerMixin, L0Delegation | Y | Y | Y | D | 137 | 
     Autonomous boot integrity agen |
 | GapClosureArchitect | HealerMixin, Agent | - | - | Y | - | 103 | Gap Closure Architect agent for lea |
 | GravityComplianceValidator | HealerMixin | - | - | Y | - | 52 | Brief description of functionality  |
-| GuardianOrchestrator | HealerMixin, AutonomyMixi | - | - | Y | - | 77 | 
+| GuardianOrchestrator | HealerMixin, SelfDiagnosi | - | - | Y | - | 77 | 
     Sovereign orchestrator for all |
-| HealingOrchestrator | HealerMixin, AutonomyMixi | - | - | Y | - | 160 | 
+| HealingOrchestrator | HealerMixin, SelfDiagnosi | - | - | Y | - | 160 | 
     Sovereign healing engine orche |
 | HygieneValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 144 | 
     Detects 'Rot' within the syste |
 | L0DelegationMixin | - | Y | - | - | - | 111 | Mixin providing L0 delegation-only  |
 | L0DelegationTestingMixin | - | - | - | - | D | 68 | 
     Phase 2: Canonical delegated t |
-| MetricsWitness | HealerMixin, AutonomyMixi | - | - | Y | - | 70 | 
+| MetricsWitness | HealerMixin, SelfDiagnosi | - | - | Y | - | 70 | 
     Sovereign witness that cross-e |
 | SafeSystemCommandExecutor | HealerMixin, MCPHardenedM | Y | - | Y | - | 140 | 
     A secure system command execut |
-| ScriptToAgentClassifier | AdaptiveExecutionMixin, H | - | - | Y | D | 245 | 
+| ScriptToAgentClassifier | HealerMixin, L0Delegation | - | - | Y | D | 245 | 
     Sovereign classifier for scrip |
 | ScriptsPlanningOrchestrator | HealerMixin | - | - | Y | - | 119 | Orchestrator for planning script ex |
 | SovereignFilesystemMcpClient | - | Y | - | - | - | 81 | Official Filesystem MCP client for  |
@@ -111,7 +111,7 @@
     Forces the agent to show its w |
 | AgentThoughtProcess | BaseModel | Y | - | - | - | 92 | 
     Forces the agent to show its w |
-| AsyncBlockingValidator | HealerMixin, MCPHardenedM | Y | - | Y | - | 94 | 
+| AsyncBlockingValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 31: Detects blocking calls |
 | BareExceptValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 5: Detects bare except: st |
@@ -135,7 +135,7 @@
     Key 6: Detects eval() and exec |
 | ExternalHttpValidator | HealerMixin, CanonASTVali | Y | - | Y | - | 94 | 
     Key 23: Detects forbidden HTTP |
-| GenerativeGuard | HealerMixin, CanonBaseAge | Y | - | Y | - | 301 | 
+| GenerativeGuard | HealerMixin, MCPHardenedM | Y | - | Y | - | 301 | 
     KEYS: 45 (Dead Code/Runaway Ge |
 | GovernanceAgent | HealerMixin, MCPHardenedM | Y | - | Y | - | 337 | 
     Enforces architectural governa |
@@ -191,9 +191,9 @@
 | IntegrityGateExecutor | HealerMixin | - | - | Y | - | 111 | Brief description of functionality  |
 | IntegrityGateExecutor | HealerMixin | - | - | Y | - | 206 | Brief description of functionality  |
 | IntegrityGateExecutorAgent | HealerMixin | - | - | Y | S | 211 | Executor for integrity gate validat |
-| L2SelfTestingMixin | SubatomicTestingMixin, MC | Y | - | Y | S | 54 | 
+| L2SelfTestingMixin | MCPHardenedMixin, Subatom | Y | - | Y | S | 54 | 
     Alias for SubatomicTestingMixi |
-| MemoryArchitectAgent | SubAtomicAgent, MCPHarden | Y | Y | Y | S | 244 | 
+| MemoryArchitectAgent | MCPHardenedMixin, SubAtom | Y | Y | Y | S | 244 | 
     Autonomous Knowledge Distillat |
 | MemoryLeakDetector | HealerMixin | - | - | Y | - | 644 | ROLE: Memory Guardian. Detects and  |
 | NamingAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 872 | 
@@ -291,7 +291,7 @@
     L3 Orchestration switchboard:  |
 | MemoryLeakDetector | HealerMixin | - | - | Y | - | 159 | 
     Detects memory leaks in the ag |
-| MetaLearningAgent | HealerMixin, AutonomyMixi | - | - | Y | S | 122 | 
+| MetaLearningAgent | HealerMixin, SelfDiagnosi | - | - | Y | S | 122 | 
     Sovereign meta-learning agent  |
 | MetricsAgent | HealerMixin, MCPHardenedM | Y | Y | Y | - | 171 | 
     MetricsAgent: Sovereign quanti |
