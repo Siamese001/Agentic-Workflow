@@ -53,7 +53,9 @@ class HealingLease:
         """Get remaining time in seconds."""
         return max(0, self.expires_at - time.time())
 
-class AtomicBlackboard:
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+class AtomicBlackboard(MCPHardenedMixin):
     """
     Thread-safe blackboard for managing validation state.
     
