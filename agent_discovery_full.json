@@ -149,8 +149,8 @@
     "layer": "L0",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "L0DelegationTestingMixin"
+      "L0DelegationTestingMixin",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -224,9 +224,9 @@
     "layer": "L0",
     "inheritance": [
       "HealerMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -257,9 +257,9 @@
     "layer": "L0",
     "inheritance": [
       "HealerMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -367,9 +367,9 @@
     "layer": "L0",
     "inheritance": [
       "HealerMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -423,11 +423,11 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AutonomyMixin",
+      "L0DelegationTestingMixin",
+      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "L0DelegationTestingMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -833,8 +833,8 @@
     "layer": "L1",
     "inheritance": [
       "HealerMixin",
-      "MCPHardenedMixin",
-      "CanonASTValidator"
+      "CanonASTValidator",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1162,8 +1162,8 @@
     "layer": "L1",
     "inheritance": [
       "HealerMixin",
-      "CanonBaseAgentInterface",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "CanonBaseAgentInterface"
     ],
     "key_methods": [
       "__init__",
@@ -2044,8 +2044,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\subatomic_testing_mixin.py",
     "layer": "L2",
     "inheritance": [
-      "SubatomicTestingMixin",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubatomicTestingMixin"
     ],
     "key_methods": [],
     "has_tools": true,
@@ -2065,8 +2065,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
     "layer": "L2",
     "inheritance": [
-      "SubAtomicAgent",
-      "MCPHardenedMixin"
+      "MCPHardenedMixin",
+      "SubAtomicAgent"
     ],
     "key_methods": [
       "__init__",
@@ -3721,9 +3721,9 @@
     "layer": "L3",
     "inheritance": [
       "HealerMixin",
+      "SelfDiagnosisMixin",
       "AutonomyMixin",
-      "AdaptiveExecutionMixin",
-      "SelfDiagnosisMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
