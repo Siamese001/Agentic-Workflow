@@ -16,10 +16,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L5_safety.healer_mixin import HealerMixin
+from agentic_core.L2_execution.tool_registry.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger('L2.Fetch')
 
-class SovereignFetchMcpClient:
+class SovereignFetchMcpClient(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     """
     Fetch MCP Client for sanitized content ingestion.
     
@@ -29,8 +32,10 @@ class SovereignFetchMcpClient:
 
     def __init__(self):
         """Initialize Fetch client with sovereign routing."""
+        super().__init__()
         self.router = SovereignMCPRouter(role='content_ingestion')
         self.initialized = False
+        self._mcp_audit('init')
         Logger.info('[L2 FETCH] Client initialized')
 
     async def initialize(self) -> Any:
