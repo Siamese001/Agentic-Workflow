@@ -6,12 +6,9 @@ Prevents path traversal, protects critical directories, and integrates with Heal
 import logging
 import os
 import re
-import shutil
 from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Set
-
-from agentic_core.L2_execution.ToolRegistry.definitions import (
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
@@ -19,6 +16,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 
+from agentic_core.L2_execution.ToolRegistry.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,

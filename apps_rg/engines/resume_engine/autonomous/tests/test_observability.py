@@ -18,8 +18,8 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..observability import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from ..observability import (
     AuditReporter,
     ExecutionTrace,
     ExecutionTracer,

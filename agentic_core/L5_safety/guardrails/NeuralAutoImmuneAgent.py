@@ -22,7 +22,8 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 class NeuralAutoImmuneAgent(AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
-    HealerMixin,, MCPHardenedMixin):
+    HealerMixin,
+    MCPHardenedMixin):
     """
     Sovereign auto-immune response — isolates territories after repeated breaches.
     Now hardened with predictive, proactive, adaptive, and self-learning capabilities.

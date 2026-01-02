@@ -14,11 +14,10 @@ except ImportError:
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.config.blueprint_sovereign.structure_blueprint import (
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )
-
+from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class SubAtomicAgent:
     """Stub base class for quality agents."""

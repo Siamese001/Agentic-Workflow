@@ -1,5 +1,4 @@
 from __future__ import annotations
-```python
 """
 RefineResumeRanking.py - Refinement Module
 
@@ -46,4 +45,3 @@ def refine(data: Union[str,
            config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return RefineResumeRanking(config).refine(data, adjustments)
-```

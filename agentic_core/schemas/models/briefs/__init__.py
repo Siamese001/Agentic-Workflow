@@ -8,7 +8,7 @@ from typing import List, Optional
 
 
 @dataclass
-class SubjectLineBrief(
+class SubjectLineBrief:
     """Brief for subject line generation."""
     word_count: tuple[int, int]
     tone: str
@@ -18,7 +18,7 @@ class SubjectLineBrief(
 
 
 @dataclass
-class MessageBodyBrief(
+class MessageBodyBrief:
     """Brief for message body generation."""
     word_count: tuple[int, int]
     jargon_level: str
@@ -28,7 +28,7 @@ class MessageBodyBrief(
 
 
 @dataclass
-class CTABrief(
+class CTABrief:
     """Brief for call-to-action generation."""
     word_count: tuple[int, int]
     tone: str
@@ -38,7 +38,7 @@ class CTABrief(
 
 
 @dataclass
-class CreativeBrief(
+class CreativeBrief:
     """Complete creative brief for message generation."""
     subject_line: SubjectLineBrief
     message_body: MessageBodyBrief
@@ -48,7 +48,7 @@ class CreativeBrief(
 
 
 @dataclass
-class ArchetypeTemplate(
+class ArchetypeTemplate:
     """Complete template for an Archetype."""
     Archetype: str
     system_instructions: str
@@ -61,7 +61,7 @@ class ArchetypeTemplate(
 
 
 @dataclass
-class SignatureTemplate(
+class SignatureTemplate:
     """Template for message signature."""
     template: str
     use_for: List[str]
@@ -71,7 +71,7 @@ class SignatureTemplate(
 
 
 @dataclass
-class GreetingTemplate(
+class GreetingTemplate:
     """Template for message greeting."""
     template: str
     note: str
@@ -80,7 +80,7 @@ class GreetingTemplate(
 
 
 @dataclass
-class HeadlineBrief(
+class HeadlineBrief:
     """Brief for headline generation."""
     word_count_min: int
     word_count_max: int
@@ -91,7 +91,7 @@ class HeadlineBrief(
 
 
 @dataclass
-class ExperienceBulletsBrief(
+class ExperienceBulletsBrief:
     """Brief for experience bullet generation."""
     word_count_range: tuple[int, int]
     provenance_split: dict
@@ -101,7 +101,7 @@ class ExperienceBulletsBrief(
 
 
 @dataclass
-class LeadershipCompetenciesBrief(
+class LeadershipCompetenciesBrief:
     """Brief for leadership competencies section."""
     min_differentiators: int
     focus_areas: List[str] = field(default_factory=list)
@@ -110,7 +110,7 @@ class LeadershipCompetenciesBrief(
 
 
 @dataclass
-class CoverLetterBrief(
+class CoverLetterBrief:
     """Brief for cover letter generation."""
     p1_word_count: tuple[int, int]
     p2_word_count: tuple[int, int]
@@ -121,7 +121,7 @@ class CoverLetterBrief(
 
 
 @dataclass
-class OptimizedSkillsBrief(
+class OptimizedSkillsBrief:
     """Brief for skills optimization."""
     count_range: tuple[int, int]
     word_count_range: tuple[int, int]
@@ -130,7 +130,7 @@ class OptimizedSkillsBrief(
 
 
 @dataclass
-class ExecutiveSummaryBrief(
+class ExecutiveSummaryBrief:
     """Brief for executive summary generation."""
     sentence_count_range: tuple[int, int]
     word_count_range: tuple[int, int]

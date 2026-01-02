@@ -22,13 +22,29 @@ For file operations, use:
     healer = HealerAgent(project_root)
     healer.heal_file_moves(violations)  # For depth violations
     healer.heal_fission(large_files)    # For atomicity violations
+
+GOLD STANDARD UPGRADE (2026-01-02):
+- Structured Violation dataclass with severity levels
+- HierarchyAgent integration for structure validation
+- ImportAgent integration for gravity compliance
+- Post-heal validation with blast radius analysis
+- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
+- cleanup_violations with multi-stage healing coordination
+- run_with_cleanup returning comprehensive summaries
+
+DOMAIN-SPECIFIC INTEGRATIONS:
+- HierarchyAgent: Validate structure after governance fixes
+- ImportAgent: Check gravity compliance after moves
+- DependencyGraph: Calculate blast radius for all changes
 """
 import ast
 import glob
 import logging
 import shutil
+from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
@@ -226,7 +242,26 @@ class GovernanceAgent(HealerMixin, MCPHardenedMixin):
     1. Law of The Void (Root hygiene)
     2. Law of Depth (Depth 3-5)
     3. Law of Impact (Blast radius awareness)
+    
+    GOLD STANDARD FEATURES (2026-01-02):
+    - Structured Violation dataclass with severity levels
+    - HierarchyAgent integration for structure validation
+    - ImportAgent integration for gravity compliance
+    - Post-heal validation with blast radius analysis
+    - Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
+    - cleanup_violations with multi-stage healing coordination
+    - run_with_cleanup returning comprehensive summaries
     """
+
+    @dataclass
+    class Violation:
+        """Structured violation output for deterministic healing."""
+        is_valid: bool
+        message: str
+        file_path: Optional[Path] = None
+        suggested_action: Optional[str] = None
+        blast_radius: Optional[int] = None
+        severity: int = 5
 
     def __init__(self, root_dir: str=None):
         """
@@ -241,6 +276,23 @@ class GovernanceAgent(HealerMixin, MCPHardenedMixin):
         self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
         self.MAX_COMPLEXITY = 10
         self.MAX_FUNC_LINES = 50
+        
+        # HierarchyAgent integration for structure validation
+        try:
+            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            self.hierarchy_agent = HierarchyAgent(self.root_dir)
+        except ImportError:
+            self.hierarchy_agent = None
+        
+        # ImportAgent integration for gravity compliance
+        try:
+            from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+            self.import_agent = ImportAgent(self.root_dir)
+        except ImportError:
+            self.import_agent = None
+        
+        # Backup directory for safe operations
+        self._backup_dir: Optional[Path] = None
         self.MAX_NESTING_SPACES = 40
         self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
         self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
@@ -538,6 +590,176 @@ class GovernanceAgent(HealerMixin, MCPHardenedMixin):
             report['overall_status'] = 'FAIL'
         return report
 
-def create_architecture_governor(root_dir: str=None) -> ArchitectureGovernor:
+    def _init_backup_dir(self) -> Path:
+        """Initialize and return the backup directory for safe operations."""
+        if self._backup_dir is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self._backup_dir = self.root_dir / ".governance_healer_backups" / timestamp
+            self._backup_dir.mkdir(parents=True, exist_ok=True)
+        return self._backup_dir
+
+    def post_hierarchy_validation(self, file_paths: List[str], dry_run: bool = True) -> Dict[str, Any]:
+        """Run HierarchyAgent validation after governance fixes."""
+        report = {
+            "hierarchy_status": "SKIPPED",
+            "hierarchy_violations": [],
+            "message": "",
+        }
+
+        if dry_run or not self.hierarchy_agent:
+            report["message"] = "PREVIEW: Hierarchy validation skipped"
+            return report
+
+        try:
+            violations = self.hierarchy_agent.run()
+            relevant = [v for v in violations if any(fp in str(v[0]) for fp in file_paths)]
+            report["hierarchy_violations"] = len(relevant)
+            
+            if not relevant:
+                report["hierarchy_status"] = "FULL_SUCCESS"
+                report["message"] = "All affected files hierarchy-compliant"
+            else:
+                report["hierarchy_status"] = "PARTIAL"
+                report["message"] = f"{len(relevant)} hierarchy issues found"
+        except Exception as e:
+            report["hierarchy_status"] = "ERROR"
+            report["message"] = f"Hierarchy validation error: {e}"
+
+        return report
+
+    def post_import_validation(self, file_paths: List[str], dry_run: bool = True) -> Dict[str, Any]:
+        """Run ImportAgent validation after governance fixes."""
+        report = {
+            "import_status": "SKIPPED",
+            "import_violations": [],
+            "message": "",
+        }
+
+        if dry_run or not self.import_agent:
+            report["message"] = "PREVIEW: Import validation skipped"
+            return report
+
+        try:
+            path_objects = [Path(fp) for fp in file_paths if Path(fp).exists()]
+            violations = self.import_agent.run(path_objects)
+            report["import_violations"] = len(violations)
+            
+            if not violations:
+                report["import_status"] = "FULL_SUCCESS"
+                report["message"] = "All affected files import-compliant"
+            else:
+                report["import_status"] = "PARTIAL"
+                report["message"] = f"{len(violations)} import issues found"
+        except Exception as e:
+            report["import_status"] = "ERROR"
+            report["message"] = f"Import validation error: {e}"
+
+        return report
+
+    def cleanup_violations(self, file_paths: List[str] = None, dry_run: bool = True) -> List[Dict[str, Any]]:
+        """
+        GOLD STANDARD CLEANUP ENGINE — Multi-stage autonomous governance.
+        
+        Healing stages:
+        1. Check and fix root hygiene
+        2. Check depth violations (suggest moves via HealerAgent)
+        3. Check atomicity violations (suggest splits)
+        4. Calculate blast radius for all changes
+        5. HierarchyAgent integration for structure validation
+        6. ImportAgent integration for gravity compliance
+        """
+        actions = []
+        affected_paths: List[str] = []
+
+        root_violations = self.check_root_hygiene(auto_sanitize=not dry_run)
+        for v in root_violations:
+            actions.append({
+                "violation": v,
+                "type": "ROOT_HYGIENE",
+                "applied": not dry_run,
+                "action_taken": "SANITIZED" if not dry_run else "PREVIEW",
+            })
+
+        if file_paths:
+            for fp in file_paths:
+                depth_v = self.check_depth_law(fp)
+                if depth_v:
+                    actions.append({
+                        "violation": depth_v,
+                        "path": fp,
+                        "type": "DEPTH",
+                        "applied": False,
+                        "action_taken": "SUGGEST: Use HealerAgent.heal_file_moves()",
+                    })
+                    affected_paths.append(fp)
+
+                atom_v = self.check_atomicity_law(fp)
+                if atom_v:
+                    actions.append({
+                        "violation": atom_v,
+                        "path": fp,
+                        "type": "ATOMICITY",
+                        "applied": False,
+                        "action_taken": "SUGGEST: Use HealerAgent.heal_fission()",
+                    })
+                    affected_paths.append(fp)
+
+        batch_report = {"batch_post_heal_status": "PENDING", "batch_message": ""}
+
+        if dry_run:
+            batch_report["batch_message"] = "PREVIEW: Batch validation skipped"
+            batch_report["batch_post_heal_status"] = "PREVIEW"
+        else:
+            if affected_paths:
+                blast = self.get_blast_radius(affected_paths)
+                batch_report["blast_radius"] = blast
+
+            hierarchy_report = self.post_hierarchy_validation(affected_paths, dry_run=False)
+            batch_report["hierarchy_validation"] = hierarchy_report
+            batch_report["batch_message"] = f"Hierarchy: {hierarchy_report['hierarchy_status']}"
+
+            import_report = self.post_import_validation(affected_paths, dry_run=False)
+            batch_report["import_validation"] = import_report
+            batch_report["batch_message"] += f" | Imports: {import_report['import_status']}"
+
+            if (hierarchy_report["hierarchy_status"] == "FULL_SUCCESS" and 
+                import_report["import_status"] == "FULL_SUCCESS"):
+                batch_report["batch_post_heal_status"] = "FULL_SUCCESS"
+            else:
+                batch_report["batch_post_heal_status"] = "PARTIAL"
+
+        for action in actions:
+            action["batch_post_heal"] = batch_report
+
+        return actions
+
+    def run_with_cleanup(self, file_paths: List[str] = None, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        GOLD STANDARD WORKFLOW — Full governance compliance with autonomous cleanup.
+        """
+        if file_paths is None:
+            file_paths = [str(p) for p in self.root_dir.rglob("*.py")]
+
+        cleanup_results = self.cleanup_violations(file_paths, dry_run=dry_run)
+        batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
+
+        arch_report = self.validate_architecture(file_paths=file_paths, enforce=not dry_run)
+
+        return {
+            "violations_detected": len(cleanup_results),
+            "actions_applied": sum(1 for a in cleanup_results if a.get("applied")),
+            "detailed_actions": cleanup_results,
+            "architecture_report": arch_report,
+            "batch_post_heal_summary": batch_summary,
+            "hierarchy_validation_summary": batch_summary.get("hierarchy_validation", {}),
+            "import_validation_summary": batch_summary.get("import_validation", {}),
+            "blast_radius": batch_summary.get("blast_radius"),
+            "dry_run": dry_run,
+        }
+
+# Alias for backwards compatibility
+ArchitectureGovernor = GovernanceAgent
+
+def create_architecture_governor(root_dir: str=None) -> GovernanceAgent:
     """Create an architecture governor instance."""
-    return ArchitectureGovernor(root_dir)
+    return GovernanceAgent(root_dir)

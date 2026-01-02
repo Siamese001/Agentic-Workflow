@@ -833,8 +833,7 @@ class TestShadowModeExecution:
             # print("\nAll log_action calls:")  # [Security Fix]
 
             for call in mock_log_action.call_args_list:
-
-                # print(f"  {call[0]}")  # [Security Fix]
+                pass
 
             # Check if SEND_EMAIL_SHADOW was called
 

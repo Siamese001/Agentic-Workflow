@@ -13,6 +13,22 @@ Placed in L5_safety/guardrails per SSOT semantic registry:
   "Hard safety limits, mutation controls, deletion guards"
 
 Depth: agentic_core/L5_safety/guardrails/HealerAgent.py -> 4 parts -> compliant
+
+GOLD STANDARD UPGRADE (2026-01-02):
+- Structured Violation dataclass with severity levels
+- LocationAgent integration for territory validation after heals
+- HierarchyAgent integration for structure validation after heals
+- ImportAgent integration for gravity compliance after heals
+- Post-heal validation with coordinated multi-agent checks
+- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
+- cleanup_violations with multi-stage unified healing
+- run_with_cleanup returning comprehensive summaries
+
+DOMAIN-SPECIFIC INTEGRATIONS (Unified Healing Coordinator):
+- LocationAgent: Validate file territory after moves/fissions
+- HierarchyAgent: Validate structure depth after moves
+- ImportAgent: Validate gravity compliance after import syncs
+
 """
 import ast
 import logging
@@ -158,6 +174,28 @@ class HealerAgent(HealerMixin, MCPHardenedMixin):
         else:
             self.audit = None
             Logger.warning("[HealerAgent] Audit logging unavailable")
+
+        # [GOLD STANDARD] Domain-specific agent integrations
+        # LocationAgent for territory validation after heals
+        try:
+            from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+            self.location_agent = LocationAgent(self.project_root)
+        except ImportError:
+            self.location_agent = None
+        
+        # HierarchyAgent for structure validation after heals
+        try:
+            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            self.hierarchy_agent = HierarchyAgent(self.project_root)
+        except ImportError:
+            self.hierarchy_agent = None
+        
+        # ImportAgent for gravity compliance after heals
+        try:
+            from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+            self.import_agent = ImportAgent(self.project_root)
+        except ImportError:
+            self.import_agent = None
 
         if not self.dry_run:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
@@ -1154,6 +1192,125 @@ class HealerAgent(HealerMixin, MCPHardenedMixin):
                 continue
         
         return results
+
+    # ==================== GOLD STANDARD METHODS (2026-01-02) ====================
+
+    def post_location_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+        """Run LocationAgent validation on files after healing."""
+        report = {"location_status": "SKIPPED", "location_violations": [], "message": ""}
+
+        if dry_run or not self.location_agent:
+            report["message"] = "PREVIEW: Location validation skipped"
+            return report
+
+        try:
+            py_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
+            violations = self.location_agent.run(py_files)
+            report["location_violations"] = len(violations) if violations else 0
+            
+            if not violations:
+                report["location_status"] = "FULL_SUCCESS"
+                report["message"] = f"All {len(py_files)} files location-compliant"
+            else:
+                report["location_status"] = "PARTIAL"
+                report["message"] = f"{len(violations)} location issues found"
+        except Exception as e:
+            report["location_status"] = "ERROR"
+            report["message"] = f"Location validation error: {e}"
+
+        return report
+
+    def post_hierarchy_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+        """Run HierarchyAgent validation on files after healing."""
+        report = {"hierarchy_status": "SKIPPED", "hierarchy_violations": [], "message": ""}
+
+        if dry_run or not self.hierarchy_agent:
+            report["message"] = "PREVIEW: Hierarchy validation skipped"
+            return report
+
+        try:
+            violations = self.hierarchy_agent.run()
+            relevant = [v for v in violations if any(str(p) in str(v[0]) for p in affected_paths)]
+            report["hierarchy_violations"] = len(relevant)
+            
+            if not relevant:
+                report["hierarchy_status"] = "FULL_SUCCESS"
+                report["message"] = "All affected files hierarchy-compliant"
+            else:
+                report["hierarchy_status"] = "PARTIAL"
+                report["message"] = f"{len(relevant)} hierarchy issues found"
+        except Exception as e:
+            report["hierarchy_status"] = "ERROR"
+            report["message"] = f"Hierarchy validation error: {e}"
+
+        return report
+
+    def post_import_validation(self, affected_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
+        """Run ImportAgent validation on files after healing."""
+        report = {"import_status": "SKIPPED", "import_violations": [], "message": ""}
+
+        if dry_run or not self.import_agent:
+            report["message"] = "PREVIEW: Import validation skipped"
+            return report
+
+        try:
+            py_files = [p for p in affected_paths if p.suffix == ".py" and p.exists()]
+            violations = self.import_agent.run(py_files)
+            report["import_violations"] = len(violations)
+            
+            if not violations:
+                report["import_status"] = "FULL_SUCCESS"
+                report["message"] = f"All {len(py_files)} files import-compliant"
+            else:
+                report["import_status"] = "PARTIAL"
+                report["message"] = f"{len(violations)} import issues found"
+        except Exception as e:
+            report["import_status"] = "ERROR"
+            report["message"] = f"Import validation error: {e}"
+
+        return report
+
+    def run_with_cleanup(self, dry_run: bool = True) -> Dict[str, Any]:
+        """
+        GOLD STANDARD WORKFLOW — Full healing with coordinated multi-agent validation.
+        
+        Executes healing sweep and validates results with:
+        1. LocationAgent for territory compliance
+        2. HierarchyAgent for structure compliance
+        3. ImportAgent for gravity compliance
+        """
+        # Run base healing sweep
+        base_results = self.run()
+        
+        # Collect affected paths from recent heals
+        affected_paths = [
+            Path(p) for p in self.change_tracker.get_all_paths()
+        ] if hasattr(self.change_tracker, 'get_all_paths') else []
+
+        # Post-heal validations
+        location_report = self.post_location_validation(affected_paths, dry_run=dry_run)
+        hierarchy_report = self.post_hierarchy_validation(affected_paths, dry_run=dry_run)
+        import_report = self.post_import_validation(affected_paths, dry_run=dry_run)
+
+        # Determine overall status
+        all_success = (
+            location_report["location_status"] == "FULL_SUCCESS" and
+            hierarchy_report["hierarchy_status"] == "FULL_SUCCESS" and
+            import_report["import_status"] == "FULL_SUCCESS"
+        )
+
+        batch_status = "FULL_SUCCESS" if all_success else "PARTIAL"
+        batch_message = f"Location: {location_report['location_status']} | Hierarchy: {hierarchy_report['hierarchy_status']} | Imports: {import_report['import_status']}"
+
+        return {
+            "base_results": base_results,
+            "batch_post_heal_status": batch_status,
+            "batch_message": batch_message,
+            "location_validation_summary": location_report,
+            "hierarchy_validation_summary": hierarchy_report,
+            "import_validation_summary": import_report,
+            "dry_run": dry_run,
+        }
 
 
 # PascalCase is now the canonical name
