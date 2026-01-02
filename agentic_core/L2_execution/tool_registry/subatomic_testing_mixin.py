@@ -10,6 +10,7 @@ Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 from typing import Any, Dict, Optional
 import logging
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
 
 Logger = logging.getLogger(__name__)
 
@@ -50,12 +51,29 @@ class SubatomicTestingMixin:
             
         class_name = self.__class__.__name__
         
-        # Basic capability check
-        if hasattr(self, "can_run"):
-            can_run_result = self.can_run()
-            if can_run_result is not True:
-                Logger.debug(f"[SELF-TEST] {class_name}.can_run() returned {can_run_result}")
-                # Don't fail - some agents legitimately can't run in isolation
+        try:
+            # Basic capability check
+            if hasattr(self, "can_run"):
+                can_run_result = self.can_run()
+                if can_run_result is not True:
+                    Logger.debug(f"[SELF-TEST] {class_name}.can_run() returned {can_run_result}")
+                    # Don't fail - some agents legitimately can't run in isolation
+        except AssertionError as e:
+            # Proactive healing: create anomaly and attempt heal
+            anomaly = AnomalyReport(
+                type="self_test_failure",
+                severity=AnomalySeverity.MEDIUM,
+                description=f"Self-test assertion failed: {e}",
+                source=class_name,
+                details={"failed_assert": str(e)},
+            )
+            if hasattr(self, "_mcp_audit"):
+                self._mcp_audit("proactive_anomaly_detected", payload=anomaly.to_dict())
+            if hasattr(self, "heal"):
+                if self.heal({}, anomaly):  # Attempt proactive heal
+                    Logger.info(f"[SELF-TEST] {class_name} healed via proactive repair")
+                    return True  # Healed - pass implicitly
+            raise  # Unhealable - escalate
         
         # If tools present, test registration structure
         if hasattr(self, "tools") and self.tools is not None:

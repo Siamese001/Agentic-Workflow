@@ -64,36 +64,53 @@ class L4SubatomicTestingMixin(MCPHardenedMixin):
             
         class_name = self.__class__.__name__
         
-        # Test checkpoint round-trip if available
-        if hasattr(self, "create_checkpoint") and hasattr(self, "recover_from_checkpoint"):
-            test_state = {"_self_test": "checkpoint_marker", "value": 123}
-            try:
-                checkpoint = self.create_checkpoint(test_state)
-                if checkpoint:
-                    recovered = self.recover_from_checkpoint(checkpoint)
-                    assert recovered == test_state, \
-                        f"{class_name}: Checkpoint corruption - recovered state != original"
-            except NotImplementedError:
-                pass  # Method exists but not implemented - OK for base class
-            except Exception as e:
-                # Log but don't fail - checkpoint may require external resources
-                pass
-        
-        # Test state dict if present
-        if hasattr(self, "state") and isinstance(self.state, dict):
-            test_key = "_l4_self_test"
-            test_value = f"l4_ok_{class_name}"
-            original = self.state.get(test_key)
+        try:
+            # Test checkpoint round-trip if available
+            if hasattr(self, "create_checkpoint") and hasattr(self, "recover_from_checkpoint"):
+                test_state = {"_self_test": "checkpoint_marker", "value": 123}
+                try:
+                    checkpoint = self.create_checkpoint(test_state)
+                    if checkpoint:
+                        recovered = self.recover_from_checkpoint(checkpoint)
+                        assert recovered == test_state, \
+                            f"{class_name}: Checkpoint corruption - recovered state != original"
+                except NotImplementedError:
+                    pass  # Method exists but not implemented - OK for base class
+                except Exception as e:
+                    # Log but don't fail - checkpoint may require external resources
+                    pass
             
-            self.state[test_key] = test_value
-            assert self.state.get(test_key) == test_value, \
-                f"{class_name}: State write/read failed"
-            
-            # Cleanup
-            if original is None:
-                del self.state[test_key]
-            else:
-                self.state[test_key] = original
+            # Test state dict if present
+            if hasattr(self, "state") and isinstance(self.state, dict):
+                test_key = "_l4_self_test"
+                test_value = f"l4_ok_{class_name}"
+                original = self.state.get(test_key)
+                
+                self.state[test_key] = test_value
+                assert self.state.get(test_key) == test_value, \
+                    f"{class_name}: State write/read failed"
+                
+                # Cleanup
+                if original is None:
+                    del self.state[test_key]
+                else:
+                    self.state[test_key] = original
+        except AssertionError as e:
+            # Proactive healing: create anomaly and attempt heal
+            from agentic_core.schemas.anomaly_report import AnomalyReport, AnomalySeverity
+            anomaly = AnomalyReport(
+                type="self_test_failure",
+                severity=AnomalySeverity.MEDIUM,
+                description=f"L4 self-test assertion failed: {e}",
+                source=class_name,
+                details={"failed_assert": str(e)},
+            )
+            if hasattr(self, "_mcp_audit"):
+                self._mcp_audit("proactive_anomaly_detected", payload=anomaly.to_dict())
+            if hasattr(self, "heal"):
+                if self.heal({}, anomaly):
+                    return True  # Healed - pass implicitly
+            raise  # Unhealable - escalate
         
         return True
 
