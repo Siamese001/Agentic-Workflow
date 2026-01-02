@@ -14,6 +14,7 @@
     "class_count": 4,
     "description": "Defines the capability of an agent role.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -38,6 +39,7 @@
     "class_count": 4,
     "description": "Registry for managing agent capabilities and specifications.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -57,6 +59,7 @@
     "class_count": 4,
     "description": "Functional roles for agents in the system.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -77,6 +80,7 @@
     "class_count": 4,
     "description": "Specification for creating an agent instance.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -96,6 +100,7 @@
     "class_count": 2,
     "description": "Base exception for agentic workflow errors at L0.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -115,6 +120,7 @@
     "class_count": 5,
     "description": "Base exception for agentic workflow.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -132,6 +138,7 @@
     "class_count": 4,
     "description": "Lightweight Bias Detection for Content Quality.\n\n    Simple pattern-based bias detection for risk mi",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -158,6 +165,7 @@
     "class_count": 1,
     "description": "\n    Autonomous boot integrity agent.\n    Runs before any validation mission to anchor the environme",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -165,10 +173,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\FilesystemSSOTReconcilerAgent.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -191,6 +199,7 @@
     "class_count": 1,
     "description": "\n    Filesystem-level SSOT reconciler - updates blueprint when folders change.\n    \n    Ensures the ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -210,6 +219,7 @@
     "class_count": 3,
     "description": "Gap Closure Architect agent for leadership competencies.\n\n    This agent generates competencies with",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -232,6 +242,7 @@
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -239,9 +250,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\guardian_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -263,6 +274,7 @@
     "class_count": 1,
     "description": "\n    Sovereign orchestrator for all available L0 guardians.\n    Returns standardized (score, issues)",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -270,9 +282,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\healing_orchestrator.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -294,6 +306,7 @@
     "class_count": 1,
     "description": "\n    Sovereign healing engine orchestrator.\n    Coordinates diagnosis, strategy selection, transacti",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -320,6 +333,7 @@
     "class_count": 1,
     "description": "\n    Detects 'Rot' within the system:\n    1. Dead Code (Orphaned files that are never imported)\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -343,6 +357,7 @@
     "class_count": 3,
     "description": "Mixin providing L0 delegation-only capabilities.\n    \n    L0 Table Decision:\n    - Basic Self-Testin",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -365,6 +380,7 @@
     "class_count": 2,
     "description": "\n    Phase 2: Canonical delegated testing mixin for L0 agents.\n    \n    L0 Table Decision:\n    - Bas",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -372,9 +388,9 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\metrics_witness.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -394,6 +410,7 @@
     "class_count": 1,
     "description": "\n    Sovereign witness that cross-examines L6 observability metrics against constitutional expectati",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -416,6 +433,7 @@
     "class_count": 4,
     "description": "\n    A secure system command executor that prevents destructive actions\n    and logs attempts. This ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -423,10 +441,10 @@
     "path": "agentic_core\\L0_maintenance\\scripts\\script_to_agent_classifier.py",
     "layer": "L0",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
+      "AutonomyMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -447,6 +465,7 @@
     "class_count": 3,
     "description": "\n    Sovereign classifier for script vs agent constitutional compliance.\n    Uses static analysis (A",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -471,6 +490,7 @@
     "class_count": 5,
     "description": "Orchestrator for planning script execution operations.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -493,6 +513,7 @@
     "class_count": 4,
     "description": "\n    Protocol for safely executing system commands.\n    This executor enforces security policies and",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -510,6 +531,7 @@
     "class_count": 3,
     "description": "Workflow orchestrator with SDK integration.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -529,6 +551,7 @@
     "class_count": 2,
     "description": "Standard agent capabilities.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -552,6 +575,7 @@
     "class_count": 4,
     "description": "Cryptographically-verified agent identity.\n\n    Based on SPIFFE ID format: spiffe://trust-domain/pat",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -573,6 +597,7 @@
     "class_count": 2,
     "description": "Simple agent information container with explicit initialization.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -592,6 +617,7 @@
     "class_count": 2,
     "description": "Simple agent information container.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -611,6 +637,7 @@
     "class_count": 2,
     "description": "Agent operational status.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -634,7 +661,8 @@
     "class_count": 8,
     "description": "\n    Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "BareExceptValidator",
@@ -655,7 +683,8 @@
     "class_count": 8,
     "description": "\n    Key 5: Detects bare except: statements (catching all exceptions).\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "CanonValidator",
@@ -685,6 +714,7 @@
     "class_count": 2,
     "description": "\n    The L5 Meta-Learner that validates code against the Canon.\n\n    This class implements the core ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -709,6 +739,7 @@
     "class_count": 3,
     "description": "\n    Manages concurrent operations and prevents conflicts.\n\n    Features:\n    - Distributed lock man",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -735,6 +766,7 @@
     "class_count": 6,
     "description": "\n    [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator\n    \n    This orchestrat",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -756,7 +788,8 @@
     "class_count": 8,
     "description": "\n    Key 42: Detects dangerous builtin functions (compile, __import__, globals, locals).\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "DebuggerValidator",
@@ -777,7 +810,8 @@
     "class_count": 8,
     "description": "\n    Key 3: Detects breakpoint() and pdb.set_trace() using AST.\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "DependencySentinel",
@@ -805,6 +839,7 @@
     "class_count": 3,
     "description": "\n    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (C",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -834,6 +869,7 @@
     "class_count": 3,
     "description": "\n    Guards the codebase against illegal dependencies.\n\n    Rules enforced:\n    1. No circular impor",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -858,6 +894,7 @@
     "class_count": 5,
     "description": "\n    KEYS: 21 (Missing Docstrings)\n    ROLE: Pure focus on Docstrings.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -879,6 +916,7 @@
     "class_count": 2,
     "description": "TODO: Add docstring.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -900,6 +938,7 @@
     "class_count": 2,
     "description": "TODO: Add docstring.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -921,7 +960,8 @@
     "class_count": 8,
     "description": "\n    Key 4: Detects empty except blocks (except: pass).\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "EvalExecValidator",
@@ -942,7 +982,8 @@
     "class_count": 8,
     "description": "\n    Key 6: Detects eval() and exec() calls using AST.\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "ExternalHttpValidator",
@@ -964,7 +1005,8 @@
     "class_count": 8,
     "description": "\n    Key 23: Detects forbidden HTTP library imports (requests, urllib, httpx).\n    Automatically han",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "GenerativeGuard",
@@ -993,6 +1035,7 @@
     "class_count": 4,
     "description": "\n    KEYS: 45 (Dead Code/Runaway Generation)\n    ROLE: The Watchdog. Identifies and deletes recursiv",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1021,6 +1064,7 @@
     "class_count": 2,
     "description": "\n    Enforces architectural governance laws and constraints.\n\n    Implements the Three Laws:\n    1. ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1046,6 +1090,7 @@
     "class_count": 4,
     "description": "\n    KEYS: 48 (Syntax Repair), 49 (Structural Alignment)\n    ROLE: The Ultimate Repair Agent. Uses G",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1068,6 +1113,7 @@
     "class_count": 3,
     "description": "Interface for the orchestrator (Nervous System).\n\n    The orchestrator coordinates between cognitive",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1091,7 +1137,8 @@
     "class_count": 1,
     "description": "Orchestrates all validation agents in dependency order.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "MetaLearningAgent",
@@ -1117,6 +1164,7 @@
     "class_count": 1,
     "description": "\n    Sovereign meta-learning engine.\n    Accumulates mission experience and drives self-evolution.\n ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1142,6 +1190,7 @@
     "class_count": 5,
     "description": "\n    KEYS: 47 (Naming Conventions)\n    ROLE: Enforces Snake_Case/PascalCase.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1163,6 +1212,7 @@
     "class_count": 6,
     "description": "\n    Manages the creation of the subatomic agent swarm and calculates\n    the smart scope for target",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1191,7 +1241,8 @@
     "class_count": 4,
     "description": "\n    Enforces coding patterns and best practices across Python files.\n\n    KEYS: 26-39 (Pattern Chec",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "PrintStatementValidator",
@@ -1212,7 +1263,8 @@
     "class_count": 8,
     "description": "\n    Key 2: Detects print() statements using AST.\n    Automatically ignores TYPE_CHECKING blocks via",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "ReasoningRouter",
@@ -1234,6 +1286,7 @@
     "class_count": 2,
     "description": "Routes tasks to appropriate reasoning strategies.\n    \n    Implements a simple strategy selector tha",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1263,6 +1316,7 @@
     "class_count": 1,
     "description": "\n    Agent responsible for learning from successful execution traces\n    and consolidating them into",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1291,6 +1345,7 @@
     "class_count": 5,
     "description": "\n    KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1310,15 +1365,16 @@
     "class_count": 4,
     "description": "\n    ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.\n   ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "SovereignCognitivePlane",
     "path": "agentic_core\\L1_cognition\\thought_engine\\sovereign_cognitive_plane.py",
     "layer": "L1",
     "inheritance": [
-      "HealerMixin",
-      "ICognitivePlane"
+      "ICognitivePlane",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -1339,6 +1395,7 @@
     "class_count": 2,
     "description": "Sovereign cognitive plane with in-memory agent registry and async compliance.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1369,6 +1426,7 @@
     "class_count": 4,
     "description": "\n    KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)\n    ROLE: The G",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1397,6 +1455,7 @@
     "class_count": 3,
     "description": "Test cases for injection detection patterns.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1419,7 +1478,8 @@
     "class_count": 4,
     "description": "\n    ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.\n    ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "ArchitectureGovernorAgent",
@@ -1447,6 +1507,7 @@
     "class_count": 2,
     "description": "\n    Unified Architecture Governor.\n    Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Ke",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1468,6 +1529,7 @@
     "class_count": 5,
     "description": "\n    Base class for task execution with error handling.\n    Previously duplicated 7+ times as execut",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1489,6 +1551,7 @@
     "class_count": 5,
     "description": "\n    ROLE: Measures execution time and ensures tools aren't too slow.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1512,6 +1575,7 @@
     "class_count": 6,
     "description": "\n    ROLE: Memory & Embedding. Maps the codebase into semantic space.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1542,6 +1606,7 @@
     "class_count": 1,
     "description": "\n    Batch agent for detecting and optionally refactoring duplicated code.\n    \n    Responsibilities",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1572,6 +1637,7 @@
     "class_count": 1,
     "description": "\n    Code Janitor validates syntax, style, and formatting.\n    \n    Validates Canon Keys 10-20:\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1598,6 +1664,7 @@
     "class_count": 4,
     "description": "\n    Unified concurrency safety agent.\n    Covers: Data races (Key 61), Livelock (Key 63), Starvatio",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1628,6 +1695,7 @@
     "class_count": 3,
     "description": "\n    The Context Curator - Prompt Engineer Agent\n    \n    Runs between pipeline stages (post-converg",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1652,6 +1720,7 @@
     "class_count": 2,
     "description": "\n    Sovereign dead code auditor that identifies unused code across the project.\n    Enhanced with c",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1675,6 +1744,7 @@
     "class_count": 4,
     "description": "ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1705,6 +1775,7 @@
     "class_count": 3,
     "description": "\n    The Dependency Diplomat - Graph Optimizer\n    \n    Maintains live DAG of imports in Redis.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1729,6 +1800,7 @@
     "class_count": 2,
     "description": "\n    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),\n          14 (Duplicate Impor",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1750,6 +1822,7 @@
     "class_count": 6,
     "description": "ROLE: Documentation Surgeon.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1772,6 +1845,7 @@
     "class_count": 1,
     "description": "Detects files that have drifted outside mapped canon territories.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1795,6 +1869,7 @@
     "class_count": 1,
     "description": "Naming/Compliance: Drift Detection",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1825,6 +1900,7 @@
     "class_count": 4,
     "description": "\n    The Throttler - Dynamic Model Router\n    \n    Analyzes file complexity before healing and route",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1856,6 +1932,7 @@
     "class_count": 1,
     "description": "\n    Agent for managing git operations and remote synchronization.\n\n    Features:\n    - Atomic commi",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -1879,6 +1956,7 @@
     "class_count": 5,
     "description": "\n    ROLE: Manages Version Control (Branching, Commits).\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1901,6 +1979,7 @@
     "class_count": 1,
     "description": "Naming/Compliance: Global Compliance Aggregation",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1931,6 +2010,7 @@
     "class_count": 1,
     "description": "\n    Healer Agent provides autonomous code repair for any canon Violation.\n    \n    This is the gene",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1954,6 +2034,7 @@
     "class_count": 5,
     "description": "\n    ROLE: Records all validation events to a Markdown log file.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -1976,6 +2057,7 @@
     "class_count": 6,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -1997,6 +2079,7 @@
     "class_count": 8,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2019,6 +2102,7 @@
     "class_count": 6,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2048,6 +2132,7 @@
     "class_count": 12,
     "description": "Executor for integrity gate validation.\n\n    Validates research outputs against quality criteria inc",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2067,6 +2152,7 @@
     "class_count": 2,
     "description": "\n    Alias for SubatomicTestingMixin - use in L2 agents.\n    Provides the same functionality with cl",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2074,8 +2160,8 @@
     "path": "agentic_core\\L2_execution\\tool_registry\\MemoryArchitectAgent.py",
     "layer": "L2",
     "inheritance": [
-      "MCPHardenedMixin",
-      "SubAtomicAgent"
+      "SubAtomicAgent",
+      "MCPHardenedMixin"
     ],
     "key_methods": [
       "__init__",
@@ -2098,6 +2184,7 @@
     "class_count": 4,
     "description": "\n    Autonomous Knowledge Distillation Agent\n    \n    Monitors healing successes and automatically d",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -2126,6 +2213,7 @@
     "class_count": 4,
     "description": "ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2156,6 +2244,7 @@
     "class_count": 2,
     "description": "\n    Autonomous agent for naming law compliance.\n    Operates after LocationAgent (assumes file is i",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2177,6 +2266,7 @@
     "class_count": 6,
     "description": "ROLE: Semantic Naming Guardian.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2207,6 +2297,7 @@
     "class_count": 1,
     "description": "\n    L1 Cognition: High-Signal Naming Law Healer \u2014 Key 49 Sovereign Enforcement\n    The \"Naming Surg",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2231,6 +2322,7 @@
     "class_count": 1,
     "description": "\n    Normalizes filenames and public symbols to snake_case.\n\n    Why ungated healing is safe:\n    - ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2255,6 +2347,7 @@
     "class_count": 1,
     "description": "\n    ROLE: Global Architectural Context. Concatenates all non-excluded .py files\n    into a single c",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2276,6 +2369,7 @@
     "class_count": 6,
     "description": "\n    ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2303,6 +2397,7 @@
     "class_count": 2,
     "description": "\n    KEYS: 26-39 (Pattern Checks)\n    ROLE: Enforces coding patterns and best practices.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2331,6 +2426,7 @@
     "class_count": 8,
     "description": "\n    K.2.5 - Multi-Hop RAG Analysis Agent\n\n    RAG Intensity Constraint:\n    - MUST run 24 searches ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2352,6 +2448,7 @@
     "class_count": 4,
     "description": "Red team sentinel for adversarial security testing.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2374,6 +2471,7 @@
     "class_count": 2,
     "description": "\n    ROLE: Consolidation and self-critique.\n    Consolidates successful mutations into long-term mem",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2393,6 +2491,7 @@
     "class_count": 1,
     "description": "\n    Executes resume safety validation with optimal model selection.\n\n    Protects user data and ens",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2423,6 +2522,7 @@
     "class_count": 4,
     "description": "\n    Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,\n    Empty Except, ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2444,6 +2544,7 @@
     "class_count": 4,
     "description": "Security enforcement agent for additional security checks.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2470,6 +2571,7 @@
     "class_count": 3,
     "description": "\n    ROLE: Root Cause Analysis. Triggered when TestPilot fails.\n    Analyzes cross-file dependencies",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2501,6 +2603,7 @@
     "class_count": 3,
     "description": "Sovereign action plane with Toolsmith and Sandbox.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2530,6 +2633,7 @@
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -2558,6 +2662,7 @@
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2584,7 +2689,8 @@
     "class_count": 1,
     "description": "\n    Sovereignty Audit Engine for MCP compliance.\n    \n    Scans codebase for:\n    - Direct SDK usag",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "SprawlInspector",
@@ -2607,6 +2713,7 @@
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2626,6 +2733,7 @@
     "class_count": 2,
     "description": "\n    Validates state files against expected schemas\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2648,6 +2756,7 @@
     "class_count": 2,
     "description": "\n    ROLE: High-level strategist.\n    Analyzes aggregated signals/violations and generates multi-ste",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2670,6 +2779,7 @@
     "class_count": 6,
     "description": "\n    ROLE: Proactive Architecture. Identifies code smells and proposes refactors.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2699,6 +2809,7 @@
     "class_count": 2,
     "description": "\n    KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Densi",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2727,6 +2838,7 @@
     "class_count": 1,
     "description": "\n    Structural Engineer validates code structure and organization.\n    \n    Validates Canon Keys 20",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2754,6 +2866,7 @@
     "class_count": 6,
     "description": "Mixin providing L2 subatomic testing capabilities.\n    \n    L2 Table Decision:\n    - Basic Self-Test",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2776,6 +2889,7 @@
     "class_count": 2,
     "description": "\n    Phase 1: Canonical self-testing mixin for L2 agents.\n    \n    NOTE: _healing_enabled = False - ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2804,6 +2918,7 @@
     "class_count": 1,
     "description": "\n    System Architect validates core architecture and import dependencies.\n    \n    Validates Canon ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2832,6 +2947,7 @@
     "class_count": 1,
     "description": "\n    System Architect validates core architecture and import dependencies.\n    \n    Validates Canon ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2856,6 +2972,7 @@
     "class_count": 3,
     "description": "\n    ROLE: Integration Guardian. Runs pytest and triggers Sherlock on failure.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2879,6 +2996,7 @@
     "class_count": 3,
     "description": "\n    ROLE: Dynamic Tool Forger.\n    Creates diagnostic tools on-the-fly based on detected issues.\n  ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2909,6 +3027,7 @@
     "class_count": 4,
     "description": "\n    Creates and manages tools dynamically.\n    Features:\n    - Generates tools from specifications\n",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2930,6 +3049,7 @@
     "class_count": 6,
     "description": "ROLE: Type Guardian. Enforces PEP 484.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -2958,6 +3078,7 @@
     "class_count": 1,
     "description": "\n    Centralized factory for sovereign agent injection.\n    \n    Phase 9A DDD Compliance:\n    - Only",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -2988,6 +3109,7 @@
     "class_count": 1,
     "description": "Agent Gym for self-evolution and benchmarking.\n\n    Features:\n    - Offline simulation environment\n ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3014,6 +3136,7 @@
     "class_count": 1,
     "description": "Manages agent permissions with Control Plane integration.\n\n    Provides:\n    - Identity-based Permis",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3033,6 +3156,7 @@
     "class_count": 9,
     "description": "Mock AgentRegistry for type hinting.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3059,6 +3183,7 @@
     "class_count": 1,
     "description": "\n    L3 Orchestration: Agent Registry Validation\n    Ensures all agents defined in CANON_AGENT_REGIS",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3078,6 +3203,7 @@
     "class_count": 9,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3106,6 +3232,7 @@
     "class_count": 1,
     "description": "Autonomic immune system for agent health monitoring.\n\n    Features:\n    - Runtime metrics monitoring",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3136,6 +3263,7 @@
     "class_count": 5,
     "description": "\n    Measures and tracks performance metrics.\n\n    Features:\n    - Function timing with context mana",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3164,6 +3292,7 @@
     "class_count": 1,
     "description": "\n    Sovereign L3 orchestration base \u2014 Redis cache for all decisions and state.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -3194,6 +3323,7 @@
     "class_count": 1,
     "description": "Curates and manages the context window dynamically.\n\n    Features:\n    - Pin core instructions and s",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3217,6 +3347,7 @@
     "class_count": 4,
     "description": "Orchestrator for operations domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3247,6 +3378,7 @@
     "class_count": 9,
     "description": "Manages the dynamic DAG with mutation capabilities.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3277,6 +3409,7 @@
     "class_count": 9,
     "description": "Handles the actual graph mutations.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3307,6 +3440,7 @@
     "class_count": 5,
     "description": "Lightweight DAG engine for workflow execution.\n\n    Features:\n    - Task dependency management\n    -",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3326,6 +3460,7 @@
     "class_count": 3,
     "description": "Executes Directed Acyclic Graphs of operations.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3350,6 +3485,7 @@
     "class_count": 9,
     "description": "Mock DAGManager for type hinting.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3367,6 +3503,7 @@
     "class_count": 2,
     "description": "Diagnostics engine for inspection domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3397,6 +3534,7 @@
     "class_count": 2,
     "description": "\n    Detects potential deadlocks in asyncio tasks.\n\n    Monitors:\n    - Task execution time\n    - He",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3422,6 +3560,7 @@
     "class_count": 1,
     "description": "Executor for outreach domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -3450,6 +3589,7 @@
     "class_count": 1,
     "description": "Executor for resume domain with Titanium RAG integration.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -3472,6 +3612,7 @@
     "class_count": 1,
     "description": "Stub implementation of hallucination detector.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3495,6 +3636,7 @@
     "class_count": 1,
     "description": "\n    Thin wrapper for Hardened Workflow Orchestrator.\n    Delegates to ConsolidatedOrchestrator.\n   ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3522,6 +3664,7 @@
     "class_count": 1,
     "description": "\n    Enforces the canonical L4 hierarchy across agentic_core.\n    Drills down from L2 -> L3 -> L4 to",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3552,6 +3695,7 @@
     "class_count": 5,
     "description": "Interface for the Orchestrator (Nervous System).\n    \n    The orchestrator coordinates between cogni",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3580,6 +3724,7 @@
     "class_count": 3,
     "description": "Mixin providing L3 subatomic testing capabilities.\n    \n    L3 Table Decision:\n    - Basic Self-Test",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -3606,6 +3751,7 @@
     "class_count": 1,
     "description": "\n    L3 Orchestration switchboard: Hardens the L1-L5 stack by routing\n    specific layer failures to",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -3635,6 +3781,7 @@
     "class_count": 2,
     "description": "\n    Detects memory leaks in the agentic system.\n\n    Features:\n    - Tracks memory usage across cyc",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3642,9 +3789,9 @@
     "path": "agentic_core\\L3_orchestration\\meta_learning\\MetaLearningAgent.py",
     "layer": "L3",
     "inheritance": [
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -3667,6 +3814,7 @@
     "class_count": 1,
     "description": "\n    Sovereign meta-learning agent that evolves system behavior over time.\n    Now hardened with str",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3697,6 +3845,7 @@
     "class_count": 1,
     "description": "\n    MetricsAgent: Sovereign quantitative state and alert governor.\n    Thread-safe, in-memory Metri",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -3718,6 +3867,7 @@
     "class_count": 9,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3747,6 +3897,7 @@
     "class_count": 1,
     "description": "Dynamic model router for cost-optimized LLM selection.\n\n    Features:\n    - Complexity-based routing",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3777,6 +3928,7 @@
     "class_count": 9,
     "description": "Core orchestrator that coordinates cognitive and action planes.\n\n    Implements the 5-step agentic c",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3803,6 +3955,7 @@
     "class_count": 9,
     "description": "Orchestrates the execution of all phases within a mission cycle.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3828,6 +3981,7 @@
     "class_count": 9,
     "description": "\n    Orchestrates Phase 5 observability for outreach.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3858,6 +4012,7 @@
     "class_count": 4,
     "description": "\n    The Efficiency Guard - Predictive Cost Auditor\n    \n    Monitors economic ROI of swarm healing ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3883,6 +4038,7 @@
     "class_count": 1,
     "description": "\n    Autonomous diagnostic agent for compliance reporting and visualization.\n    Operates independen",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -3902,6 +4058,7 @@
     "class_count": 1,
     "description": "Orchestrate the multi-hop resume generation workflow.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3932,6 +4089,7 @@
     "class_count": 4,
     "description": "\n    Orchestrator that automatically recovers from workflow failures.\n    \n    Features:\n    - Autom",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3959,6 +4117,7 @@
     "class_count": 1,
     "description": "\n    Gatekeeper that controls agent execution with concurrency limits and timeouts.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -3980,6 +4139,7 @@
     "class_count": 1,
     "description": "L3 Orchestration: Semantic Territory Mapping",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4008,6 +4168,7 @@
     "class_count": 1,
     "description": "\n    The Intelligent Brain that maps files to semantic territories\n    using real Gemini embeddings ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4031,6 +4192,7 @@
     "class_count": 2,
     "description": "function class for inspection domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4054,7 +4216,8 @@
     "class_count": 1,
     "description": "\n    Sovereign Canon Auditor using DeepWiki MCP.\n    Performs self-verification of critical system c",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "SovereignMcpRouter",
@@ -4078,7 +4241,8 @@
     "class_count": 1,
     "description": "Ultra-hardened L3 MCP switchboard \u2014 zero tolerance for failure",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "SovereignRagOrchestrator",
@@ -4106,6 +4270,7 @@
     "class_count": 1,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4127,6 +4292,7 @@
     "class_count": 9,
     "description": "Mock SubatomicHop for type hinting.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4157,7 +4323,8 @@
     "class_count": 2,
     "description": "\n    Sovereign SubatomicHop with Dependency Injection.\n    \n    This is a 'Pure Engine.' It has no k",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "SubatomicOrchestrator",
@@ -4187,6 +4354,7 @@
     "class_count": 9,
     "description": "Implementation for SubatomicOrchestrator.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4211,6 +4379,7 @@
     "class_count": 2,
     "description": "Monitors a single asyncio Task.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4241,6 +4410,7 @@
     "class_count": 1,
     "description": "\n    Autonomous telemetry emission agent.\n    Collects and emits structured events for sovereign obs",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4264,6 +4434,7 @@
     "class_count": 1,
     "description": "L3 Orchestration: Territory Healing",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4292,6 +4463,7 @@
     "class_count": 1,
     "description": "\n    Enforces exhaustive territory compliance by detecting intra-territory strays.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4312,6 +4484,7 @@
     "class_count": 6,
     "description": "Integration tests for MetricsCollector with agents.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4340,6 +4513,7 @@
     "class_count": 13,
     "description": "Tests for Phase5Orchestrator class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4368,6 +4542,7 @@
     "class_count": 1,
     "description": "\n    TestPilot agent with property-based testing capabilities.\n\n    Uses Hypothesis to generate and ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4395,6 +4570,7 @@
     "class_count": 13,
     "description": "Tests for ValidationAgent class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4412,6 +4588,7 @@
     "class_count": 2,
     "description": "Diagnostics engine for inspection domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4442,6 +4619,7 @@
     "class_count": 5,
     "description": "\n    Autonomous distributed tracing agent.\n    Manages trace context and Span lifecycle.\n    \n    So",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4465,6 +4643,7 @@
     "class_count": 2,
     "description": "function class for standard domain.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4486,6 +4665,7 @@
     "class_count": 9,
     "description": "Mock WorkflowBlueprint for type hinting.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4516,6 +4696,7 @@
     "class_count": 3,
     "description": "\n    Manages state checkpoints with automatic recovery capabilities.\n    \n    Features:\n    - Automa",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4546,6 +4727,7 @@
     "class_count": 3,
     "description": "\n    Manages state checkpoints with automatic recovery capabilities.\n    \n    Features:\n    - Automa",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4576,6 +4758,7 @@
     "class_count": 1,
     "description": "\n    L4 State Guardian that autonomously monitors and repairs state corruption.\n    \n    Features:\n ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4606,6 +4789,7 @@
     "class_count": 1,
     "description": "\n    L4 State Guardian that autonomously monitors and repairs state corruption.\n    \n    Features:\n ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4636,6 +4820,7 @@
     "class_count": 1,
     "description": "\n    The Gatekeeper logic that enforces the 'Subatomic' canon.\n    Uses a 2-stage cache (L1 Redis Ho",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4664,6 +4849,7 @@
     "class_count": 3,
     "description": "Mixin providing L4 subatomic testing capabilities.\n    \n    L4 Table Decision:\n    - Basic Self-Test",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4695,6 +4881,7 @@
     "class_count": 1,
     "description": "\n    Sovereign Pinecone controller \u2014 zero drift, eternal readiness.\n    Centralizes all vector opera",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -4719,6 +4906,7 @@
     "class_count": 1,
     "description": "Mock Pinecone Sovereign Agent.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -4747,6 +4935,7 @@
     "class_count": 1,
     "description": "\n    Sovereign Redis controller \u2014 hardened, monitored, eternal.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -4777,6 +4966,7 @@
     "class_count": 5,
     "description": "\n    The Structural Guard - Schema Evolution Agent\n    Monitors all Pydantic definitions and databas",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4808,6 +4998,7 @@
     "class_count": 1,
     "description": "\n    ADAPTER: Legacy Interface -> New MCP Client.\n    Maintains backward compatibility for 'add_text",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -4837,6 +5028,7 @@
     "class_count": 1,
     "description": "\n    Sovereign method registry \u2014 live, hybrid-indexed, eternal.\n    Now with Redis sovereign caching",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": true
   },
   {
@@ -4867,6 +5059,7 @@
     "class_count": 3,
     "description": "\n    The Skeptic - Adversarial Red Team Agent\n\n    Acts as counter-agent to CodeJanitor and SystemAr",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -4897,6 +5090,7 @@
     "class_count": 1,
     "description": "L5: Self-healing security agent",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4927,6 +5121,7 @@
     "class_count": 1,
     "description": "L5: Self-healing security agent",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4949,6 +5144,7 @@
     "class_count": 14,
     "description": "Stub for BaseAgent - TODO: Replace with sovereign equivalent",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4974,6 +5170,7 @@
     "class_count": 4,
     "description": "Lightweight Bias Detection for Content Quality.\n    \n    Simple pattern-based bias detection for ris",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -4981,8 +5178,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run"
@@ -4996,6 +5193,7 @@
     "class_count": 14,
     "description": "Runs local bias detection with dynamic constitution rules.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5018,6 +5216,7 @@
     "class_count": 1,
     "description": "\n    Atomic agent: Enforces consistent formatting using Black + Ruff auto-fix.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5047,6 +5246,7 @@
     "class_count": 1,
     "description": "\n    Ultra high-signal code-level SSOT enforcer using AST analysis.\n    \n    Enforces that code uses",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5077,6 +5277,7 @@
     "class_count": 1,
     "description": "\n    L5 Sovereign Compliance Orchestrator\n\n    Single responsibility:\n      - Discover all validator",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5084,8 +5285,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
@@ -5099,6 +5300,7 @@
     "class_count": 14,
     "description": "Performs final constitutional review of the output.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5123,6 +5325,7 @@
     "class_count": 1,
     "description": "\n    Batch agent: Detects and removes unused Python dependencies from requirements.txt.\n    Uses 'de",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5146,6 +5349,7 @@
     "class_count": 1,
     "description": "\n    Ensures public functions, classes, and modules have docstrings.\n\n    Rules:\n    - Module-level ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5171,6 +5375,7 @@
     "class_count": 1,
     "description": "\n    Batch agent: Detects exact duplicate code blocks across the entire territory.\n    Uses token-ba",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5198,6 +5403,7 @@
     "class_count": 1,
     "description": "\n    Batch agent: Identifies and removes files with repeated strings in filenames.\n    Detects patte",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5223,6 +5429,7 @@
     "class_count": 1,
     "description": "\n    Batch agent that enforces unique filenames across the entire repository.\n    \n    Rule: No two ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5249,6 +5456,7 @@
     "class_count": 1,
     "description": "\n    Autonomous agent for physical filesystem purity.\n    Targets technical debt markers in non-Pyth",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5275,6 +5483,7 @@
     "class_count": 1,
     "description": "\n    Batch agent: Enforces Git repository hygiene.\n    - Detects stale branches (no commits in >90 d",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5282,9 +5491,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
+      "AutonomyMixin",
       "HealerMixin",
-      "AdaptiveExecutionMixin",
-      "AutonomyMixin"
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5307,6 +5516,7 @@
     "class_count": 1,
     "description": "\n    Sovereign governance agent that makes constitutional decisions.\n    Now hardened with intellige",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5314,8 +5524,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\GravityEnforcerAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "CachedSafetyShield"
+      "CachedSafetyShield",
+      "HealerMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5333,6 +5543,7 @@
     "class_count": 1,
     "description": "\n    The \"Neural Link\" stabilizer that enforces gravity rules by actively\n    commenting out forbidd",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5356,6 +5567,7 @@
     "class_count": 1,
     "description": "\n    Converts forbidden static imports from higher layers (L4/L5) into dynamic importlib calls.\n\n   ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5385,6 +5597,7 @@
     "class_count": 7,
     "description": "\n    The Hallucination Hunter - Ground Truth Verifier\n    \n    Runs in HOP inference stages (Phase 2",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5412,6 +5625,7 @@
     "class_count": 1,
     "description": "\n    Multi-stage validator for LLM-healed code.\n    \n    Validation Pipeline:\n    1. Syntax check (A",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5442,6 +5656,7 @@
     "class_count": 2,
     "description": "\n    Autonomous Conductor for structural healing.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5472,6 +5687,7 @@
     "class_count": 2,
     "description": "\n    Autonomous agent for hierarchical structure compliance.\n    Scans folders only (no file content",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5497,6 +5713,7 @@
     "class_count": 1,
     "description": "\n    L5 Hierarchy Healer Agent\n    \n    Heals hierarchy violations by:\n    1. Relocating files from ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5521,6 +5738,7 @@
     "class_count": 1,
     "description": "\n    Validates Canon Key 45: Shared Utils and Repository Hygiene.\n    Ensures that architectural shi",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5548,6 +5766,7 @@
     "class_count": 3,
     "description": "\n    Autonomous agent for import convention and gravity compliance.\n    Requires file content access",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5571,6 +5790,7 @@
     "class_count": 1,
     "description": "\n    Uses LLM inference to add accurate type hints to functions/methods.\n\n    Why gated (not ungated",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5601,6 +5821,7 @@
     "class_count": 6,
     "description": "Validates input data against schema and rules.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5631,6 +5852,7 @@
     "class_count": 7,
     "description": "\n    L5+ Integrity Gate Executor with Two-Pass Validation.\n\n    Canon Validator Pattern:\n        # P",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5660,6 +5882,7 @@
     "class_count": 1,
     "description": "\n    Autonomous agent responsible for territorial integrity.\n    Run independently or as first stage",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5686,7 +5909,8 @@
     "class_count": 1,
     "description": "\n    L5 Safety Guardian for MCP integration compliance.\n    \n    Validates that all MCP integrations",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "MethodChangeDetector",
@@ -5709,6 +5933,7 @@
     "class_count": 6,
     "description": "Detects method changes between two versions of a file.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5716,10 +5941,10 @@
     "path": "agentic_core\\L5_safety\\guardrails\\NeuralAutoImmuneAgent.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "AdaptiveExecutionMixin",
       "SelfDiagnosisMixin",
-      "AutonomyMixin"
+      "AutonomyMixin",
+      "HealerMixin",
+      "AdaptiveExecutionMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5742,6 +5967,7 @@
     "class_count": 1,
     "description": "\n    Sovereign auto-immune response \u2014 isolates territories after repeated breaches.\n    Now hardened",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5764,6 +5990,7 @@
     "class_count": 1,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5771,8 +5998,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run",
@@ -5787,6 +6014,7 @@
     "class_count": 14,
     "description": "Performs local PII detection using regex heuristics.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5817,6 +6045,7 @@
     "class_count": 2,
     "description": "L5 Safety agent \u2014 enforces PascalCase as eternal sole SSOT.\n    \n    Uses ASTEnforcementMixin for ul",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5824,8 +6053,8 @@
     "path": "agentic_core\\L5_safety\\guardrails\\campaign_guardrails.py",
     "layer": "L5",
     "inheritance": [
-      "HealerMixin",
-      "BaseAgent"
+      "BaseAgent",
+      "HealerMixin"
     ],
     "key_methods": [
       "run_async"
@@ -5839,6 +6068,7 @@
     "class_count": 14,
     "description": "Detects prompt-injection attacks.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5866,7 +6096,8 @@
     "class_count": 1,
     "description": "\n    Active defense system that generates hostile inputs for testing.\n\n    Creates edge cases and ma",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "RedTeamAgent",
@@ -5889,6 +6120,7 @@
     "class_count": 1,
     "description": "\n    Sovereign red-teaming agent for guardrail penetration testing.\n\n    Safety model:\n    - Only ac",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -5913,6 +6145,7 @@
     "class_count": 6,
     "description": "\n    The Regression Oracle - Automated Test Synthesizer\n    \n    Subscribes to AtomicBlackboard FILE",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5937,7 +6170,8 @@
     "class_count": 3,
     "description": "\n    L5 Safety Inspector with Socratic Judge for false positive mitigation.\n\n    KEYS: 0 (Secrets), ",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "SelfUpdatingSafetyEngineAgent",
@@ -5967,6 +6201,7 @@
     "class_count": 6,
     "description": "\n    Safety engine that learns and adapts to new threats.\n    \n    Features:\n    - Automatic threat ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -5994,6 +6229,7 @@
     "class_count": 1,
     "description": "\n    Enforces exhaustive territory compliance by detecting intra-territory strays.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6024,6 +6260,7 @@
     "class_count": 1,
     "description": "\n    Ultimate verification agent: Enforces comprehensive test coverage with branch, mutation, and pr",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6053,6 +6290,7 @@
     "class_count": 2,
     "description": "L5 specialist \u2014 advanced sovereign testing.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6076,6 +6314,7 @@
     "class_count": 2,
     "description": "\n    Ensures public functions, methods, and module-level assignments have type hints.\n\n    Rules:\n  ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6101,6 +6340,7 @@
     "class_count": 2,
     "description": "\n    AST transformer that adds Missing type hints to public symbols.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6123,6 +6363,7 @@
     "class_count": 1,
     "description": "\n    Atomic agent: Removes unused imports and variables using autoflake.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6143,6 +6384,7 @@
     "class_count": 7,
     "description": "\n    Enforce ASCII-only characters for LinkedIn compatibility\n    GAP 1.10 from v10.22\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6162,6 +6404,7 @@
     "class_count": 18,
     "description": "Agent execution status",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6181,6 +6424,7 @@
     "class_count": 20,
     "description": "Agent execution status",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6201,6 +6445,7 @@
     "class_count": 11,
     "description": "Stub for BaseAgent - TODO: Replace with sovereign equivalent",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6222,6 +6467,7 @@
     "class_count": 9,
     "description": "Ensures campaign elements are balanced.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6243,6 +6489,7 @@
     "class_count": 9,
     "description": "Validates contact information.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6265,6 +6512,7 @@
     "class_count": 7,
     "description": "\n    Forbidden verbs and weak language detection\n    FEATURE 3.1 and 3.2 from SUPREME_SPELL\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6286,6 +6534,7 @@
     "class_count": 9,
     "description": "Checks email deliverability factors.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6305,6 +6554,7 @@
     "class_count": 18,
     "description": "\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6324,6 +6574,7 @@
     "class_count": 20,
     "description": "\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6346,6 +6597,7 @@
     "class_count": 5,
     "description": "\n    v13.1: HOP-1 - Profile Analysis with state-based I/O (MCP Hardened)\n    \n    Single Responsibil",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6375,6 +6627,7 @@
     "class_count": 5,
     "description": "\n    v13.1: Research Agent - Vector-store-first with fallback RAG (MCP Hardened)\n    \n    BREAKING C",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6397,6 +6650,7 @@
     "class_count": 5,
     "description": "\n    v13.1: HOP-3 - Sender Grounding Extraction (MCP Hardened)\n    \n    Single Responsibility: Extra",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6419,6 +6673,7 @@
     "class_count": 5,
     "description": "\n    v13.1: HOP-4 - Routing Decision with state-based I/O (MCP Hardened)\n    \n    Single Responsibil",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6447,6 +6702,7 @@
     "class_count": 5,
     "description": "\n    v13.1: Generation Agent - N-candidate generation only (MCP Hardened)\n    \n    BREAKING CHANGE f",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6470,6 +6726,7 @@
     "class_count": 5,
     "description": "\n    v13.1: Validation Agent - Rule-based validation from config (MCP Hardened)\n    \n    BREAKING CH",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6493,6 +6750,7 @@
     "class_count": 5,
     "description": "\n    v13.1: HOP-7 - Gate Decision Agent (MCP Hardened)\n    \n    Single Responsibility: Make the \"Slo",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6517,6 +6775,7 @@
     "class_count": 5,
     "description": "\n    v13.1: QA Report Agent - Persistent markdown report generation (MCP Hardened)\n    \n    NEW in v",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6537,6 +6796,7 @@
     "class_count": 5,
     "description": "\n    v13.0: HOP-based Workflow Orchestrator\n    \n    BREAKING CHANGE from v12.0:\n    - OLD: Monolith",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6557,6 +6817,7 @@
     "class_count": 5,
     "description": "\n    v13.0: Example orchestrator showing HOP execution pattern\n    \n    This demonstrates the \"Forem",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": true
   },
   {
@@ -6582,6 +6843,7 @@
     "class_count": 11,
     "description": "\n    v12.0: UPGRADED to primary intelligence-gathering unit.\n    NOW LOADS: \n    - master_resume.jso",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6603,6 +6865,7 @@
     "class_count": 9,
     "description": "Validates and scores lead quality.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6624,6 +6887,7 @@
     "class_count": 9,
     "description": "Ensures message compliance with regulations and best practices.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6645,6 +6909,7 @@
     "class_count": 7,
     "description": "\n    Prevent repetitive messages using cosine similarity\n    FEATURE 1.3 from SUPREME_SPELL\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6668,6 +6933,7 @@
     "class_count": 11,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6695,6 +6961,7 @@
     "class_count": 1,
     "description": "\n    Abstract base class for all outreach agents.\n\n    Each agent:\n    - Has a name and description\n",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6717,6 +6984,7 @@
     "class_count": 7,
     "description": "Factory for creating outreach agents.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6741,6 +7009,7 @@
     "class_count": 9,
     "description": "\n    Monitors outreach agent capabilities and performance.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6761,6 +7030,7 @@
     "class_count": 7,
     "description": "Orchestrates the complete self-healing process.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6786,6 +7056,7 @@
     "class_count": 7,
     "description": "\n    Learning agent for outreach campaigns.\n\n    Learns from past campaigns and provides recommendat",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6808,6 +7079,7 @@
     "class_count": 9,
     "description": "\n    Agent that proactively identifies and executes outreach tasks.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6829,6 +7101,7 @@
     "class_count": 9,
     "description": "Reflects on execution and suggests improvements.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6850,6 +7123,7 @@
     "class_count": 7,
     "description": "Routes signals to appropriate agents.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6880,6 +7154,7 @@
     "class_count": 1,
     "description": "Extended validation executor for outreach-specific rules.\n\n    Implements LIC-specific validation ga",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6900,6 +7175,7 @@
     "class_count": 7,
     "description": "\n    Comprehensive placeholder detection\n    FEATURE 3.3 from SUPREME_SPELL / GAP 1.5\n    ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6923,6 +7199,7 @@
     "class_count": 11,
     "description": "\n    v12.0: DEMOTED to secondary fact-checker role.\n    Now performs validation searches based on st",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6948,6 +7225,7 @@
     "class_count": 11,
     "description": "\n    v12.0: Updated coordination logic for strategic alignment workflow.\n    Now manages entity extr",
     "pascal_compliant": false,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -6968,6 +7246,7 @@
     "class_count": 11,
     "description": "Tests for ContactValidatorAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -6988,6 +7267,7 @@
     "class_count": 11,
     "description": "Tests for LeadQualityAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7008,6 +7288,7 @@
     "class_count": 11,
     "description": "Tests for MessageComplianceAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7030,6 +7311,7 @@
     "class_count": 7,
     "description": "Tests for OutreachCapabilityMonitor.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7050,6 +7332,7 @@
     "class_count": 11,
     "description": "Tests for OutreachHealingOrchestrator.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7072,6 +7355,7 @@
     "class_count": 11,
     "description": "Tests for OutreachPhase5Orchestrator.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7093,6 +7377,7 @@
     "class_count": 7,
     "description": "Tests for OutreachProactiveAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7114,6 +7399,7 @@
     "class_count": 11,
     "description": "Tests for OutreachSignalRouter.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7139,6 +7425,7 @@
     "class_count": 7,
     "description": "\n    NEW v11.6: Comprehensive validation framework with 107 rules\n    Consolidates all rules from v1",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7161,6 +7448,7 @@
     "class_count": 9,
     "description": "\n    Validates ATS (Applicant Tracking System) compatibility.\n\n    Checks:\n    - No complex formatti",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7183,6 +7471,7 @@
     "class_count": 9,
     "description": "Factory for creating agent instances.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7205,6 +7494,7 @@
     "class_count": 9,
     "description": "\n    Ensures brand voice and professional tone.\n\n    Checks for:\n    - Professional language\n    - N",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7229,6 +7519,7 @@
     "class_count": 9,
     "description": "\n    Monitors agent capabilities and performance.\n\n    Tracks success rates, identifies limitations,",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7251,6 +7542,7 @@
     "class_count": 9,
     "description": "\n    Validates resume content quality.\n\n    Checks for:\n    - Minimum content length\n    - Proper se",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7274,6 +7566,7 @@
     "class_count": 9,
     "description": "Detects when the system has converged.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7297,6 +7590,7 @@
     "class_count": 9,
     "description": "\n    Verifies claims against user profile.\n\n    Checks for:\n    - Claims that can be verified agains",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7317,6 +7611,7 @@
     "class_count": 9,
     "description": "Orchestrates the complete self-healing process.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7338,6 +7633,7 @@
     "class_count": 9,
     "description": "\n    Orchestrates all Phase 4 components for advanced healing.\n\n    Combines:\n    - GitOps for branc",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7361,6 +7657,7 @@
     "class_count": 14,
     "description": "\n    Orchestrates all Phase 6 intelligence components.\n\n    Combines:\n    - Security hardening\n    -",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7387,6 +7684,7 @@
     "class_count": 13,
     "description": "\n    Orchestrates all Phase 7 governance components.\n\n    Combines:\n    - Dependency arbitration\n   ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7411,6 +7709,7 @@
     "class_count": 9,
     "description": "\n    Agent that proactively identifies and executes tasks.\n    ",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7433,6 +7732,7 @@
     "class_count": 9,
     "description": "\n    Learns from execution and records insights.\n\n    Analyzes:\n    - What worked\n    - What failed\n",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7461,6 +7761,7 @@
     "class_count": 1,
     "description": "\n    Base class for all resume generation agents.\n\n    Each agent has:\n    - A reference to the shar",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7487,6 +7788,7 @@
     "class_count": 10,
     "description": "\n    Agent that combines all Phase 3 learning capabilities.\n\n    Integrates:\n    - Few-shot learning",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7504,6 +7806,7 @@
     "class_count": 1,
     "description": "Orchestrate the multi-hop resume generation workflow.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7526,6 +7829,7 @@
     "class_count": 9,
     "description": "\n    Ensures proper section balance and prioritization.\n\n    Checks:\n    - Section lengths are propo",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7547,6 +7851,7 @@
     "class_count": 9,
     "description": "Routes signals to appropriate agents.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7572,6 +7877,7 @@
     "class_count": 13,
     "description": "\n    Enforces type contract compliance in docstrings.\n\n    Features:\n    - Docstring existence check",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7593,6 +7899,7 @@
     "class_count": 9,
     "description": "Tests for ATSCompatibilityAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7613,6 +7920,7 @@
     "class_count": 6,
     "description": "Tests for multi-agent coordination.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7636,6 +7944,7 @@
     "class_count": 7,
     "description": "Tests for AgentFactory class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7657,6 +7966,7 @@
     "class_count": 9,
     "description": "Tests for BrandComplianceAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7680,6 +7990,7 @@
     "class_count": 7,
     "description": "Tests for CapabilityMonitor.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7702,6 +8013,7 @@
     "class_count": 9,
     "description": "Tests for ContentQualityAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7725,6 +8037,7 @@
     "class_count": 7,
     "description": "Tests for ConvergenceDetector class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7745,6 +8058,7 @@
     "class_count": 6,
     "description": "Integration tests for ConversationalRepair with orchestrator.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7766,6 +8080,7 @@
     "class_count": 9,
     "description": "Tests for FactCheckAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7787,6 +8102,7 @@
     "class_count": 10,
     "description": "Tests for Phase4Orchestrator class.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7811,6 +8127,7 @@
     "class_count": 12,
     "description": "Tests for Phase6Orchestrator class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7837,6 +8154,7 @@
     "class_count": 13,
     "description": "Tests for Phase7Orchestrator class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7858,6 +8176,7 @@
     "class_count": 7,
     "description": "Tests for ProactiveAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7878,6 +8197,7 @@
     "class_count": 9,
     "description": "Tests for ReflectionAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7898,6 +8218,7 @@
     "class_count": 6,
     "description": "Integration tests for ResilientMutator with agents.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7924,6 +8245,7 @@
     "class_count": 10,
     "description": "Tests for ResumeLearningAgent class.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -7945,6 +8267,7 @@
     "class_count": 6,
     "description": "Integration tests for ResumeLearningAgent with full workflow.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7966,6 +8289,7 @@
     "class_count": 9,
     "description": "Tests for SectionBalanceAgent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -7994,6 +8318,7 @@
     "class_count": 7,
     "description": "Tests for SignalRouter class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8018,6 +8343,7 @@
     "class_count": 13,
     "description": "Tests for StrictDocEnforcer class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8040,6 +8366,7 @@
     "class_count": 12,
     "description": "Tests for UnifiedOrchestrator class.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8063,6 +8390,7 @@
     "class_count": 14,
     "description": "\n    Multi-phase execution orchestrator.\n\n    Features:\n    - Phase-based execution\n    - Convergenc",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8082,6 +8410,7 @@
     "class_count": 2,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8105,6 +8434,7 @@
     "class_count": 2,
     "description": "Sovereign interface for all canon agents \u2014 shared across contexts.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8124,6 +8454,7 @@
     "class_count": 3,
     "description": "Contract specification for an agent.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8141,6 +8472,7 @@
     "class_count": 2,
     "description": "Information about a discovered agent class.",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8158,6 +8490,7 @@
     "class_count": 2,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8177,6 +8510,7 @@
     "class_count": 3,
     "description": "\n    Sovereign-grade message used for inter-agent handoffs.\n    Inherits immutability and strict val",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8196,6 +8530,7 @@
     "class_count": 3,
     "description": "Brief description of functionality and purpose.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8215,7 +8550,8 @@
     "class_count": 4,
     "description": "",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "AgentPlan",
@@ -8234,6 +8570,7 @@
     "class_count": 4,
     "description": "Agent execution plan with reasoning and tool calls.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8253,6 +8590,7 @@
     "class_count": 6,
     "description": "Agent execution plan with reasoning and tool calls.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8270,6 +8608,7 @@
     "class_count": 13,
     "description": "Response from agent execution containing a residual message.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8291,6 +8630,7 @@
     "class_count": 4,
     "description": "\n    Forces the agent to show its work before acting.\n    This is the \"Physics\" of your Agent - the ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8312,6 +8652,7 @@
     "class_count": 6,
     "description": "\n    Forces the agent to show its work before acting.\n    This is the \"Physics\" of your Agent - the ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8335,6 +8676,7 @@
     "class_count": 1,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8356,6 +8698,7 @@
     "class_count": 5,
     "description": "Audits text for potential bias.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8379,6 +8722,7 @@
     "class_count": 1,
     "description": "\n    [L6 INFRASTRUCTURE] Base AST visitor for Canon keys.\n    Provides automatic Type-Checking suppr",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8402,6 +8746,7 @@
     "class_count": 8,
     "description": "Validates cognitive contracts and ensures compliance.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8428,6 +8773,7 @@
     "class_count": 1,
     "description": "\n    Base class for intelligent validators.\n    Subclasses implement rule-specific logic while inher",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8448,6 +8794,7 @@
     "class_count": 1,
     "description": "\n    [L3 AGENT] The Structural Surgeon.\n    Directive: Physically relocate files to satisfy Depth-4 ",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8478,6 +8825,7 @@
     "class_count": 4,
     "description": "Interface for the Orchestrator (Nervous System).\n\n    The orchestrator coordinates between cognitive",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8503,6 +8851,7 @@
     "class_count": 1,
     "description": "\n    Automatically fixes import statements when files are moved.\n    Critical for preventing breakag",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8523,6 +8872,7 @@
     "class_count": 11,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8551,7 +8901,8 @@
     "class_count": 4,
     "description": "Production router with intelligent provider selection and failover.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": false,
+    "mcp_hardened": false
   },
   {
     "class_name": "NonConformingAgentFinder",
@@ -8573,6 +8924,7 @@
     "class_count": 1,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8590,6 +8942,7 @@
     "class_count": 3,
     "description": "\n    Lightweight runtime message format discovered during Phase 2C sweep.\n    Maintains compatibilit",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8607,7 +8960,37 @@
     "class_count": 13,
     "description": "Message in agent conversation (Residual Phase 2C).",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
+  },
+  {
+    "class_name": "SystemValidator",
+    "path": "scripts\\system_validation.py",
+    "layer": "misc",
+    "inheritance": [],
+    "key_methods": [
+      "__init__",
+      "load_discovery",
+      "check_has_healing",
+      "check_has_testing",
+      "check_external_touch",
+      "check_mcp_hardened",
+      "validate_syntax",
+      "validate_agent",
+      "run_validation",
+      "print_report"
+    ],
+    "has_tools": true,
+    "has_memory": true,
+    "has_healing": false,
+    "testing": "None",
+    "has_subatomic": false,
+    "loc": 211,
+    "class_count": 3,
+    "description": "Full system validation for sovereignty verification.",
+    "pascal_compliant": true,
+    "external_touch": true,
+    "mcp_hardened": true
   },
   {
     "class_name": "TalentIntelligenceAgent",
@@ -8635,6 +9018,7 @@
     "class_count": 11,
     "description": "Production agent for talent intelligence operations",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8655,6 +9039,7 @@
     "class_count": 11,
     "description": "Orchestrates the complete agentic workflow",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8675,6 +9060,7 @@
     "class_count": 4,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8695,6 +9081,7 @@
     "class_count": 4,
     "description": "",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8716,6 +9103,7 @@
     "class_count": 5,
     "description": "E2E tests for agent discovery and registry.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8740,6 +9128,7 @@
     "class_count": 8,
     "description": "Test validation of Agent files.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8760,6 +9149,7 @@
     "class_count": 6,
     "description": "Test agent hierarchy and inheritance patterns.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8780,7 +9170,8 @@
     "class_count": 8,
     "description": "Test AGENT_REGISTRY from structure_blueprint.py.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestCodeDeduplicationAgent",
@@ -8804,6 +9195,7 @@
     "class_count": 5,
     "description": "Test suite for L2 CodeDeduplicationAgent",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8829,6 +9221,7 @@
     "class_count": 5,
     "description": "Test suite for L5 DuplicateCodeDetectorAgent",
     "pascal_compliant": true,
+    "external_touch": true,
     "mcp_hardened": false
   },
   {
@@ -8859,6 +9252,7 @@
     "class_count": 3,
     "description": "Test FileCleanupAgent functionality.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8889,6 +9283,7 @@
     "class_count": 3,
     "description": "Test AST-based diff application for structural healing.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8913,6 +9308,7 @@
     "class_count": 3,
     "description": "Integration tests for AST-based healing.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8936,6 +9332,7 @@
     "class_count": 3,
     "description": "Performance tests for AST operations.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -8957,7 +9354,8 @@
     "class_count": 8,
     "description": "L0 Maintenance Layer: Scripts, logs, benchmarks.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestL1CognitionAgents",
@@ -8980,7 +9378,8 @@
     "class_count": 8,
     "description": "L1 Cognition Layer: Thought engine, intent analysis, planning.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestL2ExecutionAgents",
@@ -9005,7 +9404,8 @@
     "class_count": 8,
     "description": "L2 Execution Layer: Tool registry, action handlers, MCP.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestL3OrchestrationAgents",
@@ -9025,7 +9425,8 @@
     "class_count": 8,
     "description": "L3 Orchestration Layer: Workflow engines, fission logic, meta-learning.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestL4StateAgents",
@@ -9047,7 +9448,8 @@
     "class_count": 8,
     "description": "L4 State Layer: Validation context, ledger, filesystem, memory.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestL5SafetyAgents",
@@ -9070,7 +9472,8 @@
     "class_count": 8,
     "description": "L5 Safety Layer: Guardrails, validators, gravity, red-teaming.",
     "pascal_compliant": true,
-    "mcp_hardened": true
+    "external_touch": true,
+    "mcp_hardened": false
   },
   {
     "class_name": "TestNamingAgentFallback",
@@ -9093,6 +9496,7 @@
     "class_count": 3,
     "description": "Test fallback behavior when tree-sitter is not available.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -9115,6 +9519,7 @@
     "class_count": 3,
     "description": "Test performance improvements with tree-sitter.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -9145,6 +9550,7 @@
     "class_count": 3,
     "description": "Test tree-sitter multi-language symbol extraction.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   },
   {
@@ -9173,6 +9579,7 @@
     "class_count": 1,
     "description": "Test cases for PascalCase sovereignty enforcement.",
     "pascal_compliant": true,
+    "external_touch": false,
     "mcp_hardened": false
   }
 ]

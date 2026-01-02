@@ -1,0 +1,12 @@
+{
+  "total_core": 241,
+  "testing_pass": 78,
+  "healing_pass": 178,
+  "external_agents": 102,
+  "mcp_hardened": 9,
+  "regressions": [],
+  "testing_pct": 32.365145228215766,
+  "healing_pct": 73.85892116182573,
+  "mcp_pct": 8.823529411764707,
+  "pass": false
+}
