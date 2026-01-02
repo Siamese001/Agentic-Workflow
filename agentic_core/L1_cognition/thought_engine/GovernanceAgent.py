@@ -276,27 +276,35 @@ class GovernanceAgent(HealerMixin, MCPHardenedMixin):
         self.DEPTH_MAP = {root: cfg['depth'] for root, cfg in SOVEREIGN_REGISTRY.items()}
         self.MAX_COMPLEXITY = 10
         self.MAX_FUNC_LINES = 50
-        
-        # HierarchyAgent integration for structure validation
-        try:
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-            self.hierarchy_agent = HierarchyAgent(self.root_dir)
-        except ImportError:
-            self.hierarchy_agent = None
-        
-        # ImportAgent integration for gravity compliance
-        try:
-            from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
-            self.import_agent = ImportAgent(self.root_dir)
-        except ImportError:
-            self.import_agent = None
-        
-        # Backup directory for safe operations
         self._backup_dir: Optional[Path] = None
         self.MAX_NESTING_SPACES = 40
         self.stats = {'files_checked': 0, 'violations_found': 0, 'files_sanitized': 0}
         self.sovereign_dirs = {'agentic_core', 'schemas', 'scripts', 'docs', 'tests', 'config', 'data', 'cache', 'observability', '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage', '.github', 'htmlcov', '.mypy_cache', '.coverage', 'eggs', '.eggs', '*.egg-info'}
         self.MAX_FILE_LINES = 200
+        self._hierarchy_agent = None
+        self._import_agent = None
+
+    @property
+    def hierarchy_agent(self):
+        """Lazy-load HierarchyAgent to avoid circular import."""
+        if self._hierarchy_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                self._hierarchy_agent = HierarchyAgent(self.root_dir)
+            except ImportError:
+                pass
+        return self._hierarchy_agent
+    
+    @property
+    def import_agent(self):
+        """Lazy-load ImportAgent to avoid circular import."""
+        if self._import_agent is None:
+            try:
+                from agentic_core.L5_safety.gravity.ImportAgent import ImportAgent
+                self._import_agent = ImportAgent(self.root_dir)
+            except ImportError:
+                pass
+        return self._import_agent
 
     def build_graph(self, file_patterns: List[str]=['**/*.py']) -> Any:
         """
