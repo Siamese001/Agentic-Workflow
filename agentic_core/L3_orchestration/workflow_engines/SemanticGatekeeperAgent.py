@@ -11,8 +11,10 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
 
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
-class SemanticGatekeeperAgent:
+class SemanticGatekeeperAgent(HealerMixin):
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """
