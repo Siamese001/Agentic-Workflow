@@ -166,9 +166,9 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -240,8 +240,8 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -271,8 +271,8 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -373,8 +373,8 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -424,9 +424,9 @@
     "layer": "L0",
     "inheritance": [
       "SelfDiagnosisMixin",
+      "AdaptiveExecutionMixin",
       "L0DelegationTestingMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -687,7 +687,9 @@
     "class_name": "ConcurrencyGuardian",
     "path": "agentic_core\\L1_cognition\\thought_engine\\concurrency_guardian.py",
     "layer": "L1",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "acquire_lock",
@@ -696,10 +698,10 @@
     ],
     "has_tools": false,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 104,
+    "loc": 105,
     "class_count": 3,
     "description": "\n    Manages concurrent operations and prevents conflicts.\n\n    Features:\n    - Distributed lock man",
     "pascal_compliant": true,
@@ -3248,7 +3250,9 @@
     "class_name": "DispatchOutreachToolsAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\dispatch_outreach_tools.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3257,10 +3261,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 24,
+    "loc": 25,
     "class_count": 1,
     "description": "Executor for outreach domain.",
     "pascal_compliant": true,
@@ -3270,7 +3274,9 @@
     "class_name": "DispatchResumeToolsAgent",
     "path": "agentic_core\\L3_orchestration\\workflow_engines\\dispatch_resume_tools.py",
     "layer": "L3",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "_run_self_tests",
@@ -3282,10 +3288,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "Self",
     "has_subatomic": false,
-    "loc": 65,
+    "loc": 66,
     "class_count": 1,
     "description": "Executor for resume domain with Titanium RAG integration.",
     "pascal_compliant": true,
@@ -3474,8 +3480,8 @@
     "layer": "L3",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
-      "AdaptiveExecutionMixin"
+      "AdaptiveExecutionMixin",
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5050,9 +5056,9 @@
     "path": "agentic_core\\L5_safety\\validators\\GovernanceAgent.py",
     "layer": "L5",
     "inheritance": [
-      "AutonomyMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5484,9 +5490,9 @@
     "layer": "L5",
     "inheritance": [
       "SelfDiagnosisMixin",
-      "AutonomyMixin",
+      "AdaptiveExecutionMixin",
       "HealerMixin",
-      "AdaptiveExecutionMixin"
+      "AutonomyMixin"
     ],
     "key_methods": [
       "__init__",
@@ -5610,7 +5616,9 @@
     "class_name": "RedSentinel",
     "path": "agentic_core\\L5_safety\\guardrails\\red_sentinel.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "fuzz_function",
@@ -5622,10 +5630,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 126,
+    "loc": 127,
     "class_count": 1,
     "description": "\n    Active defense system that generates hostile inputs for testing.\n\n    Creates edge cases and ma",
     "pascal_compliant": true,
@@ -5682,7 +5690,9 @@
     "class_name": "SafetyInspector",
     "path": "agentic_core\\L5_safety\\guardrails\\overseer.py",
     "layer": "L5",
-    "inheritance": [],
+    "inheritance": [
+      "HealerMixin"
+    ],
     "key_methods": [
       "__init__",
       "scan_file",
@@ -5691,10 +5701,10 @@
     ],
     "has_tools": true,
     "has_memory": false,
-    "has_healing": false,
+    "has_healing": true,
     "testing": "None",
     "has_subatomic": false,
-    "loc": 163,
+    "loc": 164,
     "class_count": 3,
     "description": "\n    L5 Safety Inspector with Socratic Judge for false positive mitigation.\n\n    KEYS: 0 (Secrets), ",
     "pascal_compliant": true,

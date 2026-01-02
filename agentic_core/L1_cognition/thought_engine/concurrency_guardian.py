@@ -94,7 +94,9 @@ class LockInfo:
         """Convert to dictionary."""
         return {'key': self.key, 'owner': self.owner, 'timeout': self.timeout, 'acquired_at': self.acquired_at.isoformat(), 'expires_at': self.expires_at.isoformat()}
 
-class ConcurrencyGuardian:
+from agentic_core.common.healing.healer_mixin import HealerMixin
+
+class ConcurrencyGuardian(HealerMixin):
     """
     Manages concurrent operations and prevents conflicts.
 
