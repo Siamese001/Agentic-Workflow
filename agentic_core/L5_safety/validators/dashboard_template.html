@@ -958,7 +958,17 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="margin-top:8px; font-size:0.75em; color:#888;">Health Score = Invocation 25% + Hardened 18% + Tests 18% + Heal Cap 14% + Observable 10% + Typed 10% + Complexity 5%. Color: <span style="color:#991b1b;">■</span>0-20% <span style="color:#ea580c;">■</span>20-60% <span style="color:#a16207;">■</span>60-75% <span style="color:#65a30d;">■</span>75-85% <span style="color:#065f46;">■</span>85-100%</p>
+                <div style="margin-top:12px; padding:12px; background:#f9fafb; border-radius:6px; border-left:3px solid var(--primary);">
+                    <p style="margin:0; font-size:0.75em; color:#666; font-weight:600; margin-bottom:8px;">Column Descriptions:</p>
+                    <ul style="margin:0; padding-left:20px; font-size:0.75em; color:#666; line-height:1.6;">
+                        <li><strong>Territory:</strong> System layer or subsystem category</li>
+                        <li><strong>Category:</strong> Subcategory breakdown for territories with >10 agents</li>
+                        <li><strong>Count:</strong> Total number of agents in territory</li>
+                        <li><strong>Avg CC:</strong> Average cyclomatic complexity—lower indicates simpler code</li>
+                        <li><strong>Health Score:</strong> Composite operational health: Invocation 25% + Hardened 18% + Tests 18% + Heal Cap 14% + Observable 10% + Typed 10% + Complexity 5%</li>
+                    </ul>
+                </div>
+                <p style="margin-top:8px; font-size:0.75em; color:#888;">Health Score Color: <span style="color:#991b1b;">■</span>0-20% <span style="color:#ea580c;">■</span>20-60% <span style="color:#a16207;">■</span>60-75% <span style="color:#65a30d;">■</span>75-85% <span style="color:#065f46;">■</span>85-100%</p>
                 
                 <!-- Code Quality Score Section -->
                 <div style="margin-top:40px; margin-bottom:20px;">
@@ -1089,6 +1099,17 @@
             html += `
                             </tbody>
                         </table>
+                    </div>
+                    <div style="margin-top:12px; padding:12px; background:#f9fafb; border-radius:6px; border-left:3px solid var(--primary);">
+                        <p style="margin:0; font-size:0.75em; color:#666; font-weight:600; margin-bottom:8px;">Column Descriptions:</p>
+                        <ul style="margin:0; padding-left:20px; font-size:0.75em; color:#666; line-height:1.6;">
+                            <li><strong>Territory:</strong> System layer or subsystem category</li>
+                            <li><strong>Typing %:</strong> Percentage of agents with type hints—35% weight in score</li>
+                            <li><strong>MCP Capable %:</strong> Percentage of agents with MCP tool access—25% weight</li>
+                            <li><strong>Complexity Health:</strong> Inverted cyclomatic complexity score—20% weight, higher better</li>
+                            <li><strong>Documentation %:</strong> Docstring coverage percentage—20% weight in score</li>
+                            <li><strong>Code Quality Score:</strong> Weighted composite of all four metrics above</li>
+                        </ul>
                     </div>
                     <p style="margin-top:8px; font-size:0.75em; color:#888;">Code Quality Score = Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%</p>
                 </div>
@@ -2077,6 +2098,20 @@ ${rec.guidance.split('\n').map((line, i) =>
                     </tr>`;
                 });
                 content += '</tbody></table>';
+                
+                content += '<div style="margin-top:12px; padding:12px; background:#f9fafb; border-radius:6px; border-left:3px solid var(--primary);">';
+                content += '<p style="margin:0; font-size:0.75em; color:#666; font-weight:600; margin-bottom:8px;">Column Descriptions:</p>';
+                content += '<ul style="margin:0; padding-left:20px; font-size:0.75em; color:#666; line-height:1.6;">';
+                content += '<li><strong>Agent File:</strong> File path and line number—click to open in VS Code</li>';
+                content += '<li><strong>HealerMixin:</strong> Has HealerMixin in class bases for autonomous repair</li>';
+                content += '<li><strong>Invocation Chain:</strong> Calls super().heal_repository()—seatbelt analogy for safety</li>';
+                content += '<li><strong>Tests:</strong> Has test coverage for agent functionality</li>';
+                content += '<li><strong>Observability:</strong> Uses structured_log and log_metric for visibility</li>';
+                content += '<li><strong>MCP Hardening:</strong> MCPShield mixin and @hardened decorators for security</li>';
+                content += '<li><strong>Typing:</strong> Type hints in __init__, methods, and return annotations</li>';
+                content += '<li><strong>Complexity:</strong> Cyclomatic complexity—lower indicates simpler code</li>';
+                content += '</ul>';
+                content += '</div>';
                 
                 content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
                 content += '<strong>Windsurf Priority:</strong> Agents with ✗ on HealerMixin, Invocation Chain, Observability, MCP Hardening, or weak Typing are sorted first. ';
