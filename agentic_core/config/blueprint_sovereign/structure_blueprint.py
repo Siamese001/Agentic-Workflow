@@ -805,6 +805,25 @@ L2_TO_L1_MAP: Dict[str, str] = {
     "benchmarks": "L0_maintenance",
 }
 
+# === GENERALIZED EXERCISER REGISTRY (Phase 7 SSOT) ===
+# Map layer → exerciser class (or "GeneralExerciserAgent" for fallback)
+EXERCISER_REGISTRY: Dict[str, str] = {
+    "L5_safety": "L5SafetyExerciserAgent",  # Existing specialized
+    "L4_state": "L4StateExerciserAgent",
+    "L1_cognition": "L1CognitionExerciserAgent",
+    "L2_execution": "GeneralExerciserAgent",  # Fallback generic
+    "L3_orchestration": "GeneralExerciserAgent",
+    "L0_maintenance": "GeneralExerciserAgent",
+    "observability": "GeneralExerciserAgent",
+    "utils": "GeneralExerciserAgent",
+    "config": "GeneralExerciserAgent",
+    "schemas": "GeneralExerciserAgent",
+    "prompt_governance": "GeneralExerciserAgent",
+    "patterns": "GeneralExerciserAgent",
+    "semantic_memory": "GeneralExerciserAgent",
+    "knowledge": "GeneralExerciserAgent",
+}
+
 # === UPPERCASE ALIASES FOR BACKWARD COMPATIBILITY ===
 
 # [PHASE 17] AGENT REGISTRY - Complete PascalCase Agent Discovery Map
