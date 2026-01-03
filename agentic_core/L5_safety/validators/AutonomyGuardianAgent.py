@@ -2479,7 +2479,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Prepend holistic recommendations to top of list
         recommendations = holistic_recs + recommendations
         recommendations.sort(key=lambda r: r["score"], reverse=True)
-        top_recommendations = recommendations[:10]
+        
+        # For "Top Recommendations" display: ONLY show macro-level (holistic) recommendations
+        # Filter to show only strategic/architectural recommendations, not metric-focused ones
+        top_recommendations = [r for r in holistic_recs if r["territory"].startswith(("🎯", "🔧", "🏗️", "📊", "💾", "🧠", "🔌"))][:10]
+        
+        # If not enough macro recommendations, pad with top holistic ones
+        if len(top_recommendations) < 3:
+            top_recommendations = holistic_recs[:10]
         
         # === Generate Self-Contained HTML ===
         # Template now lives with agent code (package resource)
