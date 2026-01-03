@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 38.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 27.3/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
 - **Total Agents:** 415
-- **Compliant:** 136 (32.8%) ❌
-- **Healing Capabilities:** 314 (75.7%) ⚠️
-- **Healing Invocation:** 136 (32.8%) ❌
+- **Compliant:** 165 (39.8%) ❌
+- **Healing Capabilities:** 268 (64.6%) ⚠️
+- **Healing Invocation:** 1 (0.2%) ❌
 - **With Tests:** 155 (37.3%) ❌
-- **Avg Complexity:** 48.5 ❌
+- **Avg Complexity:** 48.6 ❌
 
 ## 📊 Territory Analysis
 

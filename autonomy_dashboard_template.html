@@ -13,23 +13,21 @@
         }
 
         :root {
-            --bg-dark: #0f1419;
-            --bg-card: #1a1f2e;
-            --border-color: #2a3142;
-            --text-primary: #e4e6eb;
-            --text-secondary: #a0aec0;
-            --light-text: #718096;
-            --accent-blue: #3b82f6;
-            --success-green: #10b981;
-            --warning-orange: #f59e0b;
-            --danger-red: #ef4444;
-            --primary: #3b82f6;
-            --secondary: #6b7280;
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         body {
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f2e 100%);
-            color: var(--text-primary);
+            background: var(--background);
+            color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             min-height: 100vh;
@@ -43,26 +41,24 @@
 
         header {
             margin-bottom: 40px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border);
             padding-bottom: 20px;
         }
 
         h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #3b82f6, #10b981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
+            font-weight: 700;
         }
 
         .subtitle {
-            color: var(--text-secondary);
+            color: var(--text-light);
             font-size: 1.1em;
         }
 
         .timestamp {
-            color: var(--light-text);
+            color: var(--text-light);
             font-size: 0.9em;
             margin-top: 10px;
         }
@@ -71,7 +67,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border);
             flex-wrap: wrap;
         }
 
@@ -79,7 +75,7 @@
             padding: 12px 20px;
             background: transparent;
             border: none;
-            color: var(--text-secondary);
+            color: var(--text-light);
             cursor: pointer;
             font-size: 1em;
             font-weight: 500;
@@ -89,13 +85,13 @@
         }
 
         .nav-tab:hover {
-            color: var(--text-primary);
-            border-bottom-color: var(--accent-blue);
+            color: var(--text);
+            border-bottom-color: var(--primary);
         }
 
         .nav-tab.active {
-            color: var(--accent-blue);
-            border-bottom-color: var(--accent-blue);
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         .tab-content {
@@ -103,11 +99,11 @@
         }
 
         .dashboard-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
         }
 
         .kpi-grid {
@@ -118,42 +114,43 @@
         }
 
         .kpi-box {
-            background: linear-gradient(135deg, #2a3f5f 0%, #1a2847 100%);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: default;
+            box-shadow: var(--shadow);
         }
 
         .kpi-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
         }
 
         .kpi-box.danger {
-            background: linear-gradient(135deg, #7f1d1d 0%, #5f0f0f 100%);
-            border-color: var(--danger-red);
+            border-color: var(--danger);
+            background: #fef2f2;
         }
 
         .kpi-box.warning {
-            background: linear-gradient(135deg, #78350f 0%, #5a2a0f 100%);
-            border-color: var(--warning-orange);
+            border-color: var(--warning);
+            background: #fffbf0;
         }
 
         .kpi-box.success {
-            background: linear-gradient(135deg, #065f46 0%, #034e3b 100%);
-            border-color: var(--success-green);
+            border-color: var(--success);
+            background: #f0fdf4;
         }
 
         .kpi-box.primary {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
             border-color: var(--primary);
+            background: #eff6ff;
         }
 
         .kpi-label {
-            color: var(--text-secondary);
+            color: var(--text-light);
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -163,12 +160,12 @@
         .kpi-value {
             font-size: 2em;
             font-weight: bold;
-            color: var(--text-primary);
+            color: var(--text);
             margin-bottom: 8px;
         }
 
         .kpi-subtext {
-            color: var(--light-text);
+            color: var(--text-light);
             font-size: 0.85em;
         }
 
@@ -181,31 +178,38 @@
 
         .charts-grid.full-width {
             grid-template-columns: 1fr;
+            margin-bottom: 40px;
         }
 
         .chart-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
         }
 
         .chart-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            background: var(--card-bg);
             padding: 20px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
         }
 
         .chart-title {
             font-size: 1.2em;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-weight: 700;
+            color: var(--text);
             margin-bottom: 5px;
         }
 
         .chart-subtitle {
-            color: var(--text-secondary);
+            color: var(--text-light);
             font-size: 0.9em;
         }
 
@@ -303,11 +307,11 @@
                 <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.8em;">Overall System Health</div>
-                            <div class="chart-subtitle">Composite score across all autonomy signals • Target ≥80%</div>
+                            <h2 style="font-size:1.6em; font-weight:700; color:var(--primary); margin:0;">System Health Score</h2>
+                            <p style="font-size:0.95em; color:var(--text-light); margin:5px 0 0 0;">Composite autonomy health • Target ≥80%</p>
                         </div>
                         <div class="chart-body">
-                            <div id="healthGauge" style="height: 400px;"></div>
+                            <div id="healthGauge" style="height: 300px;"></div>
                         </div>
                     </div>
                 </div>
@@ -315,11 +319,11 @@
                 <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.8em;">Healing Compliance Coverage</div>
-                            <div class="chart-subtitle">Invocation rate vs capabilities • Target ≥80%</div>
+                            <h2 style="font-size:1.6em; font-weight:700; color:var(--primary); margin:0;">Healing Compliance Coverage</h2>
+                            <p style="font-size:0.95em; color:var(--text-light); margin:5px 0 0 0;">Invocation vs capabilities • Target ≥80%</p>
                         </div>
                         <div class="chart-body">
-                            <div id="complianceGauge" style="height: 400px;"></div>
+                            <div id="complianceGauge" style="height: 300px;"></div>
                         </div>
                     </div>
                 </div>
@@ -527,31 +531,30 @@
             const health = parseFloat(totalRow.Health) || 0;
             const data = [{
                 type: 'indicator',
-                mode: 'gauge+number+delta',
+                mode: 'gauge+number',
                 value: health,
-                title: { text: 'Health Score' },
-                delta: { reference: 75 },
+                title: { text: '' },
                 gauge: {
                     axis: { range: [0, 100] },
-                    bar: { color: health >= 75 ? '#10b981' : health >= 50 ? '#f59e0b' : '#ef4444' },
+                    bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
                     steps: [
-                        { range: [0, 50], color: '#fee2e2' },
-                        { range: [50, 75], color: '#fef3c7' },
-                        { range: [75, 100], color: '#dcfce7' }
+                        { range: [0, 60], color: '#fee2e2' },
+                        { range: [60, 80], color: '#fed7aa' },
+                        { range: [80, 100], color: '#bbf7d0' }
                     ],
                     threshold: {
-                        line: { color: '#3b82f6', width: 4 },
+                        line: { color: '#dc2626', width: 4 },
                         thickness: 0.75,
-                        value: 75
+                        value: 80
                     }
                 }
             }];
 
             const layout = {
-                margin: { l: 50, r: 50, t: 50, b: 50 },
+                margin: { l: 50, r: 50, t: 20, b: 20 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' }
+                font: { color: '#1f2937', size: 14 }
             };
 
             Plotly.newPlot('healthGauge', data, layout, { responsive: true, displayModeBar: false });
@@ -561,20 +564,19 @@
             const compliance = parseFloat(totalRow['Compliance %']) || 0;
             const data = [{
                 type: 'indicator',
-                mode: 'gauge+number+delta',
+                mode: 'gauge+number',
                 value: compliance,
-                title: { text: 'Compliance %' },
-                delta: { reference: 80 },
+                title: { text: '' },
                 gauge: {
                     axis: { range: [0, 100] },
-                    bar: { color: compliance >= 80 ? '#10b981' : compliance >= 60 ? '#f59e0b' : '#ef4444' },
+                    bar: { color: compliance >= 80 ? '#16a34a' : compliance >= 60 ? '#ea580c' : '#dc2626' },
                     steps: [
                         { range: [0, 60], color: '#fee2e2' },
-                        { range: [60, 80], color: '#fef3c7' },
-                        { range: [80, 100], color: '#dcfce7' }
+                        { range: [60, 80], color: '#fed7aa' },
+                        { range: [80, 100], color: '#bbf7d0' }
                     ],
                     threshold: {
-                        line: { color: '#3b82f6', width: 4 },
+                        line: { color: '#dc2626', width: 4 },
                         thickness: 0.75,
                         value: 80
                     }
@@ -582,10 +584,10 @@
             }];
 
             const layout = {
-                margin: { l: 50, r: 50, t: 50, b: 50 },
+                margin: { l: 50, r: 50, t: 20, b: 20 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' }
+                font: { color: '#1f2937', size: 14 }
             };
 
             Plotly.newPlot('complianceGauge', data, layout, { responsive: true, displayModeBar: false });
@@ -594,23 +596,42 @@
         function renderHealthChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const health = territoryData.map(d => parseFloat(d.Health) || 0);
+            const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
+            const tests = territoryData.map(d => parseFloat(d['Test %']) || 0);
+            const observable = territoryData.map(d => parseFloat(d['Observable %']) || 0);
+            const avgCC = territoryData.map(d => parseFloat(d['Avg CC']) || 0);
 
             const trace = {
                 x: territories,
                 y: health,
                 type: 'bar',
                 marker: {
-                    color: health.map(h => h >= 75 ? '#10b981' : h >= 50 ? '#f59e0b' : '#ef4444')
-                }
+                    color: health.map(h => h >= 80 ? '#16a34a' : h >= 60 ? '#ea580c' : '#dc2626'),
+                    line: { color: 'white', width: 2 }
+                },
+                customdata: territoryData.map((row, i) => [invocation[i], tests[i], observable[i], avgCC[i]]),
+                hovertemplate: 
+                    '<b>%{x}</b><br>' +
+                    'Health Score: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Healing Invocation: <b>%{customdata[0]:.1f}%</b> (core autonomy)<br>' +
+                    'Test Coverage: <b>%{customdata[1]:.1f}%</b> (reliability gate)<br>' +
+                    'Observability: <b>%{customdata[2]:.1f}%</b> (production readiness)<br>' +
+                    'Avg Complexity: <b>%{customdata[3]:.1f}</b> (target ≤10)<extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 20, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
+                font: { color: '#1f2937' },
                 xaxis: { tickangle: -45 },
-                yaxis: { range: [0, 100] }
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
             };
 
             Plotly.newPlot('healthChart', [trace], layout, { responsive: true, displayModeBar: false });
@@ -619,35 +640,41 @@
         function renderHealingChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const invocation = territoryData.map(d => parseFloat(d['Invocation %']) || 0);
-            const target = Array(territories.length).fill(100);
+            const healingCap = territoryData.map(d => parseFloat(d['Heal Cap %']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
 
             const trace1 = {
                 x: territories,
                 y: invocation,
-                name: 'Current',
+                name: 'Invocation',
                 type: 'bar',
-                marker: { color: '#3b82f6' }
-            };
-
-            const trace2 = {
-                x: territories,
-                y: target,
-                name: 'Target',
-                type: 'scatter',
-                mode: 'lines',
-                line: { color: '#10b981', width: 2, dash: 'dash' }
+                marker: { color: '#2563eb' },
+                customdata: territoryData.map((row, i) => [healingCap[i], health[i]]),
+                hovertemplate: 
+                    '<b>%{x}</b><br>' +
+                    'Healing Invocation: <b>%{y:.1f}%</b><br>' +
+                    'Actual super().heal_repository() usage<br>' +
+                    'Healing Capability: <b>%{customdata[0]:.1f}%</b><br>' +
+                    'Gap = healing lag (fix with super() calls)<br>' +
+                    'Target: ≥80%<extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 20, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
+                font: { color: '#1f2937' },
                 xaxis: { tickangle: -45 },
-                yaxis: { range: [0, 120] }
+                yaxis: { range: [0, 120] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
             };
 
-            Plotly.newPlot('healingChart', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
+            Plotly.newPlot('healingChart', [trace1], layout, { responsive: true, displayModeBar: false });
         }
 
         function renderRiskMatrix(territoryData) {
@@ -660,20 +687,33 @@
                 marker: {
                     size: territoryData.map(d => Math.sqrt(parseFloat(d.Total) || 1) * 3),
                     color: territoryData.map(d => parseFloat(d.Health) || 0),
-                    colorscale: 'RdYlGn',
+                    colorscale: [[0, '#dc2626'], [0.5, '#ea580c'], [1, '#16a34a']],
                     showscale: true,
                     colorbar: { title: 'Health' }
                 },
-                hovertemplate: '<b>%{text}</b><br>Complexity: %{x:.1f}<br>Compliance: %{y:.1f}%<extra></extra>'
+                customdata: territoryData.map(d => [parseFloat(d.Health) || 0, parseFloat(d['Invocation %']) || 0, parseFloat(d.Risk) || 'MED']),
+                hovertemplate: 
+                    '<b>%{text}</b><br>' +
+                    'Health: <b>%{customdata[0]:.1f}%</b><br>' +
+                    'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
+                    'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Healing Invocation: <b>%{customdata[1]:.1f}%</b><br>' +
+                    'Risk Level: <b>%{customdata[2]}</b><br>' +
+                    'Red zone = high risk (fix urgently)<extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 80, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
+                font: { color: '#1f2937' },
                 xaxis: { title: 'Avg Cyclomatic Complexity' },
-                yaxis: { title: 'Compliance %', range: [0, 100] }
+                yaxis: { title: 'Compliance %', range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: 10, x1: 10, y0: 0, y1: 100, line: { color: '#16a34a', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 20, x1: 20, y0: 0, y1: 100, line: { color: '#dc2626', width: 2, dash: 'dash' } },
+                    { type: 'line', x0: 0, x1: 100, y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ]
             };
 
             Plotly.newPlot('riskMatrix', [trace], layout, { responsive: true, displayModeBar: false });
@@ -682,23 +722,38 @@
         function renderComplianceChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const compliance = territoryData.map(d => parseFloat(d['Compliance %']) || 0);
+            const compliant = territoryData.map(d => parseFloat(d.Compliant) || 0);
+            const total = territoryData.map(d => parseFloat(d.Total) || 0);
 
             const trace = {
                 x: territories,
                 y: compliance,
                 type: 'bar',
                 marker: {
-                    color: compliance.map(c => c >= 80 ? '#10b981' : c >= 60 ? '#f59e0b' : '#ef4444')
-                }
+                    color: compliance.map(c => c >= 80 ? '#16a34a' : c >= 60 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [compliant[i], total[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Agents with heal_repository: <b>%{customdata[0]:.0f}</b>/<b>%{customdata[1]:.0f}</b><br>' +
+                    'Percentage of agents implementing healing<br>' +
+                    'Core autonomy compliance metric<extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 20, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
+                font: { color: '#1f2937' },
                 xaxis: { tickangle: -45 },
-                yaxis: { range: [0, 100] }
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
             };
 
             Plotly.newPlot('complianceChart', [trace], layout, { responsive: true, displayModeBar: false });
@@ -707,23 +762,37 @@
         function renderObservabilityChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const observable = territoryData.map(d => parseFloat(d['Observable %']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
 
             const trace = {
                 x: territories,
                 y: observable,
                 type: 'bar',
                 marker: {
-                    color: observable.map(o => o >= 80 ? '#10b981' : o >= 50 ? '#f59e0b' : '#ef4444')
-                }
+                    color: observable.map(o => o >= 80 ? '#16a34a' : o >= 50 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [health[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Observability: <b>%{y:.1f}%</b> (target ≥80%)<br>' +
+                    'Logging/metrics coverage<br>' +
+                    'Essential for production healing<br>' +
+                    'Impacts overall Health: <b>%{customdata[0]:.1f}%</b><extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 20, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
+                font: { color: '#1f2937' },
                 xaxis: { tickangle: -45 },
-                yaxis: { range: [0, 100] }
+                yaxis: { range: [0, 100] },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 80, y1: 80, line: { color: '#dc2626', width: 2, dash: 'dash' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
             };
 
             Plotly.newPlot('observabilityChart', [trace], layout, { responsive: true, displayModeBar: false });
@@ -732,22 +801,39 @@
         function renderComplexityChart(territoryData) {
             const territories = territoryData.map(d => d.Territory);
             const complexity = territoryData.map(d => parseFloat(d['Avg CC']) || 0);
+            const health = territoryData.map(d => parseFloat(d.Health) || 0);
 
             const trace = {
                 x: territories,
                 y: complexity,
                 type: 'bar',
                 marker: {
-                    color: complexity.map(c => c <= 10 ? '#10b981' : c <= 20 ? '#f59e0b' : '#ef4444')
-                }
+                    color: complexity.map(c => c <= 10 ? '#16a34a' : c <= 20 ? '#ea580c' : '#dc2626')
+                },
+                customdata: territoryData.map((row, i) => [health[i]]),
+                hovertemplate:
+                    '<b>%{x}</b><br>' +
+                    'Avg Cyclomatic Complexity: <b>%{y:.1f}</b><br>' +
+                    'Target ≤10 (green), >20 critical (red)<br>' +
+                    'High CC blocks safe healing extensions<br>' +
+                    'Health impact: <b>%{customdata[0]:.1f}%</b><extra></extra>'
             };
 
             const layout = {
                 margin: { l: 80, r: 20, t: 20, b: 80 },
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
-                font: { color: '#e4e6eb' },
-                xaxis: { tickangle: -45 }
+                font: { color: '#1f2937' },
+                xaxis: { tickangle: -45 },
+                yaxis: { title: 'Cyclomatic Complexity' },
+                shapes: [
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 10, y1: 10, line: { color: '#16a34a', width: 3, dash: 'dash' } },
+                    { type: 'line', x0: -0.5, x1: territories.length - 0.5, xref: 'x', y0: 20, y1: 20, line: { color: '#dc2626', width: 3, dash: 'dot' } }
+                ],
+                annotations: [
+                    { x: -0.4, y: 11, text: 'Ideal ≤10', font: { color: '#16a34a', size: 12 }, showarrow: false },
+                    { x: -0.4, y: 21, text: 'High Risk >20', font: { color: '#dc2626', size: 12 }, showarrow: false }
+                ]
             };
 
             Plotly.newPlot('complexityChart', [trace], layout, { responsive: true, displayModeBar: false });
