@@ -897,55 +897,76 @@
                             </thead>
                             <tbody>`;
             
+            // Add TOTAL row FIRST (like Territory Summary)
+            const totalCodeQuality = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Code Quality Score'] || 0), 0) / territoryData.length) : 0;
+            const totalTyping = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Typed %'] || 0), 0) / territoryData.length) : 0;
+            const totalMcpCapable = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
+            const totalComplexityHealth = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Complexity Health'] || 0), 0) / territoryData.length) : 0;
+            const totalDocumented = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
+            
+            const getGradientBg = (value, target = 100) => {
+                const normalized = Math.max(0, Math.min(100, value)) / 100;
+                let r, g, b;
+                
+                if (normalized < 0.2) {
+                    const t = normalized * 5;
+                    r = Math.round(139 + (220 - 139) * t);
+                    g = Math.round(0 + (38 - 0) * t);
+                    b = Math.round(0 + (38 - 0) * t);
+                } else if (normalized < 0.4) {
+                    const t = (normalized - 0.2) * 5;
+                    r = Math.round(220 + (255 - 220) * t);
+                    g = Math.round(38 + (140 - 38) * t);
+                    b = 38;
+                } else if (normalized < 0.6) {
+                    const t = (normalized - 0.4) * 5;
+                    r = Math.round(255 - (21) * t);
+                    g = Math.round(140 + (39) * t);
+                    b = Math.round(38 - (30) * t);
+                } else if (normalized < 0.75) {
+                    const t = (normalized - 0.6) / 0.15;
+                    r = Math.round(234 - (84) * t);
+                    g = Math.round(179 + (11) * t);
+                    b = Math.round(8 + (32) * t);
+                } else if (normalized < 0.85) {
+                    const t = (normalized - 0.75) / 0.1;
+                    r = Math.round(150 - (84) * t);
+                    g = Math.round(190 - (7) * t);
+                    b = Math.round(40 + (34) * t);
+                } else {
+                    const t = (normalized - 0.85) / 0.15;
+                    r = Math.round(66 - (44) * t);
+                    g = Math.round(183 - (20) * t);
+                    b = Math.round(74);
+                }
+                
+                const alpha = 0.15 + normalized * 0.15;
+                return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+            };
+            
+            html += `
+                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
+                        <td style="padding:14px; font-weight:700; font-size:1.05em; border-right:1px solid #e5e7eb;">TOTAL</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalTyping)}; border-right:1px solid #e5e7eb;">
+                            ${totalTyping.toFixed(1)}%
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.typing ? formatSparkline(dashboardData[0].sparklines.typing, totalTyping, dashboardData[0].trends?.typing_delta ? totalTyping - dashboardData[0].trends.typing_delta : totalTyping) : ''}
+                        </td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalMcpCapable)}; border-right:1px solid #e5e7eb;">${totalMcpCapable.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalComplexityHealth)}; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalDocumented)}; border-right:1px solid #e5e7eb;">${totalDocumented.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:700; font-size:1.05em; background:${getGradientBg(totalCodeQuality)};">
+                            ${totalCodeQuality.toFixed(1)}%
+                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.code_quality_score ? formatSparkline(dashboardData[0].sparklines.code_quality_score, totalCodeQuality, dashboardData[0].trends?.code_quality_score_delta ? totalCodeQuality - dashboardData[0].trends.code_quality_score_delta : totalCodeQuality) : ''}
+                        </td>
+                    </tr>`;
+            
             // Add Code Quality rows
             territoryData.forEach((row, index) => {
-                // Use same continuous gradient as Territory Summary table
-                const getGradientBg = (value, target = 100) => {
-                    const normalized = Math.max(0, Math.min(100, value)) / 100;
-                    let r, g, b;
-                    
-                    if (normalized < 0.2) {
-                        // Deep Red (0-20%)
-                        const t = normalized * 5;
-                        r = Math.round(139 + (220 - 139) * t);
-                        g = Math.round(0 + (38 - 0) * t);
-                        b = Math.round(0 + (38 - 0) * t);
-                    } else if (normalized < 0.4) {
-                        // Red to Orange (20-40%)
-                        const t = (normalized - 0.2) * 5;
-                        r = Math.round(220 + (255 - 220) * t);
-                        g = Math.round(38 + (140 - 38) * t);
-                        b = 38;
-                    } else if (normalized < 0.6) {
-                        // Orange to Yellow (40-60%)
-                        const t = (normalized - 0.4) * 5;
-                        r = Math.round(255 - (21) * t);
-                        g = Math.round(140 + (39) * t);
-                        b = Math.round(38 - (30) * t);
-                    } else if (normalized < 0.75) {
-                        // Yellow to Yellow-Green (60-75%)
-                        const t = (normalized - 0.6) / 0.15;
-                        r = Math.round(234 - (84) * t);
-                        g = Math.round(179 + (11) * t);
-                        b = Math.round(8 + (32) * t);
-                    } else if (normalized < 0.85) {
-                        // Yellow-Green to Light Green (75-85%)
-                        const t = (normalized - 0.75) / 0.1;
-                        r = Math.round(150 - (84) * t);
-                        g = Math.round(190 - (7) * t);
-                        b = Math.round(40 + (34) * t);
-                    } else {
-                        // Light Green to Green (85-100%)
-                        const t = (normalized - 0.85) / 0.15;
-                        r = Math.round(66 - (44) * t);
-                        g = Math.round(183 - (20) * t);
-                        b = Math.round(74);
-                    }
-                    
-                    const alpha = 0.15 + normalized * 0.15;
-                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
-                };
-                
                 const codeQualityScore = row['Code Quality Score'] || 0;
                 const typing = row['Typed %'] || 0;
                 const mcp_capable = row['MCP Capable %'] || 0;
@@ -1034,20 +1055,6 @@
             };
             
             html += `
-                    <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
-                        <td style="padding:14px; font-weight:700; font-size:1.05em; border-right:1px solid #e5e7eb;">TOTAL</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalTyping)}; border-right:1px solid #e5e7eb;">
-                            ${totalTyping.toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.typing ? formatSparkline(dashboardData[0].sparklines.typing, totalTyping, dashboardData[0].trends?.typing_delta ? totalTyping - dashboardData[0].trends.typing_delta : totalTyping) : ''}
-                        </td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalMcpCapable)}; border-right:1px solid #e5e7eb;">${totalMcpCapable.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalComplexityHealth)}; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalDocumented)}; border-right:1px solid #e5e7eb;">${totalDocumented.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; font-weight:700; font-size:1.05em; background:${getGradientBg(totalCodeQuality)};">
-                            ${totalCodeQuality.toFixed(1)}%
-                            ${dashboardData[0].sparklines && dashboardData[0].sparklines.code_quality_score ? formatSparkline(dashboardData[0].sparklines.code_quality_score, totalCodeQuality, dashboardData[0].trends?.code_quality_score_delta ? totalCodeQuality - dashboardData[0].trends.code_quality_score_delta : totalCodeQuality) : ''}
-                        </td>
-                    </tr>
                             </tbody>
                         </table>
                     </div>
