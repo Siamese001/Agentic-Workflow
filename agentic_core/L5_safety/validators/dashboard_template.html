@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
+    <meta http-equiv="refresh" content="30">
     <title>Autonomy Compliance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
@@ -110,8 +110,8 @@
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 30px;
+            margin-bottom: 60px;
         }
 
         .kpi-box {
@@ -131,23 +131,23 @@
         }
 
         .kpi-box.danger {
-            border-color: var(--danger);
             background: #fef2f2;
+            border-left: 6px solid var(--danger);
         }
 
         .kpi-box.warning {
-            border-color: var(--warning);
-            background: #fffbf0;
+            background: #fffbeb;
+            border-left: 6px solid var(--warning);
         }
 
         .kpi-box.success {
-            border-color: var(--success);
             background: #f0fdf4;
+            border-left: 6px solid var(--success);
         }
 
         .kpi-box.primary {
-            border-color: var(--primary);
             background: #eff6ff;
+            border-left: 6px solid var(--primary);
         }
 
         .kpi-label {
@@ -298,6 +298,7 @@
                 <a href="#" class="nav-tab" data-target="risk">Risk Assessment</a>
                 <a href="#" class="nav-tab" data-target="compliance">Compliance Metrics</a>
                 <a href="#" class="nav-tab" data-target="recommendations">Prioritized Recommendations</a>
+                <a href="#" class="nav-tab" data-target="interview">Interview Prep</a>
             </div>
 
             <!-- Executive Dashboard Tab -->
@@ -435,6 +436,24 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Interview Prep Tab -->
+            <div id="interview-content" class="tab-content" style="display:none;">
+                <div class="charts-grid full-width">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title" style="font-size:1.6em;">Autonomy Interview Question Prompts</div>
+                            <div class="chart-subtitle">15 common questions tied to dashboard metrics • Top 5 prioritized by current weak signals • Practice articulating concepts</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="interviewQuestions" style="display: grid; gap: 20px;"></div>
+                            <p style="margin-top: 30px; font-style: italic; color: var(--text-light);">
+                                Use these to prepare: Explain metrics with analogies (e.g., healing as immune system). Hover cards for full sample answers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -444,6 +463,7 @@
         const recommendationsData = [];
         const lastUpdatedStr = "";
         const gaugeData = {};
+        const interviewQuestions = [];
 
         // Tab switching functionality
         document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -462,45 +482,75 @@
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
-            // Calculate Coverage Score: weighted average of tests + invocation + observability
-            const coverageScore = ((parseFloat(totalRow['Test %']) || 0) + 
-                                   (parseFloat(totalRow['Invocation %']) || 0) + 
-                                   (parseFloat(totalRow['Observable %']) || 0)) / 3;
+            // New composite Coverage Score (teaches interdependencies)
+            const coverageScore = (
+                (parseFloat(totalRow['Invocation %']) || 0) +
+                (parseFloat(totalRow['Test %']) || 0) +
+                (parseFloat(totalRow['Observable %']) || 0)
+            ) / 3;
 
-            const kpis = [
-                { label: 'Total Agents', value: totalRow.Total, unit: '' },
-                { label: 'Compliant', value: totalRow.Compliant, unit: '' },
-                { label: 'Compliance %', value: totalRow['Compliance %'], unit: '%' },
-                { label: 'Health Score', value: totalRow.Health, unit: '/100' },
-                { label: 'Coverage Score', value: coverageScore, unit: '%' },
-                { label: 'Avg Complexity', value: totalRow['Avg CC'], unit: '' },
-                { label: 'Test Coverage', value: totalRow['Test %'], unit: '%' },
-                { label: 'Healing Invocation', value: totalRow['Invocation %'], unit: '%' },
-                { label: 'Observability', value: totalRow['Observable %'], unit: '%' }
+            function getStatus(value, threshold) {
+                const v = parseFloat(value);
+                if (v >= threshold) return 'success';
+                if (v >= threshold * 0.75) return 'warning';
+                return 'danger';
+            }
+
+            function getComplexityStatus(cc) {
+                const v = parseFloat(cc);
+                if (v <= 10) return 'success';
+                if (v <= 20) return 'warning';
+                return 'danger';
+            }
+
+            // Group definitions with didactic subtitles
+            const groups = [
+                {
+                    title: "Portfolio Overview",
+                    subtitle: "Big-picture scope and risk — shows scale and urgency",
+                    kpis: [
+                        { label: 'Total Agents', value: totalRow.Total, target: null, status: 'primary' },
+                        { label: 'Risk Level', value: totalRow.Risk, target: 'Target: LOW', status: totalRow.Risk === 'HIGH' ? 'danger' : totalRow.Risk === 'MED' ? 'warning' : 'success' }
+                    ]
+                },
+                {
+                    title: "Core Autonomy Signals",
+                    subtitle: "Heart of self-healing agents — like a body's immune system",
+                    kpis: [
+                        { label: 'Overall Health Score', value: totalRow.Health.toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow.Health, 80) },
+                        { label: 'Healing Invocation', value: totalRow['Invocation %'].toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow['Invocation %'], 80) },
+                        { label: 'Coverage Score', value: coverageScore.toFixed(1), target: 'Target ≥80%', status: getStatus(coverageScore, 80) }
+                    ]
+                },
+                {
+                    title: "Reliability & Maintainability",
+                    subtitle: "Foundation for safe evolution — clean code + tests = robust agents",
+                    kpis: [
+                        { label: 'Test Coverage', value: totalRow['Test %'].toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow['Test %'], 80) },
+                        { label: 'Avg Complexity', value: totalRow['Avg CC'].toFixed(1), target: 'Target ≤10', status: getComplexityStatus(totalRow['Avg CC']) }
+                    ]
+                }
             ];
 
             let html = '';
-            kpis.forEach(kpi => {
-                const value = parseFloat(kpi.value) || 0;
-                let status = 'primary';
-                if (kpi.label.includes('Compliance') || kpi.label.includes('Health') || kpi.label.includes('Test') || kpi.label.includes('Invocation') || kpi.label.includes('Observability')) {
-                    if (value >= 80) status = 'success';
-                    else if (value >= 60) status = 'warning';
-                    else status = 'danger';
-                } else if (kpi.label.includes('Complexity')) {
-                    if (value <= 10) status = 'success';
-                    else if (value <= 20) status = 'warning';
-                    else status = 'danger';
-                }
-
+            groups.forEach(group => {
                 html += `
-                <div class="kpi-box ${status}">
-                    <div class="kpi-label">${kpi.label}</div>
-                    <div class="kpi-value">${typeof value === 'number' ? value.toFixed(1) : value}</div>
-                    <div class="kpi-subtext">${kpi.unit}</div>
+                <div style="margin-bottom:40px;">
+                    <div style="margin-bottom:20px;">
+                        <h3 style="font-size:1.4em; color:var(--primary); font-weight:700;">${group.title}</h3>
+                        <p style="color:var(--text-light); font-size:1em; font-style:italic;">${group.subtitle}</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
+                        ${group.kpis.map(kpi => `
+                        <div class="kpi-box ${kpi.status}" style="padding:30px;">
+                            <div class="kpi-label">${kpi.label}</div>
+                            <div class="kpi-value" style="font-size:3em;">${kpi.value}${kpi.label.includes('%') || kpi.label.includes('Score') ? '%' : ''}</div>
+                            ${kpi.target ? `<div class="kpi-subtext" style="font-size:1em; margin-top:10px;">${kpi.target}</div>` : ''}
+                        </div>
+                        `).join('')}
+                    </div>
                 </div>`;
             });
-
             container.innerHTML = html;
         }
 
@@ -510,7 +560,7 @@
                 type: 'indicator',
                 mode: 'gauge+number',
                 value: health,
-                title: { text: '' },
+                title: { text: `<b style="font-size:1.8em;">Overall Health Score</b><br><span style="font-size:1em;">Composite autonomy signal • Currently <strong style="color:${health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626'};">${health.toFixed(1)}%</strong></span>` },
                 gauge: {
                     axis: { range: [0, 100] },
                     bar: { color: health >= 80 ? '#16a34a' : health >= 60 ? '#ea580c' : '#dc2626' },
@@ -543,7 +593,7 @@
                 type: 'indicator',
                 mode: 'gauge+number',
                 value: compliance,
-                title: { text: '' },
+                title: { text: `<b style="font-size:1.8em;">Compliance Gauge</b><br><span style="font-size:1em;">Healing implementation • Currently <strong style="color:${compliance >= 80 ? '#16a34a' : compliance >= 60 ? '#ea580c' : '#dc2626'};">${compliance.toFixed(1)}%</strong></span>` },
                 gauge: {
                     axis: { range: [0, 100] },
                     bar: { color: compliance >= 80 ? '#16a34a' : compliance >= 60 ? '#ea580c' : '#dc2626' },
@@ -611,6 +661,17 @@
                 ]
             };
 
+            trace.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Health Score: <b>%{y:.1f}%</b><br><br>' +
+                '<i>Analogy:</i> Like a human health checkup — combines healing ability, test fitness, and observability vitals<br>' +
+                'High score = robust, self-correcting agent territory<br>' +
+                'Low score = fragile, needs windsurf attention<br><br>' +
+                'Key components:<br>' +
+                '• Healing Invocation: <b>%{customdata[0]:.1f}%</b> (emergency self-repair usage)<br>' +
+                '• Tests: <b>%{customdata[1]:.1f}%</b> (safety net strength)<br>' +
+                '• Observability: <b>%{customdata[2]:.1f}%</b> (doctor\'s monitoring tools)<extra></extra>';
+
             Plotly.newPlot('healthChart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
@@ -650,6 +711,13 @@
                     { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
                 ]
             };
+
+            trace1.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Healing Invocation: <b>%{y:.1f}%</b><br><br>' +
+                '<i>Analogy:</i> Like seatbelts in a car — agents have the feature (capabilities), but this shows how often they actually buckle up when crashing (errors)<br>' +
+                'Gap vs capabilities = unused safety potential<br>' +
+                'Target ≥80% for true autonomy<extra></extra>';
 
             Plotly.newPlot('healingChart', [trace1], layout, { responsive: true, displayModeBar: false });
         }
@@ -693,6 +761,15 @@
                 ]
             };
 
+            trace.hovertemplate = 
+                '<b>%{text}</b><br>' +
+                'Health: <b>%{customdata[0]:.1f}%</b><br>' +
+                'Complexity: <b>%{x:.1f}</b> (target ≤10)<br>' +
+                'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
+                '<i>Analogy:</i> Like a risk dashboard for drivers — complexity = road hazards, compliance = safety features<br>' +
+                'Green zone (top-left) = safe to extend<br>' +
+                'Red zone (bottom-right) = high risk<extra></extra>';
+
             Plotly.newPlot('riskMatrix', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
@@ -733,6 +810,13 @@
                 ]
             };
 
+            trace.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Compliance: <b>%{y:.1f}%</b> (target ≥80%)<br><br>' +
+                '<i>Analogy:</i> Like seatbelt adoption rates — percentage of agents implementing healing<br>' +
+                'Agents with heal_repository: <b>%{customdata[0]:.0f}</b>/<b>%{customdata[1]:.0f}</b><br>' +
+                'Core autonomy compliance metric<extra></extra>';
+
             Plotly.newPlot('complianceChart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
@@ -771,6 +855,13 @@
                     { x: -0.4, y: 82, text: 'Target 80%', font: { color: '#dc2626', size: 12 }, showarrow: false }
                 ]
             };
+
+            trace.hovertemplate = 
+                '<b>%{x}</b><br>' +
+                'Observability: <b>%{y:.1f}%</b><br><br>' +
+                '<i>Analogy:</i> Like dash cams + health trackers in a self-driving car — essential for diagnosing issues<br>' +
+                'Logs/metrics/traces enable post-mortem + proactive healing<br>' +
+                'Low obs blocks production deployment<extra></extra>';
 
             Plotly.newPlot('observabilityChart', [trace], layout, { responsive: true, displayModeBar: false });
         }
@@ -897,6 +988,147 @@
             container.innerHTML = html;
         }
 
+        function renderInterviewQuestions(totalRow) {
+            const container = document.getElementById('interviewQuestions');
+            if (!container) return;
+
+            // Prioritize by current weak signals (higher score = more urgent question)
+            const weakSignals = {
+                invocation: 100 - (parseFloat(totalRow['Invocation %']) || 0),
+                tests: 100 - (parseFloat(totalRow['Test %']) || 0),
+                complexity: parseFloat(totalRow['Avg CC']) || 0 > 20 ? (parseFloat(totalRow['Avg CC']) - 10) * 5 : 0,
+                observability: 100 - (parseFloat(totalRow['Observable %']) || 0),
+                health: 100 - (parseFloat(totalRow.Health) || 0)
+            };
+
+            // Full question bank with priority weights matching signals
+            const allQuestions = [
+                { 
+                    q: "Explain the difference between healing capabilities and invocation. Why is invocation more important?", 
+                    concept: "Healing Gap", 
+                    analogy: "Capabilities = having a first-aid kit; Invocation = actually using it during an accident", 
+                    answer: "- Capabilities: Mixin presence (potential)\n- Invocation: super().heal_repository() calls (actual use)\n- Gap shows unused safety — target closing it for true resilience", 
+                    priority: weakSignals.invocation * 1.5 
+                },
+                { 
+                    q: "How does high cyclomatic complexity impact agent autonomy?", 
+                    concept: "Complexity Penalty", 
+                    analogy: "Tangled code = knotted headphones — harder to safely add new features or healing", 
+                    answer: "- High CC (>20) blocks safe extensions\n- Increases bug surface\n- Low CC (≤10) enables rapid, safe windsurf", 
+                    priority: weakSignals.complexity 
+                },
+                { 
+                    q: "Why is test coverage critical for self-healing agents?", 
+                    concept: "Tests Gap", 
+                    analogy: "Tests = safety net for acrobats — without it, self-healing attempts are dangerous", 
+                    answer: "- Untested healing = risk of worse failures\n- Dedicated tests validate healing triggers + outcomes\n- Target ≥80% for production trust", 
+                    priority: weakSignals.tests 
+                },
+                { 
+                    q: "Describe observability's role in autonomous agents.", 
+                    concept: "Observability", 
+                    analogy: "Like dash cams + health trackers in a self-driving car — essential for diagnosing issues", 
+                    answer: "- Logs/metrics/traces enable post-mortem + proactive healing\n- Low obs blocks production deployment\n- Ties directly to health score", 
+                    priority: weakSignals.observability 
+                },
+                { 
+                    q: "What is a composite health score and why use it?", 
+                    concept: "Overall Health", 
+                    analogy: "Full medical checkup vs single symptom — averages key vitals for holistic view", 
+                    answer: "- Averages invocation + tests + observability + complexity\n- Teaches interdependencies\n- Target ≥80% for robust portfolio", 
+                    priority: weakSignals.health 
+                },
+                { 
+                    q: "How would you prioritize fixing low healing invocation?", 
+                    concept: "Prioritized Windsurf", 
+                    analogy: "Like fixing brakes before paint job — highest ROI on safety", 
+                    answer: "- Score by gap × usage × priority\n- Add super() calls in error paths\n- Validate with tests", 
+                    priority: weakSignals.invocation 
+                },
+                { 
+                    q: "What does 'Coverage Score' teach about agent autonomy?", 
+                    concept: "Coverage Score", 
+                    analogy: "Like a three-legged stool — all three legs needed for stability", 
+                    answer: "- Composite of invocation + tests + observability\n- Shows interdependencies\n- No single metric tells full story", 
+                    priority: (weakSignals.invocation + weakSignals.tests + weakSignals.observability) / 3 
+                },
+                { 
+                    q: "How does complexity relate to healing safety?", 
+                    concept: "Complexity-Safety Link", 
+                    analogy: "Tangled wires = hard to rewire safely; clean wires = easy modifications", 
+                    answer: "- High CC = more code paths to test\n- More paths = healing side effects\n- Refactor first, then add healing", 
+                    priority: weakSignals.complexity * 1.2 
+                },
+                { 
+                    q: "Why is the invocation-capability gap a red flag?", 
+                    concept: "Unused Potential", 
+                    analogy: "Like a fire extinguisher on the wall nobody uses — false sense of security", 
+                    answer: "- Gap = agents have healing but don't call it\n- Root causes: missing error handling, wrong try/except placement\n- Fix: audit error paths, add super() calls", 
+                    priority: weakSignals.invocation * 1.3 
+                },
+                { 
+                    q: "How do you explain autonomy to a non-technical stakeholder?", 
+                    concept: "Autonomy Narrative", 
+                    analogy: "Self-healing agents = immune system for software — detects + fixes problems without human intervention", 
+                    answer: "- Healing: agents repair themselves (like white blood cells)\n- Tests: safety net (like vaccines)\n- Observability: monitoring (like health checkups)\n- Together = resilient, low-maintenance systems", 
+                    priority: 30 
+                },
+                { 
+                    q: "What's the relationship between test coverage and invocation?", 
+                    concept: "Tests-Invocation Link", 
+                    analogy: "Tests = proving ground; invocation = real-world deployment", 
+                    answer: "- Tests validate healing logic\n- Invocation shows if agents actually use it\n- Both needed: untested healing is risky; tested but unused = wasted effort", 
+                    priority: (weakSignals.tests + weakSignals.invocation) / 2 
+                },
+                { 
+                    q: "How would you explain risk matrix zones to a team?", 
+                    concept: "Risk Matrix", 
+                    analogy: "Like a weather map — green = safe, yellow = caution, red = danger", 
+                    answer: "- Top-left (green): low complexity + high compliance = safe to extend\n- Bottom-right (red): high complexity + low compliance = risky\n- Use to prioritize refactoring", 
+                    priority: 25 
+                },
+                { 
+                    q: "What's the first thing you'd fix in a low-health territory?", 
+                    concept: "Triage Strategy", 
+                    analogy: "Like emergency room triage — fix life-threatening issues first", 
+                    answer: "- Check invocation gap (unused healing = easy win)\n- Then tests (safety net)\n- Then complexity (long-term)\n- Measure health after each fix", 
+                    priority: weakSignals.health 
+                },
+                { 
+                    q: "How do you teach a junior dev about healing interdependencies?", 
+                    concept: "Teaching Autonomy", 
+                    analogy: "Like explaining why a car needs brakes, steering, AND tires — all three matter", 
+                    answer: "- Show dashboard: metrics are connected\n- Low invocation + high tests = wasted tests\n- High complexity blocks healing\n- Use analogies (immune system, car safety)", 
+                    priority: 20 
+                },
+                { 
+                    q: "What metrics would you track to prove healing ROI?", 
+                    concept: "Healing ROI", 
+                    analogy: "Like tracking insurance claims prevented — measure value of prevention", 
+                    answer: "- Invocation rate (% of errors caught + fixed)\n- MTTR reduction (mean time to recovery)\n- Test pass rate (healing doesn't break things)\n- Complexity trend (refactoring pays off)", 
+                    priority: 15 
+                }
+            ];
+
+            // Sort by priority (worst signals first), take top 15
+            const sorted = allQuestions.sort((a, b) => b.priority - a.priority);
+
+            let html = '';
+            sorted.forEach((q, i) => {
+                const urgency = i < 5 ? 'danger' : i < 10 ? 'warning' : 'primary';
+                html += `
+                <div class="kpi-box ${urgency}" style="padding:25px;">
+                    <div class="kpi-label">Question ${i+1} • ${q.concept}</div>
+                    <div class="kpi-value" style="font-size:1.3em; margin:15px 0;">${q.q}</div>
+                    <div><strong>Analogy:</strong> ${q.analogy}</div>
+                    <div style="margin:15px 0;"><strong>Sample Answer Outline:</strong></div>
+                    <pre style="background:#f8f9fa; padding:12px; border-radius:6px; white-space:pre-wrap; font-size:0.9em;">${q.answer}</pre>
+                    <div style="font-style:italic; color:var(--text-light); margin-top:10px;">Current portfolio signal strength: ${q.priority.toFixed(0)} urgency points</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function loadData() {
             const data = dashboardData;
             const territoryData = data.filter(row => row.Territory !== 'TOTAL');
@@ -905,16 +1137,6 @@
             if (!totalRow) {
                 document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
                 return;
-            }
-
-            // Render top-level gauges if gaugeData is available
-            if (gaugeData && Object.keys(gaugeData).length > 0) {
-                renderHealthGauge(gaugeData);
-                renderComplianceGauge(gaugeData);
-            } else {
-                // Fallback: use totalRow if gaugeData not injected
-                renderHealthGauge(totalRow);
-                renderComplianceGauge(totalRow);
             }
 
             renderKPIBoxes(totalRow);
@@ -926,6 +1148,7 @@
             renderObservabilityChart(territoryData);
             renderComplexityChart(territoryData);
             renderRecommendations();
+            renderInterviewQuestions(totalRow);
 
             document.getElementById('lastUpdated').textContent = lastUpdatedStr;
         }
