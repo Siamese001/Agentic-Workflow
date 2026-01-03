@@ -1483,6 +1483,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Typed %": perc_typed,
                 "Documented %": perc_documented,  # NEW: Documentation coverage
                 "Proper Base %": perc_proper_base,  # Phase 5: Base class compliance
+                "Complexity Health": cc_health_component,  # Inverted CC health (higher = better)
+                "Code Quality Score": code_quality,  # Weighted composite quality metric
                 "Criticality": criticality,
                 "Health": health,
                 "Risk": risk,
