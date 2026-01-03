@@ -299,40 +299,24 @@
             <div id="executive-content" class="tab-content">
                 <div class="kpi-grid" id="kpiGrid"></div>
 
-                <!-- Promoted Full-Width Gauges -->
-                <div class="charts-grid full-width">
+                <div class="charts-grid">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.8em;">Overall System Health</div>
-                            <div class="chart-subtitle">Composite score across all autonomy signals • Target ≥80%</div>
+                            <div class="chart-title">System Health Score</div>
+                            <div class="chart-subtitle">Composite metric: tests + healing + observability</div>
                         </div>
                         <div class="chart-body">
-                            <div id="healthGauge" style="height: 400px;"></div>
+                            <div id="healthGauge" class="gauge-container"></div>
                         </div>
                     </div>
-                </div>
 
-                <div class="charts-grid full-width">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.8em;">Healing Compliance Coverage</div>
-                            <div class="chart-subtitle">Invocation rate vs capabilities • Target ≥80%</div>
+                            <div class="chart-title">Compliance Coverage</div>
+                            <div class="chart-subtitle">Agents with heal_repository implementation</div>
                         </div>
                         <div class="chart-body">
-                            <div id="complianceGauge" style="height: 400px;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Top 3 Recommendations Section -->
-                <div class="charts-grid full-width" style="margin-top:30px;">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.6em;">Top 3 Prioritized Actions</div>
-                            <div class="chart-subtitle">Highest urgency recommendations • Click Recommendations tab for full top 10 with file links</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="topRecommendations" style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
+                            <div id="complianceGauge" class="gauge-container"></div>
                         </div>
                     </div>
                 </div>
@@ -443,7 +427,7 @@
                     <div class="chart-card">
                         <div class="chart-header">
                             <div class="chart-title">Top 10 Prioritized Windsurf Recommendations</div>
-                            <div class="chart-subtitle">Ranked by multi-dimensional urgency • Click file links to open directly in VS Code for windsurf diffs</div>
+                            <div class="chart-subtitle">Ranked by urgency: healing & tests gaps × usage × priority • Click any territory for action</div>
                         </div>
                         <div class="chart-body">
                             <div id="recommendationsList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));"></div>
@@ -460,9 +444,9 @@
 
     <script>
         // Data injection points
-        const dashboardData = [];
-        const recommendationsData = [];
-        const lastUpdatedStr = "";
+        const dashboardData = [{"Territory": "TOTAL", "Total": 415, "Compliant": 136, "Compliance %": 32.8, "Heal Cap %": 75.7, "Invocation %": 32.8, "Hardened %": 45.3, "Test %": 37.3, "Avg CC": 48.5, "Typed %": 73.5, "Observable %": 44.3, "Criticality": 75, "Health": 38.1, "Risk": "HIGH", "Used %": 71.3, "Priority": "ALL"}, {"Territory": "L0 Maintenance", "Total": 24, "Compliant": 5, "Compliance %": 20.8, "Heal Cap %": 87.5, "Invocation %": 20.8, "Hardened %": 41.7, "Test %": 29.2, "Avg CC": 23.5, "Typed %": 92.0, "Observable %": 83.3, "Criticality": 58, "Health": 44.4, "Risk": "HIGH", "Used %": 70.8, "Priority": "Medium"}, {"Territory": "L1 Cognition", "Total": 50, "Compliant": 9, "Compliance %": 18.0, "Heal Cap %": 78.0, "Invocation %": 18.0, "Hardened %": 42.0, "Test %": 20.0, "Avg CC": 45.6, "Typed %": 69.4, "Observable %": 52.0, "Criticality": 63, "Health": 30.0, "Risk": "HIGH", "Used %": 62.0, "Priority": "Medium"}, {"Territory": "L2 Execution", "Total": 83, "Compliant": 27, "Compliance %": 32.5, "Heal Cap %": 79.5, "Invocation %": 32.5, "Hardened %": 59.0, "Test %": 24.1, "Avg CC": 45.5, "Typed %": 72.3, "Observable %": 48.2, "Criticality": 68, "Health": 34.9, "Risk": "HIGH", "Used %": 83.1, "Priority": "High"}, {"Territory": "L3 Orchestration", "Total": 62, "Compliant": 30, "Compliance %": 48.4, "Heal Cap %": 90.3, "Invocation %": 48.4, "Hardened %": 38.7, "Test %": 41.9, "Avg CC": 49.0, "Typed %": 85.6, "Observable %": 80.6, "Criticality": 58, "Health": 57.0, "Risk": "HIGH", "Used %": 71.0, "Priority": "High"}, {"Territory": "L4 State", "Total": 21, "Compliant": 10, "Compliance %": 47.6, "Heal Cap %": 85.7, "Invocation %": 47.6, "Hardened %": 66.7, "Test %": 57.1, "Avg CC": 51.8, "Typed %": 82.1, "Observable %": 57.1, "Criticality": 58, "Health": 53.9, "Risk": "HIGH", "Used %": 95.2, "Priority": "Medium"}, {"Territory": "L5 Safety/Validators", "Total": 19, "Compliant": 12, "Compliance %": 63.2, "Heal Cap %": 94.7, "Invocation %": 63.2, "Hardened %": 63.2, "Test %": 21.1, "Avg CC": 91.2, "Typed %": 90.3, "Observable %": 57.9, "Criticality": 52, "Health": 47.4, "Risk": "HIGH", "Used %": 94.7, "Priority": "Critical"}, {"Territory": "L5 Safety/Guardrails", "Total": 37, "Compliant": 28, "Compliance %": 75.7, "Heal Cap %": 89.2, "Invocation %": 75.7, "Hardened %": 48.6, "Test %": 37.8, "Avg CC": 46.4, "Typed %": 76.3, "Observable %": 40.5, "Criticality": 50, "Health": 51.3, "Risk": "HIGH", "Used %": 75.7, "Priority": "Critical"}, {"Territory": "L5 Safety/Gravity", "Total": 2, "Compliant": 2, "Compliance %": 100.0, "Heal Cap %": 100.0, "Invocation %": 100.0, "Hardened %": 50.0, "Test %": 50.0, "Avg CC": 89.5, "Typed %": 83.8, "Observable %": 50.0, "Criticality": 41, "Health": 66.7, "Risk": "MED", "Used %": 100.0, "Priority": "High"}, {"Territory": "Utils", "Total": 7, "Compliant": 0, "Compliance %": 0.0, "Heal Cap %": 42.9, "Invocation %": 0.0, "Hardened %": 42.9, "Test %": 42.9, "Avg CC": 57.4, "Typed %": 76.8, "Observable %": 57.1, "Criticality": 33, "Health": 33.3, "Risk": "HIGH", "Used %": 14.3, "Priority": "Medium"}, {"Territory": "Apps Lic", "Total": 47, "Compliant": 11, "Compliance %": 23.4, "Heal Cap %": 68.1, "Invocation %": 23.4, "Hardened %": 31.9, "Test %": 38.3, "Avg CC": 54.7, "Typed %": 79.1, "Observable %": 2.1, "Criticality": 68, "Health": 21.3, "Risk": "HIGH", "Used %": 78.7, "Priority": "High"}, {"Territory": "Apps Rg", "Total": 39, "Compliant": 1, "Compliance %": 2.6, "Heal Cap %": 53.8, "Invocation %": 2.6, "Hardened %": 43.6, "Test %": 97.4, "Avg CC": 69.0, "Typed %": 62.5, "Observable %": 10.3, "Criticality": 68, "Health": 36.8, "Risk": "HIGH", "Used %": 64.1, "Priority": "High"}, {"Territory": "Apps Shared", "Total": 4, "Compliant": 0, "Compliance %": 0.0, "Heal Cap %": 100.0, "Invocation %": 0.0, "Hardened %": 100.0, "Test %": 50.0, "Avg CC": 24.8, "Typed %": 97.2, "Observable %": 0.0, "Criticality": 56, "Health": 16.7, "Risk": "HIGH", "Used %": 75.0, "Priority": "Medium"}];
+        const recommendationsData = [{"territory": "Unclassified Agents", "priority": "Critical", "total": 0, "rationale": "Unclassified agents distort portfolio metrics and block accurate healing coverage", "gaps": "Metrics unknown — categorization required", "guidance": "1. Review paths in text report subdir breakdown\n2. Identify pattern (e.g., 'config/')\n3. Add to territories dict:\n```python\nself.territories['config'] = ('Config Agents', 'Low')\n```\n4. Re-run --report → unclassified disappears from dashboard", "score": 9999.0}, {"territory": "L5 Safety/Validators", "priority": "Critical", "total": 19, "rationale": "High-impact fix: improve autonomy in frequently used critical priority territory", "gaps": "Healing Invocation 63.2% (gap 36.8%), Tests 21.1% (gap 78.9%)", "guidance": "```diff\n+ from agentic_core.L5_safety.healing import HealerMixin\n class YourAgent(..., HealerMixin):\n     def key_method(self):\n+         super().heal_repository()  # Enables self-healing on errors\n     # Add more super() calls in error-handling paths\n```\nAdd dedicated tests:\n```python\ndef test_healing_activation(self):\n    # Simulate failure → assert healing triggered + logs/metrics\n```\nRe-run --report to validate closure.", "score": 2088.0}, {"territory": "L5 Safety/Guardrails", "priority": "Critical", "total": 37, "rationale": "High-impact fix: improve autonomy in frequently used critical priority territory", "gaps": "Healing Invocation 75.7% (gap 24.3%), Tests 37.8% (gap 62.2%)", "guidance": "```diff\n+ from agentic_core.L5_safety.healing import HealerMixin\n class YourAgent(..., HealerMixin):\n     def key_method(self):\n+         super().heal_repository()  # Enables self-healing on errors\n     # Add more super() calls in error-handling paths\n```\nAdd dedicated tests:\n```python\ndef test_healing_activation(self):\n    # Simulate failure → assert healing triggered + logs/metrics\n```\nRe-run --report to validate closure.", "score": 1404.0}];
+        const lastUpdatedStr = "Last updated: January 02, 2026 at 19:26:00";
 
         // Tab switching functionality
         document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -481,17 +465,11 @@
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
-            // Calculate Coverage Score: weighted average of tests + invocation + observability
-            const coverageScore = ((parseFloat(totalRow['Test %']) || 0) + 
-                                   (parseFloat(totalRow['Invocation %']) || 0) + 
-                                   (parseFloat(totalRow['Observable %']) || 0)) / 3;
-
             const kpis = [
                 { label: 'Total Agents', value: totalRow.Total, unit: '' },
                 { label: 'Compliant', value: totalRow.Compliant, unit: '' },
                 { label: 'Compliance %', value: totalRow['Compliance %'], unit: '%' },
                 { label: 'Health Score', value: totalRow.Health, unit: '/100' },
-                { label: 'Coverage Score', value: coverageScore, unit: '%' },
                 { label: 'Avg Complexity', value: totalRow['Avg CC'], unit: '' },
                 { label: 'Test Coverage', value: totalRow['Test %'], unit: '%' },
                 { label: 'Healing Invocation', value: totalRow['Invocation %'], unit: '%' },
@@ -753,32 +731,6 @@
             Plotly.newPlot('complexityChart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
-        function renderTopRecommendations() {
-            const container = document.getElementById('topRecommendations');
-            if (!container || !recommendationsData || recommendationsData.length === 0) {
-                if (container) {
-                    container.innerHTML = '<p style="text-align:center; color:var(--success-green); font-size:1.2em;">No urgent actions – autonomy health excellent!</p>';
-                }
-                return;
-            }
-
-            const top3 = recommendationsData.slice(0, 3);
-            let html = '';
-            top3.forEach((rec, index) => {
-                const rank = index + 1;
-                const status = rank === 1 ? 'danger' : rank === 2 ? 'warning' : 'primary';
-                html += `
-                <div class="kpi-box ${status}" style="padding:25px; min-height:220px;">
-                    <div class="kpi-label" style="font-size:1.1em;">Top Action #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority}</div>
-                    <div class="kpi-value" style="font-size:1.4em;">${rec.territory}</div>
-                    <div style="margin:10px 0; color: var(--text-secondary);">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
-                    <div style="margin:10px 0;"><strong>Why urgent:</strong> ${rec.rationale}</div>
-                    <div style="margin:10px 0; font-size:0.95em;"><strong>Gaps:</strong> ${rec.gaps}</div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
         function renderRecommendations() {
             const container = document.getElementById('recommendationsList');
             if (!container) return;
@@ -792,43 +744,15 @@
             recommendationsData.forEach((rec, index) => {
                 const rank = index + 1;
                 const status = rank <= 3 ? 'danger' : rank <= 6 ? 'warning' : 'primary';
-                const fileCount = rec.file_links ? rec.file_links.length : 0;
                 html += `
                 <div class="kpi-box ${status}" style="padding:20px;">
-                    <div class="kpi-label">Recommendation #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority} Priority</div>
+                    <div class="kpi-label">Recommendation #${rank} • ${rec.priority} Priority</div>
                     <div class="kpi-value">${rec.territory}</div>
-                    <div style="margin:10px 0; color: var(--text-secondary);">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
+                    <div style="margin:10px 0; color: var(--text-secondary);">${rec.total} agents</div>
                     <div style="margin:10px 0;"><strong>Rationale:</strong> ${rec.rationale}</div>
-                    <div style="margin:10px 0;"><strong>Key Urgency Contributors:</strong> ${rec.gaps}</div>
-                    <div style="margin:15px 0;"><strong>IDE Diff Guidance (apply in windsurf batch):</strong></div>
+                    <div style="margin:10px 0;"><strong>Key Gaps:</strong> ${rec.gaps}</div>
+                    <div style="margin:15px 0;"><strong>IDE Diff Guidance:</strong></div>
                     <pre style="background:#f8f9fa; padding:12px; border-radius:6px; overflow-x:auto; white-space:pre-wrap; color:#333;">${rec.guidance}</pre>
-                    ${rec.file_links && fileCount > 0 ? `
-                    <div style="margin:15px 0;"><strong>Clickable Agent Files (${fileCount} – VS Code optimized):</strong></div>
-                    <div style="columns: 2; -webkit-columns: 2; -moz-columns: 2; column-gap: 30px; max-height: 400px; overflow-y: auto; padding:10px; background:#f8f9fa; border-radius:6px;">
-                        <ul style="list-style:none; padding-left:0; margin:0; break-inside: avoid-column;">
-                        ${rec.file_links.map(f => `
-                            <li style="margin-bottom:12px;">
-                                <div>
-                                    <a href="vscode://file/${f.abs_class}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-family:monospace; font-size:0.95em; font-weight:600;">
-                                        ${f.rel} → class (line ${f.class_line})
-                                    </a>
-                                </div>
-                                <div style="margin-top:4px;">
-                                    <small style="color:var(--light-text);">
-                                        <a href="vscode://file/${f.abs_file}" target="_blank" style="color:var(--light-text); text-decoration:underline;">
-                                            Open full file
-                                        </a>
-                                    </small>
-                                </div>
-                            </li>
-                        `).join('')}
-                        </ul>
-                    </div>
-                    <p style="font-size:0.9em; color:var(--light-text); margin-top:10px;">
-                        Primary links jump directly to the agent class definition – ideal starting point for adding HealerMixin inheritance.<br>
-                        Use full-file links for adding super().heal_repository() calls in try/except or key methods.
-                    </p>
-                    ` : ''}
                 </div>`;
             });
             container.innerHTML = html;
@@ -847,7 +771,6 @@
             renderKPIBoxes(totalRow);
             renderHealthGauge(totalRow);
             renderComplianceGauge(totalRow);
-            renderTopRecommendations();
             renderHealthChart(territoryData);
             renderHealingChart(territoryData);
             renderRiskMatrix(territoryData);

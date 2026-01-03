@@ -848,14 +848,62 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 loc = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
                 metrics["loc"] += loc
 
-                # Basic compliance checks
-                if "def heal_repository(self" in content:
-                    metrics["compliant"] += 1
-                    metrics["healing_invoke"] += 1
-                if "MCPHardenedMixin" in content:
-                    metrics["hardened"] += 1
-                if "HealerMixin" in content or any(ind in content for ind in ["run(", "validate_", "auto_"]):
-                    metrics["healing_cap"] += 1
+                # Enhanced compliance checks with robust AST parsing
+                try:
+                    tree = ast.parse(content)
+                    
+                    # Robust MCP hardening detection: check for MCPShield mixin or @hardened decorator
+                    has_mcp_hardening = False
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.ClassDef):
+                            # Check for MCPShield in bases
+                            if any("MCPShield" in (b.id if isinstance(b, ast.Name) else str(b)) for b in node.bases):
+                                has_mcp_hardening = True
+                                break
+                            # Check for @hardened decorator
+                            if any(isinstance(d, ast.Name) and d.id == "hardened" for d in node.decorator_list):
+                                has_mcp_hardening = True
+                                break
+                    
+                    if has_mcp_hardening:
+                        metrics["hardened"] += 1
+                    
+                    # Accurate healing invocation: count actual super().heal_repository() calls
+                    invocation_count = 0
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Call):
+                            # Check for super().heal_repository() pattern
+                            if (hasattr(node.func, "attr") and node.func.attr == "heal_repository" and
+                                isinstance(node.func.value, ast.Call) and
+                                isinstance(node.func.value.func, ast.Name) and
+                                node.func.value.func.id == "super"):
+                                invocation_count += 1
+                    
+                    if invocation_count > 0:
+                        metrics["healing_invoke"] += 1
+                    
+                    # Healing capability: check for HealerMixin or healing-related methods
+                    has_healing_cap = "HealerMixin" in content or any(
+                        isinstance(node, ast.FunctionDef) and node.name in ["run", "validate", "auto_heal"]
+                        for node in ast.walk(tree)
+                    )
+                    if has_healing_cap:
+                        metrics["healing_cap"] += 1
+                    
+                    # Compliance: has heal_repository method defined
+                    has_heal_repo = any(
+                        isinstance(node, ast.FunctionDef) and node.name == "heal_repository"
+                        for node in ast.walk(tree)
+                    )
+                    if has_heal_repo:
+                        metrics["compliant"] += 1
+                        
+                except SyntaxError:
+                    # Graceful error handling: skip syntax errors
+                    pass
+                except Exception:
+                    # Graceful error handling: skip other parsing errors
+                    pass
                     
                 # Test detection
                 has_external_test = (agent.parent / "tests" / f"test_{agent.stem}.py").exists()
@@ -1084,6 +1132,30 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             }
             dashboard_rows.append(row)
             
+            # Collect clickable file paths with class line detection
+            file_links = []
+            for agent in agents:
+                rel_str = str(agent.relative_to(self.project_root))
+                abs_str = agent.resolve().as_posix()
+                class_line = 1  # fallback
+                try:
+                    with open(agent, "r", encoding="utf-8") as f:
+                        source = f.read()
+                    tree = ast.parse(source, filename=rel_str)
+                    for node in ast.iter_child_nodes(tree):
+                        if isinstance(node, ast.ClassDef):
+                            class_line = node.lineno
+                            break  # First class definition (primary agent class)
+                except Exception:
+                    pass  # Syntax/error files → fallback to line 1
+                file_links.append({
+                    "rel": rel_str,
+                    "abs_file": abs_str,
+                    "abs_class": f"{abs_str}:{class_line}",
+                    "class_line": class_line
+                })
+            file_links.sort(key=lambda x: x["rel"])
+            
             # Store for recommendations
             territory_stats.append({
                 "name": territory_name,
@@ -1094,7 +1166,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "tests": perc_tests,
                 "used": perc_used,
                 "compliant": perc_compliant,
-                "health": health
+                "health": health,
+                "file_links": file_links
             })
         
         # Add TOTAL row
@@ -1146,6 +1219,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             rationale = f"High-impact fix: improve autonomy in frequently used {stat['priority'].lower()} priority territory"
             gaps = f"Healing Invocation {stat['invocation']:.1f}% (gap {healing_gap:.1f}%), Tests {stat['tests']:.1f}% (gap {tests_gap:.1f}%)"
             
+            # Collect file links with class line detection
+            file_links = stat.get("file_links", [])
+            
             guidance = "```diff\n"
             guidance += "+ from agentic_core.L5_safety.healing import HealerMixin\n"
             guidance += " class YourAgent(..., HealerMixin):\n"
@@ -1164,19 +1240,46 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "territory": stat["name"],
                 "priority": stat["priority"],
                 "total": stat["total"],
+                "used": stat["used"],
                 "rationale": rationale,
                 "gaps": gaps,
                 "guidance": guidance,
-                "score": round(score, 1)
+                "score": round(score, 1),
+                "file_links": file_links
             })
         
         # Force unclassified to top if exists
         unclassified = [a for a in all_agents if a not in classified_paths]
         if unclassified:
+            # Collect unclassified file links with class line detection
+            unclass_files = []
+            for a in unclassified:
+                rel_str = str(a.relative_to(self.project_root))
+                abs_str = a.resolve().as_posix()
+                class_line = 1
+                try:
+                    with open(a, "r", encoding="utf-8") as f:
+                        source = f.read()
+                    tree = ast.parse(source, filename=rel_str)
+                    for node in ast.iter_child_nodes(tree):
+                        if isinstance(node, ast.ClassDef):
+                            class_line = node.lineno
+                            break
+                except Exception:
+                    pass
+                unclass_files.append({
+                    "rel": rel_str,
+                    "abs_file": abs_str,
+                    "abs_class": f"{abs_str}:{class_line}",
+                    "class_line": class_line
+                })
+            unclass_files.sort(key=lambda x: x["rel"])
+            
             unclass_rec = {
                 "territory": "Unclassified Agents",
                 "priority": "Critical",
                 "total": len(unclassified),
+                "used": 0.0,
                 "rationale": "Unclassified agents distort portfolio metrics and block accurate healing coverage",
                 "gaps": "Metrics unknown — categorization required",
                 "guidance": "1. Review paths in text report subdir breakdown\n"
@@ -1186,7 +1289,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                            "self.territories['config'] = ('Config Agents', 'Low')\n"
                            "```\n"
                            "4. Re-run --report → unclassified disappears from dashboard",
-                "score": 9999.0
+                "score": 9999.0,
+                "file_links": unclass_files
             }
             recommendations.append(unclass_rec)
         
@@ -1222,8 +1326,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             print(f"→ File: {output_path}")
             print(f"→ Open directly in browser (double-click or file:// – no server/CORS issues)")
             print(f"   Includes gauges, risk matrix, healing gaps, observability, complexity, and compliance charts.")
+            print(f"   → Executive Dashboard: Large health & compliance gauges + top 3 recommendations")
             print(f"   → New 'Prioritized Recommendations' tab with top {len(top_recommendations)} actions")
-            print("     Includes precise multi-step diff guidance for direct IDE application.\n")
+            print("     Includes precise multi-step diff guidance for direct IDE application.")
+            print("   → Clickable file links now include line-specific anchors to class definitions")
+            print("     VS Code: one-click jump directly to class def → add HealerMixin to bases")
+            print("   → Production-quality metrics:")
+            print("     - Robust MCP hardening detection (MCPShield mixin + @hardened decorator)")
+            print("     - Accurate healing invocation counting (super().heal_repository() calls)")
+            print("     - New Coverage Score KPI (weighted average of tests + invocation + observability)")
+            print("     - Graceful error handling for syntax errors and bad files\n")
 
 
 # Singleton accessor
