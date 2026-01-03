@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 37.8/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 38.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
 - **Total Agents:** 415
 - **Compliant:** 136 (32.8%) ❌
-- **Healing Capabilities:** 321 (77.3%) ⚠️
+- **Healing Capabilities:** 314 (75.7%) ⚠️
 - **Healing Invocation:** 136 (32.8%) ❌
-- **With Tests:** 164 (39.5%) ❌
-- **Avg Complexity:** 49.9 ❌
+- **With Tests:** 155 (37.3%) ❌
+- **Avg Complexity:** 48.5 ❌
 
 ## 📊 Territory Analysis
 
@@ -27,12 +27,12 @@
 - 🔥 **L0 Maintenance**: 5/24 compliant | Health: 45.8% | Risk: HIGH | Heal Gap: 66.7%
 - 🔥 **L2 Execution**: 27/83 compliant | Health: 46.2% | Risk: HIGH | Heal Gap: 47.0%
 - 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 57.9% | Risk: HIGH | Heal Gap: 31.5%
+- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 50.5% | Risk: HIGH | Heal Gap: 13.5%
 
 ### Medium Priority Territories
 
 - 🔥 **Apps Lic**: 11/47 compliant | Health: 31.2% | Risk: HIGH | Heal Gap: 44.7%
 - 🔥 **Apps Rg**: 1/39 compliant | Health: 41.9% | Risk: HIGH | Heal Gap: 51.2%
-- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 50.5% | Risk: HIGH | Heal Gap: 13.5%
 - 🔥 **L3 Orchestration**: 30/62 compliant | Health: 60.7% | Risk: HIGH | Heal Gap: 41.9%
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 66.7% | Risk: MED
 - 🔥 **Apps Shared**: 0/4 compliant | Health: 16.7% | Risk: HIGH | Heal Gap: 100.0%
@@ -54,9 +54,9 @@
 - **L1 Cognition**: Focus on complexity reduction (CC=47.4) and test coverage
 - **L2 Execution**: Focus on complexity reduction (CC=47.4) and test coverage
 - **L5 Safety/Validators**: Focus on complexity reduction (CC=47.4) and test coverage
+- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=47.4) and test coverage
 - **L3 Orchestration**: Focus on complexity reduction (CC=47.4) and test coverage
 - **L4 State**: Focus on complexity reduction (CC=47.4) and test coverage
-- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=47.4) and test coverage
 - **Apps Lic**: Focus on complexity reduction (CC=47.4) and test coverage
 - **Apps Rg**: Focus on complexity reduction (CC=47.4) and test coverage
 - **Apps Shared**: Focus on complexity reduction (CC=47.4) and test coverage

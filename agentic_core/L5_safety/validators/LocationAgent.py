@@ -230,204 +230,164 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
         except ValueError:
             return False, "VOID VIOLATION: File outside project root"
 
-        # === EARLY FORBIDDEN PATTERN REJECTION (fixed original dead-code bug) ===
-        for part in parts:
-            if part in FORBIDDEN_ROOT_FOLDERS:
-                return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth"
+        # Early validation chain - exit on first violation
+        result = self._validate_forbidden_patterns(parts, root_folder)
+        if not result[0]:
+            return result
             
-            # Check for regex pattern match if applicable
-            if hasattr(FORBIDDEN_FOLDER_PATTERN, 'match'):
-                if FORBIDDEN_FOLDER_PATTERN.match(part):
-                    return False, f"VOID VIOLATION: Numbered folder pattern '{part}' forbidden"
+        result = self._validate_root_whitelist(root_folder)
+        if not result[0]:
+            return result
+            
+        result = self._validate_depth_requirements(parts, root_folder, rel_path)
+        if not result[0]:
+            return result
 
-        # Numbered root folders (e.g., 08_scripts) forbidden
-        if len(root_folder) >= 3 and root_folder[:2].isdigit() and root_folder[2:3] == "_":
-            return False, f"VOID VIOLATION: Numbered root folder '{root_folder}' not approved"
+        # Continue validation chain
+        result = self._validate_app_specific_files(root_folder, file_path)
+        if not result[0]:
+            return result
+            
+        result = self._validate_filename_patterns(file_path)
+        if not result[0]:
+            return result
 
-        # Root whitelist enforcement
-        if root_folder not in ROOT_WHITELIST:
-            return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
+        # AST validation for agentic_core files
+        result = self._validate_ast_violations(root_folder, file_path, rel_path)
+        if not result[0]:
+            return result
 
-        # === DEPTH ENFORCEMENT FROM SSOT ===
-        expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
-        actual_depth = len(parts) - 1  # exclude filename
+        # Final validation checks
+        result = self._validate_final_checks(root_folder, file_path, parts)
+        if not result[0]:
+            return result
 
-        if expected_depth is not None and actual_depth != expected_depth:
-            reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
-            return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
+        return True, f"Location compliant in sovereign territory: {root_folder}"
 
-        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
-        if root_folder == "agentic_core":
-            if len(parts) != 4:
-                return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
-
-        # === APP-SPECIFIC FILE REJECTION (Post-migration hardening) ===
-        # Block any file with app-specific prefix/pattern if placed in agentic_core
-        if root_folder == "agentic_core" and is_app_specific_file(file_path.name):
-            correct_path = get_correct_app_path(file_path.name) or "appropriate apps_* folder"
-            return False, (
-                f"APP-SPECIFIC IN CORE VIOLATION: '{file_path.name}' is application-specific "
-                f"and must not live in agentic_core. Move to '{correct_path}/'."
-            )
-
-        # === FORBIDDEN LAYER PREFIX REJECTION ===
-        # Filenames should NOT begin with l1_, l2_, P1_, etc. - layer info belongs in folders
-        forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
-        if forbidden_prefix:
-            return False, (
-                f"LAYER PREFIX VIOLATION: '{file_path.name}' begins with forbidden prefix '{forbidden_prefix}'. "
-                f"Layer/priority info belongs in folder structure, not filenames. "
-                f"Rename to remove the '{forbidden_prefix}' prefix."
-            )
-
-        # === BROKEN BACKUP FILE REJECTION ===
-        # Files like .bak.174742 break archiving logic and sit unused
-        if is_broken_backup_file(file_path.name):
-            return False, (
-                f"BROKEN BACKUP FILE: '{file_path.name}' matches forbidden backup pattern (.bak.NNNNNN). "
-                f"These files break archiving logic. Delete or properly archive this file."
-            )
-
-        # === ULTRA AST VIOLATION CHECK (2026-01-02 Comprehensive Hardening) ===
-        # Single-parse multi-signal analysis:
-        #   1. App-specific domain leak (RG/LIC) → highest priority
-        #   2. Internal core gravity (layer import direction)
-        #   3. Territory semantic alignment (folder vs content)
-        if root_folder == "agentic_core" and file_path.suffix == ".py":
+    def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> Tuple[bool, str]:
+        """Validate AST-based violations for agentic_core Python files."""
+        if root_folder != "agentic_core" or file_path.suffix != ".py":
+            return True, "OK"
+            
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(content)
+            
+            # Territory inference from path
             try:
-                content = file_path.read_text(encoding="utf-8", errors="ignore")
-                tree = ast.parse(content)
+                rel_parts = file_path.relative_to(self.project_root / "agentic_core").parts
+                current_l1 = rel_parts[0] if len(rel_parts) > 1 else None
+                current_l2 = rel_parts[1] if len(rel_parts) > 2 else None
+                current_territory = f"{current_l1}/{current_l2}" if current_l2 else current_l1
+            except ValueError:
+                current_l1, current_l2, current_territory = None, None, None
 
-                # Territory inference from path
-                try:
-                    rel_parts = file_path.relative_to(self.project_root / "agentic_core").parts
-                    current_l1 = rel_parts[0] if len(rel_parts) > 1 else None
-                    current_l2 = rel_parts[1] if len(rel_parts) > 2 else None
-                    current_territory = f"{current_l1}/{current_l2}" if current_l2 else current_l1
-                except ValueError:
-                    current_l1, current_l2, current_territory = None, None, None
+            # Check for forbidden imports
+            result = self._check_forbidden_imports(tree, current_l1, rel_path)
+            if not result[0]:
+                return result
+                
+            # Check semantic alignment
+            result = self._check_semantic_alignment(tree, current_territory, rel_path)
+            if not result[0]:
+                return result
+                
+        except Exception as e:
+            Logger.debug(f"[LocationAgent] AST failure in {file_path}: {e}")
+            
+        return True, "OK"
 
-                # Scoring containers
-                app_rg_score = 0.0
-                app_lic_score = 0.0
-                territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+    def _check_forbidden_imports(self, tree: ast.AST, current_l1: str, rel_path: Path) -> Tuple[bool, str]:
+        """Check for forbidden app imports and layer violations."""
+        forbidden_app_import = False
+        forbidden_layer_import = None
+        
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                modules = []
+                if isinstance(node, ast.Import):
+                    modules = [alias.name for alias in node.names]
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    modules = [node.module]
 
-                # --- Import Resolution (Apps + Internal Core Gravity) ---
-                forbidden_app_import = False
-                forbidden_layer_import = None
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.Import, ast.ImportFrom)):
-                        modules = []
-                        if isinstance(node, ast.Import):
-                            modules = [alias.name for alias in node.names]
-                        elif isinstance(node, ast.ImportFrom) and node.module:
-                            modules = [node.module]
+                for module in modules:
+                    if module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES:
+                        forbidden_app_import = True
+                    if current_l1 and module.startswith("agentic_core.") and len(module.split(".")) > 2:
+                        imported_l1 = module.split(".")[1]
+                        if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
+                            forbidden_layer_import = f"{current_l1} → {imported_l1}"
+                            
+                if forbidden_app_import or forbidden_layer_import:
+                    break
 
-                        for module in modules:
-                            if module.startswith(("apps_rg.", "apps_lic.")) or module in FORBIDDEN_APP_MODULES:
-                                forbidden_app_import = True
-                            if current_l1 and module.startswith("agentic_core.") and len(module.split(".")) > 2:
-                                imported_l1 = module.split(".")[1]
-                                if imported_l1 in LAYER_FORBIDDEN_IMPORTS.get(current_l1, set()):
-                                    forbidden_layer_import = f"{current_l1} → {imported_l1}"
-                    if forbidden_app_import or forbidden_layer_import:
-                        break
+        if forbidden_app_import:
+            return False, (
+                f"GRAVITY VIOLATION (AST-resolved): Imports from apps_* modules forbidden in agentic_core. "
+                f"Move file to correct apps_*/engines/ folder. File: {rel_path}"
+            )
+        if forbidden_layer_import:
+            return False, (
+                f"INTERNAL GRAVITY VIOLATION: {forbidden_layer_import} import direction forbidden. "
+                f"Refactor to respect layer gravity or move file. File: {rel_path}"
+            )
+            
+        return True, "OK"
 
-                if forbidden_app_import:
-                    return False, (
-                        f"GRAVITY VIOLATION (AST-resolved): Imports from apps_* modules forbidden in agentic_core. "
-                        f"Move file to correct apps_*/engines/ folder. File: {rel_path}"
-                    )
-                if forbidden_layer_import:
-                    return False, (
-                        f"INTERNAL GRAVITY VIOLATION: {forbidden_layer_import} import direction forbidden. "
-                        f"Refactor to respect layer gravity or move file. File: {rel_path}"
-                    )
+    def _check_semantic_alignment(self, tree: ast.AST, current_territory: str, rel_path: Path) -> Tuple[bool, str]:
+        """Check semantic alignment between file location and content."""
+        if not current_territory:
+            return True, "OK"
+            
+        # Simplified semantic scoring
+        app_rg_score = 0.0
+        app_lic_score = 0.0
+        territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
 
-                # --- Multi-Signal Semantic Scoring ---
-                for node in ast.walk(tree):
-                    # Class/Function names — full weight
-                    if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                        name = node.name.lower()
-                        if any(t in name for t in APP_RG_AST_TERMS):
-                            app_rg_score += 1.0
-                        if any(t in name for t in APP_LIC_AST_TERMS):
-                            app_lic_score += 1.0
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                if any(t in name for t in terms):
-                                    territory_scores[terr] += 1.0
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                name = node.name.lower()
+                if any(t in name for t in APP_RG_AST_TERMS):
+                    app_rg_score += 1.0
+                if any(t in name for t in APP_LIC_AST_TERMS):
+                    app_lic_score += 1.0
+                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
+                    for terms in cats.values():
+                        if any(t in name for t in terms):
+                            territory_scores[terr] += 1.0
 
-                    # Arguments — medium weight
-                    elif isinstance(node, ast.arguments):
-                        for arg in node.args + getattr(node, "kwonlyargs", []) + getattr(node, "posonlyargs", []):
-                            if arg.arg and arg.arg not in {"self", "cls"}:
-                                a = arg.arg.lower()
-                                if any(t in a for t in APP_RG_VARIABLE_TERMS):
-                                    app_rg_score += VARIABLE_HIT_WEIGHT
-                                if any(t in a for t in APP_LIC_VARIABLE_TERMS):
-                                    app_lic_score += VARIABLE_HIT_WEIGHT
-                                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                                    for terms in cats.values():
-                                        if any(t in a for t in terms):
-                                            territory_scores[terr] += VARIABLE_HIT_WEIGHT
+        # App-specific violation check
+        total_app_score = app_rg_score + app_lic_score
+        if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
+            dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
+            target = get_correct_app_path(rel_path.name) or f"{dominant}/{APP_SPECIFIC_TARGET_SUBFOLDER}"
+            return False, (
+                f"AST DOMAIN VIOLATION (app score {total_app_score:.2f}): "
+                f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
+                f"Move to '{target}/'. File: {rel_path}"
+            )
 
-                    # Assignment targets — medium weight
-                    elif isinstance(node, ast.Assign):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name):
-                                v = target.id.lower()
-                                if any(t in v for t in APP_RG_VARIABLE_TERMS):
-                                    app_rg_score += VARIABLE_HIT_WEIGHT
-                                if any(t in v for t in APP_LIC_VARIABLE_TERMS):
-                                    app_lic_score += VARIABLE_HIT_WEIGHT
-                                for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                                    for terms in cats.values():
-                                        if any(t in v for t in terms):
-                                            territory_scores[terr] += VARIABLE_HIT_WEIGHT
+        # Territory alignment check
+        current_score = territory_scores.get(current_territory, 0.0)
+        if territory_scores:
+            best_territory = max(territory_scores, key=territory_scores.get)
+            max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
 
-                    # String literals — low weight
-                    elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
-                        text = node.value.lower()
-                        app_rg_score += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                        app_lic_score += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                        for terr, cats in CORE_TERRITORY_KEYWORDS.items():
-                            for terms in cats.values():
-                                territory_scores[terr] += sum(1 for t in terms if t in text) * STRING_HIT_WEIGHT
+            if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
+                return False, (
+                    f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
+                    f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
+                )
+            if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
+                return False, (
+                    f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
+                    f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
+                )
 
-                # --- App-Specific Violation (Highest Priority) ---
-                total_app_score = app_rg_score + app_lic_score
-                if total_app_score >= AST_DOMAIN_HIT_THRESHOLD:
-                    dominant = "apps_rg" if app_rg_score >= app_lic_score else "apps_lic"
-                    target = get_correct_app_path(file_path.name) or f"{dominant}/{APP_SPECIFIC_TARGET_SUBFOLDER}"
-                    return False, (
-                        f"AST DOMAIN VIOLATION (app score {total_app_score:.2f}): "
-                        f"Strong application signals (RG: {app_rg_score:.2f}, LIC: {app_lic_score:.2f}). "
-                        f"Move to '{target}/'. File: {rel_path}"
-                    )
+        return True, "OK"
 
-                # --- Core Territory Alignment Check ---
-                if current_territory and territory_scores:
-                    current_score = territory_scores.get(current_territory, 0.0)
-                    best_territory = max(territory_scores, key=territory_scores.get) if territory_scores else None
-                    max_other = max((s for t, s in territory_scores.items() if t != current_territory), default=0.0)
-
-                    if current_score < MIN_ALIGNMENT_SCORE and max_other >= MIN_ALIGNMENT_SCORE:
-                        return False, (
-                            f"TERRITORY ALIGNMENT WEAK: Current '{current_territory}' score {current_score:.2f} < {MIN_ALIGNMENT_SCORE}. "
-                            f"Lacks semantic signals — refactor or move to '{best_territory}'. File: {rel_path}"
-                        )
-                    if max_other > current_score + TERRITORY_MISMATCH_THRESHOLD:
-                        return False, (
-                            f"TERRITORY MISMATCH VIOLATION: Stronger signals for '{best_territory}' ({max_other:.2f}) "
-                            f"vs current ({current_score:.2f}). Move to agentic_core/{best_territory}. File: {rel_path}"
-                        )
-
-            except SyntaxError:
-                Logger.debug(f"[LocationAgent] Syntax error in {file_path}")
-            except Exception as e:
-                Logger.debug(f"[LocationAgent] AST failure in {file_path}: {e}")
-
+    def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> Tuple[bool, str]:
+        """Final validation checks for root-level files and gravity leaks."""
         # Root-level file protections (Key 0)
         if len(parts) == 1 and file_path.suffix == ".py":
             if file_path.name in ROOT_PROTECTED_FILES:
@@ -440,7 +400,166 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
         if root_folder.startswith("apps_") and any(marker in file_path.stem.lower() for marker in compliance_markers):
             return False, f"GRAVITY ERROR: Sovereign compliance logic leaked into downstream '{root_folder}'"
 
-        return True, f"Location compliant in sovereign territory: {root_folder}"
+        return True, "OK"
+
+    def _apply_healing_strategy(
+        self, file_path: Path, msg: str, archives_root: Path, dry_run: bool,
+        affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Apply appropriate healing strategy based on violation message."""
+        # === APP-SPECIFIC / AST DOMAIN LEAK HEALING ===
+        if "APP-SPECIFIC IN CORE VIOLATION" in msg or "AST DOMAIN VIOLATION" in msg:
+            return self._heal_app_specific_violation(
+                file_path, msg, dry_run, affected_paths, import_touched_paths
+            )
+
+        # === TERRITORY MISMATCH HEALING ===
+        elif "TERRITORY MISMATCH VIOLATION" in msg or "TERRITORY ALIGNMENT WEAK" in msg:
+            return self._heal_territory_mismatch(
+                file_path, msg, dry_run, affected_paths, import_touched_paths
+            )
+
+        # === BROKEN BACKUP DELETE ===
+        elif "BROKEN BACKUP FILE" in msg:
+            result = self.safe_delete(file_path, dry_run=dry_run)
+            if result.get("applied") and not dry_run:
+                affected_paths.append(file_path)
+            return result
+
+        # === FALLBACK ARCHIVING (Legacy behavior) ===
+        else:
+            return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
+
+    def _heal_app_specific_violation(
+        self, file_path: Path, msg: str, dry_run: bool,
+        affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Heal app-specific violations by moving to correct apps folder."""
+        target_match = re.search(r"Move to '([^']+)'", msg)
+        if target_match:
+            relative_target = target_match.group(1).rstrip("/")
+            target_path = self.project_root / relative_target / file_path.name
+            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+            if move_result.get("applied") and not dry_run:
+                affected_paths.extend([file_path, target_path])
+                # Collect import-touched files
+                if "import_files_touched" in move_result:
+                    for rel in move_result["import_files_touched"]:
+                        import_touched_paths.append(self.project_root / rel)
+            return move_result
+        else:
+            return {"action_taken": f"SKIPPED: Could not parse target path. Using fallback: {DEFAULT_APP_HEALING_TARGET}"}
+
+    def _heal_territory_mismatch(
+        self, file_path: Path, msg: str, dry_run: bool,
+        affected_paths: List[Path], import_touched_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Heal territory mismatch violations by moving to correct agentic_core location."""
+        target_match = re.search(r"Move to agentic_core/([^\s.]+)", msg) or re.search(r"move to '([^']+)'", msg)
+        if target_match:
+            territory = target_match.group(1)
+            target_path = self.project_root / "agentic_core" / territory / file_path.name
+            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+            if move_result.get("applied") and not dry_run:
+                affected_paths.extend([file_path, target_path])
+                if "import_files_touched" in move_result:
+                    for rel in move_result["import_files_touched"]:
+                        import_touched_paths.append(self.project_root / rel)
+            return move_result
+        else:
+            return {"action_taken": "SKIPPED: Could not parse target territory"}
+
+    def _heal_via_archiving(
+        self, file_path: Path, msg: str, archives_root: Path, 
+        dry_run: bool, affected_paths: List[Path]
+    ) -> Dict[str, Any]:
+        """Heal violations by archiving to appropriate subfolder."""
+        if "VOID VIOLATION" in msg or "GRAVITY" in msg:
+            target_subdir = archives_root / "void_violations"
+        elif "DEPTH VIOLATION" in msg:
+            target_subdir = archives_root / "depth_violations"
+        elif "LAYER PREFIX VIOLATION" in msg:
+            target_subdir = archives_root / "naming_violations"
+        else:
+            target_subdir = archives_root / "location_violations"
+            
+        target_path = target_subdir / file_path.name
+        move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+        if "MOVED" in move_result.get("action_taken", ""):
+            move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
+        if move_result.get("applied") and not dry_run:
+            affected_paths.extend([file_path, target_path])
+        return move_result
+
+    def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> Tuple[bool, str]:
+        """Validate forbidden folder patterns and numbered roots."""
+        # Check all parts for forbidden folders
+        for part in parts:
+            if part in FORBIDDEN_ROOT_FOLDERS:
+                return False, f"VOID VIOLATION: Forbidden folder '{part}' at any depth"
+            
+            # Check for regex pattern match if applicable
+            if hasattr(FORBIDDEN_FOLDER_PATTERN, 'match'):
+                if FORBIDDEN_FOLDER_PATTERN.match(part):
+                    return False, f"VOID VIOLATION: Numbered folder pattern '{part}' forbidden"
+
+        # Numbered root folders (e.g., 08_scripts) forbidden
+        if len(root_folder) >= 3 and root_folder[:2].isdigit() and root_folder[2:3] == "_":
+            return False, f"VOID VIOLATION: Numbered root folder '{root_folder}' not approved"
+            
+        return True, "OK"
+
+    def _validate_root_whitelist(self, root_folder: str) -> Tuple[bool, str]:
+        """Validate root folder is in whitelist."""
+        if root_folder not in ROOT_WHITELIST:
+            return False, f"VOID VIOLATION: Unapproved root folder '{root_folder}'"
+        return True, "OK"
+
+    def _validate_depth_requirements(self, parts: tuple, root_folder: str, rel_path: Path) -> Tuple[bool, str]:
+        """Validate depth requirements from sovereign registry."""
+        expected_depth = SOVEREIGN_REGISTRY.get(root_folder, {}).get("depth")
+        actual_depth = len(parts) - 1  # exclude filename
+
+        if expected_depth is not None and actual_depth != expected_depth:
+            reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
+            return False, f"{reason} VIOLATION ({root_folder}): depth {actual_depth} != {expected_depth}"
+
+        # Special strict depth for agentic_core (Canon Key 3/12 hardening)
+        if root_folder == "agentic_core":
+            if len(parts) != 4:
+                return False, f"AGENTIC_CORE DEPTH VIOLATION: {rel_path} has {len(parts)} parts (expected exactly 4: root/L1/L2/file.py)"
+                
+        return True, "OK"
+
+    def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> Tuple[bool, str]:
+        """Validate app-specific files are not in core."""
+        if root_folder == "agentic_core" and is_app_specific_file(file_path.name):
+            correct_path = get_correct_app_path(file_path.name) or "appropriate apps_* folder"
+            return False, (
+                f"APP-SPECIFIC IN CORE VIOLATION: '{file_path.name}' is application-specific "
+                f"and must not live in agentic_core. Move to '{correct_path}/'."
+            )
+        return True, "OK"
+
+    def _validate_filename_patterns(self, file_path: Path) -> Tuple[bool, str]:
+        """Validate filename patterns for forbidden prefixes and backup files."""
+        # Forbidden layer prefixes
+        forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
+        if forbidden_prefix:
+            return False, (
+                f"LAYER PREFIX VIOLATION: '{file_path.name}' begins with forbidden prefix '{forbidden_prefix}'. "
+                f"Layer/priority info belongs in folder structure, not filenames. "
+                f"Rename to remove the '{forbidden_prefix}' prefix."
+            )
+
+        # Broken backup files
+        if is_broken_backup_file(file_path.name):
+            return False, (
+                f"BROKEN BACKUP FILE: '{file_path.name}' matches forbidden backup pattern (.bak.NNNNNN). "
+                f"These files break archiving logic. Delete or properly archive this file."
+            )
+            
+        return True, "OK"
 
     def enforce_void_compliance(self, files: List[Path]) -> Tuple[List[Path], List[Tuple[Path, str]]]:
         """Filter files and collect all location-based violations."""
@@ -1601,64 +1720,12 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
                 "action_taken": "",
             }
 
-            # === APP-SPECIFIC / AST DOMAIN LEAK HEALING ===
-            if "APP-SPECIFIC IN CORE VIOLATION" in msg or "AST DOMAIN VIOLATION" in msg:
-                target_match = re.search(r"Move to '([^']+)'", msg)
-                if target_match:
-                    relative_target = target_match.group(1).rstrip("/")
-                    target_path = self.project_root / relative_target / file_path.name
-                    move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-                    action.update(move_result)
-                    if move_result.get("applied") and not dry_run:
-                        affected_paths.extend([file_path, target_path])
-                        # Collect import-touched files
-                        if "import_files_touched" in move_result:
-                            for rel in move_result["import_files_touched"]:
-                                import_touched_paths.append(self.project_root / rel)
-                else:
-                    action["action_taken"] = f"SKIPPED: Could not parse target path. Using fallback: {DEFAULT_APP_HEALING_TARGET}"
-
-            # === TERRITORY MISMATCH HEALING ===
-            elif "TERRITORY MISMATCH VIOLATION" in msg or "TERRITORY ALIGNMENT WEAK" in msg:
-                target_match = re.search(r"Move to agentic_core/([^\s.]+)", msg) or re.search(r"move to '([^']+)'", msg)
-                if target_match:
-                    territory = target_match.group(1)
-                    target_path = self.project_root / "agentic_core" / territory / file_path.name
-                    move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-                    action.update(move_result)
-                    if move_result.get("applied") and not dry_run:
-                        affected_paths.extend([file_path, target_path])
-                        if "import_files_touched" in move_result:
-                            for rel in move_result["import_files_touched"]:
-                                import_touched_paths.append(self.project_root / rel)
-                else:
-                    action["action_taken"] = "SKIPPED: Could not parse target territory"
-
-            # === BROKEN BACKUP DELETE ===
-            elif "BROKEN BACKUP FILE" in msg:
-                delete_result = self.safe_delete(file_path, dry_run=dry_run)
-                action.update(delete_result)
-                if delete_result.get("applied") and not dry_run:
-                    affected_paths.append(file_path)
-
-            # === FALLBACK ARCHIVING (Legacy behavior) ===
-            else:
-                if "VOID VIOLATION" in msg or "GRAVITY" in msg:
-                    target_subdir = archives_root / "void_violations"
-                elif "DEPTH VIOLATION" in msg:
-                    target_subdir = archives_root / "depth_violations"
-                elif "LAYER PREFIX VIOLATION" in msg:
-                    target_subdir = archives_root / "naming_violations"
-                else:
-                    target_subdir = archives_root / "location_violations"
-                    
-                target_path = target_subdir / file_path.name
-                move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-                if "MOVED" in move_result.get("action_taken", ""):
-                    move_result["action_taken"] = move_result["action_taken"].replace("MOVED", "ARCHIVED")
-                action.update(move_result)
-                if move_result.get("applied") and not dry_run:
-                    affected_paths.extend([file_path, target_path])
+            # Apply specific healing strategy
+            heal_result = self._apply_healing_strategy(
+                file_path, msg, archives_root, dry_run, 
+                affected_paths, import_touched_paths
+            )
+            action.update(heal_result)
                     
             actions.append(action)
 
