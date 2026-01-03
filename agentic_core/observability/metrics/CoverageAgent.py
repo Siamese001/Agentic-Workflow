@@ -10,11 +10,13 @@ from agentic_core.observability.metrics.layer_decorator import layer_entry
 
 # Gravity-safe imports for active interventions
 try:
-    from agentic_core.runtime.shared_runtime import publish_event
+    from agentic_core.runtime.shared_runtime import publish_event, subscribe_event
 except ImportError:
     # Stub if not available
     def publish_event(event_type: str, payload: dict):
         print(f"[CoverageAgent] Event published (stub): {event_type} = {payload}")
+    def subscribe_event(event_type: str, handler):
+        print(f"[CoverageAgent] Event subscription (stub): {event_type}")
 
 try:
     from agentic_core.L3_orchestration.workflow_engines.task_queue import enqueue
@@ -56,6 +58,17 @@ class CoverageAgent:
             "observability",
             "utils"
         ]
+        # PHASE 8: Subscribe to parameter updates from MetaCoverageOptimizerAgent
+        subscribe_event("coverage_params_updated", self._handle_param_update)
+
+    def _handle_param_update(self, event_data: Dict) -> None:
+        """Handle parameter updates from MetaCoverageOptimizerAgent."""
+        if "bias_weight" in event_data:
+            self.bias_weight = event_data["bias_weight"]
+            print(f"[{self.name}] Updated bias_weight to {self.bias_weight}")
+        if "synthetic_tasks_per_trigger" in event_data:
+            self.synthetic_tasks_per_trigger = event_data["synthetic_tasks_per_trigger"]
+            print(f"[{self.name}] Updated synthetic_tasks_per_trigger to {self.synthetic_tasks_per_trigger}")
 
     def _fetch_metrics(self) -> Optional[Dict[str, int]]:
         """Pull layer activation counts from dashboard backend."""
