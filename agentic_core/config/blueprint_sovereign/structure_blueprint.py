@@ -8,7 +8,9 @@ CONSOLIDATED VERSION: Reduced redundancy while preserving all information.
 """
 import os
 import re
-from typing import Any, Dict, List, Optional, Protocol, Set
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol, Set, Union
+
 CANON_KEY_EXCEPTIONS: Dict[int, Dict[str, Any]] = {23: {'files': {'agentic_core/L2_execution/mcp/fetch_client_sovereign.py'}, 'patterns': ['if TYPE_CHECKING:', '\\"\\"\\".*requests.*\\"\\"\\"']}, 20: {'files': {'canon_validator_agentic_v2.py', 'pyproject.toml'}, 'patterns': []}}
 ACTIVE_CANON_KEYS: Any = list(range(0, 20))
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {0: ['.'], 1: ['agentic_core/prompt_governance'], 2: ['agentic_core/schemas'], 3: ['agentic_core/L1_cognition'], 4: ['agentic_core/L3_orchestration'], 5: ['agentic_core/L4_state'], 6: ['agentic_core/L5_safety'], 7: ['agentic_core/L0_maintenance'], 8: ['agentic_core/L2_execution', 'agentic_core/patterns', 'agentic_core/semantic_memory', 'agentic_core/knowledge'], 9: ['agentic_core/config', 'agentic_core/runtime'], 10: ['agentic_core/utils', 'agentic_core/observability'], 11: ['apps_shared', 'apps_rg', 'apps_lic'], 12: ['tests'], 13: ['*'], 14: ['*'], 15: ['*'], 16: ['*'], 17: ['*'], 18: ['*'], 19: ['*']}
