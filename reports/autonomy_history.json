@@ -842,5 +842,290 @@
         "typing": 2.1
       }
     }
+  },
+  {
+    "date": "2026-01-03",
+    "portfolio": {
+      "health_score": 35.0,
+      "code_quality_score": 44.2,
+      "mcp_hardened": 0.0,
+      "typing": 74.2
+    },
+    "territories": {
+      "L5 Safety/Validators": {
+        "health_score": 51.2,
+        "code_quality_score": 50.7,
+        "mcp_hardened": 0.0,
+        "typing": 90.9
+      },
+      "L5 Safety/Guardrails": {
+        "health_score": 51.5,
+        "code_quality_score": 49.0,
+        "mcp_hardened": 0.0,
+        "typing": 79.5
+      },
+      "L5 Safety/Gravity": {
+        "health_score": 50.9,
+        "code_quality_score": 45.9,
+        "mcp_hardened": 0.0,
+        "typing": 83.8
+      },
+      "L5 Safety/Red Teaming": {
+        "health_score": 62.9,
+        "code_quality_score": 66.6,
+        "mcp_hardened": 0.0,
+        "typing": 100.0
+      },
+      "L4 State": {
+        "health_score": 44.9,
+        "code_quality_score": 51.1,
+        "mcp_hardened": 0.0,
+        "typing": 82.1
+      },
+      "L3 Orchestration": {
+        "health_score": 41.2,
+        "code_quality_score": 48.8,
+        "mcp_hardened": 0.0,
+        "typing": 85.6
+      },
+      "L2 Execution": {
+        "health_score": 29.9,
+        "code_quality_score": 43.4,
+        "mcp_hardened": 0.0,
+        "typing": 72.3
+      },
+      "L1 Cognition": {
+        "health_score": 27.8,
+        "code_quality_score": 46.3,
+        "mcp_hardened": 0.0,
+        "typing": 69.4
+      },
+      "L0 Maintenance": {
+        "health_score": 38.5,
+        "code_quality_score": 62.1,
+        "mcp_hardened": 0.0,
+        "typing": 92.0
+      },
+      "Apps Lic": {
+        "health_score": 25.7,
+        "code_quality_score": 44.5,
+        "mcp_hardened": 0.0,
+        "typing": 79.1
+      },
+      "Apps Rg": {
+        "health_score": 36.8,
+        "code_quality_score": 39.7,
+        "mcp_hardened": 0.0,
+        "typing": 63.4
+      },
+      "Apps Shared": {
+        "health_score": 37.2,
+        "code_quality_score": 61.1,
+        "mcp_hardened": 0.0,
+        "typing": 97.2
+      },
+      "Utils": {
+        "health_score": 24.1,
+        "code_quality_score": 40.2,
+        "mcp_hardened": 0.0,
+        "typing": 76.8
+      },
+      "Tests": {
+        "health_score": 20.3,
+        "code_quality_score": 21.0,
+        "mcp_hardened": 0.0,
+        "typing": 2.1
+      }
+    }
+  },
+  {
+    "date": "2026-01-03",
+    "portfolio": {
+      "health_score": 35.0,
+      "code_quality_score": 44.2,
+      "mcp_hardened": 0.0,
+      "typing": 74.2
+    },
+    "territories": {
+      "L5 Safety/Validators": {
+        "health_score": 51.2,
+        "code_quality_score": 50.7,
+        "mcp_hardened": 0.0,
+        "typing": 90.9
+      },
+      "L5 Safety/Guardrails": {
+        "health_score": 51.5,
+        "code_quality_score": 49.0,
+        "mcp_hardened": 0.0,
+        "typing": 79.5
+      },
+      "L5 Safety/Gravity": {
+        "health_score": 50.9,
+        "code_quality_score": 45.9,
+        "mcp_hardened": 0.0,
+        "typing": 83.8
+      },
+      "L5 Safety/Red Teaming": {
+        "health_score": 62.9,
+        "code_quality_score": 66.6,
+        "mcp_hardened": 0.0,
+        "typing": 100.0
+      },
+      "L4 State": {
+        "health_score": 44.9,
+        "code_quality_score": 51.1,
+        "mcp_hardened": 0.0,
+        "typing": 82.1
+      },
+      "L3 Orchestration": {
+        "health_score": 41.2,
+        "code_quality_score": 48.8,
+        "mcp_hardened": 0.0,
+        "typing": 85.6
+      },
+      "L2 Execution": {
+        "health_score": 29.9,
+        "code_quality_score": 43.4,
+        "mcp_hardened": 0.0,
+        "typing": 72.3
+      },
+      "L1 Cognition": {
+        "health_score": 27.8,
+        "code_quality_score": 46.3,
+        "mcp_hardened": 0.0,
+        "typing": 69.4
+      },
+      "L0 Maintenance": {
+        "health_score": 38.5,
+        "code_quality_score": 62.1,
+        "mcp_hardened": 0.0,
+        "typing": 92.0
+      },
+      "Apps Lic": {
+        "health_score": 25.7,
+        "code_quality_score": 44.5,
+        "mcp_hardened": 0.0,
+        "typing": 79.1
+      },
+      "Apps Rg": {
+        "health_score": 36.8,
+        "code_quality_score": 39.7,
+        "mcp_hardened": 0.0,
+        "typing": 63.4
+      },
+      "Apps Shared": {
+        "health_score": 37.2,
+        "code_quality_score": 61.1,
+        "mcp_hardened": 0.0,
+        "typing": 97.2
+      },
+      "Utils": {
+        "health_score": 24.1,
+        "code_quality_score": 40.2,
+        "mcp_hardened": 0.0,
+        "typing": 76.8
+      },
+      "Tests": {
+        "health_score": 20.3,
+        "code_quality_score": 21.0,
+        "mcp_hardened": 0.0,
+        "typing": 2.1
+      }
+    }
+  },
+  {
+    "date": "2026-01-03",
+    "portfolio": {
+      "health_score": 35.0,
+      "code_quality_score": 44.2,
+      "mcp_hardened": 0.0,
+      "typing": 74.2
+    },
+    "territories": {
+      "L5 Safety/Validators": {
+        "health_score": 51.2,
+        "code_quality_score": 50.7,
+        "mcp_hardened": 0.0,
+        "typing": 90.9
+      },
+      "L5 Safety/Guardrails": {
+        "health_score": 51.5,
+        "code_quality_score": 49.0,
+        "mcp_hardened": 0.0,
+        "typing": 79.5
+      },
+      "L5 Safety/Gravity": {
+        "health_score": 50.9,
+        "code_quality_score": 45.9,
+        "mcp_hardened": 0.0,
+        "typing": 83.8
+      },
+      "L5 Safety/Red Teaming": {
+        "health_score": 62.9,
+        "code_quality_score": 66.6,
+        "mcp_hardened": 0.0,
+        "typing": 100.0
+      },
+      "L4 State": {
+        "health_score": 44.9,
+        "code_quality_score": 51.1,
+        "mcp_hardened": 0.0,
+        "typing": 82.1
+      },
+      "L3 Orchestration": {
+        "health_score": 41.2,
+        "code_quality_score": 48.8,
+        "mcp_hardened": 0.0,
+        "typing": 85.6
+      },
+      "L2 Execution": {
+        "health_score": 29.9,
+        "code_quality_score": 43.4,
+        "mcp_hardened": 0.0,
+        "typing": 72.3
+      },
+      "L1 Cognition": {
+        "health_score": 27.8,
+        "code_quality_score": 46.3,
+        "mcp_hardened": 0.0,
+        "typing": 69.4
+      },
+      "L0 Maintenance": {
+        "health_score": 38.5,
+        "code_quality_score": 62.1,
+        "mcp_hardened": 0.0,
+        "typing": 92.0
+      },
+      "Apps Lic": {
+        "health_score": 25.7,
+        "code_quality_score": 44.5,
+        "mcp_hardened": 0.0,
+        "typing": 79.1
+      },
+      "Apps Rg": {
+        "health_score": 36.8,
+        "code_quality_score": 39.7,
+        "mcp_hardened": 0.0,
+        "typing": 63.4
+      },
+      "Apps Shared": {
+        "health_score": 37.2,
+        "code_quality_score": 61.1,
+        "mcp_hardened": 0.0,
+        "typing": 97.2
+      },
+      "Utils": {
+        "health_score": 24.1,
+        "code_quality_score": 40.2,
+        "mcp_hardened": 0.0,
+        "typing": 76.8
+      },
+      "Tests": {
+        "health_score": 20.3,
+        "code_quality_score": 21.0,
+        "mcp_hardened": 0.0,
+        "typing": 2.1
+      }
+    }
   }
 ]
