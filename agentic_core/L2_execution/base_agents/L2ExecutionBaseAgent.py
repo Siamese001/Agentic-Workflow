@@ -29,7 +29,6 @@ import json
 import os
 import re
 import subprocess
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -42,9 +41,11 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
 )
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+
+# NEW: Root inheritance
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Gemini optional import
 try:
@@ -66,14 +67,16 @@ def get_subatomic_engine(gemini_client: Any) -> Any:
 
 # Unified Base Class
 @dataclass
-class L2ExecutionBaseAgent(ABC, HealerMixin, SubatomicTestingMixin):
+class L2ExecutionBaseAgent(SovereignBaseAgent, SubatomicTestingMixin):
     """Unified L2 base class - replaces CanonBaseAgent + SubAtomicAgent.
     
     Features:
     - Async execution (mandatory)
     - Gemini client (optional via enable_gemini flag)
     - Subatomic testing (mandatory via mixin)
-    - Healing infrastructure (mandatory)
+    - Healing infrastructure (mandatory - from SovereignBaseAgent)
+    - Real logging (from SovereignBaseAgent)
+    - Standardized self-tests & heal_repository (from SovereignBaseAgent)
     - ValidationContext (mandatory)
     """
     ctx: ValidationContext
@@ -87,7 +90,9 @@ class L2ExecutionBaseAgent(ABC, HealerMixin, SubatomicTestingMixin):
 
     def __post_init__(self) -> None:
         """Shared initialization logic."""
-        self.name = self.__class__.__name__
+        # Call root for name + universal setup
+        super().__post_init__()
+        
         self.role = re.sub('(?<!^)(?=[A-Z])', '_', self.name).lower()
         
         # Conditional Gemini + subatomic initialization
@@ -95,14 +100,14 @@ class L2ExecutionBaseAgent(ABC, HealerMixin, SubatomicTestingMixin):
             api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
             if genai and api_key:
                 self._client = genai.Client(api_key=api_key)
-                print(f'[OK] {self.name} connected to Gemini', flush=True)
+                self.log_info("connected to Gemini")
                 try:
                     self._subatomic_engine = get_subatomic_engine(self._client)
-                    print(f'   [+] {self.name}: Sub-Atomic Engine initialized', flush=True)
+                    self.log_info("Sub-Atomic Engine initialized")
                 except Exception as e:
-                    print(f'   [!] {self.name}: Failed to init Sub-Atomic Engine: {e}', flush=True)
+                    self.log_error(f"Failed to init Sub-Atomic Engine: {e}")
             else:
-                print(f"[!] {self.name}: Gemini not available (API key: {'found' if api_key else 'missing'})", flush=True)
+                self.log_warning(f"Gemini not available (API key: {'found' if api_key else 'missing'})")
 
     def can_run(self) -> bool:
         """From SubAtomicAgent - default run unless critical failure."""
@@ -114,7 +119,7 @@ class L2ExecutionBaseAgent(ABC, HealerMixin, SubatomicTestingMixin):
         try:
             return await self.execute()
         except Exception as e:
-            print(f'   [X] [{self.name}] Error: {e}')
+            self.log_error(f"Execution error: {e}")
             raise
 
     @abstractmethod

@@ -1395,6 +1395,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 cc_health_component * 0.05 +   # Maintainability (reduced to accommodate typing)
                 perc_typed * 0.10              # Runtime safety via type hints (NEW)
             ), 1)
+            
+            # Code Quality Score (new separate metric)
+            # Focuses on static/maintainability quality, independent of operational health
+            # Weights: Typing (40%), MCP Capable (30%), Complexity Health (30%)
+            # Rationale: Decouple modernization and code hygiene from runtime autonomy signals
+            code_quality = round((
+                perc_typed * 0.40 +              # Strong predictor of fewer runtime errors
+                perc_mcp_capable * 0.30 +        # Modernization / external tool integration
+                cc_health_component * 0.30       # Structural maintainability
+            ), 1)
+            
             risk_score = 0
             if avg_cc > 10: risk_score += 3
             if perc_tests < 50: risk_score += 3
@@ -1732,6 +1743,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_observable * 0.10 +       # Visibility
                 total_cc_health * 0.05 +        # Maintainability (reduced to accommodate typing)
                 total_typed * 0.10              # Runtime safety via type hints (NEW)
+            ), 1)
+            
+            # Portfolio-wide Code Quality Score
+            total_code_quality = round((
+                total_typed * 0.40 +
+                total_mcp_capable * 0.30 +
+                total_cc_health * 0.30
             ), 1)
             
             total_row = {
