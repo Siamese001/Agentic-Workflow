@@ -300,54 +300,6 @@
             <div id="executive-content" class="tab-content">
                 <div class="kpi-grid" id="kpiGrid"></div>
 
-                <!-- Didactic Metrics Key -->
-                <div class="charts-grid full-width" style="margin:40px 0;">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title" style="font-size:1.6em;">📚 Dashboard Metrics Key</div>
-                            <div class="chart-subtitle">Core autonomy signals explained with analogies • Color coding: <span style="color:#16a34a;">Green ≥85%</span> | <span style="color:#96b746;">Yellow-Green 60-75%</span> | <span style="color:#eab308;">Yellow 40-60%</span> | <span style="color:#ea580c;">Orange 20-40%</span> | <span style="color:#dc2626;">Red <20%</span></div>
-                        </div>
-                        <div class="chart-body" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">Healing Capability</strong><br>
-                                % agents with heal_repository method (HealerMixin presence)<br><br>
-                                <i>Analogy:</i> Having a first-aid kit installed in your car<br>
-                                <i>Interview tip:</i> "Potential for self-repair — necessary but not sufficient"
-                            </div>
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">Healing Invocation</strong><br>
-                                % agents calling super().heal_repository()<br><br>
-                                <i>Analogy:</i> Actually using the first-aid kit during an accident (seatbelts buckled)<br>
-                                <i>Interview tip:</i> "Gap vs capability = unused safety — #1 autonomy blocker"
-                            </div>
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">MCP Hardened</strong><br>
-                                % agents with MCPShield protection against unsafe overrides<br><br>
-                                <i>Analogy:</i> Bulletproof vest for critical components<br>
-                                <i>Interview tip:</i> "Essential for L5 compliance and production safety"
-                            </div>
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">Health Score</strong><br>
-                                (Invocation % + Test % + Observability %) / 3<br><br>
-                                <i>Analogy:</i> Full medical checkup — holistic vitality<br>
-                                <i>Interview tip:</i> "Teaches interdependencies: one weak signal drags everything"
-                            </div>
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">Test Coverage</strong><br>
-                                % agents with dedicated test files or inline tests<br><br>
-                                <i>Analogy:</i> Safety net under a tightrope walker<br>
-                                <i>Interview tip:</i> "Blocks safe hardening without regression protection"
-                            </div>
-                            <div class="kpi-box primary" style="padding:20px;">
-                                <strong style="font-size:1.1em;">Avg Complexity</strong><br>
-                                Cyclomatic complexity (lower = cleaner code)<br><br>
-                                <i>Analogy:</i> Tangled Christmas lights — high = knots blocking safe additions<br>
-                                <i>Interview tip:</i> "Target ≤10 enables rapid, safe healing extensions"
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Top 3 Recommendations Section -->
                 <div class="charts-grid full-width" style="margin-top:30px;">
                     <div class="chart-card">
@@ -361,11 +313,20 @@
                     </div>
                 </div>
 
-                <div class="charts-grid full-width">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Health Score by Territory</div>
+                            <div class="chart-subtitle">Click any bar to drill down into per-agent diagnostics</div>
+                        </div>
+                        <div class="chart-body">
+                            <div id="healthChart"></div>
+                        </div>
+                    </div>
                     <div class="chart-card">
                         <div class="chart-header">
                             <div class="chart-title">Risk Matrix</div>
-                            <div class="chart-subtitle">Complexity vs compliance (bubble size = usage)</div>
+                            <div class="chart-subtitle">Complexity vs compliance (bubble size = usage) • Click to drill down</div>
                         </div>
                         <div class="chart-body">
                             <div id="riskMatrix"></div>
@@ -519,14 +480,14 @@
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
                         <thead>
                             <tr style="background:var(--primary); color:white;">
-                                <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;"># Agents</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Heal Capability %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Heal Invocation %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">MCP Hardened %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Test Coverage %</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Avg Complexity</th>
-                                <th style="padding:16px; text-align:center; font-weight:600;">Health Score</th>
+                                <th style="padding:16px; text-align:left; font-weight:600;" title="Click any territory to drill down into per-agent diagnostics">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Total number of agents in this territory"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers (agents) with personal repair toolkits — Each has their own customized fix-it list">Heal Capability %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers actually consulting the master factory safety checklist — Using the centralized healing protocol">Heal Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with security hardening around MCP — Protection against dangerous operations (NOT about using MCP capabilities)">MCP Hardened %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with quality control inspections — Each station has verification procedures">Test Coverage %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Average workflow complexity — Tangled assembly lines slow down production (target ≤10 steps)">Avg Complexity</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;" title="Composite health score: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5">Health Score</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -584,11 +545,11 @@
                     const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
                     return getGradientBg(inverted, 80);
                 };
-                const healthColor = totalRow.Health >= 85 ? '#16a34a' : totalRow.Health >= 75 ? '#42a35a' : totalRow.Health >= 60 ? '#96b746' : totalRow.Health >= 40 ? '#eab308' : totalRow.Health >= 20 ? '#ea580c' : '#dc2626';
-                const invocationColor = totalRow['Invocation %'] >= 85 ? '#16a34a' : totalRow['Invocation %'] >= 75 ? '#42a35a' : totalRow['Invocation %'] >= 60 ? '#96b746' : totalRow['Invocation %'] >= 40 ? '#eab308' : totalRow['Invocation %'] >= 20 ? '#ea580c' : '#dc2626';
-                const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#16a34a' : (totalRow['Hardened %'] || 0) >= 75 ? '#42a35a' : (totalRow['Hardened %'] || 0) >= 60 ? '#96b746' : (totalRow['Hardened %'] || 0) >= 40 ? '#eab308' : (totalRow['Hardened %'] || 0) >= 20 ? '#ea580c' : '#dc2626';
-                const testColor = totalRow['Test %'] >= 85 ? '#16a34a' : totalRow['Test %'] >= 75 ? '#42a35a' : totalRow['Test %'] >= 60 ? '#96b746' : totalRow['Test %'] >= 40 ? '#eab308' : totalRow['Test %'] >= 20 ? '#ea580c' : '#dc2626';
-                const ccColor = totalRow['Avg CC'] <= 10 ? '#16a34a' : totalRow['Avg CC'] <= 15 ? '#42a35a' : totalRow['Avg CC'] <= 20 ? '#96b746' : totalRow['Avg CC'] <= 30 ? '#eab308' : totalRow['Avg CC'] <= 40 ? '#ea580c' : '#dc2626';
+                const healthColor = totalRow.Health >= 85 ? '#065f46' : totalRow.Health >= 75 ? '#047857' : totalRow.Health >= 60 ? '#65a30d' : totalRow.Health >= 40 ? '#a16207' : totalRow.Health >= 20 ? '#c2410c' : '#991b1b';
+                const invocationColor = totalRow['Invocation %'] >= 85 ? '#065f46' : totalRow['Invocation %'] >= 75 ? '#047857' : totalRow['Invocation %'] >= 60 ? '#65a30d' : totalRow['Invocation %'] >= 40 ? '#a16207' : totalRow['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
+                const hardenedColor = (totalRow['Hardened %'] || 0) >= 85 ? '#065f46' : (totalRow['Hardened %'] || 0) >= 75 ? '#047857' : (totalRow['Hardened %'] || 0) >= 60 ? '#65a30d' : (totalRow['Hardened %'] || 0) >= 40 ? '#a16207' : (totalRow['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
+                const testColor = totalRow['Test %'] >= 85 ? '#065f46' : totalRow['Test %'] >= 75 ? '#047857' : totalRow['Test %'] >= 60 ? '#65a30d' : totalRow['Test %'] >= 40 ? '#a16207' : totalRow['Test %'] >= 20 ? '#c2410c' : '#991b1b';
+                const ccColor = totalRow['Avg CC'] <= 10 ? '#065f46' : totalRow['Avg CC'] <= 15 ? '#047857' : totalRow['Avg CC'] <= 20 ? '#65a30d' : totalRow['Avg CC'] <= 30 ? '#a16207' : totalRow['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
                 
                 html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
@@ -658,15 +619,19 @@
                     return getGradientBg(inverted, 80);
                 };
                 
-                const healthColor = row.Health >= 85 ? '#16a34a' : row.Health >= 75 ? '#42a35a' : row.Health >= 60 ? '#96b746' : row.Health >= 40 ? '#eab308' : row.Health >= 20 ? '#ea580c' : '#dc2626';
-                const invocationColor = row['Invocation %'] >= 85 ? '#16a34a' : row['Invocation %'] >= 75 ? '#42a35a' : row['Invocation %'] >= 60 ? '#96b746' : row['Invocation %'] >= 40 ? '#eab308' : row['Invocation %'] >= 20 ? '#ea580c' : '#dc2626';
-                const hardenedColor = (row['Hardened %'] || 0) >= 85 ? '#16a34a' : (row['Hardened %'] || 0) >= 75 ? '#42a35a' : (row['Hardened %'] || 0) >= 60 ? '#96b746' : (row['Hardened %'] || 0) >= 40 ? '#eab308' : (row['Hardened %'] || 0) >= 20 ? '#ea580c' : '#dc2626';
-                const testColor = row['Test %'] >= 85 ? '#16a34a' : row['Test %'] >= 75 ? '#42a35a' : row['Test %'] >= 60 ? '#96b746' : row['Test %'] >= 40 ? '#eab308' : row['Test %'] >= 20 ? '#ea580c' : '#dc2626';
-                const ccColor = row['Avg CC'] <= 10 ? '#16a34a' : row['Avg CC'] <= 15 ? '#42a35a' : row['Avg CC'] <= 20 ? '#96b746' : row['Avg CC'] <= 30 ? '#eab308' : row['Avg CC'] <= 40 ? '#ea580c' : '#dc2626';
+                const healthColor = row.Health >= 85 ? '#065f46' : row.Health >= 75 ? '#047857' : row.Health >= 60 ? '#65a30d' : row.Health >= 40 ? '#a16207' : row.Health >= 20 ? '#c2410c' : '#991b1b';
+                const invocationColor = row['Invocation %'] >= 85 ? '#065f46' : row['Invocation %'] >= 75 ? '#047857' : row['Invocation %'] >= 60 ? '#65a30d' : row['Invocation %'] >= 40 ? '#a16207' : row['Invocation %'] >= 20 ? '#c2410c' : '#991b1b';
+                const hardenedColor = (row['Hardened %'] || 0) >= 85 ? '#065f46' : (row['Hardened %'] || 0) >= 75 ? '#047857' : (row['Hardened %'] || 0) >= 60 ? '#65a30d' : (row['Hardened %'] || 0) >= 40 ? '#a16207' : (row['Hardened %'] || 0) >= 20 ? '#c2410c' : '#991b1b';
+                const testColor = row['Test %'] >= 85 ? '#065f46' : row['Test %'] >= 75 ? '#047857' : row['Test %'] >= 60 ? '#65a30d' : row['Test %'] >= 40 ? '#a16207' : row['Test %'] >= 20 ? '#c2410c' : '#991b1b';
+                const ccColor = row['Avg CC'] <= 10 ? '#065f46' : row['Avg CC'] <= 15 ? '#047857' : row['Avg CC'] <= 20 ? '#65a30d' : row['Avg CC'] <= 30 ? '#a16207' : row['Avg CC'] <= 40 ? '#c2410c' : '#991b1b';
                 
                 html += `
-                    <tr style="border-bottom:1px solid #e5e7eb;">
-                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Territory}</td>
+                    <tr style="border-bottom:1px solid #e5e7eb; cursor:pointer; transition:background 0.2s;" 
+                        onmouseover="this.style.background='#f0f9ff'" 
+                        onmouseout="this.style.background='${index % 2 === 0 ? '#f9fafb' : 'white'}'" 
+                        onclick="openDrillModal('${row.Territory}')" 
+                        title="Click to view detailed per-agent diagnostics for ${row.Territory}">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb; color:var(--primary);">${row.Territory}</td>
                         <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
@@ -681,11 +646,18 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="margin-top:16px; color:var(--text-light); font-size:0.95em; font-style:italic;">
-                    <strong>Key:</strong> Heal Capability = agents with heal_repository method | Heal Invocation = agents calling super().heal_repository() | MCP Hardened = agents with MCPShield protection<br>
-                    <strong>Health Score Formula:</strong> (Heal Invocation % + Test Coverage % + Observability %) / 3 — <em>Note: Observability % not shown in table (cross-cutting metric)</em><br>
-                    <strong>Color Gradient (7 levels):</strong> <span style="color:#8b0000;">Deep Red 0-20%</span> → <span style="color:#dc2626;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#eab308;">Yellow 60-75%</span> → <span style="color:#96b746;">Yellow-Green 75-85%</span> → <span style="color:#42a35a;">Light Green 85-95%</span> → <span style="color:#16a34a;">Green 95-100%</span>
-                </p>
+                <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">
+                    <strong style="font-size:1.1em; color:var(--primary);">📚 Dashboard Metrics Key (Factory Analogy)</strong>
+                    <div style="margin-top:12px; font-size:0.9em; line-height:1.8;">
+                        <p style="margin:8px 0;"><strong>Heal Capability:</strong> % workers (agents) with personal repair toolkits — <em>Each worker has their own customized fix-it list for their station</em></p>
+                        <p style="margin:8px 0;"><strong>Heal Invocation:</strong> % workers consulting the master factory safety checklist — <em>Actually using the centralized healing protocol when problems occur</em></p>
+                        <p style="margin:8px 0;"><strong>MCP Hardened:</strong> % workers with security hardening around MCP — <em>Protection against dangerous operations (NOT about using MCP capabilities)</em></p>
+                        <p style="margin:8px 0;"><strong>Test Coverage:</strong> % workers with quality control inspections — <em>Each station has verification procedures before shipping</em></p>
+                        <p style="margin:8px 0;"><strong>Avg Complexity:</strong> Average workflow complexity — <em>Tangled assembly lines with too many steps slow down production (target ≤10 steps)</em></p>
+                        <p style="margin:8px 0;"><strong>Health Score:</strong> (Heal Cap % + Invocation % + Test % + Observability % + Inverted CC) / 5 — <em>Full medical checkup; holistic vitality. Gives credit for having healing infrastructure and penalizes code tangles</em></p>
+                        <p style="margin:8px 0;"><strong>Color Gradient:</strong> <span style="color:#991b1b;">Deep Red 0-20%</span> → <span style="color:#c2410c;">Red 20-40%</span> → <span style="color:#ea580c;">Orange 40-60%</span> → <span style="color:#a16207;">Yellow 60-75%</span> → <span style="color:#65a30d;">Yellow-Green 75-85%</span> → <span style="color:#047857;">Light Green 85-95%</span> → <span style="color:#065f46;">Green 95-100%</span></p>
+                    </div>
+                </div>
             </div>`;
             
             container.innerHTML = html;
@@ -860,9 +832,9 @@
             trace1.hovertemplate = 
                 '<b>%{x}</b><br>' +
                 'Healing Invocation: <b>%{y:.1f}%</b><br><br>' +
-                '<i>Analogy:</i> Like seatbelts in a car — agents have the feature (capabilities), but this shows how often they actually buckle up when crashing (errors)<br>' +
-                'Gap vs capabilities = unused safety potential<br>' +
-                'Target ≥80% for true autonomy<extra></extra>';
+                '<i>Factory Analogy:</i> Workers have personal toolkits (capabilities), but this shows how often they consult the master factory safety checklist when problems occur<br>' +
+                'Gap vs capabilities = workers ignoring centralized healing protocol<br>' +
+                'Target ≥80% for coordinated factory-wide error recovery<extra></extra>';
 
             Plotly.newPlot('healingChart', [trace1], layout, { responsive: true, displayModeBar: false });
         }
@@ -1101,9 +1073,9 @@
                 // Simple analogy based on gap type
                 let analogy = '';
                 if (rec.gaps.includes('Invocation')) {
-                    analogy = '🚨 Seatbelts installed but never buckled';
+                    analogy = '🚨 Workers ignoring master factory safety checklist';
                 } else if (rec.gaps.includes('Tests')) {
-                    analogy = '⚠️ Safety net missing';
+                    analogy = '⚠️ No quality control inspections';
                 } else if (rec.gaps.includes('Observability')) {
                     analogy = '👁️ Flying blind';
                 } else {
@@ -1216,8 +1188,8 @@ ${rec.guidance.split('\n').map((line, i) =>
                 {
                     question: "Explain the difference between healing capabilities and invocation in autonomous agents.",
                     concept: "Healing Gap",
-                    analogy: "Capabilities = having a first-aid kit in your car; Invocation = actually using it during an accident",
-                    answer: "- Capabilities: HealerMixin presence (potential self-repair)\n- Invocation: Explicit super().heal_repository() calls (actual usage)\n- Gap shows unused safety — critical for resilience\n- In our portfolio: 66.6% capability vs 12.3% invocation = major opportunity",
+                    analogy: "Factory: Capabilities = workers have personal toolkits; Invocation = workers consulting master factory safety checklist",
+                    answer: "- Capabilities: HealerMixin presence (workers have personal repair tools)\n- Invocation: Explicit super().heal_repository() calls (workers using centralized healing protocol)\n- Gap shows workers ignoring factory-wide safety procedures\n- In our portfolio: 66.6% capability vs 12.3% invocation = workers not coordinating repairs",
                     signal: "invocation_gap"
                 },
                 {
@@ -1258,15 +1230,15 @@ ${rec.guidance.split('\n').map((line, i) =>
                 {
                     question: "What are risks of low healing invocation despite high capabilities?",
                     concept: "Invocation Gap",
-                    analogy: "Seatbelts installed but never buckled — safety feature exists but unused",
-                    answer: "- Agents crash without self-repair\n- Shared healing diagnostics/rollback never trigger\n- Fix: Add explicit super() chains",
+                    analogy: "Factory: Workers have toolkits but ignore master safety checklist — no coordinated factory-wide recovery",
+                    answer: "- Workers fix problems in isolation without coordinating\n- Shared healing diagnostics/rollback never trigger\n- Factory-wide issues cascade unhandled\n- Fix: Add explicit super() chains to consult master checklist",
                     signal: "invocation_gap"
                 },
                 {
                     question: "Explain MCP hardening in agentic systems.",
                     concept: "MCP Hardening",
-                    analogy: "Bulletproof vest for critical components — protects core logic",
-                    answer: "- MCPShield mixin + decorators prevent unsafe overrides\n- Currently 0% — major safety gap\n- Essential for L5 compliance",
+                    analogy: "Security hardening around MCP connections — protects factory from dangerous operations",
+                    answer: "- MCPShield mixin + decorators prevent unsafe overrides\n- This is SECURITY around MCP, NOT about using MCP capabilities\n- Currently 0% — major safety gap\n- Essential for L5 compliance",
                     signal: "mcp_gap"
                 },
                 {
@@ -1360,6 +1332,7 @@ ${rec.guidance.split('\n').map((line, i) =>
 
             renderTerritorySummaryTable(territoryData);
             renderTopRecommendations();
+            renderHealthChart(territoryData);
             renderRiskMatrix(territoryData);
             renderRecommendations();
             renderInterviewQuestions(totalRow);
@@ -1378,7 +1351,7 @@ ${rec.guidance.split('\n').map((line, i) =>
             document.getElementById('modalTitle').textContent = `${territoryName} Territory Drill-Down`;
             document.getElementById('modalSubtitle').textContent = `${row.Total} agents • Health ${row.Health.toFixed(1)}% • Invocation ${row['Invocation %'].toFixed(1)}%`;
 
-            let content = '<strong style="font-size:1.2em;">Key Metrics Recap:</strong><ul style="margin-top:10px;">';
+            let content = '<strong style="font-size:1.2em;">Territory Metrics Recap:</strong><ul style="margin-top:10px;">';
             content += `<li>Healing Capability: <strong>${row['Heal Cap %'].toFixed(1)}%</strong></li>`;
             content += `<li>Healing Invocation: <strong>${row['Invocation %'].toFixed(1)}%</strong> (gap = opportunity)</li>`;
             content += `<li>MCP Hardened: <strong>${(row['Hardened %'] || 0).toFixed(1)}%</strong></li>`;
@@ -1386,21 +1359,82 @@ ${rec.guidance.split('\n').map((line, i) =>
             content += `<li>Avg Complexity: <strong>${row['Avg CC'].toFixed(1)}</strong></li>`;
             content += '</ul>';
 
-            if (row.file_links && row.file_links.length > 0) {
-                content += '<strong style="font-size:1.2em; margin-top:20px; display:block;">Clickable Agents (' + row.file_links.length + '):</strong>';
-                content += '<div style="columns:2; column-gap:30px; margin-top:12px;">';
-                content += '<ul style="list-style:none; padding:0;">';
-                row.file_links.forEach(f => {
-                    content += `<li style="margin-bottom:16px;">
-                        <a href="vscode://file/${f.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-weight:600; font-size:0.95em;">
-                            ${f.rel} → class (line ${f.class_line})
-                        </a><br>
-                        <small><a href="vscode://file/${f.abs_file}" target="_blank" style="color:var(--text-light);">Open full file</a></small>
-                    </li>`;
+            // Per-agent diagnostics table
+            if (row.agents && row.agents.length > 0) {
+                content += '<strong style="font-size:1.4em; margin:30px 0 15px 0; display:block;">Per-Agent Diagnostics (' + row.agents.length + ' agents)</strong>';
+                content += '<table style="width:100%; border-collapse:collapse; font-size:0.95em; margin-top:10px;">';
+                content += '<thead><tr style="background:#f1f5f9; border-bottom:2px solid var(--border);">';
+                content += '<th style="text-align:left; padding:12px; font-weight:600;" title="Click to open in VS Code">Agent File</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Has HealerMixin in class bases">HealerMixin</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Calls super().heal_repository() - seatbelt analogy">Invocation Chain</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Has dedicated test coverage">Tests</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Observability = dash cams + health trackers\nLogging: structured_log calls\nMetrics: log_metric\nTracing: span starts\nEssential for production debugging">Observability Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="MCP Hardening = security hardening around MCP connections (NOT about using MCP)\nShield: MCPShield mixin inheritance\n@hardened: decorator on critical methods\nSafe: no direct os/subprocess calls\nEssential for L5 safety and production trust">MCP Hardening Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Typing = clear road signs\nInit: __init__ params/return typed\nMethods: >70% defs typed\nReturns: return annotations\nEnables static analysis + safe refactoring">Typing Flags</th>';
+                content += '<th style="padding:12px; font-weight:600;" title="Cyclomatic complexity (lower = better)">Complexity</th>';
+                content += '</tr></thead><tbody>';
+
+                row.agents.forEach(agent => {
+                    const mixinIcon = agent.has_mixin 
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">Yes</span>' 
+                        : '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">No</span>';
+                    
+                    let invIcon;
+                    if (agent.invocation === "Yes" || agent.invocation === "Inherited") {
+                        invIcon = '<span style="color:#16a34a; font-weight:700;">✓</span> <span style="color:#16a34a;">' + agent.invocation + '</span>';
+                    } else if (agent.invocation === "Unknown") {
+                        invIcon = '<span style="color:#94a3b8;">?</span> <span style="color:#94a3b8;">Unknown</span>';
+                    } else {
+                        invIcon = '<span style="color:#dc2626; font-weight:700;">✗</span> <span style="color:#dc2626;">' + agent.invocation + '</span>';
+                    }
+                    
+                    const testIcon = agent.has_tests 
+                        ? '<span style="color:#16a34a; font-weight:700;">✓</span>' 
+                        : '<span style="color:#dc2626; font-weight:700;">✗</span>';
+                    
+                    const typedColor = getColor(agent.typed_pct, true);
+                    const complexityColor = getColor(agent.complexity, false);
+                    
+                    // Observability flags with color coding
+                    const obsTitle = "Observability flags:\nLogging: structured logs\nMetrics: log_metric calls\nTracing: OpenTelemetry spans\nEssential for production debugging";
+                    const obsSummary = agent.obs_summary || "Logging: ✗ | Metrics: ✗ | Tracing: ✗";
+                    
+                    // MCP Hardening flags with color coding
+                    const mcpTitle = "MCP Hardening flags:\nShield: MCPShield mixin (core protection)\n@hardened: method decorator\nSafe: no unsafe exec patterns\nCurrently 10.1% portfolio-wide — major L5 gap";
+                    const mcpSummary = agent.mcp_summary || "Shield: ✗ | @hardened: ✗ | Safe: ✓";
+                    
+                    // Typing flags with color coding
+                    const typingTitle = "Typing flags:\nInit Typed: params + return hints\nMethods Typed: % of defs with hints\nReturns Annotated: return types\nCurrent portfolio ~58% — aim 90%+ for maintainability";
+                    const typingSummary = agent.typing_summary || "Init: ✗ | Methods: 0% | Returns: 0%";
+                    const overallTyped = agent.overall_typed_pct || 0;
+                    
+                    content += `<tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:12px;">
+                            <a href="vscode://file/${agent.abs_class}" target="_blank" style="color:var(--primary); font-family:monospace; font-size:0.9em; font-weight:600;">
+                                ${agent.rel}
+                            </a><br>
+                            <small style="color:var(--text-light);">
+                                <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Line ${agent.class_line}</a> | 
+                                <a href="vscode://file/${agent.abs_file}" target="_blank" style="color:var(--text-light);">Full file</a>
+                            </small>
+                        </td>
+                        <td style="padding:12px; text-align:center;">${mixinIcon}</td>
+                        <td style="padding:12px; text-align:center;">${invIcon}</td>
+                        <td style="padding:12px; text-align:center;">${testIcon}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${obsTitle}">${obsSummary}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${mcpTitle}">${mcpSummary}</td>
+                        <td style="padding:12px; text-align:center; font-size:0.85em;" title="${typingTitle}">${typingSummary}<br><small style="color:var(--text-light);">${overallTyped}% overall</small></td>
+                        <td style="padding:12px; text-align:center; color:${complexityColor}; font-weight:600;">${agent.complexity}</td>
+                    </tr>`;
                 });
-                content += '</ul></div>';
+                content += '</tbody></table>';
+                
+                content += '<p style="margin-top:15px; font-size:0.9em; color:var(--text-light); font-style:italic;">';
+                content += '<strong>Windsurf Priority:</strong> Agents with ✗ on HealerMixin, Invocation Chain, Observability, MCP Hardening, or weak Typing are sorted first. ';
+                content += 'Click any file link → add HealerMixin to bases, super().heal_repository() calls, observability imports (structured_log, log_metric), MCPShield mixin + @hardened decorators, or type annotations (: Type) → re-run report.';
+                content += '</p>';
             } else {
-                content += '<p style="margin-top:20px; color:var(--text-light);">No detailed agent links available for this territory. File links are generated for territories with gaps.</p>';
+                content += '<p style="margin-top:20px; color:var(--text-light);">No per-agent diagnostics available for this territory.</p>';
             }
 
             document.getElementById('modalContent').innerHTML = content;

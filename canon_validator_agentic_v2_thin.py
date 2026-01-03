@@ -10,6 +10,15 @@ import asyncio
 import argparse
 import traceback
 from pathlib import Path
+from datetime import datetime
+
+# ----------------------------------------------------------------------
+# NEW: Hybrid Interactive Discovery (Cached JSON ↔ Live Scan)
+# ----------------------------------------------------------------------
+try:
+    from agentic_core.utils.discovery.Full_Agent_discovery import discover_all_agents
+except ImportError:
+    discover_all_agents = None
 
 # [ETERNAL UTF-8] Force Windows consoles to handle unicode symbols
 if sys.platform.startswith("win"):
@@ -120,28 +129,87 @@ def main():
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
     
-    # Helper: Load agents from agent_discovery_full.json (396 agents - authoritative source)
+    # Helper to process discovery data → agent tuples
+    def process_discovery_data(data):
+        processed = []
+        for agent in data:
+            class_name = agent.get("class_name", "")
+            if not class_name:
+                continue
+            path = agent.get("path", "").replace("\\", "/")
+            module_path = path.replace("/", ".").replace(".py", "")
+            processed.append((class_name, module_path))
+        return processed
+
+    # Replace the entire original list_available_agents with this new version
     def list_available_agents(dedupe: bool = True) -> list:
-        """Load agents from agent_discovery_full.json - the authoritative AST scan result."""
+        """Hybrid agent discovery: prefer cached JSON with user prompt to fallback/refresh via live scan."""
         import json
+        
         agents = []
         json_path = project_root / "agent_discovery_full.json"
-        
+
+        # Case 1: Cached JSON exists → prompt user
         if json_path.exists():
-            try:
-                data = json.loads(json_path.read_text(encoding="utf-8"))
-                for agent in data:
-                    class_name = agent.get("class_name", "")
-                    path = agent.get("path", "").replace("\\", "/")
-                    # Convert path to module format
-                    module_path = path.replace("/", ".").replace(".py", "")
-                    agents.append((class_name, module_path))
-            except Exception:
-                pass
-        
+            print(f"\n[*] Cached agent discovery found ({json_path.name}, {json_path.stat().st_mtime:.0f} timestamp)")
+            choice = input("   Use cached JSON (faster) [Y/n]? ").strip().lower()
+            if choice != "n":  # Default yes
+                try:
+                    data = json.loads(json_path.read_text(encoding="utf-8"))
+                    agents = process_discovery_data(data)
+                    print(f"   [OK] Loaded {len(agents)} agents from cache")
+                except Exception as e:
+                    print(f"   [!] Cache corrupt: {e}")
+            # User wants fresh scan (fall through to live scan block)
+
+        # Case 2: No cache or user requested refresh → try live scan
+        if not agents:  # Either no cache, corrupt, or user chose refresh
+            if discover_all_agents is None:
+                print("   [!] Live discovery module not available (Full_Agent_discovery.py missing/wrong path)")
+                if json_path.exists():
+                    print("   [FALLBACK] Forcing load from (possibly outdated) cache")
+                    try:
+                        data = json.loads(json_path.read_text(encoding="utf-8"))
+                        agents = process_discovery_data(data)
+                    except Exception:
+                        pass
+                if not agents:
+                    print("   [ERROR] No agent list available — aborting discovery")
+                    return []
+            else:
+                # Prompt only if we reached here because cache was skipped/corrupt
+                if json_path.exists():
+                    print("   Proceeding with live scan as requested...")
+                else:
+                    print(f"\n[*] No cached discovery file found.")
+                    choice = input("   Run live agent discovery now [Y/n]? ").strip().lower()
+                    if choice == "n":
+                        print("   [ABORT] Cannot proceed without agent list")
+                        return []
+
+                print("   [RUNNING] Live AST discovery via Full_Agent_discovery.discover_all_agents()...")
+                try:
+                    discovery_data = discover_all_agents(project_root)  # ← adjust arg type if needed (Path/str)
+                    agents = process_discovery_data(discovery_data)
+                    print(f"   [OK] Discovered {len(agents)} agents (fresh)")
+
+                    # Auto-save cache for next run
+                    try:
+                        json_path.write_text(json.dumps(discovery_data, indent=2), encoding="utf-8")
+                        print(f"   [CACHE] Saved fresh discovery to {json_path}")
+                    except Exception as e:
+                        print(f"   [!] Could not save cache: {e}")
+                except Exception as e:
+                    print(f"   [!] Live discovery failed: {e}")
+                    traceback.print_exc()
+                    return []
+
         if dedupe:
-            return sorted(set(agents), key=lambda x: (x[0], x[1]))
-        return sorted(agents, key=lambda x: (x[0], x[1]))
+            agents = sorted(set(agents), key=lambda x: (x[0], x[1]))
+        else:
+            agents = sorted(agents, key=lambda x: (x[0], x[1]))
+
+        return agents
     
     # Handle --list-agents
     if args.list_agents:

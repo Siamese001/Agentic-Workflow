@@ -1362,7 +1362,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             avg_cc = round(metrics["cc_sum"] / max(total, 1), 1)
             
             # Calculate health and risk
-            health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
+            # New formula: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5
+            # Inverted CC: normalize to 0-100 scale where lower CC = higher score
+            cc_health_component = max(0, min(100, 100 - (avg_cc * 2)))  # CC of 0 = 100%, CC of 50 = 0%
+            health = round((perc_healing_cap + perc_healing_invoke + perc_tests + perc_observable + cc_health_component) / 5, 1)
             risk_score = 0
             if avg_cc > 10: risk_score += 3
             if perc_tests < 50: risk_score += 3
@@ -1380,7 +1383,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             territory_name = territory_key.replace("_", " ").title()
             
-            # Add to dashboard data
+            # Add to dashboard data (agents array will be added after collection below)
             row = {
                 "Territory": territory_name,
                 "Total": total,
@@ -1399,31 +1402,227 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Used %": perc_used,
                 "Priority": priority
             }
-            dashboard_rows.append(row)
             
-            # Collect clickable file paths with class line detection
-            file_links = []
+            # Collect per-agent diagnostics with detailed metrics
+            territory_agents = []
             for agent in agents:
                 rel_str = str(agent.relative_to(self.project_root))
                 abs_str = agent.resolve().as_posix()
-                class_line = 1  # fallback
+                class_line = 1
+                has_mixin = False
+                invocation_status = "Unknown"
+                has_tests = False
+                agent_typed_pct = 0
+                agent_complexity = 0
+                
                 try:
                     with open(agent, "r", encoding="utf-8") as f:
                         source = f.read()
                     tree = ast.parse(source, filename=rel_str)
-                    for node in ast.iter_child_nodes(tree):
+                    
+                    # Detect HealerMixin in class bases
+                    for node in ast.walk(tree):
                         if isinstance(node, ast.ClassDef):
-                            class_line = node.lineno
-                            break  # First class definition (primary agent class)
+                            if class_line == 1:
+                                class_line = node.lineno
+                            # Check for HealerMixin in bases
+                            for base in node.bases:
+                                if isinstance(base, ast.Name) and base.id == "HealerMixin":
+                                    has_mixin = True
+                                elif isinstance(base, ast.Attribute) and base.attr == "HealerMixin":
+                                    has_mixin = True
+                    
+                    # Detect heal_repository invocation
+                    invocation_status = "Inherited"  # Default if no override
+                    heal_methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"]
+                    if heal_methods:
+                        # Check if super().heal_repository() is called
+                        has_super_call = False
+                        for node in ast.walk(heal_methods[0]):
+                            if isinstance(node, ast.Call):
+                                if isinstance(node.func, ast.Attribute) and node.func.attr == "heal_repository":
+                                    if isinstance(node.func.value, ast.Call):
+                                        if isinstance(node.func.value.func, ast.Name) and node.func.value.func.id == "super":
+                                            has_super_call = True
+                                            break
+                        invocation_status = "Yes" if has_super_call else "No (missing super)"
+                    
+                    # Observability flags detection
+                    obs_logging = False
+                    obs_metrics = False
+                    obs_tracing = False
+                    
+                    # Check for logging imports
+                    imports_logging = any(
+                        (isinstance(node, ast.Import) and any(alias.name == "logging" for alias in node.names)) or
+                        (isinstance(node, ast.ImportFrom) and node.module and "logging" in node.module)
+                        for node in ast.walk(tree)
+                    )
+                    imports_obs = any(
+                        isinstance(node, ast.ImportFrom) and node.module and "observability" in node.module
+                        for node in ast.walk(tree)
+                    )
+                    
+                    # Check for observability call patterns
+                    calls_structured = sum(
+                        1 for node in ast.walk(tree) 
+                        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "structured_log"
+                    )
+                    calls_metric = sum(
+                        1 for node in ast.walk(tree)
+                        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "log_metric"
+                    )
+                    calls_trace = any(
+                        isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr in ["trace", "start_span"]
+                        for node in ast.walk(tree)
+                    )
+                    imports_otel = any(
+                        isinstance(node, ast.ImportFrom) and node.module and "opentelemetry" in node.module
+                        for node in ast.walk(tree)
+                    )
+                    
+                    # Set flags
+                    obs_logging = imports_logging or imports_obs or calls_structured > 0
+                    obs_metrics = calls_metric > 0 or calls_structured > 0  # structured_log often dual-use
+                    obs_tracing = calls_trace or imports_otel
+                    
+                    obs_summary = f"Logging: {'✓' if obs_logging else '✗'} | Metrics: {'✓' if obs_metrics else '✗'} | Tracing: {'✓' if obs_tracing else '✗'}"
+                    
+                    # MCP Hardening flags detection
+                    has_mcpshield = False
+                    has_hardened_decorator = False
+                    mcp_safe_overrides = True  # Innocent until proven guilty
+                    
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.ClassDef):
+                            # Check for MCPShield in bases
+                            for base in node.bases:
+                                if isinstance(base, ast.Name) and base.id == "MCPShield":
+                                    has_mcpshield = True
+                                elif isinstance(base, ast.Attribute) and base.attr == "MCPShield":
+                                    has_mcpshield = True
+                            
+                            # Check for @hardened decorator on class or methods
+                            for decorator in node.decorator_list:
+                                if isinstance(decorator, ast.Name) and decorator.id == "hardened":
+                                    has_hardened_decorator = True
+                                elif isinstance(decorator, ast.Attribute) and decorator.attr == "hardened":
+                                    has_hardened_decorator = True
+                        
+                        if isinstance(node, ast.FunctionDef):
+                            # Check for @hardened on methods
+                            for decorator in node.decorator_list:
+                                if isinstance(decorator, ast.Name) and decorator.id == "hardened":
+                                    has_hardened_decorator = True
+                                elif isinstance(decorator, ast.Attribute) and decorator.attr == "hardened":
+                                    has_hardened_decorator = True
+                        
+                        # Unsafe patterns detection (direct os/subprocess without guards)
+                        if isinstance(node, ast.Call):
+                            func = node.func
+                            if isinstance(func, ast.Attribute):
+                                # Check for unsafe os calls
+                                if func.attr in ["system", "popen", "spawn"]:
+                                    if isinstance(func.value, ast.Name) and func.value.id == "os":
+                                        mcp_safe_overrides = False
+                                # Check for unsafe subprocess calls
+                                if func.attr in ["run", "Popen", "call", "check_call"]:
+                                    if isinstance(func.value, ast.Name) and func.value.id == "subprocess":
+                                        mcp_safe_overrides = False
+                    
+                    mcp_summary = f"Shield: {'✓' if has_mcpshield else '✗'} | @hardened: {'✓' if has_hardened_decorator else '✗'} | Safe: {'✓' if mcp_safe_overrides else '✗'}"
+                    
+                    # Typing flags detection
+                    typed_init = False
+                    typed_methods_ratio = 0.0
+                    return_annotated_ratio = 0.0
+                    total_methods = 0
+                    typed_methods = 0
+                    annotated_returns = 0
+                    
+                    class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
+                    if class_nodes:
+                        primary_class = class_nodes[0]  # First class = main agent
+                        methods = [n for n in primary_class.body if isinstance(n, ast.FunctionDef)]
+                        total_methods = len(methods)
+                        
+                        # Check __init__ typing
+                        init_node = next((n for n in methods if n.name == "__init__"), None)
+                        if init_node:
+                            params_typed = all(arg.annotation is not None for arg in init_node.args.args if arg.arg != "self")
+                            return_typed = init_node.returns is not None
+                            typed_init = params_typed and return_typed
+                        
+                        # Check method typing
+                        for method in methods:
+                            params_typed = all(arg.annotation is not None for arg in method.args.args if arg.arg != "self")
+                            if params_typed:
+                                typed_methods += 1
+                            if method.returns is not None:
+                                annotated_returns += 1
+                        
+                        if total_methods > 0:
+                            typed_methods_ratio = typed_methods / total_methods
+                            return_annotated_ratio = annotated_returns / total_methods
+                    
+                    overall_typed_pct = round(perc_typed, 1)
+                    typing_summary = f"Init: {'✓' if typed_init else '✗'} | Methods: {typed_methods_ratio:.0%} | Returns: {return_annotated_ratio:.0%}"
+                    
+                    # Proxy metrics from territory-level (can be refined per-agent if needed)
+                    has_tests = perc_tests > 0
+                    agent_typed_pct = round(perc_typed, 1)
+                    agent_complexity = round(avg_cc, 1)
+                    
                 except Exception:
-                    pass  # Syntax/error files → fallback to line 1
-                file_links.append({
+                    pass  # Graceful fallback for unparseable files
+                
+                territory_agents.append({
                     "rel": rel_str,
                     "abs_file": abs_str,
                     "abs_class": f"{abs_str}:{class_line}",
-                    "class_line": class_line
+                    "class_line": class_line,
+                    "has_mixin": has_mixin,
+                    "invocation": invocation_status,
+                    "has_tests": has_tests,
+                    "typed_pct": agent_typed_pct,
+                    "complexity": agent_complexity,
+                    "obs_logging": obs_logging,
+                    "obs_metrics": obs_metrics,
+                    "obs_tracing": obs_tracing,
+                    "obs_summary": obs_summary,
+                    "has_mcpshield": has_mcpshield,
+                    "has_hardened_decorator": has_hardened_decorator,
+                    "mcp_safe_overrides": mcp_safe_overrides,
+                    "mcp_summary": mcp_summary,
+                    "typed_init": typed_init,
+                    "typed_methods_ratio": round(typed_methods_ratio * 100, 1),
+                    "return_annotated_ratio": round(return_annotated_ratio * 100, 1),
+                    "overall_typed_pct": overall_typed_pct,
+                    "typing_summary": typing_summary
                 })
-            file_links.sort(key=lambda x: x["rel"])
+            
+            # Sort: gap-first (mixin → invocation → observability → MCP → typing → alphabetical)
+            territory_agents.sort(key=lambda x: (
+                not x["has_mixin"],  # No mixin first (needs adding)
+                x["invocation"] != "Yes" and x["invocation"] != "Inherited",  # Missing super() second
+                not (x["obs_logging"] or x["obs_metrics"] or x["obs_tracing"]),  # No observability third
+                not x["has_mcpshield"],  # No MCP shield fourth
+                not x["mcp_safe_overrides"],  # Unsafe patterns fifth
+                x["typed_methods_ratio"] < 70,  # Weak typing sixth
+                x["rel"]  # Alphabetical for ties
+            ))
+            
+            # Legacy file_links for backward compatibility
+            file_links = [{
+                "rel": a["rel"],
+                "abs_file": a["abs_file"],
+                "abs_class": a["abs_class"],
+                "class_line": a["class_line"]
+            } for a in territory_agents]
+            
+            # Add agents array to dashboard row
+            row["agents"] = territory_agents
+            dashboard_rows.append(row)
             
             # Store for recommendations
             territory_stats.append({
@@ -1431,6 +1630,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "key": territory_key,
                 "total": total,
                 "priority": priority,
+                "healing_cap": perc_healing_cap,
                 "invocation": perc_healing_invoke,
                 "tests": perc_tests,
                 "used": perc_used,
@@ -1461,7 +1661,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_tests = total_cc = total_typed = total_observable = total_used = 0
-            total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
+            # Calculate total health with new formula
+            total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
+            total_health = round((total_healing_cap + total_healing_invoke + total_tests + total_observable + total_cc_health) / 5, 1)
             
             total_row = {
                 "Territory": "TOTAL",
@@ -1526,30 +1728,86 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             elif "tests" in territory_lower:
                 layer_weight = layer_hierarchy_weights["tests"]
             
-            healing_gap = max(0, 100 - stat["invocation"])
+            healing_cap_gap = max(0, 100 - stat.get("healing_cap", 0))
+            healing_invoke_gap = max(0, 100 - stat["invocation"])
             tests_gap = max(0, 100 - stat["tests"])
-            # Score = gap severity × usage × priority × LAYER HIERARCHY
-            score = healing_gap * tests_gap * (stat["used"] / 100) * priority_weights.get(stat["priority"], 1.0) * layer_weight
             
-            rationale = f"High-impact fix: improve autonomy in frequently used {stat['priority'].lower()} priority territory"
-            gaps = f"Healing Invocation {stat['invocation']:.1f}% (gap {healing_gap:.1f}%), Tests {stat['tests']:.1f}% (gap {tests_gap:.1f}%)"
+            # Score = gap severity × usage × priority × LAYER HIERARCHY
+            score = healing_invoke_gap * tests_gap * (stat["used"] / 100) * priority_weights.get(stat["priority"], 1.0) * layer_weight
+            
+            # Build impact-first rationale with clear business consequences
+            territory_display = stat["name"]
+            total_agents = stat["total"]
+            usage_pct = stat["used"]
+            
+            # Calculate actual agent counts for clarity
+            agents_with_healing = int(total_agents * stat.get("healing_cap", 0) / 100)
+            agents_invoking = int(total_agents * stat["invocation"] / 100)
+            agents_with_tests = int(total_agents * stat["tests"] / 100)
+            agents_without_invocation = total_agents - agents_invoking
+            agents_without_tests = total_agents - agents_with_tests
+            
+            # Determine primary gap with negative consequence framing
+            if healing_invoke_gap > 70:
+                # High invocation gap = production errors cascade
+                impact = f"⚠️ {agents_without_invocation} of {total_agents} agents fail silently when errors occur → Production issues cascade unhandled, requiring manual intervention and causing downtime"
+                action = "Add super().heal_repository() calls to enable autonomous error recovery"
+            elif healing_cap_gap > 50:
+                # No healing capability = no error recovery
+                impact = f"⚠️ {total_agents - agents_with_healing} of {total_agents} agents lack self-repair infrastructure → Errors propagate unchecked, breaking workflows and blocking autonomous operation"
+                action = "Add HealerMixin to enable self-repair infrastructure"
+            elif tests_gap > 60:
+                # Low tests = regression risk
+                impact = f"⚠️ {agents_without_tests} of {total_agents} agents have no test coverage → Changes break production silently, regressions go undetected until customer impact"
+                action = "Add test coverage to protect against regressions"
+            else:
+                # Multiple gaps
+                impact = f"⚠️ {agents_without_invocation} agents fail without recovery, {agents_without_tests} lack regression protection → System fragility causes frequent outages and manual firefighting"
+                action = "Add healing invocation + test coverage for production safety"
+            
+            # Build clear, actionable rationale
+            rationale = f"🎯 {territory_display}: {impact}\n💡 Action: {action}\n📊 Impact: {usage_pct:.0f}% of portfolio uses this {stat['priority'].lower()}-priority territory"
+            
+            # Simplified gaps display
+            gaps = f"{agents_invoking}/{total_agents} self-heal • {agents_with_tests}/{total_agents} tested • {usage_pct:.0f}% portfolio usage"
             
             # Collect file links with class line detection
             file_links = stat.get("file_links", [])
             
-            guidance = "```diff\n"
-            guidance += "+ from agentic_core.L5_safety.healing import HealerMixin\n"
-            guidance += " class YourAgent(..., HealerMixin):\n"
-            guidance += "     def key_method(self):\n"
-            guidance += "+         super().heal_repository()  # Enables self-healing on errors\n"
-            guidance += "     # Add more super() calls in error-handling paths\n"
-            guidance += "```\n"
-            guidance += "Add dedicated tests:\n"
-            guidance += "```python\n"
-            guidance += "def test_healing_activation(self):\n"
-            guidance += "    # Simulate failure → assert healing triggered + logs/metrics\n"
-            guidance += "```\n"
-            guidance += "Re-run --report to validate closure."
+            # Targeted guidance based on primary gap
+            if healing_invoke_gap > 70:
+                guidance = "**Quick Fix (5 min per agent):**\n"
+                guidance += "```diff\n"
+                guidance += " class YourAgent(..., HealerMixin):\n"
+                guidance += "     def execute_task(self, task):\n"
+                guidance += "         try:\n"
+                guidance += "             result = self._process(task)\n"
+                guidance += "+         except Exception as e:\n"
+                guidance += "+             super().heal_repository()  # Auto-fix errors\n"
+                guidance += "+             raise\n"
+                guidance += "```\n"
+                guidance += f"**Impact:** Enables {agents_without_invocation} agents to self-repair instead of failing silently."
+            elif healing_cap_gap > 50:
+                guidance = "**Add Healing Capability:**\n"
+                guidance += "```diff\n"
+                guidance += "+ from agentic_core.L5_safety.healing import HealerMixin\n"
+                guidance += "- class YourAgent(BaseAgent):\n"
+                guidance += "+ class YourAgent(BaseAgent, HealerMixin):\n"
+                guidance += "      def execute_task(self, task):\n"
+                guidance += "+         super().heal_repository()  # Enable self-repair\n"
+                guidance += "```\n"
+                guidance += f"**Impact:** Gives {total_agents - agents_with_healing} agents autonomous error recovery."
+            else:
+                guidance = "**Add Test Coverage:**\n"
+                guidance += "```python\n"
+                guidance += "# tests/test_your_agent.py\n"
+                guidance += "def test_healing_on_error():\n"
+                guidance += "    agent = YourAgent()\n"
+                guidance += "    with pytest.raises(Error):\n"
+                guidance += "        agent.execute_task(bad_input)\n"
+                guidance += "    assert agent.healing_triggered  # Verify recovery\n"
+                guidance += "```\n"
+                guidance += f"**Impact:** Protects {agents_without_tests} agents from regressions during healing."
             
             recommendations.append({
                 "territory": stat["name"],
@@ -1609,6 +1867,184 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             }
             recommendations.append(unclass_rec)
         
+        recommendations.sort(key=lambda r: r["score"], reverse=True)
+        
+        # === Add Holistic Portfolio-Level Recommendations ===
+        holistic_recs = []
+        
+        # Build comprehensive territory metrics for holistic analysis
+        territory_counts = {stat["name"]: stat["total"] for stat in territory_stats}
+        territory_healing_cap = {stat["name"]: stat.get("healing_cap", 0) for stat in territory_stats}
+        territory_invocation = {stat["name"]: stat["invocation"] for stat in territory_stats}
+        territory_tests = {stat["name"]: stat["tests"] for stat in territory_stats}
+        territory_usage = {stat["name"]: stat["used"] for stat in territory_stats}
+        territory_health = {stat["name"]: stat["health"] for stat in territory_stats}
+        total_classified = sum(territory_counts.values())
+        
+        # === 1. PORTFOLIO-WIDE HEALING GAP ANALYSIS ===
+        # Calculate overall: X% have toolkits but only Y% use master checklist
+        total_with_capability = sum(int(territory_counts[t] * territory_healing_cap[t] / 100) for t in territory_counts)
+        total_invoking = sum(int(territory_counts[t] * territory_invocation[t] / 100) for t in territory_counts)
+        if total_with_capability > 0 and total_classified > 0:
+            cap_pct = (total_with_capability / total_classified) * 100
+            invoke_pct = (total_invoking / total_classified) * 100
+            healing_gap = cap_pct - invoke_pct
+            if healing_gap > 30:  # Significant gap between capability and invocation
+                workers_not_using_checklist = total_with_capability - total_invoking
+                holistic_recs.append({
+                    "territory": "🏭 Factory-Wide Healing Gap",
+                    "priority": "Critical",
+                    "total": total_classified,
+                    "used": 100.0,
+                    "rationale": f"⚠️ {total_with_capability} workers have personal toolkits ({cap_pct:.0f}%) but only {total_invoking} consult master safety checklist ({invoke_pct:.0f}%) → {workers_not_using_checklist} workers fix problems in isolation without coordinated factory-wide recovery\n💡 Action: Mandate super().heal_repository() calls in all agents with HealerMixin\n📊 Impact: {workers_not_using_checklist} agents currently fail silently, causing production cascades and manual firefighting",
+                    "gaps": f"{invoke_pct:.0f}% using master checklist vs {cap_pct:.0f}% with toolkits • {healing_gap:.0f}% coordination gap",
+                    "guidance": f"**Factory-Wide Coordination Fix:**\n1. Audit all {total_with_capability} agents with HealerMixin\n2. Add super().heal_repository() in error handlers\n3. Target: 80%+ invocation rate\n4. Current gap: {workers_not_using_checklist} workers ignoring master checklist",
+                    "score": healing_gap * 3,  # High priority
+                    "file_links": []
+                })
+        
+        # === 2. TEST COVERAGE DISPARITY ===
+        # Find territories with vastly different test coverage
+        if territory_tests:
+            max_test_territory = max(territory_tests.items(), key=lambda x: x[1])
+            min_test_territory = min(territory_tests.items(), key=lambda x: x[1])
+            test_disparity = max_test_territory[1] - min_test_territory[1]
+            if test_disparity > 50:  # 50%+ disparity
+                holistic_recs.append({
+                    "territory": "🔬 Quality Control Disparity",
+                    "priority": "High",
+                    "total": total_classified,
+                    "used": 100.0,
+                    "rationale": f"⚠️ {max_test_territory[0]} has {max_test_territory[1]:.0f}% quality inspections vs {min_test_territory[0]} with only {min_test_territory[1]:.0f}% → Inconsistent verification standards across factory\n💡 Action: Raise {min_test_territory[0]} test coverage to match factory standards\n📊 Impact: Changes to {min_test_territory[0]} break production silently while {max_test_territory[0]} catches regressions",
+                    "gaps": f"{test_disparity:.0f}% test coverage disparity between territories",
+                    "guidance": f"**Standardize Quality Control:**\n1. Target minimum 60% test coverage across all territories\n2. Priority: Add tests to {min_test_territory[0]} ({min_test_territory[1]:.0f}% → 60%)\n3. Copy testing patterns from {max_test_territory[0]}\n4. Enforce pre-merge test requirements",
+                    "score": test_disparity * 1.5,
+                    "file_links": []
+                })
+        
+        # === 3. COMPLEXITY HOTSPOTS ===
+        # Find territories with dangerously high complexity
+        high_cc_territories = [(stat["name"], stat.get("cc_avg", 0), stat["total"]) 
+                               for stat in territory_stats 
+                               if stat.get("cc_avg", 0) > 30]
+        if not high_cc_territories:
+            # Fallback: check dashboard rows for Avg CC
+            high_cc_territories = [(r["Territory"], r.get("Avg CC", 0), r["Total"]) 
+                                   for r in dashboard_rows 
+                                   if r.get("Avg CC", 0) > 30 and r["Territory"] != "TOTAL"]
+        for territory, cc, count in high_cc_territories[:2]:  # Top 2 complexity hotspots
+            holistic_recs.append({
+                "territory": "🔥 Complexity Hotspot",
+                "priority": "High",
+                "total": count,
+                "used": territory_usage.get(territory, 50),
+                "rationale": f"⚠️ {territory} has average complexity of {cc:.0f} (target ≤10) → Tangled assembly lines blocking safe modifications\n💡 Action: Refactor high-complexity agents into smaller, focused units\n📊 Impact: High complexity causes bugs during healing, blocks feature additions, increases maintenance cost",
+                "gaps": f"Avg CC {cc:.0f} • Target ≤10 • {cc / 10:.1f}x over threshold",
+                "guidance": f"**Untangle Assembly Lines:**\n1. Identify agents with CC > 20 in {territory}\n2. Extract helper functions and sub-agents\n3. Apply single-responsibility principle\n4. Target: Reduce average CC to ≤15",
+                "score": cc * 2,
+                "file_links": []
+            })
+        
+        # === 4. MCP HARDENING GAPS IN CRITICAL TERRITORIES ===
+        # Check for 0% hardening in high-usage or L5 territories
+        for stat in territory_stats:
+            hardened_pct = 0  # Get from dashboard rows
+            for row in dashboard_rows:
+                if row["Territory"] == stat["name"]:
+                    hardened_pct = row.get("Hardened %", 0)
+                    break
+            if hardened_pct == 0 and (stat["used"] > 70 or stat["name"].startswith("L5")):
+                holistic_recs.append({
+                    "territory": "🛡️ Safety Harness Gap",
+                    "priority": "Critical" if stat["name"].startswith("L5") else "High",
+                    "total": stat["total"],
+                    "used": stat["used"],
+                    "rationale": f"⚠️ {stat['name']} has 0% MCP hardening → {stat['total']} workers lack safety harnesses for dangerous operations\n💡 Action: Add MCPShield mixin and @hardened decorators to all agents\n📊 Impact: Unsafe operations can break factory, no protection against malicious inputs",
+                    "gaps": f"0/{stat['total']} agents hardened • {stat['used']:.0f}% portfolio usage",
+                    "guidance": f"**Add Safety Harnesses:**\n1. Add MCPShield to class bases\n2. Decorate critical methods with @hardened\n3. Audit for unsafe os/subprocess calls\n4. Target: 100% hardening for L5 Safety",
+                    "score": 80 if stat["name"].startswith("L5") else 50,
+                    "file_links": []
+                })
+        
+        # === 5. HIGH USAGE + LOW HEALTH CORRELATION ===
+        # Find territories that are heavily used but poorly maintained
+        for stat in territory_stats:
+            if stat["used"] > 70 and stat["health"] < 40:
+                risk_score = stat["used"] * (100 - stat["health"]) / 100
+                holistic_recs.append({
+                    "territory": "⚡ High-Risk Territory",
+                    "priority": "Critical",
+                    "total": stat["total"],
+                    "used": stat["used"],
+                    "rationale": f"⚠️ {stat['name']}: {stat['used']:.0f}% portfolio usage but only {stat['health']:.0f}% health → Critical production risk\n💡 Action: Immediate windsurf focus - this territory drives your business but lacks safety infrastructure\n📊 Impact: High-traffic + low-health = frequent production issues, customer-facing outages",
+                    "gaps": f"{stat['used']:.0f}% usage • {stat['health']:.0f}% health • {risk_score:.0f} risk score",
+                    "guidance": f"**Emergency Stabilization:**\n1. Add healing invocation to all {stat['total']} agents\n2. Add minimum test coverage (60%+)\n3. Enable observability (logging, metrics)\n4. Target: Raise health to 60%+ within 2 sprints",
+                    "score": risk_score * 2,
+                    "file_links": []
+                })
+        
+        # === 6. OVER-CONCENTRATION (existing) ===
+        for territory, count in territory_counts.items():
+            if count > 0 and total_classified > 0:
+                pct = (count / total_classified) * 100
+                if pct > 30:
+                    holistic_recs.append({
+                        "territory": "📊 Portfolio Imbalance",
+                        "priority": "Medium",
+                        "total": count,
+                        "used": 100.0,
+                        "rationale": f"⚠️ {territory} has {count} agents ({pct:.0f}% of portfolio) → Over-concentration increases maintenance burden\n💡 Action: Consolidate overlapping agents or redistribute responsibilities\n📊 Impact: Too many agents in one area = duplication, confusion, higher maintenance cost",
+                        "gaps": f"{count} agents in one territory • {pct:.0f}% concentration",
+                        "guidance": f"**Consolidation Strategy:**\n1. Review {territory} agents for overlapping functionality\n2. Identify 3-5 core responsibilities\n3. Merge similar agents into unified implementations\n4. Target: Reduce to ~{int(count * 0.7)} agents while maintaining coverage",
+                        "score": pct * 1.5,
+                        "file_links": []
+                    })
+        
+        # === 7. CRITICAL UNDER-RESOURCING (existing) ===
+        critical_territories = {
+            "L5 Safety/Gravity": ("gravity enforcement", 2),
+            "L5 Safety/Red Teaming": ("adversarial testing", 3),
+            "L5 Safety/Validators": ("compliance validation", 15)
+        }
+        for territory_key, (purpose, min_threshold) in critical_territories.items():
+            actual_count = territory_counts.get(territory_key, 0)
+            if actual_count < min_threshold:
+                gap = min_threshold - actual_count
+                holistic_recs.append({
+                    "territory": "📉 Under-Resourced Territory",
+                    "priority": "Critical",
+                    "total": actual_count,
+                    "used": 100.0,
+                    "rationale": f"⚠️ {territory_key} has only {actual_count} agents → Under-resourced for {purpose}\n💡 Action: Add {gap} specialized agents to strengthen {purpose} coverage\n📊 Impact: Critical safety function understaffed, increasing production risk",
+                    "gaps": f"{actual_count}/{min_threshold} agents • {gap} needed",
+                    "guidance": f"**Expansion Strategy:**\n1. Identify {gap} key {purpose} scenarios not covered\n2. Create specialized agents for each scenario\n3. Add comprehensive test coverage\n4. Integrate into compliance pipeline",
+                    "score": (gap / max(min_threshold, 1)) * 80,
+                    "file_links": []
+                })
+        
+        # === 8. L5 SAFETY SUB-TERRITORY BALANCE (existing) ===
+        l5_territories = {k: v for k, v in territory_counts.items() if k.startswith("L5 Safety/")}
+        if len(l5_territories) > 1:
+            l5_counts = list(l5_territories.values())
+            max_l5 = max(l5_counts) if l5_counts else 0
+            min_l5 = min(l5_counts) if l5_counts else 1
+            if max_l5 > min_l5 * 5 and min_l5 > 0:  # 5x imbalance
+                max_territory = max(l5_territories.items(), key=lambda x: x[1])
+                min_territory = min(l5_territories.items(), key=lambda x: x[1])
+                holistic_recs.append({
+                    "territory": "⚖️ L5 Safety Imbalance",
+                    "priority": "High",
+                    "total": sum(l5_counts),
+                    "used": 100.0,
+                    "rationale": f"⚠️ {max_territory[0]} has {max_territory[1]} agents vs {min_territory[0]} with {min_territory[1]} → Uneven safety coverage\n💡 Action: Rebalance L5 Safety investments across gravity, validators, and red teaming\n📊 Impact: Over-investment in one safety area while others remain vulnerable",
+                    "gaps": f"{max_territory[1]} vs {min_territory[1]} agents • {max_territory[1] / max(min_territory[1], 1):.1f}x imbalance",
+                    "guidance": f"**Rebalancing Strategy:**\n1. Audit {max_territory[0]} for consolidation opportunities\n2. Strengthen {min_territory[0]} with 2-3 new agents\n3. Ensure each L5 sub-territory has minimum viable coverage\n4. Target ratio: Validators 60%, Gravity 20%, Red Teaming 20%",
+                    "score": (max_territory[1] / max(min_territory[1], 1)) * 8,
+                    "file_links": []
+                })
+        
+        # Prepend holistic recommendations to top of list
+        recommendations = holistic_recs + recommendations
         recommendations.sort(key=lambda r: r["score"], reverse=True)
         top_recommendations = recommendations[:10]
         
