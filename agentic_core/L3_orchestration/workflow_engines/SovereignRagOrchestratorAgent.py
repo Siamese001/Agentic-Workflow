@@ -26,7 +26,9 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestratorAgent:
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L3 orchestration/workflow_engines - operational only."""
     if _call_path is None:
-        _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
     agent_name = "SovereignRagOrchestratorAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}

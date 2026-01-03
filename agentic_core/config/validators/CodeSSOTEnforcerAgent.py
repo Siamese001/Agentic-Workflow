@@ -281,7 +281,9 @@ class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """Autonomous code SSOT enforcement."""
         if _call_path is None:
-            _call_path = set()
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+
         if self.__class__.__name__ in _call_path:
             return {"errors": 0, "skipped": 1, "cycle_detected": True}
         if depth > max_depth:

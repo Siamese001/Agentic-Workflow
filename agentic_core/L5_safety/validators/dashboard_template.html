@@ -49,6 +49,62 @@
             margin-left: 4px;
         }
 
+        .refresh-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .refresh-button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .refresh-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .refresh-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         body {
             background: var(--background);
             color: var(--text);
@@ -302,6 +358,15 @@
     </style>
 </head>
 <body>
+    <!-- Refresh Controls -->
+    <div class="refresh-controls">
+        <button class="refresh-button" onclick="manualRefresh()">🔄 Refresh Now</button>
+        <div class="refresh-status">
+            <div class="refresh-indicator"></div>
+            <span id="refreshStatus">Auto-refresh: 30s</span>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>🎯 Autonomy Compliance Dashboard</h1>
@@ -451,6 +516,29 @@
     </div>
 
     <script>
+        // Auto-refresh every 30 seconds
+        let lastRefreshTime = new Date();
+        let refreshInterval = setInterval(() => {
+            location.reload();
+        }, 30000);  // 30 seconds
+
+        function manualRefresh() {
+            // Clear the interval and reload immediately
+            clearInterval(refreshInterval);
+            location.reload();
+        }
+
+        // Update refresh status display
+        setInterval(() => {
+            const now = new Date();
+            const secondsSinceRefresh = Math.floor((now - lastRefreshTime) / 1000);
+            const secondsUntilRefresh = 30 - secondsSinceRefresh;
+            
+            if (secondsUntilRefresh > 0) {
+                document.getElementById('refreshStatus').textContent = `Auto-refresh: ${secondsUntilRefresh}s`;
+            }
+        }, 1000);
+
         // Color coding helper for consistent thresholds
         function getColor(value, highGood = true) {
             const v = parseFloat(value);
