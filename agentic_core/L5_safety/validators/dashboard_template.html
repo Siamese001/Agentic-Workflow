@@ -186,20 +186,15 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
-            overflow: hidden;
             box-shadow: var(--shadow);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .chart-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
 
         .chart-header {
             background: var(--card-bg);
             padding: 20px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid #e5e7eb;
         }
 
         .chart-title {
@@ -331,55 +326,11 @@
 
                     <div class="chart-card">
                         <div class="chart-header">
-                            <div class="chart-title">Healing Capability Gap</div>
-                            <div class="chart-subtitle">Invocation % vs target (100%)</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="healingChart"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
                             <div class="chart-title">Risk Matrix</div>
                             <div class="chart-subtitle">Complexity vs compliance (bubble size = usage)</div>
                         </div>
                         <div class="chart-body">
                             <div id="riskMatrix"></div>
-                        </div>
-                    </div>
-
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Compliance by Territory</div>
-                            <div class="chart-subtitle">Percentage of agents with heal_repository</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="complianceChart"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Observability Coverage</div>
-                            <div class="chart-subtitle">Logging/telemetry implementation by territory</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="observabilityChart"></div>
-                        </div>
-                    </div>
-
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Cyclomatic Complexity</div>
-                            <div class="chart-subtitle">Average CC by territory (lower is better)</div>
-                        </div>
-                        <div class="chart-body">
-                            <div id="complexityChart"></div>
                         </div>
                     </div>
                 </div>
@@ -478,80 +429,107 @@
             });
         });
 
-        function renderKPIBoxes(totalRow) {
+        function renderTerritorySummaryTable(territoryData) {
             const container = document.getElementById('kpiGrid');
             if (!container) return;
 
-            // New composite Coverage Score (teaches interdependencies)
-            const coverageScore = (
-                (parseFloat(totalRow['Invocation %']) || 0) +
-                (parseFloat(totalRow['Test %']) || 0) +
-                (parseFloat(totalRow['Observable %']) || 0)
-            ) / 3;
-
-            function getStatus(value, threshold) {
-                const v = parseFloat(value);
-                if (v >= threshold) return 'success';
-                if (v >= threshold * 0.75) return 'warning';
-                return 'danger';
-            }
-
-            function getComplexityStatus(cc) {
-                const v = parseFloat(cc);
-                if (v <= 10) return 'success';
-                if (v <= 20) return 'warning';
-                return 'danger';
-            }
-
-            // Group definitions with didactic subtitles
-            const groups = [
-                {
-                    title: "Portfolio Overview",
-                    subtitle: "Big-picture scope and risk — shows scale and urgency",
-                    kpis: [
-                        { label: 'Total Agents', value: totalRow.Total, target: null, status: 'primary' },
-                        { label: 'Risk Level', value: totalRow.Risk, target: 'Target: LOW', status: totalRow.Risk === 'HIGH' ? 'danger' : totalRow.Risk === 'MED' ? 'warning' : 'success' }
-                    ]
-                },
-                {
-                    title: "Core Autonomy Signals",
-                    subtitle: "Heart of self-healing agents — like a body's immune system",
-                    kpis: [
-                        { label: 'Overall Health Score', value: totalRow.Health.toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow.Health, 80) },
-                        { label: 'Healing Invocation', value: totalRow['Invocation %'].toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow['Invocation %'], 80) },
-                        { label: 'Coverage Score', value: coverageScore.toFixed(1), target: 'Target ≥80%', status: getStatus(coverageScore, 80) }
-                    ]
-                },
-                {
-                    title: "Reliability & Maintainability",
-                    subtitle: "Foundation for safe evolution — clean code + tests = robust agents",
-                    kpis: [
-                        { label: 'Test Coverage', value: totalRow['Test %'].toFixed(1), target: 'Target ≥80%', status: getStatus(totalRow['Test %'], 80) },
-                        { label: 'Avg Complexity', value: totalRow['Avg CC'].toFixed(1), target: 'Target ≤10', status: getComplexityStatus(totalRow['Avg CC']) }
-                    ]
-                }
-            ];
-
-            let html = '';
-            groups.forEach(group => {
+            // Build table with key metrics per territory
+            let html = `
+            <div style="margin-bottom:40px;">
+                <h3 style="font-size:1.4em; color:var(--primary); font-weight:700; margin-bottom:20px;">Territory Summary</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow);">
+                        <thead>
+                            <tr style="background:var(--primary); color:white;">
+                                <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;"># Agents</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Heal Capability %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Heal Invocation %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Test Coverage %</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Avg Complexity</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Health Score</th>
+                                <th style="padding:16px; text-align:center; font-weight:600;">Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            territoryData.forEach((row, index) => {
+                // Continuous gradient background based on percentage (higher is better)
+                // Red (0%) → Orange (50%) → Yellow (70%) → Green (100%)
+                const getGradientBg = (value, target = 80) => {
+                    const normalized = Math.max(0, Math.min(100, value)) / 100;
+                    let r, g, b;
+                    
+                    if (normalized < 0.5) {
+                        // Red to Orange (0-50%)
+                        const t = normalized * 2;
+                        r = 220;
+                        g = Math.round(38 + (88 - 38) * t);
+                        b = 38;
+                    } else if (normalized < 0.7) {
+                        // Orange to Yellow (50-70%)
+                        const t = (normalized - 0.5) / 0.2;
+                        r = Math.round(234 - (234 - 234) * t);
+                        g = Math.round(88 + (179 - 88) * t);
+                        b = Math.round(12 - (12 - 8) * t);
+                    } else {
+                        // Yellow to Green (70-100%)
+                        const t = (normalized - 0.7) / 0.3;
+                        r = Math.round(234 - (234 - 22) * t);
+                        g = Math.round(179 - (179 - 163) * t);
+                        b = Math.round(8 + (74 - 8) * t);
+                    }
+                    
+                    const alpha = 0.15 + normalized * 0.1;
+                    return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
+                };
+                
+                // Continuous gradient for complexity (lower is better, inverted scale)
+                const getComplexityGradientBg = (value) => {
+                    // Invert: 0 CC = 100%, 50+ CC = 0%
+                    const inverted = Math.max(0, Math.min(100, 100 - (value * 2)));
+                    return getGradientBg(inverted, 80);
+                };
+                
+                const healthColor = row.Health >= 80 ? '#16a34a' : row.Health >= 60 ? '#ea580c' : '#dc2626';
+                const riskColor = row.Risk === 'HIGH' ? '#dc2626' : row.Risk === 'MED' ? '#ea580c' : '#16a34a';
+                const invocationColor = row['Invocation %'] >= 80 ? '#16a34a' : row['Invocation %'] >= 60 ? '#ea580c' : '#dc2626';
+                const testColor = row['Test %'] >= 80 ? '#16a34a' : row['Test %'] >= 60 ? '#ea580c' : '#dc2626';
+                const ccColor = row['Avg CC'] <= 10 ? '#16a34a' : row['Avg CC'] <= 20 ? '#ea580c' : '#dc2626';
+                
                 html += `
-                <div style="margin-bottom:40px;">
-                    <div style="margin-bottom:20px;">
-                        <h3 style="font-size:1.4em; color:var(--primary); font-weight:700;">${group.title}</h3>
-                        <p style="color:var(--text-light); font-size:1em; font-style:italic;">${group.subtitle}</p>
-                    </div>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
-                        ${group.kpis.map(kpi => `
-                        <div class="kpi-box ${kpi.status}" style="padding:30px;">
-                            <div class="kpi-label">${kpi.label}</div>
-                            <div class="kpi-value" style="font-size:3em;">${kpi.value}${kpi.label.includes('%') || kpi.label.includes('Score') ? '%' : ''}</div>
-                            ${kpi.target ? `<div class="kpi-subtext" style="font-size:1em; margin-top:10px;">${kpi.target}</div>` : ''}
-                        </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+                    <tr style="border-bottom:1px solid #e5e7eb;">
+                        <td style="padding:12px; font-weight:600; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Territory}</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'}; border-right:1px solid #e5e7eb;">${row.Total}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Heal Cap %'])}; border-right:1px solid #e5e7eb;">${row['Heal Cap %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Invocation %'])}; color:${invocationColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Invocation %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row['Test %'])}; color:${testColor}; border-right:1px solid #e5e7eb;">${row['Test %'].toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getComplexityGradientBg(row['Avg CC'])}; color:${ccColor}; font-weight:600; border-right:1px solid #e5e7eb;">${row['Avg CC'].toFixed(1)}</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(row.Health)}; color:${healthColor}; font-weight:700; border-right:1px solid #e5e7eb;">${row.Health.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${index % 2 === 0 ? '#f9fafb' : 'white'};">
+                            <span style="padding:4px 12px; border-radius:4px; font-weight:600; font-size:0.85em; background:${riskColor}; color:white;">
+                                ${row.Risk}
+                            </span>
+                        </td>
+                    </tr>`;
             });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top:16px; color:var(--text-light); font-size:0.95em; font-style:italic;">
+                    <strong>Key:</strong> Heal Capability = agents with heal_repository method | Heal Invocation = agents calling super().heal_repository() | 
+                    Color coding: <span style="color:var(--success);">Green ≥80%</span>, <span style="color:var(--warning);">Orange 60-80%</span>, <span style="color:var(--danger);">Red &lt;60%</span>
+                </p>
+            </div>`;
+            
             container.innerHTML = html;
+        }
+
+        function renderKPIBoxes(totalRow) {
+            // Deprecated - replaced by renderTerritorySummaryTable
+            // Kept for backward compatibility if needed
         }
 
         function renderHealthGauge(totalRow) {
@@ -909,10 +887,10 @@
 
         function renderTopRecommendations() {
             const container = document.getElementById('topRecommendations');
-            if (!container || !recommendationsData || recommendationsData.length === 0) {
-                if (container) {
-                    container.innerHTML = '<p style="text-align:center; color:var(--success-green); font-size:1.2em;">No urgent actions – autonomy health excellent!</p>';
-                }
+            if (!container) return;
+
+            if (!recommendationsData || recommendationsData.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--success);">All territories healthy!</p>';
                 return;
             }
 
@@ -920,14 +898,49 @@
             let html = '';
             top3.forEach((rec, index) => {
                 const rank = index + 1;
-                const status = rank === 1 ? 'danger' : rank === 2 ? 'warning' : 'primary';
+                
+                // Extract key gap percentage for gradient calculation
+                const gapMatch = rec.gaps.match(/Healing Invocation ([\d.]+)%|Tests ([\d.]+)%|Observability ([\d.]+)%/);
+                const gapValue = gapMatch ? parseFloat(gapMatch[1] || gapMatch[2] || gapMatch[3]) : 50;
+                const keyGap = gapMatch ? `${gapValue.toFixed(0)}% gap` : 'Multiple gaps';
+                
+                // Calculate gradient background based on gap severity (0-100%)
+                // 0% gap = green, 50% gap = orange, 100% gap = red
+                let bgColor;
+                if (gapValue >= 80) {
+                    // Critical: deep red gradient
+                    const intensity = Math.min(100, gapValue);
+                    bgColor = `linear-gradient(135deg, rgba(220, 38, 38, ${0.15 + intensity/500}) 0%, rgba(220, 38, 38, ${0.08 + intensity/800}) 100%)`;
+                } else if (gapValue >= 50) {
+                    // Warning: orange gradient
+                    const intensity = (gapValue - 50) / 30;
+                    bgColor = `linear-gradient(135deg, rgba(234, 88, 12, ${0.12 + intensity*0.08}) 0%, rgba(234, 88, 12, ${0.06 + intensity*0.04}) 100%)`;
+                } else {
+                    // Moderate: light yellow gradient
+                    bgColor = `linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%)`;
+                }
+                
+                // Border color based on severity
+                const borderColor = gapValue >= 80 ? '#dc2626' : gapValue >= 50 ? '#ea580c' : '#eab308';
+                
+                // Simple analogy based on gap type
+                let analogy = '';
+                if (rec.gaps.includes('Invocation')) {
+                    analogy = '🚨 Seatbelts installed but never buckled';
+                } else if (rec.gaps.includes('Tests')) {
+                    analogy = '⚠️ Safety net missing';
+                } else if (rec.gaps.includes('Observability')) {
+                    analogy = '👁️ Flying blind';
+                } else {
+                    analogy = '⚡ Multiple risks';
+                }
+                
                 html += `
-                <div class="kpi-box ${status}" style="padding:25px; min-height:220px;">
-                    <div class="kpi-label" style="font-size:1.1em;">Top Action #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority}</div>
-                    <div class="kpi-value" style="font-size:1.4em;">${rec.territory}</div>
-                    <div style="margin:10px 0; color: var(--text-secondary);">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
-                    <div style="margin:10px 0;"><strong>Why urgent:</strong> ${rec.rationale}</div>
-                    <div style="margin:10px 0; font-size:0.95em;"><strong>Gaps:</strong> ${rec.gaps}</div>
+                <div style="padding:20px; border-radius:8px; border-left:6px solid ${borderColor}; background:${bgColor}; box-shadow:var(--shadow);">
+                    <div style="font-size:1.3em; font-weight:700; margin-bottom:8px; color:var(--text);">${rec.territory}</div>
+                    <div style="font-size:1.1em; color:var(--text-light); margin-bottom:12px;">${rec.total} agents • ${rec.used !== undefined ? `${rec.used.toFixed(0)}% used` : ''}</div>
+                    <div style="font-size:1.2em; font-weight:600; margin-bottom:8px; color:${borderColor};">${keyGap} ${analogy}</div>
+                    <div style="font-size:0.95em; color:var(--text-light);">→ ${rec.rationale.split('—')[0].trim()}</div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -936,52 +949,71 @@
         function renderRecommendations() {
             const container = document.getElementById('recommendationsList');
             if (!container) return;
-
+            
             if (!recommendationsData || recommendationsData.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:var(--success-green);">All territories at target autonomy – excellent!</p>';
+                container.innerHTML = '<p style="text-align:center; color:var(--success); font-size:1.4em;">All territories at target autonomy – excellent!</p>';
                 return;
             }
-
+            
             let html = '';
             recommendationsData.forEach((rec, index) => {
                 const rank = index + 1;
                 const status = rank <= 3 ? 'danger' : rank <= 6 ? 'warning' : 'primary';
                 const fileCount = rec.file_links ? rec.file_links.length : 0;
+                
                 html += `
-                <div class="kpi-box ${status}" style="padding:20px;">
-                    <div class="kpi-label">Recommendation #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority} Priority</div>
-                    <div class="kpi-value">${rec.territory}</div>
-                    <div style="margin:10px 0; color: var(--text-secondary);">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
-                    <div style="margin:10px 0;"><strong>Rationale:</strong> ${rec.rationale}</div>
-                    <div style="margin:10px 0;"><strong>Key Urgency Contributors:</strong> ${rec.gaps}</div>
-                    <div style="margin:15px 0;"><strong>IDE Diff Guidance (apply in windsurf batch):</strong></div>
-                    <pre style="background:#f8f9fa; padding:12px; border-radius:6px; overflow-x:auto; white-space:pre-wrap; color:#333;">${rec.guidance}</pre>
-                    ${rec.file_links && fileCount > 0 ? `
-                    <div style="margin:15px 0;"><strong>Clickable Agent Files (${fileCount} – VS Code optimized):</strong></div>
-                    <div style="columns: 2; -webkit-columns: 2; -moz-columns: 2; column-gap: 30px; max-height: 400px; overflow-y: auto; padding:10px; background:#f8f9fa; border-radius:6px;">
-                        <ul style="list-style:none; padding-left:0; margin:0; break-inside: avoid-column;">
-                        ${rec.file_links.map(f => `
-                            <li style="margin-bottom:12px;">
-                                <div>
-                                    <a href="vscode://file/${f.abs_class}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-family:monospace; font-size:0.95em; font-weight:600;">
-                                        ${f.rel} → class (line ${f.class_line})
-                                    </a>
-                                </div>
-                                <div style="margin-top:4px;">
-                                    <small style="color:var(--light-text);">
-                                        <a href="vscode://file/${f.abs_file}" target="_blank" style="color:var(--light-text); text-decoration:underline;">
-                                            Open full file
-                                        </a>
-                                    </small>
-                                </div>
-                            </li>
-                        `).join('')}
-                        </ul>
+                <div class="kpi-box ${status}" style="padding:30px; margin-bottom:30px;">
+                    <div class="kpi-label" style="font-size:1.1em; font-weight:600;">Recommendation #${rank} (${rec.score.toFixed(1)} urgency) • ${rec.priority} Priority</div>
+                    <div class="kpi-value" style="font-size:1.6em; margin:15px 0; font-weight:700;">${rec.territory}</div>
+                    <div style="margin:10px 0; color:var(--text-light); font-size:1.1em;">${rec.total} agents${rec.used !== undefined ? `, ${rec.used.toFixed(1)}% used` : ''}</div>
+                    
+                    <div style="margin:20px 0;">
+                        <strong style="font-size:1.2em; color:var(--text);">Rationale:</strong>
+                        <p style="margin-top:8px; line-height:1.6;">${rec.rationale}</p>
                     </div>
-                    <p style="font-size:0.9em; color:var(--light-text); margin-top:10px;">
-                        Primary links jump directly to the agent class definition – ideal starting point for adding HealerMixin inheritance.<br>
-                        Use full-file links for adding super().heal_repository() calls in try/except or key methods.
-                    </p>
+                    
+                    <div style="margin:20px 0;">
+                        <strong style="font-size:1.2em; color:var(--text);">Key Urgency Contributors:</strong>
+                        <p style="margin-top:8px; line-height:1.6;">${rec.gaps}</p>
+                    </div>
+                    
+                    <div style="margin:20px 0;">
+                        <strong style="font-size:1.2em; color:var(--text);">IDE Diff Guidance (apply in windsurf batch):</strong>
+                        <pre style="background:#f8f9fa; padding:16px; border-radius:8px; overflow-x:auto; font-size:0.95em; line-height:1.6; counter-reset: line;">
+${rec.guidance.split('\n').map((line, i) => 
+    `<span style="display:block;"><span style="color:#666; user-select:none; margin-right:12px;">${i+1}</span>${line || ' '}</span>` 
+).join('\n')}
+                        </pre>
+                    </div>
+                    
+                    ${rec.file_links && fileCount > 0 ? `
+                    <div style="margin:20px 0;">
+                        <strong style="font-size:1.2em; color:var(--text);">Clickable Agent Files (${fileCount} – VS Code optimized):</strong>
+                        <div style="columns: 2 auto; column-gap: 40px; margin-top:12px; max-height:500px; overflow-y:auto; padding:12px; background:#f8f9fa; border-radius:8px;">
+                            <ul style="list-style:none; padding:0; margin:0; break-inside:avoid;">
+                            ${rec.file_links.map(f => `
+                                <li style="margin-bottom:16px; page-break-inside:avoid; break-inside:avoid;">
+                                    <div>
+                                        <a href="vscode://file/${f.abs_class}" target="_blank" style="color:var(--primary); text-decoration:none; font-family:monospace; font-size:0.95em; font-weight:600;">
+                                            ${f.rel} → class def (line ${f.class_line})
+                                        </a>
+                                    </div>
+                                    <div style="margin-top:6px;">
+                                        <small style="color:var(--text-light);">
+                                            <a href="vscode://file/${f.abs_file}" target="_blank" style="color:var(--text-light); text-decoration:underline;">
+                                                Open full file for method-level changes
+                                            </a>
+                                        </small>
+                                    </div>
+                                </li>
+                            `).join('')}
+                            </ul>
+                        </div>
+                        <p style="font-size:0.9em; color:var(--text-light); margin-top:12px;">
+                            Primary links → class inheritance (add HealerMixin).<br>
+                            Full-file links → error paths (add super().heal_repository()).
+                        </p>
+                    </div>
                     ` : ''}
                 </div>`;
             });
@@ -992,138 +1024,150 @@
             const container = document.getElementById('interviewQuestions');
             if (!container) return;
 
-            // Prioritize by current weak signals (higher score = more urgent question)
-            const weakSignals = {
-                invocation: 100 - (parseFloat(totalRow['Invocation %']) || 0),
-                tests: 100 - (parseFloat(totalRow['Test %']) || 0),
-                complexity: parseFloat(totalRow['Avg CC']) || 0 > 20 ? (parseFloat(totalRow['Avg CC']) - 10) * 5 : 0,
-                observability: 100 - (parseFloat(totalRow['Observable %']) || 0),
-                health: 100 - (parseFloat(totalRow.Health) || 0)
+            // Calculate current gap scores for prioritization
+            const gaps = {
+                invocation_gap: 100 - (parseFloat(totalRow['Invocation %']) || 0),
+                tests_gap: 100 - (parseFloat(totalRow['Test %']) || 0),
+                complexity: parseFloat(totalRow['Avg CC']) || 0,
+                obs_gap: 100 - (parseFloat(totalRow['Observable %']) || 0),
+                health: 100 - (parseFloat(totalRow.Health) || 0),
+                mcp_gap: 100,
+                general: 50,
+                unclassified: 0
             };
 
-            // Full question bank with priority weights matching signals
-            const allQuestions = [
-                { 
-                    q: "Explain the difference between healing capabilities and invocation. Why is invocation more important?", 
-                    concept: "Healing Gap", 
-                    analogy: "Capabilities = having a first-aid kit; Invocation = actually using it during an accident", 
-                    answer: "- Capabilities: Mixin presence (potential)\n- Invocation: super().heal_repository() calls (actual use)\n- Gap shows unused safety — target closing it for true resilience", 
-                    priority: weakSignals.invocation * 1.5 
+            // Full question bank with analogies and sample answers
+            const interviewQuestionsData = [
+                {
+                    question: "Explain the difference between healing capabilities and invocation in autonomous agents.",
+                    concept: "Healing Gap",
+                    analogy: "Capabilities = having a first-aid kit in your car; Invocation = actually using it during an accident",
+                    answer: "- Capabilities: HealerMixin presence (potential self-repair)\n- Invocation: Explicit super().heal_repository() calls (actual usage)\n- Gap shows unused safety — critical for resilience\n- In our portfolio: 66.6% capability vs 12.3% invocation = major opportunity",
+                    signal: "invocation_gap"
                 },
-                { 
-                    q: "How does high cyclomatic complexity impact agent autonomy?", 
-                    concept: "Complexity Penalty", 
-                    analogy: "Tangled code = knotted headphones — harder to safely add new features or healing", 
-                    answer: "- High CC (>20) blocks safe extensions\n- Increases bug surface\n- Low CC (≤10) enables rapid, safe windsurf", 
-                    priority: weakSignals.complexity 
+                {
+                    question: "Why is high cyclomatic complexity dangerous for self-healing systems?",
+                    concept: "Complexity Risk",
+                    analogy: "Tangled code = knotted headphones — adding new features (healing) risks breaking more things",
+                    answer: "- High CC (>20) increases bug surface and maintenance cost\n- Blocks safe extensions of healing logic\n- Target ≤10 for clean, evolvable agents\n- Current avg 51.5 = red flag for reliability",
+                    signal: "complexity"
                 },
-                { 
-                    q: "Why is test coverage critical for self-healing agents?", 
-                    concept: "Tests Gap", 
-                    analogy: "Tests = safety net for acrobats — without it, self-healing attempts are dangerous", 
-                    answer: "- Untested healing = risk of worse failures\n- Dedicated tests validate healing triggers + outcomes\n- Target ≥80% for production trust", 
-                    priority: weakSignals.tests 
+                {
+                    question: "How do you ensure agent reliability in production?",
+                    concept: "Test Coverage + Healing",
+                    analogy: "Tests = safety net for acrobats; healing = parachute — both needed for safe falls",
+                    answer: "- High test coverage (≥80%) validates behavior\n- Healing invocation catches runtime errors\n- Observability provides visibility\n- Composite health score averages these signals",
+                    signal: "tests_gap"
                 },
-                { 
-                    q: "Describe observability's role in autonomous agents.", 
-                    concept: "Observability", 
-                    analogy: "Like dash cams + health trackers in a self-driving car — essential for diagnosing issues", 
-                    answer: "- Logs/metrics/traces enable post-mortem + proactive healing\n- Low obs blocks production deployment\n- Ties directly to health score", 
-                    priority: weakSignals.observability 
+                {
+                    question: "What role does observability play in autonomous agents?",
+                    concept: "Observability Maturity",
+                    analogy: "Like dash cams + health trackers in a self-driving car — essential for diagnosing issues",
+                    answer: "- Logs/metrics/traces enable debugging and proactive healing\n- Low observability blocks production trust\n- Ties to overall health score\n- Target ≥80% for safe deployment",
+                    signal: "obs_gap"
                 },
-                { 
-                    q: "What is a composite health score and why use it?", 
-                    concept: "Overall Health", 
-                    analogy: "Full medical checkup vs single symptom — averages key vitals for holistic view", 
-                    answer: "- Averages invocation + tests + observability + complexity\n- Teaches interdependencies\n- Target ≥80% for robust portfolio", 
-                    priority: weakSignals.health 
+                {
+                    question: "Describe a composite health score and its benefits.",
+                    concept: "Overall Health",
+                    analogy: "Full medical checkup vs single symptom — averages healing, tests, observability, complexity",
+                    answer: "- Weighted average of key signals\n- Teaches interdependencies (e.g., high complexity drags health)\n- Single glance portfolio view\n- Current 33.3% = room for improvement",
+                    signal: "health"
                 },
-                { 
-                    q: "How would you prioritize fixing low healing invocation?", 
-                    concept: "Prioritized Windsurf", 
-                    analogy: "Like fixing brakes before paint job — highest ROI on safety", 
-                    answer: "- Score by gap × usage × priority\n- Add super() calls in error paths\n- Validate with tests", 
-                    priority: weakSignals.invocation 
+                {
+                    question: "How would you prioritize autonomy improvements across a large agent portfolio?",
+                    concept: "Prioritized Recommendations",
+                    analogy: "Triage in ER — fix bleeding (high usage + critical gaps) first",
+                    answer: "- Score by gap × usage × priority weight\n- Focus on invocation + tests in frequently used territories\n- Use dashboard recommendations tab for guidance",
+                    signal: "general"
                 },
-                { 
-                    q: "What does 'Coverage Score' teach about agent autonomy?", 
-                    concept: "Coverage Score", 
-                    analogy: "Like a three-legged stool — all three legs needed for stability", 
-                    answer: "- Composite of invocation + tests + observability\n- Shows interdependencies\n- No single metric tells full story", 
-                    priority: (weakSignals.invocation + weakSignals.tests + weakSignals.observability) / 3 
+                {
+                    question: "What are risks of low healing invocation despite high capabilities?",
+                    concept: "Invocation Gap",
+                    analogy: "Seatbelts installed but never buckled — safety feature exists but unused",
+                    answer: "- Agents crash without self-repair\n- Shared healing diagnostics/rollback never trigger\n- Fix: Add explicit super() chains",
+                    signal: "invocation_gap"
                 },
-                { 
-                    q: "How does complexity relate to healing safety?", 
-                    concept: "Complexity-Safety Link", 
-                    analogy: "Tangled wires = hard to rewire safely; clean wires = easy modifications", 
-                    answer: "- High CC = more code paths to test\n- More paths = healing side effects\n- Refactor first, then add healing", 
-                    priority: weakSignals.complexity * 1.2 
+                {
+                    question: "Explain MCP hardening in agentic systems.",
+                    concept: "MCP Hardening",
+                    analogy: "Bulletproof vest for critical components — protects core logic",
+                    answer: "- MCPShield mixin + decorators prevent unsafe overrides\n- Currently 0% — major safety gap\n- Essential for L5 compliance",
+                    signal: "mcp_gap"
                 },
-                { 
-                    q: "Why is the invocation-capability gap a red flag?", 
-                    concept: "Unused Potential", 
-                    analogy: "Like a fire extinguisher on the wall nobody uses — false sense of security", 
-                    answer: "- Gap = agents have healing but don't call it\n- Root causes: missing error handling, wrong try/except placement\n- Fix: audit error paths, add super() calls", 
-                    priority: weakSignals.invocation * 1.3 
+                {
+                    question: "Why prioritize typing in autonomous codebases?",
+                    concept: "Typed %",
+                    analogy: "Clear road signs — reduces wrong turns (bugs) during evolution",
+                    answer: "- Enables static analysis + refactoring\n- Supports safe healing extensions\n- Current 73.9% = good but room to 90%+",
+                    signal: "general"
                 },
-                { 
-                    q: "How do you explain autonomy to a non-technical stakeholder?", 
-                    concept: "Autonomy Narrative", 
-                    analogy: "Self-healing agents = immune system for software — detects + fixes problems without human intervention", 
-                    answer: "- Healing: agents repair themselves (like white blood cells)\n- Tests: safety net (like vaccines)\n- Observability: monitoring (like health checkups)\n- Together = resilient, low-maintenance systems", 
-                    priority: 30 
+                {
+                    question: "How does usage % influence improvement priority?",
+                    concept: "Used % Weighting",
+                    analogy: "Fix brakes on daily driver before garage queen",
+                    answer: "- High usage = higher impact from autonomy gaps\n- Scoring multiplies by used% to focus real-world wins\n- E.g., L4 State at 95% used = high priority",
+                    signal: "general"
                 },
-                { 
-                    q: "What's the relationship between test coverage and invocation?", 
-                    concept: "Tests-Invocation Link", 
-                    analogy: "Tests = proving ground; invocation = real-world deployment", 
-                    answer: "- Tests validate healing logic\n- Invocation shows if agents actually use it\n- Both needed: untested healing is risky; tested but unused = wasted effort", 
-                    priority: (weakSignals.tests + weakSignals.invocation) / 2 
+                {
+                    question: "What is the risk matrix telling us?",
+                    concept: "Risk vs Criticality",
+                    analogy: "Storm radar — high criticality + low health = imminent danger",
+                    answer: "- Plots health vs business impact\n- Red zone = urgent fixes\n- Current portfolio mostly HIGH risk",
+                    signal: "general"
                 },
-                { 
-                    q: "How would you explain risk matrix zones to a team?", 
-                    concept: "Risk Matrix", 
-                    analogy: "Like a weather map — green = safe, yellow = caution, red = danger", 
-                    answer: "- Top-left (green): low complexity + high compliance = safe to extend\n- Bottom-right (red): high complexity + low compliance = risky\n- Use to prioritize refactoring", 
-                    priority: 25 
+                {
+                    question: "How do territories help manage large agent portfolios?",
+                    concept: "Territory Grouping",
+                    analogy: "Neighborhoods in a city — group similar agents for targeted improvements",
+                    answer: "- Logical grouping (L2 Execution, Apps Rg, etc.)\n- Enables per-territory metrics + recommendations\n- Unclassified = lost agents distorting view",
+                    signal: "general"
                 },
-                { 
-                    q: "What's the first thing you'd fix in a low-health territory?", 
-                    concept: "Triage Strategy", 
-                    analogy: "Like emergency room triage — fix life-threatening issues first", 
-                    answer: "- Check invocation gap (unused healing = easy win)\n- Then tests (safety net)\n- Then complexity (long-term)\n- Measure health after each fix", 
-                    priority: weakSignals.health 
+                {
+                    question: "Why aim for explicit super() chains even when inherited?",
+                    concept: "Explicit Invocation",
+                    analogy: "Visible seatbelt click — confirms safety engaged",
+                    answer: "- Makes chain auditable/detectable\n- Allows future territory extensions\n- Guardian counts explicit calls for accurate metrics",
+                    signal: "invocation_gap"
                 },
-                { 
-                    q: "How do you teach a junior dev about healing interdependencies?", 
-                    concept: "Teaching Autonomy", 
-                    analogy: "Like explaining why a car needs brakes, steering, AND tires — all three matter", 
-                    answer: "- Show dashboard: metrics are connected\n- Low invocation + high tests = wasted tests\n- High complexity blocks healing\n- Use analogies (immune system, car safety)", 
-                    priority: 20 
+                {
+                    question: "How would you close a healing invocation gap at scale?",
+                    concept: "Batch Windsurf",
+                    analogy: "Vaccination campaign — systematic batches for herd immunity",
+                    answer: "- Use AST scripts to add stubs/chains\n- Verify per-batch with report\n- Current progress: 2% → 12.3% via 4 batches",
+                    signal: "general"
                 },
-                { 
-                    q: "What metrics would you track to prove healing ROI?", 
-                    concept: "Healing ROI", 
-                    analogy: "Like tracking insurance claims prevented — measure value of prevention", 
-                    answer: "- Invocation rate (% of errors caught + fixed)\n- MTTR reduction (mean time to recovery)\n- Test pass rate (healing doesn't break things)\n- Complexity trend (refactoring pays off)", 
-                    priority: 15 
+                {
+                    question: "What makes an agent portfolio 'robust'?",
+                    concept: "All Signals",
+                    analogy: "Healthy ecosystem — balanced healing, tests, observability, clean code",
+                    answer: "- Health ≥80%, invocation ≥80%, complexity ≤10\n- Low risk, high coverage\n- Interdependent — fix one lifts others",
+                    signal: "health"
                 }
             ];
 
-            // Sort by priority (worst signals first), take top 15
-            const sorted = allQuestions.sort((a, b) => b.priority - a.priority);
+            // Score questions by matching signal
+            const scored = interviewQuestionsData.map(q => ({
+                ...q,
+                score: gaps[q.signal] || 50
+            }));
+
+            // Sort by urgency (highest first)
+            scored.sort((a, b) => b.score - a.score);
 
             let html = '';
-            sorted.forEach((q, i) => {
+            scored.forEach((q, i) => {
                 const urgency = i < 5 ? 'danger' : i < 10 ? 'warning' : 'primary';
                 html += `
-                <div class="kpi-box ${urgency}" style="padding:25px;">
-                    <div class="kpi-label">Question ${i+1} • ${q.concept}</div>
-                    <div class="kpi-value" style="font-size:1.3em; margin:15px 0;">${q.q}</div>
-                    <div><strong>Analogy:</strong> ${q.analogy}</div>
-                    <div style="margin:15px 0;"><strong>Sample Answer Outline:</strong></div>
-                    <pre style="background:#f8f9fa; padding:12px; border-radius:6px; white-space:pre-wrap; font-size:0.9em;">${q.answer}</pre>
-                    <div style="font-style:italic; color:var(--text-light); margin-top:10px;">Current portfolio signal strength: ${q.priority.toFixed(0)} urgency points</div>
+                <div class="kpi-box ${urgency}" style="padding:30px;">
+                    <div class="kpi-label" style="font-size:1.1em;">Question ${i+1} • ${q.concept} (${q.score.toFixed(0)} urgency)</div>
+                    <div class="kpi-value" style="font-size:1.4em; margin:15px 0;">${q.question}</div>
+                    <div style="margin:15px 0;">
+                        <strong>Analogy:</strong> ${q.analogy}
+                    </div>
+                    <div style="margin:15px 0;">
+                        <strong>Sample Answer Outline:</strong>
+                        <pre style="background:#f8f9fa; padding:16px; border-radius:8px; font-size:0.95em; margin-top:8px; white-space:pre-wrap;">${q.answer}</pre>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -1139,14 +1183,10 @@
                 return;
             }
 
-            renderKPIBoxes(totalRow);
+            renderTerritorySummaryTable(territoryData);
             renderTopRecommendations();
             renderHealthChart(territoryData);
-            renderHealingChart(territoryData);
             renderRiskMatrix(territoryData);
-            renderComplianceChart(territoryData);
-            renderObservabilityChart(territoryData);
-            renderComplexityChart(territoryData);
             renderRecommendations();
             renderInterviewQuestions(totalRow);
 

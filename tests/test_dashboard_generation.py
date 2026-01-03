@@ -70,11 +70,7 @@ class TestDashboardGeneration(unittest.TestCase):
         required_elements = [
             'kpiGrid',
             'healthChart',
-            'healingChart',
             'riskMatrix',
-            'complianceChart',
-            'observabilityChart',
-            'complexityChart',
             'interviewQuestions',
             'recommendationsList',
             'topRecommendations',
