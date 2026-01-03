@@ -1562,5 +1562,345 @@
         "complexity": 48.7
       }
     }
+  },
+  {
+    "date": "2026-01-03",
+    "portfolio": {
+      "health_score": 36.1,
+      "code_quality_score": 43.1,
+      "invocation": 25.2,
+      "mcp_hardened": 0.0,
+      "tests": 41.8,
+      "heal_cap": 64.4,
+      "observable": 45.7,
+      "typing": 72.0,
+      "complexity": 51.0
+    },
+    "territories": {
+      "L5 Safety/Validators": {
+        "health_score": 51.2,
+        "code_quality_score": 50.7,
+        "invocation": 68.4,
+        "mcp_hardened": 0.0,
+        "tests": 21.1,
+        "heal_cap": 100.0,
+        "observable": 57.9,
+        "typing": 90.9,
+        "complexity": 111.7
+      },
+      "L5 Safety/Guardrails": {
+        "health_score": 54.2,
+        "code_quality_score": 49.0,
+        "invocation": 78.4,
+        "mcp_hardened": 0.0,
+        "tests": 37.8,
+        "heal_cap": 97.3,
+        "observable": 40.5,
+        "typing": 79.5,
+        "complexity": 45.8
+      },
+      "L5 Safety/Gravity": {
+        "health_score": 63.4,
+        "code_quality_score": 45.9,
+        "invocation": 100.0,
+        "mcp_hardened": 0.0,
+        "tests": 50.0,
+        "heal_cap": 100.0,
+        "observable": 50.0,
+        "typing": 83.8,
+        "complexity": 89.5
+      },
+      "L5 Safety/Red Teaming": {
+        "health_score": 62.9,
+        "code_quality_score": 66.6,
+        "invocation": 100.0,
+        "mcp_hardened": 0.0,
+        "tests": 0.0,
+        "heal_cap": 100.0,
+        "observable": 100.0,
+        "typing": 100.0,
+        "complexity": 21.0
+      },
+      "L4 State": {
+        "health_score": 49.6,
+        "code_quality_score": 51.1,
+        "invocation": 42.9,
+        "mcp_hardened": 0.0,
+        "tests": 57.1,
+        "heal_cap": 90.5,
+        "observable": 57.1,
+        "typing": 82.1,
+        "complexity": 51.8
+      },
+      "L3 Orchestration": {
+        "health_score": 46.1,
+        "code_quality_score": 48.8,
+        "invocation": 30.6,
+        "mcp_hardened": 0.0,
+        "tests": 41.9,
+        "heal_cap": 88.7,
+        "observable": 80.6,
+        "typing": 85.6,
+        "complexity": 49.0
+      },
+      "L2 Execution": {
+        "health_score": 30.9,
+        "code_quality_score": 42.4,
+        "invocation": 21.7,
+        "mcp_hardened": 0.0,
+        "tests": 24.1,
+        "heal_cap": 55.4,
+        "observable": 48.2,
+        "typing": 69.9,
+        "complexity": 44.8
+      },
+      "L1 Cognition": {
+        "health_score": 26.4,
+        "code_quality_score": 44.5,
+        "invocation": 4.0,
+        "mcp_hardened": 0.0,
+        "tests": 20.0,
+        "heal_cap": 60.0,
+        "observable": 52.0,
+        "typing": 62.8,
+        "complexity": 40.7
+      },
+      "L0 Maintenance": {
+        "health_score": 35.0,
+        "code_quality_score": 56.2,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 29.2,
+        "heal_cap": 66.7,
+        "observable": 83.3,
+        "typing": 76.6,
+        "complexity": 18.5
+      },
+      "Apps Lic": {
+        "health_score": 26.2,
+        "code_quality_score": 44.5,
+        "invocation": 12.8,
+        "mcp_hardened": 0.0,
+        "tests": 38.3,
+        "heal_cap": 42.6,
+        "observable": 10.6,
+        "typing": 79.1,
+        "complexity": 56.8
+      },
+      "Apps Rg": {
+        "health_score": 36.8,
+        "code_quality_score": 39.7,
+        "invocation": 12.5,
+        "mcp_hardened": 0.0,
+        "tests": 95.0,
+        "heal_cap": 47.5,
+        "observable": 12.5,
+        "typing": 63.4,
+        "complexity": 69.3
+      },
+      "Apps Shared": {
+        "health_score": 43.5,
+        "code_quality_score": 61.1,
+        "invocation": 25.0,
+        "mcp_hardened": 0.0,
+        "tests": 50.0,
+        "heal_cap": 100.0,
+        "observable": 0.0,
+        "typing": 97.2,
+        "complexity": 24.8
+      },
+      "Utils": {
+        "health_score": 24.1,
+        "code_quality_score": 40.2,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 42.9,
+        "heal_cap": 14.3,
+        "observable": 57.1,
+        "typing": 76.8,
+        "complexity": 57.4
+      },
+      "Tests": {
+        "health_score": 20.3,
+        "code_quality_score": 21.0,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 100.0,
+        "heal_cap": 0.0,
+        "observable": 0.0,
+        "typing": 2.1,
+        "complexity": 48.7
+      }
+    }
+  },
+  {
+    "date": "2026-01-03",
+    "portfolio": {
+      "health_score": 36.1,
+      "code_quality_score": 43.1,
+      "invocation": 25.2,
+      "mcp_hardened": 0.0,
+      "tests": 41.8,
+      "heal_cap": 64.4,
+      "observable": 45.7,
+      "typing": 72.0,
+      "complexity": 51.0
+    },
+    "territories": {
+      "L5 Safety/Validators": {
+        "health_score": 51.2,
+        "code_quality_score": 50.7,
+        "invocation": 68.4,
+        "mcp_hardened": 0.0,
+        "tests": 21.1,
+        "heal_cap": 100.0,
+        "observable": 57.9,
+        "typing": 90.9,
+        "complexity": 111.7
+      },
+      "L5 Safety/Guardrails": {
+        "health_score": 54.2,
+        "code_quality_score": 49.0,
+        "invocation": 78.4,
+        "mcp_hardened": 0.0,
+        "tests": 37.8,
+        "heal_cap": 97.3,
+        "observable": 40.5,
+        "typing": 79.5,
+        "complexity": 45.8
+      },
+      "L5 Safety/Gravity": {
+        "health_score": 63.4,
+        "code_quality_score": 45.9,
+        "invocation": 100.0,
+        "mcp_hardened": 0.0,
+        "tests": 50.0,
+        "heal_cap": 100.0,
+        "observable": 50.0,
+        "typing": 83.8,
+        "complexity": 89.5
+      },
+      "L5 Safety/Red Teaming": {
+        "health_score": 62.9,
+        "code_quality_score": 66.6,
+        "invocation": 100.0,
+        "mcp_hardened": 0.0,
+        "tests": 0.0,
+        "heal_cap": 100.0,
+        "observable": 100.0,
+        "typing": 100.0,
+        "complexity": 21.0
+      },
+      "L4 State": {
+        "health_score": 49.6,
+        "code_quality_score": 51.1,
+        "invocation": 42.9,
+        "mcp_hardened": 0.0,
+        "tests": 57.1,
+        "heal_cap": 90.5,
+        "observable": 57.1,
+        "typing": 82.1,
+        "complexity": 51.8
+      },
+      "L3 Orchestration": {
+        "health_score": 46.1,
+        "code_quality_score": 48.8,
+        "invocation": 30.6,
+        "mcp_hardened": 0.0,
+        "tests": 41.9,
+        "heal_cap": 88.7,
+        "observable": 80.6,
+        "typing": 85.6,
+        "complexity": 49.0
+      },
+      "L2 Execution": {
+        "health_score": 30.9,
+        "code_quality_score": 42.4,
+        "invocation": 21.7,
+        "mcp_hardened": 0.0,
+        "tests": 24.1,
+        "heal_cap": 55.4,
+        "observable": 48.2,
+        "typing": 69.9,
+        "complexity": 44.8
+      },
+      "L1 Cognition": {
+        "health_score": 26.4,
+        "code_quality_score": 44.5,
+        "invocation": 4.0,
+        "mcp_hardened": 0.0,
+        "tests": 20.0,
+        "heal_cap": 60.0,
+        "observable": 52.0,
+        "typing": 62.8,
+        "complexity": 40.7
+      },
+      "L0 Maintenance": {
+        "health_score": 35.0,
+        "code_quality_score": 56.2,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 29.2,
+        "heal_cap": 66.7,
+        "observable": 83.3,
+        "typing": 76.6,
+        "complexity": 18.5
+      },
+      "Apps Lic": {
+        "health_score": 26.2,
+        "code_quality_score": 44.5,
+        "invocation": 12.8,
+        "mcp_hardened": 0.0,
+        "tests": 38.3,
+        "heal_cap": 42.6,
+        "observable": 10.6,
+        "typing": 79.1,
+        "complexity": 56.8
+      },
+      "Apps Rg": {
+        "health_score": 36.8,
+        "code_quality_score": 39.7,
+        "invocation": 12.5,
+        "mcp_hardened": 0.0,
+        "tests": 95.0,
+        "heal_cap": 47.5,
+        "observable": 12.5,
+        "typing": 63.4,
+        "complexity": 69.3
+      },
+      "Apps Shared": {
+        "health_score": 43.5,
+        "code_quality_score": 61.1,
+        "invocation": 25.0,
+        "mcp_hardened": 0.0,
+        "tests": 50.0,
+        "heal_cap": 100.0,
+        "observable": 0.0,
+        "typing": 97.2,
+        "complexity": 24.8
+      },
+      "Utils": {
+        "health_score": 24.1,
+        "code_quality_score": 40.2,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 42.9,
+        "heal_cap": 14.3,
+        "observable": 57.1,
+        "typing": 76.8,
+        "complexity": 57.4
+      },
+      "Tests": {
+        "health_score": 20.3,
+        "code_quality_score": 21.0,
+        "invocation": 0.0,
+        "mcp_hardened": 0.0,
+        "tests": 100.0,
+        "heal_cap": 0.0,
+        "observable": 0.0,
+        "typing": 2.1,
+        "complexity": 48.7
+      }
+    }
   }
 ]

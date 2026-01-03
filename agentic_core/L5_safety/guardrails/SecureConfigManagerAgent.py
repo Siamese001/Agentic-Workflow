@@ -477,7 +477,9 @@ def get_secure_config_manager(config_dir: Optional[Path] = None, master_password
 def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
     """L5 safety/guardrails - operational only."""
     if _call_path is None:
-        _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
     agent_name = "SecureConfigManagerAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}

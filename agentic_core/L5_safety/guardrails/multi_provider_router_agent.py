@@ -651,7 +651,9 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
     # Note: Module-level function, cannot call super()
     
     if _call_path is None:
-        _call_path = set()
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
     agent_name = "MultiProviderRouterAgent"
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
