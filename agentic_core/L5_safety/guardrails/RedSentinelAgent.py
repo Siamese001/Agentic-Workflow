@@ -212,6 +212,9 @@ _red_sentinel: Optional[RedSentinelAgent] = None
 
 def get_red_sentinel() -> RedSentinelAgent:
     """Get or create the global RedSentinelAgent instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _red_sentinel
     if _red_sentinel is None:
         _red_sentinel = RedSentinelAgent()

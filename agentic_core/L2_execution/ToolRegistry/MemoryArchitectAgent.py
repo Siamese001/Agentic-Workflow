@@ -578,4 +578,7 @@ _memory_architect = None
 
 def get_memory_architect() -> MemoryArchitect:
     """Factory function to get memory architect instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return MemoryArchitect()

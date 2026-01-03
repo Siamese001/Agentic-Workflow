@@ -61,6 +61,9 @@ class SemanticGatekeeperAgent(HealerMixin):
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str) -> Any:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Context manager for controlled execution.
 
         Args:

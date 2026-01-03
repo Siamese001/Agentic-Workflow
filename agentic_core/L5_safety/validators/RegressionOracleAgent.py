@@ -451,6 +451,9 @@ class RegressionOracleAgent(SubAtomicAgent):
 
     def post_heal_validation(self, generated_tests: List[GeneratedTest], dry_run: bool = True) -> Dict[str, Any]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         GOLD STANDARD: Post-heal validation confirming test coverage.
         Verifies tests were successfully generated and pass.
         

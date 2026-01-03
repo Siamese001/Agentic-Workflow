@@ -218,6 +218,9 @@ class FirecrackerManager:
 def create_firecracker_manager(Provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager.
 
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         Provider: VM Provider type
 

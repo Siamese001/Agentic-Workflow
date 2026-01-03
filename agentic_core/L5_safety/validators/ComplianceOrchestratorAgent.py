@@ -874,6 +874,9 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
 
 def compliance_orchestrator(project_root: Optional[Path] = None) -> ComplianceOrchestratorAgent:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Factory function exported for import in L6.
     Usage in canon_validator_agentic_v2.py:
         orchestrator = compliance_orchestrator(Path.cwd())

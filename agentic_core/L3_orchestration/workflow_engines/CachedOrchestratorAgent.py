@@ -60,6 +60,9 @@ class CachedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
 
     def get_cached_decision(self, category: str, identifier: str) -> Optional[Dict]:
         """Check if we've already solved this specific problem."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         key = self._get_cache_key(category, identifier)
         return self.get(key)
 

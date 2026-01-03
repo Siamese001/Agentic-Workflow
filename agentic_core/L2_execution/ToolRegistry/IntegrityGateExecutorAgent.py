@@ -327,5 +327,8 @@ def validate_research_output(
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)
     return EXECUTOR.execute(research_output)

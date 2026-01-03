@@ -77,6 +77,9 @@ class McpConnectionManagerAgent:
 
 def load_mcp_config(config_path: str) -> Dict[str, Any]:
     """Load MCP configuration from YAML file."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     path: Any = Path(config_path)
     if not path.exists():
         Logger.warning(f'[L3 MCP] Config file not found: {config_path}')

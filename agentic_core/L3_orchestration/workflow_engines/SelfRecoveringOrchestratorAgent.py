@@ -402,4 +402,7 @@ class SelfRecoveringOrchestratorAgent(HealerMixin):
 
 def create_self_recovering_orchestrator() -> SelfRecoveringOrchestratorAgent:
     """Factory function to create self-recovering orchestrator."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return SelfRecoveringOrchestratorAgent()

@@ -107,4 +107,7 @@ class DocstringComplianceAgent(HealerMixin):
 
 def get_docstring_compliance_agent() -> Any:
     """Brief description of functionality and purpose."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return DocstringComplianceAgent()

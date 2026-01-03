@@ -406,6 +406,9 @@ class HallucinationHunterAgent(SubAtomicAgent):
 
     async def inject_citations(self, generated_text: str, source_text: str) -> str:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Inject citation metadata into generated text.
         
         Args:

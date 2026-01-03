@@ -291,6 +291,9 @@ class ToolsmithAgent(HealerMixin, MCPHardenedMixin):
 
     async def seed_territory(self, project_root: Path, dry_run: bool = False) -> Dict[str, Any]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
         
         Seed organic content in empty territories (Ghost Territories).

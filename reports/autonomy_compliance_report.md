@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 29.8/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 33.3/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
 - **Total Agents:** 416
 - **Compliant:** 174 (41.8%) ❌
-- **Healing Capabilities:** 269 (64.7%) ⚠️
-- **Healing Invocation:** 8 (1.9%) ❌
+- **Healing Capabilities:** 277 (66.6%) ⚠️
+- **Healing Invocation:** 51 (12.3%) ❌
 - **With Tests:** 174 (41.8%) ❌
-- **Avg Complexity:** 51.4 ❌
+- **Avg Complexity:** 51.5 ❌
 
 ## 📊 Territory Analysis
 
@@ -23,21 +23,21 @@
 
 ### High Priority Territories
 
-- 🔥 **L1 Cognition**: 9/50 compliant | Health: 27.3% | Risk: HIGH | Heal Gap: 78.0%
+- 🔥 **L1 Cognition**: 9/50 compliant | Health: 31.3% | Risk: HIGH | Heal Gap: 66.0%
 - 🔥 **L0 Maintenance**: 5/24 compliant | Health: 38.9% | Risk: HIGH | Heal Gap: 87.5%
-- 🔥 **L2 Execution**: 27/83 compliant | Health: 35.3% | Risk: HIGH | Heal Gap: 79.5%
-- 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 38.6% | Risk: HIGH | Heal Gap: 89.4%
-- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 25.2% | Risk: HIGH | Heal Gap: 89.2%
+- 🔥 **L2 Execution**: 27/83 compliant | Health: 42.2% | Risk: HIGH | Heal Gap: 61.4%
+- 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 52.6% | Risk: HIGH | Heal Gap: 52.6%
+- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 34.2% | Risk: HIGH | Heal Gap: 67.6%
 
 ### Medium Priority Territories
 
-- 🔥 **Apps Lic**: 11/47 compliant | Health: 28.4% | Risk: HIGH | Heal Gap: 59.6%
-- 🔥 **Apps Rg**: 5/40 compliant | Health: 44.2% | Risk: HIGH | Heal Gap: 45.0%
-- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 44.6% | Risk: HIGH | Heal Gap: 90.3%
-- ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 33.3% | Risk: MED | Heal Gap: 100.0%
-- 🔥 **L5 Safety/Red Teaming**: 1/1 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 100.0%
+- 🔥 **Apps Lic**: 11/47 compliant | Health: 29.1% | Risk: HIGH | Heal Gap: 57.5%
+- 🔥 **Apps Rg**: 5/40 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 42.5%
 - 🔥 **Apps Shared**: 0/4 compliant | Health: 16.7% | Risk: HIGH | Heal Gap: 100.0%
-- 🔥 **L4 State**: 10/21 compliant | Health: 41.3% | Risk: HIGH | Heal Gap: 85.7%
+- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 54.3% | Risk: HIGH | Heal Gap: 62.9%
+- ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 50.0% | Risk: MED | Heal Gap: 50.0%
+- 🔥 **L5 Safety/Red Teaming**: 1/1 compliant | Health: 66.7% | Risk: HIGH
+- 🔥 **L4 State**: 10/21 compliant | Health: 50.8% | Risk: HIGH | Heal Gap: 61.9%
 
 ### Low Priority Territories
 
@@ -61,18 +61,17 @@
 - **Apps Shared**: Focus on complexity reduction (CC=48.7) and test coverage
 
 ### Healing Gap Closure
-- **L5 Safety/Gravity**: Add heal_repository() methods (Gap: 100.0%)
-- **L5 Safety/Red Teaming**: Add heal_repository() methods (Gap: 100.0%)
 - **Apps Shared**: Add heal_repository() methods (Gap: 100.0%)
-- **L3 Orchestration**: Add heal_repository() methods (Gap: 90.3%)
-- **L5 Safety/Validators**: Add heal_repository() methods (Gap: 89.4%)
-- **L5 Safety/Guardrails**: Add heal_repository() methods (Gap: 89.2%)
 - **L0 Maintenance**: Add heal_repository() methods (Gap: 87.5%)
-- **L4 State**: Add heal_repository() methods (Gap: 85.7%)
-- **L2 Execution**: Add heal_repository() methods (Gap: 79.5%)
-- **L1 Cognition**: Add heal_repository() methods (Gap: 78.0%)
-- **Apps Lic**: Add heal_repository() methods (Gap: 59.6%)
-- **Apps Rg**: Add heal_repository() methods (Gap: 45.0%)
+- **L5 Safety/Guardrails**: Add heal_repository() methods (Gap: 67.6%)
+- **L1 Cognition**: Add heal_repository() methods (Gap: 66.0%)
+- **L3 Orchestration**: Add heal_repository() methods (Gap: 62.9%)
+- **L4 State**: Add heal_repository() methods (Gap: 61.9%)
+- **L2 Execution**: Add heal_repository() methods (Gap: 61.4%)
+- **Apps Lic**: Add heal_repository() methods (Gap: 57.5%)
+- **L5 Safety/Validators**: Add heal_repository() methods (Gap: 52.6%)
+- **L5 Safety/Gravity**: Add heal_repository() methods (Gap: 50.0%)
+- **Apps Rg**: Add heal_repository() methods (Gap: 42.5%)
 
 
 ## 📊 Data Files

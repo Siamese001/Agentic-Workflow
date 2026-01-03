@@ -327,6 +327,9 @@ _memory_manager = None
 
 def get_memory_manager(base_dir: str=None) -> MemoryManagerAgent:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Get or create global memory manager instance.
     
     Args:

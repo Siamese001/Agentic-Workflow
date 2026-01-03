@@ -197,6 +197,9 @@ class FallbackManagerAgent(HealerMixin):
 def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL) -> FallbackManagerAgent:
     """Factory function to create fallback manager.
 
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         strategy: Fallback strategy to use
 

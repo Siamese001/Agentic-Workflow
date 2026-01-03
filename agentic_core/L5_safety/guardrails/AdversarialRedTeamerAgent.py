@@ -297,6 +297,9 @@ _red_teamer: Optional[AdversarialRedTeamer] = None
 
 def get_adversarial_red_teamer(ctx: Any) -> AdversarialRedTeamer:
     """Get or create global Red Teamer instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _red_teamer
     if _red_teamer is None:
         _red_teamer = AdversarialRedTeamer(ctx)

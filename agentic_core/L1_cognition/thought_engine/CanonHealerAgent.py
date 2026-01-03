@@ -330,6 +330,9 @@ class SystemArchitect(HealerMixin, CanonBaseAgentInterface):
 # NOT_AN_AGENT — legacy L1 class, not actively used — excluded from discovery
 class HealerAgent(HealerMixin, CanonBaseAgentInterface):
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
     ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
     Phase 9A: DDD Remediation - Composition over inheritance

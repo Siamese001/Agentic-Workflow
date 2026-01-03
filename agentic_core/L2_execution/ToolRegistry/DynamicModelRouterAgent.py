@@ -463,6 +463,9 @@ _model_router = None
 
 def get_model_router(ctx) -> DynamicModelRouterAgent:
     """Get or create global Model Router instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _model_router
     if _model_router is None:
         _model_router = DynamicModelRouterAgent(ctx)

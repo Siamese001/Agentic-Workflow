@@ -70,6 +70,9 @@ class HardenedWorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3Subatom
 
 def get_hardened_workflow_orchestrator() -> HardenedWorkflowOrchestratorAgent:
     """Factory function to get hardened workflow orchestrator instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return HardenedWorkflowOrchestratorAgent()
 
 def create_hardened_orchestrator(workflow_spec: Optional[Any]=None, run_base_dir: str='./pipeline_runs', storage_path: Optional[str]=None) -> HardenedWorkflowOrchestratorAgent:

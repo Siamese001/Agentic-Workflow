@@ -246,6 +246,9 @@ class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
 
     def get_test_sovereignty_agent(self) -> TestSovereigntyAgent:
         """Factory function to get test sovereignty agent instance."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         return TestSovereigntyAgent()
 
 def create_test_sovereignty(ctx=None) -> Any:

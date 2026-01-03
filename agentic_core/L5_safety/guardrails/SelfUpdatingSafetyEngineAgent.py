@@ -323,4 +323,7 @@ class SelfUpdatingSafetyEngineAgent(HealerMixin, MCPHardenedMixin):
 
 def create_self_updating_safety_engine(rules_storage_path: Optional[str]=None) -> SelfUpdatingSafetyEngine:
     """Factory function to create self-updating safety engine."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return SelfUpdatingSafetyEngine(rules_storage_path=rules_storage_path)

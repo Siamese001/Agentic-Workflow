@@ -258,6 +258,9 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
 
     async def execute(self):
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Main execution entry point.
         Finds and executes all territory violations with cache purging.
         """

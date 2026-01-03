@@ -266,4 +266,7 @@ class GravityLeakRepairAgent(HealerMixin):
 
 def get_gravity_leak_repair_agent(project_root, ctx) -> Any:
     """Brief description of functionality and purpose."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return GravityLeakRepairAgent(ctx, project_root)

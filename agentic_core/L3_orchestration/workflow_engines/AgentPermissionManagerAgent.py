@@ -90,6 +90,9 @@ class AgentPermissionManagerAgent(HealerMixin):
     def revoke_permission(self, identity: AgentIdentity, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
         """Revoke a Permission from an agent.
 
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Args:
             identity: Agent identity
             scope: Permission scope

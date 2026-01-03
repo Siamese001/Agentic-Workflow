@@ -270,6 +270,9 @@ _context_manager: Optional[ValidationContextManagerAgent] = None
 
 def get_context_manager() -> ValidationContextManagerAgent:
     """Get or create the global context manager."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _context_manager
     if _context_manager is None:
         _context_manager = ValidationContextManagerAgent()

@@ -48,6 +48,9 @@ class ArchitectureGovernorAgent(HealerMixin):
 
     def validate_layer_boundaries(self, file_path: Path) -> Tuple[bool, str]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Validate that file respects layer boundaries (L0-L5).
         
         Args:

@@ -40,4 +40,7 @@ class L3Agent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     
     async def orchestrate(self, task: Dict) -> Dict:
         """Override in subclass to implement orchestration logic."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         raise NotImplementedError(f"{self.name} must implement orchestrate()")

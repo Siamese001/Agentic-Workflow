@@ -216,6 +216,9 @@ class CodeDeduplicationAgent(HealerMixin):
 
     async def execute(self, ctx: Any) -> Any:
         """Batch agent interface."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         if not hasattr(ctx, 'python_files'):
             return
         if not hasattr(ctx, 'project_root'):

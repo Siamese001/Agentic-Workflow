@@ -324,6 +324,9 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
 
 def create_autonomous_checkpoint_manager(checkpoint_dir: Optional[str]=None) -> AutonomousCheckpointManager:
     """Factory function to create autonomous Checkpoint manager."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return AutonomousCheckpointManager(checkpoint_dir=checkpoint_dir)
 
 def get_checkpoint_manager(project_root: Path) -> AutonomousCheckpointManagerAgent:
