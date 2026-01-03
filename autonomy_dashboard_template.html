@@ -443,6 +443,7 @@
         const dashboardData = [];
         const recommendationsData = [];
         const lastUpdatedStr = "";
+        const gaugeData = {};
 
         // Tab switching functionality
         document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -504,7 +505,7 @@
         }
 
         function renderHealthGauge(totalRow) {
-            const health = parseFloat(totalRow.Health) || 0;
+            const health = parseFloat(totalRow.health || totalRow.Health) || 0;
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
@@ -537,7 +538,7 @@
         }
 
         function renderComplianceGauge(totalRow) {
-            const compliance = parseFloat(totalRow['Compliance %']) || 0;
+            const compliance = parseFloat(totalRow.compliance || totalRow['Compliance %']) || 0;
             const data = [{
                 type: 'indicator',
                 mode: 'gauge+number',
@@ -904,6 +905,16 @@
             if (!totalRow) {
                 document.getElementById('kpiGrid').innerHTML = '<div class="loading">No data available.</div>';
                 return;
+            }
+
+            // Render top-level gauges if gaugeData is available
+            if (gaugeData && Object.keys(gaugeData).length > 0) {
+                renderHealthGauge(gaugeData);
+                renderComplianceGauge(gaugeData);
+            } else {
+                // Fallback: use totalRow if gaugeData not injected
+                renderHealthGauge(totalRow);
+                renderComplianceGauge(totalRow);
             }
 
             renderKPIBoxes(totalRow);
