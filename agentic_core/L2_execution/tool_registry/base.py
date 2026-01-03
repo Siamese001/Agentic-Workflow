@@ -1,8 +1,18 @@
 from __future__ import annotations
-import ast
-'''Brief description of functionality and purpose.'''
+"""
+DEPRECATED: This file is deprecated as of Phase 2 (Jan 03, 2026).
+All agents must migrate to L2ExecutionBaseAgent with enable_gemini=False.
+This file will be removed in Phase 5.
+"""
 
-'Brief description of functionality and purpose.'
+import warnings
+warnings.warn(
+    "SubAtomicAgent is deprecated. Use L2ExecutionBaseAgent with enable_gemini=False instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+import ast
 import logging
 import os
 import re

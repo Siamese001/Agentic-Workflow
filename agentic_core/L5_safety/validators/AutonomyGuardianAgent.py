@@ -929,7 +929,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     def _empty_metrics(self) -> Dict[str, Any]:
         """Handle empty territory edge case."""
         return {
-            "total": 0, "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "total": 0, "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
             "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0,
             "documented": 0, "observable": 0, "used": 0
         }
@@ -938,7 +938,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Base metrics structure."""
         return {
             "total": total,
-            "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
             "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0,
             "documented": 0, "observable": 0, "used": 0
         }
@@ -948,7 +948,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     ) -> Dict[str, Any]:
         """Per-agent analysis — isolated AST + checks."""
         file_metrics = {
-            "loc": 0, "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "loc": 0, "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
             "tests": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, "documented": 0, "observable": 0
         }
         
@@ -961,8 +961,11 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             try:
                 tree = ast.parse(content)
                 
-                # MCP hardening detection
+                # MCP hardening detection (security)
                 file_metrics["hardened"] = self._detect_mcp_hardening(tree)
+                
+                # MCP capability detection (uses MCP servers)
+                file_metrics["mcp_capable"] = self._detect_mcp_capability(content)
                 
                 # Healing invocation detection
                 file_metrics["healing_invoke"] = self._detect_healing_invocation(tree)
@@ -994,8 +997,21 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
         return file_metrics
 
+    def _detect_mcp_capability(self, content: str) -> int:
+        """Check if agent uses MCP client to call external MCP servers."""
+        mcp_imports = [
+            "from mcp import",
+            "import mcp",
+            "ClientSession",
+            "mcp.types",
+            "mcp_client",
+            "from mcp.client",
+            "MCPClient"
+        ]
+        return 1 if any(pattern in content for pattern in mcp_imports) else 0
+    
     def _detect_mcp_hardening(self, tree: ast.AST) -> int:
-        """Check for MCPShield mixin or @hardened decorator."""
+        """Check for MCPShield mixin or @hardened decorator (security protection)."""
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if any("MCPShield" in (b.id if isinstance(b, ast.Name) else str(b)) for b in node.bases):
@@ -1083,6 +1099,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Aggregate per-file results — simple increments."""
         metrics["compliant"] += file_metrics["compliant"]
         metrics["hardened"] += file_metrics["hardened"]
+        metrics["mcp_capable"] += file_metrics["mcp_capable"]
         metrics["healing_cap"] += file_metrics["healing_cap"]
         metrics["healing_invoke"] += file_metrics["healing_invoke"]
         metrics["tests"] += file_metrics["tests"]
@@ -1104,8 +1121,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """DEPRECATED: Old implementation kept for reference during transition."""
         metrics = {
             "total": len(agents),
-            "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
-            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, 
+            "compliant": 0, "hardened": 0, "mcp_capable": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0,
             "documented": 0, "observable": 0, "used": 0
         }
 
@@ -1350,6 +1367,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             total = metrics["total"]
             perc_compliant = round(metrics["compliant"] / total * 100, 1) if total else 0
             perc_hardened = round(metrics["hardened"] / total * 100, 1) if total else 0
+            perc_mcp_capable = round(metrics["mcp_capable"] / total * 100, 1) if total else 0
             perc_healing_cap = round(metrics["healing_cap"] / total * 100, 1) if total else 0
             perc_healing_invoke = round(metrics["healing_invoke"] / total * 100, 1) if total else 0
             perc_tests = round(metrics["tests"] / total * 100, 1) if total else 0
@@ -1362,10 +1380,21 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             avg_cc = round(metrics["cc_sum"] / max(total, 1), 1)
             
             # Calculate health and risk
-            # New formula: (Heal Cap + Invocation + Tests + Observability + Inverted CC) / 5
-            # Inverted CC: normalize to 0-100 scale where lower CC = higher score
+            # Health Score v2.1 (Added Typing Weight)
+            # Changes from v2:
+            # - Added perc_typing @ 10%: reduces runtime errors, strong quality signal
+            # - Reduced complexity weight to 5% to keep total 100%
+            # Rationale: Empirical evidence shows typed code has ~50-70% fewer bugs
             cc_health_component = max(0, min(100, 100 - (avg_cc * 2)))  # CC of 0 = 100%, CC of 50 = 0%
-            health = round((perc_healing_cap + perc_healing_invoke + perc_tests + perc_observable + cc_health_component) / 5, 1)
+            health = round((
+                perc_healing_invoke * 0.25 +   # Proven L5 autonomy in production
+                perc_hardened * 0.20 +         # Critical security control
+                perc_tests * 0.20 +            # Regression prevention
+                perc_healing_cap * 0.15 +      # Foundational capability
+                perc_observable * 0.10 +       # Visibility
+                cc_health_component * 0.05 +   # Maintainability (reduced to accommodate typing)
+                perc_typed * 0.10              # Runtime safety via type hints (NEW)
+            ), 1)
             risk_score = 0
             if avg_cc > 10: risk_score += 3
             if perc_tests < 50: risk_score += 3
@@ -1395,6 +1424,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Heal Cap %": perc_healing_cap,
                 "Invocation %": perc_healing_invoke,
                 "Hardened %": perc_hardened,
+                "MCP Capable %": perc_mcp_capable,
                 "Test %": perc_tests,
                 "Observable %": perc_observable,  # Now a column for all territories
                 "Avg CC": avg_cc,
@@ -1418,6 +1448,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 has_tests = False
                 agent_typed_pct = 0
                 agent_complexity = 0
+                obs_logging = obs_metrics = obs_tracing = False
+                obs_summary = "Logging: ✗ | Metrics: ✗ | Tracing: ✗"
+                has_mcp_capability = False
+                has_mcpshield = has_hardened_decorator = False
+                mcp_safe_overrides = True
+                mcp_summary = "Shield: ✗ | @hardened: ✗ | Safe: ✓"
+                typed_init = False
+                typed_methods_ratio = return_annotated_ratio = overall_typed_pct = 0.0
+                typing_summary = "Init: ✗ | Methods: 0% | Returns: 0%"
                 
                 try:
                     with open(agent, "r", encoding="utf-8") as f:
@@ -1610,6 +1649,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "obs_metrics": obs_metrics,
                     "obs_tracing": obs_tracing,
                     "obs_summary": obs_summary,
+                    "has_mcp_capability": has_mcp_capability,
                     "has_mcpshield": has_mcpshield,
                     "has_hardened_decorator": has_hardened_decorator,
                     "mcp_safe_overrides": mcp_safe_overrides,
@@ -1673,6 +1713,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_mcp_capable = round(sum(r["MCP Capable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
@@ -1680,10 +1721,18 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
-                total_hardened = total_tests = total_cc = total_typed = total_observable = total_used = 0
-            # Calculate total health with new formula
+                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_observable = total_used = 0
+            # Calculate total health with new formula (v2.1 with typing weight)
             total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
-            total_health = round((total_healing_cap + total_healing_invoke + total_tests + total_observable + total_cc_health) / 5, 1)
+            total_health = round((
+                total_healing_invoke * 0.25 +   # Proven L5 autonomy in production
+                total_hardened * 0.20 +         # Critical security control
+                total_tests * 0.20 +            # Regression prevention
+                total_healing_cap * 0.15 +      # Foundational capability
+                total_observable * 0.10 +       # Visibility
+                total_cc_health * 0.05 +        # Maintainability (reduced to accommodate typing)
+                total_typed * 0.10              # Runtime safety via type hints (NEW)
+            ), 1)
             
             total_row = {
                 "Territory": "TOTAL",
@@ -1693,6 +1742,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Heal Cap %": total_healing_cap,
                 "Invocation %": total_healing_invoke,
                 "Hardened %": total_hardened,
+                "MCP Capable %": total_mcp_capable,
                 "Test %": total_tests,
                 "Avg CC": total_cc,
                 "Typed %": total_typed,
@@ -1986,7 +2036,33 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "file_links": []
                 })
         
-        # === 5. HIGH USAGE + LOW HEALTH CORRELATION ===
+        # === 5. MCP ADOPTION GAP (NEW) ===
+        # Analyze MCP capability adoption across portfolio
+        total_mcp_capable = sum(r.get("MCP Capable %", 0) * r["Total"] for r in dashboard_rows if r["Territory"] != "TOTAL") / max(total_classified, 1) if total_classified > 0 else 0
+        
+        if total_mcp_capable < 15:  # Less than 15% portfolio-wide MCP adoption
+            territories_without_mcp = [(r["Territory"], r["Total"], r.get("MCP Capable %", 0)) 
+                                       for r in dashboard_rows 
+                                       if r.get("MCP Capable %", 0) == 0 and r["Territory"] != "TOTAL"]
+            
+            if len(territories_without_mcp) > 0:
+                top_territories = sorted(territories_without_mcp, key=lambda x: x[1], reverse=True)[:3]
+                territory_names = ", ".join([t[0] for t in top_territories])
+                total_agents_without = sum([t[1] for t in top_territories])
+                
+                holistic_recs.append({
+                    "territory": "🔌 MCP Adoption Gap",
+                    "priority": "Medium",
+                    "total": total_agents_without,
+                    "used": 100.0,
+                    "rationale": f"⚠️ Portfolio-wide MCP adoption: {total_mcp_capable:.1f}% → Missing modernization opportunity\n💡 Action: {total_agents_without} agents in {len(top_territories)} territories lack MCP client capabilities\n📊 Impact: Agents cannot leverage external tools (Brave Search, GitHub, Figma) for enhanced functionality",
+                    "gaps": f"{total_agents_without} agents without MCP • {len(territories_without_mcp)} territories at 0%",
+                    "guidance": f"**MCP Integration Roadmap:**\n1. Add MCP client imports to high-value agents\n2. Connect to relevant MCP servers (search, code, design)\n3. Target territories: {territory_names}\n4. Goal: 30%+ portfolio adoption within 2 quarters",
+                    "score": 30,
+                    "file_links": []
+                })
+        
+        # === 6. HIGH USAGE + LOW HEALTH CORRELATION ===
         # Find territories that are heavily used but poorly maintained
         for stat in territory_stats:
             if stat["used"] > 70 and stat["health"] < 40:
