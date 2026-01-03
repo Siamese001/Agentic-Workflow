@@ -338,3 +338,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         return {"skipped": 1}
     finally:
         _call_path.discard(agent_name)
+
+
+# Add heal_repository as a class method for compliance
+SecureCheckpointManagerAgent.heal_repository = heal_repository

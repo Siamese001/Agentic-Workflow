@@ -363,6 +363,9 @@ class SecureErrorHandler:
         _call_path: Optional[set] = None
     ) -> Dict[str, int]:
         """L5 safety agent - operational only."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+        
         if _call_path is None:
             _call_path = set()
         agent_name = "SecureErrorHandler"

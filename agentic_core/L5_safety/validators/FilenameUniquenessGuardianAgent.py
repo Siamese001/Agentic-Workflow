@@ -155,5 +155,8 @@ class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """[DEPRECATED] Agent functionality merged into NamingAgent."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+        
         print(f"[FilenameUniquenessGuardian] DEPRECATED - use NamingAgent instead")
         return {"skipped": 1, "deprecated": True}
