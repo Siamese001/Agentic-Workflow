@@ -40,4 +40,7 @@ class L4Agent(HealerMixin, MCPHardenedMixin, L4SubatomicTestingMixin):
     
     async def update_state(self, task: Dict) -> Dict:
         """Override in subclass to implement state update logic."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         raise NotImplementedError(f"{self.name} must implement update_state()")

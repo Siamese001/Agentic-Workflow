@@ -116,6 +116,9 @@ class GitAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
 
     def _run_git(self, args: List[str], check: bool=True) -> subprocess.CompletedProcess:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Run a git command.
         Args:
             args: Git command arguments
@@ -367,6 +370,9 @@ _git_agent: Optional["GitAgent"] = None
 
 def get_git_agent() -> "GitAgent":
     """Get or create the global GitAgent instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _git_agent
     if _git_agent is None:
         _git_agent = GitAgent()

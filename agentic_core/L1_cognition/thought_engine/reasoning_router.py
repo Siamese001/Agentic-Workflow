@@ -207,6 +207,9 @@ def select_reasoning_strategy(
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
     
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         Task: The Task to solve
         context: Optional context

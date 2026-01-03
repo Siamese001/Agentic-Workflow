@@ -112,4 +112,7 @@ class HygieneGuardianAgent(CanonBaseAgent, MCPHardenedMixin):
 
 def create_hygiene_guardian(ctx=None) -> Any:
     """Brief description of functionality and purpose."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return HygieneGuardianAgent(ctx)

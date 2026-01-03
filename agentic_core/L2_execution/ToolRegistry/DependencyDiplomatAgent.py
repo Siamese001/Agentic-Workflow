@@ -310,6 +310,9 @@ _dependency_diplomat = None
 
 def get_dependency_diplomat(ctx: Any) -> DependencyDiplomat:
     """Get or create global Dependency Diplomat instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _dependency_diplomat
     if _dependency_diplomat is None:
         _dependency_diplomat = DependencyDiplomat(ctx)

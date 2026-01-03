@@ -179,6 +179,9 @@ class WorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingM
 
 async def main():
     """Main execution entry point"""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     from apps_lic.domain.lic_models import OutreachMission
     
     mission = OutreachMission(

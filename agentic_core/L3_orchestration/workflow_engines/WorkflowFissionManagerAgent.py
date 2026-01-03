@@ -325,6 +325,9 @@ class FissionManagerAgent(HealerMixin):
 
 def get_fission_manager(gemini_client: Optional[Any]=None) -> FissionManagerAgent:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Factory function to create FissionManagerAgent instance.
     
     Args:

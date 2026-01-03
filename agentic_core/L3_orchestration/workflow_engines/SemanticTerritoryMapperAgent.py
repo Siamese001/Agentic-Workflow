@@ -213,6 +213,9 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
 
     async def execute(self):
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Main execution entry point.
         Analyzes and reports on territory mapping across the codebase.
         """

@@ -95,6 +95,9 @@ class AutonomousThreatEvolutionAgent(MCPHardenedMixin, HealerMixin):
 
     def stop(self):
         """Graceful shutdown"""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         self.running = False
         print(f"   [L5] Threat Evolution Agent: Stopping")
 

@@ -78,6 +78,9 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
 
     async def add_texts(self, texts: List[str], metadatas: Optional[List[dict]]=None, ids: Optional[List[str]]=None) -> List[str]:
         """Legacy adapter for adding documents."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Logger.info(f'[L4 ADAPTER] Routing legacy add_texts to MCP Inference + Upsert')
         await self._ensure_initialized()
         emb_result: Any = await self.McpClient.inference_embed(texts)

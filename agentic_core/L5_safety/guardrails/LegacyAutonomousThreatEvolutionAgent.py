@@ -131,4 +131,7 @@ class AutonomousThreatEvolutionAgent(HealerMixin):
 # Factory function for L6 coordination
 def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolutionAgent:
     """Create and configure the threat evolution agent"""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return AutonomousThreatEvolutionAgent(SafetyEngine=SafetyEngine)

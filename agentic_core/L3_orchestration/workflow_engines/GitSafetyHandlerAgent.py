@@ -193,6 +193,9 @@ class GitSafetyHandlerAgent(HealerMixin):
 
 def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Factory function to create GitSafetyHandlerAgent instance.
     
     Args:

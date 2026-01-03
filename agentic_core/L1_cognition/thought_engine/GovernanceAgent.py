@@ -787,6 +787,9 @@ ArchitectureGovernor = GovernanceAgent
 
 def create_architecture_governor(root_dir: str=None) -> GovernanceAgent:
     """Create an architecture governor instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return GovernanceAgent(root_dir)
 
 def get_governance_agent(project_root: Path, enforcement_mode: str = "audit") -> GovernanceAgent:

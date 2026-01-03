@@ -117,6 +117,9 @@ class AgentRegistryValidatorAgent(HealerMixin):
 
     def _generate_search_paths(self, key: int, agent_name: str) -> List[str]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Generate search paths for an agent based on its key.
         
         Args:

@@ -1037,28 +1037,43 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
 
         return heal_report
 
+    # Refactored: Phase-based — orchestrator low CC (~10–15)
     def _recompute_ast_scores(self, tree: ast.AST) -> Tuple[float, float, Dict[str, float]]:
-        """
-        Helper to recompute AST scores for gravity root-cause detection.
-        Full multi-signal AST scoring identical to LocationAgent primary check.
-        Includes Class/Function names, Variables/Arguments, String literals.
-        """
-        app_rg_score = 0.0
-        app_lic_score = 0.0
-        territory_scores: Dict[str, float] = {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+        """AST score recomputation orchestrator — linear walk + aggregation."""
+        initial_scores = {
+            "app_rg": 0.0,
+            "app_lic": 0.0,
+            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+        }
+
+        # Phase 1: Walk and collect raw increments
+        raw_increments = self._collect_ast_increments(tree)
+
+        # Phase 2: Aggregate and apply
+        final_scores = self._aggregate_ast_increments(initial_scores, raw_increments)
+
+        return final_scores["app_rg"], final_scores["app_lic"], final_scores["territories"]
+
+    def _collect_ast_increments(self, tree: ast.AST) -> dict:
+        """Phase 1: Pure AST walk — collect raw risk increments (CC ~25)."""
+        increments = {
+            "app_rg": 0.0,
+            "app_lic": 0.0,
+            "territories": {t: 0.0 for t in CORE_TERRITORY_KEYWORDS}
+        }
 
         for node in ast.walk(tree):
             # Class/Function names — full weight
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
                 name = node.name.lower()
                 if any(t in name for t in APP_RG_AST_TERMS):
-                    app_rg_score += 1.0
+                    increments["app_rg"] += 1.0
                 if any(t in name for t in APP_LIC_AST_TERMS):
-                    app_lic_score += 1.0
+                    increments["app_lic"] += 1.0
                 for terr, cats in CORE_TERRITORY_KEYWORDS.items():
                     for terms in cats.values():
                         if any(t in name for t in terms):
-                            territory_scores[terr] += 1.0
+                            increments["territories"][terr] += 1.0
 
             # Arguments — medium weight
             elif isinstance(node, ast.arguments):
@@ -1066,13 +1081,13 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
                     if arg.arg and arg.arg not in {"self", "cls"}:
                         a = arg.arg.lower()
                         if any(t in a for t in APP_RG_VARIABLE_TERMS):
-                            app_rg_score += VARIABLE_HIT_WEIGHT
+                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
                         if any(t in a for t in APP_LIC_VARIABLE_TERMS):
-                            app_lic_score += VARIABLE_HIT_WEIGHT
+                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
                         for terr, cats in CORE_TERRITORY_KEYWORDS.items():
                             for terms in cats.values():
                                 if any(t in a for t in terms):
-                                    territory_scores[terr] += VARIABLE_HIT_WEIGHT
+                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
 
             # Assignment targets — medium weight
             elif isinstance(node, ast.Assign):
@@ -1080,24 +1095,33 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
                     if isinstance(target, ast.Name):
                         v = target.id.lower()
                         if any(t in v for t in APP_RG_VARIABLE_TERMS):
-                            app_rg_score += VARIABLE_HIT_WEIGHT
+                            increments["app_rg"] += VARIABLE_HIT_WEIGHT
                         if any(t in v for t in APP_LIC_VARIABLE_TERMS):
-                            app_lic_score += VARIABLE_HIT_WEIGHT
+                            increments["app_lic"] += VARIABLE_HIT_WEIGHT
                         for terr, cats in CORE_TERRITORY_KEYWORDS.items():
                             for terms in cats.values():
                                 if any(t in v for t in terms):
-                                    territory_scores[terr] += VARIABLE_HIT_WEIGHT
+                                    increments["territories"][terr] += VARIABLE_HIT_WEIGHT
 
             # String literals — low weight
             elif isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value) > 8:
                 text = node.value.lower()
-                app_rg_score += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
-                app_lic_score += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+                increments["app_rg"] += sum(1 for t in APP_RG_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
+                increments["app_lic"] += sum(1 for t in APP_LIC_STRING_TERMS if t in text) * STRING_HIT_WEIGHT
                 for terr, cats in CORE_TERRITORY_KEYWORDS.items():
                     for terms in cats.values():
-                        territory_scores[terr] += sum(1 for t in terms if t in text) * STRING_HIT_WEIGHT
+                        increments["territories"][terr] += sum(1 for t in terms if t in text) * STRING_HIT_WEIGHT
 
-        return app_rg_score, app_lic_score, territory_scores
+        return increments
+
+    def _aggregate_ast_increments(self, initial_scores: dict, increments: dict) -> dict:
+        """Phase 2: Simple aggregation (CC ~5)."""
+        final_scores = initial_scores.copy()
+        final_scores["app_rg"] += increments["app_rg"]
+        final_scores["app_lic"] += increments["app_lic"]
+        for terr in final_scores["territories"]:
+            final_scores["territories"][terr] += increments["territories"].get(terr, 0.0)
+        return final_scores
 
     def post_import_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
         """
@@ -1459,16 +1483,9 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
 
         return deep_report
 
+    # Refactored: Phase-based decomposition — orchestrator low CC (~12)
     def deep_naming_validation_and_heal(self, affected_paths: List[Path], import_touched_paths: List[Path], dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Deep NamingAgent integration: full convention + semantic validation + auto-heal.
-        Covers filename conventions, duplicates, prefix-location, global uniqueness, high-signal, markers.
-        
-        SEMANTIC KEYWORD AUTO-INSERTION ENHANCEMENT (Ultra Autonomy 2026-01-02):
-        - For files missing expected high-signal keywords (based on filename signals)
-          → auto-insert TODO comment block with suggested canon keywords
-        - Safe: Only adds non-executable comments at file top (after docstring)
-        """
+        """Deep naming validation orchestrator — linear phase chain."""
         deep_naming_report = {
             "naming_deep_status": "SKIPPED",
             "naming_convention_heal_applied": False,
@@ -1490,171 +1507,204 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
             deep_naming_report["naming_message"] = "No Python files for naming analysis"
             return deep_naming_report
 
+        # Phase 1: Collect convention violations
+        heal_actions, semantic_issues = self._collect_naming_violations(py_files, affected_paths)
+
+        # Phase 2: Apply targeted healing
+        healed_count = self._apply_naming_heals(heal_actions, affected_paths)
+
+        # Phase 3: Determine final status
+        deep_naming_report["naming_semantic_issues"] = semantic_issues
+        deep_naming_report["naming_convention_heal_applied"] = bool(heal_actions)
+        deep_naming_report["naming_heal_actions"] = heal_actions
+        self._set_naming_final_status(deep_naming_report, heal_actions, semantic_issues)
+
+        return deep_naming_report
+
+    def _collect_naming_violations(self, py_files: List[Path], affected_paths: List[Path]) -> Tuple[list, list]:
+        """Phase 1: Scan files for naming violations (CC ~20)."""
         heal_actions = []
         semantic_issues = []
 
-        # Full NamingAgent validation on affected files
         for path in py_files:
             try:
                 rel = str(path.relative_to(self.project_root))
                 filename = path.name
                 filename_lower = filename.lower()
+                content = path.read_text(encoding="utf-8", errors="ignore")
+                content_lower = content.lower()
 
-                issues = []
+                # Check conventions
+                issues = self._check_naming_conventions(filename)
+                if issues:
+                    heal_actions.append({"path": path, "rel": rel, "filename": filename, "issues": issues})
 
-                # snake_case + forbidden patterns (allow PascalCase for Agent files)
-                if not re.match(r'^[a-z0-9_]+\.py$', filename) and not re.match(r'^[A-Z][a-zA-Z0-9]*Agent\.py$', filename):
-                    issues.append("NOT_SNAKE_CASE")
-
-                if hasattr(self.naming_agent, 'forbidden_patterns'):
-                    for pattern in self.naming_agent.forbidden_patterns:
-                        if pattern.match(filename):
-                            issues.append("FORBIDDEN_PATTERN")
-
-                # Prefix-location (deep call)
+                # Check prefix-location
                 if hasattr(self.naming_agent, 'validate_prefix_location_match'):
                     prefix_issues = self.naming_agent.validate_prefix_location_match(path)
                     if prefix_issues:
                         issues.extend(prefix_issues if isinstance(prefix_issues, list) else [prefix_issues])
 
-                # High-signal keywords (semantic - enhanced auto-insertion)
-                content = path.read_text(encoding="utf-8", errors="ignore")
-                content_lower = content.lower()
-
-                expected_signals = set()
-                signal_keywords = ["agent", "engine", "validator", "healer", "manager", "orchestrator"]
-                if any(sig in filename_lower for sig in signal_keywords):
-                    high_signal_kws = getattr(self.naming_agent, 'high_signal_keywords', set())
-                    expected_signals = high_signal_kws & {"agent", "engine", "validator", "healer", "orchestrator", "workflow", "state", "memory", "prompt", "guardrail"}
-
-                missing_signals = expected_signals - {kw for kw in expected_signals if kw in content_lower}
+                # Check high-signal keywords
+                missing_signals = self._check_high_signal_keywords(filename_lower, content_lower)
                 if missing_signals:
                     semantic_issues.append({
                         "file": rel,
                         "issue": "MISSING_HIGH_SIGNAL_KEYWORDS",
                         "missing": list(missing_signals),
                     })
+                    heal_actions.append({"path": path, "rel": rel, "missing_signals": missing_signals})
 
-                    # Enhanced auto-insertion: Add TODO block with missing keywords
-                    try:
-                        todo_block = [
-                            "",
-                            "# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)",
-                            "# File appears to be a sovereign component but missing canon high-signal keywords.",
-                            "# Suggested keywords to add in docstring/code: " + ", ".join(sorted(missing_signals)),
-                            "# This boosts alignment detection — review and integrate appropriately",
-                            "",
-                        ]
-
-                        # Insert after docstring/shebang
-                        lines = content.splitlines()
-                        insert_idx = 0
-                        if lines and lines[0].startswith("#!"):
-                            insert_idx = 1
-                        # Find docstring end
-                        if len(lines) > insert_idx and lines[insert_idx].strip().startswith(('"""', "'''")):
-                            quote = lines[insert_idx].strip()[:3]
-                            for i, l in enumerate(lines[insert_idx:], insert_idx):
-                                if i > insert_idx and quote in l:
-                                    insert_idx = i + 1
-                                    break
-
-                        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
-                        new_content = "\n".join(new_lines)
-
-                        # Backup + write
-                        backup_dir = self._init_backup_dir() / "semantic_keyword_insertion"
-                        backup_dir.mkdir(parents=True, exist_ok=True)
-                        backup_path = backup_dir / path.relative_to(self.project_root)
-                        backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(path, backup_path)
-
-                        path.write_text(new_content, encoding="utf-8")
-
-                        heal_actions.append({
-                            "type": "SEMANTIC_KEYWORD_AUTO_INSERT",
-                            "file": rel,
-                            "inserted_keywords": list(missing_signals),
-                        })
-
-                    except Exception as e:
-                        heal_actions.append({
-                            "type": "SEMANTIC_INSERT_ERROR",
-                            "file": rel,
-                            "error": str(e),
-                        })
-
-                # Sovereign root markers (report + optional TODO)
-                try:
-                    rel_parts = path.relative_to(self.project_root).parts
-                    if len(rel_parts) == 1:  # Root file
-                        if "validator" in filename_lower or "compliance" in filename_lower:
-                            if "sovereign" not in content_lower:
-                                semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
-                                # Optional auto-TODO
-                                todo = "\n# SOVEREIGN MARKER MISSING - ADD CANON COMPLIANCE COMMENT\n"
-                                if todo not in content:
-                                    new_content = content + todo
-                                    backup_dir = self._init_backup_dir() / "naming_marker"
-                                    backup_dir.mkdir(parents=True, exist_ok=True)
-                                    shutil.copy2(path, backup_dir / path.name)
-                                    path.write_text(new_content, encoding="utf-8")
-                                    heal_actions.append({"type": "SOVEREIGN_MARKER_TODO", "file": rel})
-                except ValueError:
-                    pass
-
-                if issues:
-                    # Auto-heal filename conventions + prefix
-                    try:
-                        # Canonical snake_case rename
-                        new_name = re.sub(r'[^a-zA-Z0-9_.]', '_', filename)
-                        new_name = re.sub(r'_+', '_', new_name).strip('_')
-                        if not new_name.endswith('.py'):
-                            new_name += '.py'
-                        new_path = path.parent / new_name
-
-                        if new_path != path and new_name.lower() != filename.lower():
-                            move_result = self.safe_move(path, new_path, dry_run=False)
-                            if move_result.get("applied"):
-                                heal_actions.append({"type": "FILENAME_CANONICAL_RENAME", "original": rel, "new": str(new_path.relative_to(self.project_root))})
-                                affected_paths.append(new_path)
-
-                        # Prefix-location canonical move
-                        if hasattr(self.naming_agent, 'move_to_canonical_location'):
-                            final_path = new_path if new_path != path and new_path.exists() else path
-                            if final_path.exists():
-                                canonical_result = self.naming_agent.move_to_canonical_location(final_path, dry_run=False)
-                                if canonical_result.get("moved"):
-                                    heal_actions.append({"type": "PREFIX_CANONICAL_MOVE", "result": canonical_result})
-                                    if canonical_result.get("new_path"):
-                                        affected_paths.append(self.project_root / canonical_result["new_path"])
-
-                    except Exception as e:
-                        heal_actions.append({"type": "NAMING_HEAL_ERROR", "file": rel, "error": str(e)})
+                # Check sovereign markers
+                self._check_sovereign_markers(path, rel, filename_lower, content_lower, semantic_issues, heal_actions)
 
             except Exception as e:
                 heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
 
-        deep_naming_report["naming_semantic_issues"] = semantic_issues
-        deep_naming_report["naming_convention_heal_applied"] = bool(heal_actions)
-        deep_naming_report["naming_heal_actions"] = heal_actions
+        return heal_actions, semantic_issues
 
-        # Final status
+    def _check_naming_conventions(self, filename: str) -> list:
+        """Check filename conventions (CC ~8)."""
+        issues = []
+        if not re.match(r'^[a-z0-9_]+\.py$', filename) and not re.match(r'^[A-Z][a-zA-Z0-9]*Agent\.py$', filename):
+            issues.append("NOT_SNAKE_CASE")
+        if hasattr(self.naming_agent, 'forbidden_patterns'):
+            for pattern in self.naming_agent.forbidden_patterns:
+                if pattern.match(filename):
+                    issues.append("FORBIDDEN_PATTERN")
+        return issues
+
+    def _check_high_signal_keywords(self, filename_lower: str, content_lower: str) -> set:
+        """Check for missing high-signal keywords (CC ~8)."""
+        signal_keywords = ["agent", "engine", "validator", "healer", "manager", "orchestrator"]
+        if not any(sig in filename_lower for sig in signal_keywords):
+            return set()
+        high_signal_kws = getattr(self.naming_agent, 'high_signal_keywords', set())
+        expected_signals = high_signal_kws & {"agent", "engine", "validator", "healer", "orchestrator", "workflow", "state", "memory", "prompt", "guardrail"}
+        return expected_signals - {kw for kw in expected_signals if kw in content_lower}
+
+    def _check_sovereign_markers(self, path: Path, rel: str, filename_lower: str, content_lower: str, semantic_issues: list, heal_actions: list) -> None:
+        """Check for sovereign root markers (CC ~8)."""
+        try:
+            rel_parts = path.relative_to(self.project_root).parts
+            if len(rel_parts) == 1 and ("validator" in filename_lower or "compliance" in filename_lower):
+                if "sovereign" not in content_lower:
+                    semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
+                    heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
+        except ValueError:
+            pass
+
+    def _apply_naming_heals(self, heal_actions: list, affected_paths: List[Path]) -> int:
+        """Phase 2: Apply healing actions (CC ~15)."""
+        healed_count = 0
+        for action in heal_actions:
+            try:
+                path = action.get("path")
+                if not path or not path.exists():
+                    continue
+
+                # Handle semantic keyword insertion
+                if "missing_signals" in action:
+                    self._insert_semantic_keywords(path, action["missing_signals"])
+                    healed_count += 1
+
+                # Handle sovereign marker
+                if action.get("type") == "SOVEREIGN_MARKER":
+                    self._insert_sovereign_marker(path)
+                    healed_count += 1
+
+                # Handle convention fixes
+                if "issues" in action:
+                    self._apply_convention_fixes(path, action, affected_paths)
+                    healed_count += 1
+
+            except Exception as e:
+                action["error"] = str(e)
+
+        return healed_count
+
+    def _insert_semantic_keywords(self, path: Path, missing_signals: set) -> None:
+        """Insert semantic keyword TODO block (CC ~8)."""
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        todo_block = [
+            "",
+            "# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)",
+            "# File appears to be a sovereign component but missing canon high-signal keywords.",
+            "# Suggested keywords to add in docstring/code: " + ", ".join(sorted(missing_signals)),
+            "# This boosts alignment detection — review and integrate appropriately",
+            "",
+        ]
+        lines = content.splitlines()
+        insert_idx = self._find_docstring_end(lines)
+        new_lines = lines[:insert_idx] + todo_block + lines[insert_idx:]
+        new_content = "\n".join(new_lines)
+        backup_dir = self._init_backup_dir() / "semantic_keyword_insertion"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        backup_path = backup_dir / path.relative_to(self.project_root)
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, backup_path)
+        path.write_text(new_content, encoding="utf-8")
+
+    def _find_docstring_end(self, lines: list) -> int:
+        """Find insertion point after docstring/shebang (CC ~6)."""
+        insert_idx = 0
+        if lines and lines[0].startswith("#!"):
+            insert_idx = 1
+        if len(lines) > insert_idx and lines[insert_idx].strip().startswith(('"""', "'''")):
+            quote = lines[insert_idx].strip()[:3]
+            for i, l in enumerate(lines[insert_idx:], insert_idx):
+                if i > insert_idx and quote in l:
+                    insert_idx = i + 1
+                    break
+        return insert_idx
+
+    def _insert_sovereign_marker(self, path: Path) -> None:
+        """Insert sovereign marker TODO (CC ~5)."""
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        todo = "\n# SOVEREIGN MARKER MISSING - ADD CANON COMPLIANCE COMMENT\n"
+        if todo not in content:
+            backup_dir = self._init_backup_dir() / "naming_marker"
+            backup_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, backup_dir / path.name)
+            path.write_text(content + todo, encoding="utf-8")
+
+    def _apply_convention_fixes(self, path: Path, action: dict, affected_paths: List[Path]) -> None:
+        """Apply filename/prefix convention fixes (CC ~10)."""
+        filename = path.name
+        new_name = re.sub(r'[^a-zA-Z0-9_.]', '_', filename)
+        new_name = re.sub(r'_+', '_', new_name).strip('_')
+        if not new_name.endswith('.py'):
+            new_name += '.py'
+        new_path = path.parent / new_name
+
+        if new_path != path and new_name.lower() != filename.lower():
+            move_result = self.safe_move(path, new_path, dry_run=False)
+            if move_result.get("applied"):
+                action["type"] = "FILENAME_CANONICAL_RENAME"
+                action["new"] = str(new_path.relative_to(self.project_root))
+                affected_paths.append(new_path)
+
+            # Prefix-location canonical move
+            if hasattr(self.naming_agent, 'move_to_canonical_location') and new_path.exists():
+                canonical_result = self.naming_agent.move_to_canonical_location(new_path, dry_run=False)
+                if canonical_result.get("moved") and canonical_result.get("new_path"):
+                    affected_paths.append(self.project_root / canonical_result["new_path"])
+
+    def _set_naming_final_status(self, report: dict, heal_actions: list, semantic_issues: list) -> None:
+        """Phase 3: Set final status (CC ~5)."""
         if not heal_actions and not semantic_issues:
-            deep_naming_report["naming_deep_status"] = "FULL_SUCCESS"
-            deep_naming_report["naming_final_status"] = "FULL_SUCCESS"
+            report["naming_deep_status"] = "FULL_SUCCESS"
+            report["naming_final_status"] = "FULL_SUCCESS"
         elif not semantic_issues:
-            deep_naming_report["naming_deep_status"] = "CONVENTIONS_FIXED"
-            deep_naming_report["naming_final_status"] = "CONVENTIONS_FIXED"
+            report["naming_deep_status"] = "CONVENTIONS_FIXED"
+            report["naming_final_status"] = "CONVENTIONS_FIXED"
         else:
-            deep_naming_report["naming_deep_status"] = "PARTIAL"
-            deep_naming_report["naming_final_status"] = "PARTIAL"
+            report["naming_deep_status"] = "PARTIAL"
+            report["naming_final_status"] = "PARTIAL"
 
-        deep_naming_report["naming_message"] = f"Deep naming: {len(heal_actions)} convention heals, {len(semantic_issues)} semantic issues → Final: {deep_naming_report['naming_deep_status']}"
+        report["naming_message"] = f"Deep naming: {len(heal_actions)} convention heals, {len(semantic_issues)} semantic issues → Final: {report['naming_deep_status']}"
         if any(a.get("type") == "SEMANTIC_KEYWORD_AUTO_INSERT" for a in heal_actions):
-            deep_naming_report["naming_message"] += " | Semantic keywords auto-inserted"
-
-        return deep_naming_report
+            report["naming_message"] += " | Semantic keywords auto-inserted"
 
     def cleanup_violations(
         self, 

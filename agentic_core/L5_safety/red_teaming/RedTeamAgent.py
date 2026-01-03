@@ -132,4 +132,7 @@ class RedTeamAgent(HealerMixin):
 
 def get_red_team_agent() -> Any:
     """Brief description of functionality and purpose."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return RedTeamAgent()

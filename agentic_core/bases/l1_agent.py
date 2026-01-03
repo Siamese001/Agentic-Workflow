@@ -38,4 +38,7 @@ class L1Agent(HealerMixin, MCPHardenedMixin):
     
     def _run_self_tests(self) -> Dict[str, Any]:
         """Override in subclass to implement self-tests."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         return {"status": "not_implemented", "tests": 0}

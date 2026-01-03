@@ -103,6 +103,9 @@ class DependencyPruningAgent(HealerMixin, MCPHardenedMixin):
 
     async def execute(self) -> Dict:
         """Scan for and optionally remove unused dependencies."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         print("   [PRUNE] Scanning for unused dependencies...")
         unused = self._find_unused_deptry()
 

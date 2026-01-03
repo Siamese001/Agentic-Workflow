@@ -198,4 +198,7 @@ class GovernanceAgent(
 
     async def _execute_standard(self, ctx: Any, **context: Dict) -> Dict:
         """Standard mode - full decision making."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         return await self.make_decision(context)

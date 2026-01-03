@@ -59,6 +59,9 @@ class TerritoryChangeHandlerAgent(FileSystemEventHandler, HealerMixin):
 class AutonomousRagDaemon:
     """L3: Self-monitoring RAG system with autonomous health checks"""
     
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     def __init__(self, orchestrator, retriever, Historian):
         self.orchestrator = orchestrator
         self.retriever = retriever

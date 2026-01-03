@@ -575,6 +575,9 @@ def test_artifact_exists():
 
     def _emit_subatomic_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit subatomic testing event for observability."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         print(f"[SUBATOMIC L2] {Severity.value} | {event_type}")
         if payload:
             print(f"  Payload: {payload}")

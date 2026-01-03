@@ -278,6 +278,9 @@ class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
 def create_sovereign_action_plane(safety_layer: Any=None, SignalLedger: Any=None) -> IActionPlane:
     """Factory function to create sovereign action plane.
 
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         safety_layer: L5 safety layer for validation
         SignalLedger: L4 signal ledger for logging ExecutionResults

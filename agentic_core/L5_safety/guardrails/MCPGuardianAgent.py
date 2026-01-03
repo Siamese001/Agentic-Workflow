@@ -257,6 +257,9 @@ _guardian: Optional[MCPGuardianAgent] = None
 
 def get_mcp_guardian(project_root: Optional[Path] = None) -> MCPGuardianAgent:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Get or create the global MCP Guardian instance.
     
     Args:

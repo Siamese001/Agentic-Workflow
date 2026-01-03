@@ -309,6 +309,9 @@ _schema_evolver = None
 
 def get_schema_evolver(ctx: Any) -> SchemaEvolver:
     """Get or create global Schema Evolver instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _schema_evolver
     if _schema_evolver is None:
         _schema_evolver = SchemaEvolver(ctx)

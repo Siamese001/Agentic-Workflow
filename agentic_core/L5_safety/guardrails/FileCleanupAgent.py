@@ -240,4 +240,7 @@ class FileCleanupAgent(HealerMixin):
 
 def get_file_cleanup_agent(project_root: Path, ctx, dry_run=True) -> Any:
     """Factory function"""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return FileCleanupAgent(project_root, ctx, dry_run)

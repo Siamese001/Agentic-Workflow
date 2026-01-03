@@ -90,6 +90,9 @@ class HierarchyEnforcerAgent(HealerMixin):
 
     def enforce_depth_precision(self) -> List[str]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Apps depth enforcement. If it's not depth 3, it gets archived.
         """
         from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIGN_REGISTRY

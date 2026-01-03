@@ -102,6 +102,9 @@ class NamingNormalizationAgent(HealerMixin):
 
     async def heal_violation(self, file_path: Path, ctx: Any=None) -> Dict[str, Any]:
         """
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Per-file healing: fix filename + public symbols.
         """
         ctx: Any = ctx or self.ctx

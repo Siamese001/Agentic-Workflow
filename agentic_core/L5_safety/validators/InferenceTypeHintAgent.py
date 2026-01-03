@@ -113,4 +113,7 @@ class InferenceTypeHintAgent(HealerMixin):
 
 def get_inference_type_hint_agent() -> Any:
     """Brief description of functionality and purpose."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     return InferenceTypeHintAgent()

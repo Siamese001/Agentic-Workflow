@@ -221,6 +221,9 @@ class AutonomousStateGuardianAgent(HealerMixin):
     
     async def eternal_state_guardianship(self):
         """L4: Continuous state monitoring and self-repair loop"""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+
         Logger.info("L4: Eternal state guardianship active")
         
         while True:

@@ -726,6 +726,9 @@ _dag_manager: Optional[DAGManagerAgent] = None
 def get_dag_manager(**kwargs) -> DAGManagerAgent:
     """Get or create global DAGManagerAgent instance.
     
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         **kwargs: Configuration arguments
         

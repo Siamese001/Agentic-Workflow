@@ -222,6 +222,9 @@ class SpiffeManager:
 def create_spiffe_manager(TrustDomain: TrustDomain=TrustDomain.LOCAL, default_ttl_seconds: int=3600) -> SpiffeManager:
     """Factory function to create SPIFFE manager.
 
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Args:
         TrustDomain: Trust domain
         default_ttl_seconds: Default TTL

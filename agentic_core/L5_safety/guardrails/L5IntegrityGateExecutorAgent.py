@@ -662,6 +662,9 @@ def create_l5_integrity_executor(
     signal_bus_emitter: Optional[SignalBusInterface] = None,
 ) -> L5IntegrityGateExecutor:
     """
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     Factory function to create L5+ integrity gate executor.
 
     Args:

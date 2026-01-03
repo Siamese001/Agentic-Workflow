@@ -88,5 +88,8 @@ def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: in
 
 def orchestrate_resume(master_resume: Dict, JobDescription: str) -> Dict[str, object]:
     """Single public function - pure routing between atoms."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     orchestrator = ResumeOrchestratorAgent(master_resume)
     return orchestrator.run(JobDescription)

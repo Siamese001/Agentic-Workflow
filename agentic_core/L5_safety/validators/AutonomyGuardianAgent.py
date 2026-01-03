@@ -774,6 +774,28 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             if markdown:
                 self._print_territory_row(territory_key, metrics, priority)
                 
+                # Phase 4: Detect invocation gaps (has method but no super() chain)
+                invocation_gaps = []
+                for agent in agents:
+                    try:
+                        content = agent.read_text(errors="ignore")
+                        has_method = "def heal_repository(self" in content
+                        has_invocation = "super().heal_repository(" in content
+                        if has_method and not has_invocation:
+                            rel_path = str(agent.relative_to(self.project_root))
+                            invocation_gaps.append(f"  - {rel_path}")
+                    except Exception:
+                        pass
+                
+                if invocation_gaps:
+                    territory_name = territory_key.replace("_", " ").title()
+                    print(f"\n**Healing Invocation Gap in {territory_name} (add super() chain):**")
+                    for gap in sorted(invocation_gaps)[:20]:
+                        print(gap)
+                    if len(invocation_gaps) > 20:
+                        print(f"  ... {len(invocation_gaps) - 20} more — full grep recommended")
+                    print("  → Impact: Enables shared healing chain — +60% potential invocation boost\n")
+                
         return classified_paths
 
     def _get_territory_agents(

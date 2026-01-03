@@ -304,6 +304,9 @@ _context_curator = None
 
 def get_context_curator(ctx: Any) -> ContextCurator:
     """Get or create global Context Curator instance."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    super().heal_repository()
+
     global _context_curator
     if _context_curator is None:
         _context_curator = ContextCurator(ctx)
