@@ -12,6 +12,8 @@ Opt-out cases:
 - L0 agents: Boot isolation safety
 - Pure data/enums: No repair value
 - Read-only detectors: Adversarial safety
+
+FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blueprint
 """
 from ast import parse, unparse
 from pathlib import Path
@@ -21,6 +23,11 @@ import time
 import asyncio
 
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    get_validated_project_root,
+    safe_path_join,
+    validate_path_within_project
+)
 
 Logger = logging.getLogger(__name__)
 

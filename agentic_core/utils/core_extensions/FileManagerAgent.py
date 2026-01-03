@@ -221,21 +221,30 @@ class FileManager:
     @staticmethod
     def write_file(path: str, content: str) -> bool:
         """
-        Write content to file.
+        Write content to file using safe root-relative paths.
 
         Args:
-            path: File path
+            path: File path (relative to project root)
             content: Content to write
 
         Returns:
             True if successful
         """
         try:
-            file_path: Any = Path(path)
+            from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+                get_validated_project_root,
+                safe_path_join,
+            )
+            
+            # Convert relative path to safe absolute path
+            project_root = get_validated_project_root()
+            path_parts = Path(path).parts
+            file_path = safe_path_join(project_root, *path_parts)
+            
             file_path.parent.mkdir(parents=True, exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            Logger.info(f'File written successfully: {path}')
+            Logger.info(f'File written successfully: {file_path}')
             return True
         except Exception as e:
             Logger.error(f'Failed to write file {path}: {e}')

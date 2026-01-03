@@ -3,6 +3,7 @@ Autonomy Dashboard Server
 Serves the autonomy dashboard with metrics API integration
 
 SAFETY: Run ../dashboard/run_tests.sh after ANY change to this file
+FILESYSTEM COMPLIANCE: All file operations use safe_path_join from structure_blueprint
 """
 
 from fastapi import FastAPI
@@ -11,6 +12,11 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 import logging
 from agentic_core.observability.metrics.shared_counters import get_layer_counts
+from agentic_core.config.blueprint_sovereign.structure_blueprint import (
+    get_validated_project_root,
+    safe_path_join,
+    validate_path_within_project
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,12 +25,25 @@ logger = logging.getLogger(__name__)
 # Initialize FastAPI app
 app = FastAPI(title="Autonomy Dashboard", version="1.0.0")
 
-# Get the directory where this file is located
-DASHBOARD_DIR = Path(__file__).parent
-STATIC_DIR = DASHBOARD_DIR / "static"
+# Get validated project root and build safe paths
+try:
+    PROJECT_ROOT = get_validated_project_root()
+    DASHBOARD_DIR = safe_path_join(
+        PROJECT_ROOT,
+        "agentic_core", "observability", "metrics", "dashboard"
+    )
+    STATIC_DIR = safe_path_join(
+        PROJECT_ROOT,
+        "agentic_core", "observability", "metrics", "dashboard", "static"
+    )
+except ValueError as e:
+    logger.error(f"FILESYSTEM COMPLIANCE ERROR: {e}")
+    raise
 
 # Ensure static directory exists
 STATIC_DIR.mkdir(exist_ok=True, parents=True)
+logger.info(f"Dashboard directory validated: {DASHBOARD_DIR}")
+logger.info(f"Static directory validated: {STATIC_DIR}")
 
 # Mount static files
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
