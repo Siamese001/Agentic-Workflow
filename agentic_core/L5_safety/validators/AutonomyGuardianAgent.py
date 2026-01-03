@@ -83,8 +83,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "L5_safety/red_teaming": ("L5", "High"),
             
             # L4 State - Subcategories for granularity
-            "L4_state/validation_context": ("L4", "High"),  # ValidationContext subfolder
-            "L4_state/other": ("L4", "Medium"),  # Other L4 agents
+            "L4_state/ValidationContext": ("L4", "High"),  # ValidationContext subfolder (capitalized)
+            "L4_state/validation_context": ("L4", "High"),  # validation_context subfolder (lowercase)
             
             # L3 Orchestration - Subcategories
             "L3_orchestration/workflow_engines": ("L3", "High"),
@@ -113,11 +113,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "observability/metrics": ("observability", "High"),
             "observability/compliance": ("observability", "High"),
             "observability/telemetry": ("observability", "Medium"),
-            "utils": ("utils", "Medium"),
-            "tests": ("tests", "Medium"),
             
-            # Cross-cutting: agents with test coverage (not a physical location)
-            "tested_agents": ("tested_agents", "Medium"),
+            # Utils - Broken down for higher signal
+            "utils/core_extensions": ("utils", "Medium"),
+            "utils/general_helpers": ("utils", "Low"),
+            
+            "tests": ("tests", "Medium"),
         }
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
@@ -776,7 +777,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Process all territories and track sub-atomic violations."""
         classified_paths = set()
         atomic_threshold = 10  # CC threshold for sub-atomic violations
-        cross_cutting_territories = {"tested_agents", "observability", "knowledge"}  # Don't count in totals
+        cross_cutting_territories = {"observability", "knowledge"}  # Don't count in totals
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -829,22 +830,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         all_agents: List[Path], path_to_layer: Dict[str, str]
     ) -> List[Path]:
         """Get agents for a specific territory."""
-        if territory_key == "tested_agents":
-            # Cross-cutting: agents with test coverage (external tests, self-tests, etc.)
-            agents_with_tests = []
-            for agent in all_agents:
-                try:
-                    content = agent.read_text(errors="ignore")
-                    has_external_test = (agent.parent / "tests" / f"test_{agent.stem}.py").exists()
-                    has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content
-                    has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content
-                    has_inline_tests = "def test_" in content or "import pytest" in content
-                    if has_external_test or has_self_test or has_delegation or has_inline_tests:
-                        agents_with_tests.append(agent)
-                except Exception:
-                    pass
-            return agents_with_tests
-        elif territory_key.startswith("L5_safety"):
+        if territory_key.startswith("L5_safety"):
             # Special handling for L5 subfolders (validators, guardrails, gravity, red_teaming)
             subfolder = territory_key.split("/")[1]
             return [
@@ -852,20 +838,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
             ]
         elif territory_key.startswith("L4_state/"):
-            # L4 subcategories
+            # L4 subcategories (ValidationContext or validation_context)
             subfolder = territory_key.split("/")[1]
-            if subfolder == "other":
-                # L4 agents NOT in validation_context
-                return [
-                    p for p in all_agents
-                    if path_to_layer.get(str(p)) == "L4" and "validation_context" not in str(p).replace("\\", "/").lower()
-                ]
-            else:
-                # Specific L4 subfolder
-                return [
-                    p for p in all_agents
-                    if path_to_layer.get(str(p)) == "L4" and subfolder in str(p).replace("\\", "/").lower()
-                ]
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L4" and subfolder in str(p).replace("\\", "/")
+            ]
         elif territory_key.startswith("L3_orchestration/"):
             # L3 subcategories
             subfolder = territory_key.split("/")[1]
@@ -909,6 +887,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 p for p in all_agents
                 if "observability" in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
             ]
+        elif territory_key.startswith("utils/"):
+            # Utils subcategories
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if "utils" in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
+            ]
         elif territory_key in ["observability", "knowledge"]:
             # Path-based filtering for non-layer territories (fallback for observability without subfolder)
             return [
@@ -916,7 +901,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 if territory_key in str(p).replace("\\", "/").lower()
             ]
         else:
-            # Standard layer matching (L0, utils, tests, apps_shared, etc.)
+            # Standard layer matching (L0, tests, apps_shared, etc.)
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == layer_filter or layer_filter in str(p).replace("\\", "/").lower()
@@ -1351,7 +1336,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Build dashboard data rows from territories
         dashboard_rows = []
         territory_stats = []
-        cross_cutting_territories = {"tested_agents", "observability", "knowledge"}  # Don't count in totals
+        cross_cutting_territories = {"observability", "knowledge"}  # Don't count in totals
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -1499,13 +1484,52 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             dashboard_rows.insert(0, total_row)
         
         # === Compute Prioritized Recommendations ===
+        # Layer hierarchy multiplier: L5 (Critical) > L4 > L3 > L2 > L1 > L0
+        layer_hierarchy_weights = {
+            "L5": 10.0,  # L5 Safety - top priority (gravity, validators, guardrails)
+            "L4": 5.0,   # L4 State - high priority
+            "L3": 3.0,   # L3 Orchestration - medium-high priority
+            "L2": 2.0,   # L2 Execution - medium priority
+            "L1": 1.5,   # L1 Cognition - lower priority
+            "L0": 1.0,   # L0 Maintenance - lowest priority
+            "apps": 2.5, # Apps - medium priority
+            "observability": 1.2, # Observability - cross-cutting, lower priority
+            "utils": 0.8, # Utils - lowest priority
+            "tests": 0.5  # Tests - very low priority
+        }
+        
         priority_weights = {"CRITICAL": 1.8, "HIGH": 1.4, "MEDIUM": 1.0, "LOW": 0.6}
         recommendations = []
         
         for stat in territory_stats:
+            # Determine layer from territory name
+            territory_lower = stat["name"].lower()
+            layer_weight = 1.0
+            if territory_lower.startswith("l5"):
+                layer_weight = layer_hierarchy_weights["L5"]
+            elif territory_lower.startswith("l4"):
+                layer_weight = layer_hierarchy_weights["L4"]
+            elif territory_lower.startswith("l3"):
+                layer_weight = layer_hierarchy_weights["L3"]
+            elif territory_lower.startswith("l2"):
+                layer_weight = layer_hierarchy_weights["L2"]
+            elif territory_lower.startswith("l1"):
+                layer_weight = layer_hierarchy_weights["L1"]
+            elif territory_lower.startswith("l0"):
+                layer_weight = layer_hierarchy_weights["L0"]
+            elif "apps" in territory_lower:
+                layer_weight = layer_hierarchy_weights["apps"]
+            elif "observability" in territory_lower:
+                layer_weight = layer_hierarchy_weights["observability"]
+            elif "utils" in territory_lower:
+                layer_weight = layer_hierarchy_weights["utils"]
+            elif "tests" in territory_lower:
+                layer_weight = layer_hierarchy_weights["tests"]
+            
             healing_gap = max(0, 100 - stat["invocation"])
             tests_gap = max(0, 100 - stat["tests"])
-            score = healing_gap * tests_gap * (stat["used"] / 100) * priority_weights.get(stat["priority"], 1.0)
+            # Score = gap severity × usage × priority × LAYER HIERARCHY
+            score = healing_gap * tests_gap * (stat["used"] / 100) * priority_weights.get(stat["priority"], 1.0) * layer_weight
             
             rationale = f"High-impact fix: improve autonomy in frequently used {stat['priority'].lower()} priority territory"
             gaps = f"Healing Invocation {stat['invocation']:.1f}% (gap {healing_gap:.1f}%), Tests {stat['tests']:.1f}% (gap {tests_gap:.1f}%)"
@@ -1607,7 +1631,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             return
         
         # Calculate gauge metrics from non-cross-cutting rows
-        cross_cutting_territories = {"Tested Agents", "Observability", "Knowledge"}
+        cross_cutting_territories = {"Observability", "Knowledge"}
         gauge_rows = [r for r in dashboard_rows if r["Territory"] not in cross_cutting_territories]
         
         if gauge_rows:
