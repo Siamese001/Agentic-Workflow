@@ -432,58 +432,16 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
 
     def _save_markdown_report(self, today: str, totals: dict, all_agents: list, classified_paths: set, used_stems: set, path_to_layer: dict) -> None:
-        """Save compliance report as Windsurf-readable format with structured sections."""
+        """High-level orchestrator for report generation — linear chain with early exits."""
         report_path = self.project_root / "reports" / "autonomy_compliance_report.md"
         csv_path = self.project_root / "reports" / "autonomy_compliance_data.csv"
         report_path.parent.mkdir(parents=True, exist_ok=True)
         
-        t = totals
-        total_perc = round(t["compliant"] / t["agents"] * 100, 1) if t["agents"] else 0
-        total_hardened = round(t["hardened"] / t["agents"] * 100, 1) if t["agents"] else 0
-        total_healing_cap = round(t["healing_cap"] / t["agents"] * 100, 1) if t["agents"] else 0
-        total_healing_invoke = round(t["healing_invoke"] / t["agents"] * 100, 1) if t["agents"] else 0
-        total_tests = round(t["tests"] / t["agents"] * 100, 1) if t["agents"] else 0
-        overall_avg_loc = round(t["loc"] / t["agents"], 1) if t["agents"] else 0
-        overall_avg_cc = round(t["cc_sum"] / t["agents"], 1) if t["agents"] else 0
-        total_typed = round(t["typed"] / t["agents"], 1) if t["agents"] else 0
-        total_documented = round(t["documented"] / t["agents"], 1) if t["agents"] else 0
-        total_observable = round(t["observable"] / t["agents"], 1) if t["agents"] else 0
-        total_used = round(t["used"] / t["agents"] * 100, 1) if t["agents"] else 0
+        # Phase 1: Calculate global metrics
+        global_metrics = self._calculate_global_metrics(totals)
         
-        # Calculate overall health and criticality
-        overall_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
-        overall_criticality = min(100, (total_used * 2) + 30)
-        
-        overall_risk_score = 0
-        if overall_avg_cc > 10: overall_risk_score += 3
-        if total_tests < 50: overall_risk_score += 3
-        if total_perc < 80: overall_risk_score += 4
-        overall_risk = "HIGH" if overall_risk_score >= 6 else "MED" if overall_risk_score >= 3 else "LOW"
-
-        md = f"""# Autonomy Compliance Report
-
-**Generated:** {today}  
-**Source:** `agent_discovery_full.json` (canonical AST scan)
-
-## 🎯 Executive Summary
-
-**System Health:** {overall_health:.1f}/100 | **Risk Level:** {overall_risk} | **Criticality:** {overall_criticality:.0f}/100
-
-### Key Metrics
-- **Total Agents:** {t['agents']}
-- **Compliant:** {t['compliant']} ({total_perc}%) {'✅' if total_perc >= 80 else '⚠️' if total_perc >= 60 else '❌'}
-- **Healing Capabilities:** {t['healing_cap']} ({total_healing_cap}%) {'✅' if total_healing_cap >= 80 else '⚠️' if total_healing_cap >= 60 else '❌'}
-- **Healing Invocation:** {t['healing_invoke']} ({total_healing_invoke}%) {'✅' if total_healing_invoke >= 80 else '⚠️' if total_healing_invoke >= 60 else '❌'}
-- **With Tests:** {t['tests']} ({total_tests}%) {'✅' if total_tests >= 80 else '⚠️' if total_tests >= 60 else '❌'}
-- **Avg Complexity:** {overall_avg_cc} {'✅' if overall_avg_cc <= 10 else '⚠️' if overall_avg_cc <= 15 else '❌'}
-
-## 📊 Territory Analysis
-
-**Note:** Table data available in CSV format for better readability in spreadsheet tools.
-
-### High Priority Territories (Criticality > 70)
-"""
-        # Create CSV data for spreadsheet viewing
+        # Phase 2: Build header and initialize collections
+        md = self._build_report_header(today, global_metrics)
         csv_data = []
         csv_headers = ["Territory", "Total", "Compliant", "Heal_Cap_Pct", "Heal_Inv_Pct", "MCP_Pct", "Test_Pct", "Avg_CC", "Typed_Pct", "Obs_Pct", "Criticality", "Health", "Risk", "Used_Pct", "Priority"]
         
@@ -491,7 +449,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         medium_priority_territories = []
         low_priority_territories = []
         
-        # Add territory rows using path_to_layer lookup
+        # Phase 3: Process classified territories
         for territory_key, (layer_filter, priority) in self.territories.items():
             # Get agents for this territory using path_to_layer
             if territory_key.startswith("L5_safety"):
@@ -665,11 +623,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             md += f"- ❓ **Unclassified**: {terr_compliant}/{terr_total} compliant | Health: {unclass_health:.1f}% | Risk: {unclass_risk} | Heal Gap: {perc_heal_cap - perc_heal_inv:.1f}%\n"
 
         # Add CSV totals
-        total_agents = t.get('agents', 0)
-        total_compliant = t.get('compliant', 0)
         csv_data.append([
-            "TOTAL", total_agents, total_compliant, total_healing_cap, total_healing_invoke,
-            total_hardened, total_tests, overall_avg_cc, total_typed, total_observable, overall_criticality, overall_health, overall_risk, total_used, "ALL"
+            "TOTAL", global_metrics['agents'], global_metrics['compliant'], global_metrics['total_healing_cap'], global_metrics['total_healing_invoke'],
+            global_metrics['total_hardened'], global_metrics['tests'], global_metrics['overall_avg_cc'], global_metrics['total_typed'], global_metrics['total_observable'], global_metrics['overall_criticality'], global_metrics['overall_health'], global_metrics['overall_risk'], global_metrics['total_used'], "ALL"
         ])
 
         # Finish markdown report
@@ -1339,6 +1295,67 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
 
 
 # Singleton accessor
+    def _calculate_global_metrics(self, totals: dict) -> dict:
+        """Phase 1: Calculate all global metrics from totals — isolated for low CC."""
+        t = totals
+        total_perc = round(t["compliant"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_hardened = round(t["hardened"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_healing_cap = round(t["healing_cap"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_healing_invoke = round(t["healing_invoke"] / t["agents"] * 100, 1) if t["agents"] else 0
+        total_tests = round(t["tests"] / t["agents"] * 100, 1) if t["agents"] else 0
+        overall_avg_cc = round(t["cc_sum"] / t["agents"], 1) if t["agents"] else 0
+        total_typed = round(t["typed"] / t["agents"], 1) if t["agents"] else 0
+        total_documented = round(t["documented"] / t["agents"], 1) if t["agents"] else 0
+        total_observable = round(t["observable"] / t["agents"], 1) if t["agents"] else 0
+        total_used = round(t["used"] / t["agents"] * 100, 1) if t["agents"] else 0
+        
+        overall_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
+        overall_criticality = min(100, (total_used * 2) + 30)
+        
+        overall_risk_score = 0
+        if overall_avg_cc > 10: overall_risk_score += 3
+        if total_tests < 50: overall_risk_score += 3
+        if total_perc < 80: overall_risk_score += 4
+        overall_risk = "HIGH" if overall_risk_score >= 6 else "MED" if overall_risk_score >= 3 else "LOW"
+        
+        return {
+            "total_perc": total_perc, "total_hardened": total_hardened, "total_healing_cap": total_healing_cap,
+            "total_healing_invoke": total_healing_invoke, "total_tests": total_tests, "overall_avg_cc": overall_avg_cc,
+            "total_typed": total_typed, "total_documented": total_documented, "total_observable": total_observable,
+            "total_used": total_used, "overall_health": overall_health, "overall_criticality": overall_criticality,
+            "overall_risk": overall_risk, "agents": t["agents"], "compliant": t["compliant"],
+            "healing_cap": t["healing_cap"], "healing_invoke": t["healing_invoke"], "tests": t["tests"]
+        }
+
+    def _build_report_header(self, today: str, metrics: dict) -> str:
+        """Phase 2: Build markdown header with global metrics — simple string formatting."""
+        m = metrics
+        md = f"""# Autonomy Compliance Report
+
+**Generated:** {today}  
+**Source:** `agent_discovery_full.json` (canonical AST scan)
+
+## 🎯 Executive Summary
+
+**System Health:** {m['overall_health']:.1f}/100 | **Risk Level:** {m['overall_risk']} | **Criticality:** {m['overall_criticality']:.0f}/100
+
+### Key Metrics
+- **Total Agents:** {m['agents']}
+- **Compliant:** {m['compliant']} ({m['total_perc']}%) {'✅' if m['total_perc'] >= 80 else '⚠️' if m['total_perc'] >= 60 else '❌'}
+- **Healing Capabilities:** {m['healing_cap']} ({m['total_healing_cap']}%) {'✅' if m['total_healing_cap'] >= 80 else '⚠️' if m['total_healing_cap'] >= 60 else '❌'}
+- **Healing Invocation:** {m['healing_invoke']} ({m['total_healing_invoke']}%) {'✅' if m['total_healing_invoke'] >= 80 else '⚠️' if m['total_healing_invoke'] >= 60 else '❌'}
+- **With Tests:** {m['tests']} ({m['total_tests']}%) {'✅' if m['total_tests'] >= 80 else '⚠️' if m['total_tests'] >= 60 else '❌'}
+- **Avg Complexity:** {m['overall_avg_cc']} {'✅' if m['overall_avg_cc'] <= 10 else '⚠️' if m['overall_avg_cc'] <= 15 else '❌'}
+
+## 📊 Territory Analysis
+
+**Note:** Table data available in CSV format for better readability in spreadsheet tools.
+
+### High Priority Territories (Criticality > 70)
+"""
+        return md
+
+
 _autonomy_guardian: Optional[AutonomyGuardianAgent] = None
 
 

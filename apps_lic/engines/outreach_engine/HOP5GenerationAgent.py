@@ -5,16 +5,18 @@ __version__ = "13.1"
 
 import asyncio
 import json
+import logging
 import os
 from typing import Dict, List, Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from apps_shared.utils.state_manager import StateManager
 from apps_lic.engines.outreach_engine.tools.code_interpreter import CodeInterpreterTool
+
+Logger = logging.getLogger(__name__)
 
 
 class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
@@ -181,8 +183,76 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         temp_config = self.config.get("base_temperatures", {})
         return temp_config.get(Archetype, 0.50)
 
-    @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
-        return {"skipped": 1}
+    def heal_repository(self) -> None:
+        """Autonomy healing: Validate and auto-correct agent state/config for reliable message generation.
+
+        - Chains super() for shared diagnostics/rollback
+        - Lic-specific: LLM client availability, prompt config integrity, temperature bounds
+        - MCP ensures safe operations (e.g., sanitized prompt loading)
+        """
+        super().heal_repository()
+
+        self._heal_llm_client()
+        self._heal_prompt_config()
+        self._heal_temperature_bounds()
+        self._run_generation_diagnostics()
+
+    def _heal_llm_client(self) -> None:
+        """Validate LLM client availability and gracefully degrade if needed."""
+        try:
+            if not self.llm_client:
+                Logger.warning("LLM client missing — generation may fail")
+                return
+            if not hasattr(self.llm_client, 'generate'):
+                Logger.error("LLM client missing generate method — disabling")
+                self.llm_client = None
+        except Exception as e:
+            Logger.error(f"LLM client validation failed: {e}")
+
+    def _heal_prompt_config(self) -> None:
+        """Validate and reload prompt configuration if corrupted."""
+        try:
+            if not isinstance(self.prompts, dict):
+                Logger.warning("Prompts config corrupted — reloading from file")
+                if os.path.exists("config/prompts_LIC.json"):
+                    with open("config/prompts_LIC.json", 'r') as f:
+                        self.prompts = json.load(f)
+                else:
+                    Logger.error("Prompts file missing — using empty config")
+                    self.prompts = {}
+            required_keys = ["system", "user_template"]
+            for key in required_keys:
+                if key not in self.prompts:
+                    Logger.warning(f"Missing prompt key {key} — using default")
+                    if key == "system":
+                        self.prompts[key] = "You are a professional message generator."
+                    elif key == "user_template":
+                        self.prompts[key] = "Generate a message for {recipient}."
+        except Exception as e:
+            Logger.error(f"Prompt config healing failed: {e}")
+
+    def _heal_temperature_bounds(self) -> None:
+        """Ensure temperature settings within safe bounds."""
+        try:
+            if not isinstance(self.config, dict):
+                Logger.warning("Config corrupted — resetting to defaults")
+                self.config = {"base_temperatures": {}}
+            base_temps = self.config.get("base_temperatures", {})
+            for archetype, temp in base_temps.items():
+                if not isinstance(temp, (int, float)) or temp < 0 or temp > 2.0:
+                    Logger.warning(f"Temperature {temp} for {archetype} out of bounds — resetting to 0.7")
+                    base_temps[archetype] = 0.7
+        except Exception as e:
+            Logger.error(f"Temperature bounds check failed: {e}")
+
+    def _run_generation_diagnostics(self) -> None:
+        """Run generation-specific health checks (e.g., mock prompt rendering)."""
+        try:
+            if not self.prompts:
+                Logger.error("Diagnostics failed — prompts unavailable")
+                return
+            test_prompt = self.prompts.get("user_template", "").format(recipient="Test Recipient")
+            if not isinstance(test_prompt, str) or len(test_prompt) == 0:
+                Logger.error("Diagnostics failed — invalid prompt rendering")
+        except Exception as e:
+            Logger.error(f"Generation diagnostics exception: {e}")

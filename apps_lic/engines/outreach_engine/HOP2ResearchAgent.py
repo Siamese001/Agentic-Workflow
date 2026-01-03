@@ -4,15 +4,17 @@ from __future__ import annotations
 __version__ = "13.1"
 
 import asyncio
+import logging
 from typing import Dict, List, Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from apps_shared.utils.state_manager import StateManager
 from apps_shared.utils.vector_memory import VectorMemoryStore
+
+Logger = logging.getLogger(__name__)
 
 
 class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
@@ -220,8 +222,83 @@ class HOP2ResearchAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
             })
         return formatted
 
-    @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
-        return {"skipped": 1}
+    def heal_repository(self) -> None:
+        """Autonomy healing: Validate and auto-correct agent state/config for reliable research synthesis.
+
+        - Chains super() for shared diagnostics/rollback
+        - Lic-specific: vector store health, cache integrity, search client availability
+        - MCP ensures safe operations (e.g., sanitized queries)
+        """
+        super().heal_repository()
+
+        self._heal_vector_store()
+        self._heal_search_client()
+        self._heal_cache_integrity()
+        self._run_research_diagnostics()
+
+    def _heal_vector_store(self) -> None:
+        """Validate and repair vector store connection if corrupted."""
+        try:
+            if not self.memory_store:
+                Logger.warning("Vector store missing — cannot reinitialize")
+                return
+            if not hasattr(self.memory_store, 'is_healthy'):
+                Logger.warning("Vector store missing health check — skipping")
+                return
+            if not self.memory_store.is_healthy():
+                Logger.warning("Vector store unhealthy — attempting reconnect")
+                if hasattr(self.memory_store, 'reconnect'):
+                    self.memory_store.reconnect()
+        except Exception as e:
+            Logger.error(f"Vector store healing failed: {e}")
+
+    def _heal_search_client(self) -> None:
+        """Validate search client availability and gracefully degrade if needed."""
+        try:
+            if not self.search_client:
+                Logger.warning("Search client missing — fallback RAG disabled")
+                return
+            if not hasattr(self.search_client, 'search'):
+                Logger.error("Search client missing search method — disabling fallback")
+                self.search_client = None
+        except Exception as e:
+            Logger.error(f"Search client validation failed: {e}")
+
+    def _heal_cache_integrity(self) -> None:
+        """Validate cache parameters and repair if corrupted."""
+        try:
+            if not isinstance(self.critique_params, dict):
+                Logger.warning("Critique params corrupted — resetting to defaults")
+                self.critique_params = {
+                    "min_confidence_score": 0.6,
+                    "min_recency_days": 30,
+                    "min_recipient_specific_count": 2
+                }
+            required_keys = ["min_confidence_score", "min_recency_days", "min_recipient_specific_count"]
+            for key in required_keys:
+                if key not in self.critique_params:
+                    Logger.warning(f"Missing critique param {key} — setting default")
+                    if key == "min_confidence_score":
+                        self.critique_params[key] = 0.6
+                    elif key == "min_recency_days":
+                        self.critique_params[key] = 30
+                    elif key == "min_recipient_specific_count":
+                        self.critique_params[key] = 2
+        except Exception as e:
+            Logger.error(f"Cache integrity check failed: {e}")
+
+    def _run_research_diagnostics(self) -> None:
+        """Run research-specific health checks (e.g., mock vector query)."""
+        try:
+            if not self.memory_store:
+                Logger.error("Diagnostics skipped — vector store unavailable")
+                return
+            test_results = self.memory_store.query_by_company(
+                company_name="test_company",
+                query_text="test query",
+                n_results=1
+            )
+            if not isinstance(test_results, list):
+                Logger.error("Diagnostics failed — invalid vector store response")
+        except Exception as e:
+            Logger.error(f"Research diagnostics exception: {e}")

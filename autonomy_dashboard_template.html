@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="60">
     <title>Autonomy Compliance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
@@ -302,31 +303,6 @@
             <!-- Executive Dashboard Tab -->
             <div id="executive-content" class="tab-content">
                 <div class="kpi-grid" id="kpiGrid"></div>
-
-                <!-- Promoted Full-Width Gauges -->
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h2 style="font-size:1.6em; font-weight:700; color:var(--primary); margin:0;">System Health Score</h2>
-                            <p style="font-size:0.95em; color:var(--text-light); margin:5px 0 0 0;">Composite autonomy health • Target ≥80%</p>
-                        </div>
-                        <div class="chart-body">
-                            <div id="healthGauge" style="height: 300px;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="charts-grid full-width">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h2 style="font-size:1.6em; font-weight:700; color:var(--primary); margin:0;">Healing Compliance Coverage</h2>
-                            <p style="font-size:0.95em; color:var(--text-light); margin:5px 0 0 0;">Invocation vs capabilities • Target ≥80%</p>
-                        </div>
-                        <div class="chart-body">
-                            <div id="complianceGauge" style="height: 300px;"></div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Top 3 Recommendations Section -->
                 <div class="charts-grid full-width" style="margin-top:30px;">
@@ -931,8 +907,6 @@
             }
 
             renderKPIBoxes(totalRow);
-            renderHealthGauge(totalRow);
-            renderComplianceGauge(totalRow);
             renderTopRecommendations();
             renderHealthChart(territoryData);
             renderHealingChart(territoryData);

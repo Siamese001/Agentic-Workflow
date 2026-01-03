@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from pathlib import Path
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
@@ -84,23 +85,53 @@ class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
         except Exception as e:
             return {'error': str(e)}
 
+    def heal_repository(self) -> None:
+        """Autonomy healing: Validate and auto-correct agent state/config for reliable resume dispatch.
+
+        - Inherits shared healing from HealerMixin (diagnostics, rollback)
+        - Adds Rg-specific checks: Titanium config, timeout settings, tool availability
+        - MCP hardening ensures safe healing (no injection during auto-correct)
+        """
+        super().heal_repository()
+
+        self._heal_titanium_config()
+        self._heal_timeout_settings()
+        self._heal_tool_availability()
+        self._run_rg_diagnostics()
+
+    def _heal_titanium_config(self) -> None:
+        """Validate and reload Titanium RAG config if corrupted/missing."""
+        if self.titanium_enabled and not TITANIUM_AVAILABLE:
+            Logger.warning("Titanium enabled but not available — disabling")
+            self.titanium_enabled = False
+
+    def _heal_timeout_settings(self) -> None:
+        """Ensure timeout settings within safe bounds."""
+        if self.TIMEOUT > 300:
+            Logger.warning(f"Timeout {self.TIMEOUT}s exceeds safe limit — resetting to 30s")
+            self.TIMEOUT = 30.0
+        elif self.TIMEOUT < 1:
+            Logger.warning(f"Timeout {self.TIMEOUT}s too low — resetting to 30s")
+            self.TIMEOUT = 30.0
+
+    def _heal_tool_availability(self) -> None:
+        """Verify tool availability and gracefully degrade if needed."""
+        try:
+            if self.titanium_enabled:
+                get_pipeline_stats()
+        except Exception as e:
+            Logger.error(f"Tool availability check failed: {e} — falling back to legacy")
+            self.titanium_enabled = False
+
+    def _run_rg_diagnostics(self) -> None:
+        """Run Rg-specific health checks (e.g., mock dispatch smoke test)."""
+        try:
+            test_result = self._perform_action('search', {'query': 'diagnostic test'})
+            if isinstance(test_result, dict) and 'error' in test_result:
+                Logger.error(f"Diagnostics failed: {test_result['error']}")
+        except Exception as e:
+            Logger.error(f"Diagnostics exception: {e}")
+
 def execute(action: str, params: Dict[str, object], config: Optional[Dict]=None) -> ExecutionResult:
     """Execute action."""
-    return DispatchResumeTools(config).execute(action, params)
-
-@timeout(300)
-def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """Apps_rg/engines - operational only."""
-    if _call_path is None:
-        _call_path = set()
-    agent_name = "DispatchResumeTools"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] Apps_rg/engines - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
+    return DispatchResumeToolsAgent(config).execute(action, params)
