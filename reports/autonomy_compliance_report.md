@@ -13,7 +13,7 @@
 - **Healing Capabilities:** 278 (63.9%) ⚠️
 - **Healing Invocation:** 63 (14.5%) ❌
 - **With Tests:** 171 (39.3%) ❌
-- **Avg Complexity:** 42.8 ❌
+- **Avg Complexity:** 42.9 ❌
 
 ## 📊 Territory Analysis
 
