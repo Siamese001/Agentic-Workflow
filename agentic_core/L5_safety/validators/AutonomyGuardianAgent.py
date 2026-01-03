@@ -74,50 +74,31 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self._agent_registry_cache = None
         
         # Territory definitions for compliance report - map to JSON layers
-        # Ordered: L5 first (most critical), then L4-L0 with subcategories for granularity
+        # IMPORTANT: Use layer-based matching to avoid double-counting
+        # Each territory maps to exactly one layer from agent_discovery_full.json
         self.territories = {
-            # L5 Safety - Most Critical (Top Priority)
+            # L5 Safety - Most Critical (Top Priority) - distinct subfolders
             "L5_safety/validators": ("L5", "Critical"),
             "L5_safety/guardrails": ("L5", "Critical"),
             "L5_safety/gravity": ("L5", "High"),
             "L5_safety/red_teaming": ("L5", "High"),
             
-            # L4 State - Subcategories for granularity
-            "L4_state/ValidationContext": ("L4", "High"),  # ValidationContext subfolder (capitalized)
-            "L4_state/validation_context": ("L4", "High"),  # validation_context subfolder (lowercase)
-            
-            # L3 Orchestration - Subcategories
-            "L3_orchestration/workflow_engines": ("L3", "High"),
-            "L3_orchestration/meta_learning": ("L3", "Medium"),
-            
-            # L2 Execution - Subcategories
-            "L2_execution/action_handlers": ("L2", "High"),
-            "L2_execution/mcp": ("L2", "High"),
-            
-            # L1 Cognition - Subcategories
-            "L1_cognition/intent_analysis": ("L1", "Medium"),
-            "L1_cognition/thought_engine": ("L1", "Medium"),
-            
-            # L0 Maintenance
+            # L4-L0 Layers - single territory per layer to avoid double-counting
+            "L4_state": ("L4", "High"),
+            "L3_orchestration": ("L3", "High"),
+            "L2_execution": ("L2", "High"),
+            "L1_cognition": ("L1", "Medium"),
             "L0_maintenance": ("L0", "Medium"),
             
-            # Apps - Broken down by domain/engines for higher signal
-            "apps_lic/domain": ("apps_lic", "High"),
-            "apps_lic/engines": ("apps_lic", "High"),
-            "apps_lic/core": ("apps_lic", "Medium"),
-            "apps_rg/domain": ("apps_rg", "High"),
-            "apps_rg/engines": ("apps_rg", "High"),
+            # Apps - single territory per app to avoid double-counting
+            "apps_lic": ("apps_lic", "High"),
+            "apps_rg": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
             
-            # Cross-cutting concerns
-            "observability/metrics": ("observability", "High"),
-            "observability/compliance": ("observability", "High"),
-            "observability/telemetry": ("observability", "Medium"),
+            # Utils - single territory
+            "utils": ("utils", "Medium"),
             
-            # Utils - Broken down for higher signal
-            "utils/core_extensions": ("utils", "Medium"),
-            "utils/general_helpers": ("utils", "Low"),
-            
+            # Tests
             "tests": ("tests", "Medium"),
         }
         
@@ -169,6 +150,29 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     return False, f"Missing {expected} (found {bases})"
         
         return True, "Compliant"
+    
+    def _generate_sparkline(self, values: List[float]) -> str:
+        """Generate Unicode block sparkline from list of values (last 10 max)."""
+        if len(values) < 2:
+            return "—"  # Insufficient data
+        
+        values = values[-10:]  # Last 10 runs max
+        
+        min_val = min(values)
+        max_val = max(values)
+        
+        if max_val == min_val:
+            return "▃" * len(values)  # Flat line (middle bar)
+        
+        # Normalize to 0-7 (8 levels)
+        buckets = 8
+        normalized = [
+            int((v - min_val) / (max_val - min_val) * (buckets - 1))
+            for v in values
+        ]
+        
+        chars = "▁▂▃▄▅▆▇█"
+        return "".join(chars[i] for i in normalized)
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
         """Load agents from agent_discovery_full.json (authoritative AST scan)."""
@@ -911,82 +915,24 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self, territory_key: str, layer_filter: str, 
         all_agents: List[Path], path_to_layer: Dict[str, str]
     ) -> List[Path]:
-        """Get agents for a specific territory."""
-        if territory_key.startswith("L5_safety"):
-            # Special handling for L5 subfolders (validators, guardrails, gravity, red_teaming)
+        """Get agents for a specific territory using layer-based matching.
+        
+        Uses the 'layer' field from agent_discovery_full.json to ensure
+        each agent is counted in exactly one territory (no double-counting).
+        """
+        if territory_key.startswith("L5_safety/"):
+            # L5 has distinct subfolders (validators, guardrails, gravity, red_teaming)
             subfolder = territory_key.split("/")[1]
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
             ]
-        elif territory_key.startswith("L4_state/"):
-            # L4 subcategories (ValidationContext or validation_context)
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if path_to_layer.get(str(p)) == "L4" and subfolder in str(p).replace("\\", "/")
-            ]
-        elif territory_key.startswith("L3_orchestration/"):
-            # L3 subcategories
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if path_to_layer.get(str(p)) == "L3" and subfolder in str(p).replace("\\", "/").lower()
-            ]
-        elif territory_key.startswith("L2_execution/"):
-            # L2 subcategories
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if path_to_layer.get(str(p)) == "L2" and subfolder in str(p).replace("\\", "/").lower()
-            ]
-        elif territory_key.startswith("L1_cognition/"):
-            # L1 subcategories
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if path_to_layer.get(str(p)) == "L1" and subfolder in str(p).replace("\\", "/").lower()
-            ]
-        elif territory_key.startswith("apps_lic/") or territory_key.startswith("apps_rg/"):
-            # Apps subcategories (domain, engines, core)
-            parts = territory_key.split("/")
-            app_name = parts[0]
-            subfolder = parts[1] if len(parts) > 1 else None
-            if subfolder:
-                return [
-                    p for p in all_agents
-                    if app_name in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
-                ]
-            else:
-                return [
-                    p for p in all_agents
-                    if app_name in str(p).replace("\\", "/").lower()
-                ]
-        elif territory_key.startswith("observability/"):
-            # Observability subcategories
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if "observability" in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
-            ]
-        elif territory_key.startswith("utils/"):
-            # Utils subcategories
-            subfolder = territory_key.split("/")[1]
-            return [
-                p for p in all_agents
-                if "utils" in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
-            ]
-        elif territory_key in ["observability", "knowledge"]:
-            # Path-based filtering for non-layer territories (fallback for observability without subfolder)
-            return [
-                p for p in all_agents
-                if territory_key in str(p).replace("\\", "/").lower()
-            ]
         else:
-            # Standard layer matching (L0, tests, apps_shared, etc.)
+            # All other territories: match by layer field from JSON
+            # This ensures each agent is counted exactly once
             return [
                 p for p in all_agents
-                if path_to_layer.get(str(p)) == layer_filter or layer_filter in str(p).replace("\\", "/").lower()
+                if path_to_layer.get(str(p)) == layer_filter
             ]
 
     def _compute_territory_metrics_with_violations(
@@ -1857,6 +1803,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_documented * 0.20
             ), 1)
             
+            # Health Score component breakdown for dashboard transparency
+            total_breakdown = [
+                {"component": "Healing Invocation", "raw": total_healing_invoke, "weight": 0.25, "points": round(total_healing_invoke * 0.25, 1)},
+                {"component": "MCP Hardened",       "raw": total_hardened,       "weight": 0.20, "points": round(total_hardened * 0.20, 1)},
+                {"component": "Test Coverage",      "raw": total_tests,          "weight": 0.20, "points": round(total_tests * 0.20, 1)},
+                {"component": "Healing Capability", "raw": total_healing_cap,    "weight": 0.15, "points": round(total_healing_cap * 0.15, 1)},
+                {"component": "Observability",      "raw": total_observable,     "weight": 0.10, "points": round(total_observable * 0.10, 1)},
+                {"component": "Typing",             "raw": total_typed,          "weight": 0.10, "points": round(total_typed * 0.10, 1)},
+                {"component": "Complexity Health",  "raw": total_cc_health,      "weight": 0.05, "points": round(total_cc_health * 0.05, 1)},
+            ]
+            
             total_row = {
                 "Territory": "TOTAL",
                 "Total": total_agents,
@@ -1875,11 +1832,170 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Observable %": total_observable,
                 "Criticality": 75,
                 "Health": total_health,
+                "Health Breakdown": total_breakdown,
+                "Code Quality Score": total_code_quality,
+                "Complexity Health": total_cc_health,
                 "Risk": "HIGH",
                 "Used %": total_used,
                 "Priority": "ALL"
             }
             dashboard_rows.insert(0, total_row)
+        
+        # === Historical Trending: Portfolio + Per-Territory Deltas & Sparklines ===
+        history_file = self.project_root / "reports" / "autonomy_history.json"
+        current_date = date.today().isoformat()  # "2026-01-03"
+        
+        # Portfolio snapshot
+        portfolio_snapshot = {
+            "health_score": total_row.get("Health", 0),
+            "code_quality_score": total_row.get("Code Quality Score", 0),
+            "mcp_hardened": total_row.get("Hardened %", 0),
+            "typing": total_row.get("Typed %", 0),
+        }
+        
+        # Per-territory snapshots
+        territory_snapshots = {}
+        for row in dashboard_rows:
+            if row.get("Territory") != "TOTAL":
+                territory_snapshots[row["Territory"]] = {
+                    "health_score": row.get("Health", 0),
+                    "code_quality_score": row.get("Code Quality Score", 0),
+                    "mcp_hardened": row.get("Hardened %", 0),
+                    "typing": row.get("Typed %", 0),
+                }
+        
+        current_full_snapshot = {
+            "date": current_date,
+            "portfolio": portfolio_snapshot,
+            "territories": territory_snapshots,
+        }
+        
+        # Load history
+        history = []
+        if history_file.exists():
+            try:
+                with open(history_file, "r") as f:
+                    history = json.load(f)
+            except:
+                history = []
+        
+        # Compute trends
+        has_previous = len(history) > 0
+        total_trends = {"has_previous": has_previous}
+        territory_trends = {}
+        max_points = 10
+        
+        if has_previous:
+            previous = history[-1]
+            prev_portfolio = previous.get("portfolio", {})
+            prev_territories = previous.get("territories", {})
+            
+            # Portfolio deltas
+            for key in portfolio_snapshot:
+                curr = portfolio_snapshot[key]
+                prev = prev_portfolio.get(key, curr)
+                delta = round(curr - prev, 1)
+                direction = "up" if delta > 0 else "down" if delta < 0 else "flat"
+                total_trends[f"{key}_delta"] = delta
+                total_trends[f"{key}_direction"] = direction
+            
+            # Territory deltas
+            for row in dashboard_rows:
+                if row.get("Territory") != "TOTAL":
+                    t_name = row["Territory"]
+                    curr_t = territory_snapshots.get(t_name, {})
+                    prev_t = prev_territories.get(t_name, {})
+                    
+                    t_trend = {"has_previous": t_name in prev_territories}
+                    if t_trend["has_previous"]:
+                        for key in curr_t:
+                            c_val = curr_t[key]
+                            p_val = prev_t.get(key, c_val)
+                            delta = round(c_val - p_val, 1)
+                            direction = "up" if delta > 0 else "down" if delta < 0 else "flat"
+                            t_trend[f"{key}_delta"] = delta
+                            t_trend[f"{key}_direction"] = direction
+                    else:
+                        for key in curr_t:
+                            t_trend[f"{key}_delta"] = None
+                            t_trend[f"{key}_direction"] = "flat"
+                    
+                    territory_trends[t_name] = t_trend
+        else:
+            # First run: no deltas
+            for key in portfolio_snapshot:
+                total_trends[f"{key}_delta"] = None
+                total_trends[f"{key}_direction"] = "flat"
+            
+            for row in dashboard_rows:
+                if row.get("Territory") != "TOTAL":
+                    t_name = row["Territory"]
+                    t_trend = {"has_previous": False}
+                    for key in territory_snapshots.get(t_name, {}):
+                        t_trend[f"{key}_delta"] = None
+                        t_trend[f"{key}_direction"] = "flat"
+                    territory_trends[t_name] = t_trend
+        
+        # Collect historical series for sparklines (handle old format for backward compatibility)
+        portfolio_health_history = []
+        portfolio_cq_history = []
+        portfolio_hardened_history = []
+        portfolio_typing_history = []
+        for entry in history[-max_points:]:
+            # Handle both old format (direct keys) and new format (nested under "portfolio")
+            if "portfolio" in entry:
+                portfolio_health_history.append(entry["portfolio"].get("health_score", 0))
+                portfolio_cq_history.append(entry["portfolio"].get("code_quality_score", 0))
+                portfolio_hardened_history.append(entry["portfolio"].get("mcp_hardened", 0))
+                portfolio_typing_history.append(entry["portfolio"].get("typing", 0))
+            else:
+                # Old format compatibility
+                portfolio_health_history.append(entry.get("health_score", 0))
+                portfolio_cq_history.append(entry.get("code_quality_score", 0))
+                portfolio_hardened_history.append(entry.get("mcp_hardened", 0))
+                portfolio_typing_history.append(entry.get("typing", 0))
+        
+        total_sparklines = {
+            "health_score": self._generate_sparkline(portfolio_health_history),
+            "code_quality_score": self._generate_sparkline(portfolio_cq_history),
+            "mcp_hardened": self._generate_sparkline(portfolio_hardened_history),
+            "typing": self._generate_sparkline(portfolio_typing_history),
+        }
+        
+        # Per-territory sparklines
+        territory_sparklines = {}
+        for row in dashboard_rows:
+            if row.get("Territory") != "TOTAL":
+                t_name = row["Territory"]
+                t_health_hist = []
+                t_cq_hist = []
+                t_hardened_hist = []
+                t_typing_hist = []
+                
+                for entry in history[-max_points:]:
+                    t_data = entry.get("territories", {}).get(t_name)
+                    if t_data:
+                        t_health_hist.append(t_data.get("health_score", 0))
+                        t_cq_hist.append(t_data.get("code_quality_score", 0))
+                        t_hardened_hist.append(t_data.get("mcp_hardened", 0))
+                        t_typing_hist.append(t_data.get("typing", 0))
+                
+                territory_sparklines[t_name] = {
+                    "health_score": self._generate_sparkline(t_health_hist),
+                    "code_quality_score": self._generate_sparkline(t_cq_hist),
+                    "mcp_hardened": self._generate_sparkline(t_hardened_hist),
+                    "typing": self._generate_sparkline(t_typing_hist),
+                }
+        
+        # Append & save
+        history.append(current_full_snapshot)
+        history_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(history_file, "w") as f:
+            json.dump(history, f, indent=2)
+        
+        # Add trends and sparklines to total_row for dashboard display
+        total_row["trends"] = total_trends
+        total_row["sparklines"] = total_sparklines
         
         # === Compute Prioritized Recommendations ===
         # Layer hierarchy multiplier: L5 (Critical) > L4 > L3 > L2 > L1 > L0
