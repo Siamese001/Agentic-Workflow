@@ -74,24 +74,50 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self._agent_registry_cache = None
         
         # Territory definitions for compliance report - map to JSON layers
+        # Ordered: L5 first (most critical), then L4-L0 with subcategories for granularity
         self.territories = {
+            # L5 Safety - Most Critical (Top Priority)
+            "L5_safety/validators": ("L5", "Critical"),
+            "L5_safety/guardrails": ("L5", "Critical"),
+            "L5_safety/gravity": ("L5", "High"),
+            "L5_safety/red_teaming": ("L5", "High"),
+            
+            # L4 State - Subcategories for granularity
+            "L4_state/validation_context": ("L4", "High"),  # ValidationContext subfolder
+            "L4_state/other": ("L4", "Medium"),  # Other L4 agents
+            
+            # L3 Orchestration - Subcategories
+            "L3_orchestration/workflow_engines": ("L3", "High"),
+            "L3_orchestration/meta_learning": ("L3", "Medium"),
+            
+            # L2 Execution - Subcategories
+            "L2_execution/action_handlers": ("L2", "High"),
+            "L2_execution/mcp": ("L2", "High"),
+            
+            # L1 Cognition - Subcategories
+            "L1_cognition/intent_analysis": ("L1", "Medium"),
+            "L1_cognition/thought_engine": ("L1", "Medium"),
+            
+            # L0 Maintenance
             "L0_maintenance": ("L0", "Medium"),
-            "L1_cognition": ("L1", "Medium"),
-            "L2_execution": ("L2", "High"),
-            "L3_orchestration": ("L3", "High"),
-            "L4_state": ("L4", "Medium"),
-            "L5_safety/validators": ("L5", "Critical"),  # Will filter by validators subfolder
-            "L5_safety/guardrails": ("L5", "Critical"),  # Will filter by guardrails subfolder  
-            "L5_safety/gravity": ("L5", "High"),        # Will filter by gravity subfolder
-            "L5_safety/red_teaming": ("L5", "High"),    # Will filter by red_teaming subfolder
-            "utils": ("utils", "Medium"),
-            "observability": ("observability", "High"),  # Metrics, telemetry, tracing agents
-            "knowledge": ("knowledge", "Low"),
-            "apps_lic": ("apps_lic", "High"),
-            "apps_rg": ("apps_rg", "High"),
+            
+            # Apps - Broken down by domain/engines for higher signal
+            "apps_lic/domain": ("apps_lic", "High"),
+            "apps_lic/engines": ("apps_lic", "High"),
+            "apps_lic/core": ("apps_lic", "Medium"),
+            "apps_rg/domain": ("apps_rg", "High"),
+            "apps_rg/engines": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
-            "tests": ("tests", "Medium"),  # Layer territory (repo /tests)
-            "tested_agents": ("tested_agents", "Medium"),  # Cross-cutting: agents with test coverage
+            
+            # Cross-cutting concerns
+            "observability/metrics": ("observability", "High"),
+            "observability/compliance": ("observability", "High"),
+            "observability/telemetry": ("observability", "Medium"),
+            "utils": ("utils", "Medium"),
+            "tests": ("tests", "Medium"),
+            
+            # Cross-cutting: agents with test coverage (not a physical location)
+            "tested_agents": ("tested_agents", "Medium"),
         }
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
@@ -819,23 +845,81 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     pass
             return agents_with_tests
         elif territory_key.startswith("L5_safety"):
-            # Special handling for L5 subfolders (validators, guardrails, gravity)
+            # Special handling for L5 subfolders (validators, guardrails, gravity, red_teaming)
             subfolder = territory_key.split("/")[1]
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
             ]
+        elif territory_key.startswith("L4_state/"):
+            # L4 subcategories
+            subfolder = territory_key.split("/")[1]
+            if subfolder == "other":
+                # L4 agents NOT in validation_context
+                return [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == "L4" and "validation_context" not in str(p).replace("\\", "/").lower()
+                ]
+            else:
+                # Specific L4 subfolder
+                return [
+                    p for p in all_agents
+                    if path_to_layer.get(str(p)) == "L4" and subfolder in str(p).replace("\\", "/").lower()
+                ]
+        elif territory_key.startswith("L3_orchestration/"):
+            # L3 subcategories
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L3" and subfolder in str(p).replace("\\", "/").lower()
+            ]
+        elif territory_key.startswith("L2_execution/"):
+            # L2 subcategories
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L2" and subfolder in str(p).replace("\\", "/").lower()
+            ]
+        elif territory_key.startswith("L1_cognition/"):
+            # L1 subcategories
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L1" and subfolder in str(p).replace("\\", "/").lower()
+            ]
+        elif territory_key.startswith("apps_lic/") or territory_key.startswith("apps_rg/"):
+            # Apps subcategories (domain, engines, core)
+            parts = territory_key.split("/")
+            app_name = parts[0]
+            subfolder = parts[1] if len(parts) > 1 else None
+            if subfolder:
+                return [
+                    p for p in all_agents
+                    if app_name in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
+                ]
+            else:
+                return [
+                    p for p in all_agents
+                    if app_name in str(p).replace("\\", "/").lower()
+                ]
+        elif territory_key.startswith("observability/"):
+            # Observability subcategories
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if "observability" in str(p).replace("\\", "/").lower() and subfolder in str(p).replace("\\", "/").lower()
+            ]
         elif territory_key in ["observability", "knowledge"]:
-            # Path-based filtering for non-layer territories (observability, knowledge, etc.)
+            # Path-based filtering for non-layer territories (fallback for observability without subfolder)
             return [
                 p for p in all_agents
                 if territory_key in str(p).replace("\\", "/").lower()
             ]
         else:
-            # Standard layer matching
+            # Standard layer matching (L0, utils, tests, apps_shared, etc.)
             return [
                 p for p in all_agents
-                if path_to_layer.get(str(p)) == layer_filter
+                if path_to_layer.get(str(p)) == layer_filter or layer_filter in str(p).replace("\\", "/").lower()
             ]
 
     def _compute_territory_metrics_with_violations(
