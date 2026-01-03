@@ -285,6 +285,19 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         except Exception:
             return 0.0  # Parse error = 0% documented
     
+    def _count_source_loc(self, source_code: str) -> int:
+        """Count non-blank, non-comment physical source lines of code (SLOC)."""
+        lines = source_code.splitlines()
+        sloc = 0
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:  # Blank line
+                continue
+            if stripped.startswith('#'):  # Single-line comment
+                continue
+            sloc += 1
+        return sloc
+    
     def run(self) -> List[tuple]:
         """
         Scan repository for autonomy violations using agent_discovery_full.json.
@@ -1172,7 +1185,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         metrics["healing_cap"] += file_metrics["healing_cap"]
         metrics["healing_invoke"] += file_metrics["healing_invoke"]
         metrics["tests"] += file_metrics["tests"]
-        metrics["loc"] += file_metrics["loc"]
+        metrics["loc"] += file_metrics["loc"]  # Sum LOC for average calculation
         metrics["cc_sum"] += file_metrics["cc_sum"]
         metrics["max_cc"] = max(metrics["max_cc"], file_metrics["max_cc"])
         metrics["typed"] += file_metrics["typed"]
@@ -1520,6 +1533,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Test %": perc_tests,
                 "Observable %": perc_observable,  # Now a column for all territories
                 "Avg CC": avg_cc,
+                "Avg LOC": round(avg_loc),  # Medium-Term #2: Average source lines of code
                 "Typed %": perc_typed,
                 "Documented %": perc_documented,  # NEW: Documentation coverage
                 "Proper Base %": perc_proper_base,  # Phase 5: Base class compliance
@@ -1813,6 +1827,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_mcp_capable = round(sum(r["MCP Capable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_loc = round(sum(r.get("Avg LOC", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents) if total_agents else 0
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 # Portfolio-average documentation coverage (granular signal, not threshold-based)
                 total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
@@ -1821,7 +1836,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
-                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
+                total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
             # Calculate total health with new formula (v2.1 with typing weight)
             total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
             total_health = round((
@@ -1853,6 +1868,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "MCP Capable %": total_mcp_capable,
                 "Test %": total_tests,
                 "Avg CC": total_cc,
+                "Avg LOC": total_loc,  # Medium-Term #2: Average source lines of code
                 "Typed %": total_typed,
                 "Documented %": total_documented,
                 "Proper Base %": total_proper_base,  # Phase 5: Base class compliance
