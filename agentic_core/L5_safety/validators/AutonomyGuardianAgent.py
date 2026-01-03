@@ -1411,15 +1411,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             # - Reduced complexity weight to 5% to keep total 100%
             # Rationale: Empirical evidence shows typed code has ~50-70% fewer bugs
             cc_health_component = max(0, min(100, 100 - (avg_cc * 2)))  # CC of 0 = 100%, CC of 50 = 0%
+            # Health Score v2.2 - Fixed weights to sum to 100%
+            # Previous v2.1 had weights summing to 105% (bug)
             health = round((
-                perc_healing_invoke * 0.25 +   # Proven L5 autonomy in production
-                perc_hardened * 0.20 +         # Critical security control
-                perc_tests * 0.20 +            # Regression prevention
-                perc_healing_cap * 0.15 +      # Foundational capability
-                perc_observable * 0.10 +       # Visibility
-                cc_health_component * 0.05 +   # Maintainability (reduced to accommodate typing)
-                perc_typed * 0.10              # Runtime safety via type hints (NEW)
-            ), 1)
+                perc_healing_invoke * 0.25 +   # Proven L5 autonomy in production (25%)
+                perc_hardened * 0.18 +         # Critical security control (18%, was 20%)
+                perc_tests * 0.18 +            # Regression prevention (18%, was 20%)
+                perc_healing_cap * 0.14 +      # Foundational capability (14%, was 15%)
+                perc_observable * 0.10 +       # Visibility (10%)
+                cc_health_component * 0.05 +   # Maintainability (5%)
+                perc_typed * 0.10              # Runtime safety via type hints (10%)
+            ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
             
             # Code Quality Score v1.1 (new separate metric)
             # Focuses on static/maintainability quality, independent of operational health
@@ -1779,17 +1781,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_mcp_capable = total_tests = total_cc = total_loc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
-            # Calculate total health with new formula (v2.1 with typing weight)
+            # Calculate total health with new formula (v2.2 with fixed weights)
             total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
             total_health = round((
-                total_healing_invoke * 0.25 +   # Proven L5 autonomy in production
-                total_hardened * 0.20 +         # Critical security control
-                total_tests * 0.20 +            # Regression prevention
-                total_healing_cap * 0.15 +      # Foundational capability
-                total_observable * 0.10 +       # Visibility
-                total_cc_health * 0.05 +        # Maintainability (reduced to accommodate typing)
-                total_typed * 0.10              # Runtime safety via type hints (NEW)
-            ), 1)
+                total_healing_invoke * 0.25 +   # Proven L5 autonomy in production (25%)
+                total_hardened * 0.18 +         # Critical security control (18%)
+                total_tests * 0.18 +            # Regression prevention (18%)
+                total_healing_cap * 0.14 +      # Foundational capability (14%)
+                total_observable * 0.10 +       # Visibility (10%)
+                total_cc_health * 0.05 +        # Maintainability (5%)
+                total_typed * 0.10              # Runtime safety via type hints (10%)
+            ), 1)  # Total: 25+18+18+14+10+5+10 = 100%
             
             # Portfolio-wide Code Quality Score v1.1
             total_code_quality = round((
@@ -1799,12 +1801,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_documented * 0.20
             ), 1)
             
-            # Health Score component breakdown for dashboard transparency
+            # Health Score component breakdown for dashboard transparency (v2.2 weights)
             total_breakdown = [
                 {"component": "Healing Invocation", "raw": total_healing_invoke, "weight": 0.25, "points": round(total_healing_invoke * 0.25, 1)},
-                {"component": "MCP Hardened",       "raw": total_hardened,       "weight": 0.20, "points": round(total_hardened * 0.20, 1)},
-                {"component": "Test Coverage",      "raw": total_tests,          "weight": 0.20, "points": round(total_tests * 0.20, 1)},
-                {"component": "Healing Capability", "raw": total_healing_cap,    "weight": 0.15, "points": round(total_healing_cap * 0.15, 1)},
+                {"component": "MCP Hardened",       "raw": total_hardened,       "weight": 0.18, "points": round(total_hardened * 0.18, 1)},
+                {"component": "Test Coverage",      "raw": total_tests,          "weight": 0.18, "points": round(total_tests * 0.18, 1)},
+                {"component": "Healing Capability", "raw": total_healing_cap,    "weight": 0.14, "points": round(total_healing_cap * 0.14, 1)},
                 {"component": "Observability",      "raw": total_observable,     "weight": 0.10, "points": round(total_observable * 0.10, 1)},
                 {"component": "Typing",             "raw": total_typed,          "weight": 0.10, "points": round(total_typed * 0.10, 1)},
                 {"component": "Complexity Health",  "raw": total_cc_health,      "weight": 0.05, "points": round(total_cc_health * 0.05, 1)},

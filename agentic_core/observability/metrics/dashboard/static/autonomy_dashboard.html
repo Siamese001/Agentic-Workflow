@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomy Dashboard - Layer Coverage & Entropy</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-l1: #ff9999;  /* Cognition - red/orange */
+            --color-l2: #99ccff;  /* Execution - blue */
+            --color-l3: #99ff99;  /* Orchestration - green */
+            --color-l4: #ffff99;  /* State - yellow */
+            --color-l5: #ccb3ff;  /* Safety - purple */
+            --color-apps: #ffcc99; /* Apps - orange */
+            --color-utils: #e6e6e6; /* Utils/obs - gray */
+            --primary: #1e40af;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .entropy-highlight {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            max-width: 1400px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .entropy-highlight small {
+            display: block;
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+            font-weight: normal;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .chart-section {
+            flex: 2;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .glossary-section {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .glossary-section h2 {
+            color: var(--primary);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            background: #f5f5f5;
+            padding-bottom: 10px;
+        }
+
+        .glossary-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .glossary-item strong {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .glossary-item small {
+            display: block;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .glossary-item em {
+            display: block;
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .glossary-section {
+                max-height: none;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+
+        #recommendations {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        #recommendations-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+        }
+
+        #recommendations-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #333;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        #recommendations-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Autonomy Dashboard</h1>
+        <p>Layer Coverage & System Entropy Monitoring</p>
+    </div>
+
+    <div class="entropy-highlight" id="entropy-display">
+        <span class="loading">Loading entropy data...</span>
+        <div id="recommendations" style="display:none;">
+            <strong>Recommendations:</strong>
+            <ul id="recommendations-list"></ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="chart-section">
+            <h2>Layer Activation Distribution</h2>
+            <canvas id="coverageChart"></canvas>
+        </div>
+        <div class="glossary-section">
+            <h2>Territory Glossary</h2>
+            <div id="glossary-content" class="loading">Loading territories...</div>
+        </div>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
