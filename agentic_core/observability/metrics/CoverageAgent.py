@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
-import requests
 import time
 import uuid
-from typing import Dict, Optional, List
+import math
+from typing import Dict, List, Optional
+
+from agentic_core.observability.metrics.layer_decorator import layer_entry
 
 # Gravity-safe imports for active interventions
 try:
@@ -77,6 +81,7 @@ class CoverageAgent:
             return 0.0
         return float(-np.sum(props * np.log2(props)))  # Base-2 for interpretability
 
+    @layer_entry("observability", subterritory="metrics")
     def act(self) -> str:
         """Primary actuation method — call periodically from orchestrator/metrics coordinator."""
         counts = self._fetch_metrics()
@@ -129,13 +134,16 @@ class CoverageAgent:
 
     def _inject_synthetic_exercises(self, layer: str) -> None:
         """Enqueue safe no-op tasks targeting layer — direct metric increment."""
+        from agentic_core.config.blueprint_sovereign.structure_blueprint import EXERCISER_REGISTRY
+        exerciser_class_name = EXERCISER_REGISTRY.get(layer, "GeneralExerciserAgent")
         for i in range(self.synthetic_tasks_per_trigger):
             task_payload = {
                 "task_id": f"coverage_synthetic_{layer}_{uuid.uuid4().hex[:8]}",
                 "task_type": "layer_coverage_exercise",
                 "target_territory": layer,
+                "agent_class": exerciser_class_name,  # Orchestrator instantiates
                 "priority": "high",  # Ensure quick execution
-                "description": f"Synthetic activation #{i+1} for {layer} to improve coverage metrics",
+                "description": f"Generalized coverage exercise for {layer}",
                 "safe_no_op": True,
             }
             enqueue(task_payload)  # Constitution-safe queue (L3 territory)

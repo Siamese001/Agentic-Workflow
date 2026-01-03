@@ -15,12 +15,12 @@ GOLD STANDARD UPGRADE (2026-01-02):
 - Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW
 - run_with_cleanup returning comprehensive summaries
 
-DOMAIN-SPECIFIC INTEGRATIONS (Orchestration Hub):
-- LocationAgent: Validate file territory after all phases
-- HierarchyAgent: Validate structure depth after all phases
-- ImportAgent: Validate gravity compliance after all phases
-- GovernanceAgent: Validate architecture after all phases
-- HealerAgent: Coordinate unified healing after validation
+PHASE 5 UPGRADE (2026-01-03):
+- Coverage bias tracking for dynamic layer prioritization
+- Event-driven bias activation from CoverageAgent
+- Multi-layer concurrent bias support (max 3)
+- Hysteresis-based bias extension for sustained elevation
+- Exerciser fallback routing for synthetic task dispatch
 '''
 
 import json
@@ -30,6 +30,7 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.runtime.shared_runtime import subscribe_event
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -1177,15 +1178,80 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
             LOGGER,
         )
 
+        # PHASE 5: Coverage bias tracking for dynamic layer prioritization
+        self.coverage_bias_state: Dict[str, Dict] = {}
+        self.bias_hysteresis_threshold = 0.15
+        self.max_concurrent_biases = 3
+        subscribe_event("coverage_bias_update", self._handle_bias_update)
+
         LOGGER.info(
             "nervous_system_initialized",
             extra={
                 "cognitive_capabilities": [c.value if hasattr(c, 'value') else c for c in self.brain.get_capabilities()],
                 "action_capabilities": [c.value if hasattr(c, 'value') else c for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),
-                "phases_populated": len([p for p in self.phases.values() if p])
+                "phases_populated": len([p for p in self.phases.values() if p]),
+                "coverage_bias_enabled": True
             }
         )
+
+    def _handle_bias_update(self, event_data: Dict) -> None:
+        """Process CoverageAgent bias events — multi-layer queue."""
+        layer = event_data.get("underrepresented_layer")
+        weight = event_data.get("selection_weight_multiplier")
+        cycles = event_data.get("remaining_orchestration_cycles")
+
+        if not layer or not weight or not cycles:
+            return
+
+        # Enforce max concurrent
+        if len(self.coverage_bias_state) >= self.max_concurrent_biases:
+            lowest_layer = min(self.coverage_bias_state, key=lambda k: self.coverage_bias_state[k]["weight"])
+            del self.coverage_bias_state[lowest_layer]
+
+        self.coverage_bias_state[layer] = {
+            "weight": weight,
+            "remaining_cycles": cycles,
+            "last_updated": time.time(),
+        }
+        LOGGER.info(f"Coverage bias activated: {layer} *{weight} for {cycles} cycles")
+
+    def _decay_biases(self) -> None:
+        """Decrement and cleanup expired biases with dynamic decay based on health."""
+        expired = [l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0]
+        for l in expired:
+            del self.coverage_bias_state[l]
+        
+        # Decrement active and apply dynamic decay
+        for layer, info in list(self.coverage_bias_state.items()):
+            info["remaining_cycles"] = max(0, info["remaining_cycles"] - 1)
+            
+            # Dynamic decay: Reduce weight if proportion healthy
+            try:
+                from agentic_core.observability.metrics.CoverageAgent import CoverageAgent
+                coverage_agent = CoverageAgent()
+                metrics = coverage_agent._fetch_metrics()
+                if metrics:
+                    current_props = coverage_agent._compute_proportions(metrics)
+                    if current_props.get(layer, 0) > 0.25:  # Healthy threshold
+                        info["weight"] = max(1.0, info["weight"] * 0.8)  # Gradual decay
+                        if info["weight"] <= 1.1:
+                            del self.coverage_bias_state[layer]
+            except Exception:
+                # If metrics unavailable, just decrement cycles
+                pass
+
+    def force_exerciser_fallback(self, task: Dict) -> Optional[str]:
+        """If no candidates in target layer, direct to exerciser."""
+        target = task.get("target_territory")
+        if target:
+            exerciser_map = {
+                "L5_safety": "L5SafetyExerciserAgent",
+                "L4_state": "L4StateExerciserAgent",
+                "L1_cognition": "L1CognitionExerciserAgent",
+            }
+            return exerciser_map.get(target)
+        return None
 
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L3 compliance."""
