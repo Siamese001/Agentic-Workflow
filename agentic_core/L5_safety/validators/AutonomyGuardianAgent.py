@@ -1176,9 +1176,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         metrics["cc_sum"] += file_metrics["cc_sum"]
         metrics["max_cc"] = max(metrics["max_cc"], file_metrics["max_cc"])
         metrics["typed"] += file_metrics["typed"]
-        # Count agents with >= 80% documentation (threshold-based like typing)
-        if file_metrics["documented"] >= 80:
-            metrics["documented"] += 1
+        # Documentation %: Sum per-agent coverage for average calculation (granular signal)
+        # Changed from threshold-based to reward partial documentation
+        metrics["documented"] += file_metrics["documented"]
         metrics["observable"] += file_metrics["observable"]
 
     def _finalize_metrics(self, metrics: Dict[str, Any], agents: List[Path], used_stems: set) -> None:
@@ -1443,6 +1443,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             perc_healing_invoke = round(metrics["healing_invoke"] / total * 100, 1) if total else 0
             perc_tests = round(metrics["tests"] / total * 100, 1) if total else 0
             perc_typed = round(metrics["typed"] / total, 1) if total else 0
+            # Documentation %: Average per-agent docstring coverage (granular signal, not threshold-based)
             perc_documented = round(metrics["documented"] / total, 1) if total else 0
             perc_observable = round(metrics["observable"] / total, 1) if total else 0
             perc_used = round(metrics["used"] / total * 100, 1) if total else 0
@@ -1813,6 +1814,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                # Portfolio-average documentation coverage (granular signal, not threshold-based)
                 total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_proper_base = round(sum(r.get("Proper Base %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
