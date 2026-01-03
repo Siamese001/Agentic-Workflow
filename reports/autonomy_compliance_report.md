@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 30.1/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 29.6/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 437
-- **Compliant:** 178 (40.7%) ❌
-- **Healing Capabilities:** 281 (64.3%) ⚠️
-- **Healing Invocation:** 63 (14.4%) ❌
-- **With Tests:** 176 (40.3%) ❌
-- **Avg Complexity:** 43.5 ❌
+- **Total Agents:** 435
+- **Compliant:** 177 (40.7%) ❌
+- **Healing Capabilities:** 279 (64.1%) ⚠️
+- **Healing Invocation:** 63 (14.5%) ❌
+- **With Tests:** 171 (39.3%) ❌
+- **Avg Complexity:** 42.5 ❌
 
 ## 📊 Territory Analysis
 
@@ -43,40 +43,41 @@
 - 🔥 **L3 Orchestration/Meta Learning**: 30/62 compliant | Health: 54.3% | Risk: HIGH | Heal Gap: 62.9%
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 50.0% | Risk: MED | Heal Gap: 50.0%
 - 🔥 **L5 Safety/Red Teaming**: 1/1 compliant | Health: 66.7% | Risk: HIGH
+- 🔥 **L4 State/Validationcontext**: 10/21 compliant | Health: 50.8% | Risk: HIGH | Heal Gap: 61.9%
 - 🔥 **L4 State/Validation Context**: 10/21 compliant | Health: 50.8% | Risk: HIGH | Heal Gap: 61.9%
-- 🔥 **L4 State/Other**: 10/21 compliant | Health: 50.8% | Risk: HIGH | Heal Gap: 61.9%
 
 ### Low Priority Territories
 
 - 🔥 **Tests**: 0/19 compliant | Health: 49.1% | Risk: HIGH | Heal Gap: 36.8%
-- 🔥 **Utils**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 42.9%
+- 🔥 **Utils/Core Extensions**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 42.9%
+- 🔥 **Utils/General Helpers**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 42.9%
 
 ### Unclassified Agents
 
-- ❓ **Unclassified**: 24/83 compliant | Health: 39.4% | Risk: HIGH | Heal Gap: 51.8%
+- ❓ **Unclassified**: 24/90 compliant | Health: 38.9% | Risk: HIGH | Heal Gap: 51.1%
 
 
 ## 📈 Recommendations
 
 ### Immediate Actions (High Risk)
-- **L5 Safety/Validators**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L2 Execution/Action Handlers**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L2 Execution/Mcp**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L1 Cognition/Intent Analysis**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L1 Cognition/Thought Engine**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L0 Maintenance**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L5 Safety/Red Teaming**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L4 State/Validation Context**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L4 State/Other**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L3 Orchestration/Workflow Engines**: Focus on complexity reduction (CC=38.7) and test coverage
-- **L3 Orchestration/Meta Learning**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Lic/Domain**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Lic/Engines**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Lic/Core**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Rg/Domain**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Rg/Engines**: Focus on complexity reduction (CC=38.7) and test coverage
-- **Apps Shared**: Focus on complexity reduction (CC=38.7) and test coverage
+- **L5 Safety/Validators**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L2 Execution/Action Handlers**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L2 Execution/Mcp**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L1 Cognition/Intent Analysis**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L1 Cognition/Thought Engine**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L0 Maintenance**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L5 Safety/Red Teaming**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L4 State/Validationcontext**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L4 State/Validation Context**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L3 Orchestration/Workflow Engines**: Focus on complexity reduction (CC=40.1) and test coverage
+- **L3 Orchestration/Meta Learning**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Lic/Domain**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Lic/Engines**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Lic/Core**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Rg/Domain**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Rg/Engines**: Focus on complexity reduction (CC=40.1) and test coverage
+- **Apps Shared**: Focus on complexity reduction (CC=40.1) and test coverage
 
 ### Healing Gap Closure
 - **Apps Shared**: Add heal_repository() methods (Gap: 100.0%)
@@ -86,8 +87,8 @@
 - **L1 Cognition/Thought Engine**: Add heal_repository() methods (Gap: 66.0%)
 - **L3 Orchestration/Workflow Engines**: Add heal_repository() methods (Gap: 62.9%)
 - **L3 Orchestration/Meta Learning**: Add heal_repository() methods (Gap: 62.9%)
+- **L4 State/Validationcontext**: Add heal_repository() methods (Gap: 61.9%)
 - **L4 State/Validation Context**: Add heal_repository() methods (Gap: 61.9%)
-- **L4 State/Other**: Add heal_repository() methods (Gap: 61.9%)
 - **L2 Execution/Action Handlers**: Add heal_repository() methods (Gap: 61.4%)
 - **L2 Execution/Mcp**: Add heal_repository() methods (Gap: 61.4%)
 - **Apps Lic/Domain**: Add heal_repository() methods (Gap: 57.5%)
