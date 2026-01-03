@@ -33,6 +33,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.runtime.shared_runtime import subscribe_event
 from agentic_core.L3_orchestration.workflow_engines.RLOrchestratorAgent import RLOrchestratorAgent
 from agentic_core.L3_orchestration.workflow_engines.QLearningOrchestratorAgent import QLearningOrchestratorAgent
+from agentic_core.L3_orchestration.workflow_engines.ActorCriticOrchestratorAgent import ActorCriticOrchestratorAgent
 
 from dataclasses import dataclass
 from pathlib import Path
