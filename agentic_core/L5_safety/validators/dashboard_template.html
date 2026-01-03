@@ -665,7 +665,8 @@
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with type hints">Typing %</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with access to external MCP tools">MCP Capable %</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Inverted cyclomatic complexity health (higher = better)">Complexity Health</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score (Typing 40% + MCP Capable 30% + Complexity 30%)">Code Quality Score</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of definitions with non-empty docstrings">Documentation %</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Composite code quality score (Typing 35% + MCP Capable 25% + Complexity 20% + Documentation 20%)">Code Quality Score</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -687,6 +688,7 @@
                 const typing = row['Typed %'] || 0;
                 const mcpCapable = row['MCP Capable %'] || 0;
                 const complexityHealth = row['Complexity Health'] || 0;
+                const documented = row['Documented %'] || 0;
                 
                 html += `
                     <tr style="border-bottom:1px solid #e5e7eb; ${index % 2 === 0 ? 'background:#f9fafb;' : ''}">
@@ -694,6 +696,7 @@
                         <td style="padding:12px; text-align:center; background:${getGradientBg(typing)};">${typing.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(mcpCapable)};">${mcpCapable.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(complexityHealth)};">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)};">${documented.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(codeQualityScore)}; font-weight:700;">${codeQualityScore.toFixed(1)}%</td>
                     </tr>`;
             });
@@ -707,6 +710,8 @@
                 (territoryData.reduce((sum, r) => sum + (r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
             const totalComplexityHealth = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Complexity Health'] || 0), 0) / territoryData.length) : 0;
+            const totalDocumented = territoryData.length > 0 ? 
+                (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
             
             html += `
                     <tr style="background:#f0f9ff; border-bottom:2px solid var(--primary);">
@@ -714,12 +719,13 @@
                         <td style="padding:14px; text-align:center; font-weight:600; background:#e0f2fe;">${totalTyping.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:#e0f2fe;">${totalMcpCapable.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:#e0f2fe;">${totalComplexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:#e0f2fe;">${totalDocumented.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; font-weight:700; font-size:1.05em; background:#dbeafe;">${totalCodeQuality.toFixed(1)}%</td>
                     </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p style="margin-top:12px; font-size:0.9em; color:#666;"><strong>Code Quality Score:</strong> Weighted composite (Typing 40% + MCP Capable 30% + Complexity Health 30%) — encourages typed, modern, maintainable code.</p>
+                    <p style="margin-top:12px; font-size:0.9em; color:#666;"><strong>Code Quality Score:</strong> Weighted composite (Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%) — encourages typed, documented, modern, maintainable code.</p>
                 </div>
                 
                 <div style="margin-top:20px; padding:16px; background:#f9fafb; border-radius:8px; border-left:4px solid var(--primary);">

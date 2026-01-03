@@ -18,7 +18,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # [PHASE 2] L0 Delegated Testing Mixin
@@ -149,13 +149,13 @@ class L0DelegationMixin:
 
     def _emit_l0_event(self, Severity: L0SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L0 delegation event for observability."""
-        print(f"[SUBATOMIC L0] {Severity.value} | {event_type}")
+        self.log_info(f"SUBATOMIC L0 {Severity.value} | {event_type}")
         if payload:
-            print(f"  Payload: {payload}")
+            self.log_info(f"Payload: {payload}")
 
 
 @dataclass
-class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin, L0DelegationTestingMixin):
+class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTestingMixin):
     """Base class for L0 Maintenance agents with delegation-only testing.
     
     NOTE: _healing_enabled = False for L0 boot isolation safety.
@@ -229,7 +229,7 @@ class MaintenanceBaseAgent(CanonBaseAgent, L0DelegationMixin, L0DelegationTestin
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L0 maintenance - operational only")
+            self.log_info("L0 maintenance - operational only")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

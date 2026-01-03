@@ -20,10 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
-
-# [PHASE 3] Default-on healing mixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # NEW: Root
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
@@ -327,20 +324,20 @@ def test_artifact_exists():
 
     def _emit_l3_event(self, Severity: L3SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
         """Emit L3 subatomic testing event for observability."""
-        print(f"[SUBATOMIC L3] {Severity.value} | {event_type}")
+        self.log_info(f"SUBATOMIC L3 {Severity.value} | {event_type}")
         if payload:
-            print(f"  Payload: {payload}")
+            self.log_info(f"Payload: {payload}")
 
 
 @dataclass
-class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixin):
+class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
     """Base class for L3 Orchestration agents with subatomic testing.
     
     L3 Table Decision:
     - Basic Self-Testing: YES (plan validation)
     - Delegation to TestSovereigntyAgent: YES (on failure)
     
-    Inherits from CanonBaseAgent for core capabilities.
+    Inherits from SovereignBaseAgent for core capabilities.
     Includes L3SubatomicTestingMixin for CRITIQUE hop testing.
     """
 
@@ -388,7 +385,7 @@ class OrchestrationBaseAgent(CanonBaseAgent, L3SubatomicTestingMixin, HealerMixi
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
+            self.log_info("L3 orchestration - operational only")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

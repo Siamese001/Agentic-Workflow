@@ -35,10 +35,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.L2_execution.ToolRegistry.ExecutionCanonBaseAgent import CanonBaseAgent
-
-# [PHASE 3] Default-on healing mixin
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
@@ -594,7 +591,7 @@ class StateBaseAgent(CanonBaseAgent, L4SubatomicTestingMixin, HealerMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L4 state - operational only")
+            self.log_info("L4 state - operational only")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
