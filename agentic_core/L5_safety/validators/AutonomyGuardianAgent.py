@@ -83,12 +83,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             "L5_safety/validators": ("L5", "Critical"),  # Will filter by validators subfolder
             "L5_safety/guardrails": ("L5", "Critical"),  # Will filter by guardrails subfolder  
             "L5_safety/gravity": ("L5", "High"),        # Will filter by gravity subfolder
+            "L5_safety/red_teaming": ("L5", "High"),    # Will filter by red_teaming subfolder
             "utils": ("utils", "Medium"),
-            "observability": ("observability", "Low"),
+            "observability": ("observability", "High"),  # Metrics, telemetry, tracing agents
             "knowledge": ("knowledge", "Low"),
             "apps_lic": ("apps_lic", "High"),
             "apps_rg": ("apps_rg", "High"),
             "apps_shared": ("apps_shared", "Medium"),
+            "tests": ("tests", "Medium"),  # Layer territory (repo /tests)
+            "tested_agents": ("tested_agents", "Medium"),  # Cross-cutting: agents with test coverage
         }
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
@@ -463,7 +466,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             terr_total = len(agents)
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in agents if "super().heal_repository()" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: either inherits HealerMixin OR has healing logic
             terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
@@ -564,7 +567,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if unclassified:
             terr_total = len(unclassified)
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
-            terr_healing_invoke = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
+            terr_healing_invoke = sum(1 for a in unclassified if "super().heal_repository()" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
             # Healing capabilities: either inherits HealerMixin OR has healing logic
             terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
@@ -747,10 +750,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         """Process all territories and track sub-atomic violations."""
         classified_paths = set()
         atomic_threshold = 10  # CC threshold for sub-atomic violations
+        cross_cutting_territories = {"tested_agents", "observability", "knowledge"}  # Don't count in totals
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
-            classified_paths.update(agents)
+            
+            # Only add to classified_paths if not cross-cutting (to avoid double-counting in totals)
+            if territory_key not in cross_cutting_territories:
+                classified_paths.update(agents)
 
             if len(agents) == 0:
                 continue
@@ -759,7 +766,10 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             metrics = self._compute_territory_metrics_with_violations(
                 agents, used_stems, atomic_threshold, global_sub_atomic_violations
             )
-            self._update_totals(totals, metrics)
+            
+            # Only update totals for non-cross-cutting territories
+            if territory_key not in cross_cutting_territories:
+                self._update_totals(totals, metrics)
 
             if markdown:
                 self._print_territory_row(territory_key, metrics, priority)
@@ -771,12 +781,33 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         all_agents: List[Path], path_to_layer: Dict[str, str]
     ) -> List[Path]:
         """Get agents for a specific territory."""
-        if territory_key.startswith("L5_safety"):
+        if territory_key == "tested_agents":
+            # Cross-cutting: agents with test coverage (external tests, self-tests, etc.)
+            agents_with_tests = []
+            for agent in all_agents:
+                try:
+                    content = agent.read_text(errors="ignore")
+                    has_external_test = (agent.parent / "tests" / f"test_{agent.stem}.py").exists()
+                    has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content
+                    has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content
+                    has_inline_tests = "def test_" in content or "import pytest" in content
+                    if has_external_test or has_self_test or has_delegation or has_inline_tests:
+                        agents_with_tests.append(agent)
+                except Exception:
+                    pass
+            return agents_with_tests
+        elif territory_key.startswith("L5_safety"):
             # Special handling for L5 subfolders (validators, guardrails, gravity)
             subfolder = territory_key.split("/")[1]
             return [
                 p for p in all_agents
                 if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
+            ]
+        elif territory_key in ["observability", "knowledge"]:
+            # Path-based filtering for non-layer territories (observability, knowledge, etc.)
+            return [
+                p for p in all_agents
+                if territory_key in str(p).replace("\\", "/").lower()
             ]
         else:
             # Standard layer matching
@@ -789,7 +820,197 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         self, agents: List[Path], used_stems: set, 
         atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
     ) -> Dict[str, Any]:
-        """Compute territory metrics and track sub-atomic violations."""
+        """Metric computation orchestrator — linear phase chain."""
+        if not agents:
+            return self._empty_metrics()
+
+        metrics = self._initialize_metrics(len(agents))
+        
+        # Phase 1: Analyze each agent
+        for agent in agents:
+            file_metrics = self._analyze_single_agent(agent, atomic_threshold, global_violations)
+            self._aggregate_file_metrics(metrics, file_metrics)
+        
+        # Phase 2: Finalize and track usage
+        self._finalize_metrics(metrics, agents, used_stems)
+        return metrics
+
+    def _empty_metrics(self) -> Dict[str, Any]:
+        """Handle empty territory edge case."""
+        return {
+            "total": 0, "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0,
+            "documented": 0, "observable": 0, "used": 0
+        }
+
+    def _initialize_metrics(self, total: int) -> Dict[str, Any]:
+        """Base metrics structure."""
+        return {
+            "total": total,
+            "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0,
+            "documented": 0, "observable": 0, "used": 0
+        }
+
+    def _analyze_single_agent(
+        self, agent: Path, atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+    ) -> Dict[str, Any]:
+        """Per-agent analysis — isolated AST + checks."""
+        file_metrics = {
+            "loc": 0, "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, "documented": 0, "observable": 0
+        }
+        
+        try:
+            content = agent.read_text(errors="ignore")
+            lines = content.splitlines()
+            file_metrics["loc"] = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
+
+            # Phase 1a: AST parsing and compliance checks
+            try:
+                tree = ast.parse(content)
+                
+                # MCP hardening detection
+                file_metrics["hardened"] = self._detect_mcp_hardening(tree)
+                
+                # Healing invocation detection
+                file_metrics["healing_invoke"] = self._detect_healing_invocation(tree)
+                
+                # Healing capability detection
+                file_metrics["healing_cap"] = self._detect_healing_capability(tree, content)
+                
+                # Compliance: has heal_repository method
+                file_metrics["compliant"] = self._detect_heal_repository(tree)
+                
+            except (SyntaxError, Exception):
+                pass
+            
+            # Phase 1b: Test detection
+            file_metrics["tests"] = self._detect_tests(agent, content)
+            
+            # Phase 1c: AST metrics (CC, typing, docs, observability)
+            try:
+                tree = ast.parse(content)
+                self._compute_ast_metrics(tree, file_metrics, agent, atomic_threshold, global_violations)
+            except (SyntaxError, Exception):
+                file_metrics["max_cc"] = 999
+            
+            # Phase 1d: Observability detection
+            file_metrics["observable"] = 100 if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]) else 0
+                
+        except Exception:
+            pass
+
+        return file_metrics
+
+    def _detect_mcp_hardening(self, tree: ast.AST) -> int:
+        """Check for MCPShield mixin or @hardened decorator."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                if any("MCPShield" in (b.id if isinstance(b, ast.Name) else str(b)) for b in node.bases):
+                    return 1
+                if any(isinstance(d, ast.Name) and d.id == "hardened" for d in node.decorator_list):
+                    return 1
+        return 0
+
+    def _detect_healing_invocation(self, tree: ast.AST) -> int:
+        """Count actual super().heal_repository() calls."""
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                if (hasattr(node.func, "attr") and node.func.attr == "heal_repository" and
+                    isinstance(node.func.value, ast.Call) and
+                    isinstance(node.func.value.func, ast.Name) and
+                    node.func.value.func.id == "super"):
+                    return 1
+        return 0
+
+    def _detect_healing_capability(self, tree: ast.AST, content: str) -> int:
+        """Check for HealerMixin or healing-related methods."""
+        if "HealerMixin" in content:
+            return 1
+        if any(isinstance(node, ast.FunctionDef) and node.name in ["run", "validate", "auto_heal"] for node in ast.walk(tree)):
+            return 1
+        return 0
+
+    def _detect_heal_repository(self, tree: ast.AST) -> int:
+        """Check for heal_repository method definition."""
+        if any(isinstance(node, ast.FunctionDef) and node.name == "heal_repository" for node in ast.walk(tree)):
+            return 1
+        return 0
+
+    def _detect_tests(self, agent: Path, content: str) -> int:
+        """Detect test presence via multiple indicators."""
+        has_external_test = (agent.parent / "tests" / f"test_{agent.stem}.py").exists()
+        has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content
+        has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content
+        has_inline_tests = "def test_" in content or "import pytest" in content
+        return 1 if (has_external_test or has_self_test or has_delegation or has_inline_tests) else 0
+
+    def _compute_ast_metrics(
+        self, tree: ast.AST, file_metrics: Dict[str, Any], agent: Path,
+        atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+    ) -> None:
+        """Compute CC, typing, documentation, and violation tracking."""
+        functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+        classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+
+        # CC calculation and violation tracking
+        for func_node in functions:
+            visitor = _CCVisitor()
+            visitor.visit(func_node)
+            cc = visitor.cc
+            
+            if cc > atomic_threshold:
+                file_path = str(agent.relative_to(self.project_root))
+                global_violations.append((cc, file_path, func_node.name))
+            
+            file_metrics["cc_sum"] += cc
+            file_metrics["max_cc"] = max(file_metrics["max_cc"], cc)
+
+        # Typing coverage
+        if functions:
+            typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
+            file_metrics["typed"] = (typed / len(functions)) * 100
+
+        # Documentation coverage
+        doc_count = 0
+        for cls in classes:
+            if cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(getattr(cls.body[0].value, 's', None), str):
+                doc_count += 1
+            elif cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(cls.body[0].value, ast.Constant):
+                doc_count += 1
+        for f in functions:
+            if f.body and isinstance(f.body[0], ast.Expr):
+                val = f.body[0].value
+                if isinstance(getattr(val, 's', None), str) or isinstance(val, ast.Constant):
+                    doc_count += 1
+        total_targets = len(classes) + len(functions)
+        if total_targets:
+            file_metrics["documented"] = (doc_count / total_targets) * 100
+
+    def _aggregate_file_metrics(self, metrics: Dict[str, Any], file_metrics: Dict[str, Any]) -> None:
+        """Aggregate per-file results — simple increments."""
+        metrics["compliant"] += file_metrics["compliant"]
+        metrics["hardened"] += file_metrics["hardened"]
+        metrics["healing_cap"] += file_metrics["healing_cap"]
+        metrics["healing_invoke"] += file_metrics["healing_invoke"]
+        metrics["tests"] += file_metrics["tests"]
+        metrics["loc"] += file_metrics["loc"]
+        metrics["cc_sum"] += file_metrics["cc_sum"]
+        metrics["max_cc"] = max(metrics["max_cc"], file_metrics["max_cc"])
+        metrics["typed"] += file_metrics["typed"]
+        metrics["documented"] += file_metrics["documented"]
+        metrics["observable"] += file_metrics["observable"]
+
+    def _finalize_metrics(self, metrics: Dict[str, Any], agents: List[Path], used_stems: set) -> None:
+        """Final calculations and usage tracking."""
+        metrics["used"] = sum(1 for a in agents if a.stem in used_stems)
+
+    def _old_compute_territory_metrics_with_violations(
+        self, agents: List[Path], used_stems: set, 
+        atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+    ) -> Dict[str, Any]:
+        """DEPRECATED: Old implementation kept for reference during transition."""
         metrics = {
             "total": len(agents),
             "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
@@ -1024,6 +1245,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         # Build dashboard data rows from territories
         dashboard_rows = []
         territory_stats = []
+        cross_cutting_territories = {"tested_agents", "observability", "knowledge"}  # Don't count in totals
         
         for territory_key, (layer_filter, priority) in self.territories.items():
             agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
@@ -1126,21 +1348,28 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "file_links": file_links
             })
         
-        # Add TOTAL row
+        # Add TOTAL row (excluding cross-cutting territories)
         if len(dashboard_rows) > 0:
-            total_agents = sum(r["Total"] for r in dashboard_rows)
-            total_compliant = sum(r["Compliant"] for r in dashboard_rows)
-            total_perc = round(total_compliant / total_agents * 100, 1) if total_agents else 0
+            # Filter out cross-cutting territories for TOTAL calculation
+            non_cross_cutting_rows = [r for r in dashboard_rows if r["Territory"] not in ["Tested Agents", "Observability", "Knowledge"]]
             
-            # Compute weighted averages
-            total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_tests = round(sum(r["Test %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_cc = round(sum(r["Avg CC"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_typed = round(sum(r["Typed %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_observable = round(sum(r["Observable %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
-            total_used = round(sum(r["Used %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            if len(non_cross_cutting_rows) > 0:
+                total_agents = sum(r["Total"] for r in non_cross_cutting_rows)
+                total_compliant = sum(r["Compliant"] for r in non_cross_cutting_rows)
+                total_perc = round(total_compliant / total_agents * 100, 1) if total_agents else 0
+                
+                # Compute weighted averages
+                total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_tests = round(sum(r["Test %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_used = round(sum(r["Used %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+            else:
+                total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
+                total_hardened = total_tests = total_cc = total_typed = total_observable = total_used = 0
             total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
             
             total_row = {
@@ -1245,7 +1474,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                            "self.territories['config'] = ('Config Agents', 'Low')\n"
                            "```\n"
                            "4. Re-run --report → unclassified disappears from dashboard",
-                "score": 9999.0,
+                "score": 100.0,
                 "file_links": unclass_files
             }
             recommendations.append(unclass_rec)
@@ -1264,15 +1493,33 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             with open(template_path, "r", encoding="utf-8") as f:
                 template = f.read()
             
+            # Calculate gauge metrics from non-cross-cutting rows
+            cross_cutting_territories = {"Tested Agents", "Observability", "Knowledge"}
+            gauge_rows = [r for r in dashboard_rows if r["Territory"] not in cross_cutting_territories]
+            
+            if gauge_rows:
+                total_agents = sum(r["Total"] for r in gauge_rows)
+                gauge_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
+                gauge_compliance = round(sum(r["Compliant"] for r in gauge_rows) / total_agents * 100, 1) if total_agents else 0
+                gauge_health = round(sum(r["Health"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
+            else:
+                gauge_healing_cap = gauge_compliance = gauge_health = 0
+            
             # Prepare data for embedding
             data_json = json.dumps(dashboard_rows)
             recommendations_json = json.dumps(top_recommendations)
             last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
+            gauge_data = json.dumps({
+                "healing_cap": gauge_healing_cap,
+                "compliance": gauge_compliance,
+                "health": gauge_health
+            })
             
             # Inject data into template
             html = template.replace('const dashboardData = [];', f'const dashboardData = {data_json};')
             html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
             html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
+            html = html.replace('const gaugeData = {};', f'const gaugeData = {gauge_data};')
             
             # Write self-contained HTML
             with open(output_path, "w", encoding="utf-8") as f:
