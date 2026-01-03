@@ -12,27 +12,27 @@ from typing import Any, Dict, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 import logging
 
-from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
 
 # NOT_AN_AGENT — Base class for L5 agents, not a true agent itself
-class SafetyBaseAgent(HealerMixin):
+class SafetyBaseAgent(SovereignBaseAgent):
     """Base class for L5 Safety agents with healing capability.
     
     Provides:
-    - Default-on healing via HealerMixin
+    - Default-on healing via SovereignBaseAgent
+    - Real logging (log_info/warning/error)
     - Standard initialization pattern
     - Self-testing support
     
     L5 agents should inherit from this to get automatic healing.
     """
     
-    def __init__(self, project_root=None, ctx=None):
+    def __init__(self, project_root=None, ctx=None, **kwargs):
+        super().__init__(ctx=ctx or kwargs.get("ctx"))  # Root handles name
         self.project_root = project_root
-        self.ctx = ctx
-        self.name = self.__class__.__name__
     
     def _run_self_tests(self) -> bool:
         """Phase 1: Self-testing for L5 compliance."""
@@ -52,7 +52,7 @@ class SafetyBaseAgent(HealerMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L5 safety - operational only")
+            self.log_info("L5 safety - operational only")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

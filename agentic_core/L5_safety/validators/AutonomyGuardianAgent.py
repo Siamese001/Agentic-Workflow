@@ -216,6 +216,26 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         
         return violations
     
+    def _detect_documentation_coverage(self, source_code: str) -> float:
+        """Calculate percentage of definitions (functions/classes/methods) with docstrings."""
+        try:
+            tree = ast.parse(source_code)
+            defs = [node for node in ast.walk(tree) 
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))]
+            
+            if not defs:
+                return 100.0  # No defs = trivially documented
+            
+            documented = 0
+            for node in defs:
+                docstring = ast.get_docstring(node)
+                if docstring and docstring.strip():  # Non-empty after strip
+                    documented += 1
+            
+            return round(documented / len(defs) * 100, 1)
+        except Exception:
+            return 0.0  # Parse error = 0% documented
+    
     def run(self) -> List[tuple]:
         """
         Scan repository for autonomy violations using agent_discovery_full.json.
@@ -1107,7 +1127,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         metrics["cc_sum"] += file_metrics["cc_sum"]
         metrics["max_cc"] = max(metrics["max_cc"], file_metrics["max_cc"])
         metrics["typed"] += file_metrics["typed"]
-        metrics["documented"] += file_metrics["documented"]
+        # Count agents with >= 80% documentation (threshold-based like typing)
+        if file_metrics["documented"] >= 80:
+            metrics["documented"] += 1
         metrics["observable"] += file_metrics["observable"]
 
     def _finalize_metrics(self, metrics: Dict[str, Any], agents: List[Path], used_stems: set) -> None:
@@ -1396,14 +1418,15 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 perc_typed * 0.10              # Runtime safety via type hints (NEW)
             ), 1)
             
-            # Code Quality Score (new separate metric)
+            # Code Quality Score v1.1 (new separate metric)
             # Focuses on static/maintainability quality, independent of operational health
-            # Weights: Typing (40%), MCP Capable (30%), Complexity Health (30%)
+            # Weights: Typing (35%), MCP Capable (25%), Complexity Health (20%), Documentation (20%)
             # Rationale: Decouple modernization and code hygiene from runtime autonomy signals
             code_quality = round((
-                perc_typed * 0.40 +              # Strong predictor of fewer runtime errors
-                perc_mcp_capable * 0.30 +        # Modernization / external tool integration
-                cc_health_component * 0.30       # Structural maintainability
+                perc_typed * 0.35 +              # Runtime safety via type hints (reduced)
+                perc_mcp_capable * 0.25 +        # Modernization / external tool integration (reduced)
+                cc_health_component * 0.20 +     # Structural maintainability (reduced)
+                perc_documented * 0.20           # Self-documenting code (NEW)
             ), 1)
             
             risk_score = 0
@@ -1440,6 +1463,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Observable %": perc_observable,  # Now a column for all territories
                 "Avg CC": avg_cc,
                 "Typed %": perc_typed,
+                "Documented %": perc_documented,  # NEW: Documentation coverage
                 "Criticality": criticality,
                 "Health": health,
                 "Risk": risk,
@@ -1638,6 +1662,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     overall_typed_pct = round(perc_typed, 1)
                     typing_summary = f"Init: {'✓' if typed_init else '✗'} | Methods: {typed_methods_ratio:.0%} | Returns: {return_annotated_ratio:.0%}"
                     
+                    # Documentation coverage detection
+                    agent_documented_pct = self._detect_documentation_coverage(source)
+                    
                     # Proxy metrics from territory-level (can be refined per-agent if needed)
                     has_tests = perc_tests > 0
                     agent_typed_pct = round(perc_typed, 1)
@@ -1728,11 +1755,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
-                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_observable = total_used = 0
+                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_documented = total_observable = total_used = 0
             # Calculate total health with new formula (v2.1 with typing weight)
             total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
             total_health = round((
@@ -1745,11 +1773,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_typed * 0.10              # Runtime safety via type hints (NEW)
             ), 1)
             
-            # Portfolio-wide Code Quality Score
+            # Portfolio-wide Code Quality Score v1.1
             total_code_quality = round((
-                total_typed * 0.40 +
-                total_mcp_capable * 0.30 +
-                total_cc_health * 0.30
+                total_typed * 0.35 +
+                total_mcp_capable * 0.25 +
+                total_cc_health * 0.20 +
+                total_documented * 0.20
             ), 1)
             
             total_row = {

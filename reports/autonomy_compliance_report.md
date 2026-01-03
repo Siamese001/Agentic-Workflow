@@ -10,7 +10,7 @@
 ### Key Metrics
 - **Total Agents:** 435
 - **Compliant:** 177 (40.7%) ❌
-- **Healing Capabilities:** 279 (64.1%) ⚠️
+- **Healing Capabilities:** 278 (63.9%) ⚠️
 - **Healing Invocation:** 63 (14.5%) ❌
 - **With Tests:** 171 (39.3%) ❌
 - **Avg Complexity:** 42.8 ❌
