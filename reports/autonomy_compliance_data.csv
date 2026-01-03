@@ -1,5 +1,5 @@
 Territory,Total,Compliant,Heal_Cap_Pct,Heal_Inv_Pct,MCP_Pct,Test_Pct,Avg_CC,Typed_Pct,Obs_Pct,Criticality,Health,Risk,Used_Pct,Priority
-L5 Safety/Validators,19,14,100.0,89.5,63.2,31.6,110.7,100.0,78.9,71.9,66.7,HIGH,100.0,Critical
+L5 Safety/Validators,19,14,100.0,89.5,63.2,31.6,111.7,100.0,78.9,71.9,66.7,HIGH,100.0,Critical
 L5 Safety/Guardrails,37,28,97.3,75.7,48.6,2.7,45.8,100.0,73.0,70.1,50.5,HIGH,75.7,Critical
 L5 Safety/Gravity,2,2,100.0,50.0,50.0,50.0,89.5,100.0,50.0,57.4,50.0,MED,100.0,High
 L5 Safety/Red Teaming,1,1,100.0,100.0,0.0,0.0,21.0,100.0,100.0,56.7,66.7,HIGH,100.0,High
@@ -13,4 +13,4 @@ Apps Rg,40,5,55.0,12.5,45.0,75.0,69.3,65.0,47.5,66.2,45.0,HIGH,65.0,High
 Apps Shared,4,0,100.0,0.0,100.0,50.0,24.8,100.0,0.0,66.0,16.7,HIGH,100.0,Medium
 Utils,7,0,42.9,0.0,42.9,42.9,57.4,100.0,57.1,33.2,33.3,HIGH,14.3,Medium
 Tests,19,0,36.8,0.0,0.0,100.0,48.7,63.2,47.4,33.5,49.1,HIGH,0.0,Medium
-TOTAL,416,175,66.8,18.5,0.0,174,51.9,74.2,45.7,100,35.3,HIGH,72.8,ALL
+TOTAL,416,175,66.8,18.5,0.0,174,52.0,74.2,45.7,100,35.3,HIGH,72.8,ALL
