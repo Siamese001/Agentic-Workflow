@@ -16,7 +16,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class GitHygieneAgent(HealerMixin, MCPHardenedMixin):
+class GitHygieneAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Batch agent: Enforces Git repository hygiene.
     - Detects stale branches (no commits in >90 days)
@@ -24,7 +24,7 @@ class GitHygieneAgent(HealerMixin, MCPHardenedMixin):
     - Checks for uncommitted/unpushed changes
     """
 
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.dry_run = True
@@ -166,3 +166,4 @@ class GitHygieneAgent(HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

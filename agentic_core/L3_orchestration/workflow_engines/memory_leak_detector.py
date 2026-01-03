@@ -19,7 +19,7 @@ max_snapshots: Any = 100
 class MemorySnapshot:
     """A snapshot of memory usage at a point in time."""
 
-    def __init__(self, label: str=''):
+    def __init__(self, label: str='') -> None:
         self.label = label
         self.timestamp = datetime.utcnow()
         self.total_allocated = 0
@@ -51,7 +51,7 @@ class MemorySnapshot:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class MemoryLeakDetectorAgent(HealerMixin):
+class MemoryLeakDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Detects memory leaks in the agentic system.
 
@@ -62,7 +62,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
     - Automatic garbage collection
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the MemoryLeakDetectorAgent."""
         self.enabled = True
         self.snapshots: List[MemorySnapshot] = []
@@ -227,4 +227,4 @@ def end_memory_cycle(cycle_id: str=None) -> Any:
 def take_memory_snapshot(label: str='') -> Any:
     """Take a memory snapshot."""
     detector: Any = get_memory_detector()
-    detector.take_snapshot(label)
+    detector.take_snapshot(label)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

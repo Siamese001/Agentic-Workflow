@@ -30,7 +30,7 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     - An execute() method that performs the agent's work
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         super().__init__()
         self.ctx = ctx
         self.name = self.__class__.__name__
@@ -161,3 +161,4 @@ class ResumeAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nimport logging\n\nLogger = logging.getLogger(__name__)

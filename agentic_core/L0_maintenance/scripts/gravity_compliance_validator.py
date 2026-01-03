@@ -18,10 +18,10 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 gravity_layers = list(CORE_SUBFOLDER_MAP.keys())
 
 # NOT_AN_AGENT — validator utility, not a true agent — excluded from agent discovery
-class GravityComplianceValidatorAgent(HealerMixin):
+class GravityComplianceValidatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.root = project_root.resolve()
         self.violations = []
 
@@ -59,7 +59,7 @@ class GravityComplianceValidatorAgent(HealerMixin):
                     "illegal_import": GRAVITY_LAYERS[import_rank]
                 })
 
-    def run(self):
+    def run(self) -> Dict[str, Any]:
                     
         print("=== GRAVITY COMPLIANCE SCAN ===")
         for py_file in self.root.rglob("*.py"):
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).parent.parent  # Assumes script in /scripts/
     validator = GravityComplianceValidatorAgent(PROJECT_ROOT)
     success = validator.run()
-    exit(0 if success else 1)
+    exit(0 if success else 1)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

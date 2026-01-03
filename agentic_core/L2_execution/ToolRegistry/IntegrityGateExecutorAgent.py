@@ -23,7 +23,7 @@ class ValidationRejectionReason(Enum):
 class Violation:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, reason: ValidationRejectionReason, message: str):
+    def __init__(self, reason: ValidationRejectionReason, message: str) -> None:
         self.reason = reason
         self.message = message
 
@@ -31,7 +31,7 @@ class Violation:
 class IntegrityGateResult:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, passed: bool, depth_score: float):
+    def __init__(self, passed: bool, depth_score: float) -> None:
         self.passed = passed
         self.depth_score = depth_score
         self.violations: List[Violation] = []
@@ -46,7 +46,7 @@ class IntegrityGateResult:
 class FinancialProofPoint:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, metric_name: str, value: str, source_citation: str = None):
+    def __init__(self, metric_name: str, value: str, source_citation: str = None) -> None:
         self.metric_name = metric_name
         self.value = value
         self.source_citation = source_citation
@@ -55,7 +55,7 @@ class FinancialProofPoint:
 class KeyTechnology:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None):
+    def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None) -> None:
         self.technology_name = technology_name
         self.implementation_details = implementation_details
         self.source_citation = source_citation
@@ -64,14 +64,14 @@ class KeyTechnology:
 class KeyExecutive:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
 
 # NAMING FIXED: StrategicLayer → StrategicLayer
 class StrategicLayer:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]):
+    def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]) -> None:
         self.core_thesis = core_thesis
         self.strategic_initiatives = strategic_initiatives
         self.financial_proof_points = financial_proof_points
@@ -80,7 +80,7 @@ class StrategicLayer:
 class TechnicalLayer:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]):
+    def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]) -> None:
         self.implementation_summary = implementation_summary
         self.key_technologies = key_technologies
 
@@ -88,14 +88,14 @@ class TechnicalLayer:
 class LeadershipLayer:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, key_executives: List[KeyExecutive]):
+    def __init__(self, key_executives: List[KeyExecutive]) -> None:
         self.key_executives = key_executives
 
 # NAMING FIXED: CitationMap → CitationMap
 class CitationMap:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, citations: List[Any]): # Type of citation not specified, just its count is used
+    def __init__(self, citations: List[Any]) -> None: # Type of citation not specified, just its count is used
         self.citations = citations
 
 # NAMING FIXED: DeepResearchOutput → DeepResearchOutput
@@ -120,7 +120,7 @@ class DeepResearchOutput:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class IntegrityGateExecutorAgent(HealerMixin):
+class IntegrityGateExecutorAgent(MCPHardenedMixin, HealerMixin):
     """Executor for integrity gate validation.
 
     Validates research outputs against quality criteria including
@@ -139,7 +139,7 @@ class IntegrityGateExecutorAgent(HealerMixin):
         "system", "infrastructure", "stack", "pipeline", "engine",
         "service", "API", "database", "network", "protocol"
     }
-    def __init__(self, min_depth_score: float = 0.7):
+    def __init__(self, min_depth_score: float = 0.7) -> None:
         self.min_depth_score = min_depth_score
 
     def _run_self_tests(self) -> bool:
@@ -331,4 +331,4 @@ def validate_research_output(
     super().heal_repository()
 
     EXECUTOR = IntegrityGateExecutorAgent(min_depth_score=min_depth_score)
-    return EXECUTOR.execute(research_output)
+    return EXECUTOR.execute(research_output)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nLogger = logging.getLogger(__name__)

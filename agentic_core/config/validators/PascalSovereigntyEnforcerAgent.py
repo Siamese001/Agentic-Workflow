@@ -295,8 +295,8 @@ class SovereignEvent(BaseModel):
         }
 
     def _emit_event(self, Severity: SovereignSeverity, event_type: str, payload: Optional[Dict] = None) -> None:
-        """Telemetry for observability."""
-        print(f"[SOVEREIGN EVENT] {Severity.value} | {event_type}")
+        """Emit sovereign event for observability."""
+        print(f"[{self.__class__.__name__}] {Severity.value}: {event_type}")
         if payload:
             print(f"  Payload: {payload}")
 
@@ -312,6 +312,7 @@ class SovereignEvent(BaseModel):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
             result = self.run(dry_run=not execute)
             print(f"[{agent_name} HEAL @ depth {depth}] Found {result['total_violations']} violations")
             return {"violations_found": result['total_violations'], "purged": result['purged']}

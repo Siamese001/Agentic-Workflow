@@ -77,7 +77,7 @@ class DependencyDiplomatAgent(SubAtomicAgent, MCPHardenedMixin):
     4. Return surgical target list (only affected files)
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Dependency Diplomat.
         

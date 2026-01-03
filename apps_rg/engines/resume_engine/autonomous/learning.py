@@ -462,7 +462,7 @@ class InstructionInjector:
     downstream agent behavior.
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._instructions: List[Instruction] = []
 
@@ -570,7 +570,7 @@ class InstructionInjector:
         for inst in instructions:
             lines.append(f"- [{inst.source}] {inst.content}")
 
-        return "\n".join(lines)
+        return "\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(lines)
 
     def remove(self, instruction_id: str) -> bool:
         """Remove an instruction by ID."""
@@ -768,7 +768,7 @@ class ResumeLearningAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     - Memory persistence
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self.name = "ResumeLearningAgent"
 

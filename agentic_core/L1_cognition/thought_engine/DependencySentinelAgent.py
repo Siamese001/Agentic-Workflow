@@ -21,7 +21,7 @@ LAYER_NAMES = [k for k in CORE_SUBFOLDER_MAP.keys() if k.startswith("L")]
 class ImportAnalyzer(ast.NodeVisitor):
     """AST visitor to extract import information."""
 
-    def __init__(self, file_path: Path):
+    def __init__(self, file_path: Path) -> None:
         self.file_path = file_path
         self.imports: List[Dict] = []
         self.from_imports: List[Dict] = []
@@ -51,7 +51,7 @@ class ImportAnalyzer(ast.NodeVisitor):
 class DependencyViolation:
     """Represents a dependency rule Violation."""
 
-    def __init__(self, ViolationType: str, file_path: Path, line: int, message: str, details: Dict=None):
+    def __init__(self, ViolationType: str, file_path: Path, line: int, message: str, details: Dict=None) -> None:
         self.type = ViolationType
         self.file_path = file_path
         self.line = line
@@ -66,7 +66,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON COMPLIANCE — renamed to DependencySentinelAgent for discovery and sovereignty — 2025-12-30
-class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
+class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Guards the codebase against illegal dependencies.
 
@@ -77,7 +77,7 @@ class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
     4. Depth compliance for imports
     """
 
-    def __init__(self, root_dir: Path=None):
+    def __init__(self, root_dir: Path=None) -> None:
         """
         Initialize the DependencySentinelAgent.
 
@@ -298,4 +298,4 @@ def check_dependencies(file_path: Path=None, directory: Path=None) -> List[Depen
     elif directory:
         return sentinel.check_directory(directory)
     else:
-        return sentinel.check_directory(sentinel.root_dir)
+        return sentinel.check_directory(sentinel.root_dir)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

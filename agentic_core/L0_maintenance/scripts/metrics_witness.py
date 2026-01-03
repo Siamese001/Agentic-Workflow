@@ -16,7 +16,7 @@ from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosis
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class MetricsWitnessAgent(HealerMixin, AutonomyMixin,
+class MetricsWitnessAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
@@ -30,7 +30,7 @@ class MetricsWitnessAgent(HealerMixin, AutonomyMixin,
       - Self-diagnosis of MetricsAgent availability
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         """
         Initialise with project root. Gracefully degrades if MetricsAgent unavailable.
         """
@@ -118,3 +118,4 @@ class MetricsWitnessAgent(HealerMixin, AutonomyMixin,
             "Structural SSOT": self.calculate_structural_ssot_score(),
             "Healing Resilience": self.calculate_healing_resilience_score(),
         }
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

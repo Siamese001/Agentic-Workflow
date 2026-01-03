@@ -66,7 +66,7 @@ except ImportError:
         def error(msg): print(f"[ERROR] {msg}")
 
 
-class HierarchyAgent(HealerMixin, MCPHardenedMixin):
+class HierarchyAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous agent for hierarchical structure compliance.
     Scans folders only (no file content parsing).
@@ -106,7 +106,7 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         suggested_target: Optional[str] = None  # Target path for healing
         severity: int = 5
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.excluded_folders = SOVEREIGN_EXCLUDED_FOLDERS
         # Cache for faster healing suggestions
@@ -1215,7 +1215,7 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
             
-            print(f"\n[HIERARCHY HEAL SUMMARY] "
+            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n[HIERARCHY HEAL SUMMARY] "
                   f"Healed: {counts['healed']} | "
                   f"Blocked: {counts['blocked']} | "
                   f"Skipped: {counts['skipped']} | "

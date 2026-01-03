@@ -24,7 +24,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """
     
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         self.root = project_root
         self.ctx = ctx
         
@@ -256,7 +256,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
-    async def execute(self):
+    async def execute(self) -> None:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -264,7 +264,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Finds and executes all territory violations with cache purging.
         """
-        print(f"\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
         
         stray_actions = self.find_all_stray()
         

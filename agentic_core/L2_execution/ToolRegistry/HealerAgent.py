@@ -24,7 +24,7 @@ from agentic_core.L2_execution.ToolRegistry.tools.code_transform import (
 )
 
 
-class HealerAgent(CanonBaseAgent, MCPHardenedMixin):
+class HealerAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """
     Healer Agent provides autonomous code repair for any canon Violation.
     
@@ -246,7 +246,7 @@ CURRENT CODE:
         # Add reference fix if available
         if reference_fix:
             reference_chars = int(os.getenv('REFERENCE_FIX_CHARS', '500'))
-            base_prompt += f"\n\nReference successful fix for similar Violation:\n{reference_fix[:reference_chars]}..."
+            base_prompt += f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n\nReference successful fix for similar Violation:\n{reference_fix[:reference_chars]}..."
         
         # Multi-round healing with reflective learning
         max_rounds = 5

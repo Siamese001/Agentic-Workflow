@@ -14,10 +14,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
-class DriftDetectorAgent(HealerMixin):
+class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Naming/Compliance: Drift Detection"""
     
-    def __init__(self, project_root: Path = None):
+    def __init__(self, project_root: Path = None) -> None:
         self.project_root = project_root or Path.cwd()
         
     def detect_drift(self) -> List[Dict[str, Any]]:
@@ -47,3 +47,4 @@ class DriftDetectorAgent(HealerMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

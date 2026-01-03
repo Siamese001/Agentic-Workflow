@@ -34,7 +34,7 @@ class CodeJanitor:
     - No direct dependency on L2_Execution layer
     """
     
-    def __init__(self, agent_impl: CanonBaseAgentInterface):
+    def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
     
@@ -42,11 +42,11 @@ class CodeJanitor:
         """Delegate all agent methods to injected implementation - backward compatible."""
         return getattr(self.agent, name)
 
-    async def execute(self):
+    async def execute(self) -> None:
         """
         Executes the CodeJanitor agent's checks and auto-fixes for syntax and style violations.
         """
-        print(f"\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Sanitizing Codebase...")
 
         # Check and fix trailing whitespace (Key 11)
         passed, details = self.check_key_11_no_trailing_whitespace()
@@ -242,7 +242,7 @@ class CodeJanitor:
 
         class NestingVisitor(ast.NodeVisitor):
                                     
-            def __init__(self, filepath: str, max_depth: int):
+            def __init__(self, filepath: str, max_depth: int) -> None:
                 self.filepath = filepath
                 self.max_depth = max_depth
                 self.depth = 0
@@ -300,7 +300,7 @@ class CodeJanitor:
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DependencySentinelAgent in L2 — excluded from discovery
-class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
+class DependencySentinelAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
@@ -311,7 +311,7 @@ class DependencySentinelAgent(HealerMixin, MCPHardenedMixin):
     - No direct dependency on L2_Execution layer
     """
     
-    def __init__(self, agent_impl: CanonBaseAgentInterface):
+    def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
     

@@ -389,7 +389,7 @@ class SectionBalanceAgent(ResumeAgent):
         return str(content)
 
 
-class ATSCompatibilityAgent(ResumeAgent):
+class ATSCompatibilityAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ResumeAgent):
     """
     Validates ATS (Applicant Tracking System) compatibility.
 
@@ -676,3 +676,4 @@ class ReflectionAgent(ResumeAgent):
 
         passed = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
         return passed / total_agents
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

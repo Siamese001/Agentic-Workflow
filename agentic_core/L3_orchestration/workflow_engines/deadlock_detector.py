@@ -32,7 +32,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class TaskMonitorAgent(HealerMixin):
     """Monitors a single asyncio Task."""
 
-    def __init__(self, Task: asyncio.Task, name: str = None):
+    def __init__(self, Task: asyncio.Task, name: str = None) -> None:
         self.Task = Task
         self.name = name or f"Task-{id(Task)}"
         self.start_time = time.time()
@@ -85,7 +85,7 @@ class DeadlockDetectorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMix
     - Stack traces for debugging
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the DeadlockDetectorAgent."""
         super().__init__()
         self.monitored_tasks: Dict[str, TaskMonitorAgent] = {}

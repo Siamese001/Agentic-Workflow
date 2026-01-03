@@ -35,13 +35,13 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 Logger = logging.getLogger(__name__)
 
 
-class MetricsAgent(HealerMixin, MCPHardenedMixin):
+class MetricsAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.
     """
 
-    def __init__(self, project_root: Optional[Path] = None):
+    def __init__(self, project_root: Optional[Path] = None) -> None:
         """
         Initialize Metric store and alerting configuration.
         project_root optional — for future context-aware metrics.
@@ -213,7 +213,7 @@ class MetricsAgent(HealerMixin, MCPHardenedMixin):
             for k, v in cfg['annotations'].items():
                 yaml_lines.append(f"          {k}: '{v}'")
 
-        yaml_str = "\n".join(yaml_lines)
+        yaml_str = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n".join(yaml_lines)
 
         if self.alerting_rules_file:
             try:
@@ -294,8 +294,12 @@ class MetricsAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """Observability agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        """Observability agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 
 

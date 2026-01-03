@@ -16,7 +16,7 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class AutonomicMonitorAgent(HealerMixin):
+class AutonomicMonitorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Autonomic immune system for agent health monitoring.
 
     Features:
@@ -27,7 +27,7 @@ class AutonomicMonitorAgent(HealerMixin):
     - Self-healing recommendations
     """
 
-    def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True):
+    def __init__(self, success_rate_threshold: float=0.8, error_rate_threshold: float=0.2, response_time_threshold_ms: float=5000.0, enable_logging: bool=True) -> None:
         """Initialize autonomic monitor.
 
         Args:
@@ -183,4 +183,4 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8, error_rate_thres
     Returns:
         AutonomicMonitorAgent instance
     """
-    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)
+    return AutonomicMonitorAgent(success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

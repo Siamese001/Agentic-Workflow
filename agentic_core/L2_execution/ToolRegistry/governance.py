@@ -28,7 +28,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ArchitectureGovernorAgent(SubAtomicAgent, MCPHardenedMixin):
+class ArchitectureGovernorAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     Unified Architecture Governor.
     Enforces: Depth (Key 49), Atomicity (Key 50), Complexity (Keys 17, 19), System (Keys 40, 41).
@@ -37,9 +37,9 @@ class ArchitectureGovernorAgent(SubAtomicAgent, MCPHardenedMixin):
     MAX_COMPLEXITY = 10
     MAX_FUNC_LINES = 50
 
-    async def execute(self):
+    async def execute(self) -> None:
         """Execute Architecture Governor validation checks."""
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
         print(f"   [{self.name}] 🏛️  Analyzing {len(self.ctx.python_files)} files for architectural compliance...")
 
         violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
@@ -264,7 +264,7 @@ class DependencySentinelAgent(SubAtomicAgent):
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
     """
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
         await asyncio.sleep(0)

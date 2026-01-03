@@ -17,12 +17,12 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30
-class SemanticGatekeeperAgent(HealerMixin):
+class SemanticGatekeeperAgent(MCPHardenedMixin, HealerMixin):
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """
 
-    def __init__(self, max_concurrent: int=5, timeout_seconds: int=120):
+    def __init__(self, max_concurrent: int=5, timeout_seconds: int=120) -> None:
         """
         Initialize the gatekeeper.
 
@@ -136,3 +136,4 @@ async def with_gatekeeping(trace_id: str, operation: str, coro: Any) -> Any:
     """
     GATEKEEPER: Any = get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

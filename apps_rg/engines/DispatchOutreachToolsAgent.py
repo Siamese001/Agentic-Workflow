@@ -20,7 +20,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 class DispatchOutreachToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         self.CONFIG = config or {}
         self.TIMEOUT = self.config.get('timeout', 30.0)
         Logger.info(f'Initialized {self.__class__.__name__}')

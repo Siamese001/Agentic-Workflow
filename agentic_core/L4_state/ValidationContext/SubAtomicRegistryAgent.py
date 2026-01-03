@@ -33,7 +33,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
     Sovereign method registry — live, hybrid-indexed, eternal.
     Now with Redis sovereign caching for instant method discovery.
     """
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.root = project_root
         self.pinecone = PineconeSovereignAgent(project_root)
         self.redis_gateway = RedisSovereignAgent(project_root)
@@ -66,7 +66,7 @@ class SubAtomicRegistryAgent(HealerMixin, MCPHardenedMixin):
                             "path": str(py_file),
                             "method": node.name,
                             "docstring": doc,
-                            "source_snippet": f"Method: {node.name}\nDoc: {doc}\nSource: {source_lines[:200]}...",
+                            "source_snippet": f"Method: {node.name}\nimport logging\n\nLogger = logging.getLogger(__name__)\nDoc: {doc}\nSource: {source_lines[:200]}...",
                             "line_number": node.lineno,
                             "is_async": isinstance(node, ast.AsyncFunctionDef)
                         })

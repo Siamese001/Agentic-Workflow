@@ -68,7 +68,7 @@ class CostReport:
     recommendations: List[str]
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class PredictiveCostAuditorAgent(SubAtomicAgent):
+class PredictiveCostAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     The Efficiency Guard - Predictive Cost Auditor
     
@@ -87,7 +87,7 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
     - Cost optimization strategies
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Predictive Cost Auditor.
         
@@ -208,7 +208,7 @@ class PredictiveCostAuditorAgent(SubAtomicAgent):
 
     def _display_report(self, report: CostReport):
         """Display cost report."""
-        Logger.info(f"\n{'=' * 80}")
+        Logger.info(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info('💰 PREDICTIVE COST AUDIT REPORT')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Total Files Analyzed: {report.total_files}')

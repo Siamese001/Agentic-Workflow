@@ -5,15 +5,15 @@
 
 ## 🎯 Executive Summary
 
-**System Health:** 37.6/100 | **Risk Level:** HIGH | **Criticality:** 100/100
+**System Health:** 67.5/100 | **Risk Level:** HIGH | **Criticality:** 100/100
 
 ### Key Metrics
-- **Total Agents:** 416
-- **Compliant:** 165 (39.7%) ❌
-- **Healing Capabilities:** 268 (64.4%) ⚠️
-- **Healing Invocation:** 105 (25.2%) ❌
-- **With Tests:** 174 (41.8%) ❌
-- **Avg Complexity:** 51.0 ❌
+- **Total Agents:** 310
+- **Compliant:** 97 (31.3%) ❌
+- **Healing Capabilities:** 169 (54.5%) ❌
+- **Healing Invocation:** 77 (24.8%) ❌
+- **With Tests:** 280 (90.3%) ✅
+- **Avg Complexity:** 39.9 ❌
 
 ## 📊 Territory Analysis
 
@@ -23,52 +23,45 @@
 
 ### High Priority Territories
 
-- 🔥 **L1 Cognition**: 9/50 compliant | Health: 34.0% | Risk: HIGH | Heal Gap: 50.0%
-- 🔥 **L0 Maintenance**: 5/24 compliant | Health: 44.5% | Risk: HIGH | Heal Gap: 54.1%
-- 🔥 **L2 Execution**: 27/83 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 33.8%
-- 🔥 **L5 Safety/Validators**: 14/19 compliant | Health: 66.7% | Risk: HIGH | Heal Gap: 10.5%
-- 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 54.1% | Risk: HIGH | Heal Gap: 10.8%
+- ⚠️ **L5 Safety/Guardrails**: 28/35 compliant | Health: 88.6% | Risk: MED
+- 🔥 **L2 Execution**: 25/66 compliant | Health: 75.2% | Risk: HIGH | Heal Gap: 66.7%
+- 🔥 **L5 Safety/Validators**: 14/19 compliant | Health: 94.7% | Risk: HIGH | Heal Gap: 10.5%
+- 🔥 **Apps Lic**: 11/43 compliant | Health: 55.8% | Risk: HIGH | Heal Gap: 74.4%
 
 ### Medium Priority Territories
 
-- 🔥 **Apps Lic**: 11/47 compliant | Health: 29.8% | Risk: HIGH | Heal Gap: 21.2%
-- 🔥 **Apps Rg**: 5/40 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 42.5%
-- 🔥 **Apps Shared**: 0/4 compliant | Health: 25.0% | Risk: HIGH | Heal Gap: 75.0%
-- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 60.7% | Risk: HIGH | Heal Gap: 45.1%
-- ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 66.7% | Risk: MED
-- 🔥 **L5 Safety/Red Teaming**: 1/1 compliant | Health: 66.7% | Risk: HIGH
-- 🔥 **L4 State**: 10/21 compliant | Health: 57.1% | Risk: HIGH | Heal Gap: 42.9%
+- 🔥 **L1 Cognition**: 7/32 compliant | Health: 69.8% | Risk: HIGH | Heal Gap: 75.0%
+- 🔥 **Apps Rg**: 4/33 compliant | Health: 59.6% | Risk: HIGH | Heal Gap: 69.7%
+- 🔥 **L3 Orchestration**: 29/51 compliant | Health: 84.3% | Risk: HIGH | Heal Gap: 41.2%
+- ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L5 Safety/Red Teaming**: 1/1 compliant | Health: 100.0% | Risk: MED
+- ⚠️ **L0 Maintenance**: 3/13 compliant | Health: 74.4% | Risk: MED | Heal Gap: 76.9%
+- 🔥 **L4 State**: 9/12 compliant | Health: 86.1% | Risk: HIGH | Heal Gap: 25.0%
 
 ### Low Priority Territories
 
-- 🔥 **Tests**: 0/19 compliant | Health: 49.1% | Risk: HIGH | Heal Gap: 42.1%
-- 🔥 **Utils**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 14.3%
+- 🔥 **Tests**: 0/3 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 33.3%
 
 
 ## 📈 Recommendations
 
 ### Immediate Actions (High Risk)
-- **L5 Safety/Validators**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L5 Safety/Guardrails**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L2 Execution**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L1 Cognition**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L0 Maintenance**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L5 Safety/Red Teaming**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L4 State**: Focus on complexity reduction (CC=48.7) and test coverage
-- **L3 Orchestration**: Focus on complexity reduction (CC=48.7) and test coverage
-- **Apps Lic**: Focus on complexity reduction (CC=48.7) and test coverage
-- **Apps Rg**: Focus on complexity reduction (CC=48.7) and test coverage
-- **Apps Shared**: Focus on complexity reduction (CC=48.7) and test coverage
+- **L5 Safety/Validators**: Focus on complexity reduction (CC=24.7) and test coverage
+- **L2 Execution**: Focus on complexity reduction (CC=24.7) and test coverage
+- **Apps Lic**: Focus on complexity reduction (CC=24.7) and test coverage
+- **L4 State**: Focus on complexity reduction (CC=24.7) and test coverage
+- **L3 Orchestration**: Focus on complexity reduction (CC=24.7) and test coverage
+- **L1 Cognition**: Focus on complexity reduction (CC=24.7) and test coverage
+- **Apps Rg**: Focus on complexity reduction (CC=24.7) and test coverage
 
 ### Healing Gap Closure
-- **Apps Shared**: Add heal_repository() methods (Gap: 75.0%)
-- **L0 Maintenance**: Add heal_repository() methods (Gap: 54.1%)
-- **L1 Cognition**: Add heal_repository() methods (Gap: 50.0%)
-- **L3 Orchestration**: Add heal_repository() methods (Gap: 45.1%)
-- **L4 State**: Add heal_repository() methods (Gap: 42.9%)
-- **Apps Rg**: Add heal_repository() methods (Gap: 42.5%)
-- **L2 Execution**: Add heal_repository() methods (Gap: 33.8%)
-- **Apps Lic**: Add heal_repository() methods (Gap: 21.2%)
+- **L0 Maintenance**: Add heal_repository() methods (Gap: 76.9%)
+- **L1 Cognition**: Add heal_repository() methods (Gap: 75.0%)
+- **Apps Lic**: Add heal_repository() methods (Gap: 74.4%)
+- **Apps Rg**: Add heal_repository() methods (Gap: 69.7%)
+- **L2 Execution**: Add heal_repository() methods (Gap: 66.7%)
+- **L3 Orchestration**: Add heal_repository() methods (Gap: 41.2%)
+- **L4 State**: Add heal_repository() methods (Gap: 25.0%)
 
 
 ## 📊 Data Files

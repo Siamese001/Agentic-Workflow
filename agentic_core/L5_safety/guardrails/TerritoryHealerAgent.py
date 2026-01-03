@@ -34,12 +34,12 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # DEPRECATED — Logic absorbed into HealerAgent — 2025-12-31
-class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
+class TerritoryHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Enforces exhaustive territory compliance by detecting intra-territory strays.
     """
 
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for TerritoryHealerAgent (sovereign agent)")
@@ -183,7 +183,7 @@ class TerritoryHealerAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Finds and executes all territory violations with cache purging.
         """
-        print(f'\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...')
         stray_actions: Any = self.find_all_stray()
         if not stray_actions:
             print(f'   [✓] No territory violations detected')

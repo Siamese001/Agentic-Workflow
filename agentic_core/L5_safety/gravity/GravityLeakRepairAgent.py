@@ -38,7 +38,7 @@ class GravityViolation:
 
 
 # NAMING CANON COMPLIANCE — renamed to GravityLeakRepairAgent for discovery and sovereignty — 2025-12-30
-class GravityLeakRepairAgent(HealerMixin):
+class GravityLeakRepairAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Converts forbidden static imports from higher layers (L4/L5) into dynamic importlib calls.
 
@@ -50,7 +50,7 @@ class GravityLeakRepairAgent(HealerMixin):
     """
     UPWARD_IMPORT_PATTERNS: Any = ['^(\\s*)import\\s+agentic_core\\.L[45]_\\w+', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\s+import', '^(\\s*)from\\s+agentic_core\\.L[45]_\\w+\\.\\w+\\s+import']
 
-    def __init__(self, ctx, project_root=None):
+    def __init__(self, ctx, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for GravityLeakRepairAgent (sovereign agent)")
@@ -81,7 +81,7 @@ class GravityLeakRepairAgent(HealerMixin):
                         original_import: Any = line.strip()
                         if original_import.startswith('import '):
                             module: Any = original_import[7:].strip()
-                            replacement: Any = f"{indent}import importlib\n{indent}{module.split('.')[-1]} = importlib.import_module('{module}')"
+                            replacement: Any = f"{indent}import importlib\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n{indent}{module.split('.')[-1]} = importlib.import_module('{module}')"
                         else:
                             parts: Any = original_import.split(' import ')
                             module_path: Any = parts[0][5:].strip()

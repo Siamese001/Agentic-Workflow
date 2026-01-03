@@ -33,7 +33,7 @@ from apps_shared.utils.circuit_breaker import CircuitBreaker
 from apps_shared.utils.vector_memory import VectorMemoryStore
 
 
-class IntelligenceLibrarianAgent(MCPHardenedMixin):
+class IntelligenceLibrarianAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     v13.1: Offline research agent that pre-computes intelligence (MCP Hardened)
     
@@ -89,7 +89,7 @@ class IntelligenceLibrarianAgent(MCPHardenedMixin):
         Returns:
             Dictionary with research findings and metadata
         """
-        print(f"\n[Librarian] Starting deep research on: {company_name}")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[Librarian] Starting deep research on: {company_name}")
         
         findings = {
             "company_name": company_name,

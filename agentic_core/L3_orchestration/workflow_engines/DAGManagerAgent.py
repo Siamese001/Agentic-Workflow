@@ -32,7 +32,7 @@ class GraphTransaction:
     left in a corrupted state if a mutation fails partway through.
     """
     
-    def __init__(self, manager):
+    def __init__(self, manager) -> None:
         """Initialize the transaction.
         
         Args:
@@ -196,7 +196,7 @@ from agentic_core.L3_orchestration.workflow_engines.l3_subatomic_testing_mixin i
 class DAGMutatorAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Handles the actual graph mutations."""
     
-    def __init__(self, config: DAGConfig):
+    def __init__(self, config: DAGConfig) -> None:
         """Initialize the DAGMutatorAgent.
         
         Args:
@@ -472,7 +472,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class DAGManagerAgent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
     """Manages the dynamic DAG with mutation capabilities."""
     
-    def __init__(self, config: Optional[DAGConfig] = None):
+    def __init__(self, config: Optional[DAGConfig] = None) -> None:
         """Initialize the DAG Manager.
         
         Args:

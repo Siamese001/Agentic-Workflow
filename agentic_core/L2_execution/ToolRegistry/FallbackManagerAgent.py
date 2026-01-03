@@ -55,7 +55,7 @@ class FallbackResult:
         """Convert to dictionary."""
         return {'success': self.success, 'provider_used': self.provider_used, 'output': self.output, 'error': self.error, 'attempts': self.attempts, 'metadata': self.metadata}
 
-class FallbackManagerAgent(HealerMixin):
+class FallbackManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Manages automatic fallback chains for tool providers.
 
     Features:
@@ -66,7 +66,7 @@ class FallbackManagerAgent(HealerMixin):
     - Execution tracking
     """
 
-    def __init__(self, strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL, enable_logging: bool=True):
+    def __init__(self, strategy: FallbackStrategy=FallbackStrategy.SEQUENTIAL, enable_logging: bool=True) -> None:
         """Initialize fallback manager.
 
         Args:
@@ -210,4 +210,4 @@ def create_fallback_manager(strategy: FallbackStrategy=FallbackStrategy.SEQUENTI
 
 def get_fallback_manager() -> FallbackManagerAgent:
     """Factory function to get fallback manager instance."""
-    return FallbackManagerAgent()
+    return FallbackManagerAgent()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -27,13 +27,13 @@ class StrategicPlannerAgent(SubAtomicAgent):
     ROLE: High-level strategist.
     Analyzes aggregated signals/violations and generates multi-step refactor plans.
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         super().__init__(ctx)
         self.name = "StrategicPlannerAgent"
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
-        print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
             return
 
@@ -112,16 +112,16 @@ Output ONLY the plan in Markdown.
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ReflectionAgent(SubAtomicAgent):
+class ReflectionAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     ROLE: Consolidation and self-critique.
     Consolidates successful mutations into long-term memory and performs self-critique.
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         super().__init__(ctx)
         self.name = "ReflectionAgent"
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Performing Self-Critique...")
         if not self.ctx.successful_traces:

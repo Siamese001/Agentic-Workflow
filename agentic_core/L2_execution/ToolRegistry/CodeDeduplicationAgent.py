@@ -25,7 +25,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class CodeDeduplicationAgent(HealerMixin):
+class CodeDeduplicationAgent(MCPHardenedMixin, HealerMixin):
     """
     Batch agent for detecting and optionally refactoring duplicated code.
     
@@ -36,7 +36,7 @@ class CodeDeduplicationAgent(HealerMixin):
     - [SURGERY] When RUN_SPRAWL_SURGERY=True: Extracts duplicates to shared utils
     """
 
-    def __init__(self, similarity_threshold: float=0.95, min_lines: int=8):
+    def __init__(self, similarity_threshold: float=0.95, min_lines: int=8) -> None:
         self.threshold = similarity_threshold
         self.min_lines = min_lines
         self.duplicate_groups: Dict[str, List[Tuple[Path, str, int]]] = defaultdict(list)
@@ -71,7 +71,7 @@ class CodeDeduplicationAgent(HealerMixin):
                 continue
             if stripped:
                 lines.append(' '.join(stripped.split()))
-        return '\n'.join(lines)
+        return '\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n'.join(lines)
     
     def _normalize_ast_tree(self, node: ast.AST) -> str:
         """Anonymize variables and constants in AST for structural comparison."""
@@ -228,18 +228,30 @@ class CodeDeduplicationAgent(HealerMixin):
         await self.auto_extract_duplicates(Path(ctx.project_root), ctx)
 
     # SUPPLEMENTED FROM DeadCodeDetectorAgent + DeadCodePrunerAgent — enhances dead code detection — merged 2025-12-30
+    def _collect_ast_symbols(self, tree: ast.AST) -> tuple:
+        """Collect imports, definitions, and usages from AST."""
+        imported_names, defined_functions, defined_classes, used_names = set(), set(), set(), set()
+        import_lines, def_lines = {}, {}
+        
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    name = alias.asname or alias.name
+                    imported_names.add(name)
+                    import_lines[name] = node.lineno
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                defined_functions.add(node.name)
+                def_lines[node.name] = node.lineno
+            elif isinstance(node, ast.ClassDef):
+                defined_classes.add(node.name)
+                def_lines[node.name] = node.lineno
+            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                used_names.add(node.id)
+        
+        return imported_names, defined_functions, defined_classes, used_names, import_lines, def_lines
+
     def detect_dead_code(self, file_path: Path) -> Dict[str, Any]:
-        """
-        SUPPLEMENTED FROM DeadCodeDetectorAgent — merged 2025-12-30
-        
-        Analyze a single Python file for dead code (unused imports, functions, classes, methods).
-        
-        Args:
-            file_path: Path to the Python file to analyze
-            
-        Returns:
-            Dict with findings: {unused_imports, unused_functions, unused_classes, unused_methods}
-        """
+        """Analyze a single Python file for dead code."""
         try:
             content = file_path.read_text(encoding='utf-8')
         except Exception as e:
@@ -253,60 +265,14 @@ class CodeDeduplicationAgent(HealerMixin):
         except SyntaxError as e:
             return {'error': f'Syntax error in {file_path}: {e}'}
             
-        # Track imports, definitions, and usages
-        imported_names: set = set()
-        defined_functions: set = set()
-        defined_classes: set = set()
-        used_names: set = set()
-        import_lines: Dict[str, int] = {}
-        def_lines: Dict[str, int] = {}
+        imported, funcs, classes, used, import_lines, def_lines = self._collect_ast_symbols(tree)
         
-        for node in ast.walk(tree):
-            # Track imports
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    name = alias.asname or alias.name
-                    imported_names.add(name)
-                    import_lines[name] = node.lineno
-            elif isinstance(node, ast.ImportFrom):
-                for alias in node.names:
-                    name = alias.asname or alias.name
-                    imported_names.add(name)
-                    import_lines[name] = node.lineno
-            # Track definitions
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                defined_functions.add(node.name)
-                def_lines[node.name] = node.lineno
-            elif isinstance(node, ast.ClassDef):
-                defined_classes.add(node.name)
-                def_lines[node.name] = node.lineno
-            # Track usage
-            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-                used_names.add(node.id)
-                
-        findings = {
+        return {
             'file_path': str(file_path),
-            'unused_imports': [],
-            'unused_functions': [],
-            'unused_classes': [],
+            'unused_imports': [{'name': n, 'line': import_lines.get(n)} for n in imported if n not in used],
+            'unused_functions': [{'name': n, 'line': def_lines.get(n)} for n in funcs if n not in used and not n.startswith('_')],
+            'unused_classes': [{'name': n, 'line': def_lines.get(n)} for n in classes if n not in used and not n.startswith('_')],
         }
-        
-        # Detect unused imports
-        for name in imported_names:
-            if name not in used_names:
-                findings['unused_imports'].append({'name': name, 'line': import_lines.get(name)})
-                
-        # Detect unused functions (excluding private)
-        for name in defined_functions:
-            if name not in used_names and not name.startswith('_'):
-                findings['unused_functions'].append({'name': name, 'line': def_lines.get(name)})
-                
-        # Detect unused classes (excluding private)
-        for name in defined_classes:
-            if name not in used_names and not name.startswith('_'):
-                findings['unused_classes'].append({'name': name, 'line': def_lines.get(name)})
-                
-        return findings
 
     def scan_dead_code(self, directory: Path, recursive: bool = True) -> Dict[str, Any]:
         """

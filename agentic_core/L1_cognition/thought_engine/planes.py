@@ -122,7 +122,7 @@ class IActionPlane(Protocol):
 
 @runtime_checkable
 # NOT_AN_AGENT — protocol interface, not a true agent — excluded from agent discovery
-class IOrchestratorAgent(HealerMixin, Protocol, MCPHardenedMixin):
+class IOrchestratorAgent(SubatomicTestingMixin, HealerMixin, Protocol, MCPHardenedMixin):
     """Interface for the orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes,
@@ -150,4 +150,4 @@ class IOrchestratorAgent(HealerMixin, Protocol, MCPHardenedMixin):
         Returns:
             Step result with status and updates
         """
-        ...
+        ...\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

@@ -29,7 +29,7 @@ class SafetyInspectorAgent(SubAtomicAgent):
     Also checks for async blocking issues and performs intelligent remediation.
     """
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         # Key 2: Removed print statements in favor of context reporting
         await asyncio.sleep(0)
@@ -131,7 +131,7 @@ class SafetyInspectorAgent(SubAtomicAgent):
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class ConcurrencyGuardianAgent(SubAtomicAgent, MCPHardenedMixin):
+class ConcurrencyGuardianAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     Unified concurrency safety agent.
     Covers: Data races (Key 61), Livelock (Key 63), Starvation (Key 64)
@@ -155,9 +155,9 @@ class ConcurrencyGuardianAgent(SubAtomicAgent, MCPHardenedMixin):
                 "DEPS_VALID" in self.ctx.signals and
                 "SECURE" in self.ctx.signals)
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Concurrency Safety...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Enforcing Concurrency Safety...")
         await asyncio.sleep(0)
 
         target_files = list(self.ctx.modified_files) if self.ctx.modified_files else self.ctx.python_files
@@ -228,7 +228,7 @@ class ConcurrencyGuardianAgent(SubAtomicAgent, MCPHardenedMixin):
 class SecurityEnforcerAgent(SubAtomicAgent):
     """Security enforcement agent for additional security checks."""
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Policies...")
         await asyncio.sleep(0)
@@ -239,7 +239,7 @@ class SecurityEnforcerAgent(SubAtomicAgent):
 class RedSentinelAgent(SubAtomicAgent):
     """Red team sentinel for adversarial security testing."""
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)

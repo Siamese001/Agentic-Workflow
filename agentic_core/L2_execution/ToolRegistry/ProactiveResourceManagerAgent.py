@@ -38,7 +38,7 @@ class ResourceThreshold:
     budget_critical_threshold: float = 0.95
     min_success_rate: float = 0.3
 
-class ProactiveResourceManagerAgent(HealerMixin):
+class ProactiveResourceManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages healing resources proactively to prevent exhaustion.
     
@@ -50,7 +50,7 @@ class ProactiveResourceManagerAgent(HealerMixin):
     - Resource exhaustion prevention
     """
 
-    def __init__(self, thresholds: Optional[ResourceThreshold]=None):
+    def __init__(self, thresholds: Optional[ResourceThreshold]=None) -> None:
         """Initialize the resource manager."""
         self.thresholds = thresholds or ResourceThreshold()
         self.file_healing_counts: Dict[str, int] = {}
@@ -340,4 +340,4 @@ class ProactiveResourceManagerAgent(HealerMixin):
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
-        return ProactiveResourceManagerAgent(thresholds=thresholds)
+        return ProactiveResourceManagerAgent(thresholds=thresholds)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

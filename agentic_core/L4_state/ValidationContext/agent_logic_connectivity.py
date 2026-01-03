@@ -21,7 +21,7 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CanonValidatorAgent(HealerMixin, MCPHardenedMixin):
+class CanonValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     The Gatekeeper logic that enforces the 'Subatomic' canon.
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
@@ -32,7 +32,7 @@ class CanonValidatorAgent(HealerMixin, MCPHardenedMixin):
     SUCCESS_THRESHOLD: Any = 0.8
     MAX_PATTERNS: Any = 1000
 
-    def __init__(self, similarity_threshold: float=0.75, manifest_path: str='active_manifest.json'):
+    def __init__(self, similarity_threshold: float=0.75, manifest_path: str='active_manifest.json') -> None:
         """
         Initializes the CanonValidatorAgent with connection managers and cache settings.
 
@@ -304,4 +304,4 @@ class CanonValidatorAgent(HealerMixin, MCPHardenedMixin):
         """
         status = 'duplicate' if source == 'l1_exact_match' else 'similar'
         content = match.get('content') or match.get('metadata', {}).get('code_snippet', 'Content not available')
-        return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}
+        return {'status': status, 'is_valid': True, 'confidence': match.get('similarity', 1.0 if source == 'l1_exact_match' else 0.0), 'source': source, 'matched_pattern': match.get('id'), 'ast_match': source == 'l1_exact_match', 'Recommendation': 'Use existing pattern', 'metadata': match.get('metadata'), 'query_time_ms': (time.time() - start_time) * 1000, 'content': content}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

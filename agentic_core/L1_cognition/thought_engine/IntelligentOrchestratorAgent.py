@@ -17,10 +17,10 @@ from agentic_core.runtime.shared.canon_validation_context import ValidationConte
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class IntelligentOrchestratorAgent(HealerMixin):
+class IntelligentOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrates all validation agents in dependency order."""
 
-    def __init__(self, target: Optional[str]=None):
+    def __init__(self, target: Optional[str]=None) -> None:
         """
         Initializes the IntelligentOrchestratorAgent with a validation context and a swarm of agents.
 
@@ -39,7 +39,7 @@ class IntelligentOrchestratorAgent(HealerMixin):
         are not met, it will stand down. Critical failures can abort the mission.
         """
         print('🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...')
-        print(f'\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...')
         agents_executed: Any = 0
         agents_passed: Any = 0
         agents_failed: Any = 0

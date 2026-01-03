@@ -258,7 +258,7 @@ class MessageDiversityValidatorAgent:
     
     MIN_DIVERSITY_THRESHOLD = 0.85  # Messages must be <85% similar
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.message_history: List[str] = []
         self.vectorizer = TfidfVectorizer()
     
@@ -300,7 +300,7 @@ class MessageDiversityValidatorAgent:
 # NEW v11.6: ASCII CHARACTER ENFORCER (GAP 1.10)
 # ============================================================================
 
-class ASCIIEnforcerAgent:
+class ASCIIEnforcerAgent(HealerMixin, MCPHardenedMixin):
     """
     Enforce ASCII-only characters for LinkedIn compatibility
     GAP 1.10 from v10.22
@@ -346,7 +346,7 @@ class ValidationAgent:
     Consolidates all rules from v10.22 + SUPREME_SPELL
     """
     
-    def __init__(self, circuit_breaker: 'utils.CircuitBreaker'):
+    def __init__(self, circuit_breaker: 'utils.CircuitBreaker') -> None:
         self.circuit_breaker = circuit_breaker
         self.status = "IDLE" # Using simple string, could be AgentStatus enum
         
@@ -601,4 +601,4 @@ class ValidationAgent:
                 current_row.append(min(insertions, deletions, substitutions))
             previous_row = current_row
         
-        return previous_row[-1]
+        return previous_row[-1]\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

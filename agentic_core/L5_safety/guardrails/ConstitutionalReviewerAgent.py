@@ -15,7 +15,7 @@ from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base cl
 
 class ConstitutionalReviewResult:
     """Stub for ConstitutionalReviewResult - TODO: Replace with sovereign equivalent"""
-    def __init__(self, review_passed=True, violations_found=None, feedback=""):
+    def __init__(self, review_passed=True, violations_found=None, feedback="") -> None:
         self.review_passed = review_passed
         self.violations_found = violations_found or []
         self.feedback = feedback

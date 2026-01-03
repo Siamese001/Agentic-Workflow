@@ -19,7 +19,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SubatomicHopAgent(HealerMixin):
+class SubatomicHopAgent(MCPHardenedMixin, HealerMixin):
     """
     Sovereign SubatomicHop with Dependency Injection.
     
@@ -234,4 +234,4 @@ class SubatomicHopAgent(HealerMixin):
             print(f"[{agent_name}] L3 orchestration - operational only")
             return {"skipped": 1}
         finally:
-            _call_path.discard(agent_name)
+            _call_path.discard(agent_name)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

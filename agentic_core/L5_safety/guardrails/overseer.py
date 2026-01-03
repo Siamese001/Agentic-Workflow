@@ -21,14 +21,14 @@ Logger: Any = logging.getLogger(__name__)
 class ViolationCheck:
     """Result of a safety Violation check."""
 
-    def __init__(self, is_violation: bool, reason: str=''):
+    def __init__(self, is_violation: bool, reason: str='') -> None:
         self.is_violation = is_violation
         self.reason = reason
 
 class ConstitutionalOverseer:
     """Overseer that validates ActionRequests against safety rules."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the overseer with default safety rules."""
         self._forbidden_commands = ['rm\\s+-rf\\s+/', 'rm\\s+-rf\\s+\\.', 'dd\\s+if=/dev/zero', 'mkfs\\.', 'curl\\s+https?://(?!localhost|127\\.0\\.0\\.1)', 'wget\\s+https?://(?!localhost|127\\.0\\.0\\.1)', 'nc\\s+-l', 'telnet\\s+\\d', 'sudo\\s+su', 'chmod\\s+777', 'chown\\s+root', 'apt-get\\s+install', 'pip\\s+install\\s+--force', 'yum\\s+install', 'eval\\s+\\$', 'exec\\s+\\$', 'sh\\s+-c']
         self._compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self._forbidden_commands]
@@ -124,14 +124,14 @@ class ConstitutionalOverseer:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SafetyInspectorAgent(HealerMixin, MCPHardenedMixin):
+class SafetyInspectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Compliance with intelligent Violation verification.
     """
-    def __init__(self, enable_socratic_judge: bool=True):
+    def __init__(self, enable_socratic_judge: bool=True) -> None:
         """
         Initialize the SafetyInspectorAgent.
 
@@ -161,7 +161,7 @@ class SafetyInspectorAgent(HealerMixin, MCPHardenedMixin):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content: Any = f.read()
-                lines: Any = content.split('\n')
+                lines: Any = content.split('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n')
             for pattern in self.secret_patterns:
                 if re.search(pattern, content, re.IGNORECASE):
                     if self.enable_socratic_judge and file_path not in self._false_positive_cache:

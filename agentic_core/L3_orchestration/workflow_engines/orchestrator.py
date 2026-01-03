@@ -90,7 +90,7 @@ class ExecutionResult:
         }
 
 
-class IOrchestratorAgent(HealerMixin, ABC):
+class IOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, ABC):
     """Interface for the Orchestrator (Nervous System).
     
     The orchestrator coordinates between cognitive and action planes:
@@ -234,3 +234,4 @@ class IOrchestratorAgent(HealerMixin, ABC):
             path: Path to load state from
         """
         pass
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

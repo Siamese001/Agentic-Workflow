@@ -77,7 +77,7 @@ class SovereignBaseAgent(ABC, HealerMixin):
         max_depth: int = 3,
         _call_path: Optional[set] = None,
     ) -> Dict[str, int]:
-        """Standardized healing stub - operational for most agents."""
+        """Standardized healing with shared HealerMixin chain invocation."""
         if _call_path is None:
             _call_path = set()
         
@@ -89,7 +89,9 @@ class SovereignBaseAgent(ABC, HealerMixin):
         
         _call_path.add(self.name)
         try:
-            self.log_info("Healing operational - no repository changes required")
+            # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            self.log_info("Healing chain invoked")
             return {"skipped": 1}
         finally:
             _call_path.discard(self.name)

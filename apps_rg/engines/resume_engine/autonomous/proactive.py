@@ -93,7 +93,7 @@ class ProactiveScheduler:
     - Predicted needs
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._tasks: List[ProactiveTask] = []
         self._task_counter = 0
@@ -207,7 +207,7 @@ class PredictiveHandoff:
     intervention will be needed.
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._handoff_requests: List[HandoffRequest] = []
         self._request_counter = 0
@@ -334,7 +334,7 @@ class CapabilityMonitorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixi
     and updates capability profiles.
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._execution_history: List[Dict[str, Any]] = []
         self._agent_stats: Dict[str, Dict[str, Any]] = {}
@@ -417,7 +417,7 @@ class ProactiveAgent(ResumeAgent):
     Agent that proactively identifies and executes tasks.
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         super().__init__(ctx)
         self.name = "ProactiveAgent"
         self.scheduler = ProactiveScheduler(ctx)
@@ -465,3 +465,4 @@ class ProactiveAgent(ResumeAgent):
 
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
+\nimport logging\n\nLogger = logging.getLogger(__name__)

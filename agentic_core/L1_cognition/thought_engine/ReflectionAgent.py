@@ -11,13 +11,13 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
-class ReflectionAgent(HealerMixin, MCPHardenedMixin):
+class ReflectionAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).
     """
 
-    def __init__(self, ctx: Any=None, pinecone_client: Any=None, embedding_model: Optional[str]=None):
+    def __init__(self, ctx: Any=None, pinecone_client: Any=None, embedding_model: Optional[str]=None) -> None:
         """
         Initialize the ReflectionAgent.
 
@@ -221,3 +221,4 @@ class ReflectionAgent(HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

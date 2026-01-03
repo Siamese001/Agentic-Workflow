@@ -12,10 +12,10 @@ from typing import Any
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class SprawlInspectorAgent(HealerMixin):
+class SprawlInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 
-    def __init__(self, target_path='agentic_core'):
+    def __init__(self, target_path='agentic_core') -> None:
         self.root = Path(target_path)
         self.MAX_BREADTH = 7
         self.MIN_FILES = 3
@@ -34,7 +34,7 @@ class SprawlInspectorAgent(HealerMixin):
 
     def print_summary(self) -> Any:
         """Print human-readable summary."""
-        print('\n' + '=' * 70)
+        print('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n' + '=' * 70)
         print('🔍 PROJECT SPRAWL REPORT')
         print('=' * 70)
         print(f"Target: {self.report['metadata']['target']}")

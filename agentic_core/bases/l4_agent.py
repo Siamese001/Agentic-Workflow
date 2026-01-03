@@ -44,3 +44,4 @@ class L4Agent(HealerMixin, MCPHardenedMixin, L4SubatomicTestingMixin):
         super().heal_repository()
 
         raise NotImplementedError(f"{self.name} must implement update_state()")
+\nimport logging\n\nLogger = logging.getLogger(__name__)

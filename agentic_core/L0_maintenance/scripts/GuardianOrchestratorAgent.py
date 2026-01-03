@@ -17,9 +17,10 @@ from agentic_core.patterns.agent_roles.adaptive_execution_mixin import AdaptiveE
 from agentic_core.patterns.agent_roles.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
 
 
-class GuardianOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class GuardianOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
@@ -33,7 +34,7 @@ class GuardianOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
       - Self-health monitoring of loaded guardians
     """
 
-    def __init__(self, target_path: Path | str):
+    def __init__(self, target_path: Path | str) -> None:
         self.target_path = Path(target_path)
         self.Logger = logging.getLogger(__name__)
         

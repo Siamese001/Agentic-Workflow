@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 
-class SystemArchitectAgent(CanonBaseAgent):
+class SystemArchitectAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
     
@@ -31,12 +31,12 @@ class SystemArchitectAgent(CanonBaseAgent):
         """Return canon keys validated by this agent."""
         return list(range(40, 51))  # Keys 40-50
     
-    async def execute(self):
+    async def execute(self) -> None:
         """
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy (Key 40), Nesting (Key 41), and Header Sovereignty.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
         
         # 1. Key 40: Core Hierarchy & Header Sovereignty
         print(f"   [{self.name}] 🔍 Checking Key 40: Hierarchy & Headers...")

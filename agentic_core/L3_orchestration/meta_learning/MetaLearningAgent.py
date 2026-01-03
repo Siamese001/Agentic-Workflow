@@ -41,7 +41,7 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         _call_path.discard(agent_name)
 
 
-class MetaLearningAgent(HealerMixin, AutonomyMixin,
+class MetaLearningAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
@@ -49,7 +49,7 @@ class MetaLearningAgent(HealerMixin, AutonomyMixin,
     Now hardened with strategy evolution, proactive monitoring, and self-learning.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.Logger = logging.getLogger(__name__)
         super().__init__()
 
@@ -204,3 +204,4 @@ class MetaLearningAgent(HealerMixin, AutonomyMixin,
         """Standard mode - full strategy evolution."""
         agent_name = context.get("agent_name", "HealingOrchestratorAgent")
         return await self.evolve_agent_strategy(agent_name)
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

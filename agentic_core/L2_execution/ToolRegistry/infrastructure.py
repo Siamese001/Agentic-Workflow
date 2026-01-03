@@ -50,11 +50,11 @@ class HistorianAgent(SubAtomicAgent):
     """
     ROLE: Records all validation events to a Markdown log file.
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         super().__init__(ctx)
         # Use env var for log path for better environment isolation
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
-    async def execute(self):
+    async def execute(self) -> None:
                     
         # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
@@ -63,7 +63,7 @@ class HistorianAgent(SubAtomicAgent):
     def record_event(self, agent: str, status: str, details: str):
                     
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
+        entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
 
         # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:
@@ -80,7 +80,7 @@ class GitAgent(SubAtomicAgent):
     """
     ROLE: Manages Version Control (Branching, Commits).
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         super().__init__(ctx)
         self.repo = None
         if GITPYTHON_AVAILABLE:
@@ -91,7 +91,7 @@ class GitAgent(SubAtomicAgent):
             except Exception:
                 pass
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         if not GITPYTHON_AVAILABLE or not self.repo:
             return
@@ -114,11 +114,11 @@ class GitAgent(SubAtomicAgent):
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class BenchmarkingAgent(SubAtomicAgent, MCPHardenedMixin):
+class BenchmarkingAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     ROLE: Measures execution time and ensures tools aren't too slow.
     """
-    async def execute(self):
+    async def execute(self) -> None:
                     
         # Placeholder for Time Budget logic
         pass
@@ -129,7 +129,7 @@ if WATCHDOG_AVAILABLE:
         """
         L5 Component: Reacts to file system changes in real-time.
         """
-        def __init__(self, context, loop):
+        def __init__(self, context, loop) -> None:
             self.ctx = context
             self.loop = loop
             self.cooldown = 0.0
@@ -152,7 +152,7 @@ if WATCHDOG_AVAILABLE:
 else:
     class WatchmanHandler:
         """Stub WatchmanHandler when watchdog is not installed."""
-        def __init__(self, context, loop):
+        def __init__(self, context, loop) -> None:
             self.ctx = context
             self.loop = loop
 

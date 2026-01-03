@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 'Brief description of functionality and purpose.'
 from enum import Enum, auto
-'Lightweight Bias Detection for Content Quality.\n\nPhase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)\nMigrated from archives/engines/legacy_engines/safety_enhancements.py\n'
+'Lightweight Bias Detection for Content Quality.\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nPhase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)\nMigrated from archives/engines/legacy_engines/safety_enhancements.py\n'
 import logging
 import re
 from typing import Any, Dict, List, Optional, Protocol, Set
@@ -36,7 +36,7 @@ def get_critical_biases(self: Any) -> List[BiasMatch]:
     """Get high-Severity bias matches."""
     return [m for m in self.matches if m.Severity > 0.7]
 
-class BiasAuditorAgent(HealerMixin):
+class BiasAuditorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Lightweight Bias Detection for Content Quality.
 
     Simple pattern-based bias detection for risk mitigation

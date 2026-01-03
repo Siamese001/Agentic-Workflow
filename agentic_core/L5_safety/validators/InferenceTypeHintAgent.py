@@ -8,7 +8,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class InferenceTypeHintAgent(HealerMixin):
+class InferenceTypeHintAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Uses LLM inference to add accurate type hints to functions/methods.
 
@@ -22,9 +22,9 @@ class InferenceTypeHintAgent(HealerMixin):
     - Prompt SubAtomicEngine for precise annotations
     - Apply via AST + unparse (preserves formatting)
     """
-    PROMPT_TEMPLATE: Any = '\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
+    PROMPT_TEMPLATE: Any = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nAdd precise Python type hints to the following function/method.\n\nRules:\n- Use concrete types when possible (List[str], Dict[str, int], etc.)\n- Use from __future__ import annotations if needed\n- Preserve all existing code, comments, and formatting\n- Only modify type annotations (parameters and return)\n- If uncertain, use Any from typing\n\nOutput ONLY the fully annotated function (no explanations, no markdown).\n\nFUNCTION:\n{code}\n'
 
-    def __init__(self, ctx, project_root=None):
+    def __init__(self, ctx, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for InferenceTypeHintAgent (sovereign agent)")

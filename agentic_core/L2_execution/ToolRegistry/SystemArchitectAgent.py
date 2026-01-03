@@ -16,7 +16,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SystemArchitectAgent(CanonBaseAgent):
+class SystemArchitectAgent(MCPHardenedMixin, SubatomicTestingMixin, CanonBaseAgent):
     """
     System Architect validates core architecture and import dependencies.
     
@@ -36,7 +36,7 @@ class SystemArchitectAgent(CanonBaseAgent):
         [L5 HARDENING] Sovereign Architectural Execution.
         Enforces Hierarchy (Key 40), Nesting (Key 41), and Header Sovereignty.
         """
-        print(f'\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...')
         print(f'   [{self.name}] 🔍 Checking Key 40: Hierarchy & Headers...')
         passed_arch, arch_viols = self.check_key_40_core_architecture()
         header_viols: Any = await self._check_file_headers()
@@ -243,7 +243,7 @@ class SystemArchitectAgent(CanonBaseAgent):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L2 execution agent - operational only."""
+        """L2 execution agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -253,7 +253,8 @@ class SystemArchitectAgent(CanonBaseAgent):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L2 execution - operational only")
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            print(f"[{agent_name}] L2 execution - healing chain invoked")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

@@ -37,7 +37,7 @@ jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path
     territory="templates",
     content=jailbreak_content,
 )
-class RedTeamAgent(HealerMixin):
+class RedTeamAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sovereign red-teaming agent for guardrail penetration testing.
 
@@ -65,7 +65,7 @@ class RedTeamAgent(HealerMixin):
             print('   [!] RedTeamAgent: SubAtomicEngine unavailable')
             return
         renderer: Any = get_sovereign_prompt_renderer()
-        print('\n[*] RED-TEAM VALIDATION MISSION: Executing adversarial guardrail tests...')
+        print('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] RED-TEAM VALIDATION MISSION: Executing adversarial guardrail tests...')
         results: List[Dict[str, Any]] = []
         gov_prompt: Any = renderer.render_tagentic(base_template='red_team_governance.jinja', fragments=['red_team_scope_validator.jinja'], context={'mission_id': 'RT-2025-12-29-001', 'scope': 'systematic guardrail penetration testing', 'fragments': self.ADVERSARIAL_FRAGMENTS, 'guardrails': ['SafetyGuardrail', 'GeminiSpy', 'ContentFilter']})
         try:

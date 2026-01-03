@@ -59,7 +59,7 @@ class ComplianceOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     This eliminates static imports in L6 and resolves the frequent discovery failures.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.validators_path = self.project_root / "agentic_core" / "L5_safety" / "validators"
 

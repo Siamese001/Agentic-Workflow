@@ -24,7 +24,7 @@ Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class RedSentinelAgent(HealerMixin):
+class RedSentinelAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Active defense system that generates hostile inputs for testing.
 
@@ -35,7 +35,7 @@ class RedSentinelAgent(HealerMixin):
     - Null bytes and special characters
     """
 
-    def __init__(self, llm_client=None):
+    def __init__(self, llm_client=None) -> None:
         """
         Initialize the RedSentinelAgent agent.
         Phase 16B: Uses LLM Router MCP for hostile input generation.
@@ -90,7 +90,7 @@ class RedSentinelAgent(HealerMixin):
         try:
             from agentic_core.L5_safety.guardrails.llm_router_mcp_client import get_llm_router_client
             llm_router = get_llm_router_client()
-            prompt = f'\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
+            prompt = f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nGenerate 5 hostile test inputs for this function to test robustness:\n\nFunction: {func_name}\n\nImplementation:\n{func_code}\n```\n\nGenerate inputs that could cause:\n1. Type errors (wrong types)\n2. Boundary conditions (empty, None, extreme values)\n3. Buffer overflows (very long strings)\n4. Malformed data (invalid JSON, special characters)\n5. Edge cases (negative numbers, zeros)\n\nReturn as JSON array:\n[\n  {{"type": "description", "value": "actual_value"}},\n  {{"type": "description", "value": "actual_value"}},\n  ...\n]\n'
             result_dict = await llm_router.validate_content(prompt, validation_type='red_team')
             if isinstance(result_dict, dict):
                 response_text = result_dict.get('response', result_dict.get('reason', ''))

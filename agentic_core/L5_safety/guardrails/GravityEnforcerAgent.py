@@ -16,13 +16,13 @@ from agentic_core.L5_safety.guardrails.cached_safety_shield import CachedSafetyS
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class GravityEnforcerAgent(HealerMixin, CachedSafetyShield):
+class GravityEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin, CachedSafetyShield):
     """
     The "Neural Link" stabilizer that enforces gravity rules by actively
     commenting out forbidden imports from upstream sovereign code to downstream domains.
     """
     
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         super().__init__(project_root, "gravity_gate")
         self.ctx = ctx
         # Derive Upstream vs Downstream from SSOT
@@ -44,12 +44,12 @@ class GravityEnforcerAgent(HealerMixin, CachedSafetyShield):
         self.healed_count = 0
         self.healed_files = []
         
-    async def execute(self):
+    async def execute(self) -> None:
         """
         Execute the gravity enforcement pass.
         Scans agentic_core files and comments out any forbidden downstream imports.
         """
-        print(f"\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] GravityEnforcerAgent: Scanning for neural leaks...")
         self.healed_count = 0
         self.healed_files = []
         

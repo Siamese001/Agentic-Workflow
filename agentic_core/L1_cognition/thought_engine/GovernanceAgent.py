@@ -57,7 +57,7 @@ class DependencyGraph:
     ensuring comprehensive impact analysis for governance.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the dependency graph."""
         self.graph: Dict[str, Dict[str, List[str]]] = {}
         self.reverse_graph: Dict[str, List[str]] = {}
@@ -226,7 +226,7 @@ class DependencyGraph:
                 to_name: Any = dep.replace('/', '_').replace('\\', '_').replace('.py', '')
                 dot.append(f'  "{from_name}" -> "{to_name}";')
         dot.append('}')
-        dot_str: Any = '\n'.join(dot)
+        dot_str: Any = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n'.join(dot)
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(dot_str)
@@ -234,7 +234,7 @@ class DependencyGraph:
         return dot_str
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(HealerMixin, MCPHardenedMixin):
+class GovernanceAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Enforces architectural governance laws and constraints.
 
@@ -263,7 +263,7 @@ class GovernanceAgent(HealerMixin, MCPHardenedMixin):
         blast_radius: Optional[int] = None
         severity: int = 5
 
-    def __init__(self, root_dir: str=None):
+    def __init__(self, root_dir: str=None) -> None:
         """
         Initialize the ArchitectureGovernor.
         """

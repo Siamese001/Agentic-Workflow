@@ -21,7 +21,7 @@ class DiagnosticReport:
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
-class DagRuntimeInspectorAgent(HealerMixin):
+class DagRuntimeInspectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Diagnostics engine for inspection domain."""
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
@@ -44,3 +44,4 @@ def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticRe
 def diagnose(target: object, config: Optional[Dict]=None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return DagRuntimeInspectorAgent(config).diagnose(target)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

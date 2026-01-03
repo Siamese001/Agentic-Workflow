@@ -19,10 +19,10 @@ import redis
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class SovereignRedisOrchestratorAgent(HealerMixin, MCPHardenedMixin):
+class SovereignRedisOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: Optional[redis.Redis] = None
         # BOUNDED FALLBACK: Max 1000 items to prevent MemoryError
@@ -128,4 +128,4 @@ def get_redis_orchestrator() -> SovereignRedisOrchestratorAgent:
     global _orchestrator
     if _orchestrator is None:
         _orchestrator = SovereignRedisOrchestratorAgent()
-    return _orchestrator
+    return _orchestrator\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

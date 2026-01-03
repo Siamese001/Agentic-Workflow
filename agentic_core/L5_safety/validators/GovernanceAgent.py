@@ -14,7 +14,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTimeoutError
 
 
-class GovernanceAgent(
+class GovernanceAgent(MCPHardenedMixin, SubatomicTestingMixin, 
     AutonomyMixin,
     AdaptiveExecutionMixin,
     HealerMixin,
@@ -24,7 +24,7 @@ class GovernanceAgent(
     Now hardened with intelligent confidence-based decision making.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.Logger = logging.getLogger(__name__)
         super().__init__()
 
@@ -202,3 +202,4 @@ class GovernanceAgent(
         super().heal_repository()
 
         return await self.make_decision(context)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

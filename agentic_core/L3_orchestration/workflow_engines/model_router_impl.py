@@ -6,7 +6,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 Logger: Any = logging.getLogger(__name__)
 
-class ModelRouterAgent(HealerMixin):
+class ModelRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Dynamic model router for cost-optimized LLM selection.
 
     Features:
@@ -17,7 +17,7 @@ class ModelRouterAgent(HealerMixin):
     - Budget enforcement
     """
 
-    def __init__(self, cost_budget_per_request: Optional[float]=None, prefer_speed: bool=False, enable_logging: bool=True):
+    def __init__(self, cost_budget_per_request: Optional[float]=None, prefer_speed: bool=False, enable_logging: bool=True) -> None:
         """Initialize model router.
 
         Args:
@@ -183,4 +183,4 @@ def create_model_router(cost_budget_per_request: Optional[float]=None) -> ModelR
     Returns:
         ModelRouterAgent instance
     """
-    return ModelRouterAgent(cost_budget_per_request=cost_budget_per_request)
+    return ModelRouterAgent(cost_budget_per_request=cost_budget_per_request)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

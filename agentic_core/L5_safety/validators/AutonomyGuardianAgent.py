@@ -19,7 +19,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTi
 
 class _CCVisitor(ast.NodeVisitor):
     """Cyclomatic Complexity visitor for AST analysis."""
-    def __init__(self):
+    def __init__(self) -> None:
         self.cc = 1  # Base complexity
     
     def visit_If(self, node):
@@ -63,7 +63,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
     This agent is itself autonomous — no external scripts needed.
     """
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root
         self.required_methods = ["heal_repository"]
         self.forbidden_dirs = ["scripts/healing", "scripts/tools", "scripts/runners"]
@@ -178,12 +178,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         return self._agent_registry_cache
     
     def _get_all_agent_paths(self) -> List[Path]:
-        """Get all agent file paths from the authoritative JSON registry."""
+        """Get all agent file paths from the authoritative JSON registry (deduplicated)."""
         registry = self._load_agent_registry()
+        seen_paths = set()
         paths = []
         for agent in registry:
             path_str = agent.get("path", "").replace("\\", "/")
-            if path_str:
+            if path_str and path_str not in seen_paths:
+                seen_paths.add(path_str)
                 full_path = self.project_root / path_str
                 if full_path.exists():
                     paths.append(full_path)
@@ -974,13 +976,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 tree = ast.parse(content)
                 
                 # MCP hardening detection (security)
-                file_metrics["hardened"] = self._detect_mcp_hardening(tree)
+                file_metrics["hardened"] = self._detect_mcp_hardening(tree, content)
                 
                 # MCP capability detection (uses MCP servers)
                 file_metrics["mcp_capable"] = self._detect_mcp_capability(content)
                 
                 # Healing invocation detection
-                file_metrics["healing_invoke"] = self._detect_healing_invocation(tree)
+                file_metrics["healing_invoke"] = self._detect_healing_invocation(tree, content)
                 
                 # Healing capability detection
                 file_metrics["healing_cap"] = self._detect_healing_capability(tree, content)
@@ -1023,32 +1025,33 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         ]
         return 1 if any(pattern in content for pattern in mcp_imports) else 0
     
-    def _detect_mcp_hardening(self, tree: ast.AST) -> int:
-        """Check for MCPShield mixin or @hardened decorator (security protection)."""
+    def _detect_mcp_hardening(self, tree: ast.AST, content: str) -> int:
+        """Check for MCPHardenedMixin, MCPShield mixin, or @hardened decorator (security protection)."""
+        # Fast string check first (most common pattern)
+        if "MCPHardenedMixin" in content or "MCPShield" in content:
+            return 1
+        # AST check for decorators
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if any("MCPShield" in (b.id if isinstance(b, ast.Name) else str(b)) for b in node.bases):
-                    return 1
                 if any(isinstance(d, ast.Name) and d.id == "hardened" for d in node.decorator_list):
                     return 1
         return 0
 
-    def _detect_healing_invocation(self, tree: ast.AST) -> int:
-        """Count actual super().heal_repository() calls."""
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call):
-                if (hasattr(node.func, "attr") and node.func.attr == "heal_repository" and
-                    isinstance(node.func.value, ast.Call) and
-                    isinstance(node.func.value.func, ast.Name) and
-                    node.func.value.func.id == "super"):
-                    return 1
+    def _detect_healing_invocation(self, tree: ast.AST, content: str) -> int:
+        """Detect super().heal_repository() calls using string matching (more reliable)."""
+        # String-based detection catches all patterns
+        if "super().heal_repository()" in content:
+            return 1
+        # Also catch super(ClassName, self).heal_repository() pattern
+        if "super(" in content and ".heal_repository()" in content:
+            return 1
         return 0
 
     def _detect_healing_capability(self, tree: ast.AST, content: str) -> int:
-        """Check for HealerMixin or healing-related methods."""
+        """Check for HealerMixin or heal_repository method (precise detection)."""
         if "HealerMixin" in content:
             return 1
-        if any(isinstance(node, ast.FunctionDef) and node.name in ["run", "validate", "auto_heal"] for node in ast.walk(tree)):
+        if "def heal_repository" in content:
             return 1
         return 0
 

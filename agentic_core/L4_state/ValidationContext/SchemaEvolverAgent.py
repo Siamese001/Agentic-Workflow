@@ -66,7 +66,7 @@ class SchemaRegistry:
     reverse_deps: Dict[str, Set[str]] = field(default_factory=dict)
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SchemaEvolverAgent(SubAtomicAgent):
+class SchemaEvolverAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     The Structural Guard - Schema Evolution Agent
     Monitors all Pydantic definitions and database schemas.
@@ -85,7 +85,7 @@ class SchemaEvolverAgent(SubAtomicAgent):
     - Maintains data contract consistency across HOP stages
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Schema Evolver.
         
@@ -228,7 +228,7 @@ class SchemaEvolverAgent(SubAtomicAgent):
     def _report_impact(self, impact: ImpactAnalysis):
         """Report impact analysis to user."""
         change = impact.change
-        Logger.info(f"\n{'=' * 80}")
+        Logger.info(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n{'=' * 80}")
         Logger.info(f'🛡️  SCHEMA CHANGE IMPACT ANALYSIS')
         Logger.info(f"{'=' * 80}")
         Logger.info(f'Schema: {change.schema_name}')

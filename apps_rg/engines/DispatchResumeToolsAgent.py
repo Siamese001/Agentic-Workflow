@@ -22,7 +22,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
     """Executor for resume domain with Titanium RAG integration."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         self.CONFIG = config or {}
         self.TIMEOUT = self.config.get('timeout', 30.0)
         self.titanium_enabled = self.config.get('use_titanium_search', True) and TITANIUM_AVAILABLE

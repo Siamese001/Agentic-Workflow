@@ -108,7 +108,7 @@ Span = Span
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class TracingAgent(HealerMixin):
+class TracingAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous distributed tracing agent.
     Manages trace context and Span lifecycle.
@@ -246,7 +246,7 @@ class TracingAgent(HealerMixin):
                 if not self.timestamped_exports:
                     # Append with comma separation for JSON array
                     if filepath.exists() and filepath.stat().st_size > 0:
-                        f.write(",\n")
+                        f.write(",\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n")
                     else:
                         f.write("[\n")
                 json.dump(export_data[0] if trace_id else export_data, f, indent=2)
@@ -392,8 +392,12 @@ class TracingAgent(HealerMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """Observability agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        """Observability agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 
 

@@ -40,26 +40,26 @@ class SubAtomicAgent:
 
     @staticmethod
     def get_import_patcher() -> ImportPatcher:
-    """Get an ImportPatcher mixin instance."""
-    return ImportPatcher()
+        """Get an ImportPatcher mixin instance."""
+        return ImportPatcher()
 
-    @staticmethod
     @timeout(300)
-    def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-    """L0 maintenance/scripts - operational only."""
-    if _call_path is None:
-        _call_path = set()
-    agent_name = "SubAtomicAgent"
-    if agent_name in _call_path:
-        return {"errors": 1, "cycle_detected": True}
-    if depth > max_depth:
-        return {"errors": 1, "depth_limited": True}
-    _call_path.add(agent_name)
-    try:
-        print(f"[{agent_name}] L0 maintenance/scripts - operational only")
-        return {"skipped": 1}
-    finally:
-        _call_path.discard(agent_name)
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+        """L0 maintenance/scripts - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        agent_name = self.__class__.__name__
+        if agent_name in _call_path:
+            return {"errors": 1, "cycle_detected": True}
+        if depth > max_depth:
+            return {"errors": 1, "depth_limited": True}
+        _call_path.add(agent_name)
+        try:
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            print(f"[{agent_name}] L0 maintenance/scripts - healing chain invoked")
+            return {"skipped": 1}
+        finally:
+            _call_path.discard(agent_name)
 
 class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""

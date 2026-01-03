@@ -87,7 +87,7 @@ class PlacementResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class NamingAgent(HealerMixin, MCPHardenedMixin):
+class NamingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous agent for naming law compliance.
     Operates after LocationAgent (assumes file is in valid territory).
@@ -100,7 +100,7 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
     - App-specific prefix must match actual root folder (rg_* → apps_rg, etc.)
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.high_signal_keywords = CANON_SIGNALS
         self.forbidden_patterns = FORBIDDEN_PATTERNS
@@ -1246,7 +1246,7 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
         # AUTONOMY LAW ENFORCEMENT (Canon Key 51)
         script_violations = self._detect_runner_script_violations()
         if script_violations:
-            print(f"\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
+            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[!] AUTONOMY LAW VIOLATION: Found {len(script_violations)} forbidden runner scripts")
             for script in script_violations:
                 print(f"    → {script.relative_to(self.project_root)} — DELETE THIS FILE")
                 if actual_execute:
@@ -1302,6 +1302,9 @@ class NamingAgent(HealerMixin, MCPHardenedMixin):
               f"Split needed: {summary['multi_agent_needs_split']} | "
               f"Skipped: {summary['skipped']} | "
               f"Errors: {summary['errors']}")
+        
+        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
         
         return summary
 

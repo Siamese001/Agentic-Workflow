@@ -35,7 +35,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
     Centralizes all vector operations to prevent configuration drift.
     """
     
-    def __init__(self, project_root: Optional[Path] = None, ctx=None):
+    def __init__(self, project_root: Optional[Path] = None, ctx=None) -> None:
         # Sovereign anchor: Ensure we know where we are in the territory
         self.project_root = project_root or Path(__file__).resolve().parents[4]
         self.status = "INITIALIZING"
@@ -119,7 +119,7 @@ class PineconeSovereignAgent(HealerMixin, MCPHardenedMixin):
         
         # Sovereign neutral prompt for embedding generation
         system_prompt = "You are a code territory classifier. Return only JSON: {\"embedding\": [float vector of code semantics]}"
-        user_prompt = f"Classify this code snippet for canon territory mapping:\n\n{text[:12000]}"
+        user_prompt = f"Classify this code snippet for canon territory mapping:\nimport logging\n\nLogger = logging.getLogger(__name__)\n\n{text[:12000]}"
         
         # [L6 FALLBACK] If gemini not available (circular init), skip embedding cache
         if self.gemini is None:

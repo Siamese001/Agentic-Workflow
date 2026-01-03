@@ -48,12 +48,12 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout, HealTi
 Logger = logging.getLogger(__name__)
 
 
-class FilesystemAgent(HealerMixin):
+class FilesystemAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous agent for physical filesystem purity.
     Targets technical debt markers in non-Python files with auto-remediation.
     """
-    def __init__(self, project_root: Path, dry_run: bool = False):
+    def __init__(self, project_root: Path, dry_run: bool = False) -> None:
         self.project_root = project_root.resolve()
         self.forbidden_patterns = FORBIDDEN_PATTERNS
         # REGEX: Catches repeated markers like .archived.archived or .old.old
@@ -372,7 +372,7 @@ class FilesystemAgent(HealerMixin):
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
             
-            print(f"\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
             return counts
         finally:
             _call_path.discard(agent_name)

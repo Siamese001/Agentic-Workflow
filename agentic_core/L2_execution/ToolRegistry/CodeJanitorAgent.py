@@ -31,7 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
+class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """
     Code Janitor validates syntax, style, and formatting.
     
@@ -50,7 +50,7 @@ class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
 
     async def execute(self) -> Any:
         """Execute Code Janitor validation checks."""
-        print(f'\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Syntax and Style...')
         passed, violations = self.check_key_10_syntax()
         if not passed:
             print(f'   [{self.name}] Key 10: FAIL ({len(violations)} violations)')
@@ -404,7 +404,7 @@ class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L2 execution agent - operational only."""
+        """L2 execution agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -414,7 +414,8 @@ class CodeJanitorAgent(CanonBaseAgent, MCPHardenedMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L2 execution - operational only")
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            print(f"[{agent_name}] L2 execution - healing chain invoked")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

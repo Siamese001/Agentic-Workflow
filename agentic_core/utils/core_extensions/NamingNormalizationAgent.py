@@ -32,7 +32,7 @@ warnings.warn(
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
-class NamingNormalizationAgent(HealerMixin):
+class NamingNormalizationAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Normalizes filenames and public symbols to snake_case.
 
@@ -44,7 +44,7 @@ class NamingNormalizationAgent(HealerMixin):
     SNAKE_CASE_PATTERN: Any = re.compile('^[a-z0-9_]+$')
     CAMEL_OR_PASCAL: Any = re.compile('^[A-Z][a-zA-Z0-9]*$|^[a-z]+([A-Z][a-z]+)+')
 
-    def __init__(self, ctx=None, project_root=None):
+    def __init__(self, ctx=None, project_root=None) -> None:
         self.ctx = ctx
         self.project_root = project_root
 
@@ -135,7 +135,7 @@ class NamingNormalizationAgent(HealerMixin):
                     if self.CAMEL_OR_PASCAL.match(old_name):
                         new_name: Any = self._to_snake_case(old_name)
                         new_line: Any = line.replace(old_name, new_name, 1)
-                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\n')
+                        new_lines.append(f'# NAMING FIXED: {old_name} → {new_name}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n')
                         new_lines.append(new_line)
                         symbol_changes += 1
                         continue

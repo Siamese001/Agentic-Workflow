@@ -24,7 +24,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
+class HierarchyHealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Hierarchy Healer Agent
     
@@ -34,7 +34,7 @@ class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
     3. Purging orphaned files from forbidden or root-level locations
     """
     
-    def __init__(self, project_root: Path, healing_enabled: bool = True):
+    def __init__(self, project_root: Path, healing_enabled: bool = True) -> None:
         """
         Initialize the hierarchy healer.
         
@@ -59,7 +59,7 @@ class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
             print("   [INFO] Hierarchy healing disabled (healing_enabled=False)")
             return results
         
-        print("\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
+        print("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] L6 HIERARCHY ENFORCEMENT: Healing non-approved subfolders...")
         
         # Get approved L1 folders for agentic_core from SSOT
         approved_l1 = set(SOVEREIGN_REGISTRY["agentic_core"]["subfolders"])

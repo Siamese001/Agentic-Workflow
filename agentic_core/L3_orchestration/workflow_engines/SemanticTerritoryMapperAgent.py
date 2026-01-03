@@ -29,7 +29,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
     using real Gemini embeddings and vector similarity search.
     """
     
-    def __init__(self, project_root: Path, ctx=None):
+    def __init__(self, project_root: Path, ctx=None) -> None:
         self.project_root = project_root
         self.ctx = ctx
         
@@ -211,7 +211,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         finally:
             _call_path.discard(agent_name)
 
-    async def execute(self):
+    async def execute(self) -> None:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
@@ -219,7 +219,7 @@ class SemanticTerritoryMapperAgent(HealerMixin, MCPHardenedMixin):
         Main execution entry point.
         Analyzes and reports on territory mapping across the codebase.
         """
-        print(f"\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage...")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] SemanticTerritoryMapperAgent: Analyzing territory coverage...")
         
         stats = self.analyze_territory_coverage()
         

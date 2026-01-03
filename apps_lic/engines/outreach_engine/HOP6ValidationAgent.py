@@ -29,7 +29,7 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/6_validation_report.json
     """
     
-    def __init__(self, config: Dict[str, Any], toolkit: ValidationToolkit = None):
+    def __init__(self, config: Dict[str, Any], toolkit: ValidationToolkit = None) -> None:
         super().__init__()
         self.config = config["validation_agent"]
         self.toolkit = toolkit

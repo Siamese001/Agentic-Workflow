@@ -12,12 +12,12 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class UnusedCleanupAgent(HealerMixin, MCPHardenedMixin):
+class UnusedCleanupAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Atomic agent: Removes unused imports and variables using autoflake.
     """
 
-    def __init__(self, project_root, ctx):
+    def __init__(self, project_root, ctx) -> None:
         self.project_root = Path(project_root)
         self.ctx = ctx
 
@@ -71,3 +71,4 @@ class UnusedCleanupAgent(HealerMixin, MCPHardenedMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

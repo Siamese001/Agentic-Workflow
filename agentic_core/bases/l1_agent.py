@@ -42,3 +42,4 @@ class L1Agent(HealerMixin, MCPHardenedMixin):
         super().heal_repository()
 
         return {"status": "not_implemented", "tests": 0}
+\nimport logging\n\nLogger = logging.getLogger(__name__)

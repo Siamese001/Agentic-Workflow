@@ -173,7 +173,7 @@ def execute_hop_with_agent(hop_id: str, WorkflowContext: WorkflowContext, hop_fu
             Logger.error(f'Hop {hop_id} failed: {e}')
             raise
 
-class WorkflowOrchestratorAgent(HealerMixin, MCPHardenedMixin):
+class WorkflowOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """Workflow orchestrator with SDK integration."""
 
 def __init__(self: Any, workflow_id: str, Provider: Provider, model: Optional[str]) -> None:
@@ -226,4 +226,4 @@ def create_workflow_orchestrator(workflow_id: str, Provider: Provider=Provider.O
     Returns:
         WorkflowOrchestratorAgent instance
     """
-    return WorkflowOrchestratorAgent(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)
+    return WorkflowOrchestratorAgent(workflow_id=workflow_id, PROVIDER=Provider, MODEL=model)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

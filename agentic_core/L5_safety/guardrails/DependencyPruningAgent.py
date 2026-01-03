@@ -15,13 +15,13 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class DependencyPruningAgent(HealerMixin, MCPHardenedMixin):
+class DependencyPruningAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Batch agent: Detects and removes unused Python dependencies from requirements.txt.
     Uses 'deptry' for accurate unused detection.
     """
 
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.dry_run = True  # Safety: Default to non-destructive
@@ -79,7 +79,7 @@ class DependencyPruningAgent(HealerMixin, MCPHardenedMixin):
 
         if removed > 0 and not self.dry_run:
             self.requirements_path.write_text(
-                "\n".join(new_lines) + "\n", encoding="utf-8"
+                "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(new_lines) + "\n", encoding="utf-8"
             )
 
         return {"removed": removed, "file": "requirements.txt"}

@@ -60,7 +60,7 @@ class OutreachLearningLoop:
     Tracks patterns and improves over time.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._examples: List[OutreachLearningExample] = []
         self._patterns: Dict[str, int] = {}
@@ -143,7 +143,7 @@ class OutreachConfidenceScorer:
     Scores confidence for outreach decisions.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self.learning_loop = OutreachLearningLoop(ctx)
 
@@ -216,7 +216,7 @@ class OutreachMemoryPersistence:
     Persists outreach learning across sessions.
     """
 
-    def __init__(self, memory_file: str = "outreach_memory.json"):
+    def __init__(self, memory_file: str = "outreach_memory.json") -> None:
         self.memory_file = Path(memory_file)
         self._memory: Dict[str, Any] = {}
         self._load()
@@ -261,14 +261,14 @@ class OutreachMemoryPersistence:
         self._save()
 
 
-class OutreachLearningAgent(OutreachAgent):
+class OutreachLearningAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
     """
     Learning agent for outreach campaigns.
 
     Learns from past campaigns and provides recommendations.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         super().__init__(ctx)
         self.learning_loop = OutreachLearningLoop(ctx)
         self.confidence_scorer = OutreachConfidenceScorer(ctx)
@@ -339,3 +339,4 @@ class OutreachLearningAgent(OutreachAgent):
     ):
         """Record a failed pattern."""
         await self.learning_loop.record_failure(TaskType, input_context, error)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

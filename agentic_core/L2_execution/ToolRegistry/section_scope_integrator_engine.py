@@ -38,7 +38,7 @@ Logger = logging.getLogger(__name__)
 class ValidationResult: # Placeholder for ValidationResult
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None):
+    def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None) -> None:
         self.gate_id = gate_id
         self.passed = PASSED
         self.Severity = SEVERITY
@@ -49,10 +49,10 @@ class ValidationResult: # Placeholder for ValidationResult
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
-class IntegrityGateExecutorAgent(HealerMixin): # Placeholder for IntegrityGateExecutorAgent
+class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin): # Placeholder for IntegrityGateExecutorAgent
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.results = []
     def execute_hygiene_scan(self, overview):
                     
@@ -62,7 +62,7 @@ class IntegrityGateExecutorAgent(HealerMixin): # Placeholder for IntegrityGateEx
 class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, initial_temperature):
+    def __init__(self, initial_temperature) -> None:
         self.current_temperature = initial_temperature
         self.temperature_log = []
     def reset(self, temp):
@@ -323,4 +323,4 @@ def create_section_scope_integrator( # Fixed: Removed misplaced docstring from h
     config: Optional[SectionIntegratorConfig] = None
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""
-    return SectionScopeIntegrator(config=config)
+    return SectionScopeIntegrator(config=config)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

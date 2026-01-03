@@ -64,7 +64,7 @@ class IntegrityReport:
 class ClaimExtractor:
     """Handles extraction of atomic claims from text."""
 
-    def __init__(self, genai_client, genai_available):
+    def __init__(self, genai_client, genai_available) -> None:
         self.genai_client = genai_client
         self.genai_available = genai_available
 
@@ -81,7 +81,7 @@ class ClaimExtractor:
 
     async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
         """Use Gemini to extract atomic claims from text."""
-        prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
+        prompt = f'Extract atomic claims from this text. Each Claim should be a single, verifiable fact.\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nTEXT:\n{text}\n\nREQUIREMENTS:\n1. Break the text into individual atomic claims (propositions)\n2. Each Claim should be independently verifiable\n3. Focus on factual statements (skills, experience, achievements)\n4. Ignore filler words and formatting\n5. Number each Claim\n\nOUTPUT FORMAT:\nReturn a numbered list of atomic claims, one per line:\n1. [First atomic Claim]\n2. [Second atomic Claim]\n...\n\nExample for "John has 5 years of Python experience and led 3 projects":\n1. John has 5 years of Python experience\n2. John led 3 projects\n'
         response = self.genai_client.models.generate_content(model='gemini-2.5-flash', contents=prompt, config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=2048))
         claims = []
         lines = response.text.strip().split('\n')
@@ -110,7 +110,7 @@ class ClaimExtractor:
 class ClaimEmbedder:
     """Handles generating embeddings for claims."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     async def embed_claims(self, claims: List[AtomicClaim]) -> List[AtomicClaim]:
@@ -127,7 +127,7 @@ class ClaimEmbedder:
 class ClaimVerifier:
     """Handles verifying claims against a source and calculating similarity."""
 
-    def __init__(self, similarity_threshold: float):
+    def __init__(self, similarity_threshold: float) -> None:
         self.SIMILARITY_THRESHOLD = similarity_threshold
 
     def verify_claim(self, generated_claim: AtomicClaim, source_claims: List[AtomicClaim]) -> VerificationResult:
@@ -168,7 +168,7 @@ class ClaimVerifier:
         return intersection / union if union > 0 else 0.0
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class HallucinationHunterAgent(SubAtomicAgent):
+class HallucinationHunterAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     The Hallucination Hunter - Ground Truth Verifier
     
@@ -184,7 +184,7 @@ class HallucinationHunterAgent(SubAtomicAgent):
     5. Block deployment if integrity score too low
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Hallucination Hunter.
         

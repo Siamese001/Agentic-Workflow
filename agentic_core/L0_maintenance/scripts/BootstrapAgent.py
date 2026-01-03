@@ -45,7 +45,7 @@ class BootstrapAgent(HealerMixin, L0DelegationTestingMixin, MCPHardenedMixin):
     Runs before any validation mission to anchor the environment.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
 
     def verify_neural_link(self) -> bool:

@@ -54,7 +54,7 @@ class ValidationRule:
 class InputValidationError(Exception):
     """Raised when input validation fails."""
     
-    def __init__(self, field: str, message: str, value: Any = None):
+    def __init__(self, field: str, message: str, value: Any = None) -> None:
         """Initialize validation error.
         
         Args:
@@ -70,10 +70,10 @@ class InputValidationError(Exception):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class InputValidatorAgent(MCPHardenedMixin, HealerMixin):
+class InputValidatorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
     """Validates input data against schema and rules."""
     
-    def __init__(self, name: str = "default"):
+    def __init__(self, name: str = "default") -> None:
         """Initialize the validator.
         
         Args:
@@ -154,6 +154,31 @@ class InputValidatorAgent(MCPHardenedMixin, HealerMixin):
         
         return validated
     
+    def _validate_length(self, field: str, value: Any, rule: ValidationRule) -> None:
+        """Validate length constraints."""
+        if not isinstance(value, (str, list, dict)):
+            return
+        if rule.min_length is not None and len(value) < rule.min_length:
+            raise InputValidationError(field, f"Minimum length is {rule.min_length}")
+        if rule.max_length is not None and len(value) > rule.max_length:
+            raise InputValidationError(field, f"Maximum length is {rule.max_length}")
+
+    def _validate_value_range(self, field: str, value: Any, rule: ValidationRule) -> None:
+        """Validate numeric value range constraints."""
+        if not isinstance(value, (int, float)):
+            return
+        if rule.min_value is not None and value < rule.min_value:
+            raise InputValidationError(field, f"Minimum value is {rule.min_value}")
+        if rule.max_value is not None and value > rule.max_value:
+            raise InputValidationError(field, f"Maximum value is {rule.max_value}")
+
+    def _validate_pattern_and_allowed(self, field: str, value: Any, rule: ValidationRule) -> None:
+        """Validate pattern and allowed values constraints."""
+        if rule.pattern and isinstance(value, str) and not re.match(rule.pattern, value):
+            raise InputValidationError(field, f"Value does not match pattern: {rule.pattern}")
+        if rule.allowed_values and value not in rule.allowed_values:
+            raise InputValidationError(field, f"Value must be one of: {rule.allowed_values}")
+
     def _validate_field(self, field: str, value: Any, rule: ValidationRule) -> Any:
         """Validate a single field.
         
@@ -168,57 +193,23 @@ class InputValidatorAgent(MCPHardenedMixin, HealerMixin):
         Raises:
             InputValidationError: If validation fails
         """
-        # Type validation
         validated_value = self._validate_type(value, rule)
+        self._validate_length(field, validated_value, rule)
+        self._validate_value_range(field, validated_value, rule)
+        self._validate_pattern_and_allowed(field, validated_value, rule)
         
-        # Length validation
-        if rule.min_length is not None:
-            if isinstance(validated_value, (str, list, dict)):
-                if len(validated_value) < rule.min_length:
-                    raise InputValidationError(field, f"Minimum length is {rule.min_length}")
-        
-        if rule.max_length is not None:
-            if isinstance(validated_value, (str, list, dict)):
-                if len(validated_value) > rule.max_length:
-                    raise InputValidationError(field, f"Maximum length is {rule.max_length}")
-        
-        # Value validation
-        if rule.min_value is not None:
-            if isinstance(validated_value, (int, float)):
-                if validated_value < rule.min_value:
-                    raise InputValidationError(field, f"Minimum value is {rule.min_value}")
-        
-        if rule.max_value is not None:
-            if isinstance(validated_value, (int, float)):
-                if validated_value > rule.max_value:
-                    raise InputValidationError(field, f"Maximum value is {rule.max_value}")
-        
-        # Pattern validation
-        if rule.pattern:
-            if isinstance(validated_value, str):
-                if not re.match(rule.pattern, validated_value):
-                    raise InputValidationError(field, f"Value does not match pattern: {rule.pattern}")
-        
-        # Allowed values validation
-        if rule.allowed_values:
-            if validated_value not in rule.allowed_values:
-                raise InputValidationError(field, f"Value must be one of: {rule.allowed_values}")
-        
-        # Schema validation
         if rule.schema:
             if rule.validation_type == ValidationType.JSON:
                 self._validate_json_schema(validated_value, rule.schema)
             elif rule.validation_type == ValidationType.DICT:
                 self._validate_dict_schema(validated_value, rule.schema)
         
-        # Custom validation
         if rule.custom_validator:
             try:
                 validated_value = rule.custom_validator(validated_value)
             except Exception as e:
                 raise InputValidationError(field, f"Custom validation failed: {e}")
         
-        # Sanitize if requested
         if rule.sanitize:
             validated_value = self._sanitize_value(validated_value, rule)
         
@@ -378,7 +369,7 @@ class InputValidatorAgent(MCPHardenedMixin, HealerMixin):
         """
         if isinstance(value, str):
             # Remove control characters
-            value = ''.join(char for char in value if ord(char) >= 32 or char in '\n\r\t')
+            value = ''.join(char for char in value if ord(char) >= 32 or char in '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n\r\t')
             
             # Limit length
             if rule.max_length:

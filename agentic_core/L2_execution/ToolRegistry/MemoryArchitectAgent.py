@@ -125,7 +125,7 @@ class HealingDiffAnalyzer:
     and nesting calculation, reducing the complexity of MemoryArchitect.
     """
 
-    def __init__(self, Logger: logging.Logger):
+    def __init__(self, Logger: logging.Logger) -> None:
         self.Logger = Logger
 
     def analyze_diff(self, success: HealingSuccess) -> Optional[Dict]:
@@ -197,7 +197,7 @@ class MemoryArchitectAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     - Rollback on corruption
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Memory Architect.
         

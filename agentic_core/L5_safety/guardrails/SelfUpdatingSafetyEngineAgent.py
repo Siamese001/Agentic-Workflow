@@ -95,7 +95,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class SelfUpdatingSafetyEngineAgent(HealerMixin, MCPHardenedMixin):
+class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Safety engine that learns and adapts to new threats.
     
@@ -107,7 +107,7 @@ class SelfUpdatingSafetyEngineAgent(HealerMixin, MCPHardenedMixin):
     - Rule effectiveness tracking
     """
 
-    def __init__(self, rules_storage_path: Optional[str]=None):
+    def __init__(self, rules_storage_path: Optional[str]=None) -> None:
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(os.getcwd(), '.canon_memory', 'safety_rules.json')
         self.rules: Dict[str, SafetyRule] = {}
@@ -326,4 +326,4 @@ def create_self_updating_safety_engine(rules_storage_path: Optional[str]=None) -
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
-    return SelfUpdatingSafetyEngine(rules_storage_path=rules_storage_path)
+    return SelfUpdatingSafetyEngine(rules_storage_path=rules_storage_path)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

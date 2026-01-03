@@ -65,7 +65,7 @@ class ConsoleLogger:
 
 
 # NAMING FIXED: SafeSystemCommandExecutorAgent → SafeSystemCommandExecutorAgent
-class SafeSystemCommandExecutorAgent(HealerMixin, MCPHardenedMixin):
+class SafeSystemCommandExecutorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     A secure system command executor that prevents destructive actions
     and logs attempts. This simulates the 'ActionNode' whitelist concept
@@ -77,7 +77,7 @@ class SafeSystemCommandExecutorAgent(HealerMixin, MCPHardenedMixin):
         # Add other dangerous commands/patterns here in a real system
     ]
 
-    def __init__(self, Logger: Logger):
+    def __init__(self, Logger: Logger) -> None:
         self._logger = Logger
 
     def _is_dangerous(self, command: str) -> bool:
@@ -262,4 +262,4 @@ def run(
     except Exception as e:
         Logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
-        return f"CRITICAL EXCEPTION running destructive action: {e}"
+        return f"CRITICAL EXCEPTION running destructive action: {e}"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

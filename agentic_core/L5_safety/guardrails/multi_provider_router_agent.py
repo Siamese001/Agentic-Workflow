@@ -46,10 +46,10 @@ class RouterConfig:
     health_check_interval: int = 300  # seconds
     circuit_breaker_threshold: int = 5  # failures before circuit opens
 
-class MultiProviderRouterAgent:
+class MultiProviderRouterAgent(MCPHardenedMixin):
     """Production router with intelligent provider selection and failover."""
 
-    def __init__(self, config: Optional[RouterConfig] = None):
+    def __init__(self, config: Optional[RouterConfig] = None) -> None:
         self.config = config or self._default_config()
         self.clients = {}
         self.health_status = {}
@@ -416,7 +416,7 @@ class MultiProviderRouterAgent:
             prompt = ""
             for msg in messages:
                 if msg["role"] == "system":
-                    prompt += f"System: {msg['content']}\n\n"
+                    prompt += f"System: {msg['content']}\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n\n"
                 elif msg["role"] == "user":
                     prompt += f"User: {msg['content']}\n\n"
                 elif msg["role"] == "assistant":
