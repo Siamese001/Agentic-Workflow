@@ -23,12 +23,12 @@
 
 ### High Priority Territories
 
+- 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 52.6% | Risk: HIGH | Heal Gap: 52.6%
 - 🔥 **L1 Cognition/Intent Analysis**: 9/50 compliant | Health: 31.3% | Risk: HIGH | Heal Gap: 66.0%
 - 🔥 **L1 Cognition/Thought Engine**: 9/50 compliant | Health: 31.3% | Risk: HIGH | Heal Gap: 66.0%
 - 🔥 **L0 Maintenance**: 5/24 compliant | Health: 38.9% | Risk: HIGH | Heal Gap: 87.5%
 - 🔥 **L2 Execution/Action Handlers**: 27/83 compliant | Health: 42.2% | Risk: HIGH | Heal Gap: 61.4%
 - 🔥 **L2 Execution/Mcp**: 27/83 compliant | Health: 42.2% | Risk: HIGH | Heal Gap: 61.4%
-- 🔥 **L5 Safety/Validators**: 12/19 compliant | Health: 52.6% | Risk: HIGH | Heal Gap: 52.6%
 - 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 34.2% | Risk: HIGH | Heal Gap: 67.6%
 
 ### Medium Priority Territories

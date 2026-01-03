@@ -4,21 +4,12 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
-class BaseAgent(HealerMixin):
-    """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
-    def __init__(self, context, debug_mode=False):
-        self.context = context
-        self.debug_mode = debug_mode
-    
-    def log_info(self, msg):
-        pass
-    
-    def log_warning(self, msg):
-        pass
-    
-    def log_error(self, msg):
-        pass
+# ------------------------------------------------------------------
+# REMOVED: Local stub BaseAgent definition (technical debt)
+# Reason: SafetyBaseAgent provides real logging and initialization.
+# ------------------------------------------------------------------
 
 class BaseModel:
     """Stub for BaseModel - TODO: Replace with sovereign equivalent"""
@@ -39,7 +30,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
+class PromptInjectionDetectorAgent(SafetyBaseAgent):
     """Detects prompt-injection attacks."""
 
     class PIDetectionOutput(BaseModel):
@@ -50,10 +41,10 @@ class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
     @track_metrics("run_pi_detector")
     async def run_async(self, user_input: str, workflow_id: str) -> Dict[str, object]:
         """Run async prompt injection detection on user input."""
-        self.log_info("Detecting prompt injection...")
+        self.log_info("Detecting prompt injection...")  # now real implementation
 
         if not self.config.agent_stacks.enable_prompt_injection_detection:
-            self.log_warning("Prompt injection detection is disabled.")
+            self.log_warning("Prompt injection detection is disabled.")  # now real
             return {
                 "injection_detected": False,
                 "reason": "Detector disabled",
@@ -82,7 +73,7 @@ class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
             self.PIDetectionOutput,
         )
         if error:
-            self.log_error(f"PromptInjectionDetector failed validation: {error}")
+            self.log_error(f"PromptInjectionDetector failed validation: {error}")  # now real
             return {
                 "injection_detected": True,
                 "reason": f"Detector validation failed: {error}",
@@ -90,7 +81,7 @@ class PromptInjectionDetectorAgent(HealerMixin, BaseAgent):
             }
 
         if validated_output.injection_detected:
-            self.log_warning(
+            self.log_warning(  # now real implementation
                 f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}"
             )
 

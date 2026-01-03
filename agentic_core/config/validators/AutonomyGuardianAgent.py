@@ -1492,23 +1492,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     
                     obs_summary = f"Logging: {'✓' if obs_logging else '✗'} | Metrics: {'✓' if obs_metrics else '✗'} | Tracing: {'✓' if obs_tracing else '✗'}"
                     
-                    # MCP Capable detection (uses MCP client to call external MCP servers)
-                    has_mcp_capability = False
-                    mcp_imports = [
-                        "from mcp import",
-                        "import mcp",
-                        "ClientSession",
-                        "mcp.types",
-                        "mcp_client",
-                        "from mcp.client",
-                        "MCPClient"
-                    ]
-                    for pattern in mcp_imports:
-                        if pattern in content:
-                            has_mcp_capability = True
-                            break
-                    
-                    # MCP Hardening flags detection (security protection)
+                    # MCP Hardening flags detection
                     has_mcpshield = False
                     has_hardened_decorator = False
                     mcp_safe_overrides = True  # Innocent until proven guilty
@@ -1664,20 +1648,20 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             # Filter out infrastructure territories for TOTAL calculation
             non_infrastructure_rows = [r for r in dashboard_rows if not r.get("IsInfrastructure", False)]
             
-            if len(non_infrastructure_rows) > 0:
-                total_agents = sum(r["Total"] for r in non_infrastructure_rows)
-                total_compliant = sum(r["Compliant"] for r in non_infrastructure_rows)
+            if len(non_cross_cutting_rows) > 0:
+                total_agents = sum(r["Total"] for r in non_cross_cutting_rows)
+                total_compliant = sum(r["Compliant"] for r in non_cross_cutting_rows)
                 total_perc = round(total_compliant / total_agents * 100, 1) if total_agents else 0
                 
                 # Compute weighted averages
-                total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_tests = round(sum(r["Test %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
-                total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_tests = round(sum(r["Test %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
+                total_used = round(sum(r["Used %"] * r["Total"] for r in non_cross_cutting_rows) / total_agents, 1) if total_agents else 0
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
                 total_hardened = total_tests = total_cc = total_typed = total_observable = total_used = 0

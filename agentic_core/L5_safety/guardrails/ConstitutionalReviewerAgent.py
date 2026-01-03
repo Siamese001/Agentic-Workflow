@@ -5,21 +5,13 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 import json
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
-class BaseAgent(HealerMixin):
-    """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
-    def __init__(self, context, debug_mode=False):
-        self.context = context
-        self.debug_mode = debug_mode
-    
-    def log_info(self, msg):
-        pass
-    
-    def log_warning(self, msg):
-        pass
-    
-    def log_error(self, msg):
-        pass
+# ------------------------------------------------------------------
+# REMOVED: Local stub BaseAgent definition (technical debt)
+# Reason: SafetyBaseAgent provides real logging (log_info, log_warning,
+#         log_error) and standardized initialization.
+# ------------------------------------------------------------------
 
 class ConstitutionalReviewResult:
     """Stub for ConstitutionalReviewResult - TODO: Replace with sovereign equivalent"""
@@ -39,7 +31,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class ConstitutionalReviewerAgent(HealerMixin, BaseAgent):
+class ConstitutionalReviewerAgent(SafetyBaseAgent):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")
@@ -49,10 +41,10 @@ class ConstitutionalReviewerAgent(HealerMixin, BaseAgent):
         workflow_id: str,
     ) -> ConstitutionalReviewResult:
         """Run async constitutional review of the final draft."""
-        self.log_info("Running final constitutional review...")
+        self.log_info("Running final constitutional review...")  # now real implementation
 
         if not self.config.agent_stacks.enable_constitutional_review:
-            self.log_warning("Constitutional review is disabled. Passing by default.")
+            self.log_warning("Constitutional review is disabled. Passing by default.")  # now real implementation
             return ConstitutionalReviewResult(
                 review_passed=True,
                 violations_found=[],
@@ -84,7 +76,7 @@ class ConstitutionalReviewerAgent(HealerMixin, BaseAgent):
             ConstitutionalReviewResult,
         )
         if error:
-            self.log_error(
+            self.log_error(  # now real implementation
                 f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
             )
             return ConstitutionalReviewResult(
@@ -94,7 +86,7 @@ class ConstitutionalReviewerAgent(HealerMixin, BaseAgent):
             )
 
         if not validated_output.review_passed:
-            self.log_warning(
+            self.log_warning(  # now real implementation
                 f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}"
             )
 
