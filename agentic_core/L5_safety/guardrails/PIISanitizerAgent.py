@@ -6,15 +6,12 @@ import re
 from typing import Any, Dict
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class
 
-class BaseAgent(HealerMixin):
-    """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
-    def __init__(self, context, debug_mode=False):
-        self.context = context
-        self.debug_mode = debug_mode
-    
-    def log_info(self, msg):
-        pass
+# ------------------------------------------------------------------
+# REMOVED: Local stub BaseAgent definition (technical debt)
+# Reason: SafetyBaseAgent provides real log_info and initialization.
+# ------------------------------------------------------------------
 
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
@@ -23,7 +20,7 @@ def track_metrics(name):
     return decorator
 
 
-class PIISanitizerAgent(HealerMixin, BaseAgent):
+class PIISanitizerAgent(SafetyBaseAgent):
     """Performs local PII detection using regex heuristics."""
 
     PII_PATTERNS = {
@@ -35,7 +32,7 @@ class PIISanitizerAgent(HealerMixin, BaseAgent):
     @track_metrics("run_pii_sanitizer")
     def run(self, resume: Dict[str, object]) -> Dict[str, object]:
         """Run PII sanitizer on the resume data."""
-        self.log_info("Sanitizing PII (local regex processing)...")
+        self.log_info("Sanitizing PII (local regex processing)...")  # now real implementation
         sanitized_resume = json.loads(json.dumps(resume))
 
         def sanitize_node(node: Any) -> Any:
@@ -48,7 +45,7 @@ class PIISanitizerAgent(HealerMixin, BaseAgent):
             return node
 
         sanitized = sanitize_node(sanitized_resume)
-        self.log_info("PII sanitization complete.")
+        self.log_info("PII sanitization complete.")  # now real implementation
         return sanitized
 
     def _sanitize_text(self, text: str) -> str:

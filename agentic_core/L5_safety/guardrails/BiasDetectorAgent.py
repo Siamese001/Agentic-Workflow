@@ -4,18 +4,14 @@ from __future__ import annotations
 from typing import Dict
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
+from .SafetyBaseAgent import SafetyBaseAgent  # NEW: Import canonical L5 base class (same directory → relative import)
 
-class BaseAgent(HealerMixin):
-    """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
-    def __init__(self, context, debug_mode=False):
-        self.context = context
-        self.debug_mode = debug_mode
-    
-    def log_info(self, msg):
-        pass
-    
-    def log_feedback(self, workflow_id, category, status, data):
-        pass
+# ------------------------------------------------------------------
+# REMOVED: Local stub BaseAgent definition (technical debt)
+# Reason: SafetyBaseAgent is the canonical L5 base class. It already inherits
+#         HealerMixin and provides standardized initialization, logging,
+#         and safety utilities. The stub only had pass-through logs.
+# ------------------------------------------------------------------
 
 def track_metrics(name):
     """Stub decorator for track_metrics - TODO: Replace with sovereign equivalent"""
@@ -28,16 +24,18 @@ def detect_bias(context, text, workflow_id=""):
     return {"bias_detected": False, "score": 0.0}
 
 
-class BiasDetectorAgent(HealerMixin, BaseAgent):
+class BiasDetectorAgent(SafetyBaseAgent):
     """Runs local bias detection with dynamic constitution rules."""
 
     @track_metrics("run_bias_detector")
     def run(self, text: str, workflow_id: str = "") -> Dict[str, object]:
         """Run bias detection on the provided text."""
+        # log_info now comes from SafetyBaseAgent (real implementation)
         self.log_info("Detecting bias (local processing with dynamic rules)...")
         result = detect_bias(self.context, text, workflow_id)
 
         if workflow_id:
+            # log_feedback now comes from SafetyBaseAgent (real implementation)
             self.log_feedback(
                 workflow_id,
                 "bias_detection",
