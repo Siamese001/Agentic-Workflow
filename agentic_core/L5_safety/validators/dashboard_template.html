@@ -722,11 +722,10 @@
                                     <th style="padding:16px; text-align:left; font-weight:600;">Territory</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Percentage of agents with type hints (35% weight)">Typing %</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="% workers with ACCESS TO EXTERNAL MCP TOOLS — Connected to external suppliers via MCP (25% weight)">MCP Capable %</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Average % of definitions (functions/classes/methods) with non-empty docstrings per agent (20% weight)">Documentation %</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Inverted cyclomatic complexity health (20% weight, higher = better)">Complexity Health</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Weighted composite: Typing 35% + MCP Capable 25% + Documentation 20% + Complexity Health 20%">Code Quality Score</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Average % of definitions (functions/classes/methods) with non-empty docstrings per agent (20% weight)">Documentation %</th>
+                                    <th style="padding:16px; text-align:center; font-weight:600;" title="Weighted composite: Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%">Code Quality Score</th>
                                     <th style="padding:16px; text-align:center; font-weight:600;" title="Average physical source lines of code (non-blank, non-comment) per agent">Avg LOC</th>
-                                    <th style="padding:16px; text-align:center; font-weight:600;" title="% agents with proper L5 base class inheritance / safety compliance">Proper Base %</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -776,8 +775,8 @@
                             })()}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(mcp_capable)}; border-right:1px solid #e5e7eb;">${mcp_capable.toFixed(1)}%</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(complexityHealth)}; border-right:1px solid #e5e7eb;">${complexityHealth.toFixed(1)}%</td>
+                        <td style="padding:12px; text-align:center; background:${getGradientBg(documented)}; border-right:1px solid #e5e7eb;">${documented.toFixed(1)}%</td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(codeQualityScore)}; font-weight:700; border-right:1px solid #e5e7eb;">
                             ${codeQualityScore.toFixed(1)}%
                             ${(() => {
@@ -799,7 +798,6 @@
                             })()}
                         </td>
                         <td style="padding:12px; text-align:center; background:${getGradientBg(avgLoc, 600)}; border-right:1px solid #e5e7eb;">${Math.round(avgLoc)}</td>
-                        <td style="padding:12px; text-align:center; background:${getGradientBg(properBase)}; border-right:1px solid #e5e7eb;">${properBase.toFixed(1)}%</td>
                     </tr>`;
             });
             
@@ -844,8 +842,8 @@
                             ` : ''}
                         </td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalMcpCapable)}; border-right:1px solid #e5e7eb;">${totalMcpCapable.toFixed(1)}%</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalDocumented)}; border-right:1px solid #e5e7eb;">${totalDocumented.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalComplexityHealth)}; border-right:1px solid #e5e7eb;">${totalComplexityHealth.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalDocumented)}; border-right:1px solid #e5e7eb;">${totalDocumented.toFixed(1)}%</td>
                         <td style="padding:14px; text-align:center; font-weight:700; font-size:1.05em; background:${getGradientBg(totalCodeQuality)}; border-right:1px solid #e5e7eb;">
                             ${totalCodeQuality.toFixed(1)}%
                             ${dashboardData[0].sparklines ? `<span class="sparkline">${dashboardData[0].sparklines.code_quality_score}</span>` : ''}
@@ -856,13 +854,14 @@
                                 </span>
                             ` : ''}
                         </td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalAvgLoc, 600)}; border-right:1px solid #e5e7eb;">${Math.round(totalAvgLoc)}</td>
-                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalProperBase)};">${totalProperBase.toFixed(1)}%</td>
+                        <td style="padding:14px; text-align:center; font-weight:600; background:${getGradientBg(totalAvgLoc, 600)};">${Math.round(totalAvgLoc)}</td>
                     </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p style="margin-top:12px; font-size:0.9em; color:#666;"><strong>Code Quality Score:</strong> Weighted composite (Typing 35% + MCP Capable 25% + Complexity Health 20% + Documentation 20%) — encourages typed, documented, modern, maintainable code. <strong>Avg LOC:</strong> Average source lines of code per agent (informational, flags large agents >800 LOC). <strong>Proper Base %:</strong> Phase 5 enforcement — percentage of agents inheriting from correct layer-specific base class (target: 100%).</p>
+                    <div style="margin-top:16px; padding:12px; background:#f9fafb; border-left:4px solid var(--primary); border-radius:4px;">
+                        <p style="margin:0; font-size:0.85em; color:#555;"><strong>Legend:</strong> <strong>Typing %</strong> = Type hints (35% weight) | <strong>MCP Capable %</strong> = MCP tool access (25% weight) | <strong>Complexity Health</strong> = Inverted cyclomatic complexity (20% weight) | <strong>Documentation %</strong> = Docstring coverage (20% weight) | <strong>Code Quality Score</strong> = Weighted composite | <strong>Avg LOC</strong> = Average source lines per agent</p>
+                    </div>
                 </div>
                 
                 <!-- Health Score Breakdown Section -->
