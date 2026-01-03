@@ -151,28 +151,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         
         return True, "Compliant"
     
-    def _generate_sparkline(self, values: List[float]) -> str:
-        """Generate Unicode block sparkline from list of values (last 10 max)."""
+    def _generate_sparkline(self, values: List[float]) -> List[float]:
+        """Return raw values for sparkline rendering (last 10 max)."""
         if len(values) < 2:
-            return "—"  # Insufficient data
+            return []  # Insufficient data
         
-        values = values[-10:]  # Last 10 runs max
-        
-        min_val = min(values)
-        max_val = max(values)
-        
-        if max_val == min_val:
-            return "▃" * len(values)  # Flat line (middle bar)
-        
-        # Normalize to 0-7 (8 levels)
-        buckets = 8
-        normalized = [
-            int((v - min_val) / (max_val - min_val) * (buckets - 1))
-            for v in values
-        ]
-        
-        chars = "▁▂▃▄▅▆▇█"
-        return "".join(chars[i] for i in normalized)
+        return values[-10:]  # Last 10 runs max
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
         """Load agents from agent_discovery_full.json (authoritative AST scan)."""
@@ -1847,12 +1831,17 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         history_file = self.project_root / "reports" / "autonomy_history.json"
         current_date = date.today().isoformat()  # "2026-01-03"
         
-        # Portfolio snapshot
+        # Portfolio snapshot - track key metrics for sparklines
         portfolio_snapshot = {
             "health_score": total_row.get("Health", 0),
             "code_quality_score": total_row.get("Code Quality Score", 0),
+            "invocation": total_row.get("Invocation %", 0),
             "mcp_hardened": total_row.get("Hardened %", 0),
+            "tests": total_row.get("Test %", 0),
+            "heal_cap": total_row.get("Heal Cap %", 0),
+            "observable": total_row.get("Observable %", 0),
             "typing": total_row.get("Typed %", 0),
+            "complexity": total_row.get("Avg CC", 0),
         }
         
         # Per-territory snapshots
@@ -1862,8 +1851,13 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 territory_snapshots[row["Territory"]] = {
                     "health_score": row.get("Health", 0),
                     "code_quality_score": row.get("Code Quality Score", 0),
+                    "invocation": row.get("Invocation %", 0),
                     "mcp_hardened": row.get("Hardened %", 0),
+                    "tests": row.get("Test %", 0),
+                    "heal_cap": row.get("Heal Cap %", 0),
+                    "observable": row.get("Observable %", 0),
                     "typing": row.get("Typed %", 0),
+                    "complexity": row.get("Avg CC", 0),
                 }
         
         current_full_snapshot = {
@@ -1938,56 +1932,36 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         t_trend[f"{key}_direction"] = "flat"
                     territory_trends[t_name] = t_trend
         
-        # Collect historical series for sparklines (handle old format for backward compatibility)
-        portfolio_health_history = []
-        portfolio_cq_history = []
-        portfolio_hardened_history = []
-        portfolio_typing_history = []
+        # Collect historical series for sparklines - track all key metrics
+        metric_keys = ["health_score", "code_quality_score", "invocation", "mcp_hardened", "tests", "heal_cap", "observable", "typing", "complexity"]
+        portfolio_history = {key: [] for key in metric_keys}
+        
         for entry in history[-max_points:]:
             # Handle both old format (direct keys) and new format (nested under "portfolio")
             if "portfolio" in entry:
-                portfolio_health_history.append(entry["portfolio"].get("health_score", 0))
-                portfolio_cq_history.append(entry["portfolio"].get("code_quality_score", 0))
-                portfolio_hardened_history.append(entry["portfolio"].get("mcp_hardened", 0))
-                portfolio_typing_history.append(entry["portfolio"].get("typing", 0))
+                for key in metric_keys:
+                    portfolio_history[key].append(entry["portfolio"].get(key, 0))
             else:
                 # Old format compatibility
-                portfolio_health_history.append(entry.get("health_score", 0))
-                portfolio_cq_history.append(entry.get("code_quality_score", 0))
-                portfolio_hardened_history.append(entry.get("mcp_hardened", 0))
-                portfolio_typing_history.append(entry.get("typing", 0))
+                for key in metric_keys:
+                    portfolio_history[key].append(entry.get(key, 0))
         
-        total_sparklines = {
-            "health_score": self._generate_sparkline(portfolio_health_history),
-            "code_quality_score": self._generate_sparkline(portfolio_cq_history),
-            "mcp_hardened": self._generate_sparkline(portfolio_hardened_history),
-            "typing": self._generate_sparkline(portfolio_typing_history),
-        }
+        total_sparklines = {key: self._generate_sparkline(portfolio_history[key]) for key in metric_keys}
         
         # Per-territory sparklines
         territory_sparklines = {}
         for row in dashboard_rows:
             if row.get("Territory") != "TOTAL":
                 t_name = row["Territory"]
-                t_health_hist = []
-                t_cq_hist = []
-                t_hardened_hist = []
-                t_typing_hist = []
+                t_history = {key: [] for key in metric_keys}
                 
                 for entry in history[-max_points:]:
                     t_data = entry.get("territories", {}).get(t_name)
                     if t_data:
-                        t_health_hist.append(t_data.get("health_score", 0))
-                        t_cq_hist.append(t_data.get("code_quality_score", 0))
-                        t_hardened_hist.append(t_data.get("mcp_hardened", 0))
-                        t_typing_hist.append(t_data.get("typing", 0))
+                        for key in metric_keys:
+                            t_history[key].append(t_data.get(key, 0))
                 
-                territory_sparklines[t_name] = {
-                    "health_score": self._generate_sparkline(t_health_hist),
-                    "code_quality_score": self._generate_sparkline(t_cq_hist),
-                    "mcp_hardened": self._generate_sparkline(t_hardened_hist),
-                    "typing": self._generate_sparkline(t_typing_hist),
-                }
+                territory_sparklines[t_name] = {key: self._generate_sparkline(t_history[key]) for key in metric_keys}
         
         # Append & save
         history.append(current_full_snapshot)
@@ -2382,6 +2356,125 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     "score": (max_territory[1] / max(min_territory[1], 1)) * 8,
                     "file_links": []
                 })
+        
+        # === STRATEGIC ARCHITECTURAL RECOMMENDATIONS ===
+        
+        # === 9. RED TEAMING CAPABILITY GAP ===
+        red_team_count = territory_counts.get("L5 Safety/Red Teaming", 0)
+        if red_team_count < 5:
+            holistic_recs.append({
+                "territory": "🎯 Strategic: Red Teaming Capability",
+                "priority": "Critical",
+                "total": red_team_count,
+                "used": 100.0,
+                "rationale": f"⚠️ Only {red_team_count} red teaming agents → Critical adversarial testing gap\n💡 Action: Build dedicated red team with 5-8 specialized adversarial agents\n📊 Impact: Without adversarial testing, vulnerabilities in healing/MCP go undetected until production failure",
+                "gaps": f"{red_team_count}/5 minimum • Need prompt injection, chaos engineering, boundary testing agents",
+                "guidance": "**Red Team Expansion:**\n1. **PromptInjectionAgent** - Tests LLM prompt boundaries\n2. **ChaosEngineeringAgent** - Simulates failures at scale\n3. **BoundaryTestAgent** - Tests edge cases and limits\n4. **AdversarialInputAgent** - Malformed/malicious inputs\n5. **RegressionHunterAgent** - Finds healing regressions",
+                "score": 95,  # Very high priority
+                "file_links": []
+            })
+        
+        # === 10. VALIDATOR CONSOLIDATION OPPORTUNITY ===
+        validator_count = territory_counts.get("L5 Safety/Validators", 0)
+        if validator_count > 15:
+            holistic_recs.append({
+                "territory": "🔧 Strategic: Validator Consolidation",
+                "priority": "High",
+                "total": validator_count,
+                "used": 100.0,
+                "rationale": f"⚠️ {validator_count} validation agents → Potential overlap and maintenance burden\n💡 Action: Consolidate into unified validation pipeline with pluggable rules\n📊 Impact: Reduce duplication, simplify compliance flow, lower maintenance cost",
+                "gaps": f"{validator_count} validators • Target: 8-12 core validators with composable rules",
+                "guidance": "**Consolidation Strategy:**\n1. Audit validators for overlapping responsibilities\n2. Create **UnifiedValidationOrchestrator** with rule plugins\n3. Merge: Location+Hierarchy → StructureValidator\n4. Merge: Naming+KeyMapping → ConventionValidator\n5. Extract shared logic to ValidationRuleEngine",
+                "score": 70,
+                "file_links": []
+            })
+        
+        # === 11. LAYER ORCHESTRATION ARCHITECTURE ===
+        l3_count = sum(v for k, v in territory_counts.items() if k.startswith("L3"))
+        if l3_count > 20:
+            holistic_recs.append({
+                "territory": "🏗️ Strategic: Orchestration Simplification",
+                "priority": "High",
+                "total": l3_count,
+                "used": 100.0,
+                "rationale": f"⚠️ {l3_count} L3 orchestration agents → Complex workflow coordination\n💡 Action: Implement centralized workflow engine with declarative pipelines\n📊 Impact: Reduce orchestration complexity, enable visual workflow design, improve debuggability",
+                "gaps": f"{l3_count} orchestrators • Target: Unified workflow engine + 10-15 specialized coordinators",
+                "guidance": "**Orchestration Redesign:**\n1. Create **WorkflowEngine** with declarative YAML pipelines\n2. Implement **AgentRegistry** for dynamic agent discovery\n3. Add **WorkflowVisualizer** for debugging complex flows\n4. Consolidate redundant MCP routers into single sovereign\n5. Enable hot-reload of workflow definitions",
+                "score": 65,
+                "file_links": []
+            })
+        
+        # === 12. OBSERVABILITY INFRASTRUCTURE ===
+        obs_territories = {k: v for k, v in territory_counts.items() if "observability" in k.lower()}
+        total_obs = sum(obs_territories.values()) if obs_territories else 0
+        avg_observable_pct = sum(r.get("Observable %", 0) for r in dashboard_rows if r["Territory"] != "TOTAL") / max(len(dashboard_rows) - 1, 1)
+        if avg_observable_pct < 50:
+            holistic_recs.append({
+                "territory": "📊 Strategic: Observability Platform",
+                "priority": "High",
+                "total": total_obs,
+                "used": 100.0,
+                "rationale": f"⚠️ {avg_observable_pct:.0f}% avg observability → Blind spots in production monitoring\n💡 Action: Build unified observability platform with auto-instrumentation\n📊 Impact: Enable proactive issue detection, reduce MTTR, support autonomous healing decisions",
+                "gaps": f"{avg_observable_pct:.0f}% observable • Target: 80%+ with structured logging, metrics, traces",
+                "guidance": "**Observability Platform:**\n1. **AutoInstrumentAgent** - Auto-add logging to all agents\n2. **MetricsAggregatorAgent** - Centralized metrics collection\n3. **TracingCorrelatorAgent** - Distributed trace correlation\n4. **AlertingOrchestratorAgent** - Intelligent alerting rules\n5. Deploy OpenTelemetry SDK across all layers",
+                "score": 75,
+                "file_links": []
+            })
+        
+        # === 13. STATE MANAGEMENT MATURITY ===
+        l4_count = sum(v for k, v in territory_counts.items() if k.startswith("L4"))
+        if l4_count < 10:
+            holistic_recs.append({
+                "territory": "💾 Strategic: State Management",
+                "priority": "Medium",
+                "total": l4_count,
+                "used": 100.0,
+                "rationale": f"⚠️ Only {l4_count} L4 state agents → Potential state management gaps\n💡 Action: Build robust state layer with caching, persistence, and recovery\n📊 Impact: Improve system resilience, enable stateful workflows, support long-running operations",
+                "gaps": f"{l4_count} state agents • Target: 15-20 for mature state management",
+                "guidance": "**State Layer Expansion:**\n1. **StateSnapshotAgent** - Point-in-time state capture\n2. **StateRecoveryAgent** - Rollback to known-good state\n3. **StateSyncAgent** - Multi-node state synchronization\n4. **CacheInvalidationAgent** - Smart cache management\n5. **CheckpointAgent** - Long-running workflow checkpoints",
+                "score": 45,
+                "file_links": []
+            })
+        
+        # === 14. COGNITIVE LAYER ENHANCEMENT ===
+        l1_count = sum(v for k, v in territory_counts.items() if k.startswith("L1"))
+        l1_health = sum(territory_health.get(k, 0) for k in territory_counts if k.startswith("L1")) / max(len([k for k in territory_counts if k.startswith("L1")]), 1)
+        if l1_count > 5 and l1_health < 40:
+            holistic_recs.append({
+                "territory": "🧠 Strategic: Cognitive Enhancement",
+                "priority": "Medium",
+                "total": l1_count,
+                "used": 100.0,
+                "rationale": f"⚠️ {l1_count} L1 cognition agents at {l1_health:.0f}% health → Under-maintained reasoning layer\n💡 Action: Strengthen cognitive infrastructure for better decision-making\n📊 Impact: Improve agent reasoning quality, reduce hallucinations, enable meta-learning",
+                "gaps": f"{l1_count} cognitive agents • {l1_health:.0f}% health • Target: 60%+ health",
+                "guidance": "**Cognitive Enhancement:**\n1. **ReasoningChainAgent** - Explicit CoT reasoning\n2. **ContextWindowAgent** - Intelligent context management\n3. **MemoryConsolidationAgent** - Long-term knowledge retention\n4. **UncertaintyQuantifierAgent** - Confidence scoring\n5. Integrate with RAG for knowledge grounding",
+                "score": 50,
+                "file_links": []
+            })
+        
+        # === 15. CROSS-CUTTING CONCERNS ===
+        # Check for missing critical infrastructure agents
+        critical_infra = [
+            ("CircuitBreakerAgent", "Prevent cascade failures", 85),
+            ("RateLimiterAgent", "Protect against resource exhaustion", 80),
+            ("RetryOrchestratorAgent", "Intelligent retry with backoff", 75),
+            ("FeatureFlagAgent", "Safe rollout of new capabilities", 60),
+            ("ConfigHotReloadAgent", "Dynamic configuration updates", 55),
+        ]
+        
+        # Simple check - recommend if we have many agents but likely missing these patterns
+        if total_classified > 100:
+            holistic_recs.append({
+                "territory": "🔌 Strategic: Cross-Cutting Infrastructure",
+                "priority": "High",
+                "total": 5,
+                "used": 100.0,
+                "rationale": f"⚠️ {total_classified} agents but missing critical cross-cutting infrastructure\n💡 Action: Add resilience patterns (circuit breakers, rate limiters, feature flags)\n📊 Impact: Prevent cascade failures, enable safe deployments, improve system stability",
+                "gaps": "Missing: Circuit breakers, rate limiters, retry logic, feature flags",
+                "guidance": "**Infrastructure Agents to Add:**\n1. **CircuitBreakerAgent** - Open circuit on repeated failures\n2. **RateLimiterAgent** - Token bucket rate limiting\n3. **RetryOrchestratorAgent** - Exponential backoff + jitter\n4. **FeatureFlagAgent** - Gradual rollout control\n5. **ConfigHotReloadAgent** - Zero-downtime config updates",
+                "score": 72,
+                "file_links": []
+            })
         
         # Prepend holistic recommendations to top of list
         recommendations = holistic_recs + recommendations
