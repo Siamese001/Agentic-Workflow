@@ -3,15 +3,17 @@ from __future__ import annotations
 
 __version__ = "13.1"
 
+import logging
 from typing import Dict, Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from apps_lic.domain.lic_models import OutreachMission
 from apps_shared.utils.state_manager import StateManager
+
+Logger = logging.getLogger(__name__)
 
 
 class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
@@ -104,8 +106,78 @@ class HOP1ProfileAnalysisAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMi
         
         return output_path
 
-    @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
-        return {"skipped": 1}
+    def heal_repository(self) -> None:
+        """Autonomy healing: Validate and auto-correct agent state/config for reliable profile analysis.
+
+        - Chains super() for shared diagnostics/rollback
+        - Lic-specific: archetype indicators integrity, config validation, threshold bounds
+        - MCP ensures safe operations (e.g., sanitized config reloads)
+        """
+        super().heal_repository()
+
+        self._heal_archetype_indicators()
+        self._heal_config_integrity()
+        self._heal_threshold_bounds()
+        self._run_profile_diagnostics()
+
+    def _heal_archetype_indicators(self) -> None:
+        """Validate and repair archetype indicators if corrupted."""
+        try:
+            if not isinstance(self.archetype_indicators, dict):
+                Logger.warning("Archetype indicators corrupted — resetting to defaults")
+                self.archetype_indicators = {"default": {"keywords": [], "confidence": 0.5}}
+            for arch_name, arch_config in self.archetype_indicators.items():
+                if not isinstance(arch_config, dict) or "keywords" not in arch_config:
+                    Logger.warning(f"Archetype {arch_name} config corrupted — fixing")
+                    arch_config["keywords"] = []
+                if "confidence" not in arch_config:
+                    arch_config["confidence"] = 0.5
+        except Exception as e:
+            Logger.error(f"Archetype indicators healing failed: {e}")
+
+    def _heal_config_integrity(self) -> None:
+        """Validate configuration structure and repair if corrupted."""
+        try:
+            if not isinstance(self.config, dict):
+                Logger.warning("Config corrupted — resetting to defaults")
+                self.config = {"default_archetype": "generic", "default_confidence": 0.5}
+            required_keys = ["default_archetype", "default_confidence"]
+            for key in required_keys:
+                if key not in self.config:
+                    Logger.warning(f"Missing config key {key} — setting default")
+                    if key == "default_archetype":
+                        self.config[key] = "generic"
+                    elif key == "default_confidence":
+                        self.config[key] = 0.5
+        except Exception as e:
+            Logger.error(f"Config integrity check failed: {e}")
+
+    def _heal_threshold_bounds(self) -> None:
+        """Ensure threshold settings within valid bounds."""
+        try:
+            if not isinstance(self.manual_override_threshold, (int, float)):
+                Logger.warning("Manual override threshold invalid — resetting to 0.7")
+                self.manual_override_threshold = 0.7
+            elif self.manual_override_threshold < 0 or self.manual_override_threshold > 1.0:
+                Logger.warning(f"Threshold {self.manual_override_threshold} out of bounds — clamping")
+                self.manual_override_threshold = max(0.0, min(1.0, self.manual_override_threshold))
+        except Exception as e:
+            Logger.error(f"Threshold bounds check failed: {e}")
+
+    def _run_profile_diagnostics(self) -> None:
+        """Run profile-specific health checks (e.g., mock archetype classification)."""
+        try:
+            if not self.archetype_indicators:
+                Logger.error("Diagnostics failed — archetype indicators unavailable")
+                return
+            test_title = "Chief Executive Officer"
+            found_match = False
+            for arch_name, arch_config in self.archetype_indicators.items():
+                for keyword in arch_config.get("keywords", []):
+                    if keyword in test_title.lower():
+                        found_match = True
+                        break
+            if not found_match and not self.default_archetype:
+                Logger.error("Diagnostics failed — no fallback archetype")
+        except Exception as e:
+            Logger.error(f"Profile diagnostics exception: {e}")

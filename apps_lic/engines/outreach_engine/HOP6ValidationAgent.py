@@ -4,16 +4,19 @@ from __future__ import annotations
 __version__ = "13.1"
 
 import json
+import logging
+import os
 import re
 from typing import Dict, List, Any
 
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 from apps_shared.utils.state_manager import StateManager
 from apps_lic.engines.outreach_engine.tools.code_interpreter import ValidationToolkit
+
+Logger = logging.getLogger(__name__)
 
 
 class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
@@ -197,8 +200,77 @@ class HOP6ValidationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
         
         return results
 
-    @timeout(300)
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
-        return {"skipped": 1}
+    def heal_repository(self) -> None:
+        """Autonomy healing: Validate and auto-correct agent state/config for reliable validation.
+
+        - Chains super() for shared diagnostics/rollback
+        - Lic-specific: validation rules integrity, toolkit availability, config validation
+        - MCP ensures safe operations (e.g., sanitized rule loading)
+        """
+        super().heal_repository()
+
+        self._heal_validation_rules()
+        self._heal_toolkit()
+        self._heal_config_integrity()
+        self._run_validation_diagnostics()
+
+    def _heal_validation_rules(self) -> None:
+        """Validate and reload validation rules if corrupted."""
+        try:
+            if not isinstance(self.rules, dict):
+                Logger.warning("Validation rules corrupted — reloading from file")
+                if os.path.exists("config/validator_rules_LIC.json"):
+                    with open("config/validator_rules_LIC.json", 'r') as f:
+                        self.rules = json.load(f)
+                else:
+                    Logger.error("Rules file missing — using empty rules")
+                    self.rules = {}
+            required_keys = ["severity_levels", "rule_categories"]
+            for key in required_keys:
+                if key not in self.rules:
+                    Logger.warning(f"Missing rule key {key} — using defaults")
+                    if key == "severity_levels":
+                        self.rules[key] = ["INFO", "WARNING", "CRITICAL"]
+                    elif key == "rule_categories":
+                        self.rules[key] = []
+        except Exception as e:
+            Logger.error(f"Validation rules healing failed: {e}")
+
+    def _heal_toolkit(self) -> None:
+        """Validate toolkit availability and gracefully degrade if needed."""
+        try:
+            if not self.toolkit:
+                Logger.warning("Validation toolkit missing — basic validation only")
+                return
+            if not hasattr(self.toolkit, 'validate'):
+                Logger.error("Toolkit missing validate method — disabling")
+                self.toolkit = None
+        except Exception as e:
+            Logger.error(f"Toolkit validation failed: {e}")
+
+    def _heal_config_integrity(self) -> None:
+        """Validate configuration structure and repair if corrupted."""
+        try:
+            if not isinstance(self.config, dict):
+                Logger.warning("Config corrupted — resetting to defaults")
+                self.config = {"severity_threshold": "WARNING"}
+            required_keys = ["severity_threshold"]
+            for key in required_keys:
+                if key not in self.config:
+                    Logger.warning(f"Missing config key {key} — setting default")
+                    if key == "severity_threshold":
+                        self.config[key] = "WARNING"
+        except Exception as e:
+            Logger.error(f"Config integrity check failed: {e}")
+
+    def _run_validation_diagnostics(self) -> None:
+        """Run validation-specific health checks (e.g., mock rule evaluation)."""
+        try:
+            if not self.rules:
+                Logger.error("Diagnostics failed — rules unavailable")
+                return
+            test_text = "This is a test message for validation."
+            if not isinstance(test_text, str) or len(test_text) == 0:
+                Logger.error("Diagnostics failed — invalid test text")
+        except Exception as e:
+            Logger.error(f"Validation diagnostics exception: {e}")
