@@ -565,8 +565,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_compliant = sum(1 for a in agents if "def heal_repository(self" in a.read_text(errors="ignore"))
             terr_healing_invoke = sum(1 for a in agents if "super().heal_repository()" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in agents if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            # Healing capabilities: either inherits HealerMixin OR has healing logic
-            terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
+            terr_healing_cap = sum(1 for a in agents if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
             terr_tests = sum(1 for a in agents if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in agents if a.stem in used_stems)
             
@@ -666,8 +666,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             terr_compliant = sum(1 for a in unclassified if "def heal_repository(self" in a.read_text(errors="ignore"))
             terr_healing_invoke = sum(1 for a in unclassified if "super().heal_repository()" in a.read_text(errors="ignore"))
             terr_hardened = sum(1 for a in unclassified if "MCPHardenedMixin" in a.read_text(errors="ignore"))
-            # Healing capabilities: either inherits HealerMixin OR has healing logic
-            terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or any(ind in a.read_text(errors="ignore") for ind in ["run(", "validate_", "auto_"]))
+            # Healing capabilities: ONLY count agents that inherit HealerMixin or have heal_repository method
+            terr_healing_cap = sum(1 for a in unclassified if "HealerMixin" in a.read_text(errors="ignore") or "def heal_repository" in a.read_text(errors="ignore"))
             terr_tests = sum(1 for a in unclassified if any(p in a.read_text(errors="ignore") for p in ["_run_self_tests", "SubatomicTestingMixin", "SubatomicAgent", "L0DelegationTestingMixin", "L0DelegationMixin", "TestSovereigntyAgent", "_delegate_tests", "delegate_on_failure", "def test_", "import pytest", "import unittest"]))
             terr_used = sum(1 for a in unclassified if a.stem in used_stems)
             
@@ -999,7 +999,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 tree = ast.parse(content)
                 self._compute_ast_metrics(tree, file_metrics, agent, atomic_threshold, global_violations)
             except (SyntaxError, Exception):
-                file_metrics["max_cc"] = 999
+                # Don't inflate max_cc with arbitrary high value for errors
+                pass
             
             # Phase 1d: Observability detection
             file_metrics["observable"] = 100 if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]) else 0
@@ -1218,6 +1219,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
 
                 # Track sub-atomic violations (high CC methods)
+                # FIX: Use max method CC per file (not sum) - rewards decomposition
+                file_max_cc = 0
                 for func_node in functions:
                     visitor = _CCVisitor()
                     visitor.visit(func_node)
@@ -1227,8 +1230,11 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                         file_path = str(agent.relative_to(self.project_root))
                         global_violations.append((cc, file_path, func_node.name))
                     
-                    metrics["cc_sum"] += cc
+                    file_max_cc = max(file_max_cc, cc)
                     metrics["max_cc"] = max(metrics["max_cc"], cc)
+                
+                # Use max method CC for avg calculation (rewards well-decomposed files)
+                metrics["cc_sum"] += file_max_cc
 
                 # Typing coverage
                 if functions:
@@ -1256,7 +1262,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                     metrics["observable"] += 100
                     
             except SyntaxError:
-                metrics["max_cc"] = max(metrics["max_cc"], 999)
+                # Don't inflate max_cc with arbitrary high value for syntax errors
+                pass
             except Exception:
                 pass
 
@@ -1826,6 +1833,22 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Priority": "ALL"
             }
             dashboard_rows.insert(0, total_row)
+        else:
+            # No rows - create empty total_row to prevent UnboundLocalError
+            total_row = {
+                "Territory": "TOTAL",
+                "Total": 0,
+                "Compliant": 0,
+                "Health": 0,
+                "Code Quality Score": 0,
+                "Invocation %": 0,
+                "Hardened %": 0,
+                "Test %": 0,
+                "Heal Cap %": 0,
+                "Observable %": 0,
+                "Typed %": 0,
+                "Avg CC": 0,
+            }
         
         # === Historical Trending: Portfolio + Per-Territory Deltas & Sparklines ===
         history_file = self.project_root / "reports" / "autonomy_history.json"
