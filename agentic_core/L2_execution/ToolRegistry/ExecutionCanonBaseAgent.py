@@ -1,11 +1,23 @@
 from __future__ import annotations
-"""ExecutionCanonBaseAgent — L2 Base with Subatomic Testing Framework (Jan 01, 2026)
+"""
+DEPRECATED: This file is deprecated as of Phase 2 (Jan 03, 2026).
+All agents must migrate to L2ExecutionBaseAgent with enable_gemini=True.
+This file will be removed in Phase 5.
+
+ExecutionCanonBaseAgent — L2 Base with Subatomic Testing Framework (Jan 01, 2026)
 
 L2 Execution agents produce executable artifacts (code, tool outputs, file ops).
 Subatomic CRITIQUE hop includes:
 - Basic self-testing (unit/syntax for artifacts)
 - Delegation to TestSovereigntyAgent on failure
 """
+
+import warnings
+warnings.warn(
+    "ExecutionCanonBaseAgent is deprecated. Use L2ExecutionBaseAgent with enable_gemini=True instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 import ast
 import asyncio
 import json
