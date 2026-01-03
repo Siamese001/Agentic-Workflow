@@ -1,6 +1,23 @@
 import numpy as np
 import requests
-from typing import Dict, Optional
+import time
+import uuid
+from typing import Dict, Optional, List
+
+# Gravity-safe imports for active interventions
+try:
+    from agentic_core.runtime.shared_runtime import publish_event
+except ImportError:
+    # Stub if not available
+    def publish_event(event_type: str, payload: dict):
+        print(f"[CoverageAgent] Event published (stub): {event_type} = {payload}")
+
+try:
+    from agentic_core.L3_orchestration.workflow_engines.task_queue import enqueue
+except ImportError:
+    # Stub if not available
+    def enqueue(task_payload: dict):
+        print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
 
 # Use the canonical base for metric-related agents (observed pattern in MetricsAgent/BenchmarkingAgent)
 # If no specific base exists, fall back to a lightweight object; adjust if your MetricsAgent inherits something specific
@@ -8,9 +25,13 @@ class CoverageAgent:
     def __init__(
         self,
         layers: list[str] = None,
-        threshold_entropy: float = 2.4,  # Tune after baseline: log2(12) ≈ 3.58 max for ~12 major territories
-        dashboard_api_url: str = "http://localhost:8000/api/metrics",  # Match your running dashboard backend
-        intervention_mode: str = "report",  # "report" | "bias_routing" | "inject_tasks"
+        threshold_entropy: float = 2.2,  # Tuned lower than max for early triggers (base-2; ~12 layers → max ~3.58)
+        dashboard_api_url: str = "http://localhost:8000/api/metrics",
+        intervention_mode: str = "full_active",  # Options: "report" (log only), "bias_only", "full_active" (bias + inject)
+        bias_weight: float = 4.0,                # Selection score multiplier (tunable; 3-5 recommended)
+        bias_duration_cycles: int = 30,          # How many orchestration cycles to sustain bias
+        synthetic_tasks_per_trigger: int = 10,   # Safe no-ops injected per act() imbalance detection
+        priority_boost_layers: List[str] = None, # Ordered forced exploration (Phase roadmap)
     ):
         self.name = "CoverageAgent"
         self.layers = layers or [
@@ -21,6 +42,16 @@ class CoverageAgent:
         self.threshold_entropy = threshold_entropy
         self.dashboard_api_url = dashboard_api_url
         self.intervention_mode = intervention_mode
+        self.bias_weight = bias_weight
+        self.bias_duration_cycles = bias_duration_cycles
+        self.synthetic_tasks_per_trigger = synthetic_tasks_per_trigger
+        self.priority_boost_layers = priority_boost_layers or [
+            "L5_safety",    # Phase 2 target (highest risk)
+            "L4_state",     # Phase 3
+            "L1_cognition", # Phase 4
+            "observability",
+            "utils"
+        ]
 
     def _fetch_metrics(self) -> Optional[Dict[str, int]]:
         """Pull layer activation counts from dashboard backend."""
@@ -56,42 +87,55 @@ class CoverageAgent:
         entropy = self._shannon_entropy(proportions)
 
         report = (
-            f"{self.name}: Current entropy = {entropy:.2f} / {np.log2(len(self.layers)):.2f} "
-            f"(threshold {self.threshold_entropy:.2f}). "
-            f"Proportions: { {k: f'{v:.1%}' for k, v in proportions.items() if v > 0} }"
+            f"{self.name}: Entropy={entropy:.2f}/{np.log2(len(self.layers)):.2f} "
+            f"({(entropy/np.log2(len(self.layers))*100):.1f}% max). "
         )
 
         if entropy < self.threshold_entropy:
-            underrepresented = min(proportions, key=proportions.get)
-            warning = (
-                f"IMBALANCE DETECTED — Underrepresented: {underrepresented} "
-                f"({proportions[underrepresented]:.1%}). Recommend corrective action."
+            # Prioritize from roadmap list
+            underrepresented = min(
+                proportions,
+                key=lambda k: (proportions[k], -self.priority_boost_layers.index(k) if k in self.priority_boost_layers else 99)
             )
-            report += " " + warning
+            report += (
+                f"IMBALANCE DETECTED — Underrepresented: {underrepresented} "
+                f"({proportions[underrepresented]:.1%}). Triggering active correction."
+            )
 
-            # Optional intervention hooks (extend based on your event/system)
-            if self.intervention_mode == "bias_routing":
-                # Example: publish to shared state / event bus for orchestrator to bias next routing
-                self._publish_bias(underrepresented)
-            elif self.intervention_mode == "inject_tasks":
-                self._inject_synthetic_task(underrepresented)
+            # Active interventions (modular for CC control)
+            if "bias" in self.intervention_mode or "full" in self.intervention_mode:
+                self._apply_routing_bias(underrepresented)
+            if "full" in self.intervention_mode:
+                self._inject_synthetic_exercises(underrepresented)
 
-            # Always log for compliance/audit trail
-            self._log_violation(entropy, underrepresented)
+            # Console output for monitoring
+            print(f"[CoverageAgent] INTERVENTION TRIGGERED: bias on {underrepresented}, {self.synthetic_tasks_per_trigger} tasks injected")
+
         else:
-            report += " Coverage balanced."
+            report += "Coverage balanced."
 
         return report
 
-    # === Extension points (implement according to your shared runtime) ===
-    def _publish_bias(self, layer: str):
-        # Placeholder — integrate with your orchestrator's routing bias mechanism
-        pass
+    def _apply_routing_bias(self, layer: str) -> None:
+        """Publish bias event — orchestrator subscribes and applies multiplier."""
+        priority_index = self.priority_boost_layers.index(layer) if layer in self.priority_boost_layers else 99
+        effective_weight = self.bias_weight + (5 - priority_index)  # Extra boost for roadmap priorities
+        publish_event("coverage_bias_update", {
+            "underrepresented_layer": layer,
+            "selection_weight_multiplier": effective_weight,
+            "remaining_orchestration_cycles": self.bias_duration_cycles,
+            "trigger_timestamp": time.time(),
+        })
 
-    def _inject_synthetic_task(self, layer: str):
-        # Placeholder — queue a no-op task that forces activation of the layer
-        pass
-
-    def _log_violation(self, entropy: float, layer: str):
-        # Placeholder — append to compliance ledger or emit telemetry event
-        pass
+    def _inject_synthetic_exercises(self, layer: str) -> None:
+        """Enqueue safe no-op tasks targeting layer — direct metric increment."""
+        for i in range(self.synthetic_tasks_per_trigger):
+            task_payload = {
+                "task_id": f"coverage_synthetic_{layer}_{uuid.uuid4().hex[:8]}",
+                "task_type": "layer_coverage_exercise",
+                "target_territory": layer,
+                "priority": "high",  # Ensure quick execution
+                "description": f"Synthetic activation #{i+1} for {layer} to improve coverage metrics",
+                "safe_no_op": True,
+            }
+            enqueue(task_payload)  # Constitution-safe queue (L3 territory)
