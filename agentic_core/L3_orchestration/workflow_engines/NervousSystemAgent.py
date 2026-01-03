@@ -31,6 +31,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.runtime.shared_runtime import subscribe_event
+from agentic_core.L3_orchestration.workflow_engines.RLOrchestratorAgent import RLOrchestratorAgent
+from agentic_core.L3_orchestration.workflow_engines.QLearningOrchestratorAgent import QLearningOrchestratorAgent
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -1184,6 +1186,16 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
         self.max_concurrent_biases = 3
         subscribe_event("coverage_bias_update", self._handle_bias_update)
 
+        # PHASE 9: Reinforcement-learned orchestration
+        self.rl_orchestrator = RLOrchestratorAgent(
+            layers=["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration",
+                   "L4_state", "L5_safety", "config", "schemas", "prompt_governance",
+                   "observability", "utils", "apps_rg", "apps_lic", "apps_shared"],
+            fallback_orchestrator=self
+        )
+        self.last_entropy = 0.0
+        self.rl_update_interval = 100
+
         LOGGER.info(
             "nervous_system_initialized",
             extra={
@@ -1191,7 +1203,8 @@ class NervousSystemAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin)
                 "action_capabilities": [c.value if hasattr(c, 'value') else c for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),
                 "phases_populated": len([p for p in self.phases.values() if p]),
-                "coverage_bias_enabled": True
+                "coverage_bias_enabled": True,
+                "rl_orchestration_enabled": True
             }
         )
 
