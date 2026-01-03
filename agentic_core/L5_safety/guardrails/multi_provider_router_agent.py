@@ -638,10 +638,28 @@ if __name__ == "__main__":
         else:
             print(f"Completion failed: {result['error']}")
 
-        # Router statistics
-        stats = router.get_router_stats()
-        print("\nRouter Statistics:")
-        print(json.dumps(stats, indent=2))
-
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from typing import Dict, Optional
+
+@timeout(300)
+def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
+    """L5 safety/guardrails - operational only."""
+    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    # Note: Module-level function, cannot call super()
+    
+    if _call_path is None:
+        _call_path = set()
+    agent_name = "MultiProviderRouterAgent"
+    if agent_name in _call_path:
+        return {"errors": 1, "cycle_detected": True}
+    if depth > max_depth:
+        return {"errors": 1, "depth_limited": True}
+    _call_path.add(agent_name)
+    try:
+        print(f"[{agent_name}] L5 safety/guardrails - operational only")
+        return {"skipped": 1}
+    finally:
+        _call_path.discard(agent_name)

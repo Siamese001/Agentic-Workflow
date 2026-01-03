@@ -352,6 +352,9 @@ class FilesystemAgent(HealerMixin):
         _call_path.add(agent_name)
         
         try:
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+            
             violations = self.run()
             print(f"[FILESYSTEM HEAL @ depth {depth}] Found {len(violations)} violations")
             

@@ -289,6 +289,9 @@ class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
         _call_path.add(self.__class__.__name__)
         
         try:
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+            
             result = self.validate_and_fix_ssot_drift(dry_run=True)
             violations = result.get("violations_found", 0)
             print(f"[CodeSSOTEnforcer HEAL @ depth {depth}] Found {violations} violations")

@@ -312,6 +312,9 @@ class SovereignEvent(BaseModel):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+            
             result = self.run(dry_run=not execute)
             print(f"[{agent_name} HEAL @ depth {depth}] Found {result['total_violations']} violations")
             return {"violations_found": result['total_violations'], "purged": result['purged']}

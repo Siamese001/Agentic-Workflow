@@ -43,6 +43,9 @@ class SafetyBaseAgent(SovereignBaseAgent):
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
         """L5 safety base - operational only."""
+        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        super().heal_repository()
+        
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

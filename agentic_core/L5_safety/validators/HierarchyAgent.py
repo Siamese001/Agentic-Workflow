@@ -1189,6 +1189,9 @@ class HierarchyAgent(HealerMixin, MCPHardenedMixin):
         actual_execute = execute and not dry_run
         
         try:
+            # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+            super().heal_repository()
+            
             violations = self.run()
             print(f"[HIERARCHY HEAL @ depth {depth}] Found {len(violations)} violations")
             
