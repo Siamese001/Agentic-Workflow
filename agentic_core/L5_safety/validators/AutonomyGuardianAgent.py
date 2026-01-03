@@ -1505,62 +1505,85 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         top_recommendations = recommendations[:10]
         
         # === Generate Self-Contained HTML ===
-        template_path = self.project_root / "autonomy_dashboard_template.html"
-        output_path = self.project_root / "autonomy_dashboard.html"
+        # Template now lives with agent code (package resource)
+        template_path = Path(__file__).parent / "dashboard_template.html"
+        output_path = self.project_root / "reports" / "autonomy_dashboard.html"
         
         if not template_path.exists():
-            print("\n⚠️  Warning: autonomy_dashboard_template.html not found in project root.")
-            print("   Place the modified template there to enable self-contained HTML generation.")
-        else:
+            print("\n⚠️  Warning: dashboard_template.html not found in validators package.")
+            print(f"   Expected location: {template_path}")
+            print("   Dashboard generation skipped.")
+            return
+        
+        try:
             with open(template_path, "r", encoding="utf-8") as f:
                 template = f.read()
-            
-            # Calculate gauge metrics from non-cross-cutting rows
-            cross_cutting_territories = {"Tested Agents", "Observability", "Knowledge"}
-            gauge_rows = [r for r in dashboard_rows if r["Territory"] not in cross_cutting_territories]
-            
-            if gauge_rows:
-                total_agents = sum(r["Total"] for r in gauge_rows)
-                gauge_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
-                gauge_compliance = round(sum(r["Compliant"] for r in gauge_rows) / total_agents * 100, 1) if total_agents else 0
-                gauge_health = round(sum(r["Health"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
-            else:
-                gauge_healing_cap = gauge_compliance = gauge_health = 0
-            
-            # Prepare data for embedding
-            data_json = json.dumps(dashboard_rows)
-            recommendations_json = json.dumps(top_recommendations)
-            last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
-            gauge_data = json.dumps({
-                "healing_cap": gauge_healing_cap,
-                "compliance": gauge_compliance,
-                "health": gauge_health
-            })
-            
-            # Inject data into template
-            html = template.replace('const dashboardData = [];', f'const dashboardData = {data_json};')
-            html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
-            html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
-            html = html.replace('const gaugeData = {};', f'const gaugeData = {gauge_data};')
-            
-            # Write self-contained HTML
-            with open(output_path, "w", encoding="utf-8") as f:
+        except Exception as e:
+            print(f"\n⚠️  Error reading dashboard template: {e}")
+            return
+        
+        # Calculate gauge metrics from non-cross-cutting rows
+        cross_cutting_territories = {"Tested Agents", "Observability", "Knowledge"}
+        gauge_rows = [r for r in dashboard_rows if r["Territory"] not in cross_cutting_territories]
+        
+        if gauge_rows:
+            total_agents = sum(r["Total"] for r in gauge_rows)
+            gauge_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
+            gauge_compliance = round(sum(r["Compliant"] for r in gauge_rows) / total_agents * 100, 1) if total_agents else 0
+            gauge_health = round(sum(r["Health"] * r["Total"] for r in gauge_rows) / total_agents, 1) if total_agents else 0
+        else:
+            gauge_healing_cap = gauge_compliance = gauge_health = 0
+        
+        # Prepare data for embedding
+        data_json = json.dumps(dashboard_rows)
+        recommendations_json = json.dumps(top_recommendations)
+        last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
+        gauge_data = json.dumps({
+            "healing_cap": gauge_healing_cap,
+            "compliance": gauge_compliance,
+            "health": gauge_health
+        })
+        
+        # Inject data into template with validation
+        html = template.replace('const dashboardData = [];', f'const dashboardData = {data_json};')
+        html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
+        html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
+        html = html.replace('const gaugeData = {};', f'const gaugeData = {gauge_data};')
+        
+        # Validate injection succeeded
+        if 'const dashboardData = [];' in html or 'const recommendationsData = [];' in html:
+            print("\n⚠️  Warning: Data injection may have failed - template variables not found.")
+            print("   Dashboard may display with empty data.")
+        
+        # Ensure output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Atomic write: write to temp file, then rename
+        temp_path = output_path.with_suffix('.tmp')
+        try:
+            with open(temp_path, "w", encoding="utf-8") as f:
                 f.write(html)
-            
-            print(f"\n### Self-Contained Interactive Dashboard Generated")
-            print(f"→ File: {output_path}")
-            print(f"→ Open directly in browser (double-click or file:// – no server/CORS issues)")
-            print(f"   Includes gauges, risk matrix, healing gaps, observability, complexity, and compliance charts.")
-            print(f"   → Executive Dashboard: Large health & compliance gauges + top 3 recommendations")
-            print(f"   → New 'Prioritized Recommendations' tab with top {len(top_recommendations)} actions")
-            print("     Includes precise multi-step diff guidance for direct IDE application.")
-            print("   → Clickable file links now include line-specific anchors to class definitions")
-            print("     VS Code: one-click jump directly to class def → add HealerMixin to bases")
-            print("   → Production-quality metrics:")
-            print("     - Robust MCP hardening detection (MCPShield mixin + @hardened decorator)")
-            print("     - Accurate healing invocation counting (super().heal_repository() calls)")
-            print("     - New Coverage Score KPI (weighted average of tests + invocation + observability)")
-            print("     - Graceful error handling for syntax errors and bad files\n")
+            temp_path.replace(output_path)
+        except Exception as e:
+            print(f"\n⚠️  Error writing dashboard: {e}")
+            if temp_path.exists():
+                temp_path.unlink()
+            return
+        
+        print(f"\n### ✅ Self-Contained Interactive Dashboard Generated")
+        print(f"→ File: {output_path}")
+        print(f"→ Open directly in browser (double-click or file:// – no server/CORS issues)")
+        print(f"   Includes gauges, risk matrix, healing gaps, observability, complexity, and compliance charts.")
+        print(f"   → Executive Dashboard: Large health & compliance gauges + top 3 recommendations")
+        print(f"   → Interview Prep: 15 prioritized questions with analogies (top 5 based on weak signals)")
+        print(f"   → Prioritized Recommendations: Top {len(top_recommendations)} actions with IDE diff guidance")
+        print("   → Clickable file links with line-specific anchors to class definitions")
+        print("     VS Code: one-click jump directly to class def → add HealerMixin to bases")
+        print("   → Production-quality metrics:")
+        print("     - Robust MCP hardening detection (MCPShield mixin + @hardened decorator)")
+        print("     - Accurate healing invocation counting (super().heal_repository() calls)")
+        print("     - Coverage Score KPI (composite: tests + invocation + observability)")
+        print("     - Didactic tooltips with non-technical analogies for interview prep\n")
 
 
 # Singleton accessor
