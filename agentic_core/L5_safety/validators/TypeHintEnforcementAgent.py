@@ -20,7 +20,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
 # NAMING CANON COMPLIANCE — renamed to TypeHintEnforcementAgent for discovery and sovereignty — 2025-12-30
-class TypeHintEnforcementAgent(HealerMixin):
+class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Ensures public functions, methods, and module-level assignments have type hints.
 
@@ -41,7 +41,7 @@ class TypeHintEnforcementAgent(HealerMixin):
     FALLBACK_RETURN = "Any"
     FALLBACK_VAR = "Any"
 
-    def __init__(self, ctx, project_root=None):
+    def __init__(self, ctx, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for TypeHintEnforcementAgent (sovereign agent)")
@@ -69,7 +69,7 @@ class TypeHintEnforcementAgent(HealerMixin):
                 new_source = ast.unparse(new_tree)
 
                 if new_source != source:
-                    file_path.write_text(new_source + "\n", encoding="utf-8")
+                    file_path.write_text(new_source + "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n", encoding="utf-8")
                     message = f"Added {fixer.added_count} Missing type hint(s)"
                     print(f"      [HEALED] {file_path.name}: {message}")
                     ctx.report(
@@ -99,7 +99,7 @@ class TypeHintFixerAgent(HealerMixin, ast.NodeTransformer):
     AST transformer that adds Missing type hints to public symbols.
     """
 
-    def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str):
+    def __init__(self, fallback_param: str, fallback_return: str, fallback_var: str) -> None:
         self.added_count = 0
         self.fallback_param = fallback_param
         self.fallback_return = fallback_return
@@ -151,7 +151,7 @@ def get_type_hint_enforcement_agent(ctx, project_root=None) -> TypeHintEnforceme
     return TypeHintEnforcementAgent(ctx, project_root)
 
 
-class TypeHintEnforcementAgent(HealerMixin):
+class TypeHintEnforcementAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     # ... (rest of the class remains the same)
 
     @timeout(300)

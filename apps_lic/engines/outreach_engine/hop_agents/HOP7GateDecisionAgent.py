@@ -29,7 +29,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
     - PASS: return True → proceed to output
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         """
         Initialize with externalized configuration
         
@@ -60,7 +60,7 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
             FactualGapError: If factual failure detected (triggers S6->S2 loop)
             ValueError: If creative failure detected (halts workflow)
         """
-        print(f"\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
         print("HOP-7: GATE DECISION")
         print(f"{'='*80}\n")
         
@@ -228,6 +228,9 @@ class HOP7GateDecisionAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
+        """Operational agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

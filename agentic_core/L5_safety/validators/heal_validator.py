@@ -76,7 +76,7 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
+class HealValidatorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Multi-stage validator for LLM-healed code.
     
@@ -87,7 +87,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
     4. Diff sanity (excessive changes, file deletion)
     """
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.max_diff_lines = 500  # Reject excessively large changes
         self.min_code_retention = 0.5  # Reject if <50% of original code remains
@@ -199,7 +199,7 @@ class HealValidatorAgent(HealerMixin, MCPHardenedMixin):
         for pattern, description in DANGEROUS_PATTERNS:
             matches = re.finditer(pattern, code, re.MULTILINE | re.IGNORECASE)
             for match in matches:
-                line_num = code[:match.start()].count('\n') + 1
+                line_num = code[:match.start()].count('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n') + 1
                 detected_patterns.append({
                     "pattern": description,
                     "line": line_num,

@@ -83,7 +83,7 @@ DUST_THRESHOLD = 40
 
 class ImportUpdater(ast.NodeVisitor):
     """AST engine to verify and suggest import updates."""
-    def __init__(self, target_symbols: Optional[Set[str]] = None):
+    def __init__(self, target_symbols: Optional[Set[str]] = None) -> None:
         self.target_symbols = target_symbols or set()
         self.found_usage = False
         self.imported_modules: Set[str] = set()
@@ -119,11 +119,11 @@ class ImportUpdater(ast.NodeVisitor):
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class HealerAgent(HealerMixin, MCPHardenedMixin):
+class HealerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous Conductor for structural healing.
     """
-    def __init__(self, project_root: Path, dry_run: bool = False):
+    def __init__(self, project_root: Path, dry_run: bool = False) -> None:
         self.project_root = Path(project_root).resolve()
         self.dry_run = dry_run
         self.backup_dir = self.project_root / "runtime" / "backups"
@@ -258,7 +258,7 @@ class HealerAgent(HealerMixin, MCPHardenedMixin):
             timestamp = int(time.time())
             backup_path = self.project_root.parent / f"{self.project_root.name}.bak.{timestamp}"
             
-            print(f"\n[STAGING] Committing {len(self.staged_changes)} changes...")
+            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n[STAGING] Committing {len(self.staged_changes)} changes...")
             print(f"   [BACKUP] Creating full backup at {backup_path.name}")
             
             # Backup current state

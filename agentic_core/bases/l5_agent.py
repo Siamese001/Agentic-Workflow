@@ -47,3 +47,4 @@ class L5Agent(HealerMixin, MCPHardenedMixin):
     def validate(self, target: Any) -> Dict[str, Any]:
         """Override in subclass to implement validation logic."""
         raise NotImplementedError(f"{self.name} must implement validate()")
+\nimport logging\n\nLogger = logging.getLogger(__name__)

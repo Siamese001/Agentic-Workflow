@@ -33,13 +33,13 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin, MCPHardenedMixin):
+class PascalSovereigntyEnforcerAgent(SubatomicTestingMixin, CanonBaseAgent, ASTEnforcementMixin, MCPHardenedMixin):
     """L5 Safety agent — enforces PascalCase as eternal sole SSOT.
     
     Uses ASTEnforcementMixin for ultra-precise AST analysis.
     """
 
-    def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False):
+    def __init__(self, ctx: Any, dry_run: bool = False, strict_mode: bool = False, _allow_mock: bool = False) -> None:
         """Ultra init — ctx mandatory, strict_mode configurable.
         
         Args:
@@ -216,7 +216,7 @@ class PascalSovereigntyEnforcerAgent(CanonBaseAgent, ASTEnforcementMixin, MCPHar
                 continue  # Remove alias
             cleaned_lines.append(line)
 
-        content = '\n'.join(cleaned_lines)
+        content = '\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n'.join(cleaned_lines)
 
         # Rename definitions
         for snake, pascal in mapping.items():

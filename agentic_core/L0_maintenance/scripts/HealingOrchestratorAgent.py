@@ -21,7 +21,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 
-class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
+class HealingOrchestratorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,):
     """
@@ -35,7 +35,7 @@ class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
       - Self-health monitoring (SelfDiagnosisMixin)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.Logger = logging.getLogger(__name__)
 
         # === Hardening Initialization ===
@@ -231,7 +231,7 @@ class HealingOrchestratorAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
             print("   [L0 HEALING] No automated fixes available for current violations")
             return
 
-        print(f"\n   [L0 HEALING] Initiating transactional healing for {len(fixes)} fixes...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n   [L0 HEALING] Initiating transactional healing for {len(fixes)} fixes...")
         await self.apply_fixes_transactionally(fixes)
 
     @timeout(300)

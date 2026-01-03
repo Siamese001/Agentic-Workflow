@@ -362,7 +362,7 @@ class TestMetricsCollector:
         assert stats["gauges"] == 1
 
 
-class TestValidationAgent(HealerMixin):
+class TestValidationAgent(MCPHardenedMixin, HealerMixin):
     """Tests for ValidationAgent class."""
 
     def test_init(self, ctx):
@@ -727,3 +727,4 @@ class TestPhase5Orchestrator(HealerMixin):
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

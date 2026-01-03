@@ -9,29 +9,29 @@ Logger: Any = logging.getLogger(__name__)
 class PeerIntelligenceConfig:
     """Brief description of functionality and purpose."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.total_hops = 3
         self.total_searches = 24
         self.differentiator_threshold = 0.3
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class IntegrityGateExecutorAgent(HealerMixin):
+class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.results = []
 
 class PeerIntelligenceResult:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, hops, keyword_analyses, table_stakes, DIFFERENTIATORS, validation_results, SUCCESS, total_searches_executed):
+    def __init__(self, hops, keyword_analyses, table_stakes, DIFFERENTIATORS, validation_results, SUCCESS, total_searches_executed) -> None:
         pass
 
 class RagHop:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, hop_number, search_queries, RESULTS, keywords_found):
+    def __init__(self, hop_number, search_queries, RESULTS, keywords_found) -> None:
         self.hop_number = hop_number
         self.search_queries = search_queries
         self.RESULTS = RESULTS
@@ -45,7 +45,7 @@ class KeywordClassification:
 class KeywordAnalysis:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING):
+    def __init__(self, keyword, CLASSIFICATION, frequency_score, competitive_density, REASONING) -> None:
         self.keyword = keyword
         self.classification = CLASSIFICATION
         self.frequency_score = frequency_score
@@ -55,7 +55,7 @@ class KeywordAnalysis:
 class ValidationResult:
     """Brief description of functionality and purpose."""
 
-    def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, SIGNATURE=None, DETAILS=None):
+    def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, SIGNATURE=None, DETAILS=None) -> None:
         self.gate_id = gate_id
         self.passed = PASSED
         self.Severity = SEVERITY
@@ -73,7 +73,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
     - Differentiator list MUST be used by Executive_Title_Composer and Strategist_BioWriter
     """
 
-    def __init__(self, config: Optional[PeerIntelligenceConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None):
+    def __init__(self, config: Optional[PeerIntelligenceConfig]=None, gate_executor: Optional[IntegrityGateExecutorAgent]=None) -> None:
         self.config = config or PeerIntelligenceConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
 
@@ -96,7 +96,7 @@ class PeerIntelligenceAuditorAgent(HealerMixin):
         keyword_analyses: Any = self._classify_keywords(jd_keywords, hops)
         table_stakes: Any = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.TABLE_STAKES]
         DIFFERENTIATORS: Any = [analysis.keyword for analysis in keyword_analyses if analysis.classification == KeywordClassification.DIFFERENTIATOR]
-        ClassificationResult: Any = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION', PASSED=True, SEVERITY='INFO', MESSAGE=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,\n            {len(DIFFERENTIATORS)} differentiators', SIGNATURE=f'CLASSIFY:OK:{len(DIFFERENTIATORS)}', DETAILS={'total_keywords': len(jd_keywords), 'table_stakes_count': len(table_stakes), 'differentiators_count': len(DIFFERENTIATORS)})
+        ClassificationResult: Any = ValidationResult(gate_id='VG_KEYWORD_CLASSIFICATION', PASSED=True, SEVERITY='INFO', MESSAGE=f'Classified {len(jd_keywords)} keywords: {len(table_stakes)} table-stakes,\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n            {len(DIFFERENTIATORS)} differentiators', SIGNATURE=f'CLASSIFY:OK:{len(DIFFERENTIATORS)}', DETAILS={'total_keywords': len(jd_keywords), 'table_stakes_count': len(table_stakes), 'differentiators_count': len(DIFFERENTIATORS)})
         validation_results.append(ClassificationResult)
         self.gate_executor.results = validation_results
         return PeerIntelligenceResult(hops=hops, keyword_analyses=keyword_analyses, table_stakes=table_stakes, DIFFERENTIATORS=DIFFERENTIATORS, validation_results=validation_results, SUCCESS=True, total_searches_executed=sum((len(hop.search_queries) for hop in hops)))

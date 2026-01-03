@@ -36,7 +36,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger = logging.getLogger(__name__)
 
 
-class TelemetryAgent(HealerMixin):
+class TelemetryAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Autonomous telemetry emission agent.
     Collects and emits structured events for sovereign observability.
@@ -127,7 +127,7 @@ class TelemetryAgent(HealerMixin):
         """Append event to log file (JSONL format)."""
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(event) + "\n")
+                f.write(json.dumps(event) + "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n")
         except Exception as e:
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 
@@ -254,8 +254,12 @@ class TelemetryAgent(HealerMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """Observability agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        """Observability agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 
 

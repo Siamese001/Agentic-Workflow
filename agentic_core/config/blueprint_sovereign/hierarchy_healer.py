@@ -16,12 +16,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NOT_AN_AGENT — utility healer class, not a true agent — excluded from agent discovery
-class HierarchyHealerAgent:
+class HierarchyHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     [L3 AGENT] The Structural Surgeon.
     Directive: Physically relocate files to satisfy Depth-4 Canon.
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         self.ctx = ctx
         self.blueprint = CORE_SUBFOLDER_MAP #
 
@@ -46,4 +46,4 @@ class HierarchyHealerAgent:
                 shutil.move(str(path_obj), str(new_path)) #
                 
                 return {"healed": True, "move_to": str(new_path), "reason": "Depth-4 Alignment"}
-        return {"healed": False}
+        return {"healed": False}\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n\nLogger = logging.getLogger(__name__)

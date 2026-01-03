@@ -13,10 +13,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
-class TerritoryHealerAgent(HealerMixin):
+class TerritoryHealerAgent(MCPHardenedMixin, HealerMixin):
     """L3 Orchestration: Territory Healing"""
     
-    def __init__(self, project_root: Path = None):
+    def __init__(self, project_root: Path = None) -> None:
         self.project_root = project_root or Path.cwd()
 
     def _run_self_tests(self) -> bool:
@@ -45,4 +45,4 @@ class TerritoryHealerAgent(HealerMixin):
             print(f"[{agent_name}] L3 orchestration - operational only")
             return {"skipped": 1}
         finally:
-            _call_path.discard(agent_name)
+            _call_path.discard(agent_name)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -178,7 +178,7 @@ class TemplateOptimizerAgent(OutreachAgent):
             print(f"   [{self.name}] ✅ Templates optimized")
 
 
-class CampaignBalanceAgent(OutreachAgent):
+class CampaignBalanceAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, OutreachAgent):
     """Ensures campaign elements are balanced."""
 
     async def execute(self) -> None:
@@ -381,3 +381,4 @@ class OutreachReflectionAgent(OutreachAgent):
 
         self.record_result(True, f"Passed: {len(passed_agents)}, Failed: {len(failed_agents)}")
         print(f"   [{self.name}] ✅ Reflection complete")
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

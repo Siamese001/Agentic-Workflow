@@ -29,7 +29,7 @@ class HOP5GenerationAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
     Output: state/5_generated_drafts.json
     """
     
-    def __init__(self, config: Dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None):
+    def __init__(self, config: Dict[str, Any], llm_client: Any = None, tool: CodeInterpreterTool = None) -> None:
         super().__init__()
         self.config = config["generation_agent"]
         self.llm_client = llm_client

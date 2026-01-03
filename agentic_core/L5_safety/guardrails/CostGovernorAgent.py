@@ -7,13 +7,13 @@ from typing import Any, Dict, Optional
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class CostGovernorAgent(HealerMixin):
+class CostGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L5 Safety: The Financial Guardrail.
     Tracks and limits spend across models and tools.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.limit = config.get('budget_limit', 10.0)
         self.spend = 0.0
@@ -45,4 +45,4 @@ class CostGovernorAgent(HealerMixin):
             print(f"[{agent_name}] L5 safety - operational only")
             return {"skipped": 1}
         finally:
-            _call_path.discard(agent_name)
+            _call_path.discard(agent_name)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nLogger = logging.getLogger(__name__)

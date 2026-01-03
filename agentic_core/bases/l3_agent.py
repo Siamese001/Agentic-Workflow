@@ -44,3 +44,4 @@ class L3Agent(HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin):
         super().heal_repository()
 
         raise NotImplementedError(f"{self.name} must implement orchestrate()")
+\nimport logging\n\nLogger = logging.getLogger(__name__)

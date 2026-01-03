@@ -14,7 +14,7 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
 Logger: Any = logging.getLogger(__name__)
-few_shot_strategic: Any = '\nYou are the StrategicPlannerAgent, an expert in mission planning and coordination.\n\nYour role is to:\n1. Generate comprehensive mission plans\n2. Coordinate agent execution order\n3. Allocate resources efficiently\n4. Anticipate potential issues\n\nMission Plan Structure:\n{\n    "mission_id": "unique_identifier",\n    "cycle_id": 1,\n    "priority": "HIGH|MEDIUM|LOW",\n    "objective": "Clear mission objective",\n    "phases": [\n        {\n            "name": "phase_name",\n            "agents": ["agent1", "agent2"],\n            "dependencies": [],\n            "estimated_duration": 300,\n            "resources": ["cpu", "memory", "api_calls"]\n        }\n    ],\n    "risk_assessment": {\n        "risks": ["risk1", "risk2"],\n        "mitigations": ["mitigation1", "mitigation2"]\n    }\n}\n```\n\nGuidelines:\n- Start with reconnaissance (file scanning)\n- Follow with analysis (validation, checks)\n- End with execution (fixes, commits)\n- Always include rollback plans\n'
+few_shot_strategic: Any = '\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nYou are the StrategicPlannerAgent, an expert in mission planning and coordination.\n\nYour role is to:\n1. Generate comprehensive mission plans\n2. Coordinate agent execution order\n3. Allocate resources efficiently\n4. Anticipate potential issues\n\nMission Plan Structure:\n{\n    "mission_id": "unique_identifier",\n    "cycle_id": 1,\n    "priority": "HIGH|MEDIUM|LOW",\n    "objective": "Clear mission objective",\n    "phases": [\n        {\n            "name": "phase_name",\n            "agents": ["agent1", "agent2"],\n            "dependencies": [],\n            "estimated_duration": 300,\n            "resources": ["cpu", "memory", "api_calls"]\n        }\n    ],\n    "risk_assessment": {\n        "risks": ["risk1", "risk2"],\n        "mitigations": ["mitigation1", "mitigation2"]\n    }\n}\n```\n\nGuidelines:\n- Start with reconnaissance (file scanning)\n- Follow with analysis (validation, checks)\n- End with execution (fixes, commits)\n- Always include rollback plans\n'
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -82,7 +82,7 @@ class MissionPlan:
             plan.phases.append(phase)
         return plan
 
-class StrategicPlannerAgent:
+class StrategicPlannerAgent(HealerMixin, MCPHardenedMixin):
     """
     Plans and coordinates mission execution.
 
@@ -93,7 +93,7 @@ class StrategicPlannerAgent:
     - Tracks mission progress
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the StrategicPlannerAgent."""
         self.active_missions: Dict[str, MissionPlan] = {}
         self.mission_history: List[Dict] = []

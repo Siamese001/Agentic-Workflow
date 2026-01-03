@@ -19,9 +19,9 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousThreatEvolutionAgent(HealerMixin):
+class AutonomousThreatEvolutionAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """L5: Self-healing security agent"""
-    def __init__(self, SafetyEngine=None):
+    def __init__(self, SafetyEngine=None) -> None:
         self.safety = SafetyEngine
         # Use relative pathing to stay within the 'agentic_core' root gravity
         self.log_path = Path("observability/logs/threat_detections.json")
@@ -29,7 +29,7 @@ class AutonomousThreatEvolutionAgent(HealerMixin):
         self.running = True
         self.confidence_threshold = 0.78
 
-    async def run(self):
+    async def run(self) -> Dict[str, Any]:
         """Standardized entry point for L6 Coordinator"""
         print(f"   [L5] Threat Evolution Agent: Online")
         await self.threat_evolution_loop()
@@ -135,3 +135,4 @@ def create_threat_evolution_agent(SafetyEngine=None) -> AutonomousThreatEvolutio
     super().heal_repository()
 
     return AutonomousThreatEvolutionAgent(SafetyEngine=SafetyEngine)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

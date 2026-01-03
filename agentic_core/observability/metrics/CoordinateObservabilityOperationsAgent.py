@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 'Brief description of functionality and purpose.'
 from enum import Enum, auto
-'\ncoordinate_observability_operations.py - Orchestration Module\n\nDomain: operations\nGenerated: 2025-12-07T12:07:59.851272\n'
+'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\ncoordinate_observability_operations.py - Orchestration Module\n\nDomain: operations\nGenerated: 2025-12-07T12:07:59.851272\n'
 import logging
 import time
 from typing import Any, Dict, List, Optional, Protocol
@@ -37,10 +37,10 @@ class OrchestrationResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class CoordinateObservabilityOperationsAgent(HealerMixin):
+class CoordinateObservabilityOperationsAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrator for operations domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         SELF.CONFIG = config or {}
         self.steps: List[Dict] = []
         LOGGER.info(f'Initialized {self.__class__.__name__}')

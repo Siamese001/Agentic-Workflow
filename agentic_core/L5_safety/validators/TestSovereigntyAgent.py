@@ -28,7 +28,7 @@ class SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
+class TestSovereigntyAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """L5 specialist — advanced sovereign testing."""
 
     def __init__(self, ctx=None, *args, _allow_mock: bool = True, **kwargs):
@@ -254,3 +254,4 @@ class TestSovereigntyAgent(CanonBaseAgent, MCPHardenedMixin):
 def create_test_sovereignty(ctx=None) -> Any:
     """Brief description of functionality and purpose."""
     return TestSovereigntyAgent(ctx)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

@@ -118,7 +118,7 @@ class DependencyArbiter:
         "multiprocessing", "logging", "unittest", "pytest", "ast",
     }
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._issues: List[DependencyIssue] = []
         self._checks_performed = 0
@@ -158,7 +158,7 @@ class DependencyArbiter:
 
             if result.returncode != 0:
                 # Parse pip check output
-                for line in result.stdout.split("\n"):
+                for line in result.stdout.split("\nimport logging\n\nLogger = logging.getLogger(__name__)\n"):
                     if line.strip():
                         issue = DependencyIssue(
                             issue_id=hashlib.sha256(line.encode()).hexdigest()[:12],
@@ -285,7 +285,7 @@ class StrictDocEnforcerAgent:
     - Google-style docstring parsing
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._violations: List[DocViolation] = []
 
@@ -435,7 +435,7 @@ class DashboardGenerator:
     - Mermaid.js integration
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._generated_reports: List[str] = []
 
@@ -595,7 +595,7 @@ class PromptGovernor:
         r"assistant_message\s*=",
     ]
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._issues: List[PromptIssue] = []
 
@@ -876,7 +876,7 @@ class Phase7OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
     - Predictive budgeting
     """
 
-    def __init__(self, ctx: ResumeEngineContext, budget_limit: float = 1.0):
+    def __init__(self, ctx: ResumeEngineContext, budget_limit: float = 1.0) -> None:
         self.ctx = ctx
 
         self.dependency = DependencyArbiter(ctx)

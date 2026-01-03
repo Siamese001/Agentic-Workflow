@@ -33,7 +33,7 @@ class L0SovereignSeverity(Enum):
     CRITICAL = "CRITICAL"
 
 
-class L0DelegationMixin:
+class L0DelegationMixin(MCPHardenedMixin):
     """Mixin providing L0 delegation-only capabilities.
     
     L0 Table Decision:
@@ -219,7 +219,7 @@ class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTe
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L0 maintenance base agent - operational only."""
+        """L0 maintenance base agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -229,7 +229,9 @@ class MaintenanceBaseAgent(SovereignBaseAgent, L0DelegationMixin, L0DelegationTe
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            self.log_info("L0 maintenance - operational only")
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            self.log_info("L0 maintenance - healing chain invoked")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

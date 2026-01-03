@@ -20,7 +20,7 @@ from validation_gate_executor import (  # Assuming this import is correct
 
 LOGGER = logging.getLogger(__name__)
 
-class OutreachValidationExecutorAgent(ValidationGateExecutor):
+class OutreachValidationExecutorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ValidationGateExecutor):
     """Extended validation executor for outreach-specific rules.
 
     Implements LIC-specific validation gates:
@@ -401,7 +401,7 @@ class OutreachValidationExecutorAgent(ValidationGateExecutor):
             RuleFailure if signature format violated
         """
         # Extract signature block (last 4 lines before fence end)
-        lines = content.split("\n")
+        lines = content.split("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n")
 
         # Find signature (look for "Regards,")
         regards_index = -1

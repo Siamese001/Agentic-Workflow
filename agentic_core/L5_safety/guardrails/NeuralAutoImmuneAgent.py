@@ -20,7 +20,7 @@ from agentic_core.patterns.agent_roles.experience_buffer import ExperienceBuffer
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class NeuralAutoImmuneAgent(AutonomyMixin,
+class NeuralAutoImmuneAgent(SubatomicTestingMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
     HealerMixin,
@@ -30,7 +30,7 @@ class NeuralAutoImmuneAgent(AutonomyMixin,
     Now hardened with predictive, proactive, adaptive, and self-learning capabilities.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.root = project_root
         super().__init__()  # Required for cooperative multiple inheritance
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
@@ -213,7 +213,7 @@ class NeuralAutoImmuneAgent(AutonomyMixin,
         report["predicted_imminent_breaches"] = predictions
 
         if predictions:
-            print(f"\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified")
+            print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n[🔮 PREDICTIVE IMMUNE ALERT] {len(predictions)} high-risk files identified")
             for p in predictions[:5]:
                 print(f"   → {p['file']} | {p['risk_score']:.0%} risk | {p['predicted_breach_type']}")
 

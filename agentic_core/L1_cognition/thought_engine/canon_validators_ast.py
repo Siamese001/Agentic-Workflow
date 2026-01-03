@@ -104,7 +104,7 @@ class AsyncBlockingValidatorAgent(HealerMixin, SubatomicTestingMixin, CanonASTVa
     Key 31: Detects blocking calls in async functions (time.sleep, requests, etc).
     """
 
-    def __init__(self, file_path: Path, content: str, key_id: int):
+    def __init__(self, file_path: Path, content: str, key_id: int) -> None:
         super().__init__(file_path, content, key_id)
         self.in_async_function = False
 
@@ -168,4 +168,4 @@ def validate_async_blocking(file_path: Path, content: str) -> List[Dict[str, Any
 
 def validate_dangerous_builtins(file_path: Path, content: str) -> List[Dict[str, Any]]:
     """Validate Key 42: No dangerous builtins."""
-    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidatorAgent)
+    return parse_and_validate(file_path, content, 42, DangerousBuiltinsValidatorAgent)\nimport logging\n\nLogger = logging.getLogger(__name__)

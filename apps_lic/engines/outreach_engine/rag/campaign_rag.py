@@ -48,9 +48,9 @@ class GeminiLLMClient:
     """Stub for GeminiLLMClient - TODO: Replace with sovereign equivalent"""
     pass
 
-class BaseAgent:
+class BaseAgent(HealerMixin, MCPHardenedMixin):
     """Stub for BaseAgent - TODO: Replace with sovereign equivalent"""
-    def __init__(self, context, debug_mode=False):
+    def __init__(self, context, debug_mode=False) -> None:
         self.context = context
         self.debug_mode = debug_mode
     
@@ -305,7 +305,7 @@ class RecipientAgent:
     v12.0: DEMOTED to secondary fact-checker role.
     Now performs validation searches based on strategic brief entities.
     """
-    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient):
+    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient) -> None:
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
@@ -401,7 +401,7 @@ class OrganizationAgent:
     v12.0: DEMOTED to secondary fact-checker role.
     Now performs validation searches based on strategic brief entities.
     """
-    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient):
+    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient) -> None:
         self.circuit_breaker = circuit_breaker
         self.search_client = search_client
 
@@ -499,7 +499,7 @@ class InternalAgent:
     - target_brief.pdf OR *.pdf (NEW: strategic brief)
     REMOVED: manual_rag_input.json (deprecated)
     """
-    def __init__(self, circuit_breaker: CircuitBreaker):
+    def __init__(self, circuit_breaker: CircuitBreaker) -> None:
         self.circuit_breaker = circuit_breaker
 
     def get_internal_context(self, mission: OutreachMission) -> Dict[str, object]:
@@ -564,7 +564,7 @@ class InternalAgent:
             doc.close()
 
             # Split into paragraphs
-            paragraphs = [p.strip() for p in full_text.split('\n\n') if len(p.strip()) > 50]
+            paragraphs = [p.strip() for p in full_text.split('\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n\n') if len(p.strip()) > 50]
             
             rag_results = []
             for para in paragraphs[:50]:  # Cap at 50 paragraphs to avoid overload
@@ -749,7 +749,7 @@ class S2_SupervisorAgent:
     Now manages entity extraction + validation flow.
     """
     
-    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient, llm_client: GeminiLLMClient):
+    def __init__(self, circuit_breaker: CircuitBreaker, search_client: GoogleSearchClient, llm_client: GeminiLLMClient) -> None:
         self.circuit_breaker = circuit_breaker
         self.internal_agent = InternalAgent(circuit_breaker)
         self.recipient_agent = RecipientAgent(circuit_breaker, search_client)

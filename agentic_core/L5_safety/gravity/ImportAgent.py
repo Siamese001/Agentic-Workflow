@@ -77,7 +77,7 @@ class ImportValidationVisitor(ast.NodeVisitor):
     [SUPREME COURT GATEKEEPER]
     Structural visitor to identify imported vs used modules.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.imported_modules = set()
         self.used_names = set()
         self.dynamic_access = False
@@ -147,7 +147,7 @@ class ImportAgent(MCPHardenedMixin, HealerMixin, L4SubatomicTestingMixin):
         severity: int = 5
         confidence: int = 100
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.stdlib_modules = PYTHON_STDLIB_MODULES
         self.project_roots = ROOT_WHITELIST | {"void_compliance", "canon_validator_agentic_v2"}

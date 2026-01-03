@@ -26,13 +26,13 @@ except ImportError:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class DuplicateCodeDetectorAgent(HealerMixin):
+class DuplicateCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Batch agent: Detects exact duplicate code blocks across the entire territory.
     Uses token-based hashing for speed and accuracy (ignores whitespace/comments).
     """
 
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.min_lines = 10  # Minimum block size to flag
@@ -71,7 +71,7 @@ class DuplicateCodeDetectorAgent(HealerMixin):
                 # Sliding window hash
                 for i in range(len(lines) - self.min_lines + 1):
                     # Extract block
-                    block_content = "\n".join(lines[i : i + self.min_lines])
+                    block_content = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(lines[i : i + self.min_lines])
                     if not block_content.strip():
                         continue
 

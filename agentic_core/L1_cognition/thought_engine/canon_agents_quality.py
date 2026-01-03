@@ -21,7 +21,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 class SubAtomicAgent:
     """Stub base class for quality agents."""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
 # NOT_AN_AGENT — legacy L1 class, true agent is SafetyInspectorAgent in L2 — excluded from discovery
@@ -36,7 +36,7 @@ class SafetyInspectorAgent(HealerMixin):
     - No direct dependency on L2_Execution layer
     """
 
-    def __init__(self, agent_impl: CanonBaseAgentInterface):
+    def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
 
@@ -49,7 +49,7 @@ class SafetyInspectorAgent(HealerMixin):
         Executes the security audit by running all defined checks.
         Reports findings to the context and signals security status.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.agent.name} ACTIVATED: Security Audit...')
         keys: Any = [(0, self.check_key_00_no_hardcoded_secrets), (1, self.check_key_01_no_todo_fixme), (2, self.check_key_02_no_print_statements), (3, self.check_key_03_no_debugger_statements), (4, self.check_key_04_no_empty_except_blocks), (5, self.check_key_05_no_bare_except), (6, self.check_key_06_no_eval_exec)]
         for key, check_func in keys:
             passed, details = check_func()
@@ -199,7 +199,7 @@ class SafetyInspectorAgent(HealerMixin):
         return (len(violations) == 0, violations)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is DocEnforcerAgent in L2 — excluded from discovery
-class DocumentationAgent(SubAtomicAgent):
+class DocumentationAgent(MCPHardenedMixin, SubatomicTestingMixin, SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
     ROLE: Pure focus on Docstrings.
@@ -241,7 +241,7 @@ class DocumentationAgent(SubAtomicAgent):
 
 class SubAtomicAgent:
     """Stub base class for quality agents."""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent = type('Agent', (), {'name': 'QualityAgent', 'ctx': type('Ctx', (), {'python_files': [], 'report': lambda *a: None})()})()
 
 # NOT_AN_AGENT — legacy L1 class, true agent is NamingEnforcerAgent in L2 — excluded from discovery

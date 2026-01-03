@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pydantic import BaseModel, Field
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
+from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -67,10 +68,10 @@ class CognitiveContract:
     validation_errors: List[str] = field(default_factory=list)
 
 
-class CognitiveContractValidatorAgent:
+class CognitiveContractValidatorAgent(MCPHardenedMixin):
     """Validates cognitive contracts and ensures compliance."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the validator."""
         self.required_plan_elements = [
             "constraints_acknowledged",
@@ -106,7 +107,7 @@ class CognitiveContractValidatorAgent:
         
         # Extract constraints
         constraints_match = re.search(
-            r'constraints?[:\s]*\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
+            r'constraints?[:\s]*\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
             plan_text,
             re.IGNORECASE | re.DOTALL
         )
@@ -250,7 +251,7 @@ class CognitiveContractValidatorAgent:
 class CognitiveContractManager:
     """Manages cognitive contracts for agent executions."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the contract manager."""
         self.validator = CognitiveContractValidatorAgent()
         self.active_contracts: Dict[str, CognitiveContract] = {}

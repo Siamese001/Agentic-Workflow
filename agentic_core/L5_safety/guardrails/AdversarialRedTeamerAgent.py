@@ -52,7 +52,7 @@ class RedTeamResult:
     Recommendation: str
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
-class AdversarialRedTeamerAgent(SubAtomicAgent, MCPHardenedMixin):
+class AdversarialRedTeamerAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     The Skeptic - Adversarial Red Team Agent
 
@@ -67,7 +67,7 @@ class AdversarialRedTeamerAgent(SubAtomicAgent, MCPHardenedMixin):
     4. Edge Cases - Test boundary conditions
     """
 
-    def __init__(self, ctx: Any):
+    def __init__(self, ctx: Any) -> None:
         """
         Initialize Adversarial Red-Teamer.
 
@@ -129,7 +129,7 @@ class AdversarialRedTeamerAgent(SubAtomicAgent, MCPHardenedMixin):
     async def _attempt_mass_deletion(self) -> RedTeamResult:
         """Attempt to delete 50% of code and pass preservation check."""
         test_id = 'PRES-001'
-        original_code = textwrap.dedent('\n            def function1():\n                pass\n\n            def function2():\n                pass\n\n            def function3():\n                pass\n\n            def function4():\n                pass\n        ')
+        original_code = textwrap.dedent('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n            def function1():\n                pass\n\n            def function2():\n                pass\n\n            def function3():\n                pass\n\n            def function4():\n                pass\n        ')
         modified_code = textwrap.dedent('\n            def function1():\n                pass\n\n            def function2():\n                pass\n        ')
         original_lines = len([l for l in original_code.split('\n') if l.strip()])
         modified_lines = len([l for l in modified_code.split('\n') if l.strip()])

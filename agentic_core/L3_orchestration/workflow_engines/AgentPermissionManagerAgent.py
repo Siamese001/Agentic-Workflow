@@ -24,7 +24,7 @@ ControlPlane: Any = None
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class AgentPermissionManagerAgent(HealerMixin):
+class AgentPermissionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Manages agent permissions with Control Plane integration.
 
     Provides:
@@ -34,7 +34,7 @@ class AgentPermissionManagerAgent(HealerMixin):
     - Audit logging
     """
 
-    def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True):
+    def __init__(self, control_plane: Optional[ControlPlane]=None, enable_logging: bool=True) -> None:
         """Initialize Permission manager.
 
         Args:
@@ -182,4 +182,4 @@ def create_permission_manager(control_plane: Optional[ControlPlane]=None) -> "Ag
     Returns:
         AgentPermissionManagerAgent instance
     """
-    return AgentPermissionManagerAgent(control_plane=control_plane)
+    return AgentPermissionManagerAgent(control_plane=control_plane)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

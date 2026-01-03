@@ -11,10 +11,10 @@ from typing import Any, Dict, Optional
 import yaml
 Logger: Any = logging.getLogger(__name__)
 
-class McpConnectionManagerAgent:
+class McpConnectionManagerAgent(MCPHardenedMixin):
     """Sovereign MCP Connection Manager — single source of truth"""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.connections: Dict[str, Any] = {}
         self.initialized = False
@@ -94,4 +94,4 @@ def load_mcp_config(config_path: str) -> Dict[str, Any]:
         return {'roles': {}}
 
 # Backward compatibility alias
-MCPConnectionManager = McpConnectionManagerAgent
+MCPConnectionManager = McpConnectionManagerAgent\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

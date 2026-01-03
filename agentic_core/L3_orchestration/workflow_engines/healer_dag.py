@@ -26,7 +26,7 @@ class DagExecutionResult:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class DagExecutorAgent(HealerMixin):
+class DagExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Executes Directed Acyclic Graphs of operations."""
 
 def __init__(self: Any, config: Optional[Dict[str, Any]]) -> None:
@@ -77,4 +77,4 @@ def get_execution_history(self: Any) -> List[DAGExecutionResult]:
     Returns:
         List of past execution results
     """
-    return self.execution_history.copy()
+    return self.execution_history.copy()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

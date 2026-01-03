@@ -65,7 +65,7 @@ SKIP_PATHS = {
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
+class CodeSSOTEnforcerAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Ultra high-signal code-level SSOT enforcer using AST analysis.
     
@@ -83,7 +83,7 @@ class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
     - Test fixtures and assertions
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         self.ssot_file = self.project_root / "agentic_core" / "config" / "blueprint_sovereign" / "structure_blueprint.py"
 
@@ -302,3 +302,4 @@ class CodeSSOTEnforcerAgent(HealerMixin, MCPHardenedMixin):
 
 
 __all__ = ["CodeSSOTEnforcerAgent"]
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

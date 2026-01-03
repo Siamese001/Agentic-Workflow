@@ -15,12 +15,12 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 
 
 # NAMING FIXED: FissionManagerAgent → FissionManagerAgent
-class FissionManagerAgent:
+class FissionManagerAgent(MCPHardenedMixin):
     """
     L3 Orchestration: The Task Splitter.
     Determines if a mission needs to be broken down into sub-atomic hops.
     """
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
 
     async def decompose_task(self, Task: str) -> List[Dict]:
@@ -34,7 +34,7 @@ class FissionManagerAgent:
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L3 orchestration agent - operational only."""
+        """L3 orchestration agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -44,7 +44,9 @@ class FissionManagerAgent:
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
+            # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            print(f"[{agent_name}] L3 orchestration - healing chain invoked")
             return {"skipped": 1}
         finally:
-            _call_path.discard(agent_name)
+            _call_path.discard(agent_name)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nLogger = logging.getLogger(__name__)

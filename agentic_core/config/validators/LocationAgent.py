@@ -2071,6 +2071,9 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
                   f"Skipped: {counts['skipped']} | "
                   f"Errors: {counts['errors']}")
             
+            # Invoke shared HealerMixin chain
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            
             return counts
             
         finally:

@@ -31,7 +31,7 @@ class TestFileLibrarian(unittest.TestCase):
     
     def test_content_hash_generation(self):
         """Test that content hashing produces consistent results"""
-        content = "def hello():\n    return 'world'"
+        content = "def hello():\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n    return 'world'"
         hash1 = hashlib.sha256(content.encode()).hexdigest()
         hash2 = hashlib.sha256(content.encode()).hexdigest()
         self.assertEqual(hash1, hash2)
@@ -83,7 +83,7 @@ class TestFileLibrarian(unittest.TestCase):
         self.assertTrue(is_allowed_duplicate("__init__.py"))
 
 
-class TestCodeDeduplicationAgent(unittest.TestCase):
+class TestCodeDeduplicationAgent(MCPHardenedMixin, unittest.TestCase):
     """Test suite for L2 CodeDeduplicationAgent"""
     
     def setUp(self):

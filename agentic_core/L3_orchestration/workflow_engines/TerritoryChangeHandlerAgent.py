@@ -17,9 +17,9 @@ from watchdog.observers import Observer
 
 
 # NAMING FIXED: TerritoryChangeHandlerAgent → TerritoryChangeHandlerAgent
-class TerritoryChangeHandlerAgent(FileSystemEventHandler, HealerMixin):
+class TerritoryChangeHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, FileSystemEventHandler, HealerMixin):
     """L0-L3: Watch for territory healing/ingestion changes with debouncing"""
-    def __init__(self, daemon):
+    def __init__(self, daemon) -> None:
         self.daemon = daemon
         self.last_trigger = 0
         self.debounce_seconds = 10
@@ -62,7 +62,7 @@ class AutonomousRagDaemon:
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
-    def __init__(self, orchestrator, retriever, Historian):
+    def __init__(self, orchestrator, retriever, Historian) -> None:
         self.orchestrator = orchestrator
         self.retriever = retriever
         self.Historian = Historian
@@ -141,4 +141,4 @@ class AutonomousRagDaemon:
         self.running = False
         self.observer.stop()
         self.observer.join()
-        print("[DAEMON] Daemon stopped")
+        print("[DAEMON] Daemon stopped")\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

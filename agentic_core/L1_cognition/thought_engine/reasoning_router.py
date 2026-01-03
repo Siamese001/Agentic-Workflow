@@ -27,7 +27,7 @@ class TaskType(Enum):
     UNKNOWN = "unknown"
 
 
-class ReasoningRouterAgent(HealerMixin):
+class ReasoningRouterAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Routes tasks to appropriate reasoning strategies.
     
     Implements a simple strategy selector that uses ReAct for tasks
@@ -222,3 +222,4 @@ def select_reasoning_strategy(
         router = ReasoningRouterAgent()
     
     return router.select_strategy(Task, context)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

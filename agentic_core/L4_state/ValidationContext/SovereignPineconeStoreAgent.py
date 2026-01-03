@@ -31,7 +31,7 @@ class SovereignPineconeStoreAgent(HealerMixin, MCPHardenedMixin):
     Phase 13C: All operations now flow through L3 MCP Router with L5 shielding.
     """
 
-    def __init__(self, index_name: Optional[str]=None, namespace: Optional[str]=None):
+    def __init__(self, index_name: Optional[str]=None, namespace: Optional[str]=None) -> None:
         """Initialize the adapter with MCP client."""
         from agentic_core.L4_state.semantic_memory.pinecone_mcp_client import SovereignPineconeMCPClient
         self.McpClient = SovereignPineconeMCPClient()

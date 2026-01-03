@@ -13,13 +13,13 @@ from collections import defaultdict
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class FileCleanupAgent(HealerMixin):
+class FileCleanupAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Batch agent: Identifies and removes files with repeated strings in filenames.
     Detects patterns like 'word_word', 'word_word_word', etc.
     """
 
-    def __init__(self, project_root: Path, ctx, dry_run: bool = True):
+    def __init__(self, project_root: Path, ctx, dry_run: bool = True) -> None:
         self.project_root = Path(project_root)
         self.ctx = ctx
         self.dry_run = dry_run
@@ -101,7 +101,7 @@ class FileCleanupAgent(HealerMixin):
         Scan directories for files with repeated strings in filenames.
         Groups files by their canonical name.
         """
-        print('\n[*] FileCleanupAgent: Scanning for files with repeated strings...')
+        print('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] FileCleanupAgent: Scanning for files with repeated strings...')
         
         # Group files by canonical name
         canonical_groups = defaultdict(list)

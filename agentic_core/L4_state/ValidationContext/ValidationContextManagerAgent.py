@@ -150,12 +150,12 @@ class ValidationContext:
 
 # [NAMING ALIAS] PascalCase alias for backward compatibility
 
-class ValidationContextManagerAgent(HealerMixin):
+class ValidationContextManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Manages ValidationContext persistence and history.
     """
 
-    def __init__(self, memory_dir: Path=None):
+    def __init__(self, memory_dir: Path=None) -> None:
         """
         Initialize the manager.
 
@@ -281,4 +281,4 @@ def get_context_manager() -> ValidationContextManagerAgent:
 def get_current_context() -> Optional[ValidationContext]:
     """Get the current validation context."""
     manager: Any = get_context_manager()
-    return manager.current_context
+    return manager.current_context\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

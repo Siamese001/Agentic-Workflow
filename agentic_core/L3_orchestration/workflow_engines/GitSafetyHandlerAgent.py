@@ -20,7 +20,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
-class GitSafetyHandlerAgent(HealerMixin):
+class GitSafetyHandlerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L5 Safety Layer: Uses GitKraken MCP to manage rollback points
     and hardened commits for Atomic Fission events.
@@ -33,7 +33,7 @@ class GitSafetyHandlerAgent(HealerMixin):
     5. Update Redis state registry
     """
 
-    def __init__(self, McpRouterAgent):
+    def __init__(self, McpRouterAgent) -> None:
         """
         Initialize Git Safety Handler.
         
@@ -204,4 +204,4 @@ def get_git_safety_handler(McpRouterAgent: Any) -> GitSafetyHandlerAgent:
     Returns:
         GitSafetyHandlerAgent instance
     """
-    return GitSafetyHandlerAgent(McpRouterAgent=McpRouterAgent)
+    return GitSafetyHandlerAgent(McpRouterAgent=McpRouterAgent)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

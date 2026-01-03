@@ -144,7 +144,7 @@ class SecurityHardener:
         ],
     }
 
-    def __init__(self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD):
+    def __init__(self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD) -> None:
         self.ctx = ctx
         self.level = level
         self._issues: List[SecurityIssue] = []
@@ -164,7 +164,7 @@ class SecurityHardener:
         issues = []
         self._scans_performed += 1
 
-        lines = content.split("\n")
+        lines = content.split("\nimport logging\n\nLogger = logging.getLogger(__name__)\n")
 
         for category, patterns in self.SECURITY_PATTERNS.items():
             for pattern in patterns:
@@ -292,7 +292,7 @@ class SemanticAnalyzer:
         "launched", "managed", "drove", "optimized", "transformed",
     ]
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._analyses: List[Dict[str, Any]] = []
 
@@ -452,7 +452,7 @@ class StrategicAdvisor:
     - ATS optimization suggestions
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._proposals: List[RefactorProposal] = []
 
@@ -589,7 +589,7 @@ class OmniContext:
     - Cross-reference lookup
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._context_buffer: str = ""
         self._index: Dict[str, Dict[str, Any]] = {}
@@ -701,7 +701,7 @@ class UnifiedOrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTesting
     - Progress tracking
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
 
         self.security = SecurityHardener(ctx)
@@ -859,7 +859,7 @@ class Phase6OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
     - Unified orchestration
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
 
         self.security = SecurityHardener(ctx)

@@ -375,7 +375,7 @@ class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """L3 orchestration base agent - operational only."""
+        """L3 orchestration base agent - invoke shared healing chain."""
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -385,7 +385,9 @@ class OrchestrationBaseAgent(SovereignBaseAgent, L3SubatomicTestingMixin):
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            self.log_info("L3 orchestration - operational only")
+            # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+            self.log_info("L3 orchestration - healing chain invoked")
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)

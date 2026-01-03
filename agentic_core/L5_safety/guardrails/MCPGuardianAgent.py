@@ -25,7 +25,7 @@ Logger: Any = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
+class MCPGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L5 Safety Guardian for MCP integration compliance.
     
@@ -36,7 +36,7 @@ class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
     - SovereignEvent emission on lifecycle events
     """
 
-    def __init__(self, project_root: Optional[Path] = None):
+    def __init__(self, project_root: Optional[Path] = None) -> None:
         """
         Initialize MCP Guardian.
         
@@ -137,7 +137,7 @@ class MCPGuardianAgent(HealerMixin, MCPHardenedMixin):
                 for match in matches:
                     file_violations.append({
                         "file": str(py_file.relative_to(self.project_root)),
-                        "line": content[:match.start()].count("\n") + 1,
+                        "line": content[:match.start()].count("\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n") + 1,
                         "type": ViolationType,
                         "Severity": "CRITICAL",
                         "match": match.group(0)

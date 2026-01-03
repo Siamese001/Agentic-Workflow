@@ -28,7 +28,7 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
     - Implements execute() for its specific logic
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         super().__init__()
         self.ctx = ctx
         self.name = self.__class__.__name__
@@ -56,7 +56,7 @@ class OutreachAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin, ABC):
         """Get relevant instructions for this agent."""
         instructions = self.ctx.get_instructions()
         if instructions:
-            return "\n".join(f"- {i}" for i in instructions)
+            return "\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(f"- {i}" for i in instructions)
         return ""
 
     async def call_llm(self, prompt: str) -> Optional[str]:

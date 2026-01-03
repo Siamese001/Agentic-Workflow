@@ -20,11 +20,11 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # NAMING FIXED: CachedOrchestratorAgent → CachedOrchestratorAgent
-class CachedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
+class CachedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Sovereign L3 orchestration base — Redis cache for all decisions and state.
     """
-    def __init__(self, project_root: Path, mission_id: str):
+    def __init__(self, project_root: Path, mission_id: str) -> None:
         self.root = project_root
         self.mission_id = mission_id
         self.redis_gateway = RedisSovereignAgent(project_root)
@@ -103,4 +103,4 @@ class CachedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
         try:
             data = self.redis.get(key)
             return json.loads(data) if data else None
-        except: return None
+        except: return None\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

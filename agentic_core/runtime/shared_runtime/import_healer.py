@@ -10,13 +10,13 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 
-class ImportHealerAgent:
+class ImportHealerAgent(HealerMixin, MCPHardenedMixin):
     """
     Automatically fixes import statements when files are moved.
     Critical for preventing breakage during structural refactoring.
     """
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root
         self.relocation_map: Dict[str, str] = {}  # old_path -> new_path
     
@@ -184,3 +184,4 @@ def get_sovereign_ignore_list() -> Set[str]:
             pass  # If reading fails, use defaults
     
     return ignore_list
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

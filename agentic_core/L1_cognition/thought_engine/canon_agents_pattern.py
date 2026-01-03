@@ -18,7 +18,7 @@ from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInt
 # Forward declaration for SubAtomicAgent
 class SubAtomicAgent:
     """Base class stub for pattern agents."""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent = type('Agent', (), {'name': 'PatternAgent'})()
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -31,7 +31,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger: Any = logging.getLogger(__name__)
 
 # NOT_AN_AGENT — legacy L1 class, true agent is PatternEnforcerAgent in L2 — excluded from discovery
-class PatternEnforcerAgent(HealerMixin):
+class PatternEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Enforces coding patterns and best practices across Python files.
 
@@ -44,7 +44,7 @@ class PatternEnforcerAgent(HealerMixin):
     - No direct dependency on L2_Execution layer
     """
 
-    def __init__(self, agent_impl: CanonBaseAgentInterface):
+    def __init__(self, agent_impl: CanonBaseAgentInterface) -> None:
         """Initialize with injected agent implementation."""
         self.agent = agent_impl
 
@@ -56,7 +56,7 @@ class PatternEnforcerAgent(HealerMixin):
         """
         Executes all defined pattern checks and reports violations.
         """
-        print(f'\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...')
+        print(f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n[>>>] {self.agent.name} ACTIVATED: Pattern Enforcement...')
         keys: Any = [(26, self.check_key_26_no_mutable_defaults), (27, self.check_key_27_prefer_str_join), (28, self.check_key_28_no_bare_except), (29, self.check_key_29_no_assert_in_prod), (30, self.check_key_30_prefer_fstrings), (31, self.check_key_31_no_complex_comprehensions), (32, self.check_key_32_no_dict_keys_check), (33, self.check_key_33_no_float_equality), (34, self.check_key_34_use_is_for_none), (36, self.check_key_36_no_shadowed_builtins), (37, self.check_key_37_no_redundant_self), (38, self.check_key_38_prefer_comprehensions), (39, self.check_key_39_no_useless_return)]
         for key, check_func in keys:
             passed, details = check_func()

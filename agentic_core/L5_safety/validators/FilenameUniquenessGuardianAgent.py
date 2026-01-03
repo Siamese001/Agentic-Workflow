@@ -52,7 +52,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
 # DEPRECATED — Logic absorbed into NamingAgent — 2025-12-31
-class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
+class FilenameUniquenessGuardianAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Batch agent that enforces unique filenames across the entire repository.
     
@@ -62,7 +62,7 @@ class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
     Activation: Runs in Phase 2 batch sweep via auto-discovery.
     """
 
-    def __init__(self, allow_same_dir_duplicates: bool=False):
+    def __init__(self, allow_same_dir_duplicates: bool=False) -> None:
         self.allow_same_dir = allow_same_dir_duplicates
         self.duplicates: Dict[str, List[Path]] = defaultdict(list)
         self.renamed_count = 0
@@ -70,7 +70,7 @@ class FilenameUniquenessGuardianAgent(HealerMixin, MCPHardenedMixin):
 
     def scan_repository(self, python_files: List[str], project_root: Path) -> Any:
         """Core scan logic — identifies non-unique filenames across territories"""
-        print('\n[*] FilenameUniquenessGuardian: Enforcing atomic filename sovereignty...')
+        print('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[*] FilenameUniquenessGuardian: Enforcing atomic filename sovereignty...')
         basename_to_paths: Any = defaultdict(list)
         for file_str in python_files:
             file_path: Any = Path(file_str)

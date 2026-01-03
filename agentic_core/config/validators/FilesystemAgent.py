@@ -370,6 +370,8 @@ class FilesystemAgent(HealerMixin):
                     print(f"  [!] ERROR on {file_path.name}: {e}")
             
             print(f"\n[FILESYSTEM HEAL SUMMARY] Healed: {counts['healed']} | Skipped: {counts['skipped']} | Errors: {counts['errors']}")
+            # Invoke shared HealerMixin chain
+            super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
             return counts
         finally:
             _call_path.discard(agent_name)

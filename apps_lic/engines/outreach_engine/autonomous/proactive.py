@@ -91,7 +91,7 @@ class OutreachProactiveScheduler:
     - Historical patterns
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._tasks: List[OutreachProactiveTask] = []
         self._task_counter = 0
@@ -223,7 +223,7 @@ class OutreachPredictiveHandoff:
     intervention will be needed.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._handoff_requests: List[OutreachHandoffRequest] = []
         self._request_counter = 0
@@ -351,12 +351,12 @@ class OutreachPredictiveHandoff:
         self._handoff_requests.clear()
 
 
-class OutreachCapabilityMonitorAgent:
+class OutreachCapabilityMonitorAgent(HealerMixin, MCPHardenedMixin):
     """
     Monitors outreach agent capabilities and performance.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._execution_history: List[Dict[str, Any]] = []
         self._agent_stats: Dict[str, Dict[str, Any]] = {}
@@ -437,7 +437,7 @@ class OutreachProactiveAgent(OutreachAgent):
     Agent that proactively identifies and executes outreach tasks.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         super().__init__(ctx)
         self.name = "OutreachProactiveAgent"
         self.scheduler = OutreachProactiveScheduler(ctx)
@@ -477,3 +477,4 @@ class OutreachProactiveAgent(OutreachAgent):
 
         self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

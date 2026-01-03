@@ -27,7 +27,7 @@ class HOPOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin)
     each reading from and writing to state/ directory
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         """
         Initialize orchestrator with configuration
         
@@ -55,7 +55,7 @@ class HOPOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin)
         Returns:
             Workflow result dictionary
         """
-        print(f"\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
         print(f"HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
         print(f"{'='*80}")
@@ -116,6 +116,9 @@ class HOPOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin)
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, int]:
-        """Operational agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Operational agent - no healing required")
+        """Operational agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Operational agent - healing chain invoked")
         return {"skipped": 1}

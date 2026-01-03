@@ -52,7 +52,7 @@ class RecoveryResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousCheckpointManagerAgent(HealerMixin):
+class AutonomousCheckpointManagerAgent(MCPHardenedMixin, HealerMixin):
     """
     Manages state checkpoints with automatic recovery capabilities.
     
@@ -64,7 +64,7 @@ class AutonomousCheckpointManagerAgent(HealerMixin):
     - Corruption detection and recovery
     """
 
-    def __init__(self, checkpoint_dir: Optional[str]=None):
+    def __init__(self, checkpoint_dir: Optional[str]=None) -> None:
         """Initialize the Checkpoint manager."""
         self.checkpoint_dir = checkpoint_dir or os.path.join(os.getcwd(), '.workflow_state', 'checkpoints')
         os.makedirs(self.checkpoint_dir, exist_ok=True)
@@ -331,4 +331,4 @@ def create_autonomous_checkpoint_manager(checkpoint_dir: Optional[str]=None) -> 
 
 def get_checkpoint_manager(project_root: Path) -> AutonomousCheckpointManagerAgent:
     """Factory function to get checkpoint manager instance."""
-    return AutonomousCheckpointManagerAgent(project_root=project_root)
+    return AutonomousCheckpointManagerAgent(project_root=project_root)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

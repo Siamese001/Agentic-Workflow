@@ -97,7 +97,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
     purpose="Enforces territory/file placement rules",
     territory="templates"
 )
-class LocationAgent(HealerMixin, MCPHardenedMixin):
+class LocationAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous agent responsible for territorial integrity.
     Run independently or as first stage in compliance orchestrator.
@@ -175,7 +175,7 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
         suggested_path: Optional[str] = None  # Full relative path for healing (e.g., 'apps_rg/engines')
         severity: int = 5
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root.resolve()
         # Validate project root is correct
         self._validate_project_root()
@@ -1235,7 +1235,7 @@ class LocationAgent(HealerMixin, MCPHardenedMixin):
                                     pass
 
                             new_lines = new_lines[:insert_idx] + todo_block + new_lines[insert_idx:]
-                            new_content = "\n".join(new_lines)
+                            new_content = "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n".join(new_lines)
 
                             # Backup + write
                             backup_dir = self._init_backup_dir() / "gravity_auto_heal"

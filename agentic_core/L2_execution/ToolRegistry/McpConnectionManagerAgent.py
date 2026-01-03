@@ -7,13 +7,13 @@ from typing import Any, Dict, List, Optional, Protocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class McpConnectionManagerAgent(HealerMixin):
+class McpConnectionManagerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L2 Execution: The Tool Bridge.
     Manages connections to Model Context Protocol (MCP) servers.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.active_connections = {}
 
@@ -49,4 +49,4 @@ class McpConnectionManagerAgent(HealerMixin):
             print(f"[{agent_name}] L2 execution - operational only")
             return {"skipped": 1}
         finally:
-            _call_path.discard(agent_name)
+            _call_path.discard(agent_name)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n\nLogger = logging.getLogger(__name__)

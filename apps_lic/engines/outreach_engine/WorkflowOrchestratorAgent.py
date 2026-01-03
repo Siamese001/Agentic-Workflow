@@ -34,7 +34,7 @@ class WorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingM
     Implements S6→S2 meta-loop (Factual failure) and S5 retry (Creative failure).
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize orchestrator with all dependencies"""
         with open("config/agent_specs_LIC.json", 'r') as f:
             self.config = json.load(f)
@@ -64,7 +64,7 @@ class WorkflowOrchestratorAgent(MCPHardenedMixin, HealerMixin, SubatomicTestingM
     
     async def execute_workflow(self, mission: OutreachMission) -> Dict[str, Any]:
         """Execute complete workflow using HOP architecture"""
-        print(f"\n{'='*80}")
+        print(f"\nimport logging\n\nLogger = logging.getLogger(__name__)\n{'='*80}")
         print(f"HOP WORKFLOW ORCHESTRATOR v13.0")
         print(f"Mission ID: {mission.mission_id}")
         print(f"{'='*80}")

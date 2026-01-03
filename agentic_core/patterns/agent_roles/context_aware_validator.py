@@ -21,13 +21,13 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 
-class ContextAwareValidatorAgent:
+class ContextAwareValidatorAgent(HealerMixin, MCPHardenedMixin):
     """
     Base class for intelligent validators.
     Subclasses implement rule-specific logic while inheriting context analysis.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.Logger = logging.getLogger(f"{self.__class__.__name__}.Context")
 
     async def validate_with_context(self, target: Path, rule: str) -> Dict[str, Any]:
@@ -139,3 +139,4 @@ class ContextAwareValidatorAgent:
     async def health_check(self) -> Dict[str, bool]:
         """Standard interface for SelfDiagnosisMixin."""
         return {"healthy": True}
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin

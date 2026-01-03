@@ -10,7 +10,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 Logger = logging.getLogger(__name__)
 
 # NAMING FIXED: HallucinationDetectorAgent → HallucinationDetectorAgent
-class HallucinationDetectorAgent(HealerMixin):
+class HallucinationDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Stub implementation of hallucination detector."""
 
     def __init__(self: Any, config: Dict[str, Any]) -> None:
@@ -49,4 +49,4 @@ def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str,
     Returns:
         Validation results
     """
-    return {"valid": True, "warnings": [], "score": 0.95}
+    return {"valid": True, "warnings": [], "score": 0.95}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

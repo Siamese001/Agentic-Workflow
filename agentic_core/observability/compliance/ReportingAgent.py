@@ -44,14 +44,14 @@ except ImportError:  # MetricsAgent not implemented yet or optional
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 
-class ReportingAgent(HealerMixin, MCPHardenedMixin):
+class ReportingAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     Autonomous diagnostic agent for compliance reporting and visualization.
     Operates independently — no validation, only observation.
     Safe to run alongside or after ComplianceOrchestratorAgent.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         """
         Initialize with project root.
         Combines all exclusion sets for consistent filtering.
@@ -144,7 +144,7 @@ class ReportingAgent(HealerMixin, MCPHardenedMixin):
                     _walk_directory(item, prefix + extension, depth + 1)
 
         _walk_directory(start_path, depth=1)
-        return "\n".join(tree_lines)
+        return "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(tree_lines)
 
     def _get_compliance_metrics(self) -> Dict[str, Any]:
         """
@@ -200,8 +200,12 @@ class ReportingAgent(HealerMixin, MCPHardenedMixin):
 
     @timeout(300)
     def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: Optional[set] = None) -> Dict[str, int]:
-        """Observability agent - no repository healing required."""
-        print(f"[{self.__class__.__name__}] Observability agent - no healing required")
+        """Observability agent - invoke shared healing chain."""
+        if _call_path is None:
+            _call_path = set()
+        # Invoke shared HealerMixin chain for diagnostics, rollback, MCP hardening
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
+        print(f"[{self.__class__.__name__}] Observability agent - healing chain invoked")
         return {"skipped": 1}
 
 

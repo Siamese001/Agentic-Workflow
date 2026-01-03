@@ -38,7 +38,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
-class NamingLawHealerAgent(HealerMixin):
+class NamingLawHealerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L1 Cognition: High-Signal Naming Law Healer — Key 49 Sovereign Enforcement
     The "Naming Surgeon" that standardizes file identities by renaming
@@ -86,7 +86,7 @@ Eliminate noise. Amplify signal.
 Current date: December 24, 2025
 """
     
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         self.root = project_root
         self.ctx = ctx
         self.healed_count = 0
@@ -104,7 +104,7 @@ Current date: December 24, 2025
             return await self._execute_per_file(file_path)
         
         # Batch mode (legacy)
-        print(f"\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n   [*] NamingLawHealerAgent: Scanning for naming violations...")
         self.healed_count = 0
         self.healed_files = []
         

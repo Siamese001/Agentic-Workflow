@@ -20,13 +20,13 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 Logger: Any = logging.getLogger('L6.CanonAudit')
 
-class SovereignCanonAuditorAgent(MCPHardenedMixin):
+class SovereignCanonAuditorAgent(HealerMixin, SubatomicTestingMixin, MCPHardenedMixin):
     """
     Sovereign Canon Auditor using DeepWiki MCP.
     Performs self-verification of critical system components.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the canon auditor."""
         self.client = SovereignDeepWikiClient()
         self.critical_files = ['agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py', 'agentic_core/L5_safety/guardrails/mcp_sovereign.py', 'agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py', 'agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py', 'agentic_core/L6_observability/deepwiki_client_sovereign.py', 'agentic_core/L1_cognition/thought_engine/StrategicPlannerAgent.py', 'agentic_core/L2_execution/ToolRegistry/WebSearchTools.py']
@@ -38,7 +38,7 @@ class SovereignCanonAuditorAgent(MCPHardenedMixin):
         Returns:
             Audit results with status for each component
         """
-        print('\n' + '=' * 60)
+        print('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\n' + '=' * 60)
         print('🔍 SOVEREIGN CANON AUDIT - Phase 13E')
         print('=' * 60)
         results: Any = {'total': len(self.critical_files), 'found': 0, 'Missing': 0, 'details': []}

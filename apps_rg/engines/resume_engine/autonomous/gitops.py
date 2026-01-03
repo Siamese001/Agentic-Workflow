@@ -273,7 +273,7 @@ class GitOpsManager:
 
         # Remove markdown code blocks
         if "```" in clean:
-            clean = re.sub(r"```python\n", "", clean)
+            clean = re.sub(r"```python\nimport logging\n\nLogger = logging.getLogger(__name__)\n", "", clean)
             clean = re.sub(r"```\n?", "", clean)
 
         return clean.strip()
@@ -654,7 +654,7 @@ class ImportPatcher:
     - Handle module splits
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
         self._import_map: Dict[str, List[str]] = {}
 
@@ -791,7 +791,7 @@ class ConversationalRepair:
     agents debate and propose fixes.
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
 
         # Agent personas
@@ -976,7 +976,7 @@ class Phase4OrchestratorAgent(MCPHardenedMixin, HealerMixin, L3SubatomicTestingM
     - Conversational repair for complex issues
     """
 
-    def __init__(self, ctx: ResumeEngineContext):
+    def __init__(self, ctx: ResumeEngineContext) -> None:
         self.ctx = ctx
 
         self.gitops = GitOpsManager(ctx)

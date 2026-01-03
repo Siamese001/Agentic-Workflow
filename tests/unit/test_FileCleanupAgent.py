@@ -13,7 +13,7 @@ class MockContext:
         self.scan_directories = []
 
 
-class TestFileCleanupAgent(unittest.TestCase):
+class TestFileCleanupAgent(MCPHardenedMixin, unittest.TestCase):
     """Test FileCleanupAgent functionality."""
     
     def setUp(self):
@@ -100,7 +100,7 @@ class TestFileCleanupAgent(unittest.TestCase):
         self.assertGreater(results['total_files_scanned'], 0)
         self.assertGreater(results['files_to_remove'], 0)
         
-        print(f"\n✓ Scan results: {results}")
+        print(f"\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n✓ Scan results: {results}")
     
     def test_dry_run_mode(self):
         """Test that dry run doesn't actually delete files."""

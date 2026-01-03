@@ -3,7 +3,7 @@ from dataclasses import dataclass
 '''Brief description of functionality and purpose.'''
 
 'Brief description of functionality and purpose.'
-'\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
+'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nsignature_verifier.py - function Module\n\nDomain: inspection\nGenerated: 2025-12-07T12:07:59.842368\n'
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol
@@ -21,10 +21,10 @@ class OperationResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class SignatureVerifierAgent(HealerMixin):
+class SignatureVerifierAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """function class for inspection domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         SELF.CONFIG = config or {}
         Logger.info(f'Initialized {self.__class__.__name__}')
 

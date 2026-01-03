@@ -56,7 +56,7 @@ class ExecutionResult:
         return {'success': self.success, 'output': self.output, 'final_state': self.final_state, 'execution_trace': self.execution_trace, 'iterations': self.iterations, 'errors': self.errors, 'metadata': self.metadata}
 
 # NOT_AN_AGENT — Abstract interface/protocol, not a true agent — excluded from agent discovery
-class IOrchestratorAgent(ABC):
+class IOrchestratorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ABC):
     """Interface for the Orchestrator (Nervous System).
 
     The orchestrator coordinates between cognitive and action planes:
@@ -72,7 +72,7 @@ class IOrchestratorAgent(ABC):
     """
 
     @abstractmethod
-    def __init__(self, cognitive_plane: ICognitivePlane, action_plane: IActionPlane, config: Optional[OrchestratorConfig]=None):
+    def __init__(self, cognitive_plane: ICognitivePlane, action_plane: IActionPlane, config: Optional[OrchestratorConfig]=None) -> None:
         """Initialize orchestrator with planes.
 
         Args:
@@ -172,4 +172,4 @@ class IOrchestratorAgent(ABC):
 
         Args:
             path: Path to load state from
-        """
+        """\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin

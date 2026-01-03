@@ -13,10 +13,10 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 Logger = logging.getLogger(__name__)
 
 
-class GlobalComplianceAggregatorAgent(HealerMixin):
+class GlobalComplianceAggregatorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Naming/Compliance: Global Compliance Aggregation"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.results = []
         
     def aggregate_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -46,3 +46,4 @@ class GlobalComplianceAggregatorAgent(HealerMixin):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

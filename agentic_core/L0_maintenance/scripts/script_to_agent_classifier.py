@@ -36,7 +36,7 @@ from agentic_core.L0_maintenance.bases.l0_delegation_testing_mixin import L0Dele
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 
-class ScriptToAgentClassifierAgent(HealerMixin, AutonomyMixin,
+class ScriptToAgentClassifierAgent(MCPHardenedMixin, HealerMixin, AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
     L0DelegationTestingMixin,):
@@ -56,7 +56,7 @@ class ScriptToAgentClassifierAgent(HealerMixin, AutonomyMixin,
     MAX_CLASSES_FOR_SCRIPT = 1        # >1 class in script → likely needs fission
     HIGH_SIDE_EFFECT_WEIGHT = 0.8
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()  # Required for mixins
         self.Logger = logging.getLogger(f"{self.__class__.__name__}")
 
@@ -285,7 +285,7 @@ class _ModuleAnalyzer(ast.NodeVisitor):
     Internal AST visitor to extract classification signals.
     """
 
-    def __init__(self, tree: ast.AST, source: str, file_path: Path):
+    def __init__(self, tree: ast.AST, source: str, file_path: Path) -> None:
         super().__init__()
         self.tree = tree
         self.source_lines = source.splitlines()
@@ -361,9 +361,10 @@ class _ClassExtractionVisitor(ast.NodeVisitor):
     """
     Extracts class definitions for fission suggestions.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.classes: List[ast.ClassDef] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         self.classes.append(node)
         self.generic_visit(node)
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

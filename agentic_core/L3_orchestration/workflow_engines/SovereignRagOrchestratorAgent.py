@@ -42,10 +42,10 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         _call_path.discard(agent_name)
 
 
-class SovereignRagOrchestratorAgent(HealerMixin):
+class SovereignRagOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Brief description of functionality and purpose."""
 
-    def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None):
+    def __init__(self, retriever=None, QueryPlanner=None, guardrail=None, engine=None) -> None:
         self.query_history = []
         self.config_path = Path('agentic_core/L4_state/ValidationContext/.sovereign_config.json')
         self._load_sovereign_config()
@@ -77,7 +77,7 @@ class SovereignRagOrchestratorAgent(HealerMixin):
 
     async def red_team_critique(self, answer: str, documents: List[Any], query: str) -> Dict:
         """L5: Red team critique for faithfulness validation"""
-        critique_prompt: Any = f'\nYou are a critical evaluator. Assess if this answer is faithful to the source documents.\n\nQuery: {query}\nAnswer: {answer}\nDocuments: {[d.text[:200] for d in documents[:5]]}\n\nOutput JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}\n'
+        critique_prompt: Any = f'\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\nYou are a critical evaluator. Assess if this answer is faithful to the source documents.\n\nQuery: {query}\nAnswer: {answer}\nDocuments: {[d.text[:200] for d in documents[:5]]}\n\nOutput JSON: {{"faithfulness_score": 0.0-1.0, "improvement_suggestion": "..."}}\n'
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
         def _parse_critique(raw):

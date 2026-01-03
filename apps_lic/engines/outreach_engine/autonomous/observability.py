@@ -78,7 +78,7 @@ class OutreachExecutionTracer:
     Traces execution of outreach operations.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._traces: Dict[str, OutreachExecutionTrace] = {}
         self._current_trace: Optional[str] = None
@@ -161,7 +161,7 @@ class OutreachMetricsCollector:
     Collects metrics for outreach operations.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._metrics: List[OutreachMetric] = []
         self._counters: Dict[str, float] = {}
@@ -224,7 +224,7 @@ class OutreachAuditReporter:
     Generates audit reports for outreach operations.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self._reports: List[Dict[str, Any]] = []
 
@@ -269,12 +269,12 @@ class OutreachAuditReporter:
         return self._reports
 
 
-class OutreachPhase5OrchestratorAgent(HealerMixin):
+class OutreachPhase5OrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Orchestrates Phase 5 observability for outreach.
     """
 
-    def __init__(self, ctx: OutreachEngineContext):
+    def __init__(self, ctx: OutreachEngineContext) -> None:
         self.ctx = ctx
         self.tracer = OutreachExecutionTracer(ctx)
         self.metrics = OutreachMetricsCollector(ctx)
@@ -336,3 +336,4 @@ class OutreachPhase5OrchestratorAgent(HealerMixin):
             "metrics": self.metrics.get_summary(),
             "reports": len(self.reporter.get_reports()),
         }
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

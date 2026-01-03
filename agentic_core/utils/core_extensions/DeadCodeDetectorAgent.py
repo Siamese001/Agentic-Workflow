@@ -26,7 +26,7 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
     Enhanced AST visitor that tracks dead code with class-aware method detection.
     """
     
-    def __init__(self, file_path: Path):
+    def __init__(self, file_path: Path) -> None:
         self.file_path = file_path
         self.imported_names: set[str] = set()
         self.defined_names: set[str] = set()
@@ -123,13 +123,13 @@ class ASTDeadCodeVisitor(ast.NodeVisitor):
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class DeadCodeDetectorAgent(HealerMixin):
+class DeadCodeDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sovereign dead code auditor that identifies unused code across the project.
     Enhanced with class-aware method tracking and parent-node traversal.
     """
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root
         self.results = {
             "unused_imports": [],
@@ -139,31 +139,69 @@ class DeadCodeDetectorAgent(HealerMixin):
             "dead_files": []
         }
         
+    def _find_unused_imports(self, visitor, findings: Dict) -> None:
+        """Extract unused imports from visitor."""
+        for import_name in visitor.imported_names:
+            if import_name not in visitor.used_names:
+                findings["unused_imports"].append({
+                    "name": import_name,
+                    "line": visitor.import_line_numbers.get(import_name, "unknown")
+                })
+
+    def _find_unused_functions(self, visitor, findings: Dict) -> None:
+        """Extract unused functions from visitor."""
+        for func_name in visitor.defined_functions:
+            if func_name.startswith("_"):
+                continue
+            if func_name not in visitor.used_functions and func_name not in visitor.used_names:
+                findings["unused_functions"].append({
+                    "name": func_name,
+                    "line": visitor.definition_line_numbers.get(func_name, "unknown")
+                })
+
+    def _find_unused_classes(self, visitor, findings: Dict) -> None:
+        """Extract unused classes from visitor."""
+        for class_name in visitor.defined_classes:
+            if class_name.startswith("_"):
+                continue
+            if class_name not in visitor.used_classes and class_name not in visitor.used_names:
+                findings["unused_classes"].append({
+                    "name": class_name,
+                    "line": visitor.definition_line_numbers.get(class_name, "unknown")
+                })
+
+    def _find_unused_methods(self, visitor, findings: Dict) -> None:
+        """Extract unused methods from visitor."""
+        for class_name, methods in visitor.class_methods.items():
+            used_methods = visitor.used_methods.get(class_name, set())
+            for method_name in methods:
+                if method_name.startswith("_"):
+                    continue
+                if method_name not in used_methods and method_name not in visitor.used_names:
+                    findings["unused_methods"].append({
+                        "class": class_name,
+                        "name": method_name,
+                        "line": visitor.definition_line_numbers.get(f"{class_name}.{method_name}", "unknown")
+                    })
+
     def analyze_file(self, file_path: Path) -> Dict:
-        """
-        Analyze a single Python file for dead code.
-        Returns a dictionary with findings for this file.
-        """
+        """Analyze a single Python file for dead code."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            content = file_path.read_text(encoding='utf-8')
         except Exception as e:
             return {"error": f"Could not read {file_path}: {e}"}
             
-        # Skip empty files or __init__ files
         if not content.strip() or file_path.name == "__init__.py":
             return {"skipped": True, "reason": "Empty or __init__ file"}
             
-        # Parse the AST
         try:
             tree = ast.parse(content, filename=str(file_path))
-            add_parents(tree)  # Enable deep self/cls traversal
+            add_parents(tree)
             visitor = ASTDeadCodeVisitor(file_path)
             visitor.visit(tree)
         except SyntaxError as e:
             return {"error": f"Syntax error in {file_path}: {e}"}
             
-        # Analyze findings
         findings = {
             "file_path": str(file_path.relative_to(self.project_root)),
             "unused_imports": [],
@@ -172,52 +210,10 @@ class DeadCodeDetectorAgent(HealerMixin):
             "unused_methods": []
         }
         
-        # Find unused imports
-        for import_name in visitor.imported_names:
-            if import_name not in visitor.used_names:
-                line_no = visitor.import_line_numbers.get(import_name, "unknown")
-                findings["unused_imports"].append({
-                    "name": import_name,
-                    "line": line_no
-                })
-                
-        # Find unused functions (not classes)
-        for func_name in visitor.defined_functions:
-            if (func_name not in visitor.used_functions and 
-                func_name not in visitor.used_names and
-                not func_name.startswith("_")):  # Ignore private functions
-                line_no = visitor.definition_line_numbers.get(func_name, "unknown")
-                findings["unused_functions"].append({
-                    "name": func_name,
-                    "line": line_no
-                })
-                
-        # Find unused classes
-        for class_name in visitor.defined_classes:
-            if (class_name not in visitor.used_classes and 
-                class_name not in visitor.used_names and
-                not class_name.startswith("_")):  # Ignore private classes
-                line_no = visitor.definition_line_numbers.get(class_name, "unknown")
-                findings["unused_classes"].append({
-                    "name": class_name,
-                    "line": line_no
-                })
-                
-        # Find unused methods in classes
-        for class_name, methods in visitor.class_methods.items():
-            used_methods = visitor.used_methods.get(class_name, set())
-            for method_name in methods:
-                # Skip special methods and private methods
-                if (method_name.startswith("__") and method_name.endswith("__")) or method_name.startswith("_"):
-                    continue
-                if method_name not in used_methods and method_name not in visitor.used_names:
-                    full_name = f"{class_name}.{method_name}"
-                    line_no = visitor.definition_line_numbers.get(full_name, "unknown")
-                    findings["unused_methods"].append({
-                        "class": class_name,
-                        "name": method_name,
-                        "line": line_no
-                    })
+        self._find_unused_imports(visitor, findings)
+        self._find_unused_functions(visitor, findings)
+        self._find_unused_classes(visitor, findings)
+        self._find_unused_methods(visitor, findings)
                     
         return findings
         
@@ -312,7 +308,7 @@ class DeadCodeDetectorAgent(HealerMixin):
                     
             report.append("")
             
-        return "\n".join(report)
+        return "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(report)
 
 
 # CLI Entry Point

@@ -36,13 +36,13 @@ def is_excepted_from_key(key_id: int, file_path: Path, line_content: str='') -> 
                 return True
     return False
 
-class CanonAstValidatorAgent(ast.NodeVisitor):
+class CanonAstValidatorAgent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin, ast.NodeVisitor):
     """
     [L6 INFRASTRUCTURE] Base AST visitor for Canon keys.
     Provides automatic Type-Checking suppression and Exception Ledger integration.
     """
 
-    def __init__(self, file_path: Path, content: str, key_id: int):
+    def __init__(self, file_path: Path, content: str, key_id: int) -> None:
         self.file_path = file_path
         self.content_lines = content.splitlines()
         self.key_id = key_id
@@ -79,3 +79,4 @@ def parse_and_validate(file_path: Path, content: str, key_id: int, validator_cla
         return []
     except Exception as e:
         return []
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

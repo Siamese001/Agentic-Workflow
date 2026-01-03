@@ -53,10 +53,10 @@ class ScriptsPlanningResult:
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-class ScriptsPlanningOrchestratorAgent(HealerMixin):
+class ScriptsPlanningOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Orchestrator for planning script execution operations."""
 
-    def __init__(self, config: Optional[ScriptsPlanningConfig]=None):
+    def __init__(self, config: Optional[ScriptsPlanningConfig]=None) -> None:
         self.config = config or ScriptsPlanningConfig()
         self.Logger = logging.getLogger(self.__class__.__name__)
         self.Logger.setLevel(self.config.log_level)
@@ -165,4 +165,4 @@ def plan_script_execution(script_tasks: List[Dict[str, Any]], config: Optional[D
     return {'success': result.success, 'execution_plan': [{'id': t.id, 'script_path': t.script_path, 'dependencies': t.dependencies, 'priority': t.priority.value, 'parameters': t.parameters, 'estimated_duration': t.estimated_duration} for t in result.execution_plan], 'estimated_total_duration': result.estimated_total_duration, 'resource_requirements': result.resource_requirements, 'warnings': result.warnings, 'errors': result.errors, 'metadata': result.metadata}
 if __name__ == '__main__':
     example_tasks: Any = [{'id': 'task1', 'script_path': '/scripts/setup.py', 'priority': 'critical', 'estimated_duration': 30.0}, {'id': 'task2', 'script_path': '/scripts/process.py', 'dependencies': ['task1'], 'priority': 'high', 'estimated_duration': 120.0}, {'id': 'task3', 'script_path': '/scripts/cleanup.py', 'dependencies': ['task2'], 'priority': 'normal'}]
-    result: Any = plan_script_execution(example_tasks)
+    result: Any = plan_script_execution(example_tasks)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

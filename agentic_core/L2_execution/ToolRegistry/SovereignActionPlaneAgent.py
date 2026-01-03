@@ -17,7 +17,7 @@ Logger: Any = logging.getLogger(__name__)
 class SovereignToolsmith:
     """Toolsmith implementation for dynamic tool creation."""
 
-    def __init__(self, output_dir: str='scripts'):
+    def __init__(self, output_dir: str='scripts') -> None:
         """Initialize Toolsmith."""
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
@@ -40,7 +40,7 @@ class SovereignToolsmith:
 class SovereignSandbox:
     """Secure execution environment for tools."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize sandbox."""
         self._is_running = False
 
@@ -96,7 +96,7 @@ class SovereignSandbox:
 class SovereignActionPlaneAgent(HealerMixin, IActionPlane, MCPHardenedMixin):
     """Sovereign action plane with Toolsmith and Sandbox."""
 
-    def __init__(self, safety_layer=None, SignalLedger=None):
+    def __init__(self, safety_layer=None, SignalLedger=None) -> None:
         """Initialize the sovereign action plane.
 
         Args:

@@ -75,7 +75,7 @@ class DagExecutionResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON COMPLIANCE — renamed to DagEngineAgent for discovery and sovereignty — 2025-12-30
-class DagEngineAgent(HealerMixin):
+class DagEngineAgent(MCPHardenedMixin, HealerMixin):
     """Lightweight DAG engine for workflow execution.
 
     Features:
@@ -86,7 +86,7 @@ class DagEngineAgent(HealerMixin):
     - Cycle detection
     """
 
-    def __init__(self, enable_logging: bool=True):
+    def __init__(self, enable_logging: bool=True) -> None:
         """Initialize DAG engine.
 
         Args:
@@ -354,4 +354,4 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         print(f"[{agent_name}] L3 orchestration/workflow_engines - operational only")
         return {"skipped": 1}
     finally:
-        _call_path.discard(agent_name)
+        _call_path.discard(agent_name)\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

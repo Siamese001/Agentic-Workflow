@@ -48,7 +48,7 @@ _orchestrator_instance: Optional['ConsolidatedOrchestratorAgent'] = None
 
 def _signal_handler(signum, frame):
     """Handle CTRL+C and graceful shutdown."""
-    Logger.info('\n🛑 Shutdown signal received. Releasing all leases...')
+    Logger.info('\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\n🛑 Shutdown signal received. Releasing all leases...')
     if _orchestrator_instance:
         _orchestrator_instance.release_all_leases()
     sys.exit(0)
@@ -96,7 +96,7 @@ class OrchestratorHealingService:
     Handles LLM interaction, fix validation, and file writing.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, client: Any, state: OrchestratorState, Logger: logging.Logger):
+    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, client: Any, state: OrchestratorState, Logger: logging.Logger) -> None:
         self.config = config
         self.ctx = ctx
         self.client = client
@@ -186,7 +186,7 @@ class OrchestratorStateManager:
     and result building.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, state: OrchestratorState, Logger: logging.Logger):
+    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, state: OrchestratorState, Logger: logging.Logger) -> None:
         self.config = config
         self.ctx = ctx
         self.state = state
@@ -241,7 +241,7 @@ class OrchestratorAgentAndScopeManagerAgent:
     the smart scope for targeted execution.
     """
 
-    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, Logger: logging.Logger):
+    def __init__(self, config: OrchestratorConfig, ctx: ValidationContext, Logger: logging.Logger) -> None:
         self.config = config
         self.ctx = ctx
         self.Logger = Logger
@@ -297,7 +297,7 @@ class OrchestratorAgentAndScopeManagerAgent:
         impact_scope: Any = diplomat.calculate_impact_scope(modified_files, max_depth=self.config.smart_scope_depth)
         return impact_scope
 
-class ConsolidatedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
+class ConsolidatedOrchestratorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     
@@ -313,7 +313,7 @@ class ConsolidatedOrchestratorAgent(HealerMixin, MCPHardenedMixin):
     - Graceful lease release
     """
 
-    def __init__(self, config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None):
+    def __init__(self, config: Optional[OrchestratorConfig]=None, context: Optional[ValidationContext]=None) -> None:
         """
         Initialize the consolidated orchestrator.
         

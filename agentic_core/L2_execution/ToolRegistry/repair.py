@@ -30,7 +30,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
 from agentic_core.schemas.models.anomaly_report import AnomalyReport, AnomalySeverity
 
-class SherlockAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
+class SherlockAgent(SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.
@@ -39,7 +39,7 @@ class SherlockAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
     - Analysis state checkpointed for persistent debugging
     - Trace snapshots stored in L4 ledger
     """
-    def __init__(self, context):
+    def __init__(self, context) -> None:
         super().__init__(context)
         self.triggered = False
         self.last_failure = None
@@ -71,9 +71,9 @@ class SherlockAgent(SubAtomicAgent, MCPHardenedMixin, HealerMixin):
             'traceback': traceback
         }
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
-        print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
 
@@ -140,7 +140,7 @@ class TestPilotAgent(SubAtomicAgent):
     """
     ROLE: Integration Guardian. Runs pytest and triggers Sherlock on failure.
     """
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         super().__init__(ctx)
         self.sherlock_ref: Optional[Sherlock] = None
 
@@ -148,7 +148,7 @@ class TestPilotAgent(SubAtomicAgent):
                     
         self.sherlock_ref = sherlock
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
         await asyncio.sleep(0)
@@ -181,7 +181,7 @@ class ToolsmithAgent(SubAtomicAgent):
     L5 Dynamic Agency - self-extends capabilities.
     """
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Forging Diagnostic Tools...")
         await asyncio.sleep(0)

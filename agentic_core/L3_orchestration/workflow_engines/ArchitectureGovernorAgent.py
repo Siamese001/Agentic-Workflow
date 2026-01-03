@@ -13,13 +13,13 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import SOVEREIG
 Logger: Any = logging.getLogger(__name__)
 layer_dirs: Any = set(SOVEREIGN_REGISTRY['agentic_core']['subfolders'])
 
-class ArchitectureGovernorAgent(HealerMixin):
+class ArchitectureGovernorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     L3 Orchestration: Architecture Pattern Enforcement
     Ensures code follows canonical architectural patterns and layer boundaries.
     """
 
-    def __init__(self, project_root: Path=None):
+    def __init__(self, project_root: Path=None) -> None:
         """
         Initialize the ArchitectureGovernorAgent.
         
@@ -99,4 +99,4 @@ class ArchitectureGovernorAgent(HealerMixin):
             results.append(result)
             if not result['valid']:
                 total_violations += 1
-        return {'total_files': len(files), 'total_violations': total_violations, 'results': results}
+        return {'total_files': len(files), 'total_violations': total_violations, 'results': results}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -90,7 +90,7 @@ from agentic_core.utils.core_extensions.timeout_decorator import timeout
 class MethodChangeDetectorAgent(HealerMixin, MCPHardenedMixin):
     """Detects method changes between two versions of a file."""
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         self.ctx = ctx
 
     def detect_method_changes(self, file_path: str) -> List[MethodChange]:
@@ -139,7 +139,7 @@ class MethodChangeDetectorAgent(HealerMixin, MCPHardenedMixin):
 class RegressionTestGenerator:
     """Generates pytest code and creates test files."""
 
-    def __init__(self, ctx, test_dir: Path, pinecone_available: bool, pinecone_index, genai_available: bool, genai_client):
+    def __init__(self, ctx, test_dir: Path, pinecone_available: bool, pinecone_index, genai_available: bool, genai_client) -> None:
         self.ctx = ctx
         self.test_dir = test_dir
         self.pinecone_available = pinecone_available
@@ -213,7 +213,7 @@ class RegressionTestGenerator:
 class RegressionTestRunner:
     """Runs generated tests, performs self-correction, and reports results."""
 
-    def __init__(self, ctx, test_dir: Path, genai_available: bool, genai_client, emit_signal_callback: Callable[[str, str], None]):
+    def __init__(self, ctx, test_dir: Path, genai_available: bool, genai_client, emit_signal_callback: Callable[[str, str], None]) -> None:
         self.ctx = ctx
         self.test_dir = test_dir
         self.genai_available = genai_available
@@ -349,7 +349,7 @@ class RegressionOracleAgent(SubAtomicAgent):
     6. Emit REGRESSION_CHECK_PASS signal
     """
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         """
         Initialize Regression Oracle.
         

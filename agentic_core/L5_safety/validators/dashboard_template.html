@@ -898,15 +898,15 @@
                             <tbody>`;
             
             // Add TOTAL row FIRST (like Territory Summary)
-            const totalCodeQuality = territoryData.length > 0 ? 
+            let totalCodeQuality = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Code Quality Score'] || 0), 0) / territoryData.length) : 0;
-            const totalTyping = territoryData.length > 0 ? 
+            let totalTyping = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Typed %'] || 0), 0) / territoryData.length) : 0;
-            const totalMcpCapable = territoryData.length > 0 ? 
+            let totalMcpCapable = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
-            const totalComplexityHealth = territoryData.length > 0 ? 
+            let totalComplexityHealth = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Complexity Health'] || 0), 0) / territoryData.length) : 0;
-            const totalDocumented = territoryData.length > 0 ? 
+            let totalDocumented = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
             
             const getGradientBg = (value, target = 100) => {
@@ -997,62 +997,11 @@
                     </tr>`;
             });
             
-            // Add TOTAL row for Code Quality
-            const totalCodeQuality = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Code Quality Score'] || 0), 0) / territoryData.length) : 0;
-            const totalTyping = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Typed %'] || 0), 0) / territoryData.length) : 0;
-            const totalMcpCapable = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['MCP Capable %'] || 0), 0) / territoryData.length) : 0;
-            const totalComplexityHealth = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Complexity Health'] || 0), 0) / territoryData.length) : 0;
-            const totalDocumented = territoryData.length > 0 ? 
-                (territoryData.reduce((sum, r) => sum + (r['Documented %'] || 0), 0) / territoryData.length) : 0;
+            // Add TOTAL row for Code Quality (reuse variables from above)
             const totalAvgLoc = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Avg LOC'] || 0), 0) / territoryData.length) : 0;
             const totalProperBase = territoryData.length > 0 ? 
                 (territoryData.reduce((sum, r) => sum + (r['Proper Base %'] || 0), 0) / territoryData.length) : 0;
-            
-            // Use same continuous gradient as Territory Summary table
-            const getGradientBg = (value, target = 100) => {
-                const normalized = Math.max(0, Math.min(100, value)) / 100;
-                let r, g, b;
-                
-                if (normalized < 0.2) {
-                    const t = normalized * 5;
-                    r = Math.round(139 + (220 - 139) * t);
-                    g = Math.round(0 + (38 - 0) * t);
-                    b = Math.round(0 + (38 - 0) * t);
-                } else if (normalized < 0.4) {
-                    const t = (normalized - 0.2) * 5;
-                    r = Math.round(220 + (255 - 220) * t);
-                    g = Math.round(38 + (140 - 38) * t);
-                    b = 38;
-                } else if (normalized < 0.6) {
-                    const t = (normalized - 0.4) * 5;
-                    r = Math.round(255 - (21) * t);
-                    g = Math.round(140 + (39) * t);
-                    b = Math.round(38 - (30) * t);
-                } else if (normalized < 0.75) {
-                    const t = (normalized - 0.6) / 0.15;
-                    r = Math.round(234 - (84) * t);
-                    g = Math.round(179 + (11) * t);
-                    b = Math.round(8 + (32) * t);
-                } else if (normalized < 0.85) {
-                    const t = (normalized - 0.75) / 0.1;
-                    r = Math.round(150 - (84) * t);
-                    g = Math.round(190 - (7) * t);
-                    b = Math.round(40 + (34) * t);
-                } else {
-                    const t = (normalized - 0.85) / 0.15;
-                    r = Math.round(66 - (44) * t);
-                    g = Math.round(183 - (20) * t);
-                    b = Math.round(74);
-                }
-                
-                const alpha = 0.15 + normalized * 0.15;
-                return `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, ${alpha}) 0%, rgba(${r}, ${g}, ${b}, ${alpha * 0.6}) 100%)`;
-            };
             
             html += `
                             </tbody>
@@ -1752,7 +1701,11 @@ ${rec.guidance.split('\n').map((line, i) =>
             renderRecommendations();
             renderInterviewQuestions(totalRow);
 
-            document.getElementById('lastUpdated').textContent = lastUpdatedStr;
+            // Update timestamp to current time on each load/refresh
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const currentTime = now.toLocaleDateString('en-US', options);
+            document.getElementById('lastUpdated').textContent = `Last updated: ${currentTime}`;
             
             // Setup drill-down click handlers after all charts are rendered
             setTimeout(setupDrillDowns, 100);

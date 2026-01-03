@@ -20,7 +20,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 Logger: Any = logging.getLogger(__name__)
 
-class McpRouterAgent(HealerMixin, MCPHardenedMixin):
+class McpRouterAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """
     L3 Orchestration switchboard: Hardens the L1-L5 stack by routing
     specific layer failures to the appropriate installed MCP.
@@ -32,7 +32,7 @@ class McpRouterAgent(HealerMixin, MCPHardenedMixin):
     - L5 failures → GitKraken for version control verification
     """
 
-    def __init__(self, tui_handle=None):
+    def __init__(self, tui_handle=None) -> None:
         """
         Initialize MCP Router.
         
@@ -132,4 +132,4 @@ def get_mcp_router(tui_handle: Any=None) -> MCPRouter:
     Returns:
         MCPRouter instance
     """
-    return MCPRouter(tui_handle=tui_handle)
+    return MCPRouter(tui_handle=tui_handle)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin

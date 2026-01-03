@@ -16,7 +16,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 class MemoryLeakDetectorAgent(HealerMixin):
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         self.ctx = ctx
         self.name = self.__class__.__name__
 
@@ -35,7 +35,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
             re.IGNORECASE
         ),
         'global_list_append': re.compile(
-            r'^[A-Z_]+\s*=\s*\[\]\s*\n.*\.append\(',
+            r'^[A-Z_]+\s*=\s*\[\]\s*\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n.*\.append\(',
             re.IGNORECASE | re.MULTILINE
         ),
         'file_no_close': re.compile(
@@ -44,7 +44,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
         )
     }
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
         await asyncio.sleep(0)
@@ -365,7 +365,7 @@ class MemoryLeakDetectorAgent(HealerMixin):
 class DeadlockAnalyzer(ast.NodeVisitor):
     """AST visitor to build lock acquisition graph and detect potential deadlocks."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.graph = defaultdict(set)  # Lock acquisition graph: lock_a -> {lock_b, lock_c}
         self.lock_sequences = []  # List of lock acquisition sequences per function
         self.current_function = None
@@ -498,14 +498,14 @@ class DeadlockAnalyzer(ast.NodeVisitor):
 
 
 # NOT_AN_AGENT — utility detector class, not a true agent — excluded from agent discovery
-class DeadlockDetectorAgent(HealerMixin):
+class DeadlockDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
 
-    def __init__(self, ctx):
+    def __init__(self, ctx) -> None:
         self.ctx = ctx
         self.name = self.__class__.__name__
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
         await asyncio.sleep(0)
@@ -720,7 +720,7 @@ class DeadlockDetectorAgent(HealerMixin):
 class RaceAnalyzer(ast.NodeVisitor):
     """AST visitor to analyze potential race conditions."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.races = []
         self.current_function = None
         self.current_class = None

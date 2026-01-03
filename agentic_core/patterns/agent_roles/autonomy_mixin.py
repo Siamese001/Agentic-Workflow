@@ -9,7 +9,7 @@ import logging
 from typing import Dict, Any, Optional
 
 
-class AutonomyMixin:
+class AutonomyMixin(MCPHardenedMixin):
     _autonomy_enabled: bool = True
     _proactive_interval: float = 300.0
     _last_proactive_check: float = 0.0
@@ -63,3 +63,4 @@ class AutonomyMixin:
             return {"proactive": True, "success": True, "result": result}
         except Exception as e:
             return {"proactive": True, "success": False, "error": str(e)}
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

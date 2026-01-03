@@ -29,9 +29,9 @@ class StructuralEngineerAgent(SubAtomicAgent):
                     
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
-    async def execute(self):
+    async def execute(self) -> None:
         """Execute Structural Engineer validation checks."""
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Code Structure...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.utils.core_extensions.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Checking Code Structure...")
         print(f"   [{self.name}] 🔧 Analyzing structural integrity...")
 
         # Key 17: Large functions
@@ -217,13 +217,13 @@ class StructuralEngineerAgent(SubAtomicAgent):
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-class PatternEnforcerAgent(SubAtomicAgent, MCPHardenedMixin):
+class PatternEnforcerAgent(HealerMixin, SubatomicTestingMixin, SubAtomicAgent, MCPHardenedMixin):
     """
     KEYS: 26-39 (Pattern Checks)
     ROLE: Enforces coding patterns and best practices.
     """
 
-    async def execute(self):
+    async def execute(self) -> None:
                     
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
         pattern_checks = [

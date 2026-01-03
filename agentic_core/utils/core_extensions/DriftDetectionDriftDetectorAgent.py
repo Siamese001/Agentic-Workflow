@@ -40,10 +40,10 @@ def timeout(seconds=0, minutes=0, hours=0):
         return wrapper
     return decorator
 
-class DriftDetectorAgent(HealerMixin):
+class DriftDetectorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """Detects files that have drifted outside mapped canon territories."""
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         """
         Initialize DriftDetectorAgent.
         
@@ -107,3 +107,4 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         return {"skipped": 1}
     finally:
         _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)

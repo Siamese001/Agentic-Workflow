@@ -44,13 +44,13 @@ def timeout(seconds=0, minutes=0, hours=0):
 Logger = logging.getLogger(__name__)
 
 
-class MetaLearningAgent(HealerMixin):
+class MetaLearningAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Sovereign meta-learning engine.
     Accumulates mission experience and drives self-evolution.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path) -> None:
         self.project_root = project_root
         self.experience_key = "meta_learning:experience"
         self.evolution_log = project_root / "logs" / "meta_evolution.jsonl"
@@ -80,7 +80,7 @@ class MetaLearningAgent(HealerMixin):
         }
 
         with open(self.evolution_log, "a") as f:
-            f.write(json.dumps(record) + "\n")
+            f.write(json.dumps(record) + "\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\n")
 
         Logger.info(f"MetaLearning: recorded mission {mission_id} — success={success}")
 

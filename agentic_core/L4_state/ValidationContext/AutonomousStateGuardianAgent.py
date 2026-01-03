@@ -24,7 +24,7 @@ Logger = logging.getLogger(__name__)
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
-class AutonomousStateGuardianAgent(HealerMixin):
+class AutonomousStateGuardianAgent(MCPHardenedMixin, HealerMixin):
     """
     L4 State Guardian that autonomously monitors and repairs state corruption.
     
@@ -36,7 +36,7 @@ class AutonomousStateGuardianAgent(HealerMixin):
     - Drift pattern learning
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         # GRAVITY FIXED: Dynamic import for Checkpoint manager
         try:
             from agentic_core.L4_state.validation_context.autonomous_checkpoint_manager import create_autonomous_checkpoint_manager
@@ -266,3 +266,4 @@ class AutonomousStateGuardianAgent(HealerMixin):
 def create_autonomous_state_guardian() -> AutonomousStateGuardian:
     """Factory function to create autonomous state guardian"""
     return AutonomousStateGuardian()
+\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

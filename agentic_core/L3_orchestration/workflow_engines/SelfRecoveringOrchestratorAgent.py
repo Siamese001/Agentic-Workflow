@@ -60,7 +60,7 @@ class WorkflowMutation:
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
-class SelfRecoveringOrchestratorAgent(HealerMixin):
+class SelfRecoveringOrchestratorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Orchestrator that automatically recovers from workflow failures.
     
@@ -72,7 +72,7 @@ class SelfRecoveringOrchestratorAgent(HealerMixin):
     - Failure pattern learning
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the self-recovering orchestrator."""
         self.node_patterns: Dict[str, NodeFailurePattern] = {}
         self.mutation_history: List[WorkflowMutation] = []
@@ -405,4 +405,4 @@ def create_self_recovering_orchestrator() -> SelfRecoveringOrchestratorAgent:
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
-    return SelfRecoveringOrchestratorAgent()
+    return SelfRecoveringOrchestratorAgent()\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

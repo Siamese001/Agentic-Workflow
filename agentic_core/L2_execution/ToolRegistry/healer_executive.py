@@ -31,7 +31,7 @@ from agentic_core.config.blueprint_sovereign.structure_blueprint import (
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING FIXED: IntegrityGateExecutorAgent → IntegrityGateExecutorAgent
-class IntegrityGateExecutorAgent(HealerMixin):
+class IntegrityGateExecutorAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     '''Brief description of functionality and purpose.'''
     
     def execute_hygiene_scan(self, headline: str): pass
@@ -43,7 +43,7 @@ class IntegrityGateExecutorAgent(HealerMixin):
 class ValidationResult:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None): pass
+    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, DETAILS: Optional[Dict] = None, SIGNATURE: Optional[str] = None) -> None: pass
     passed = True
     gate_id = ""
     message = ""
@@ -52,7 +52,7 @@ class ValidationResult:
 class AdaptiveRecoveryLoop:
     '''Brief description of functionality and purpose.'''
     
-    def __init__(self, initial_temperature: float): pass
+    def __init__(self, initial_temperature: float) -> None: pass
     def reset(self, temperature: float): pass
                     
     def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict): pass
@@ -337,4 +337,4 @@ def create_executive_title_composer(
     config: Optional[TitleComposerConfig] = None
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""
-    return ExecutiveTitleComposer(config=config)
+    return ExecutiveTitleComposer(config=config)\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

@@ -13,13 +13,13 @@ Logger = logging.getLogger(__name__)
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-class AgentRegistryValidatorAgent(HealerMixin):
+class AgentRegistryValidatorAgent(MCPHardenedMixin, HealerMixin):
     """
     L3 Orchestration: Agent Registry Validation
     Ensures all agents defined in CANON_AGENT_REGISTRY are present and functional.
     """
     
-    def __init__(self, project_root: Path = None):
+    def __init__(self, project_root: Path = None) -> None:
         """
         Initialize the AgentRegistryValidatorAgent.
         
@@ -167,4 +167,4 @@ class AgentRegistryValidatorAgent(HealerMixin):
             return False
         
         Logger.info(f"All {results['found']} agents validated successfully")
-        return True
+        return True\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

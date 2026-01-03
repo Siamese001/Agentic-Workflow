@@ -9,7 +9,7 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class DocstringComplianceAgent(HealerMixin):
+class DocstringComplianceAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Ensures public functions, classes, and modules have docstrings.
 
@@ -26,7 +26,7 @@ class DocstringComplianceAgent(HealerMixin):
     """
     MIN_DOCSTRING: Any = "'''Brief description of functionality and purpose.'''"
 
-    def __init__(self, ctx, project_root=None):
+    def __init__(self, ctx, project_root=None) -> None:
         """Initialize with mandatory ctx for sovereign operation."""
         if ctx is None:
             raise ValueError("ctx is mandatory for DocstringComplianceAgent (sovereign agent)")
@@ -72,7 +72,7 @@ class DocstringComplianceAgent(HealerMixin):
                     insert_idx: Any = lineno
                     def_line: Any = lines[lineno - 1]
                     indent: Any = '    ' * (len(def_line) - len(def_line.lstrip()) + 1)
-                doc_lines: Any = [f'{indent}{self.MIN_DOCSTRING}\n', f'{indent}\n']
+                doc_lines: Any = [f'{indent}{self.MIN_DOCSTRING}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n', f'{indent}\n']
                 new_lines[insert_idx:insert_idx] = doc_lines
                 added_count += 1
             if added_count > 0:

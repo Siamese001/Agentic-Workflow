@@ -23,7 +23,7 @@ class HygieneValidatorAgent(HealerMixin, MCPHardenedMixin):
     2. Duplication (Files with identical content)
     """
 
-    def __init__(self, root_path: str):
+    def __init__(self, root_path: str) -> None:
         self.root_path = Path(root_path)
         self.all_py_files = []
         self.import_graph = defaultdict(set)
@@ -50,7 +50,7 @@ class HygieneValidatorAgent(HealerMixin, MCPHardenedMixin):
         except Exception:
             pass  # Validators should not halt boot
 
-    def scan(self):
+    def scan(self) -> Dict[str, Any]:
         """Builds file list and import graph."""
         for root, dirs, files in os.walk(self.root_path):
             # Skip virtual environments and cache directories
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     validator = HygieneValidatorAgent(root)
     validator.scan()
 
-    print("\n=== DUPLICATE FILES ===")
+    print("\nimport logging\n\nLogger = logging.getLogger(__name__)\n=== DUPLICATE FILES ===")
     dupes = validator.get_duplicates()
     if dupes:
         for d in dupes:

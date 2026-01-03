@@ -34,6 +34,10 @@ class L2Agent(HealerMixin, MCPHardenedMixin, SubatomicTestingMixin):
     name: str = "L2Agent"
     layer: str = "L2"
     
-    def heal_repository(self, dry_run: bool = True) -> Dict[str, Any]:
-        """Override in subclass to implement healing logic."""
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path: set = None) -> Dict[str, Any]:
+        """Invoke shared healing chain then allow subclass override."""
+        if _call_path is None:
+            _call_path = set()
+        super().heal_repository(dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path)
         return {"status": "not_implemented", "agent": self.name}
+\nimport logging\n\nLogger = logging.getLogger(__name__)

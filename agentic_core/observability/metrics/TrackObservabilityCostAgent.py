@@ -19,10 +19,10 @@ class OperationResult:
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class TrackObservabilityCostAgent(HealerMixin):
+class TrackObservabilityCostAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """function class for standard domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]]=None):
+    def __init__(self, config: Optional[Dict[str, object]]=None) -> None:
         self.CONFIG = config or {}
         LOGGER.info(f'Initialized {self.__class__.__name__}')
 
@@ -61,3 +61,4 @@ def heal_repository(dry_run: bool = True, execute: bool = False, depth: int = 0,
         return {"skipped": 1}
     finally:
         _call_path.discard(agent_name)
+\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin

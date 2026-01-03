@@ -201,7 +201,7 @@ class NervousSystemCheckpointing:
 class NervousSystemResultReporting:
     """Handles mission result generation and reporting."""
 
-    def __init__(self, config: OrchestratorConfig, Logger: logging.Logger):
+    def __init__(self, config: OrchestratorConfig, Logger: logging.Logger) -> None:
         self.config = config
         self.Logger = Logger
 
@@ -311,7 +311,7 @@ class NervousSystemResultReporting:
 class NervousSystemStateManagement:
     """Handles state persistence and retrieval for the NervousSystem."""
 
-    def __init__(self, Logger: logging.Logger):
+    def __init__(self, Logger: logging.Logger) -> None:
         self.Logger = Logger
 
     def get_state(self, iteration: int, state: Dict[str, Any], config: OrchestratorConfig) -> Dict[str, Any]:
@@ -406,7 +406,7 @@ class NervousSystemPhaseExecution:
             # Create a simple mock agent that has execute method
             class MockAgent(HealerMixin):
                                                     
-                def __init__(self, name, phase):
+                def __init__(self, name, phase) -> None:
                     self.name = name
                     self.phase = phase
 
@@ -415,7 +415,7 @@ class NervousSystemPhaseExecution:
                     assert hasattr(self, 'name'), "Missing name"
                     return True
 
-                async def execute(self):
+                async def execute(self) -> None:
                     # Simulate agent execution
                     return {
                         "passed": True,
@@ -781,7 +781,7 @@ class NervousSystemPhaseExecution:
 class NervousSystemArchitectureGovernance:
     """Handles architecture validation and impact analysis."""
 
-    def __init__(self, ArchitectureGovernor: ArchitectureGovernor, Logger: logging.Logger):
+    def __init__(self, ArchitectureGovernor: ArchitectureGovernor, Logger: logging.Logger) -> None:
         self.ArchitectureGovernor = ArchitectureGovernor
         self.Logger = Logger
 
@@ -839,7 +839,7 @@ class NervousSystemArchitectureGovernance:
 class NervousSystemInterventionManager:
     """Manages human intervention requests and approvals."""
 
-    def __init__(self, InterventionServer: InterventionServer, Logger: logging.Logger):
+    def __init__(self, InterventionServer: InterventionServer, Logger: logging.Logger) -> None:
         self.InterventionServer = InterventionServer
         self.Logger = Logger
 

@@ -14,7 +14,7 @@ from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixi
 
 
 # NAMING CANON COMPLIANCE — renamed to HygieneGuardianAgent for discovery and sovereignty — 2025-12-30
-class HygieneGuardianAgent(CanonBaseAgent, MCPHardenedMixin):
+class HygieneGuardianAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
     """
     Validates Canon Key 45: Shared Utils and Repository Hygiene.
     Ensures that architectural shifts do not leave behind structural debris.
@@ -24,9 +24,9 @@ class HygieneGuardianAgent(CanonBaseAgent, MCPHardenedMixin):
                     
         return [45]
 
-    async def execute(self):
+    async def execute(self) -> None:
         """Execute comprehensive repository sanitation pass."""
-        print(f"\n[>>>] {self.name} ACTIVATED: Performing Sanitation Sweep...")
+        print(f"\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Performing Sanitation Sweep...")
         
         project_root = Path(os.getcwd())
         

@@ -10,13 +10,13 @@ from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 
-class HierarchyEnforcerAgent(HealerMixin):
+class HierarchyEnforcerAgent(MCPHardenedMixin, SubatomicTestingMixin, HealerMixin):
     """
     Enforces the canonical L4 hierarchy across agentic_core.
     Drills down from L2 -> L3 -> L4 to ensure all required directories exist.
     """
     
-    def __init__(self, project_root: Path, ctx):
+    def __init__(self, project_root: Path, ctx) -> None:
         from agentic_core.config.blueprint_sovereign.structure_blueprint import (
             CORE_L3_SUBFOLDER_MAP,
             CORE_L4_SUBFOLDER_MAP,
@@ -114,7 +114,7 @@ class HierarchyEnforcerAgent(HealerMixin):
                 archive_path = self.archive_root / "apps_depth" / rel
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
-                explanation = f"# APPS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
+                explanation = f"# APPS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\nfrom agentic_core.L2_execution.ToolRegistry.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n"
                 explanation += f"# {rel} was depth {depth}, but apps_* MUST be exactly {apps_exact_depth}.\n\n"
 
                 try:
