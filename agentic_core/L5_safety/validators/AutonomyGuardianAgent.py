@@ -4,12 +4,13 @@ Autonomy Guardian Agent - Autonomy Meta-Enforcement
 Ensures all domain agents have heal_repository() and no external scripts.
 This is the sovereign guardian for agent autonomy across the repository.
 """
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
-from typing import List, Dict, Any, Set, Optional
+from typing import List, Dict, Any, Set, Optional, Tuple
 import ast
 import json
 import re
+import webbrowser
 
 from agentic_core.utils.core_extensions.healer_mixin import HealerMixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import MCPHardenedMixin
@@ -373,6 +374,9 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         if markdown:
             today = date.today().strftime("%B %d, %Y")
             self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
+            
+            # === Self-Contained Interactive Dashboard Generation ===
+            self._generate_self_contained_dashboard(today, all_agents, classified_paths, used_stems, path_to_layer)
 
         # Portfolio-wide top violations — sub-atomic refactor backlog
         if global_sub_atomic_violations:
@@ -1007,6 +1011,219 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 pass
                 
         self._update_totals(totals, metrics)
+
+    def _generate_self_contained_dashboard(
+        self, today: str, all_agents: List[Path], classified_paths: set, 
+        used_stems: set, path_to_layer: Dict[str, str]
+    ) -> None:
+        """Generate self-contained interactive dashboard with embedded data and recommendations."""
+        # Build dashboard data rows from territories
+        dashboard_rows = []
+        territory_stats = []
+        
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
+            if len(agents) == 0:
+                continue
+            
+            # Compute metrics for this territory
+            metrics = self._compute_territory_metrics_with_violations(agents, used_stems, 10, [])
+            
+            # Calculate percentages
+            total = metrics["total"]
+            perc_compliant = round(metrics["compliant"] / total * 100, 1) if total else 0
+            perc_hardened = round(metrics["hardened"] / total * 100, 1) if total else 0
+            perc_healing_cap = round(metrics["healing_cap"] / total * 100, 1) if total else 0
+            perc_healing_invoke = round(metrics["healing_invoke"] / total * 100, 1) if total else 0
+            perc_tests = round(metrics["tests"] / total * 100, 1) if total else 0
+            perc_typed = round(metrics["typed"] / total, 1) if total else 0
+            perc_documented = round(metrics["documented"] / total, 1) if total else 0
+            perc_observable = round(metrics["observable"] / total, 1) if total else 0
+            perc_used = round(metrics["used"] / total * 100, 1) if total else 0
+            
+            avg_loc = round(metrics["loc"] / total, 1) if total else 0
+            avg_cc = round(metrics["cc_sum"] / max(total, 1), 1)
+            
+            # Calculate health and risk
+            health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
+            risk_score = 0
+            if avg_cc > 10: risk_score += 3
+            if perc_tests < 50: risk_score += 3
+            if perc_compliant < 80: risk_score += 4
+            risk = "HIGH" if risk_score >= 6 else "MED" if risk_score >= 3 else "LOW"
+            
+            # Calculate criticality
+            layer_multiplier = {"L0": 1.3, "L1": 1.2, "L2": 1.1, "L3": 1.0, "L4": 0.9, "L5": 1.4, "unknown": 0.8}.get(priority, 1.0)
+            priority_multiplier = {"CRITICAL": 1.5, "HIGH": 1.3, "MEDIUM": 1.1, "LOW": 0.9}.get(priority, 1.0)
+            usage_factor = min(40, perc_used * 0.4)
+            compliance_gap = max(0, 80 - perc_compliant) * 0.3
+            size_factor = min(20, total * 0.5)
+            base_criticality = usage_factor + compliance_gap + size_factor
+            criticality = round(base_criticality * layer_multiplier * priority_multiplier, 1)
+            
+            territory_name = territory_key.replace("_", " ").title()
+            
+            # Add to dashboard data
+            row = {
+                "Territory": territory_name,
+                "Total": total,
+                "Compliant": metrics["compliant"],
+                "Compliance %": perc_compliant,
+                "Heal Cap %": perc_healing_cap,
+                "Invocation %": perc_healing_invoke,
+                "Hardened %": perc_hardened,
+                "Test %": perc_tests,
+                "Avg CC": avg_cc,
+                "Typed %": perc_typed,
+                "Observable %": perc_observable,
+                "Criticality": criticality,
+                "Health": health,
+                "Risk": risk,
+                "Used %": perc_used,
+                "Priority": priority
+            }
+            dashboard_rows.append(row)
+            
+            # Store for recommendations
+            territory_stats.append({
+                "name": territory_name,
+                "key": territory_key,
+                "total": total,
+                "priority": priority,
+                "invocation": perc_healing_invoke,
+                "tests": perc_tests,
+                "used": perc_used,
+                "compliant": perc_compliant,
+                "health": health
+            })
+        
+        # Add TOTAL row
+        if len(dashboard_rows) > 0:
+            total_agents = sum(r["Total"] for r in dashboard_rows)
+            total_compliant = sum(r["Compliant"] for r in dashboard_rows)
+            total_perc = round(total_compliant / total_agents * 100, 1) if total_agents else 0
+            
+            # Compute weighted averages
+            total_healing_cap = round(sum(r["Heal Cap %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_healing_invoke = round(sum(r["Invocation %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_hardened = round(sum(r["Hardened %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_tests = round(sum(r["Test %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_cc = round(sum(r["Avg CC"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_typed = round(sum(r["Typed %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_observable = round(sum(r["Observable %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_used = round(sum(r["Used %"] * r["Total"] for r in dashboard_rows) / total_agents, 1) if total_agents else 0
+            total_health = round((total_tests + total_healing_invoke + total_observable) / 3, 1)
+            
+            total_row = {
+                "Territory": "TOTAL",
+                "Total": total_agents,
+                "Compliant": total_compliant,
+                "Compliance %": total_perc,
+                "Heal Cap %": total_healing_cap,
+                "Invocation %": total_healing_invoke,
+                "Hardened %": total_hardened,
+                "Test %": total_tests,
+                "Avg CC": total_cc,
+                "Typed %": total_typed,
+                "Observable %": total_observable,
+                "Criticality": 75,
+                "Health": total_health,
+                "Risk": "HIGH",
+                "Used %": total_used,
+                "Priority": "ALL"
+            }
+            dashboard_rows.insert(0, total_row)
+        
+        # === Compute Prioritized Recommendations ===
+        priority_weights = {"CRITICAL": 1.8, "HIGH": 1.4, "MEDIUM": 1.0, "LOW": 0.6}
+        recommendations = []
+        
+        for stat in territory_stats:
+            healing_gap = max(0, 100 - stat["invocation"])
+            tests_gap = max(0, 100 - stat["tests"])
+            score = healing_gap * tests_gap * (stat["used"] / 100) * priority_weights.get(stat["priority"], 1.0)
+            
+            rationale = f"High-impact fix: improve autonomy in frequently used {stat['priority'].lower()} priority territory"
+            gaps = f"Healing Invocation {stat['invocation']:.1f}% (gap {healing_gap:.1f}%), Tests {stat['tests']:.1f}% (gap {tests_gap:.1f}%)"
+            
+            guidance = "```diff\n"
+            guidance += "+ from agentic_core.L5_safety.healing import HealerMixin\n"
+            guidance += " class YourAgent(..., HealerMixin):\n"
+            guidance += "     def key_method(self):\n"
+            guidance += "+         super().heal_repository()  # Enables self-healing on errors\n"
+            guidance += "     # Add more super() calls in error-handling paths\n"
+            guidance += "```\n"
+            guidance += "Add dedicated tests:\n"
+            guidance += "```python\n"
+            guidance += "def test_healing_activation(self):\n"
+            guidance += "    # Simulate failure → assert healing triggered + logs/metrics\n"
+            guidance += "```\n"
+            guidance += "Re-run --report to validate closure."
+            
+            recommendations.append({
+                "territory": stat["name"],
+                "priority": stat["priority"],
+                "total": stat["total"],
+                "rationale": rationale,
+                "gaps": gaps,
+                "guidance": guidance,
+                "score": round(score, 1)
+            })
+        
+        # Force unclassified to top if exists
+        unclassified = [a for a in all_agents if a not in classified_paths]
+        if unclassified:
+            unclass_rec = {
+                "territory": "Unclassified Agents",
+                "priority": "Critical",
+                "total": len(unclassified),
+                "rationale": "Unclassified agents distort portfolio metrics and block accurate healing coverage",
+                "gaps": "Metrics unknown — categorization required",
+                "guidance": "1. Review paths in text report subdir breakdown\n"
+                           "2. Identify pattern (e.g., 'config/')\n"
+                           "3. Add to territories dict:\n"
+                           "```python\n"
+                           "self.territories['config'] = ('Config Agents', 'Low')\n"
+                           "```\n"
+                           "4. Re-run --report → unclassified disappears from dashboard",
+                "score": 9999.0
+            }
+            recommendations.append(unclass_rec)
+        
+        recommendations.sort(key=lambda r: r["score"], reverse=True)
+        top_recommendations = recommendations[:10]
+        
+        # === Generate Self-Contained HTML ===
+        template_path = self.project_root / "autonomy_dashboard_template.html"
+        output_path = self.project_root / "autonomy_dashboard.html"
+        
+        if not template_path.exists():
+            print("\n⚠️  Warning: autonomy_dashboard_template.html not found in project root.")
+            print("   Place the modified template there to enable self-contained HTML generation.")
+        else:
+            with open(template_path, "r", encoding="utf-8") as f:
+                template = f.read()
+            
+            # Prepare data for embedding
+            data_json = json.dumps(dashboard_rows)
+            recommendations_json = json.dumps(top_recommendations)
+            last_updated = f"Last updated: {today} at {datetime.now().strftime('%H:%M:%S')}"
+            
+            # Inject data into template
+            html = template.replace('const dashboardData = [];', f'const dashboardData = {data_json};')
+            html = html.replace('const recommendationsData = [];', f'const recommendationsData = {recommendations_json};')
+            html = html.replace('const lastUpdatedStr = "";', f'const lastUpdatedStr = "{last_updated}";')
+            
+            # Write self-contained HTML
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(html)
+            
+            print(f"\n### Self-Contained Interactive Dashboard Generated")
+            print(f"→ File: {output_path}")
+            print(f"→ Open directly in browser (double-click or file:// – no server/CORS issues)")
+            print(f"   Includes gauges, risk matrix, healing gaps, observability, complexity, and compliance charts.")
+            print(f"   → New 'Prioritized Recommendations' tab with top {len(top_recommendations)} actions")
+            print("     Includes precise multi-step diff guidance for direct IDE application.\n")
 
 
 # Singleton accessor
