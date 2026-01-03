@@ -120,6 +120,55 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             
             "tests": ("tests", "Medium"),
         }
+        
+        # Phase 5: Layer base class mapping (SSOT - sync with pre-commit hook)
+        self.LAYER_BASE_MAP = {
+            "L0": "MaintenanceBaseAgent",
+            "L1": "L1CognitionBaseAgent",
+            "L2": "L2ExecutionBaseAgent",
+            "L3": "OrchestrationBaseAgent",
+            "L4": "StateBaseAgent",
+            "L5": "SafetyBaseAgent",
+        }
+    
+    def _detect_layer(self, file_path: str) -> str:
+        """Detect L0-L5 layer from path."""
+        path = Path(file_path)
+        for part in path.parts:
+            if part.startswith("L") and len(part) == 2 and part[1].isdigit():
+                return part
+        return "UNKNOWN"
+    
+    def _get_base_names(self, node: ast.ClassDef) -> list:
+        """Extract base class names."""
+        bases = []
+        for base in node.bases:
+            if hasattr(base, "id"):
+                bases.append(base.id)
+            elif hasattr(base, "attr"):
+                bases.append(base.attr)
+        return bases
+    
+    def _check_base_class_compliance(self, file_path: str) -> tuple:
+        """Phase 5: Verify agent inherits from correct layer base class."""
+        layer = self._detect_layer(file_path)
+        if layer not in self.LAYER_BASE_MAP:
+            return True, "Non-agent file"
+        
+        expected = self.LAYER_BASE_MAP[layer]
+        
+        try:
+            tree = ast.parse(Path(file_path).read_text(encoding="utf-8"))
+        except Exception as e:
+            return False, f"Parse error: {e}"
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
+                bases = self._get_base_names(node)
+                if expected not in bases:
+                    return False, f"Missing {expected} (found {bases})"
+        
+        return True, "Compliant"
     
     def _load_agent_registry(self) -> List[Dict[str, Any]]:
         """Load agents from agent_discovery_full.json (authoritative AST scan)."""
@@ -1449,6 +1498,14 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
             # Mark infrastructure territories
             is_infrastructure = territory_key in infrastructure_territories
             
+            # Phase 5: Check base class compliance for this territory
+            proper_base_count = 0
+            for agent in agents:
+                ok, _ = self._check_base_class_compliance(str(agent))
+                if ok:
+                    proper_base_count += 1
+            perc_proper_base = round(proper_base_count / total * 100, 1) if total else 0
+            
             # Add to dashboard data (agents array will be added after collection below)
             row = {
                 "Territory": territory_name,
@@ -1464,6 +1521,7 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Avg CC": avg_cc,
                 "Typed %": perc_typed,
                 "Documented %": perc_documented,  # NEW: Documentation coverage
+                "Proper Base %": perc_proper_base,  # Phase 5: Base class compliance
                 "Criticality": criticality,
                 "Health": health,
                 "Risk": risk,
@@ -1756,11 +1814,12 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 total_cc = round(sum(r["Avg CC"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_typed = round(sum(r["Typed %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_documented = round(sum(r.get("Documented %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
+                total_proper_base = round(sum(r.get("Proper Base %", 0) * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_observable = round(sum(r["Observable %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
                 total_used = round(sum(r["Used %"] * r["Total"] for r in non_infrastructure_rows) / total_agents, 1) if total_agents else 0
             else:
                 total_agents = total_compliant = total_perc = total_healing_cap = total_healing_invoke = 0
-                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_documented = total_observable = total_used = 0
+                total_hardened = total_mcp_capable = total_tests = total_cc = total_typed = total_documented = total_proper_base = total_observable = total_used = 0
             # Calculate total health with new formula (v2.1 with typing weight)
             total_cc_health = max(0, min(100, 100 - (total_cc * 2)))
             total_health = round((
@@ -1793,6 +1852,8 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
                 "Test %": total_tests,
                 "Avg CC": total_cc,
                 "Typed %": total_typed,
+                "Documented %": total_documented,
+                "Proper Base %": total_proper_base,  # Phase 5: Base class compliance
                 "Observable %": total_observable,
                 "Criticality": 75,
                 "Health": total_health,
