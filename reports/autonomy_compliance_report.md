@@ -23,26 +23,26 @@
 
 ### High Priority Territories
 
-- 🔥 **L1 Cognition**: 9/50 compliant | Health: 34.0% | Risk: HIGH | Heal Gap: 58.0%
-- 🔥 **L0 Maintenance**: 5/24 compliant | Health: 44.5% | Risk: HIGH | Heal Gap: 70.8%
-- 🔥 **L2 Execution**: 27/83 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 53.0%
+- 🔥 **L1 Cognition**: 9/50 compliant | Health: 34.0% | Risk: HIGH | Heal Gap: 50.0%
+- 🔥 **L0 Maintenance**: 5/24 compliant | Health: 44.5% | Risk: HIGH | Heal Gap: 54.1%
+- 🔥 **L2 Execution**: 27/83 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 33.8%
 - 🔥 **L5 Safety/Validators**: 14/19 compliant | Health: 66.7% | Risk: HIGH | Heal Gap: 10.5%
 - 🔥 **L5 Safety/Guardrails**: 28/37 compliant | Health: 54.1% | Risk: HIGH | Heal Gap: 10.8%
 
 ### Medium Priority Territories
 
-- 🔥 **Apps Lic**: 11/47 compliant | Health: 29.8% | Risk: HIGH | Heal Gap: 55.3%
+- 🔥 **Apps Lic**: 11/47 compliant | Health: 29.8% | Risk: HIGH | Heal Gap: 21.2%
 - 🔥 **Apps Rg**: 5/40 compliant | Health: 45.0% | Risk: HIGH | Heal Gap: 42.5%
 - 🔥 **Apps Shared**: 0/4 compliant | Health: 25.0% | Risk: HIGH | Heal Gap: 75.0%
-- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 60.7% | Risk: HIGH | Heal Gap: 43.5%
+- 🔥 **L3 Orchestration**: 30/62 compliant | Health: 60.7% | Risk: HIGH | Heal Gap: 45.1%
 - ⚠️ **L5 Safety/Gravity**: 2/2 compliant | Health: 66.7% | Risk: MED
 - 🔥 **L5 Safety/Red Teaming**: 1/1 compliant | Health: 66.7% | Risk: HIGH
 - 🔥 **L4 State**: 10/21 compliant | Health: 57.1% | Risk: HIGH | Heal Gap: 42.9%
 
 ### Low Priority Territories
 
-- 🔥 **Tests**: 0/19 compliant | Health: 49.1% | Risk: HIGH | Heal Gap: 36.8%
-- 🔥 **Utils**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 42.9%
+- 🔥 **Tests**: 0/19 compliant | Health: 49.1% | Risk: HIGH | Heal Gap: 42.1%
+- 🔥 **Utils**: 0/7 compliant | Health: 33.3% | Risk: HIGH | Heal Gap: 14.3%
 
 
 ## 📈 Recommendations
@@ -62,13 +62,13 @@
 
 ### Healing Gap Closure
 - **Apps Shared**: Add heal_repository() methods (Gap: 75.0%)
-- **L0 Maintenance**: Add heal_repository() methods (Gap: 70.8%)
-- **L1 Cognition**: Add heal_repository() methods (Gap: 58.0%)
-- **Apps Lic**: Add heal_repository() methods (Gap: 55.3%)
-- **L2 Execution**: Add heal_repository() methods (Gap: 53.0%)
-- **L3 Orchestration**: Add heal_repository() methods (Gap: 43.5%)
+- **L0 Maintenance**: Add heal_repository() methods (Gap: 54.1%)
+- **L1 Cognition**: Add heal_repository() methods (Gap: 50.0%)
+- **L3 Orchestration**: Add heal_repository() methods (Gap: 45.1%)
 - **L4 State**: Add heal_repository() methods (Gap: 42.9%)
 - **Apps Rg**: Add heal_repository() methods (Gap: 42.5%)
+- **L2 Execution**: Add heal_repository() methods (Gap: 33.8%)
+- **Apps Lic**: Add heal_repository() methods (Gap: 21.2%)
 
 
 ## 📊 Data Files
