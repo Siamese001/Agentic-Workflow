@@ -347,308 +347,42 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         print(f"### Autonomy Compliance Report — {today}\n")
 
         if markdown:
-            header = (
-                "| Territory / Layer                          | Total | Compliant | % Heal Cap | % Heal Inv | % MCP | % Test | Avg CC | % Typed | % Obs | Criticality | Health | Risk | % Used | Priority |\n"
-                "|--------------------------------------------|-------|-----------|------------|-------------|-------|--------|--------|---------|-------|-------------|--------|------|--------|----------|\n"
-            )
-            print(header)
+            self._print_markdown_header()
 
-        # Accumulators for totals
-        totals = {
-            "agents": 0, "compliant": 0, "hardened": 0,
-            "healing_cap": 0, "healing_invoke": 0, "tests": 0, "loc": 0, "used": 0,
-            "cc_sum": 0, "typed": 0, "documented": 0, "observable": 0, "max_cc": 0
-        }
-
-        # Step 1: Load agents from authoritative JSON (agent_discovery_full.json)
+        # Initialize data structures
+        totals = self._initialize_totals()
         registry = self._load_agent_registry()
-        all_agents = []
-        path_to_layer = {}  # Map path -> layer for territory classification
-        for agent in registry:
-            path_str = agent.get("path", "")
-            if path_str:
-                # Convert JSON path to actual file path
-                full_path = self.project_root / path_str
-                if full_path.exists():
-                    all_agents.append(full_path)
-                    # Store both forward and backslash versions for matching
-                    path_fwd = str(full_path).replace("\\", "/")
-                    path_back = str(full_path)
-                    path_to_layer[path_fwd] = agent.get("layer", "unknown")
-                    path_to_layer[path_back] = agent.get("layer", "unknown")
+        all_agents, path_to_layer = self._process_agent_registry(registry)
+        used_stems = self._compute_global_usage(all_agents)
+        
+        # Global sub-atomic violation tracking (across all territories)
+        global_sub_atomic_violations = []  # List of (cc, file_path, method_name)
         
         print(f"Loaded {len(all_agents)} agents from agent_discovery_full.json\n")
 
-        # Step 2: Compute global usage (which agents are imported elsewhere)
-        used_stems = set()
-        for py_file in self.project_root.rglob("*.py"):
-            if py_file in all_agents:
-                continue
-            try:
-                content = py_file.read_text(errors="ignore")
-                for agent in all_agents:
-                    if agent.stem in content:
-                        used_stems.add(agent.stem)
-            except:
-                pass
+        # Process territories and generate report
+        classified_paths = self._process_territories(
+            all_agents, path_to_layer, used_stems, totals, markdown, global_sub_atomic_violations
+        )
 
-        # Step 3: Process defined territories using path_to_layer lookup
-        classified_paths = set()
-
-        for territory_key, (layer_filter, priority) in self.territories.items():
-            # Get agents based on layer from lookup
-            if territory_key.startswith("L5_safety"):
-                # Special handling for L5 subfolders (validators, guardrails, gravity)
-                subfolder = territory_key.split("/")[1]
-                agents = [
-                    p for p in all_agents
-                    if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
-                ]
-            else:
-                # Standard layer matching
-                agents = [
-                    p for p in all_agents
-                    if path_to_layer.get(str(p)) == layer_filter
-                ]
-            classified_paths.update(agents)
-
-            terr_total = len(agents)
-            if terr_total == 0:
-                continue
-
-            # Basic detections
-            terr_compliant = terr_hardened = terr_healing_cap = terr_healing_invoke = terr_tests = 0
-            terr_loc = terr_cc_sum = terr_max_cc = 0
-            terr_typed = terr_documented = terr_observable = 0
-
-            for a in agents:
-                try:
-                    content = a.read_text(errors="ignore")
-                    lines = content.splitlines()
-                    loc = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
-                    terr_loc += loc
-
-                    # Basic checks
-                    if "def heal_repository(self" in content:
-                        terr_compliant += 1
-                        terr_healing_invoke += 1
-                    if "MCPHardenedMixin" in content:
-                        terr_hardened += 1
-                    # Healing capabilities: either inherits HealerMixin OR has healing logic
-                    if "HealerMixin" in content or any(ind in content for ind in ["run(", "validate_", "auto_"]):
-                        terr_healing_cap += 1
-                    # Count tests: external test file OR self-tests OR delegation OR pytest/unittest
-                    has_external_test = (a.parent / "tests" / f"test_{a.stem}.py").exists()
-                    has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
-                    has_delegation = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
-                    has_inline_tests = "def test_" in content or "import pytest" in content or "import unittest" in content
-                    if has_external_test or has_self_test or has_delegation or has_inline_tests:
-                        terr_tests += 1
-                    if a.stem in used_stems:
-                        terr_used += 1
-
-                    # AST-based metrics
-                    tree = ast.parse(content)
-                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-                    classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-
-                    # Cyclomatic Complexity
-                    for func in functions:
-                        visitor = _CCVisitor()
-                        visitor.visit(func)
-                        terr_cc_sum += visitor.cc
-                        terr_max_cc = max(terr_max_cc, visitor.cc)
-
-                    # Typing coverage
-                    if functions:
-                        typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
-                        terr_typed += (typed / len(functions)) * 100
-
-                    # Documentation coverage
-                    doc_count = 0
-                    for cls in classes:
-                        if cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(getattr(cls.body[0].value, 's', None), str):
-                            doc_count += 1
-                        elif cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(cls.body[0].value, ast.Constant):
-                            doc_count += 1
-                    for f in functions:
-                        if f.body and isinstance(f.body[0], ast.Expr):
-                            val = f.body[0].value
-                            if isinstance(getattr(val, 's', None), str) or isinstance(val, ast.Constant):
-                                doc_count += 1
-                    total_targets = len(classes) + len(functions)
-                    if total_targets:
-                        terr_documented += (doc_count / total_targets) * 100
-
-                    # Observability (logging)
-                    if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]):
-                        terr_observable += 100
-
-                except SyntaxError:
-                    terr_max_cc = max(terr_max_cc, 999)
-                except Exception:
-                    pass
-
-            # Calculate averages
-            avg_loc = round(terr_loc / terr_total, 1) if terr_total else 0
-            avg_cc = round(terr_cc_sum / max(terr_total, 1), 1)
-            perc_typed = round(terr_typed / terr_total, 1) if terr_total else 0
-            perc_documented = round(terr_documented / terr_total, 1) if terr_total else 0
-            perc_observable = round(terr_observable / terr_total, 1) if terr_total else 0
-            terr_used = sum(1 for a in agents if a.stem in used_stems)
-            perc_used = round(terr_used / terr_total * 100, 1) if terr_total else 0
-
-            # Percentages
-            perc_compliant = round(terr_compliant / terr_total * 100, 1)
-            perc_hardened = round(terr_hardened / terr_total * 100, 1)
-            perc_healing_cap = round(terr_healing_cap / terr_total * 100, 1)
-            perc_healing_invoke = round(terr_healing_invoke / terr_total * 100, 1)
-            perc_tests = round(terr_tests / terr_total * 100, 1)
-
-            # Accumulate
-            totals["agents"] += terr_total
-            totals["compliant"] += terr_compliant
-            totals["hardened"] += terr_hardened
-            totals["healing_cap"] += terr_healing_cap
-            totals["healing_invoke"] += terr_healing_invoke
-            totals["tests"] += terr_tests
-            totals["loc"] += terr_loc
-            totals["used"] += terr_used
-            totals["cc_sum"] += terr_cc_sum
-            totals["typed"] += terr_typed
-            totals["documented"] += terr_documented
-            totals["observable"] += terr_observable
-            totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
-
-            # Calculate new high-signal metrics with better distribution
-            layer_multiplier = {"L0": 1.3, "L1": 1.2, "L2": 1.1, "L3": 1.0, "L4": 0.9, "L5": 1.4, "unknown": 0.8}.get(layer_filter, 1.0)
-            priority_multiplier = {"CRITICAL": 1.5, "HIGH": 1.3, "MEDIUM": 1.1, "LOW": 0.9}.get(priority, 1.0)
+        # Process unclassified agents and generate final report
+        unclassified_agents = [a for a in all_agents if a not in classified_paths]
+        if unclassified_agents and markdown:
+            self._process_unclassified_agents(unclassified_agents, used_stems, totals)
             
-            # Business criticality: usage + compliance gap + size impact
-            usage_factor = min(40, perc_used * 0.4)  # Max 40 points from usage
-            compliance_gap = max(0, 80 - perc_compliant) * 0.3  # Gap penalty, max 24 points
-            size_factor = min(20, terr_total * 0.5)  # Size impact, max 20 points
-            
-            base_criticality = usage_factor + compliance_gap + size_factor
-            criticality = round(base_criticality * layer_multiplier * priority_multiplier, 1)
-            
-            health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
-            
-            risk_score = 0
-            if avg_cc > 10: risk_score += 3
-            if perc_tests < 50: risk_score += 3
-            if perc_compliant < 80: risk_score += 4
-            risk = "HIGH" if risk_score >= 6 else "MED" if risk_score >= 3 else "LOW"
+        if markdown:
+            today = date.today().strftime("%B %d, %Y")
+            self._save_markdown_report(today, totals, all_agents, classified_paths, used_stems, path_to_layer)
 
-            # Display
-            territory_name = territory_key.replace("_", " ").title()[:20]
-            row = (
-                f"| {territory_name:<42} | {terr_total:5} | {terr_compliant:9} "
-                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% "
-                f"| {avg_cc:6} | {perc_typed:5}% | {perc_observable:4}% | {criticality:5.0f} | {health:5.1f} | {risk:4} | {perc_used:4}% | {priority:8} |"
-            )
-            print(row)
-
-        # Step 4: Unclassified row (exhaustive coverage)
-        unclassified = [a for a in all_agents if a not in classified_paths]
-        if unclassified:
-            terr_total = len(unclassified)
-            terr_compliant = terr_hardened = terr_healing_cap = terr_healing_invoke = terr_tests = 0
-            terr_loc = terr_cc_sum = terr_max_cc = 0
-            terr_typed = terr_documented = terr_observable = 0
-
-            for a in unclassified:
-                try:
-                    content = a.read_text(errors="ignore")
-                    lines = content.splitlines()
-                    terr_loc += len([l for l in lines if l.strip() and not l.strip().startswith("#")])
-                    
-                    if "def heal_repository(self" in content: 
-                        terr_compliant += 1
-                        terr_healing_invoke += 1
-                    if "MCPHardenedMixin" in content: terr_hardened += 1
-                    # Healing capabilities: either inherits HealerMixin OR has healing logic
-                    if "HealerMixin" in content or any(ind in content for ind in ["run(", "validate_", "auto_"]): terr_healing_cap += 1
-                    # Count tests: external test file OR self-tests OR delegation OR pytest/unittest
-                    has_ext = (a.parent / "tests" / f"test_{a.stem}.py").exists()
-                    has_self = "_run_self_tests" in content or "SubatomicTestingMixin" in content or "SubatomicAgent" in content
-                    has_deleg = "L0DelegationTestingMixin" in content or "L0DelegationMixin" in content or "TestSovereigntyAgent" in content or "_delegate_tests" in content or "delegate_on_failure" in content
-                    has_inline = "def test_" in content or "import pytest" in content or "import unittest" in content
-                    if has_ext or has_self or has_deleg or has_inline: terr_tests += 1
-                    
-                    tree = ast.parse(content)
-                    functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-                    classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-                    
-                    for func in functions:
-                        visitor = _CCVisitor()
-                        visitor.visit(func)
-                        terr_cc_sum += visitor.cc
-                        terr_max_cc = max(terr_max_cc, visitor.cc)
-                    
-                    if functions:
-                        typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
-                        terr_typed += (typed / len(functions)) * 100
-                    
-                    doc_count = sum(1 for cls in classes if cls.body and isinstance(cls.body[0], ast.Expr))
-                    doc_count += sum(1 for f in functions if f.body and isinstance(f.body[0], ast.Expr))
-                    if classes or functions:
-                        terr_documented += (doc_count / (len(classes) + len(functions))) * 100
-                    
-                    if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]):
-                        terr_observable += 100
-                except:
-                    pass
-
-            avg_loc = round(terr_loc / terr_total, 1)
-            avg_cc = round(terr_cc_sum / max(terr_total, 1), 1)
-            terr_used = sum(1 for a in unclassified if a.stem in used_stems)
-            perc_used = round(terr_used / terr_total * 100, 1)
-            perc_compliant = round(terr_compliant / terr_total * 100, 1)
-            perc_healing_cap = round(terr_healing_cap / terr_total * 100, 1)
-            perc_healing_invoke = round(terr_healing_invoke / terr_total * 100, 1)
-            perc_hardened = round(terr_hardened / terr_total * 100, 1)
-            perc_tests = round(terr_tests / terr_total * 100, 1)
-            perc_typed = round(terr_typed / terr_total, 1)
-            perc_documented = round(terr_documented / terr_total, 1)
-            perc_observable = round(terr_observable / terr_total, 1)
-
-            totals["agents"] += terr_total
-            totals["compliant"] += terr_compliant
-            totals["hardened"] += terr_hardened
-            totals["healing_cap"] += terr_healing_cap
-            totals["healing_invoke"] += terr_healing_invoke
-            totals["tests"] += terr_tests
-            totals["loc"] += terr_loc
-            totals["used"] += terr_used
-            totals["cc_sum"] += terr_cc_sum
-            totals["typed"] += terr_typed
-            totals["documented"] += terr_documented
-            totals["observable"] += terr_observable
-            totals["max_cc"] = max(totals["max_cc"], terr_max_cc)
-
-            # Calculate metrics for unclassified
-            unclass_health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
-            
-            # Unclassified criticality with better distribution
-            unclass_usage_factor = min(40, perc_used * 0.4)
-            unclass_compliance_gap = max(0, 80 - perc_compliant) * 0.3
-            unclass_size_factor = min(20, terr_total * 0.5)
-            unclass_base = unclass_usage_factor + unclass_compliance_gap + unclass_size_factor
-            unclass_criticality = round(unclass_base * 0.8, 1)  # Lower priority for unclassified
-            
-            unclass_risk_score = 0
-            if avg_cc > 10: unclass_risk_score += 3
-            if perc_tests < 50: unclass_risk_score += 3
-            if perc_compliant < 80: unclass_risk_score += 4
-            unclass_risk = "HIGH" if unclass_risk_score >= 6 else "MED" if unclass_risk_score >= 3 else "LOW"
-
-            row = (
-                f"| **OTHER/UNCLASSIFIED**                     | {terr_total:5} | {terr_compliant:9} "
-                f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% "
-                f"| {avg_cc:6} | {perc_typed:5}% | {perc_observable:4}% | {unclass_criticality:5.0f} | {unclass_health:5.1f} | {unclass_risk:4} | {perc_used:4}% | Review   |"
-            )
-            print(row)
+        # Portfolio-wide top violations — sub-atomic refactor backlog
+        if global_sub_atomic_violations:
+            print("\n**Portfolio Top 10 Sub-Atomic Violations (CC >10 — prioritize for decomposition):**")
+            top_violations = sorted(global_sub_atomic_violations, reverse=True)[:10]
+            for cc, path, method in top_violations:
+                print(f"  - {cc:3} | {path}:{method}() → Extract to primitives")
+            if len(global_sub_atomic_violations) > 10:
+                print(f"  ... and {len(global_sub_atomic_violations) - 10} more — full list per territory above")
+            print("  → Impact: Enables true sub-atomic reuse/orchestration across agents\n")
 
         # Grand total
         if totals["agents"] > 0:
@@ -993,6 +727,286 @@ class AutonomyGuardianAgent(HealerMixin, MCPHardenedMixin):
         else:
             print(f"\n[SAVED] Markdown: {report_path}")
             print(f"[SAVED] CSV Data: {csv_path}")
+
+    def _print_markdown_header(self) -> None:
+        """Print markdown table header for compliance report."""
+        header = (
+            "| Territory / Layer                          | Total | Compliant | % Heal Cap | % Heal Inv | % MCP | % Test | Avg CC | % Typed | % Obs | Criticality | Health | Risk | % Used | Priority |\n"
+            "|--------------------------------------------|-------|-----------|------------|-------------|-------|--------|--------|---------|-------|-------------|--------|------|--------|----------|\n"
+        )
+        print(header)
+
+    def _initialize_totals(self) -> Dict[str, int]:
+        """Initialize totals accumulator for compliance metrics."""
+        return {
+            "agents": 0, "compliant": 0, "hardened": 0,
+            "healing_cap": 0, "healing_invoke": 0, "tests": 0, "loc": 0, "used": 0,
+            "cc_sum": 0, "typed": 0, "documented": 0, "observable": 0, "max_cc": 0
+        }
+
+    def _process_agent_registry(self, registry: List[Dict]) -> Tuple[List[Path], Dict[str, str]]:
+        """Process agent registry to extract paths and layer mappings."""
+        all_agents = []
+        path_to_layer = {}  # Map path -> layer for territory classification
+        
+        for agent in registry:
+            path_str = agent.get("path", "")
+            if path_str:
+                # Convert JSON path to actual file path
+                full_path = self.project_root / path_str
+                if full_path.exists():
+                    all_agents.append(full_path)
+                    # Store both forward and backslash versions for matching
+                    path_fwd = str(full_path).replace("\\", "/")
+                    path_back = str(full_path)
+                    path_to_layer[path_fwd] = agent.get("layer", "unknown")
+                    path_to_layer[path_back] = agent.get("layer", "unknown")
+                    
+        return all_agents, path_to_layer
+
+    def _compute_global_usage(self, all_agents: List[Path]) -> set:
+        """Compute which agents are used/imported elsewhere."""
+        used_stems = set()
+        for py_file in self.project_root.rglob("*.py"):
+            if py_file in all_agents:
+                continue
+            try:
+                content = py_file.read_text(errors="ignore")
+                for agent in all_agents:
+                    if agent.stem in content:
+                        used_stems.add(agent.stem)
+            except:
+                pass
+        return used_stems
+
+    def _process_territories(
+        self, all_agents: List[Path], path_to_layer: Dict[str, str], 
+        used_stems: set, totals: Dict[str, int], markdown: bool,
+        global_sub_atomic_violations: List[Tuple[int, str, str]]
+    ) -> set:
+        """Process all territories and track sub-atomic violations."""
+        classified_paths = set()
+        atomic_threshold = 10  # CC threshold for sub-atomic violations
+        
+        for territory_key, (layer_filter, priority) in self.territories.items():
+            agents = self._get_territory_agents(territory_key, layer_filter, all_agents, path_to_layer)
+            classified_paths.update(agents)
+
+            if len(agents) == 0:
+                continue
+
+            # Compute territory metrics and track violations
+            metrics = self._compute_territory_metrics_with_violations(
+                agents, used_stems, atomic_threshold, global_sub_atomic_violations
+            )
+            self._update_totals(totals, metrics)
+
+            if markdown:
+                self._print_territory_row(territory_key, metrics, priority)
+                
+        return classified_paths
+
+    def _get_territory_agents(
+        self, territory_key: str, layer_filter: str, 
+        all_agents: List[Path], path_to_layer: Dict[str, str]
+    ) -> List[Path]:
+        """Get agents for a specific territory."""
+        if territory_key.startswith("L5_safety"):
+            # Special handling for L5 subfolders (validators, guardrails, gravity)
+            subfolder = territory_key.split("/")[1]
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == "L5" and subfolder in str(p).replace("\\", "/")
+            ]
+        else:
+            # Standard layer matching
+            return [
+                p for p in all_agents
+                if path_to_layer.get(str(p)) == layer_filter
+            ]
+
+    def _compute_territory_metrics_with_violations(
+        self, agents: List[Path], used_stems: set, 
+        atomic_threshold: int, global_violations: List[Tuple[int, str, str]]
+    ) -> Dict[str, Any]:
+        """Compute territory metrics and track sub-atomic violations."""
+        metrics = {
+            "total": len(agents),
+            "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, 
+            "documented": 0, "observable": 0, "used": 0
+        }
+
+        for agent in agents:
+            try:
+                content = agent.read_text(errors="ignore")
+                lines = content.splitlines()
+                loc = len([l for l in lines if l.strip() and not l.strip().startswith("#")])
+                metrics["loc"] += loc
+
+                # Basic compliance checks
+                if "def heal_repository(self" in content:
+                    metrics["compliant"] += 1
+                    metrics["healing_invoke"] += 1
+                if "MCPHardenedMixin" in content:
+                    metrics["hardened"] += 1
+                if "HealerMixin" in content or any(ind in content for ind in ["run(", "validate_", "auto_"]):
+                    metrics["healing_cap"] += 1
+                    
+                # Test detection
+                has_external_test = (agent.parent / "tests" / f"test_{agent.stem}.py").exists()
+                has_self_test = "_run_self_tests" in content or "SubatomicTestingMixin" in content
+                has_delegation = "L0DelegationTestingMixin" in content or "_delegate_tests" in content
+                has_inline_tests = "def test_" in content or "import pytest" in content
+                if has_external_test or has_self_test or has_delegation or has_inline_tests:
+                    metrics["tests"] += 1
+
+                # AST-based metrics and sub-atomic violation tracking
+                tree = ast.parse(content)
+                functions = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+
+                # Track sub-atomic violations (high CC methods)
+                for func_node in functions:
+                    visitor = _CCVisitor()
+                    visitor.visit(func_node)
+                    cc = visitor.cc
+                    
+                    if cc > atomic_threshold:
+                        file_path = str(agent.relative_to(self.project_root))
+                        global_violations.append((cc, file_path, func_node.name))
+                    
+                    metrics["cc_sum"] += cc
+                    metrics["max_cc"] = max(metrics["max_cc"], cc)
+
+                # Typing coverage
+                if functions:
+                    typed = sum(1 for f in functions if f.returns or any(arg.annotation for arg in f.args.args if arg.arg != "self"))
+                    metrics["typed"] += (typed / len(functions)) * 100
+
+                # Documentation coverage
+                doc_count = 0
+                for cls in classes:
+                    if cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(getattr(cls.body[0].value, 's', None), str):
+                        doc_count += 1
+                    elif cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(cls.body[0].value, ast.Constant):
+                        doc_count += 1
+                for f in functions:
+                    if f.body and isinstance(f.body[0], ast.Expr):
+                        val = f.body[0].value
+                        if isinstance(getattr(val, 's', None), str) or isinstance(val, ast.Constant):
+                            doc_count += 1
+                total_targets = len(classes) + len(functions)
+                if total_targets:
+                    metrics["documented"] += (doc_count / total_targets) * 100
+
+                # Observability (logging)
+                if any(imp in content for imp in ["import logging", "from logging", "logger.", "log."]):
+                    metrics["observable"] += 100
+                    
+            except SyntaxError:
+                metrics["max_cc"] = max(metrics["max_cc"], 999)
+            except Exception:
+                pass
+
+        # Usage tracking
+        metrics["used"] = sum(1 for a in agents if a.stem in used_stems)
+        
+        return metrics
+
+    def _update_totals(self, totals: Dict[str, int], metrics: Dict[str, Any]) -> None:
+        """Update territory totals with metrics."""
+        totals["agents"] += metrics["total"]
+        totals["compliant"] += metrics["compliant"]
+        totals["hardened"] += metrics["hardened"]
+        totals["healing_cap"] += metrics["healing_cap"]
+        totals["healing_invoke"] += metrics["healing_invoke"]
+        totals["tests"] += metrics["tests"]
+        totals["loc"] += metrics["loc"]
+        totals["used"] += metrics["used"]
+        totals["cc_sum"] += metrics["cc_sum"]
+        totals["typed"] += metrics["typed"]
+        totals["documented"] += metrics["documented"]
+        totals["observable"] += metrics["observable"]
+        totals["max_cc"] = max(totals["max_cc"], metrics["max_cc"])
+
+    def _print_territory_row(self, territory_key: str, metrics: Dict[str, Any], priority: str) -> None:
+        """Print territory row in markdown format."""
+        m = metrics
+        total = m["total"]
+        if total == 0:
+            return
+            
+        # Calculate percentages
+        perc_compliant = round(m["compliant"] / total * 100, 1)
+        perc_hardened = round(m["hardened"] / total * 100, 1)
+        perc_healing_cap = round(m["healing_cap"] / total * 100, 1)
+        perc_healing_invoke = round(m["healing_invoke"] / total * 100, 1)
+        perc_tests = round(m["tests"] / total * 100, 1)
+        perc_typed = round(m["typed"] / total, 1) if total else 0
+        perc_documented = round(m["documented"] / total, 1) if total else 0
+        perc_observable = round(m["observable"] / total, 1) if total else 0
+        perc_used = round(m["used"] / total * 100, 1) if total else 0
+        
+        avg_loc = round(m["loc"] / total, 1) if total else 0
+        avg_cc = round(m["cc_sum"] / max(total, 1), 1)
+        
+        # Calculate health and risk
+        health = round((perc_tests + perc_healing_invoke + perc_observable) / 3, 1)
+        risk_score = 0
+        if avg_cc > 10: risk_score += 3
+        if perc_tests < 50: risk_score += 3
+        if perc_compliant < 80: risk_score += 4
+        risk = "HIGH" if risk_score >= 6 else "MED" if risk_score >= 3 else "LOW"
+        
+        # Calculate criticality
+        layer_multiplier = {"L0": 1.3, "L1": 1.2, "L2": 1.1, "L3": 1.0, "L4": 0.9, "L5": 1.4, "unknown": 0.8}.get(priority, 1.0)
+        priority_multiplier = {"CRITICAL": 1.5, "HIGH": 1.3, "MEDIUM": 1.1, "LOW": 0.9}.get(priority, 1.0)
+        usage_factor = min(40, perc_used * 0.4)
+        compliance_gap = max(0, 80 - perc_compliant) * 0.3
+        size_factor = min(20, total * 0.5)
+        base_criticality = usage_factor + compliance_gap + size_factor
+        criticality = round(base_criticality * layer_multiplier * priority_multiplier, 1)
+        
+        territory_name = territory_key.replace("_", " ").title()[:20]
+        row = (
+            f"| {territory_name:<42} | {total:5} | {m['compliant']:9} "
+            f"| {perc_healing_cap:5}% | {perc_healing_invoke:5}% | {perc_hardened:4}% | {perc_tests:5}% "
+            f"| {avg_cc:6} | {perc_typed:5}% | {perc_observable:4}% | {criticality:5.0f} | {health:5.1f} | {risk:4} | {perc_used:4}% | {priority:8} |"
+        )
+        print(row)
+
+    def _process_unclassified_agents(self, unclassified_agents: List[Path], used_stems: set, totals: Dict[str, int]) -> None:
+        """Process unclassified agents and add to totals."""
+        if not unclassified_agents:
+            return
+            
+        # Simple metrics for unclassified agents
+        metrics = {
+            "total": len(unclassified_agents),
+            "compliant": 0, "hardened": 0, "healing_cap": 0, "healing_invoke": 0,
+            "tests": 0, "loc": 0, "cc_sum": 0, "max_cc": 0, "typed": 0, 
+            "documented": 0, "observable": 0, "used": 0
+        }
+        
+        for agent in unclassified_agents:
+            try:
+                content = agent.read_text(errors="ignore")
+                if "def heal_repository(self" in content:
+                    metrics["compliant"] += 1
+                    metrics["healing_invoke"] += 1
+                if "MCPHardenedMixin" in content:
+                    metrics["hardened"] += 1
+                if "HealerMixin" in content:
+                    metrics["healing_cap"] += 1
+                if (agent.parent / "tests" / f"test_{agent.stem}.py").exists():
+                    metrics["tests"] += 1
+                if agent.stem in used_stems:
+                    metrics["used"] += 1
+            except:
+                pass
+                
+        self._update_totals(totals, metrics)
 
 
 # Singleton accessor
